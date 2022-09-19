@@ -1,5 +1,5 @@
 import React from 'react';
-import { isEmpty } from 'lodash-es';
+import _ from 'lodash-es';
 
 import MediaSet from 'components/MediaSet/MediaSet';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
@@ -43,6 +43,7 @@ function MediaPanel({
   sortFields,
   illustrationConfig,
   selectOptions = [],
+  onRunsTagsChange = () => {},
 }: IMediaPanelProps): React.FunctionComponentElement<React.ReactNode> {
   const [activePointRect, setActivePointRect] = React.useState<{
     top: number;
@@ -50,6 +51,9 @@ function MediaPanel({
     left: number;
     right: number;
   } | null>(null);
+  const [encodedDataKey, setEncodedDataKey] = React.useState<string>('');
+  const [encodedSortFieldsDictKey, setEncodedSortFieldsDictKey] =
+    React.useState<string>('');
   let blobUriArray = React.useRef<string[]>([]);
   let timeoutID = React.useRef(0);
   const containerRef = React.useRef<HTMLDivElement>(null);
@@ -146,15 +150,44 @@ function MediaPanel({
     ],
   );
 
+  function omitRunPropertyFromData(data: any) {
+    if (_.isArray(data)) {
+      return data.map((item: any) => _.omit(item, 'run'));
+    } else {
+      return Object.keys(data).reduce((acc: any, key: any) => {
+        acc[key] = omitRunPropertyFromData(data[key]);
+        return acc;
+      }, {});
+    }
+  }
+
+  React.useEffect(() => {
+    const resultEncodedDataKey = JSON.stringify(omitRunPropertyFromData(data));
+    if (encodedDataKey !== resultEncodedDataKey) {
+      setEncodedDataKey(resultEncodedDataKey);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data]);
+
+  React.useEffect(() => {
+    const resultEncodedSortFieldsDictKey = JSON.stringify(sortFieldsDict);
+    if (encodedSortFieldsDictKey !== resultEncodedSortFieldsDictKey) {
+      setEncodedSortFieldsDictKey(resultEncodedSortFieldsDictKey);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sortFieldsDict]);
+
   const mediaSetKey = React.useMemo(
-    () => Date.now(),
+    () => {
+      return Date.now();
+    },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
-      data,
+      encodedDataKey,
       wrapperOffsetHeight,
       wrapperOffsetWidth,
       additionalProperties,
-      sortFieldsDict,
+      encodedSortFieldsDictKey,
     ],
   );
 
@@ -170,7 +203,7 @@ function MediaPanel({
       window.clearTimeout(timeoutID.current);
     }
     timeoutID.current = window.setTimeout(() => {
-      if (!isEmpty(blobUriArray.current)) {
+      if (!_.isEmpty(blobUriArray.current)) {
         requestRef.current = getBlobsData(blobUriArray.current);
         requestRef.current.call().then(() => {
           blobUriArray.current = [];
@@ -226,7 +259,7 @@ function MediaPanel({
         ) : (
           <>
             <div className='MediaPanel__Container'>
-              {!isEmpty(data) ? (
+              {!_.isEmpty(data) ? (
                 <div
                   className='MediaPanel'
                   style={{ height: `calc(100% - ${actionPanelSize || 0})` }}
@@ -253,6 +286,7 @@ function MediaPanel({
                         mediaType={mediaType}
                         sortFields={sortFields}
                         selectOptions={selectOptions}
+                        onRunsTagsChange={onRunsTagsChange}
                       />
                     </ErrorBoundary>
                   </div>
@@ -270,6 +304,7 @@ function MediaPanel({
                         tooltipContent={tooltip?.content || {}}
                         focusedState={focusedState}
                         selectOptions={selectOptions}
+                        onRunsTagsChange={onRunsTagsChange}
                       />
                     </ErrorBoundary>
                   )}

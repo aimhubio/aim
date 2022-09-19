@@ -7,11 +7,4 @@
   flex-direction: column;
   max-height: 100vh;
   overflow: hidden;
-  .ComponentsWrapper {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    height: toRem(92px);
-    border-bottom: 1px solid $primary-color-10;
-  }
 }

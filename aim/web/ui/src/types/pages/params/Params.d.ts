@@ -107,6 +107,7 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   onTableResizeModeChange: (mode: ResizeModeEnum) => void;
   onSortReset: () => void;
   updateColumnsWidths: (key: string, width: number, isReset: boolean) => void;
+  onRunsTagsChange: (runHash: string, tags: ITagInfo[]) => void;
   onShuffleChange: (name: 'stroke' | 'color') => void;
   onAxisBrushExtentChange: (
     key: string,

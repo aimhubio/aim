@@ -1,6 +1,10 @@
 import React from 'react';
 import _ from 'lodash-es';
-import { ListOnScrollProps, VariableSizeList as List } from 'react-window';
+import {
+  ListOnItemsRenderedProps,
+  ListOnScrollProps,
+  VariableSizeList as List,
+} from 'react-window';
 import classNames from 'classnames';
 import { useResizeObserver } from 'hooks';
 
@@ -11,6 +15,7 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
+import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 
 import runDetailAppModel from 'services/models/runs/runDetailAppModel';
 import * as analytics from 'services/analytics';
@@ -21,7 +26,7 @@ import { IRunLogsTabProps, LogsLastRequestEnum } from './RunLogsTab.d';
 import './RunLogsTab.scss';
 
 const SINGLE_LINE_HEIGHT = 15;
-const LOAD_MORE_LOGS_COUNT = 500;
+const LOAD_MORE_LOGS_COUNT = 200;
 
 function RunLogsTab({
   isRunLogsLoading,
@@ -30,131 +35,163 @@ function RunLogsTab({
   inProgress,
   updatedLogsCount,
 }: IRunLogsTabProps) {
-  const liveUpdate = React.useRef<any>(null);
+  const liveUpdate = React.useRef<{ intervalId: number } | null>(null);
   const logsContainerRef = React.useRef<any>(null);
   const listRef = React.useRef<any>({});
   const runsBatchRequestRef = React.useRef<any>({});
+  const logsRowsData = React.useRef<string[] | null>(null);
   const [lastRequestType, setLastRequestType] =
     React.useState<LogsLastRequestEnum>(LogsLastRequestEnum.DEFAULT);
-  const rangeRef = React.useRef<any>(null);
-  const [parentHeight, setParentHeight] = React.useState<any>(0);
-  const [parentWidth, setParentWidth] = React.useState<any>(0);
-  const dataRef = React.useRef<any>(null);
-  const scrollOffsetRef = React.useRef<any>(null);
-  const [keysList, setKeyList] = React.useState<any>(null);
-  const visibleItemsRange = React.useRef<any>(null);
+  const [requestStatus, setRequestStatus] = React.useState<RequestStatusEnum>(
+    RequestStatusEnum.Ok,
+  );
+  const logsRange = React.useRef<[number, number]>([0, 0]);
+  const [scrollOffset, setScrollOffset] = React.useState<number | null>(null);
+  const [visibleRowsRange, setVisibleRowsRange] = React.useState<{
+    visibleStartIndex: number;
+    visibleStopIndex: number;
+  } | null>(null);
+  const [parentHeight, setParentHeight] = React.useState<number>(0);
+  const [parentWidth, setParentWidth] = React.useState<number>(0);
+  const [keysList, setKeyList] = React.useState<number[] | null>(null);
 
   React.useEffect(() => {
-    runsBatchRequestRef.current = runDetailAppModel.getRunLogs({ runHash });
-    runsBatchRequestRef.current.call();
-
+    getRunLogs({ runHash });
     analytics.pageView(ANALYTICS_EVENT_KEYS.runDetails.tabs.logs.tabView);
-    startLiveUpdate();
-
     return () => {
-      runsBatchRequestRef.current.abort();
-      if (liveUpdate.current?.intervalId) {
-        clearInterval(liveUpdate.current.intervalId);
-      }
+      stopLiveUpdate(true);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function liveUpdateCallBack() {
-    return function () {
-      setLastRequestType(LogsLastRequestEnum.LIVE_UPDATE);
-      runsBatchRequestRef.current = runDetailAppModel.getRunLogs({
-        runHash,
-        record_range: dataRef.current
-          ? `${+rangeRef.current?.[1] > 5 ? +rangeRef.current?.[1] - 5 : 0}:`
-          : '',
-        isLiveUpdate: true,
-      });
-      runsBatchRequestRef.current.call();
-    };
+    setLastRequestType(LogsLastRequestEnum.LIVE_UPDATE);
+    getRunLogs({
+      runHash,
+      record_range: logsRowsData.current
+        ? `${logsRange.current?.[1] > 5 ? logsRange.current?.[1] - 5 : 0}:`
+        : '',
+      isLiveUpdate: true,
+    });
   }
 
   function startLiveUpdate() {
     if (inProgress) {
-      const intervalId = setInterval(liveUpdateCallBack(), 3000);
+      const intervalId: number = window.setTimeout(liveUpdateCallBack, 3000);
       liveUpdate.current = {
         intervalId,
       };
     }
   }
 
-  function onScroll(props: ListOnScrollProps) {
-    scrollOffsetRef.current = props.scrollOffset;
-    if (
-      props.scrollOffset <= 15 &&
-      +keysList?.[0] !== 0 &&
-      props.scrollDirection === 'backward'
-    ) {
-      if (liveUpdate.current?.intervalId) {
-        clearInterval(liveUpdate.current.intervalId);
-        runsBatchRequestRef.current.abort();
-      }
-      setLastRequestType(LogsLastRequestEnum.LOAD_MORE);
-      runsBatchRequestRef.current = runDetailAppModel.getRunLogs({
-        runHash,
-        record_range: `${
-          +rangeRef.current?.[0] > LOAD_MORE_LOGS_COUNT
-            ? +rangeRef.current?.[0] - LOAD_MORE_LOGS_COUNT
-            : 0
-        }:${rangeRef.current?.[0]}`,
-        isLoadMore: true,
-      });
-      runsBatchRequestRef.current.call();
+  function getRunLogs(params: {
+    runHash: string;
+    record_range?: string;
+    isLiveUpdate?: boolean;
+    isLoadMore?: boolean;
+  }) {
+    setRequestStatus(RequestStatusEnum.Pending);
+    runsBatchRequestRef.current = runDetailAppModel.getRunLogs(params);
+    runsBatchRequestRef.current.call().then(() => {
+      setRequestStatus(RequestStatusEnum.Ok);
+      stopLiveUpdate();
       startLiveUpdate();
+    });
+  }
+
+  function stopLiveUpdate(forceRequestAbort: boolean = false) {
+    if (
+      forceRequestAbort ||
+      lastRequestType === LogsLastRequestEnum.LIVE_UPDATE
+    ) {
+      runsBatchRequestRef.current?.abort();
+    }
+    if (liveUpdate.current?.intervalId) {
+      clearInterval(liveUpdate.current.intervalId);
     }
   }
 
-  React.useEffect(() => {
-    if (!inProgress && liveUpdate.current?.intervalId) {
-      clearInterval(liveUpdate.current.intervalId);
-      runsBatchRequestRef.current.abort();
+  function onScroll({ scrollOffset, scrollDirection }: ListOnScrollProps) {
+    setScrollOffset(scrollOffset);
+    if (
+      scrollOffset <= SINGLE_LINE_HEIGHT &&
+      keysList &&
+      keysList[0] !== 0 &&
+      scrollDirection === 'backward' &&
+      (requestStatus === RequestStatusEnum.Ok ||
+        (requestStatus === RequestStatusEnum.Pending &&
+          lastRequestType === LogsLastRequestEnum.LIVE_UPDATE))
+    ) {
+      stopLiveUpdate();
+      setLastRequestType(LogsLastRequestEnum.LOAD_MORE);
+      getRunLogs({
+        runHash,
+        record_range: `${
+          logsRange.current?.[0] > LOAD_MORE_LOGS_COUNT
+            ? logsRange.current?.[0] - LOAD_MORE_LOGS_COUNT
+            : 0
+        }:${logsRange.current?.[0]}`,
+        isLoadMore: true,
+      });
     }
+  }
+
+  function onItemsRendered({
+    visibleStartIndex,
+    visibleStopIndex,
+  }: ListOnItemsRenderedProps) {
+    setVisibleRowsRange({ visibleStartIndex, visibleStopIndex });
+  }
+
+  React.useEffect(() => {
+    if (!inProgress) {
+      stopLiveUpdate();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inProgress]);
 
   React.useEffect(() => {
-    const values = _.sortBy(Object.values(runLogs ?? {}), 'index');
-    const keys = _.sortBy(values.map((value) => value.index));
-    const arrayWithEmptyStrings = Array(3).fill('');
-    rangeRef.current = [keys[0], keys[keys.length - 1]];
+    const values: Array<{ index: string; value: string }> = _.sortBy(
+      Object.values(runLogs ?? {}),
+      'index',
+    );
+    const keys: number[] = _.sortBy(
+      values.map((value: { index: string; value: string }) => +value.index),
+    );
+    const arrayWithEmptyStrings: string[] = Array(3).fill('');
+    logsRange.current = [keys[0], keys[keys.length - 1]];
     setKeyList(keys);
-    dataRef.current = values.concat(arrayWithEmptyStrings);
+    logsRowsData.current = values
+      .map((value: { index: string; value: string }) => value.value)
+      .concat(arrayWithEmptyStrings);
   }, [runLogs]);
 
   React.useEffect(() => {
-    if (
-      lastRequestType === LogsLastRequestEnum.LOAD_MORE &&
-      visibleItemsRange.current
-    ) {
+    const logsRowsCount = logsRowsData.current?.length ?? 0;
+    if (lastRequestType === LogsLastRequestEnum.LOAD_MORE && visibleRowsRange) {
       listRef.current?.scrollToItem?.(
-        visibleItemsRange.current?.[0] + updatedLogsCount,
+        visibleRowsRange.visibleStartIndex + updatedLogsCount,
         'start',
       );
       setLastRequestType(LogsLastRequestEnum.DEFAULT);
     } else if (
-      lastRequestType === LogsLastRequestEnum.LIVE_UPDATE &&
-      visibleItemsRange.current?.[1] + updatedLogsCount >=
-        dataRef.current?.length - 1
+      (lastRequestType === LogsLastRequestEnum.LIVE_UPDATE &&
+        visibleRowsRange &&
+        visibleRowsRange?.visibleStopIndex + updatedLogsCount >=
+          logsRowsCount - 1) ||
+      lastRequestType === LogsLastRequestEnum.DEFAULT
     ) {
       if (!_.isEmpty(keysList)) {
-        listRef.current?.scrollToItem?.(dataRef.current?.length, 'end');
-      }
-    } else if (lastRequestType === LogsLastRequestEnum.DEFAULT) {
-      if (!_.isEmpty(keysList)) {
-        listRef.current?.scrollToItem?.(dataRef.current?.length, 'end');
+        listRef.current?.scrollToItem?.(logsRowsCount, 'end');
       }
     } else {
       listRef.current?.scrollToItem?.(
-        visibleItemsRange.current?.[0] ?? 0,
+        visibleRowsRange?.visibleStartIndex ?? 0,
         'start',
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dataRef.current?.length, keysList]);
+  }, [logsRowsData.current, keysList]);
 
   React.useEffect(() => {
     if (
@@ -163,7 +200,10 @@ function RunLogsTab({
       parentWidth
     ) {
       if (!_.isEmpty(keysList)) {
-        listRef.current?.scrollToItem?.(visibleItemsRange.current[0], 'start');
+        listRef.current?.scrollToItem?.(
+          visibleRowsRange?.visibleStartIndex ?? 0,
+          'start',
+        );
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -185,7 +225,9 @@ function RunLogsTab({
         className='runDetailParamsTabLoader'
         height='100%'
       >
-        {!_.isEmpty(runLogs) && !_.isEmpty(keysList) ? (
+        {!_.isEmpty(runLogs) &&
+        !_.isEmpty(keysList) &&
+        !_.isNil(logsRowsData.current) ? (
           <div className='RunDetailLogsTabWrapper'>
             <div className='RunDetailLogsTab'>
               <div className='Logs' ref={logsContainerRef}>
@@ -193,22 +235,18 @@ function RunLogsTab({
                   <List
                     ref={listRef}
                     key={`${parentHeight}${parentWidth}`}
-                    height={logsContainerRef.current?.offsetHeight || 100}
-                    itemCount={dataRef.current?.length + 1}
+                    height={parentHeight || 100}
+                    itemCount={logsRowsData.current?.length + 1}
                     itemSize={() => SINGLE_LINE_HEIGHT}
                     width={'100%'}
-                    overscanCount={1000}
+                    overscanCount={100}
                     initialScrollOffset={
-                      scrollOffsetRef.current ?? dataRef.current?.length * 15
+                      scrollOffset ??
+                      logsRowsData.current?.length * SINGLE_LINE_HEIGHT
                     }
-                    onItemsRendered={(props) => {
-                      visibleItemsRange.current = [
-                        props.visibleStartIndex,
-                        props.visibleStopIndex,
-                      ];
-                    }}
+                    onItemsRendered={onItemsRendered}
                     itemData={{
-                      logsList: dataRef.current,
+                      logsList: logsRowsData.current,
                     }}
                     onScroll={onScroll}
                   >

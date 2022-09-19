@@ -318,7 +318,8 @@ class Run(BaseRun, StructuredRunMixin):
         self._checkins = None
 
         if not read_only:
-            self._checkins = RunStatusReporter(self)
+            if not self.repo.is_remote_repo:
+                self._checkins = RunStatusReporter(self)
             if log_system_params:
                 system_params = {
                     'packages': get_installed_packages(),
@@ -423,7 +424,7 @@ class Run(BaseRun, StructuredRunMixin):
     def track(
         self,
         value,
-        name: str,
+        name: str = None,
         step: int = None,
         epoch: int = None,
         *,

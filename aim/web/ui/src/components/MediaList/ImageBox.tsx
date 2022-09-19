@@ -27,6 +27,7 @@ const ImageBox = ({
   tooltip,
   additionalProperties,
   selectOptions,
+  onRunsTagsChange,
 }: IImageBoxProps): React.FunctionComponentElement<React.ReactNode> => {
   const { format, blob_uri } = data;
   const [isImageFullViewPopupOpened, setIsImageFullViewPopupOpened] =
@@ -170,6 +171,7 @@ const ImageBox = ({
               selectOptions={selectOptions}
               imageData={data}
               handleClose={() => setIsImageFullViewPopupOpened(false)}
+              onRunsTagsChange={onRunsTagsChange}
             />
           </Dialog>
         </ErrorBoundary>

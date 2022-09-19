@@ -140,13 +140,14 @@ function TagsTable({
   return (
     <ErrorBoundary>
       <div className='Tags__TagList__tagListBox'>
-        {!isTagsDataLoading && !_.isNil(tagsList) && (
-          <div className='Tags__TagList__tagListBox__titleBox'>
+        <div className='Tags__TagList__tagListBox__titleBox'>
+          {!isTagsDataLoading && !_.isNil(tagsList) && (
             <Text component='h4' size={14} weight={600} tint={100}>
               {tagsList.length} {tagsList.length > 1 ? 'Tags' : 'Tag'}
             </Text>
-          </div>
-        )}
+          )}
+        </div>
+
         <Table
           ref={tableRef}
           fixed={false}

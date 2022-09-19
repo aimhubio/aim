@@ -25,7 +25,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.18s ease-out;
+    transition: all $popover-opening-duration ease-out;
 
     &:last-child {
       margin-right: 0;
