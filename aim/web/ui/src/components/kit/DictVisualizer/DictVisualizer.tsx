@@ -20,6 +20,8 @@ import {
 
 import './DictVisualizer.scss';
 
+const ROW_SIZE = 22;
+
 function DictVisualizer(props: IDictVisualizerProps) {
   const [collapsedItems, setCollapsedItems] = React.useState<{
     [key: string]: boolean;
@@ -203,14 +205,24 @@ function DictVisualizer(props: IDictVisualizerProps) {
 
   return (
     <ErrorBoundary>
-      <div style={props.style} className='DictVisualizer'>
+      <div
+        style={{
+          ...props.style,
+          height: props.autoScale
+            ? ROW_SIZE * rows.length > props.style!.height!
+              ? props.style?.height
+              : ROW_SIZE * rows.length
+            : props.style?.height,
+        }}
+        className='DictVisualizer'
+      >
         <AutoSizer>
           {({ width, height }) => (
             <List
               width={width}
               height={height}
               itemCount={rows.length}
-              itemSize={22}
+              itemSize={ROW_SIZE}
             >
               {({ index, style }: ListChildComponentProps) => {
                 const row = rows[index];

@@ -14,11 +14,16 @@ import './styles.scss';
 
 function JsonViewPopover({
   json,
+  dictVisualizerSize,
 }: IJsonViewPopoverProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <ErrorBoundary>
       <div className='JsonViewPopover'>
-        <DictVisualizer src={json} />
+        <DictVisualizer
+          src={json}
+          style={dictVisualizerSize ?? { width: 300, height: 300 }}
+          autoScale
+        />
       </div>
     </ErrorBoundary>
   );

@@ -4,8 +4,8 @@
 // Returns a string "type" of input object
 export function toType(obj: any) {
   let type = getType(obj);
-  // some extra disambiguation for numbers
   if (type === 'number') {
+    // some extra disambiguation for numbers
     if (isNaN(obj)) {
       type = 'nan';
     } else if ((obj | 0) !== obj) {
@@ -47,6 +47,7 @@ export function typeToColor(item: any) {
     case 'array':
       return 'rgb(73, 72, 73)';
     case '':
+    case 'nan':
       return 'rgb(148, 148, 148)';
     default:
       return 'rgb(20, 115, 230)';
