@@ -1,3 +1,6 @@
+// Adapted from react-json-view by Mac Gainor
+// License: https://github.com/mac-s-g/react-json-view/blob/master/LICENSE
+
 // Returns a string "type" of input object
 export function toType(obj: any) {
   let type = getType(obj);
@@ -20,7 +23,7 @@ export function toType(obj: any) {
   return type;
 }
 
-// source: http://stackoverflow.com/questions/7390426/better-way-to-get-type-of-a-javascript-variable/7390612#7390612
+// Source: http://stackoverflow.com/questions/7390426/better-way-to-get-type-of-a-javascript-variable/7390612#7390612
 function getType(obj: any) {
   return ({} as any).toString
     .call(obj)
@@ -28,6 +31,7 @@ function getType(obj: any) {
     .toLowerCase();
 }
 
+// Returns color code base on value type
 export function typeToColor(item: any) {
   switch (item) {
     case 'int':

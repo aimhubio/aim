@@ -24,6 +24,8 @@ function DictVisualizer(props: IDictVisualizerProps) {
   const [collapsedItems, setCollapsedItems] = React.useState<{
     [key: string]: boolean;
   }>({});
+
+  // Convert the dict to a list of key-value pairs
   const flattenDict = React.useCallback(
     (
       dict: { [key: string]: unknown } | unknown[],
@@ -31,6 +33,8 @@ function DictVisualizer(props: IDictVisualizerProps) {
       parentKey: string = 'root',
     ) => {
       let rows: DictVisualizerRowType[] = [];
+
+      // Add top level brackets
       if (level === 0) {
         if (Array.isArray(dict)) {
           let nestedItemsLength = dict.length;
@@ -85,6 +89,7 @@ function DictVisualizer(props: IDictVisualizerProps) {
           });
           const value = formatValue(item);
           if (Array.isArray(item)) {
+            // Add array subtree
             rows.push({
               id,
               root: item.length > 0,
@@ -109,6 +114,7 @@ function DictVisualizer(props: IDictVisualizerProps) {
               });
             }
           } else if (typeof item === 'object' && item !== null) {
+            // Add dict subtree
             let nestedItemsLength = Object.keys(item).length;
             rows.push({
               id,
@@ -142,6 +148,7 @@ function DictVisualizer(props: IDictVisualizerProps) {
               });
             }
           } else {
+            // Add row for primitive values
             rows.push({
               id,
               level,
@@ -154,6 +161,7 @@ function DictVisualizer(props: IDictVisualizerProps) {
           }
         }
 
+        // Add top level closing brackets
         if (level === 0) {
           if (Array.isArray(dict)) {
             rows.push({
