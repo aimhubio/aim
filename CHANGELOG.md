@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.13.4
+
+- Optimize rendering performance for large dicts (roubkar)
+
 ## 3.13.3 Sep 16, 2022
 
 - Fix request cancellation on `Logs` tab (mihran113)
