@@ -209,9 +209,7 @@ function DictVisualizer(props: IDictVisualizerProps) {
         style={{
           ...props.style,
           height: props.autoScale
-            ? ROW_SIZE * rows.length > props.style!.height!
-              ? props.style?.height
-              : ROW_SIZE * rows.length
+            ? Math.min(ROW_SIZE * rows.length, props.style!.height! as number)
             : props.style?.height,
         }}
         className='DictVisualizer'
