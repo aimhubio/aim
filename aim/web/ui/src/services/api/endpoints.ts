@@ -33,6 +33,10 @@ const ENDPOINTS = {
     UPDATE: '',
     DELETE: '',
   },
+  RELEASE_NOTES: {
+    BASE: 'api.github.com/repos/aimhubio/aim/releases',
+    GET: '',
+  },
 };
 
 export default ENDPOINTS;
