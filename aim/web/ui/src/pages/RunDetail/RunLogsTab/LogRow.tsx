@@ -8,12 +8,12 @@ function LogRow({
   index: number;
   style: React.CSSProperties;
   data: {
-    logsList: Array<{ index: string; value: string }>;
+    logsList: string[];
   };
 }) {
   return (
     <div style={style}>
-      <pre className={'LogRow__line'}>{data.logsList?.[index - 1]?.value}</pre>
+      <pre className='LogRow__line'>{data.logsList?.[index - 1]}</pre>
     </div>
   );
 }
