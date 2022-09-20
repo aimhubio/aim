@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Enhancements:
+
+- Add the ability to disable smoothing explicitly (KaroMourad)
+
 ## 3.13.3 Sep 16, 2022
 
 - Fix request cancellation on `Logs` tab (mihran113)
