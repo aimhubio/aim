@@ -6,15 +6,12 @@ import { PipelineOptions } from 'modules/core/pipeline';
 import { AimFlatObjectBase } from 'types/core/AimObjects';
 import { SequenceTypesEnum } from 'types/core/enums';
 
-import { ExplorerEngineConfiguration } from '../../BaseExplorerNew/types';
+import { ExplorerEngineConfiguration } from '../../BaseExplorer/types';
 
 import createPipelineEngine, { IPipelineEngine } from './pipeline';
 import createInstructionsEngine, { IInstructionsEngine } from './instructions';
-import { IEngineConfigFinal, PipelineStatusEnum } from './types';
-import createExplorerEngine from './explorer';
-import createVisualizationsEngine, {
-  VisualizationsConfig,
-} from './visualizations';
+import { PipelineStatusEnum } from './types';
+import createVisualizationsEngine from './visualizations';
 
 type State = {
   pipeline?: any;
@@ -88,20 +85,6 @@ function getInstructionsEngine(
   return instructions.engine;
 }
 
-function getExplorerEngine(
-  config: ExplorerEngineConfiguration,
-  set: any,
-  get: any,
-  state: State, // mutable
-) {
-  // const explorer = createExplorerEngine<object>(config, {
-  //   setState: set,
-  //   getState: set,
-  // });
-  // state['explorer'] = explorer.state.explorer;
-  // return explorer.engine;
-}
-
 function getVisualizationsEngine(
   config: ExplorerEngineConfiguration,
   set: any,
@@ -117,8 +100,6 @@ function getVisualizationsEngine(
   );
 
   state['visualizations'] = visualizations.state.visualizations;
-
-  console.log('entier state ----> ');
 
   return visualizations.engine;
 }
@@ -176,6 +157,7 @@ function createEngine<TObject = any>(
           );
         }
       })
+      // eslint-disable-next-line no-console
       .catch((err) => console.error(err));
   }
 
@@ -214,8 +196,6 @@ function createEngine<TObject = any>(
     // @ts-ignore
     window[name] = engine;
   }
-
-  console.log('whoke store --->', useReactStore.getState());
 
   return engine;
 }

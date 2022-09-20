@@ -17,6 +17,7 @@ import { PipelineStatusEnum, ProgressState } from '../types';
 
 import createState, {
   CurrentGrouping,
+  getInitialState,
   IPipelineState,
   PipelineStateBridge,
 } from './state';
@@ -37,8 +38,15 @@ export interface IPipelineEngine<TObject, TStore> {
 function createPipelineEngine<TStore, TObject>(
   store: any,
   options: Omit<PipelineOptions, 'callbacks'>,
+  defaultGroupings?: any,
 ): IPipelineEngine<TObject, TStore> {
-  const state = createState<TStore, TObject>(store);
+  const initialState = getInitialState<TObject>();
+
+  if (defaultGroupings) {
+    initialState.currentGroupings = defaultGroupings;
+  }
+
+  const state = createState<TStore, TObject>(store, initialState);
 
   /**
    * Function to get notified by pipeline which phase is executing
@@ -102,6 +110,8 @@ function createPipelineEngine<TStore, TObject>(
    */
   function search(params: RunsSearchQueryParams): void {
     const currentGroupings = state.getCurrentGroupings();
+
+    state.setCurrentQuery(params);
 
     const groupOptions = Object.keys(currentGroupings).map((key: string) => ({
       type: key as GroupType,
@@ -170,7 +180,7 @@ function createPipelineEngine<TStore, TObject>(
       })
       .then((res) => {
         const { data, additionalData, foundGroups } = res;
-        state.setResult(data, additionalData, foundGroups);
+        state.setResult(data, foundGroups, additionalData);
       });
   }
 

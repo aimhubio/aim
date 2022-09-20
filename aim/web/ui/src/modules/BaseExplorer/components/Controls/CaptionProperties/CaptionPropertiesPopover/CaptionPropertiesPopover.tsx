@@ -21,16 +21,16 @@ function CaptionPropertiesPopover(
 ): React.FunctionComponentElement<React.ReactNode> {
   const {
     captionProperties,
+    visualizationName,
     engine: {
       useStore,
-      additionalDataSelector,
-      controls: {
-        captionProperties: {
-          methods: { update: updateCaptionProperties },
-        },
-      },
+      pipeline: { additionalDataSelector },
+      visualizations,
     },
   } = props;
+  const updateCaptionProperties =
+    visualizations[visualizationName].controls.captionProperties.methods.update;
+
   const availableModifiers = useStore(additionalDataSelector);
   const [searchValue, setSearchValue] = React.useState<string>('');
 

@@ -1,4 +1,4 @@
-import { ExplorerEngineConfiguration } from 'modules/BaseExplorerNew/types';
+import { ExplorerEngineConfiguration } from 'modules/BaseExplorer/types';
 
 import createQueryState from './query';
 import createGroupingsEngine from './groupings';

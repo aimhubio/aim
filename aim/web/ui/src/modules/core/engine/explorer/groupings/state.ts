@@ -1,7 +1,6 @@
 import { omit } from 'lodash-es';
 
 import { Order } from 'modules/core/pipeline';
-import { createSliceState } from 'modules/core/engine/store/utils';
 
 type StyleApplierCallback<S> = (
   object: any,

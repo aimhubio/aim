@@ -1,10 +1,7 @@
 import { omit } from 'lodash-es';
 
 import { Order } from 'modules/core/pipeline';
-import {
-  createSliceState,
-  PreCreatedStateSlice,
-} from 'modules/core/engine/store/utils';
+import { createSliceState } from 'modules/core/engine/store/utils';
 
 import createGroupingsSlice from './state';
 
@@ -99,11 +96,9 @@ function createGroupingsEngine(config: GroupingConfigs, store: any) {
     });
   });
 
-  const styleAppliers = Object.keys(config.grouping || {}).map(
-    (key: string) => {
-      return config?.[key].styleApplier;
-    },
-  );
+  const styleAppliers = Object.keys(config || {}).map((key: string) => {
+    return config?.[key].styleApplier;
+  });
 
   const state = createGroupingsSlice(groupingSliceConfig);
 

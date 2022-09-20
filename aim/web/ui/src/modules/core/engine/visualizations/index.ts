@@ -9,7 +9,7 @@ import {
   IControlsProps,
   IEngineStates,
   IVisualizationProps,
-} from '../../../BaseExplorerNew/types';
+} from '../../../BaseExplorer/types';
 
 import { createControlsStateConfig } from './controls';
 
@@ -43,7 +43,7 @@ function createVisualizationStatePrefix(prefix: string) {
   return `${VISUALIZATIONS_STATE_PREFIX}.${prefix}`;
 }
 
-export function createState<TStore>(
+export function createState(
   store: any,
   visualizationName: string,
   controlsConfig: ControlsConfigs,
@@ -88,11 +88,7 @@ function createVisualizationEngine<TStore>(
   visualizationName: string,
   store: StoreApi<TStore>,
 ) {
-  const controlsState = createState<TStore>(
-    store,
-    visualizationName,
-    config.controls,
-  );
+  const controlsState = createState(store, visualizationName, config.controls);
 
   const boxConfigState = createSliceState<BoxConfig['initialState']>(
     config.box.initialState,

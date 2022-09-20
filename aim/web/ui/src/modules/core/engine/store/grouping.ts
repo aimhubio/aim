@@ -4,7 +4,7 @@ import { Order } from 'modules/core/pipeline';
 
 import { createSliceState } from './utils';
 
-type StyleApplierCallback<S> = (
+export type StyleApplierCallback<S = object> = (
   object: any,
   group: Array<string>,
   state: S,

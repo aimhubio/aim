@@ -1,10 +1,8 @@
-const customStates = {
+import { CustomStates } from 'modules/core/engine/store/utils';
+
+const customStates: CustomStates = {
   depthMap: {
     initialState: {},
-  },
-
-  ranges: {
-    initialState: { isApplyButtonDisabled: true, isValid: true },
   },
 };
 

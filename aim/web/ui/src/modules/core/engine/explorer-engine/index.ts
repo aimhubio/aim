@@ -3,7 +3,7 @@ import createReact, { StoreApi, UseBoundStore } from 'zustand';
 import createVanilla from 'zustand/vanilla';
 import { devtools } from 'zustand/middleware';
 import { PipelineOptions } from 'modules/core/pipeline';
-import { ExplorerEngineConfiguration } from 'modules/BaseExplorerNew/types';
+import { ExplorerEngineConfiguration } from 'modules/BaseExplorer/types';
 
 import { AimFlatObjectBase } from 'types/core/AimObjects';
 import { SequenceTypesEnum } from 'types/core/enums';
@@ -45,6 +45,16 @@ function getPipelineEngine(
 ) {
   const useCache = config.enablePipelineCache;
 
+  const defaultGroupings = Object.keys(config.groupings || {}).reduce(
+    // @ts-ignore
+    (acc: object, key: string) => {
+      // @ts-ignore
+      acc[key] = config.groupings?.[key].defaultApplications;
+      return acc;
+    },
+    {},
+  );
+
   const pipelineOptions: Omit<PipelineOptions, 'callbacks'> = {
     sequenceName: config.sequenceName,
     adapter: {
@@ -58,10 +68,13 @@ function getPipelineEngine(
       useCache,
     },
   };
+
   const pipeline = createPipelineEngine<object, AimFlatObjectBase<any>>(
     { setState: set, getState: get },
     pipelineOptions,
+    defaultGroupings,
   );
+
   state['pipeline'] = pipeline.state.pipeline;
 
   return pipeline.engine;
@@ -117,6 +130,7 @@ function getVisualizationsEngine(
 function createEngine<TObject = any>(
   config: ExplorerEngineConfiguration,
   name: string = 'ExplorerEngine',
+  devtool: boolean = false,
 ): EngineNew<object, AimFlatObjectBase<TObject>, typeof config.sequenceName> {
   let pipeline: IPipelineEngine<AimFlatObjectBase<TObject>, object>['engine'];
   let instructions: IInstructionsEngine<
@@ -130,74 +144,71 @@ function createEngine<TObject = any>(
   let query: any;
   let groupings: any;
 
+  function buildEngine(set: any, get: any) {
+    let state = {};
+
+    /**
+     * Custom states
+     */
+    const customStates = createCustomStatesEngine(
+      {
+        setState: set,
+        getState: get,
+      },
+      config.states,
+    );
+
+    state = {
+      ...state,
+      ...customStates.state.initialState,
+    };
+    customStatesEngine = customStates.engine;
+
+    /**
+     * Explorer Additional, includes query and groupings
+     */
+    const explorer = getExplorerAdditionalEngines(config, set, get);
+    state = {
+      ...state,
+      ...explorer.initialState,
+    };
+
+    query = explorer.engine.query;
+    groupings = explorer.engine.groupings;
+
+    /**
+     * Instructions
+     */
+    instructions = getInstructionsEngine(config, set, get, state);
+
+    /**
+     * Pipeline
+     */
+    pipeline = getPipelineEngine(config, set, get, state);
+
+    /*
+     * Visualizations
+     */
+    visualizations = getVisualizationsEngine(config, set, get, state);
+
+    /** Additional **/
+
+    /**
+     * @TODO add notification engine here
+     */
+    /**
+     * @TODO add blobs_uri engine here
+     */
+    /**
+     * @TODO add events service engine here
+     */
+    return state;
+  }
+
   // @ts-ignore
   const store = createVanilla<StoreApi<object>>(
     // @ts-ignore
-    devtools(
-      // @ts-ignore
-      (set, get) => {
-        let state = {};
-
-        /**
-         * Custom states
-         */
-        const customStates = createCustomStatesEngine(
-          {
-            setState: set,
-            getState: get,
-          },
-          config.states,
-        );
-
-        state = {
-          ...state,
-          ...customStates.state.initialState,
-        };
-        customStatesEngine = customStates.engine;
-
-        /**
-         * Explorer Additional, includes query and groupings
-         */
-        const explorer = getExplorerAdditionalEngines(config, set, get);
-        state = {
-          ...state,
-          ...explorer.initialState,
-        };
-
-        query = explorer.engine.query;
-        groupings = explorer.engine.groupings;
-
-        /**
-         * Instructions
-         */
-        instructions = getInstructionsEngine(config, set, get, state);
-
-        /**
-         * Pipeline
-         */
-        pipeline = getPipelineEngine(config, set, get, state);
-
-        /*
-         * Visualizations
-         */
-        visualizations = getVisualizationsEngine(config, set, get, state);
-
-        /** Additional **/
-
-        /**
-         * @TODO add notification engine here
-         */
-        /**
-         * @TODO add blobs_uri engine here
-         */
-        /**
-         * @TODO add events service engine here
-         */
-
-        return state;
-      },
-      { name },
-    ),
+    devtool ? devtools(buildEngine, { name }) : buildEngine,
   );
 
   // @ts-ignore
@@ -216,8 +227,8 @@ function createEngine<TObject = any>(
               PipelineStatusEnum.Insufficient_Resources,
             );
           }
-          console.log(useReactStore.getState());
         })
+        // eslint-disable-next-line no-console
         .catch((err) => console.error(err));
     });
   }

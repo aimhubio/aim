@@ -6,7 +6,9 @@ import { ControlsConfigs } from 'modules/core/engine/store/controls';
 
 import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
 
-import { VisualizationConfig } from '../core/engine/visualizations';
+import { VisualizationsConfig } from '../core/engine/visualizations';
+import { EngineNew } from '../core/engine/engine.new';
+import { CustomStates } from '../core/engine/store/utils';
 
 export interface IExplorerConfig {
   /**
@@ -91,19 +93,21 @@ export interface IUIComponents {
 export interface IQueryFormProps extends IBaseComponentProps {
   hasAdvancedMode?: boolean;
 }
-export interface IGroupingProps extends IBaseComponentProps {}
-export interface IControlsProps extends IBaseComponentProps {}
+export interface IGroupingProps
+  extends Omit<IBaseComponentProps, 'visualizationName'> {}
+export interface IControlsProps extends IBaseComponentProps {
+  visualizationName: string;
+}
 
 export interface IVisualizationsProps extends IBaseComponentProps {
-  visualizers: {
-    [key: string]: VisualizationConfig;
-  };
-  components?: IUIComponents;
+  components: IUIComponents;
+  visualizers: VisualizationsConfig;
 }
 
 export interface IVisualizationProps extends IBaseComponentProps {
   box?: React.FunctionComponent<IBoxProps>;
   panelRenderer: () => React.ReactNode;
+  name: string;
 }
 
 export interface IProgressBarProps extends IBaseComponentProps {}
@@ -114,10 +118,12 @@ export interface IBoxProps extends IBaseComponentProps {
 }
 
 export interface IOptionalExplorerConfig {}
-export interface IExplorerBarProps extends IBaseComponentProps {
+export interface IExplorerBarProps
+  extends Omit<IBaseComponentProps, 'visualizationName'> {
   explorerName: string;
-  documentationLink?: string;
+  documentationLink: string;
 }
+
 export interface IBaseExplorerProps extends IExplorerConfig {
   engineInstance: any;
   explorerName: string;
@@ -126,5 +132,131 @@ export interface IBaseExplorerProps extends IExplorerConfig {
 
 export interface IBaseComponentProps {
   engine: any;
+  visualizationName: string;
   // dataSelector: () => any;
+}
+
+export declare interface ExplorerEngineConfiguration {
+  /**
+   * Enable/disable pipeline cache
+   * @optional
+   * @default value is false
+   */
+  enablePipelineCache?: boolean;
+
+  /**
+   * Sequence name
+   */
+  sequenceName: SequenceTypesEnum;
+
+  /**
+   * Pipeline Adapter phase config
+   */
+  adapter: {
+    /**
+     * Object depth indicates the depth of the object inside the sequence
+     * @example
+     *   If sequenceName is Images then the objectDepth should be Index
+     */
+    objectDepth: AimObjectDepths;
+  };
+  /**
+   * groupings configurations
+   * @optional
+   * @default value is {}
+   */
+  groupings?: GroupingConfigs;
+
+  /**
+   * Visualizations
+   */
+  visualizations: ExplorerVisualizationsConfiguration;
+
+  /**
+   * Custom States
+   */
+  states?: CustomStates;
+}
+
+export declare interface ExplorerVisualizationsConfiguration
+  extends VisualizationsConfig {}
+
+export declare interface ExplorerUIComponents {
+  /**
+   * Query Form component
+   * This component will render at the top of the explorer
+   * query form allows to query and search sequence data
+   * If you want to pass this component, you should manage querying searching for your own
+   * @optional
+   * @default value is BaseExplorers default BaseQueryForm component
+   */
+  queryForm?: React.FunctionComponent<IQueryFormProps>;
+
+  /**
+   * Grouping item wrappers component
+   * This component will render at the top of the explorer
+   * query form allows to query and search sequence data
+   * If you want to pass this component, you should manage querying searching for your own
+   * @optional
+   * @default value is BaseExplorers default BaseQueryForm component
+   */
+  groupingContainer?: React.FunctionComponent<IGroupingProps>;
+}
+
+export declare interface ExplorerConfiguration
+  extends ExplorerEngineConfiguration {
+  /**
+   * The name of explorer, used to identify user configuration for the explorer
+   * Since it is identifier, it should be a unique
+   */
+  readonly name: string;
+
+  /**
+   * The url basePath the explorer will render relatively
+   * @optional
+   * @example if the name of explorer is Images Explorer, the basePath will be images-explorer
+   * @default value is the lower cased name separated by -
+   */
+  readonly basePath?: string;
+
+  /**
+   * The link to this explorer documentation
+   * @default value is https://aimstack.readthedocs.io/en/latest/ui/pages/explorers.html
+   */
+  readonly documentationLink?: string;
+
+  /**  [Fill in empty data illustrations config] **/
+
+  /**
+   * Explorer level components
+   * like query from, groupings container
+   */
+  components?: ExplorerUIComponents;
+
+  /**
+   * Explorer level additional custom states
+   * @optional
+   * This property is useful to create custom states for the explorer, and it will be accessible directly from engine
+   * The usage of the state defined on state slice documentation
+   * @default value is {}
+   */
+  readonly states?: CustomStates;
+}
+
+export declare interface ExplorerProps<
+  TEngineInstance extends EngineNew<any, any, SequenceTypesEnum> = EngineNew<
+    any,
+    any,
+    SequenceTypesEnum
+  >,
+> {
+  configuration: ExplorerConfiguration;
+
+  engineInstance: TEngineInstance;
+
+  /**
+   * The children component will render static content at the end of explorer
+   * @optional
+   */
+  children?: React.ReactChildren;
 }

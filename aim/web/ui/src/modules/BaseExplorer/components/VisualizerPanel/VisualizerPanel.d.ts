@@ -6,4 +6,5 @@ export interface IVisualizerPanelProps {
   engine: any;
   grouping: React.FunctionComponent<IGroupingProps> | null;
   controls: React.FunctionComponent<IControlsProps>;
+  visualizationName: string;
 }

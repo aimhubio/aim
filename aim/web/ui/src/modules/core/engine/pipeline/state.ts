@@ -84,6 +84,25 @@ const initialProgressState: ProgressState = {
   checked: 0,
 };
 
+function getInitialState<TObject>(): IPipelineState<TObject> {
+  const initialState: IPipelineState<TObject> = {
+    status: PipelineStatusEnum.NeverExecuted,
+    currentPhase: PipelinePhasesEnum.Waiting,
+    progress: initialProgressState,
+    additionalData: {
+      modifiers: [],
+      params: [],
+    },
+    queryableData: {},
+    currentQuery: {},
+    currentGroupings: {},
+    data: [],
+    foundGroups: {},
+  };
+
+  return initialState;
+}
+
 function createState<TStore, TObject>(
   store: StoreApi<ExtractState<TStore, TObject>>,
   initialState: IPipelineState<TObject> = {
@@ -146,6 +165,9 @@ function createState<TStore, TObject>(
             }
           },
         ),
+        false,
+        // @ts-ignore
+        '@PIPELINE/CHANGE_CURRENT_STEP_OR_STATUS',
       );
     },
     setCurrentQuery: (query: CurrentQuery) =>
@@ -155,6 +177,9 @@ function createState<TStore, TObject>(
             draft_state.pipeline.currentQuery = query;
           },
         ),
+        false,
+        // @ts-ignore
+        '@PIPELINE/SET_CURRENT_QUERY',
       ),
     setCurrentGroupings: (grouping: CurrentGrouping) =>
       store.setState(
@@ -163,6 +188,9 @@ function createState<TStore, TObject>(
             draft_state.pipeline.currentGroupings = grouping;
           },
         ),
+        false,
+        // @ts-ignore
+        '@PIPELINE/SET_CURRENT_GROUPINGS',
       ),
     getCurrentQuery: (): CurrentQuery => store.getState().pipeline.currentQuery,
     getCurrentGroupings: (): CurrentGrouping =>
@@ -174,6 +202,9 @@ function createState<TStore, TObject>(
             draft_state.pipeline.progress = progress;
           },
         ),
+        false,
+        // @ts-ignore
+        '@PIPELINE/SET_PROGRESS',
       );
     },
     resetProgress: () => {
@@ -183,6 +214,9 @@ function createState<TStore, TObject>(
             draft_state.pipeline.progress = initialProgressState;
           },
         ),
+        false,
+        // @ts-ignore
+        '@PIPELINE/RESET_PROGRESS',
       );
     },
     setResult: (
@@ -202,6 +236,9 @@ function createState<TStore, TObject>(
             }
           },
         ),
+        false,
+        // @ts-ignore
+        '@PIPELINE/setResult',
       ),
   };
 
@@ -212,4 +249,5 @@ function createState<TStore, TObject>(
   };
 }
 
+export { getInitialState };
 export default createState;

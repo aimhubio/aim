@@ -8,7 +8,7 @@ import {
   createStateSlices,
   PreCreatedStateSlice,
 } from '../../store/utils';
-import { ExplorerEngineConfiguration } from '../../../../BaseExplorerNew/types';
+import { ExplorerEngineConfiguration } from '../../../../BaseExplorer/types';
 
 import { createControlsStateConfig } from './controls';
 import { createGroupingsStateConfig } from './grouping';
