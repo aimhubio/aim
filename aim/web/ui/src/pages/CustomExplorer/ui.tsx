@@ -7,7 +7,6 @@ import Controls from 'modules/BaseExplorer/components/Controls';
 
 import { filterMetricsData } from 'utils/filterMetricData';
 import { AlignmentOptionsEnum } from 'utils/d3';
-import { encode } from 'utils/encoder/encoder';
 
 const ui: IUIConfig = {
   defaultBoxConfig: {
@@ -138,7 +137,6 @@ fig
             }}
           >
             <iframe
-              key={encode(data)}
               ref={element}
               src='about:blank'
               style={{ width: '100%', height: '100%', border: 'none' }}
