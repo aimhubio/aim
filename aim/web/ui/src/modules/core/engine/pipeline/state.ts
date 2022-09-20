@@ -47,6 +47,7 @@ type Selectors<TState, TObject> = {
   currentQuerySelector: SelectorCreator<TState, CurrentQuery>;
   currentGroupingSelector: SelectorCreator<TState, CurrentGrouping>;
   statusSelector: SelectorCreator<TState, PipelineStatusEnum>;
+  progressSelector: SelectorCreator<TState, ProgressState>;
 };
 
 export type PipelineStateBridge<TObject, TStore> = {
@@ -68,6 +69,7 @@ export type PipelineStateBridge<TObject, TStore> = {
   getCurrentPhase: () => PipelinePhasesEnum;
   getStatus: () => PipelineStatusEnum;
   setProgress: (progress: ProgressState) => void;
+  resetProgress: () => void;
 } & {
   selectors: Selectors<ExtractState<TStore, TObject>, TObject>;
 };
@@ -121,6 +123,8 @@ function createState<TStore, TObject>(
     statusSelector: (
       state: ExtractState<TStore, TObject>,
     ): PipelineStatusEnum => state.pipeline.status,
+    progressSelector: (state: ExtractState<TStore, TObject>): ProgressState =>
+      state.pipeline.progress,
   };
 
   const methods: Omit<
@@ -168,6 +172,15 @@ function createState<TStore, TObject>(
         produce<ExtractState<TStore, TObject>>(
           (draft_state: Draft<ExtractState<TStore, TObject>>) => {
             draft_state.pipeline.progress = progress;
+          },
+        ),
+      );
+    },
+    resetProgress: () => {
+      store.setState(
+        produce<ExtractState<TStore, TObject>>(
+          (draft_state: Draft<ExtractState<TStore, TObject>>) => {
+            draft_state.pipeline.progress = initialProgressState;
           },
         ),
       );

@@ -1,10 +1,11 @@
 @use 'src/styles/abstracts' as *;
 
 .QueryForm {
-  flex: 1;
   padding: 0.625rem $space-lg;
   display: flex;
-  height: 100%;
+  height: toRem(92px);
+  width: 100%;
+  border-bottom: $border-main;
   &__topPanel {
     flex: 1 100%;
     &__plusIcon {
@@ -79,9 +80,9 @@
       height: 34px;
       background: rgba(255, 255, 255, 0.5);
       background: linear-gradient(
-        90deg,
-        rgba(255, 255, 255, 0) 0%,
-        rgba(255, 255, 255, 1) 92%
+                      90deg,
+                      rgba(255, 255, 255, 0) 0%,
+                      rgba(255, 255, 255, 1) 92%
       );
       left: -20px;
       top: -5px;

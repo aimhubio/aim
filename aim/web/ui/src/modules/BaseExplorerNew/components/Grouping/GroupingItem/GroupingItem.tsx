@@ -24,10 +24,13 @@ function GroupingItem({
   ...props
 }: IGroupingItemProps): React.FunctionComponentElement<React.ReactNode> {
   const { engine } = props;
-  const availableModifiers = engine.useStore(engine.additionalDataSelector);
+  const availableModifiers = engine.useStore(
+    engine.pipeline.additionalDataSelector,
+  );
+
   const currentValues = engine.useStore(engine.groupings.currentValuesSelector);
   const isDisabled =
-    engine.useStore(engine.pipelineStatusSelector) ===
+    engine.useStore(engine.pipeline.statusSelector) ===
     PipelineStatusEnum.Executing;
 
   return (

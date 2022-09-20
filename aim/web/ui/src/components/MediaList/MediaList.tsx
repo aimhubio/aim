@@ -31,6 +31,7 @@ function MediaList({
   mediaType,
   wrapperOffsetHeight,
   selectOptions,
+  onRunsTagsChange,
 }: IMediaListProps): React.FunctionComponentElement<React.ReactNode> {
   const itemSize = React.useCallback(
     (index: number) => {
@@ -96,6 +97,7 @@ function MediaList({
           tooltip,
           mediaType,
           selectOptions,
+          onRunsTagsChange,
         }}
       >
         {MediaBoxMemoized}
@@ -123,6 +125,7 @@ const MediaBoxMemoized = React.memo(function MediaBoxMemoized(props: any) {
         additionalProperties={data.additionalProperties}
         tooltip={data.tooltip}
         selectOptions={data.selectOptions}
+        onRunsTagsChange={data.onRunsTagsChange}
       />
     </ErrorBoundary>
   );

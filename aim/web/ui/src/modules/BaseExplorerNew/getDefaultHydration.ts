@@ -51,6 +51,11 @@ const defaultHydration = {
     },
   },
   controls,
+  customStates: {
+    depthMap: {
+      initialState: {},
+    },
+  },
 };
 
 /**

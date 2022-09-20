@@ -6,7 +6,7 @@ from aim.storage.hashing import hash_auto
 from aim.storage.treeview import TreeView
 from aim.sdk.utils import generate_run_hash
 from aim.sdk.repo_utils import get_repo
-from aim.sdk.errors import MissingRunError
+# from aim.sdk.errors import MissingRunError
 from aim.sdk.tracker import STEP_HASH_FUNCTIONS
 
 if TYPE_CHECKING:
@@ -38,7 +38,12 @@ class BaseRun:
             elif self.repo.run_exists(run_hash):
                 self.hash = run_hash
             else:
-                raise MissingRunError(f'Cannot find Run {run_hash} in aim Repo {self.repo.path}.')
+                from aim.utils.deprecation import deprecation_warning
+                deprecation_warning(remove_version='3.15', msg='Setting custom `Run.hash` value is deprecated! '
+                                                               'Consider setting `Run.name` instead.')
+                self.hash = run_hash
+                # TODO [deprecation] Uncomment the line below
+                # raise MissingRunError(f'Cannot find Run {run_hash} in aim Repo {self.repo.path}.')
 
         self.meta_tree: TreeView = self.repo.request_tree(
             'meta', self.hash, read_only=read_only, from_union=True

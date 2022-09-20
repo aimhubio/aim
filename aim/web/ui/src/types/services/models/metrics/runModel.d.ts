@@ -1,3 +1,5 @@
+import { ITagProps } from 'types/pages/tags/Tags';
+
 export interface IRun<T> {
   params: IRunParams;
   props: {
@@ -7,6 +9,7 @@ export interface IRun<T> {
     end_time: number;
     description: string;
     active: boolean;
+    tags: ITagProps[];
   };
   created_at: number;
   traces: { metric: T[] };

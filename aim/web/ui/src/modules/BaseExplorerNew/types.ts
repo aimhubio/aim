@@ -102,7 +102,8 @@ export interface IVisualizationsProps extends IBaseComponentProps {
 
 export interface IVisualizationProps extends IBaseComponentProps {
   box?: React.FunctionComponent<IBoxProps>;
-  controlComponent?: React.FunctionComponent<IControlsProps>;
+  panelRenderer: () => React.ReactNode;
+  name: string;
 }
 
 export interface IProgressBarProps extends IBaseComponentProps {}

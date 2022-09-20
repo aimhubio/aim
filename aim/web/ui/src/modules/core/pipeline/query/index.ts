@@ -65,6 +65,7 @@ async function executeBaseQuery(
     return result;
   } catch (e) {
     // if (__DEV__) {
+    // eslint-disable-next-line no-console
     console.error("Can't query runs ---> ", e);
     throw e;
     // }

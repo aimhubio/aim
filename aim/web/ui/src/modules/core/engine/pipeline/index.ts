@@ -11,8 +11,9 @@ import createPipeline, {
   PipelinePhasesEnum,
 } from 'modules/core/pipeline';
 
+import { SequenceTypesEnum } from 'types/core/enums';
+
 import { PipelineStatusEnum, ProgressState } from '../types';
-import { SequenceTypesEnum } from '../../../../types/core/enums';
 
 import createState, {
   CurrentGrouping,
@@ -122,7 +123,7 @@ function createPipelineEngine<TStore, TObject>(
         const { additionalData, data, queryableData, foundGroups } = res;
 
         // save to state
-        state.setResult(data, foundGroups, queryableData, additionalData);
+        state.setResult(data, foundGroups, additionalData, queryableData);
         state.changeCurrentPhaseOrStatus(
           isEmpty(data) ? PipelineStatusEnum.Empty : state.getStatus(),
         );

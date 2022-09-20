@@ -20,22 +20,24 @@ function RangePanel(props: IRangePanelProps) {
   const sequenceName: SequenceTypesEnum = engine.useStore(
     engine.sequenceNameSelector,
   );
-  const query: QueryUIStateUnit = engine.useStore(engine.queryUI.stateSelector);
-  const rangeState = engine.useStore(engine.ranges.stateSelector);
+  const query: QueryUIStateUnit = engine.useStore(
+    engine.query.form.stateSelector,
+  );
+  const rangeState = engine.useStore(engine.query.ranges.stateSelector);
   const isFetching: boolean =
-    engine.useStore(engine.pipelineStatusSelector) === 'fetching';
+    engine.useStore(engine.pipeline.stateSelector) === 'fetching';
 
   const onSubmit = React.useCallback(() => {
     if (isFetching) {
       //TODO: abort request
       return;
     } else {
-      engine.search({
+      engine.pipeline.search({
         q: getQueryStringFromSelect(query, sequenceName),
         report_progress: true,
         ...getQueryFromRanges(rangeState),
       });
-      engine.ranges.methods.update({
+      engine.query.ranges.update({
         ...rangeState,
         isApplyButtonDisabled: true,
       });
@@ -98,7 +100,7 @@ function RangePanel(props: IRangePanelProps) {
     }
 
     //updating the ranges data and setting the apply button disability
-    engine.ranges.methods.update({
+    engine.query.ranges.update({
       ...rangeState,
       ...updatedRangesState,
       isApplyButtonDisabled: true,

@@ -7,6 +7,7 @@ import * as analytics from 'services/analytics';
 
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { IApiRequest } from 'types/services/services';
+import { ITagInfo } from 'types/pages/tags/Tags';
 
 import exceptionHandler from 'utils/app/exceptionHandler';
 import { encode } from 'utils/encoder/encoder';
@@ -354,6 +355,18 @@ function editRunNameAndDescription(
   }
 }
 
+function editTags(tags: ITagInfo[]) {
+  const state = model.getState();
+
+  model.setState({
+    ...state,
+    runInfo: {
+      ...state?.runInfo,
+      tags,
+    },
+  });
+}
+
 function onNotificationDelete(id: number) {
   let notifyData: INotification[] | [] = model.getState()?.notifyData || [];
   notifyData = [...notifyData].filter((i) => i.id !== id);
@@ -382,6 +395,7 @@ const runDetailAppModel = {
   onNotificationAdd,
   onNotificationDelete,
   editRunNameAndDescription,
+  editTags,
 };
 
 export default runDetailAppModel;

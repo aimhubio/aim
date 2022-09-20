@@ -8,21 +8,16 @@ import { IProgressBarProps } from '../../types';
 
 function ProgressBarWrapper(props: IProgressBarProps) {
   const {
-    engine: {
-      useStore,
-      pipelineStatusSelector,
-      pipelineProgressSelector,
-      resetPipelineProgress,
-    },
+    engine: { useStore, pipeline },
   } = props;
-  const progressData = useStore(pipelineProgressSelector);
-  const status = useStore(pipelineStatusSelector);
+  const progressData = useStore(pipeline.progressSelector);
+  const status = useStore(pipeline.statusSelector);
 
   const setIsProgressBarVisible = React.useCallback(
     (isVisible: boolean) => {
-      !isVisible && resetPipelineProgress();
+      !isVisible && pipeline.resetProgress();
     },
-    [resetPipelineProgress],
+    [pipeline.resetProgress],
   );
 
   return (

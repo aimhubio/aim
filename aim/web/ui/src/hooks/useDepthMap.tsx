@@ -40,6 +40,7 @@ function useDepthMap<T>({
       newDepthMap[groupId] = value > maxValue ? maxValue : value;
     }
     return newDepthMap;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
 
   const initialMap = React.useMemo(() => generateMapBy(0), [generateMapBy]);
@@ -52,17 +53,18 @@ function useDepthMap<T>({
     (value: number, groupId: string): void => {
       if (sync) {
         const syncedDepthMap = generateMapBy(value);
-        state.methods.update(syncedDepthMap);
+        state.update(syncedDepthMap);
       } else {
-        state.methods.update({ [groupId]: value });
+        state.update({ [groupId]: value });
       }
     },
-    [sync, generateMapBy],
+    [sync, generateMapBy, state],
   );
 
   React.useEffect(() => {
     // set/reset depth map
-    state.methods.update(initialMap);
+    state.update(initialMap);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
 
   return [depthSelector, onDepthMapChange];

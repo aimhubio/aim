@@ -30,16 +30,15 @@ function BaseExplorerNew({
         explorerName={configuration.name}
         documentationLink={configuration.documentationLink}
       />
-      {/* {__DEV__ && <Text>Engine status ::: status</Text>} */}
-      <div className='ComponentsWrapper'>
-        {/* @ts-ignore*/}
-        <configuration.components.queryForm engine={engineInstance} />
-        {/* @ts-ignore*/}
-        <configuration.components.groupingContainer engine={engineInstance} />
-      </div>
+      {/* @ts-ignore*/}
+      <configuration.components.queryForm engine={engineInstance} />
       <Visualizations
         visualizers={configuration.visualizations}
         engine={engineInstance}
+        components={{
+          // @ts-ignore
+          grouping: configuration.components?.groupingContainer,
+        }}
       />
     </div>
   ) : null;
@@ -105,6 +104,10 @@ function createExplorer(
         queryForm: components?.queryForm || defaultHydration.QueryForm,
       },
       visualizations: visualizationsHydration,
+      states: {
+        ...defaultHydration.customStates,
+        ...(configuration.states || {}),
+      },
     };
 
     const engine = createEngine<TObject>(hydration, configuration.basePath);

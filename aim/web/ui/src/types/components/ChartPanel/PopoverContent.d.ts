@@ -13,4 +13,5 @@ export interface IPopoverContentProps {
   chartType: ChartTypeEnum;
   alignmentConfig?: IAlignmentConfig;
   selectOptions: IGroupingSelectOption[];
+  onRunsTagsChange: (runHash: string, tags: ITagInfo[]) => void;
 }

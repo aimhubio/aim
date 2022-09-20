@@ -32,7 +32,9 @@ function GroupingPopover({
 }: IGroupingPopoverProps): React.FunctionComponentElement<React.ReactNode> {
   const { engine } = props;
   const [searchValue, setSearchValue] = React.useState('');
-  const availableModifiers = engine.useStore(engine.additionalDataSelector);
+  const availableModifiers = engine.useStore(
+    engine.pipeline.additionalDataSelector,
+  );
   const currentValues = engine.useStore(engine.groupings.currentValuesSelector);
 
   function onChange(
@@ -63,7 +65,7 @@ function GroupingPopover({
       },
     );
 
-    engine.group({
+    engine.pipeline.group({
       ...currentValues,
       [groupName]: { fields, orders },
     });

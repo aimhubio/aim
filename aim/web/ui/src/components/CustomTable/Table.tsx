@@ -402,7 +402,7 @@ function Table(props) {
                     expand={expand}
                     togglePin={togglePin}
                     pinnedTo='left'
-                    firstColumn={index === 0 && !props.multiSelect}
+                    firstColumn={index === 0}
                     width={props.columnsWidths?.[col.key]}
                     updateColumnWidth={props.updateColumnsWidths}
                     headerMeta={props.headerMeta}
@@ -432,9 +432,6 @@ function Table(props) {
                         (f) => f[0] === col.sortableKey,
                       ) === -1
                     }
-                    sortByColumn={(order) =>
-                      props.onSort(col.sortableKey, order)
-                    }
                     onRowHover={props.onRowHover}
                     onRowClick={props.onRowClick}
                     columnOptions={col.columnOptions}
@@ -449,10 +446,10 @@ function Table(props) {
           <div
             className='Table__pane Table__pane--middle'
             style={{
-              width: midPaneWidth,
+              width: isNaN(midPaneWidth) ? null : midPaneWidth,
             }}
           >
-            {middlePaneWindow?.map((col, i) => {
+            {middlePaneWindow?.map((col) => {
               let index = col.colIndex;
               return (
                 <ErrorBoundary key={col.key + index}>
@@ -495,9 +492,6 @@ function Table(props) {
                       props.sortFields.findIndex(
                         (f) => f[0] === col.sortableKey,
                       ) === -1
-                    }
-                    sortByColumn={(order) =>
-                      props.onSort(col.sortableKey, order)
                     }
                     rowHeightMode={props.rowHeightMode}
                     onRowHover={props.onRowHover}
@@ -566,9 +560,6 @@ function Table(props) {
                       props.sortFields.findIndex(
                         (f) => f[0] === col.sortableKey,
                       ) === -1
-                    }
-                    sortByColumn={(order) =>
-                      props.onSort(col.sortableKey, order)
                     }
                     onRowHover={props.onRowHover}
                     onRowClick={props.onRowClick}
