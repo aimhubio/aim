@@ -2,7 +2,7 @@
 
 ## 3.13.4
 
-- Optimize rendering performance for large dicts (roubkar)
+- Virtualize the run params list in the Run page (roubkar)
 
 ## 3.13.3 Sep 16, 2022
 
