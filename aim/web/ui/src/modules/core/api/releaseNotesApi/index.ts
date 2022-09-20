@@ -1,13 +1,9 @@
-import { getAPIHost } from 'config/config';
-
 import ENDPOINTS from 'services/api/endpoints';
 import NetworkService from 'services/NetworkService';
 
 import { IReleaseNote } from './types';
 
-const api = new NetworkService(
-  `${getAPIHost()}${ENDPOINTS.RELEASE_NOTES.BASE}`,
-);
+const api = new NetworkService(`${ENDPOINTS.RELEASE_NOTES.BASE}`);
 
 /**
  * function fetchReleaseNotes
@@ -38,4 +34,23 @@ async function fetchReleaseById(id: string): Promise<IReleaseNote> {
     .body;
 }
 
-export { fetchReleaseNotes, fetchLatestRelease, fetchReleaseById };
+/**
+ * function fetchLatestReleaseByTagName
+ * this call is used for fetching release note by tag name.
+ * @returns {Promise<IReleaseNote>}
+ */
+
+async function fetchReleaseByTagName(tagName: string): Promise<IReleaseNote> {
+  return (
+    await api.makeAPIGetRequest(
+      `${ENDPOINTS.RELEASE_NOTES.GET}${ENDPOINTS.RELEASE_NOTES.GET_BY_TAG_NAME}/${tagName}`,
+    )
+  ).body;
+}
+
+export {
+  fetchReleaseNotes,
+  fetchLatestRelease,
+  fetchReleaseById,
+  fetchReleaseByTagName,
+};
