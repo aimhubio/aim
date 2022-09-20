@@ -77,7 +77,7 @@ message InstructionRequest {
 }
 
 message ResponseHeader {
-    float version = 1;
+    string version = 1;
     enum Status {
         OK = 0;
         ERROR = 1;

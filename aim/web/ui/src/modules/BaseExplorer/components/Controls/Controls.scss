@@ -1,86 +1,71 @@
 @use 'src/styles/abstracts' as *;
 
-.Controls {
-  border-left: $border-separator;
-  width: 3.75rem;
-  max-height: 100%;
-  overflow-y: auto;
+.BaseControls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-left: $space-sm;
+  overflow: hidden;
   &__container {
-    padding: 0.75rem 0;
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    overflow: auto;
-    & > .Control {
-      margin-bottom: 0.375rem;
+    overflow-x: auto;
+    .Control {
+      margin-right: $space-xxs;
       &:last-child {
-        margin-bottom: 0;
+        margin-right: 0;
+      }
+      &__anchor {
+        white-space: nowrap;
+        padding: $space-xxxxs $space-xxs;
+        height: 1.5rem;
+        display: flex;
+        cursor: pointer;
+        position: relative;
+        align-items: center;
+        justify-content: center;
+        transition: background-color $popover-opening-duration ease-out;
+        border: 0.0625rem solid transparent;
+        border-radius: 3px;
+        &.active {
+          background-color: $primary-color-10;
+          &.outlined {
+            border: $border-main-active;
+          }
+        }
+        &.disabled {
+          cursor: initial;
+          i {
+            color: $pico-50;
+          }
+          &:hover {
+            background-color: transparent;
+          }
+        }
+        &:hover {
+          background-color: $pico-5;
+        }
+        &__arrow {
+          margin-left: $space-xxs;
+          transition: transform $popover-opening-duration ease-out;
+          color: $pico-80;
+          &.opened {
+            transform: rotateX(180deg);
+            color: $primary-color;
+          }
+        }
+        &__label {
+          user-select: none;
+          white-space: nowrap;
+        }
+        &__icon {
+          color: $pico-70;
+          font-size: 1rem;
+          margin-right: $space-xxxs;
+          &.active {
+            color: $primary-color;
+          }
+        }
       }
     }
-  }
-}
-
-.Controls__icon {
-  color: $pico-70;
-  font-size: 1.125rem;
-  &.active {
-    color: $primary-color;
-  }
-}
-
-.Controls__anchor {
-  height: 2.25rem;
-  width: 2.25rem;
-  display: flex;
-  cursor: pointer;
-  position: relative;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.18s ease-out;
-  border: 0.0625rem solid transparent;
-  border-radius: $border-radius-main;
-  &.active {
-    background-color: $primary-color-10;
-    &.outlined {
-      border: $border-main-active;
-    }
-  }
-  &.disabled {
-    cursor: initial;
-    i {
-      color: $pico-50;
-    }
-    &:hover {
-      background-color: transparent;
-    }
-  }
-  &:hover {
-    background-color: $pico-5;
-    .icon-arrow-left {
-      opacity: 1;
-    }
-  }
-}
-
-.Controls__anchor__arrow {
-  width: 0.6875rem;
-  height: 100%;
-  position: absolute;
-  left: -0.8125rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  &.opened {
-    .icon-arrow-left {
-      opacity: 1;
-      transform: rotate(180deg);
-      color: $primary-color;
-    }
-  }
-  .icon-arrow-left {
-    opacity: 0;
-    font-size: 0.45rem;
-    transition: all 0.18s ease-out;
-    color: $pico-30;
   }
 }

@@ -37,6 +37,7 @@ const PopoverContent = React.forwardRef(function PopoverContent(
     chartType,
     alignmentConfig,
     selectOptions,
+    onRunsTagsChange,
   } = props;
   const {
     selectedProps = {},
@@ -260,7 +261,11 @@ const PopoverContent = React.forwardRef(function PopoverContent(
                 <Divider />
                 <div className='PopoverContent__box'>
                   <ErrorBoundary>
-                    <AttachedTagsList runHash={run?.hash} />
+                    <AttachedTagsList
+                      runHash={run?.hash}
+                      tags={run?.props?.tags ?? []}
+                      onRunsTagsChange={onRunsTagsChange}
+                    />
                   </ErrorBoundary>
                 </div>
               </div>

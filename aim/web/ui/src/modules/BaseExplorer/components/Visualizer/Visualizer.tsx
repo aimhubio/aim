@@ -30,7 +30,7 @@ function Visualizer(props: IVisualizationProps) {
       queryableDataSelector,
     },
     box: BoxContent,
-    controlComponent: ControlComponent,
+    panelRenderer,
   } = props;
   const boxConfig = useStore(boxConfigSelector);
   const foundGroups = useStore(foundGroupsSelector);
@@ -164,48 +164,46 @@ function Visualizer(props: IVisualizationProps) {
 
   return (
     <div className='Visualizer'>
+      {panelRenderer()}
       <div className='VisualizerContainer'>
         {!_.isEmpty(dataState) && (
-          <>
-            <BoxVirtualizer
-              data={data}
-              itemsRenderer={([groupId, items]) => (
-                <BoxWrapper
-                  key={groupId}
-                  groupId={groupId}
-                  engine={engine}
-                  component={BoxContent}
-                  items={items}
-                  depthSelector={depthSelector}
-                  onDepthMapChange={onDepthMapChange}
-                />
-              )}
-              offset={boxConfig.gap}
-              axisData={{
-                columns: columnsAxisData,
-                rows: rowsAxisData,
-              }}
-              axisItemRenderer={{
-                columns: (item: any) => (
-                  <Tooltip key={item.key} title={item.value}>
-                    <div style={item.style}>
-                      <Text>{item.value}</Text>
-                    </div>
-                  </Tooltip>
-                ),
-                rows: (item: any) => (
-                  <div key={item.key} style={item.style}>
-                    <Tooltip title={item.value}>
-                      <span>
-                        <Text>{item.value}</Text>
-                      </span>
-                    </Tooltip>
+          <BoxVirtualizer
+            data={data}
+            itemsRenderer={([groupId, items]) => (
+              <BoxWrapper
+                key={groupId}
+                groupId={groupId}
+                engine={engine}
+                component={BoxContent}
+                items={items}
+                depthSelector={depthSelector}
+                onDepthMapChange={onDepthMapChange}
+              />
+            )}
+            offset={boxConfig.gap}
+            axisData={{
+              columns: columnsAxisData,
+              rows: rowsAxisData,
+            }}
+            axisItemRenderer={{
+              columns: (item: any) => (
+                <Tooltip key={item.key} title={item.value}>
+                  <div style={item.style}>
+                    <Text>{item.value}</Text>
                   </div>
-                ),
-              }}
-            />
-            {ControlComponent && <ControlComponent engine={engine} />}
-          </>
+                </Tooltip>
+              ),
+              rows: (item: any) => (
+                <div key={item.key} style={item.style}>
+                  <Tooltip title={item.value}>
+                    <span>
+                      <Text>{item.value}</Text>
+                    </span>
+                  </Tooltip>
+                </div>
+              ),
+            }}
+          />
         )}
       </div>
       {!_.isEmpty(rangesData) && (

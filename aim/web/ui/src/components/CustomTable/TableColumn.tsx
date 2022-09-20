@@ -82,11 +82,15 @@ function Column({
       : _.values(data).reduce((acc, item) => {
           return [...acc, ...item.items];
         }, []);
+
     let range = _.sortBy([
       ...new Set(
-        columnData?.map((a) => +a[col.key]).filter((a) => !isNaN(a)) ?? [],
+        columnData
+          ?.filter((a) => !_.isArray(a[col.key]) && !_.isNaN(+a[col.key]))
+          .map((a) => +a[col.key]) ?? [],
       ),
     ]);
+
     if (_.isEmpty(range)) {
       return null;
     } else if (range.length === 1) {

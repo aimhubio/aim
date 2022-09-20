@@ -36,6 +36,7 @@ export interface IChartPanelProps {
   chartProps: any[];
   controls: React.ReactNode;
   onZoomChange?: (zoom: Partial<IChartZoom>) => void;
+  onRunsTagsChange: (runHash: string, tags: ITagInfo[]) => void;
   onActivePointChange?: (
     activePoint: IActivePoint,
     focusedStateActive?: boolean,

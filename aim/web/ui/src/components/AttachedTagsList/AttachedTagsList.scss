@@ -6,7 +6,7 @@
   align-items: baseline;
   font-size: $text-sm;
   line-height: 15px;
-  margin-top: 0.5rem;
+  margin-top: $space-xs;
 
   &__title {
     text-transform: uppercase;
@@ -16,8 +16,9 @@
 
   &__noAttachedTags {
     font-weight: $font-500;
-    font-size: 0.688rem;
+    font-size: $text-sm;
     color: $pico-70;
+    margin-right: $space-unit;
   }
 
   &__tags {
@@ -26,17 +27,16 @@
     overflow: auto;
 
     .Badge {
-      margin-bottom: 0.5rem;
-      margin-right: 0.5rem;
+      margin-bottom: $space-xs;
+      margin-right: $space-xs;
       max-width: unset;
     }
   }
 
   &__ControlPopover__anchor {
-
     .icon-edit {
-      width: 24px;
-      height: 24px;
+      width: 1.5rem;
+      height: 1.5rem;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -52,14 +52,49 @@
 
   &__ControlPopover__attach {
     .icon-plus {
-      margin-right: 8px;
+      margin-right: $space-xs;
     }
   }
+}
 
-  &__ControlPopover__title {
-    color: $pico-50;
-    background: inherit;
-    font-weight: $font-500;
-    border: unset;
+.InlineAttachedTagsList {
+  margin-top: 0;
+  align-items: center;
+  max-width: 100%;
+  width: 100%;
+  .AttachedTagsList__tags {
+    align-items: center;
+    flex-wrap: unset;
+    overflow: hidden;
+    .Badge {
+      margin-bottom: 0;
+    }
+  }
+  &__tagsContainer {
+    max-width: 20rem;
+    width: 20rem;
+    &__tags {
+      padding: $space-xs $space-unit;
+      overflow: auto;
+      display: flex;
+      flex-wrap: wrap;
+      max-height: 50vh;
+
+      .Badge {
+        margin: 0;
+        max-width: unset;
+        cursor: pointer;
+      }
+
+      .icon-check {
+        padding: 0;
+      }
+
+      &__badge {
+        display: inline-block;
+        margin-bottom: $space-xs;
+        margin-right: $space-xs;
+      }
+    }
   }
 }
