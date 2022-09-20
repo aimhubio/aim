@@ -115,10 +115,10 @@ function Controls(
                       </span>
                     ) : null}
                     <Icon
+                      name='aggregation'
                       className={classNames('Controls__icon', {
                         active: props.aggregationConfig.isApplied,
                       })}
-                      name='aggregation'
                     />
                   </div>
                 </Tooltip>

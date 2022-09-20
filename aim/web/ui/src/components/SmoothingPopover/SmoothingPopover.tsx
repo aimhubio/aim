@@ -59,7 +59,7 @@ function SmoothingPopover(
         factor: factorMin,
       });
     },
-    [props.onSmoothingChange],
+    [props],
   );
 
   function handleFactorChange(
