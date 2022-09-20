@@ -32,10 +32,11 @@ const ui: IUIConfig = {
           return {
             name: item.data.name,
             context: item.data.context,
-            values,
-            steps,
-            epochs,
-            timestamps,
+            values: [...values],
+            steps: [...steps],
+            epochs: [...epochs],
+            timestamps: [...timestamps],
+            run: item.run,
           };
         });
 
@@ -105,7 +106,7 @@ fig = plt.figure()
 ax = fig.add_subplot(1, 1, 1)
 for i, metric in enumerate(metrics):
   color = (i / 10 % 1, i / 30 % 1, i / 50 % 1)
-  ax.plot(list(metric["steps"].values()), list(metric["values"].values()), color=color)
+  ax.plot(metric["steps"], metric["values"], color=color)
 fig
                     </py-repl>
                   </div>
