@@ -44,17 +44,23 @@ export function createSliceState<T, Store = any>(
           setValue(draft_state, name, updatedState);
         }),
         false,
-        '@UPDATE/' + name,
+        `@UPDATE/${name}`,
       );
     }
 
     function reset() {
-      set({
-        [name]: {
-          ...initialState,
-          isInitial: true,
-        },
-      });
+      const updatedState = {
+        ...initialState,
+        isInitial: true,
+      };
+      set(
+        produce<T>((draft_state: Draft<T>) => {
+          // @ts-ignore
+          setValue(draft_state, name, updatedState);
+        }),
+        false,
+        `@RESET/${name}`,
+      );
     }
     return { update, reset };
   };

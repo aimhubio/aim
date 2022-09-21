@@ -18,7 +18,7 @@ import './BoxWrapper.scss';
 function BoxWrapper(props: IBoxWrapperProps<AimFlatObjectBase<any>>) {
   const {
     engine,
-    engine: { useStore, sequenceNameSelector },
+    engine: { useStore },
     items,
     component: BoxContent,
     groupId,
@@ -28,7 +28,7 @@ function BoxWrapper(props: IBoxWrapperProps<AimFlatObjectBase<any>>) {
   const vizEngine = engine.visualizations[props.visualizationName];
 
   const [fullView, setFullView] = React.useState<boolean>(false);
-  const sequenceName: SequenceTypesEnum = useStore(sequenceNameSelector);
+  const sequenceName: SequenceTypesEnum = engine.pipeline.getSequenceName();
   const boxConfig = useStore(vizEngine.box.stateSelector);
   const captionProperties: ICaptionProperties = useStore(
     vizEngine.controls.captionProperties.stateSelector,

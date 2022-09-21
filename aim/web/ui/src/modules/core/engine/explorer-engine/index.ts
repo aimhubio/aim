@@ -208,7 +208,14 @@ function createEngine<TObject = any>(
   // @ts-ignore
   const store = createVanilla<StoreApi<object>>(
     // @ts-ignore
-    devtool ? devtools(buildEngine, { name }) : buildEngine,
+    devtool
+      ? // @ts-ignore
+        devtools(buildEngine, {
+          name,
+          anonymousActionType: 'UNKNOWN_ACTION',
+          serialize: { options: true },
+        })
+      : buildEngine,
   );
 
   // @ts-ignore
@@ -266,7 +273,7 @@ function createEngine<TObject = any>(
     initialize,
   };
 
-  if ('__DEV__') {
+  if (__DEV__) {
     // @ts-ignore
     window[name] = engine;
   }

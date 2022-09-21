@@ -17,9 +17,7 @@ import './RangePanel.scss';
 
 function RangePanel(props: IRangePanelProps) {
   const engine = props.engine;
-  const sequenceName: SequenceTypesEnum = engine.useStore(
-    engine.sequenceNameSelector,
-  );
+  const sequenceName: SequenceTypesEnum = engine.pipeline.getSequenceName();
   const query: QueryUIStateUnit = engine.useStore(
     engine.query.form.stateSelector,
   );
@@ -32,14 +30,14 @@ function RangePanel(props: IRangePanelProps) {
       //TODO: abort request
       return;
     } else {
+      engine.query.ranges.update({
+        ...rangeState,
+        isApplyButtonDisabled: true,
+      });
       engine.pipeline.search({
         q: getQueryStringFromSelect(query, sequenceName),
         report_progress: true,
         ...getQueryFromRanges(rangeState),
-      });
-      engine.query.ranges.update({
-        ...rangeState,
-        isApplyButtonDisabled: true,
       });
     }
   }, [engine, isFetching, query, sequenceName, rangeState]);
