@@ -1,13 +1,11 @@
 import type { FunctionComponent } from 'react';
 
 import renderer, { getDefaultHydration } from 'modules/BaseExplorer';
+import Figures from 'modules/BaseExplorer/components/Figures/Figures';
 
 import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
 
-import customStates from './customStates';
-import controls from './controls';
-import ui from './ui';
-import groupings from './groupings';
+const defaultConfig = getDefaultHydration();
 
 const FiguresExplorer = renderer(
   {
@@ -16,18 +14,17 @@ const FiguresExplorer = renderer(
     adapter: {
       objectDepth: AimObjectDepths.Step,
     },
-    groupings,
+    groupings: defaultConfig.groupings,
     visualizations: {
       vis1: {
-        component: getDefaultHydration().Visualizer as FunctionComponent,
-        controls: controls,
+        component: defaultConfig.Visualizer as FunctionComponent,
+        controls: defaultConfig.controls,
         box: {
-          component: ui.components.box as FunctionComponent,
-          initialState: ui.defaultBoxConfig,
+          component: Figures,
+          initialState: defaultConfig.box.initialState,
         },
       },
     },
-    states: customStates,
   },
   true,
 );

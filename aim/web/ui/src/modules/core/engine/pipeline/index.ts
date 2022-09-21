@@ -31,6 +31,7 @@ export interface IPipelineEngine<TObject, TStore> {
     group: (config: CurrentGrouping) => void;
     getSequenceName: () => SequenceTypesEnum;
     destroy: () => void;
+    reset: () => void;
   } & Omit<PipelineStateBridge<TObject, TStore>, 'selectors'> &
     PipelineStateBridge<TObject, TStore>['selectors'];
 }
@@ -141,16 +142,7 @@ function createPipelineEngine<TStore, TObject>(
       .catch((ex: unknown) => {});
   }
 
-  /**
-   * Function group, used to execute pipeline started from group
-   *      using cache for query and adapter phases, and run only grouping
-   * @example
-   *     pipeline.engine.group(config)
-   * @param {CurrentGrouping} config
-   */
-  function group(config: CurrentGrouping): void {
-    state.setCurrentGroupings(config);
-
+  function normalizeGroupConfig(config: CurrentGrouping) {
     // @TODO complete typings
     const groupConfig: {
       type: GroupType;
@@ -170,18 +162,34 @@ function createPipelineEngine<TStore, TObject>(
       };
       config[key as GroupType].fields.length && groupConfig.push(groupConf);
     });
+    return groupConfig;
+  }
+
+  /**
+   * Function group, used to execute pipeline started from group
+   *      using cache for query and adapter phases, and run only grouping
+   * @example
+   *     pipeline.engine.group(config)
+   * @param {CurrentGrouping} config
+   */
+  function group(config: CurrentGrouping): void {
+    state.setCurrentGroupings(config);
 
     pipeline
       .execute({
         query: {
           params: state.getCurrentQuery(),
         },
-        group: groupConfig,
+        group: normalizeGroupConfig(config),
       })
       .then((res) => {
         const { data, additionalData, foundGroups } = res;
         state.setResult(data, foundGroups, additionalData);
       });
+  }
+
+  function reset() {
+    group(defaultGroupings);
   }
 
   return {
@@ -194,6 +202,7 @@ function createPipelineEngine<TStore, TObject>(
       getSequenceName: () => options.sequenceName,
       search,
       group,
+      reset,
       destroy: () => {
         pipeline.clearCache();
         // pipeline.destroy();

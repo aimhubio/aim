@@ -17,7 +17,7 @@ import { IQueryFormProps } from 'modules/BaseExplorer/types';
 import { getQueryFromRanges } from 'modules/core/utils/getQueryFromRanges';
 import { getQueryStringFromSelect } from 'modules/core/utils/getQueryStringFromSelect';
 import { getSelectFormOptions } from 'modules/core/utils/getSelectFormOptions';
-import { PipelineStatusEnum } from 'modules/core/engine';
+import { PipelineStatusEnum } from 'modules/core/engine/types';
 import {
   QueryFormState,
   QueryRangesState,

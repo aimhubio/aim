@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { QueryUIStateUnit } from 'modules/core/engine';
+import { QueryFormState } from 'modules/core/engine/explorer/query/state';
 import { getQueryFromRanges } from 'modules/core/utils/getQueryFromRanges';
 import { getQueryStringFromSelect } from 'modules/core/utils/getQueryStringFromSelect';
 
@@ -18,7 +18,7 @@ import './RangePanel.scss';
 function RangePanel(props: IRangePanelProps) {
   const engine = props.engine;
   const sequenceName: SequenceTypesEnum = engine.pipeline.getSequenceName();
-  const query: QueryUIStateUnit = engine.useStore(
+  const query: QueryFormState = engine.useStore(
     engine.query.form.stateSelector,
   );
   const rangeState = engine.useStore(engine.query.ranges.stateSelector);

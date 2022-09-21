@@ -2,14 +2,15 @@ import type { FunctionComponent } from 'react';
 import { StoreApi } from 'zustand';
 import { omit } from 'lodash-es';
 
-import { ControlsConfigs } from '../explorer/state/controls';
-import { createSliceState } from '../store/utils';
 import {
   IBoxProps,
   IControlsProps,
   IEngineStates,
   IVisualizationProps,
-} from '../../../BaseExplorer/types';
+} from 'modules/BaseExplorer/types';
+import { createSliceState } from 'modules/core/utils/store';
+
+import { ControlsConfigs } from '../explorer/state/controls';
 
 import { createControlsStateConfig } from './controls';
 

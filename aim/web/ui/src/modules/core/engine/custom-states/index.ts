@@ -4,7 +4,8 @@ import {
   createStateSlices,
   CustomStates,
   PreCreatedStateSlice,
-} from '../store/utils';
+} from 'modules/core/utils/store';
+
 import { StoreSliceMethods } from '../types';
 
 export interface CustomStatesEngine {

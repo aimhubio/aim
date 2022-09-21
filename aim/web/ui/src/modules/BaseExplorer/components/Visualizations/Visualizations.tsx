@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { FunctionComponent } from 'react';
 
-import { PipelineStatusEnum } from 'modules/core/engine';
+import { PipelineStatusEnum } from 'modules/core/engine/types';
 import { IVisualizationsProps } from 'modules/BaseExplorer/types';
 import VisualizerPanel from 'modules/BaseExplorer/components/VisualizerPanel';
 

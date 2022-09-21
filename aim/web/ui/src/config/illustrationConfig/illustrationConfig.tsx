@@ -1,4 +1,4 @@
-import { PipelineStatusEnum } from 'modules/core/engine';
+import { PipelineStatusEnum } from 'modules/core/engine/types';
 
 import emptyBookmarks from 'assets/illustrations/emptyBookmarks.svg';
 import emptySearch from 'assets/illustrations/emptySearch.svg';

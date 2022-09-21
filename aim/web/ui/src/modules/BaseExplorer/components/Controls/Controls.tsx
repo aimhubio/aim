@@ -1,7 +1,7 @@
 import React from 'react';
 import { omit } from 'lodash-es';
 
-import { ControlsConfigs } from 'modules/core/engine/store/controls';
+import { ControlsConfigs } from 'modules/core/engine/visualizations/controls';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 

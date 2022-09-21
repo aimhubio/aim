@@ -141,12 +141,16 @@ function createGroupingsSlice(groupings: Record<string, any>) {
         },
         {},
       );
-      set({
-        groupings: {
-          ...store.groupings,
-          currentValues: newValues,
+      set(
+        {
+          groupings: {
+            ...store.groupings,
+            currentValues: newValues,
+          },
         },
-      });
+        false,
+        '@UPDATE/GROUPING',
+      );
     };
     const reset = () => {
       const store = get().groupings.currentValues;
@@ -160,12 +164,16 @@ function createGroupingsSlice(groupings: Record<string, any>) {
         },
         {},
       );
-      set({
-        groupings: {
-          ...store.groupings,
-          currentValues: newValues,
+      set(
+        {
+          groupings: {
+            ...store.groupings,
+            currentValues: newValues,
+          },
         },
-      });
+        false,
+        '@RESET/GROUPING',
+      );
     };
     return {
       update,

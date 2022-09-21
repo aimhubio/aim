@@ -24,6 +24,7 @@ export interface IInstructionsEngine<
   > &
     InstructionsStateBridge<TStore, SequenceName>['selectors'];
 }
+
 function createInstructionsEngine<TStore>(
   store: any,
   options: { sequenceName: SequenceTypesEnum },

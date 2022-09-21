@@ -1,7 +1,7 @@
 import { omit } from 'lodash-es';
 
 import { Order } from 'modules/core/pipeline';
-import { createSliceState } from 'modules/core/engine/store/utils';
+import { createSliceState } from 'modules/core/utils/store';
 
 import createGroupingsSlice from './state';
 

@@ -49,7 +49,7 @@ function createExplorer(
           box: {
             initialState:
               viz.box.initialState || defaultHydration.box.initialState,
-            component: viz.box.component || defaultHydration.BoxWrapper,
+            component: viz.box.component,
           },
         };
         return acc;
@@ -68,6 +68,7 @@ function createExplorer(
           components?.groupingContainer || defaultHydration.Groupings,
         queryForm: components?.queryForm || defaultHydration.QueryForm,
       },
+      groupings: configuration.groupings || defaultHydration.groupings,
       visualizations: visualizationsHydration,
       states: {
         ...defaultHydration.customStates,

@@ -22,7 +22,11 @@ type State = {
   visualizations?: any;
 };
 
-type EngineNew<TStore, TObject, SequenceName extends SequenceTypesEnum> = {
+export type EngineNew<
+  TStore,
+  TObject,
+  SequenceName extends SequenceTypesEnum,
+> = {
   // sub engines
   pipeline: IPipelineEngine<TObject, TStore>['engine'];
   instructions: IInstructionsEngine<TStore, SequenceName>['engine'];

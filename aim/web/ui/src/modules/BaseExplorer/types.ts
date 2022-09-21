@@ -1,42 +1,14 @@
 import React from 'react';
 
 import { GroupType } from 'modules/core/pipeline';
-import { GroupingConfigs } from 'modules/core/engine/store/grouping';
-import { ControlsConfigs } from 'modules/core/engine/store/controls';
+import { GroupingConfigs } from 'modules/core/engine/explorer/groupings';
+import { ControlsConfigs } from 'modules/core/engine/visualizations/controls';
+import { CustomStates } from 'modules/core/utils/store';
 
 import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
 
 import { VisualizationsConfig } from '../core/engine/visualizations';
-import { EngineNew } from '../core/engine/engine.new';
-import { CustomStates } from '../core/engine/store/utils';
-
-export interface IExplorerConfig {
-  /**
-   * The name of explorer, used to identify user configuration for the explorer
-   * Since it is identifier, it should be a unique
-   */
-  readonly explorerName: string;
-
-  /**
-   * The link to docs
-   */
-  readonly documentationLink: string;
-
-  /**
-   * Engine configuration
-   * You can customize grouping behaviours, style appliers etc.
-   */
-  readonly engine: IEngineConfig;
-  /**
-   * Configurations for UI
-   */
-  readonly ui: IUIConfig;
-
-  /**
-   * additional states
-   */
-  readonly states?: IEngineStates;
-}
+import { EngineNew } from '../core/engine/explorer-engine';
 
 export interface IEngineStates {
   [key: string]: {
@@ -120,12 +92,6 @@ export interface IBoxProps extends IBaseComponentProps {
 export interface IOptionalExplorerConfig {}
 export interface IExplorerBarProps
   extends Omit<IBaseComponentProps, 'visualizationName'> {
-  explorerName: string;
-  documentationLink: string;
-}
-
-export interface IBaseExplorerProps extends IExplorerConfig {
-  engineInstance: any;
   explorerName: string;
   documentationLink: string;
 }

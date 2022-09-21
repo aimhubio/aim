@@ -1,7 +1,7 @@
 import { StoreApi } from 'zustand';
 import { omit } from 'lodash-es';
 
-import { createSliceState, StateSlice } from 'modules/core/engine/store/utils';
+import { createSliceState, StateSlice } from 'modules/core/utils/store';
 
 import { ISelectOption } from 'types/services/models/explorer/createAppModel';
 

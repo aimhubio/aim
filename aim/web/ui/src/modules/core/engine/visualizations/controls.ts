@@ -1,6 +1,6 @@
 import { omit } from 'lodash-es';
 
-import { createSliceState } from '../store/utils';
+import { createSliceState } from 'modules/core/utils/store';
 
 export type ControlConfig<State extends object, Settings> = {
   /**
