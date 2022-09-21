@@ -1,12 +1,22 @@
 // visualizationType: 'box', // 'box', 'sequence'
 import * as React from 'react';
 
+import Editor from '@monaco-editor/react';
 import { IQueryFormProps, IUIConfig } from 'modules/BaseExplorer/types';
 import { Grouping, QueryForm } from 'modules/BaseExplorer/components';
 import Controls from 'modules/BaseExplorer/components/Controls';
 
+import { Button } from 'components/kit';
+import ChartPanel from 'components/ChartPanel/ChartPanel';
+import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
+
 import { filterMetricsData } from 'utils/filterMetricData';
-import { AlignmentOptionsEnum } from 'utils/d3';
+import {
+  AlignmentOptionsEnum,
+  ChartTypeEnum,
+  CurveEnum,
+  ScaleEnum,
+} from 'utils/d3';
 
 const ui: IUIConfig = {
   defaultBoxConfig: {
@@ -20,7 +30,6 @@ const ui: IUIConfig = {
     )),
     visualizations: [
       function CustomVisualizer(props: any) {
-        let element = React.useRef<HTMLIFrameElement>(null);
         const {
           engine: { useStore, dataSelector },
         } = props;
@@ -40,94 +49,82 @@ const ui: IUIConfig = {
           };
         });
 
-        React.useEffect(() => {
-          if (element.current && data && data.length > 0) {
-            const metrics = JSON.stringify(data);
-            let doc = element.current.contentWindow!.document;
-            doc.open();
-            doc.write(
-              `
-              <html>
-              <head>
-                <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
-                <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
-                <style>
-                  body {
-                    background-color: #eee;
-                    height: 100%;
-                  }
-                  .container {
-                    height: 100%;
-                    display: flex;
-                  }
-                  .box {
-                    background-color: #fff;
-                    border: 1px solid #ccc;
-                    padding: 10px;
-                    margin: 10px 5px;
-                    overflow: auto;
-                  }
-                  .repl {
-                    flex: 1;
-                  }
-                  .result {
-                    display: flex;
-                    flex-direction: column;
-                    flex: 1;
-                  }
-                  .output {
-                    flex: 0.65;
-                  }
-                  .errors {
-                    flex: 0.35;
-                    max-height: 300px;
-                  }
-                  #output, #errors {
-                    height: 70%;
-                  }
-                </style>
-                <py-env>
-                  - numpy
-                  - matplotlib
-                </py-env>
-              </head>
-              <body>
-                <py-script>
-                  import js
-                  import json
-                  metrics = json.loads('${metrics}')
-                </py-script>
-                <div class="container">
-                  <div class="repl box">
-                    <py-repl std-out="output" std-err="errors">
-                      import matplotlib.pyplot as plt
-                      
-fig = plt.figure()
-ax = fig.add_subplot(1, 1, 1)
+        (window as any).metrics = data;
+        const pyodide = React.useRef<any>();
+
+        const [editorValue, setEditorValue] =
+          React.useState(`from aim-ui-client import metrics
+
+data = [[]]
+
+metrics_list = []
+
+# smoothing section
+def calc_ema(values, factor):
+  if len(values) < 2:
+    return values
+  smoothed = [values[0]]
+  for i, _ in enumerate(values[1:], start=1):
+    smoothed.append(smoothed[i - 1] * factor + values[i] * (1 - factor))
+  return smoothed
+
+# map metrics to lines
 for i, metric in enumerate(metrics):
-  color = (i / 10 % 1, i / 30 % 1, i / 50 % 1)
-  ax.plot(metric["steps"], metric["values"], color=color)
-fig
-                    </py-repl>
-                  </div>
-                  <div class="result">
-                    <div class="output box">
-                      <b>Output</b><hr>
-                      <div id="output"></div>
-                    </div>
-                    <div class="errors box">
-                      <b>Errors and Warnings</b><hr>
-                      <div id="errors"></div>
-                    </div>
-                  </div>
-                </div>
-              </body>
-              </html>
-              `,
-            );
-            doc.close();
+  # set line facet
+  if metric.name in metrics_list:
+    chart_index = metrics_list.index(metric.name)
+  else:
+    chart_index = len(metrics_list)
+    metrics_list.append(metric.name)
+  if chart_index >= len(data):
+    data.append([])
+  data[chart_index].append({
+    "key": i,
+    "data": {
+      "xValues": metric.steps,
+      "yValues": calc_ema(list(metric.values), 0.6) # apply smoothing
+    },
+    # set line color
+    "color": f'rgb({(i * 3 + 50) % 200}, {(i * 5 + 100) % 200}, {(i * 7 + 150) % 200})',
+    # set line stroke style 
+    "dasharray": "0" if metric.context.subset == "val" else "5 5"
+  })
+        `);
+        const [result, setResult] = React.useState<any[]>([]);
+
+        React.useEffect(() => {
+          async function main() {
+            pyodide.current = await (window as any).loadPyodide();
+            await pyodide.current.loadPackage('numpy');
           }
-        }, [data]);
+          main();
+        }, []);
+
+        const execute = React.useCallback(() => {
+          function toObject(x: any): any {
+            if (x instanceof Map) {
+              return Object.fromEntries(
+                Array.from(x.entries(), ([k, v]) => [k, toObject(v)]),
+              );
+            } else if (x instanceof Array) {
+              return x.map(toObject);
+            } else {
+              return x;
+            }
+          }
+          try {
+            pyodide.current!.runPython(
+              editorValue.replace('aim-ui-client', 'js'),
+            );
+            const resultData = pyodide.current.globals.get('data').toJs();
+            console.log(resultData);
+            const convertedResult = toObject(resultData);
+            console.log(convertedResult);
+            setResult(convertedResult);
+          } catch (ex) {
+            console.log(ex);
+          }
+        }, [editorValue]);
 
         return (
           <div
@@ -135,13 +132,74 @@ fig
               width: '100%',
               height: '100%',
               position: 'relative',
+              display: 'flex',
             }}
           >
-            <iframe
-              ref={element}
-              src='about:blank'
-              style={{ width: '100%', height: '100%', border: 'none' }}
-            />
+            <div
+              style={{
+                width: '50%',
+                height: '100%',
+                position: 'relative',
+                borderRight: '1px solid #ccc',
+                flex: 1,
+              }}
+            >
+              <Editor
+                language='python'
+                height='100%'
+                value={editorValue}
+                onChange={(v) => setEditorValue(v!)}
+                loading={<span />}
+              />
+            </div>
+            <div
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 'calc(50% - 35px)',
+                backgroundColor: '#fff',
+                zIndex: 1,
+              }}
+            >
+              <Button color='primary' variant='contained' onClick={execute}>
+                Run
+              </Button>
+            </div>
+            <div
+              style={{
+                width: '50%',
+                height: '100%',
+                position: 'relative',
+                flex: 1,
+              }}
+            >
+              {result && (
+                <ChartPanel
+                  selectOptions={[]}
+                  chartType={ChartTypeEnum.LineChart}
+                  data={result}
+                  focusedState={{
+                    key: null,
+                    active: false,
+                  }}
+                  tooltip={{}}
+                  zoom={{}}
+                  onActivePointChange={props.onActivePointChange}
+                  chartProps={result.map(() => ({
+                    axesScaleType: {
+                      xAxis: ScaleEnum.Linear,
+                      yAxis: ScaleEnum.Linear,
+                    },
+                    ignoreOutliers: false,
+                    highlightMode: HighlightEnum.Off,
+                    curveInterpolation: CurveEnum.Linear,
+                  }))}
+                  resizeMode={props.resizeMode}
+                  onRunsTagsChange={props.onRunsTagsChange}
+                  controls={null}
+                />
+              )}
+            </div>
           </div>
         );
       },
