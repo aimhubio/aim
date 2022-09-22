@@ -68,9 +68,9 @@ def calc_ema(values, factor):
     smoothed.append(smoothed[i - 1] * factor + values[i] * (1 - factor))
   return smoothed
 
-# map metrics to lines
+# map metrics to lines (charts)
 for i, metric in enumerate(metrics):
-  # set line facet
+  # set chart facet
   if metric.name in metrics_list:
     chart_index = metrics_list.index(metric.name)
   else:
