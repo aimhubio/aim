@@ -23,14 +23,14 @@ import './DictVisualizer.scss';
 const ROW_SIZE = 22;
 
 function DictVisualizer(props: IDictVisualizerProps) {
-  const [collapsedItems, setCollapsedItems] = React.useState<{
-    [key: string]: boolean;
-  }>({});
+  const [collapsedItems, setCollapsedItems] = React.useState<
+    Record<string, boolean>
+  >({});
 
   // Convert the dict to a list of key-value pairs
   const flattenDict = React.useCallback(
     (
-      dict: { [key: string]: unknown } | unknown[],
+      dict: Record<string, unknown> | unknown[],
       level: number = 0,
       parentKey: string = 'root',
     ) => {
@@ -134,11 +134,7 @@ function DictVisualizer(props: IDictVisualizerProps) {
             });
             if (!collapsedItems[id] && nestedItemsLength > 0) {
               rows.push(
-                ...flattenDict(
-                  item as { [key: string]: unknown },
-                  level + 1,
-                  id,
-                ),
+                ...flattenDict(item as Record<string, unknown>, level + 1, id),
               );
               rows.push({
                 id,
@@ -193,7 +189,7 @@ function DictVisualizer(props: IDictVisualizerProps) {
   );
 
   const rows = React.useMemo(() => {
-    return flattenDict(props.src as { [key: string]: unknown });
+    return flattenDict(props.src as Record<string, unknown>);
   }, [props.src, flattenDict]);
 
   function collapseToggler(id: string) {

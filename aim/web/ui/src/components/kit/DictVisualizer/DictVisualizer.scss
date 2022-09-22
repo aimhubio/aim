@@ -1,8 +1,7 @@
 @use 'src/styles/abstracts' as *;
 
 .DictVisualizer {
-  font-family: "Inconsolata", monospace;
-  font-variation-settings: "wdth" 82;
+  @include monospaceFontFamily();
   width: 100%;
   height: 100%;
 }
