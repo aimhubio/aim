@@ -12,6 +12,7 @@ export type DictVisualizerRowType = {
   level: number;
   key: string | number | null;
   value: unknown;
+  closedValue?: unknown;
   sub: string | null;
   color: string;
   copyContent?: string;
