@@ -10,6 +10,7 @@ import { toType, typeToColor } from 'utils/valueToType/valueToType';
 
 import Text from '../Text';
 import Icon from '../Icon';
+import Button from '../Button';
 
 import {
   IDictVisualizerProps,
@@ -121,19 +122,23 @@ function DictVisualizerRow(props: IDictVisualizerRowProps) {
             <div key={i} className='DictVisualizer__row__indent' />
           ))}
       {row.root && (
-        <div
+        <Button
+          withOnlyIcon
+          color='secondary'
+          size='xxSmall'
           className='DictVisualizer__row__collapseToggler'
           onClick={() => collapseToggler(row.id)}
         >
-          <Icon
-            name={isCollapsed ? 'arrow-right' : 'arrow-down'}
-            fontSize={9}
-          />
-        </div>
+          <Icon name={isCollapsed ? 'arrow-right' : 'arrow-down'} />
+        </Button>
       )}
       <div className='DictVisualizer__row__content'>
         {row.key !== null && (
-          <Text size={16} className='DictVisualizer__row__content__key'>
+          <Text
+            size={16}
+            tint={100}
+            className='DictVisualizer__row__content__key'
+          >
             {row.key}:
           </Text>
         )}
@@ -148,7 +153,9 @@ function DictVisualizerRow(props: IDictVisualizerRowProps) {
         )}
         <Text
           size={16}
-          className='DictVisualizer__row__content__value'
+          className={`DictVisualizer__row__content__value${
+            row.closing ? ' DictVisualizer__row__content__value--closing' : ''
+          }`}
           style={{
             color: row.color,
             cursor: isCollapsed ? 'pointer' : '',
@@ -231,6 +238,7 @@ function flattenDict(
         rows.push({
           id,
           level,
+          closing: true,
           key: null,
           value: ']',
           sub: null,
@@ -258,6 +266,7 @@ function flattenDict(
         rows.push({
           id,
           level,
+          closing: true,
           key: null,
           value: '}',
           sub: null,
@@ -284,6 +293,7 @@ function flattenDict(
       rows.push({
         id: parentKey,
         level,
+        closing: true,
         key: null,
         value: ']',
         sub: null,
@@ -293,6 +303,7 @@ function flattenDict(
       rows.push({
         id: parentKey,
         level,
+        closing: true,
         key: null,
         value: '}',
         sub: null,

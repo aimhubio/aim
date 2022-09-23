@@ -9,6 +9,7 @@ export interface IDictVisualizerProps {
 export type DictVisualizerRowType = {
   id: string;
   root?: boolean;
+  closing?: boolean;
   level: number;
   key: string | number | null;
   value: unknown;
