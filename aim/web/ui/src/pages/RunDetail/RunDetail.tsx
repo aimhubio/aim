@@ -422,14 +422,26 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
                   <ErrorBoundary>
                     {tabKey === 'overview' ? (
                       <div className='RunDetail__runDetailContainer__tabPanelBox overviewPanel'>
-                        <React.Suspense fallback={<Spinner />}>
+                        <React.Suspense
+                          fallback={
+                            <div className='RunDetail__runDetailContainer__tabPanelBox__suspenseLoaderContainer'>
+                              <Spinner />
+                            </div>
+                          }
+                        >
                           {tabContent[tabKey]}
                         </React.Suspense>
                       </div>
                     ) : (
                       <div className='RunDetail__runDetailContainer__tabPanelBox'>
                         <div className='RunDetail__runDetailContainer__tabPanel container'>
-                          <React.Suspense fallback={<Spinner />}>
+                          <React.Suspense
+                            fallback={
+                              <div className='RunDetail__runDetailContainer__tabPanelBox__suspenseLoaderContainer'>
+                                <Spinner />
+                              </div>
+                            }
+                          >
                             {tabContent[tabKey]}
                           </React.Suspense>
                         </div>

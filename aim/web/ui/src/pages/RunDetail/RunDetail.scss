@@ -124,11 +124,19 @@
     &__tabPanelBox {
       overflow-y: auto;
       height: calc(100vh - 112px);
+      &__suspenseLoaderContainer {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        height: 100%;
+        align-items: center;
+      }
     }
 
     &__tabsContainer {
       background: #ffffff;
-      box-shadow: 0 toRem(4px) toRem(6px) rgba(144, 175, 218, 0.2), 0 1px 0 0 $cuddle-20;
+      box-shadow: 0 toRem(4px) toRem(6px) rgba(144, 175, 218, 0.2),
+        0 1px 0 0 $cuddle-20;
       border-top: $border-grey-lighter;
       position: relative;
       z-index: 1;
@@ -403,9 +411,6 @@
             justify-content: center;
             &__button {
               background: $cuddle-30;
-              .MuiCircularProgress-root.MuiCircularProgress-colorPrimary {
-                color: $pico-80;
-              }
               &:hover {
                 background: $cuddle-50;
               }
