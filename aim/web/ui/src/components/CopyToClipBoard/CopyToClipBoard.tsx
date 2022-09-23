@@ -5,7 +5,7 @@ import { Tooltip } from '@material-ui/core';
 import { Button, Icon } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
-import { useCopy } from 'hooks/useCopy/useCopy';
+import { useCopy } from 'hooks/useCopy';
 
 import { ICopyToClipBoardProps } from 'types/components/CopyToClipBoard/CopyToClipBoard';
 
