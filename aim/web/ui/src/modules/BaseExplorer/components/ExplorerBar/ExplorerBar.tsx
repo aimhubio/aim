@@ -14,12 +14,6 @@ import './ExplorerBar.scss';
 function ExplorerBar(props: IExplorerBarProps) {
   const status = props.engine.useStore(props.engine.pipeline.statusSelector);
 
-  const resetToSystemDefaults = useCallback(() => {
-    props.engine.visualizations.reset();
-    props.engine.groupings.reset();
-    props.engine.pipeline.reset();
-  }, [props.engine]);
-
   const disableResetControls = React.useMemo(
     () =>
       [
@@ -30,6 +24,14 @@ function ExplorerBar(props: IExplorerBarProps) {
       ].indexOf(status) !== -1,
     [status],
   );
+
+  const resetToSystemDefaults = useCallback(() => {
+    if (!disableResetControls) {
+      props.engine.visualizations.reset();
+      props.engine.groupings.reset();
+      props.engine.pipeline.reset();
+    }
+  }, [props.engine, disableResetControls]);
 
   const isExecuting = status === PipelineStatusEnum.Executing;
 
