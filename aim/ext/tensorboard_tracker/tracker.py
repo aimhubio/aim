@@ -62,6 +62,10 @@ class TensorboardTracker:
             tensorboard_folder_watcher.stop()
         self._consumer.stop()
 
+    def close(self):
+        """Interface to make compatible with Resource AutoClean"""
+        self.stop()
+
 
 class TensorboardFolderTracker:
     def __init__(self, tensorboard_event_folder: str, queue: queue.Queue) -> None:

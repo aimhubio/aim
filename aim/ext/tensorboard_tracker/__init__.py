@@ -1,1 +1,1 @@
-from aim.ext.tensorboard_tracker.tracker import TensorboardTracker
+from aim.ext.tensorboard_tracker.run import Run

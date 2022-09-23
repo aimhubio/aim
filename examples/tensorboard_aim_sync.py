@@ -1,8 +1,8 @@
 import tensorflow as tf
-import aim
+from aim.ext.tensorboard_tracker import Run as AimRun
 
 
-aim_run = aim.Run(sync_tensorboard_log_dir="logs/fit/")
+aim_run = AimRun(sync_tensorboard_log_dir="logs/fit/")
 mnist = tf.keras.datasets.mnist
 
 (x_train, y_train),(x_test, y_test) = mnist.load_data()

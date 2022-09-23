@@ -29,7 +29,6 @@ from aim.storage.context import Context
 from aim.storage import treeutils
 
 from aim.ext.resource import ResourceTracker, DEFAULT_SYSTEM_TRACKING_INT
-from aim.ext.tensorboard_tracker import TensorboardTracker
 from aim.ext.cleanup import AutoClean
 
 from typing import Any, Dict, Iterator, Optional, Tuple, Union
@@ -51,7 +50,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class RunAutoClean(AutoClean['Run']):
+class BasicRunAutoClean(AutoClean['BasicRun']):
     PRIORITY = 90
 
     def __init__(self, instance: 'Run') -> None:
@@ -67,11 +66,14 @@ class RunAutoClean(AutoClean['Run']):
         self.hash = instance.hash
         self.meta_run_tree = instance.meta_run_tree
         self.repo = instance.repo
-        self._system_resource_tracker = instance._system_resource_tracker
-        self._tensorboard_tracker = instance._tensorboard_tracker
-        # this reference is needed for system resource tracker finalization
+
+        self.extra_resources = []
+
         self._tracker = instance._tracker
         self._checkins = instance._checkins
+
+    def add_extra_resource(self, resource) -> None:
+        self.extra_resources.append(resource)
 
     def finalize_run(self):
         """
@@ -86,19 +88,6 @@ class RunAutoClean(AutoClean['Run']):
         except TimeoutError:
             logger.warning(f'Cannot index Run {self.hash}. Index is locked.')
 
-    def finalize_system_tracker(self):
-        """
-        Stop the system resource tracker before closing the run.
-        """
-        if self._system_resource_tracker is not None:
-            logger.debug('Stopping resource tracker')
-            self._system_resource_tracker.stop()
-
-    def finialize_tensorboard_tracker(self):
-        if self._tensorboard_tracker is not None:
-            logger.debug("Stopped tensorboard tracker")
-            self._tensorboard_tracker.stop()
-
     def finalize_rpc_queue(self):
         if self.repo.is_remote_repo:
             self.repo._client.get_queue(self.hash).stop()
@@ -111,8 +100,11 @@ class RunAutoClean(AutoClean['Run']):
         if self.read_only:
             logger.debug(f'Run {self.hash} is read-only, skipping cleanup')
             return
-        self.finalize_system_tracker()
-        self.finialize_tensorboard_tracker()
+
+        for res in reversed(self.extra_resources):
+            logger.debug(f'Closing resource {res}')
+            res.close()
+
         self.finalize_run()
         self.finalize_rpc_queue()
         if self._checkins is not None:
@@ -261,38 +253,15 @@ class StructuredRunMixin:
         return self.props.remove_tag(tag_name)
 
 
-class Run(BaseRun, StructuredRunMixin):
-    """Run object used for tracking metrics.
-
-    Provides method :obj:`track` to track value and object series for multiple names and contexts.
-    Provides dictionary-like interface for Run object meta-parameters.
-    Provides API for iterating through tracked sequences.
-
-    Args:
-         run_hash (:obj:`str`, optional): Run's hash. If skipped, generated automatically.
-         repo (:obj:`Union[Repo,str], optional): Aim repository path or Repo object to which Run object is bound.
-            If skipped, default Repo is used.
-         read_only (:obj:`bool`, optional): Run creation mode.
-            Default is False, meaning Run object can be used to track metrics.
-         experiment (:obj:`str`, optional): Sets Run's `experiment` property. 'default' if not specified.
-            Can be used later to query runs/sequences.
-         system_tracking_interval (:obj:`int`, optional): Sets the tracking interval in seconds for system usage
-            metrics (CPU, Memory, etc.). Set to `None` to disable system metrics tracking.
-         log_system_params (:obj:`bool`, optional): Enable/Disable logging of system params such as installed packages,
-            git info, environment variables, etc.
-    """
+class BasicRun(BaseRun, StructuredRunMixin):
 
     _metric_version_warning_shown = False
 
     def __init__(self, run_hash: Optional[str] = None, *,
                  repo: Optional[Union[str, 'Repo']] = None,
                  read_only: bool = False,
-                 experiment: Optional[str] = None,
-                 system_tracking_interval: Optional[Union[int, float]] = DEFAULT_SYSTEM_TRACKING_INT,
-                 log_system_params: Optional[bool] = False,
-                 capture_terminal_logs: Optional[bool] = True,
-                 sync_tensorboard_log_dir: Optional[str] = None):
-        self._resources: Optional[RunAutoClean] = None
+                 experiment: Optional[str] = None):
+        self._resources: Optional[BasicRunAutoClean] = None
         super().__init__(run_hash, repo=repo, read_only=read_only)
 
         self.meta_attrs_tree: TreeView = self.meta_tree.subtree('attrs')
@@ -329,16 +298,6 @@ class Run(BaseRun, StructuredRunMixin):
         if not read_only:
             if not self.repo.is_remote_repo:
                 self._checkins = RunStatusReporter(self)
-            if log_system_params:
-                system_params = {
-                    'packages': get_installed_packages(),
-                    'env_variables': get_environment_variables(),
-                    'git_info': get_git_info(),
-                    'executable': sys.executable,
-                    'arguments': sys.argv
-                }
-                self.__setitem__("__system_params", system_params)
-
             try:
                 self.meta_run_attrs_tree.first_key()
             except (KeyError, StopIteration):
@@ -350,12 +309,7 @@ class Run(BaseRun, StructuredRunMixin):
             self.experiment = experiment
 
         self._tracker = RunTracker(self)
-
-        self._system_resource_tracker: ResourceTracker = None
-        self._prepare_resource_tracker(system_tracking_interval, capture_terminal_logs)
-        self._tensorboard_tracker: TensorboardTracker = None
-        self._prepare_tensorboard_log_tracker(sync_tensorboard_log_dir)
-        self._resources = RunAutoClean(self)
+        self._resources = BasicRunAutoClean(self)
 
     def __hash__(self) -> int:
         return super().__hash__()
@@ -405,29 +359,6 @@ class Run(BaseRun, StructuredRunMixin):
 
     def _collect(self, key, strict: bool = True, resolve_objects: bool = False):
         return self.meta_run_attrs_tree.collect(key, strict=strict, resolve_objects=resolve_objects)
-
-    def _prepare_resource_tracker(
-            self,
-            tracking_interval: Union[int, float] = None,
-            capture_terminal_logs: bool = True
-    ):
-        if self.read_only:
-            return
-
-        if ResourceTracker.check_interval(tracking_interval) or capture_terminal_logs:
-            current_logs = self.get_terminal_logs()
-            log_offset = current_logs.last_step() + 1 if current_logs else 0
-            self._system_resource_tracker = ResourceTracker(self._tracker,
-                                                            tracking_interval,
-                                                            capture_terminal_logs,
-                                                            log_offset)
-            self._system_resource_tracker.start()
-
-    def _prepare_tensorboard_log_tracker(self, sync_tensorboard_log_dir: Optional[str] = None):
-        if not sync_tensorboard_log_dir:
-            return
-        self._tensorboard_tracker = TensorboardTracker(self._tracker, sync_tensorboard_log_dir)
-        self._tensorboard_tracker.start()
 
     def __delitem__(self, key: str):
         """Remove key from run meta-params.
@@ -813,3 +744,55 @@ class Run(BaseRun, StructuredRunMixin):
         if self._checkins is None:
             raise ValueError('Progress reports are not enabled for this run')
         self._checkins._report_successful_finish(block=block)
+
+
+class Run(BasicRun):
+    """Run object used for tracking metrics.
+
+    Provides method :obj:`track` to track value and object series for multiple names and contexts.
+    Provides dictionary-like interface for Run object meta-parameters.
+    Provides API for iterating through tracked sequences.
+
+    Args:
+         run_hash (:obj:`str`, optional): Run's hash. If skipped, generated automatically.
+         repo (:obj:`Union[Repo,str], optional): Aim repository path or Repo object to which Run object is bound.
+            If skipped, default Repo is used.
+         read_only (:obj:`bool`, optional): Run creation mode.
+            Default is False, meaning Run object can be used to track metrics.
+         experiment (:obj:`str`, optional): Sets Run's `experiment` property. 'default' if not specified.
+            Can be used later to query runs/sequences.
+         system_tracking_interval (:obj:`int`, optional): Sets the tracking interval in seconds for system usage
+            metrics (CPU, Memory, etc.). Set to `None` to disable system metrics tracking.
+         log_system_params (:obj:`bool`, optional): Enable/Disable logging of system params such as installed packages,
+            git info, environment variables, etc.
+    """
+
+    def __init__(self, run_hash: Optional[str] = None, *,
+                 repo: Optional[Union[str, 'Repo']] = None,
+                 read_only: bool = False,
+                 experiment: Optional[str] = None,
+                 system_tracking_interval: Optional[Union[int, float]] = DEFAULT_SYSTEM_TRACKING_INT,
+                 log_system_params: Optional[bool] = False,
+                 capture_terminal_logs: Optional[bool] = True):
+        super().__init__(run_hash, repo=repo, read_only=read_only, experiment=experiment)
+
+        self._system_resource_tracker: ResourceTracker = None
+        if not read_only:
+            if log_system_params:
+                self['__system_params'] = {
+                    'packages': get_installed_packages(),
+                    'env_variables': get_environment_variables(),
+                    'git_info': get_git_info(),
+                    'executable': sys.executable,
+                    'arguments': sys.argv
+                }
+
+            if ResourceTracker.check_interval(system_tracking_interval) or capture_terminal_logs:
+                current_logs = self.get_terminal_logs()
+                log_offset = current_logs.last_step() + 1 if current_logs else 0
+                self._system_resource_tracker = ResourceTracker(self._tracker,
+                                                                system_tracking_interval,
+                                                                capture_terminal_logs,
+                                                                log_offset)
+                self._system_resource_tracker.start()
+                self._resources.add_extra_resource(self._system_resource_tracker)

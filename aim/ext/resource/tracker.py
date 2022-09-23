@@ -138,6 +138,10 @@ class ResourceTracker(object):
             if not self._buffer_registry:
                 self._uninstall_stream_patches()
 
+    def close(self):
+        """Interface to make compatible with Resource AutoClean"""
+        self.stop()
+
     def _track(self, stat: Stat):
         # Store system stats
         for resource, usage in stat.system.items():
