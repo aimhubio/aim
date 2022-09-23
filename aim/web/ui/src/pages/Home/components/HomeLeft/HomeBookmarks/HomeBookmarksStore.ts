@@ -6,7 +6,7 @@ import createResource from 'modules/core/utils/createResource';
 
 function createBookmarksEngine() {
   const { fetchData, state } =
-    createResource<IDashboardData>(fetchDashboardsList);
+    createResource<IDashboardData[]>(fetchDashboardsList);
   return { fetchBookmarks: fetchData, bookmarksState: state };
 }
 

@@ -14,7 +14,7 @@ function useReleaseNotes() {
   const { current: releaseNotesEngine } = React.useRef(
     createReleaseNotesEngine,
   );
-  const releaseNotesStore: IResourceState<IReleaseNote> =
+  const releaseNotesStore: IResourceState<IReleaseNote[]> =
     releaseNotesEngine.releasesState((state) => state);
 
   React.useEffect(() => {
@@ -60,7 +60,7 @@ function useReleaseNotes() {
   const changelogData: { tagName: string; info: any; url: string }[] =
     React.useMemo(() => {
       const data: { tagName: string; info: any; url: string }[] = [];
-      releaseNotesStore.data.some((release: IReleaseNote) => {
+      releaseNotesStore?.data?.some((release: IReleaseNote) => {
         const info = modifyReleaseNote(release.body);
         if (release.tag_name === `v${AIM_VERSION}`) {
           return true;

@@ -1,9 +1,9 @@
 import React from 'react';
 import _ from 'lodash-es';
 
-import { IExperimentData } from 'modules/core/api/experimentsApi';
 import { IResourceState } from 'modules/core/utils/createResource';
 import { Checkbox } from '@material-ui/core';
+import { ITagData } from 'modules/core/api/tagsApi/types';
 
 import { Icon, Text } from 'components/kit';
 
@@ -13,7 +13,7 @@ function useTagsCard() {
   const tableRef = React.useRef<any>(null);
   const [selectedRows, setSelectedRows] = React.useState<string[]>([]);
   const { current: tagsEngine } = React.useRef(createTagsEngine);
-  const tagsStore: IResourceState<IExperimentData> = tagsEngine.tagsState(
+  const tagsStore: IResourceState<ITagData[]> = tagsEngine.tagsState(
     (state) => state,
   );
 
