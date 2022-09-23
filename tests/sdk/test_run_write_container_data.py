@@ -1,7 +1,6 @@
 import os
 
 from tests.base import TestBase
-from tests.utils import remove_test_data
 
 from aim.sdk import Run
 from aim.storage.context import Context
@@ -11,9 +10,6 @@ from aim.storage.hashing import hash_auto
 
 
 class TestRunContainerData(TestBase):
-    def tearDown(self):
-        remove_test_data()
-
     def test_meta_tree_contexts_and_names(self):
         train_context = {'subset': 'train'}
         val_context = {'subset': 'val'}

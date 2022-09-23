@@ -162,6 +162,28 @@ Adapter source can be found [here](https://github.com/aimhubio/aim/blob/main/aim
 Example using Keras can be found [here](https://github.com/aimhubio/aim/blob/main/examples/keras_track.py).  
 Example using tf.Keras can be found [here](https://github.com/aimhubio/aim/blob/main/examples/tensorflow_keras_track.py).
 
+
+### Integration with Keras Tuner
+
+It only takes 2 steps to easily integrate aim in keras to record experimental information.
+
+```python
+from aim.keras_tuner import AimCallback
+```
+
+In kerastuner, we call the `search()` method of the tuner object to perform a search for best hyperparameter configuations. The callbacks are provided here. `AimCallback` inherits the usage specification of callbacks. We just need to add it to the callbacks list.
+
+```python
+tuner.search(
+    train_ds,
+    validation_data=test_ds,
+    callbacks=[AimCallback(tuner=tuner, repo='./aim_logs', experiment='keras_tuner_test')],
+)
+```
+
+Adapter source can be found [here](https://github.com/aimhubio/aim/blob/main/aim/sdk/adapters/keras_tuner.py).  
+Example using Keras Tuner can be found [here](https://github.com/aimhubio/aim/blob/main/examples/keras_tuner_track.py).  
+
 ### Integration with XGboost
 
 <!--In the real world, there is a well-known handwritten digit recognition problem. In this article, we use the machine learning framework xgboost to help us train an image classification model. In this process, we will use Aim to track our experimental data.-->
@@ -239,6 +261,29 @@ time.
 
 See `AimCallback` source [here](https://github.com/aimhubio/aim/blob/main/aim/sdk/adapters/lightgbm.py).  
 Check out a simple regression task example [here](https://github.com/aimhubio/aim/blob/main/examples/lightgbm_track.py).
+
+### Integration with fastai
+
+Aim comes with a builtin callback designed to automatically track [fastai](https://docs.fast.ai/) trainings.
+It takes two steps to integrate Aim into your training script.
+
+Step 1: Explicitly import the `AimCallback` for tracking training metadata.
+
+```python
+from aim.sdk.adapters.fastai import AimCallback
+```
+
+Step 2: Pass the callback to `cbs` list upon initiating your training.
+
+```python
+learn = cnn_learner(dls, resnet18, pretrained=True,
+                    loss_func=CrossEntropyLossFlat(),
+                    metrics=accuracy, model_dir="/tmp/model/",
+                    cbs=AimCallback(repo='.', experiment='fastai_example'))
+```
+
+See `AimCallback` source [here](https://github.com/aimhubio/aim/blob/main/aim/sdk/adapters/fastai.py).  
+Check out a simple regression task example [here](https://github.com/aimhubio/aim/blob/main/examples/fastai_track.py).
 
 ### What's next?
 

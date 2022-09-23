@@ -1,11 +1,8 @@
 import React from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
+import { useResizeObserver, usePanelResize, useModel } from 'hooks';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
-
-import useModel from 'hooks/model/useModel';
-import usePanelResize from 'hooks/resize/usePanelResize';
-import useResizeObserver from 'hooks/window/useResizeObserver';
 
 import paramsAppModel from 'services/models/params/paramsAppModel';
 import * as analytics from 'services/analytics';
@@ -180,6 +177,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onExportTableData={paramsAppModel.onExportTableData}
       onRowHeightChange={paramsAppModel.onRowHeightChange}
       onParamVisibilityChange={paramsAppModel.onParamVisibilityChange}
+      onRunsTagsChange={paramsAppModel.onRunsTagsChange}
       onColumnsOrderChange={paramsAppModel.onColumnsOrderChange}
       onColumnsVisibilityChange={paramsAppModel.onColumnsVisibilityChange}
       onTableResizeModeChange={paramsAppModel.onTableResizeModeChange}

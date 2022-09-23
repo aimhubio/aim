@@ -123,7 +123,8 @@ function BookmarkCard({
             })}
           </div>
         ) : null}
-        {select.query || select.advancedQuery ? (
+        {(!select.advancedMode && select.query) ||
+        (select.advancedMode && select.advancedQuery) ? (
           <div className='BookmarkCard__bottom'>
             <div className='BookmarkCard__run__expression'>
               <CodeBlock

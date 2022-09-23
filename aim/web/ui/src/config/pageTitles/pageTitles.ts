@@ -5,6 +5,7 @@ const pageTitles = {
   PARAMS_EXPLORER: 'Params Explorer',
   IMAGES_EXPLORER: 'Images Explorer',
   SCATTERS_EXPLORER: 'Scatters Explorer',
+  FIGURES_EXPLORER: 'Figures Explorer',
   BOOKMARKS: 'Bookmarks',
   TAGS: 'Tags',
   RUN_DETAIL: '',

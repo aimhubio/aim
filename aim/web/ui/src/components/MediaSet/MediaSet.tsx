@@ -16,6 +16,7 @@ import DepthSlider from 'components/DepthSlider/DepthSlider';
 import {
   MEDIA_ITEMS_SIZES,
   MEDIA_SET_SIZE,
+  MEDIA_SET_SLIDER_HEIGHT,
   MEDIA_SET_TITLE_HEIGHT,
   MEDIA_SET_WRAPPER_PADDING_HEIGHT,
 } from 'config/mediaConfigs/mediaConfigs';
@@ -46,6 +47,7 @@ const MediaSet = ({
   sortFieldsDict,
   sortFields,
   selectOptions,
+  onRunsTagsChange,
 }: IMediaSetProps): React.FunctionComponentElement<React.ReactNode> => {
   const [depthMap, setDepthMap] = React.useState<number[]>([]);
   let content: [(string | {})[], [] | [][]][] = []; // the actual items list to be passed to virtualized list component
@@ -218,6 +220,7 @@ const MediaSet = ({
           depthMap,
           onDepthChange,
           selectOptions,
+          onRunsTagsChange,
         }}
       >
         {MediaGroupedList}
@@ -356,9 +359,10 @@ const MediaGroupedList = React.memo(function MediaGroupedList({
           {renderStacking && (
             <DepthSlider
               index={index}
-              pathValue={pathValue}
+              items={pathValue as string[]}
               depth={depth}
               onDepthChange={data.onDepthChange}
+              style={{ height: MEDIA_SET_SLIDER_HEIGHT }}
             />
           )}
           {currentItems.length > 0 && (
@@ -375,6 +379,7 @@ const MediaGroupedList = React.memo(function MediaGroupedList({
                 tooltip={data.tooltip}
                 mediaType={data.mediaType}
                 selectOptions={data.selectOptions}
+                onRunsTagsChange={data.onRunsTagsChange}
               />
             </div>
           )}

@@ -20,6 +20,7 @@ const BadgeContainer: any = styled.div`
     props.monospace ? '"Inconsolata", monospace' : 'Inter, sans-serif'};
   ${({ color }) => color && getBadgeColor(color)};
   font-variation-settings: ${(props: any) => props.monospace && "'wdth' 82"};
+  ${(props: any) => ({ ...props.styleProps })}
 `;
 
 const BadgeIcon = styled.span`
@@ -45,6 +46,7 @@ const BadgeIcon = styled.span`
 function Badge({
   id,
   label,
+  value,
   color = '',
   size = 'medium',
   style,
@@ -62,7 +64,7 @@ function Badge({
       <BadgeContainer
         id={id}
         color={color}
-        style={{
+        styleProps={{
           ...style,
           maxWidth,
         }}
@@ -87,7 +89,10 @@ function Badge({
         {onDelete && (
           <BadgeIcon
             color={color}
-            onClick={() => onDelete(label)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete(value ?? label);
+            }}
             className='Badge__deleteIcon'
           >
             <Icon color={color} name='close' />

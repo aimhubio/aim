@@ -100,7 +100,7 @@ function ColorPopoverAdvanced({
                       <Box
                         key={color}
                         component='span'
-                        className='ColorPopoverAdvanced__paletteColors_colorItem'
+                        className='ColorPopoverAdvanced__paletteColors__colorItem'
                         bgcolor={color}
                       />
                     ))}

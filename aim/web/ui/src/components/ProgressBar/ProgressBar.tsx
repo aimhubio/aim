@@ -28,13 +28,13 @@ function ProgressBar({
       }
       timeoutIdRef.current = window.setTimeout(() => {
         setRenderBar(false);
-        setIsProgressBarVisible?.(false);
       }, hidingDelay);
     }
     return () => {
       if (timeoutIdRef.current) {
         window.clearTimeout(timeoutIdRef.current);
       }
+      setIsProgressBarVisible?.(false);
     };
   }, [processing, pendingStatus, setIsProgressBarVisible]);
 

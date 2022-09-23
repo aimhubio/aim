@@ -1,0 +1,37 @@
+@use 'src/styles/abstracts' as *;
+
+.CaptionPropertiesPopover {
+  width: 25rem;
+  padding: $space-xs;
+  display: flex;
+  flex-direction: column;
+  max-height: 20rem;
+  &__subtitle {
+    text-transform: uppercase;
+    margin: $space-xs 0;
+  }
+  &__Divider {
+    margin: $space-unit 0 $space-xs;
+  }
+  &__section {
+    margin: 0 $space-xs;
+  }
+  &__SelectedTagsContainer {
+    overflow: auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: $space-xxxs;
+    width: 100%;
+  }
+  &__option {
+    display: flex;
+    width: 100%;
+    overflow: hidden;
+    &__label {
+      margin-left: $space-xs;
+      max-width: 100%;
+      overflow: hidden;
+      word-break: break-all;
+    }
+  }
+}

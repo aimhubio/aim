@@ -1,0 +1,14 @@
+@use 'src/styles/abstracts' as *;
+
+.BaseGrouping {
+  display: flex;
+  align-items: center;
+  &__title {
+    margin-right: $space-xxxs;
+  }
+  &__content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}

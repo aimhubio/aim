@@ -11,6 +11,7 @@ from collections import defaultdict
 from aim.sdk.base_run import BaseRun
 from aim.sdk.sequence import Sequence
 from aim.sdk.tracker import RunTracker
+from aim.sdk.reporter import RunStatusReporter
 from aim.sdk.sequence_collection import SingleRunSequenceCollection
 from aim.sdk.utils import (
     backup_run,
@@ -70,6 +71,7 @@ class RunAutoClean(AutoClean['Run']):
         self._tensorboard_tracker = instance._tensorboard_tracker
         # this reference is needed for system resource tracker finalization
         self._tracker = instance._tracker
+        self._checkins = instance._checkins
 
     def finalize_run(self):
         """
@@ -113,6 +115,8 @@ class RunAutoClean(AutoClean['Run']):
         self.finialize_tensorboard_tracker()
         self.finalize_run()
         self.finalize_rpc_queue()
+        if self._checkins is not None:
+            self._checkins.close()
 
 
 # TODO: [AT] generate automatically based on ModelMappedRun
@@ -320,8 +324,11 @@ class Run(BaseRun, StructuredRunMixin):
                         raise
 
         self._props = None
+        self._checkins = None
 
         if not read_only:
+            if not self.repo.is_remote_repo:
+                self._checkins = RunStatusReporter(self)
             if log_system_params:
                 system_params = {
                     'packages': get_installed_packages(),
@@ -433,7 +440,7 @@ class Run(BaseRun, StructuredRunMixin):
     def track(
         self,
         value,
-        name: str,
+        name: str = None,
         step: int = None,
         epoch: int = None,
         *,
@@ -770,3 +777,39 @@ class Run(BaseRun, StructuredRunMixin):
         import pandas as pd
         df = pd.DataFrame(data, index=[0])
         return df
+
+    def report_progress(
+        self,
+        *,
+        expect_next_in: int = 0,
+        block: bool = False,
+    ) -> None:
+        """
+        Report progress for the run. Report the expected time for the next progress report.
+
+        If no progress reports are received by the expiry date (plus the grace period), the
+        run is considered as failed.
+
+        Args:
+            expect_next_in: (:obj:`int`, optional): The number of seconds to wait before the next progress report.
+            block: (:obj:`bool`, optional): If true, block the thread until the report is written to filesystem.
+        """
+        if self._checkins is None:
+            raise ValueError('Progress reports are not enabled for this run')
+        self._checkins._check_in(expect_next_in=expect_next_in, block=block)
+
+    def report_successful_finish(
+        self,
+        *,
+        block: bool = True,
+    ) -> None:
+        """
+        Report successful finish of the run. If the run is not marked as successfully finished,
+        it can potentially be considered as failed.
+
+        Args:
+            block: (:obj:`bool`, optional): If true, block the thread until the report is written to filesystem.
+        """
+        if self._checkins is None:
+            raise ValueError('Progress reports are not enabled for this run')
+        self._checkins._report_successful_finish(block=block)

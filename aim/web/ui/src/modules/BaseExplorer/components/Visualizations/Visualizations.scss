@@ -1,0 +1,12 @@
+@use 'src/styles/abstracts' as *;
+
+.Visualizations {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  .ProgressBar__container {
+    padding-bottom: 6 * $space-unit;
+  }
+}

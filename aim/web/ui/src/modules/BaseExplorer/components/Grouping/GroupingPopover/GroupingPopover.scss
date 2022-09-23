@@ -1,0 +1,124 @@
+@use 'src/styles/abstracts' as *;
+
+.BaseGroupingPopover {
+  width: 25rem;
+
+  h3 {
+    text-transform: uppercase;
+  }
+
+  &__container__select {
+    padding: $space-unit;
+    &__selectedFieldsContainer {
+      max-height: toRem(110px);
+      overflow: auto;
+      width: 100%;
+    }
+  }
+
+  &__toggleMode__div {
+    display: flex;
+    flex-direction: column;
+    border-top: $border-main;
+    border-bottom: $border-main;
+    padding: $space-unit;
+  }
+
+  &__subtitle {
+    margin-bottom: $space-sm;
+  }
+
+  &__accordion__container {
+    box-shadow: unset;
+    margin: 0 !important;
+
+    .BaseGroupingPopover__subtitle {
+      margin-bottom: unset;
+    }
+
+    .MuiAccordionSummary-expandIcon {
+      padding: 0;
+      transform: unset;
+      margin: unset;
+
+      &.Mui-expanded {
+        transform: unset;
+      }
+    }
+
+    .Mui-expanded {
+      margin: 0;
+    }
+  }
+
+  &__option__chips {
+    max-height: 50vh;
+    padding: 0.5rem 1rem;
+    overflow: auto;
+  }
+
+  &__option__chip {
+    font-size: $text-md;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.5em;
+
+    &:last-of-type {
+      margin-bottom: 0;
+    }
+  }
+
+  &__option__chip__toggle__button {
+    span {
+      display: inline-block;
+      max-width: calc(200px - 0.5rem);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex: 1 1;
+    }
+  }
+
+  &__advanced__component {
+    padding-bottom: 0.875rem;
+  }
+
+  .MuiAccordionSummary-root {
+    min-height: unset;
+    height: 2.125rem;
+    border-bottom: $border-main;
+    padding: 0 1rem;
+  }
+  &__option {
+    display: flex;
+    width: 100%;
+    overflow: hidden;
+    &__label {
+      margin-left: $space-xs;
+      max-width: 100%;
+      overflow: hidden;
+      word-break: break-all;
+    }
+  }
+}
+
+.AdvancedPopover__container {
+  width: 25rem;
+}
+
+.AdvancedPopover__paletteColors__container {
+  display: flex;
+  border-radius: $border-radius-sm;
+  width: 10.5rem;
+  border-top: $border-main;
+  height: 2rem;
+  margin-right: $space-xs;
+  overflow: hidden;
+}
+
+.AdvancedPopover__paletteColors__colorItem {
+  display: inline-block;
+  flex: 1;
+  height: 100%;
+}

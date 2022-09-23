@@ -9,7 +9,7 @@ a powerful utility to record, search and compare AI experiments. Here are the se
 | `version` | Displays the version of aim cli currently installed.                                      |
 | `up`      | Runs Aim web UI for the given repo.                                                       |
 | `reindex` | Process runs left in 'in progress' state and optimized finished runs.                     |
-| `server`  | Run `aim` remote tracking server accepting incoming RPC requests. _Experimental feature._ |
+| `server`  | Run `aim` remote tracking server accepting incoming RPC requests.                         |
 | `runs`    | Manage run data for the given repo.                                                       |
 | `convert` | Tool-set for converting 3rd party data into Aim readable format.                          |
 | `storage` | Maintain/update Aim repository internal data formats.                                     |
@@ -200,6 +200,7 @@ __storage subcommands__
 | `upgrade 2to3`   | Upgrades legacy Aim repository from `2.x` to `3.0`.                                      |
 | `upgrade 3.11+`  | Update metric sequence data format for given runs. At least one run should be specified. |
 | `restore`        | Rollback `Run` to old metric format if run backup is available.                          |
+| `prune`          | Remove dangling params/sequences with no referring runs                                    |
 
 
 **Sub-command: update 2to3**
@@ -225,4 +226,71 @@ $ aim storage upgrade 3.11+ [HASH] ...
 
 ```shell
 $ aim storage restore [HASH] ...
+```
+
+
+**Sub-command: prune**
+
+```shell
+$ aim storage prune 
+```
+
+## Aim status watcher CLI
+
+Aim status CLI offers an interface to start training runs status monitoring and configure
+how the notifications should be received. The entry point to this CLI is `aim-watcher`:
+
+```shell
+$ aim-watcher [ARGS] SUBCOMMAND
+```
+
+| Args                  | Description                                                                      |
+| --------------------- | -------------------------------------------------------------------------------- |
+| `--repo <repo_path>`  | Path to parent directory of `.aim` repo. _Current working directory by default_. |
+
+
+| Sub-Commands| Description                                                                               |
+| ----------- | ----------------------------------------------------------------------------------------- |
+| `start`     | Start watcher service to monitor and report stuck/failed Runs.                                                          |
+| `notifiers` | Configure how notifications should be received.                                      |
+
+
+### start
+Start watcher service for the given aim `Repo`.
+```shell
+aim-watcher --repo . start
+```
+
+### notifiers
+
+Manipulate notifiers configuration.
+
+__notifiers subcommands__
+
+| Sub-command | Description                                                                      |
+| ----------- | -------------------------------------------------------------------------------- |
+| `add`       | Add a new notifier configuration (slack, workplace, etc.).                       |                           |
+| `list`      | List available notifiers                                                         |
+| `remove`    | Remove notifier configuration from the list.                                     |
+| `disable`   | Stop receiving notifications from given notifier.                                |
+| `enable`    | Start receiving notifications from given notifier.                               |
+
+```shell
+$ aim-watcher notifiers add
+```
+
+```shell
+$ aim-watcher notifiers list
+```
+
+```shell
+$ aim-watcher notifiers remove [NOTIFIER_ID]
+```
+
+```shell
+$ aim-watcher notifiers disable [NOTIFIER_ID]
+```
+
+```shell
+$ aim-watcher notifiers enable [NOTIFIER_ID]
 ```

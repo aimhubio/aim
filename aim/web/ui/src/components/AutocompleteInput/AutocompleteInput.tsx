@@ -174,6 +174,13 @@ function AutocompleteInput({
               formattedValue.length,
             );
         }
+        //@TODO: check why the onCHange function have been called in the  if (ev.changes[0].text === '\n') { scope
+        if (onChange) {
+          // formattedValue = hasSelection
+          //   ? editorValue.replace(/[\n\r]/g, '')
+          //   : formattedValue;
+          onChange(formattedValue, ev);
+        }
         if (ev.changes[0].text === '\n') {
           formattedValue = hasSelection
             ? editorValue.replace(/[\n\r]/g, '')
@@ -181,9 +188,6 @@ function AutocompleteInput({
           editorRef.current!.setValue(formattedValue);
           if (onEnter) {
             onEnter();
-          }
-          if (onChange) {
-            onChange(formattedValue, ev);
           }
           setEditorValue(formattedValue);
           return;

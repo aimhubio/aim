@@ -111,6 +111,7 @@ const Params = ({
   chartPanelOffsetHeight,
   requestProgress,
   sortOptions,
+  onRunsTagsChange,
   onRowsVisibilityChange,
 }: IParamsProps): React.FunctionComponentElement<React.ReactNode> => {
   const [isProgressBarVisible, setIsProgressBarVisible] =
@@ -216,6 +217,7 @@ const Params = ({
                       chartProps={chartProps}
                       resizeMode={resizeMode}
                       selectOptions={groupingSelectOptions}
+                      onRunsTagsChange={onRunsTagsChange}
                       controls={
                         <Controls
                           curveInterpolation={curveInterpolation}
