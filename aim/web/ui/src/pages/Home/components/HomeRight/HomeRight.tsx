@@ -9,7 +9,13 @@ import './HomeRight.scss';
 function HomeRight(): React.FunctionComponentElement<React.ReactNode> {
   return (
     <aside className='HomeRight'>
-      <Text component='h3' tint={100} size={18} weight={600}>
+      <Text
+        className='HomeRight__title'
+        component='h3'
+        tint={100}
+        size={18}
+        weight={600}
+      >
         What's New
       </Text>
       <ReleaseNotes />

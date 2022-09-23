@@ -11,7 +11,11 @@ const api = new NetworkService(`${ENDPOINTS.RELEASE_NOTES.BASE}`);
  * @returns {Promise<IReleaseNote[]>}
  */
 async function fetchReleaseNotes(): Promise<IReleaseNote[]> {
-  return (await api.makeAPIGetRequest(ENDPOINTS.RELEASE_NOTES.GET)).body;
+  return (
+    await api.makeAPIGetRequest(ENDPOINTS.RELEASE_NOTES.GET, {
+      query_params: { per_page: 10 },
+    })
+  ).body;
 }
 
 /**

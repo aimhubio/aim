@@ -51,9 +51,46 @@ function useReleaseNotes() {
     }
   }
 
+  function modifyReleaseNote(releaseBody: string): RegExpMatchArray | null {
+    const exp = /(?:^|\n)(?:d.|[*+-]) [^]*?(?=\n(?:d.|[*+-])|$)/g;
+    let str = releaseBody.replace(/(\r\n|\n|\r)/g, '\n').replace(/\*/g, '-');
+    return str.match(exp);
+  }
+
+  const changelogData: { tagName: string; info: any; url: string }[] =
+    React.useMemo(() => {
+      const data: { tagName: string; info: any; url: string }[] = [];
+      releaseNotesStore.data.some((release: IReleaseNote) => {
+        const info = modifyReleaseNote(release.body);
+        if (release.tag_name === `v${AIM_VERSION}`) {
+          return true;
+        }
+        if (info) {
+          data.push({
+            tagName: release.tag_name,
+            info: modifyReleaseNote(release.body),
+            url: release.html_url,
+          });
+        }
+      });
+      return data;
+    }, [releaseNotesStore.data]);
+
+  const currentReleaseData:
+    | { tagName: string; info: any; url: string }
+    | undefined = React.useMemo(() => {
+    if (currentRelease) {
+      return {
+        tagName: currentRelease?.tag_name,
+        info: modifyReleaseNote(currentRelease?.body),
+        url: currentRelease.html_url,
+      };
+    }
+  }, [currentRelease]);
+
   return {
-    data: releaseNotesStore.data,
-    currentRelease,
+    changelogData,
+    currentReleaseData,
     isLoading: loading,
   };
 }

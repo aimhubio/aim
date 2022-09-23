@@ -5,4 +5,9 @@
   flex-direction: column;
   width: 25%;
   max-width: 285px;
+  background-color: #fafafb;
+  &__title {
+    margin-top: $space-md;
+    padding: 0 $space-lg;
+  }
 }
