@@ -98,6 +98,8 @@ def run_router(host, port, workers=1, ssl_keyfile=None, ssl_certfile=None):
     # temporary workaround for M1 build
     import grpc
 
+    from aim.ext.transport.health import HealthServicer, health_pb2_grpc
+
     msg_max_size = int(os.getenv(AIM_RT_MAX_MESSAGE_SIZE, AIM_RT_DEFAULT_MAX_MESSAGE_SIZE))
     options = [
         ('grpc.max_send_message_length', msg_max_size),
@@ -105,6 +107,7 @@ def run_router(host, port, workers=1, ssl_keyfile=None, ssl_certfile=None):
     ]
     router = grpc.server(futures.ThreadPoolExecutor(), options=options)
     remote_router_pb2_grpc.add_RemoteRouterServiceServicer_to_server(RemoteRouterServicer(), router)
+    health_pb2_grpc.add_HealthServicer_to_server(HealthServicer(), router)
 
     if ssl_keyfile and ssl_certfile:
         with open(ssl_keyfile, 'rb') as f:
