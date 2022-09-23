@@ -1,6 +1,8 @@
 // Adapted from react-json-view by Mac Gainor
 // License: https://github.com/mac-s-g/react-json-view/blob/master/LICENSE
 
+import { COLOR_BY_VALUE_TYPE } from 'config/colors/colors';
+
 // Returns a string "type" of input object
 export function toType(obj: any) {
   let type = getType(obj);
@@ -32,24 +34,6 @@ function getType(obj: any) {
 }
 
 // Returns color code base on value type
-export function typeToColor(item: any) {
-  switch (item) {
-    case 'int':
-      return 'rgb(175, 85, 45)';
-    case 'float':
-      return 'rgb(92, 129, 21)';
-    case 'string':
-      return 'rgb(246, 103, 30)';
-    case 'bool':
-      return 'rgb(169, 87, 153)';
-    case 'object':
-      return 'rgb(73, 72, 73)';
-    case 'array':
-      return 'rgb(73, 72, 73)';
-    case '':
-    case 'nan':
-      return 'rgb(148, 148, 148)';
-    default:
-      return 'rgb(20, 115, 230)';
-  }
+export function typeToColor(item: string) {
+  return COLOR_BY_VALUE_TYPE[item] ?? 'rgb(20, 115, 230)';
 }
