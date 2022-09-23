@@ -9,7 +9,7 @@ import createBookmarksEngine from './HomeBookmarksStore';
 function useHomeBookmarks() {
   const history = useHistory();
   const { current: bookmarksEngine } = React.useRef(createBookmarksEngine);
-  const bookmarksStore: IResourceState<IDashboardData> =
+  const bookmarksStore: IResourceState<IDashboardData[]> =
     bookmarksEngine.bookmarksState((state) => state);
 
   React.useEffect(() => {
