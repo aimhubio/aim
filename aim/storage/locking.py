@@ -1,7 +1,7 @@
 import os
 import logging
 
-from filelock import BaseFileLock, SoftFileLock, UnixFileLock, has_fcntl
+from filelock import BaseFileLock, FileLock, SoftFileLock, UnixFileLock, has_fcntl
 
 from cachetools.func import ttl_cache
 from psutil import disk_partitions
@@ -141,6 +141,12 @@ def AutoFileLock(
         A timeout of 0 means, that there is exactly one attempt to acquire the
         file lock.
     """
+    from aim.sdk.configs import AIM_USE_FILELOCK_ONLY
+
+    if os.environ.get(AIM_USE_FILELOCK_ONLY):
+        # fall back to old lock functionality
+        return FileLock(lock_file, timeout)
+
     if not FileSystemInspector.needs_soft_lock(lock_file):
         return UnixFileLock(lock_file, timeout)
     else:
