@@ -12,15 +12,26 @@ import { Button, Icon } from 'components/kit';
 import './ExplorerBar.scss';
 
 function ExplorerBar(props: IExplorerBarProps) {
-  const isExecuting =
-    props.engine.useStore(props.engine.pipeline.statusSelector) ===
-    PipelineStatusEnum.Executing;
+  const status = props.engine.useStore(props.engine.pipeline.statusSelector);
 
   const resetToSystemDefaults = useCallback(() => {
     props.engine.visualizations.reset();
     props.engine.groupings.reset();
     props.engine.pipeline.reset();
   }, [props.engine]);
+
+  const disableResetControls = React.useMemo(
+    () =>
+      [
+        PipelineStatusEnum.NeverExecuted,
+        PipelineStatusEnum.Empty,
+        PipelineStatusEnum.Insufficient_Resources,
+        PipelineStatusEnum.Executing,
+      ].indexOf(status) !== -1,
+    [status],
+  );
+
+  const isExecuting = status === PipelineStatusEnum.Executing;
 
   return (
     <div>
@@ -45,7 +56,10 @@ function ExplorerBar(props: IExplorerBarProps) {
               )}
               component={
                 <div className='ExplorerBar__popover'>
-                  <MenuItem onClick={resetToSystemDefaults}>
+                  <MenuItem
+                    disabled={disableResetControls}
+                    onClick={resetToSystemDefaults}
+                  >
                     Reset Controls to System Defaults
                   </MenuItem>
                   <a
