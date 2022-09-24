@@ -8,23 +8,55 @@ import { AIM_VERSION } from 'config/config';
 
 import createReleaseNotesEngine from './ReleasesStore';
 
+const CHANGELOG_CONTENT_HEIGHT = 290;
 function useReleaseNotes() {
   const [loading, setLoading] = React.useState<boolean>(true);
+  const [mounted, setMounted] = React.useState<boolean>(false);
+  const [scrollShadow, setScrollShadow] = React.useState<boolean>(false);
   const [currentRelease, setCurrentRelease] = React.useState<IReleaseNote>();
   const { current: releaseNotesEngine } = React.useRef(
     createReleaseNotesEngine,
   );
   const releaseNotesStore: IResourceState<IReleaseNote[]> =
     releaseNotesEngine.releasesState((state) => state);
+  const releaseNoteRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
     releaseNotesEngine.fetchReleases();
     fetchCurrentRelease();
     return () => {
       releaseNotesEngine.releasesState.destroy();
+      releaseNoteRef?.current?.removeEventListener(
+        'scroll',
+        onChangelogContentScroll,
+      );
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  React.useEffect(() => {
+    if (!loading) {
+      setMounted(true);
+    }
+    if (mounted && releaseNoteRef.current) {
+      if (releaseNoteRef?.current?.scrollHeight > CHANGELOG_CONTENT_HEIGHT) {
+        setScrollShadow(true);
+      }
+      releaseNoteRef?.current?.addEventListener(
+        'scroll',
+        onChangelogContentScroll,
+      );
+    }
+  }, [loading, mounted]);
+
+  function onChangelogContentScroll() {
+    const hasScrollShadow: boolean =
+      releaseNoteRef!.current!.scrollTop + CHANGELOG_CONTENT_HEIGHT <
+      releaseNoteRef!.current!.scrollHeight;
+    if (hasScrollShadow !== scrollShadow) {
+      setScrollShadow(!!hasScrollShadow);
+    }
+  }
 
   React.useEffect(() => {
     if (releaseNotesStore.data?.length) {
@@ -92,6 +124,8 @@ function useReleaseNotes() {
     changelogData,
     currentReleaseData,
     isLoading: loading,
+    releaseNoteRef,
+    scrollShadow,
   };
 }
 

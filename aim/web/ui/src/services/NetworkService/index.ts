@@ -77,7 +77,6 @@ class NetworkService {
       return [this.uri, ...arg].join('/');
     }
     if (arg) {
-      console.log(`${this.uri}/${arg}`);
       return `${this.uri}/${arg}`;
     }
     return `${this.uri}`;

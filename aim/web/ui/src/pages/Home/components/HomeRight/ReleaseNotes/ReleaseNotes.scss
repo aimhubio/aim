@@ -52,7 +52,7 @@
       }
     }
   }
-  &__Changelog {
+  &__changelog {
     border-bottom: $border-main;
     &__title {
       padding: $space-sm $space-lg 0;
@@ -71,8 +71,16 @@
     &__currentRelease {
       position: relative;
       padding: $space-sm $space-lg;
+      .ReleaseNoteItem {
+        &::after {
+          top: -13px;
+          height: calc(100% + #{$space-sm});
+        }
+      }
       &::before {
         content: '';
+        transition: all 0.18s ease-out;
+        opacity: 0;
         position: absolute;
         left: 0;
         top: -12px;
@@ -84,10 +92,14 @@
           #eaebef 100%
         );
       }
-      .ReleaseNoteItem {
-        &::after {
-          top: -11px;
-          height: calc(100% + #{$space-sm});
+      &__scroll {
+        &::before {
+          opacity: 1;
+        }
+        .ReleaseNoteItem {
+          &::after {
+            top: -11px !important;
+          }
         }
       }
     }

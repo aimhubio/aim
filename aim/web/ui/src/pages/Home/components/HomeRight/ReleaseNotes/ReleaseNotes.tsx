@@ -10,7 +10,13 @@ import useReleaseNotes from './useReleaseNotes';
 import './ReleaseNotes.scss';
 
 function ReleaseNotes(): React.FunctionComponentElement<React.ReactNode> {
-  const { changelogData, currentReleaseData, isLoading } = useReleaseNotes();
+  const {
+    changelogData,
+    currentReleaseData,
+    isLoading,
+    releaseNoteRef,
+    scrollShadow,
+  } = useReleaseNotes();
 
   return (
     <div className='ReleaseNotes'>
@@ -37,32 +43,41 @@ function ReleaseNotes(): React.FunctionComponentElement<React.ReactNode> {
             </div>
           </div>
           {`v${AIM_VERSION}` === changelogData[0]?.tagName ? null : (
-            <div className='ReleaseNotes__Changelog'>
+            <div className='ReleaseNotes__changelog'>
               <Text
-                className='ReleaseNotes__Changelog__title'
+                className='ReleaseNotes__changelog__title'
                 component='h4'
                 tint={100}
                 weight={700}
               >
                 Changelog
               </Text>
-              <div className='ReleaseNotes__Changelog__content'>
+              <div
+                ref={releaseNoteRef}
+                className='ReleaseNotes__changelog__content'
+              >
                 {changelogData.map((item) => {
                   return (
                     <ReleaseNoteItem
                       key={item.tagName}
                       tagName={item.tagName}
                       info={item.info[0]}
-                      url={item.url}
+                      href={item.url}
                     />
                   );
                 })}
               </div>
-              <div className='ReleaseNotes__Changelog__currentRelease'>
+              <div
+                className={`ReleaseNotes__changelog__currentRelease ${
+                  scrollShadow
+                    ? 'ReleaseNotes__changelog__currentRelease__scroll'
+                    : ''
+                }`}
+              >
                 <ReleaseNoteItem
-                  tagName={`${currentReleaseData?.tagName} [current]`}
-                  info={currentReleaseData?.info[0]}
-                  url={currentReleaseData?.url}
+                  tagName={`${currentReleaseData!.tagName} [current]`}
+                  info={currentReleaseData!.info[0]}
+                  href={currentReleaseData!.url}
                 />
               </div>
             </div>

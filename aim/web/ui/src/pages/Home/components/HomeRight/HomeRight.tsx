@@ -23,4 +23,4 @@ function HomeRight(): React.FunctionComponentElement<React.ReactNode> {
   );
 }
 
-export default HomeRight;
+export default React.memo(HomeRight);
