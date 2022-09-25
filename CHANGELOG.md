@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.13.4
+## 3.13.4 Sep 25, 2022
 
 - Add the ability to disable smoothing explicitly (KaroMourad)
 - Virtualize the run params list in the Run page (roubkar)
