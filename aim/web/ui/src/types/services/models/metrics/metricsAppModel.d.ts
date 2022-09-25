@@ -1,5 +1,3 @@
-import { ZoomEnum } from 'components/ZoomInPopover/ZoomInPopover';
-
 import { GroupNameEnum } from 'config/grouping/GroupingPopovers';
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 
@@ -22,7 +20,7 @@ import {
   AggregationAreaMethods,
   AggregationLineMethods,
 } from 'utils/aggregateGroupData';
-import { AlignmentOptionsEnum } from 'utils/d3';
+import { AlignmentOptionsEnum, ZoomEnum } from 'utils/d3';
 import { IRequestProgress } from 'utils/app/setRequestProgress';
 
 import { IMetric } from './metricModel';

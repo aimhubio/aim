@@ -1,8 +1,6 @@
 import React from 'react';
 import { RouteChildrenProps } from 'react-router-dom';
 
-import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
-
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { DensityOptions } from 'config/enums/densityEnum';
@@ -44,7 +42,7 @@ import { IAxesScaleRange } from 'types/components/AxesPropsPopover/AxesPropsPopo
 import { IColumnsOrder } from 'types/services/models/explorer/createAppModel';
 
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
-import { CurveEnum } from 'utils/d3';
+import { CurveEnum, HighlightEnum } from 'utils/d3';
 import { IRequestProgress } from 'utils/app/setRequestProgress';
 
 export interface IMetricProps extends Partial<RouteChildrenProps> {

@@ -1,6 +1,5 @@
 import { IOnSmoothingChange } from 'Metrics';
 
-import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { ILine } from 'components/LineChart/LineChart';
 
 import { DensityOptions } from 'config/enums/densityEnum';
@@ -19,7 +18,7 @@ import {
 import { IMetricProps } from 'types/pages/metrics/Metrics';
 
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
-import { ChartTypeEnum, CurveEnum } from 'utils/d3';
+import { ChartTypeEnum, CurveEnum, HighlightEnum } from 'utils/d3';
 
 export interface IControlProps {
   chartProps: any[];
