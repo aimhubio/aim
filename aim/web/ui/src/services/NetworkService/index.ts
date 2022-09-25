@@ -76,7 +76,10 @@ class NetworkService {
     if (Array.isArray(arg)) {
       return [this.uri, ...arg].join('/');
     }
-    return `${this.uri}/${arg}`;
+    if (arg) {
+      return `${this.uri}/${arg}`;
+    }
+    return `${this.uri}`;
   };
 
   private createQueryParams = (queryParams: Record<string, unknown>) => {

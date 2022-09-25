@@ -7,7 +7,7 @@ import { IHomeProps } from 'types/pages/home/Home';
 
 import ExploreAim from './components/ExploreAim/ExploreAim';
 import SetupGuide from './components/SetupGuide/SetupGuide';
-import Activity from './components/Activity/Activity';
+import ProjectContributions from './components/ProjectContributions/ProjectContributions';
 import HomeLeft from './components/HomeLeft/HomeLeft';
 import HomeRight from './components/HomeRight/HomeRight';
 
@@ -26,7 +26,7 @@ function Home({
         <HomeLeft />
         <div className='Home__middle'>
           <div className='Home__Activity__container'>
-            <Activity activityData={activityData} />
+            <ProjectContributions />
           </div>
           {/* <div className='Home__Explore__container'>
             <SetupGuide askEmailSent={askEmailSent} onSendEmail={onSendEmail} />

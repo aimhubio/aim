@@ -13,7 +13,7 @@ function useExperimentsCard() {
   const tableRef = React.useRef<any>(null);
   const [selectedRows, setSelectedRows] = React.useState<string[]>([]);
   const { current: experimentsEngine } = React.useRef(createExperimentEngine);
-  const experimentsStore: IResourceState<IExperimentData> =
+  const experimentsStore: IResourceState<IExperimentData[]> =
     experimentsEngine.experimentsState((state) => state);
 
   React.useEffect(() => {

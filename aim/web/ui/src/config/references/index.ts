@@ -48,4 +48,43 @@ const GUIDES = {
   },
 };
 
-export { DOCUMENTATIONS, GUIDES, DEMOS };
+const DASHBOARD_PAGE_GUIDES: { name: string; url: string }[] = [
+  {
+    name: 'How to use Aim',
+    url: 'https://docs.aimstack.io/docs/aim-quickstart',
+  },
+  {
+    name: 'Use Aim with Colab',
+    url: 'https://docs.aimstack.io/docs/aim-colab',
+  },
+  {
+    name: 'Use Aim with PyCharm',
+    url: 'https://docs.aimstack.io/docs/aim-pycharm',
+  },
+  {
+    name: 'Use Aim with VSCode',
+    url: 'https://docs.aimstack.io/docs/aim-vscode',
+  },
+  {
+    name: 'Use Aim with Jupyter',
+    url: 'https://docs.aimstack.io/docs/aim-jupyter',
+  },
+  {
+    name: 'Use Aim with TensorBoard',
+    url: 'https://docs.aimstack.io/docs/aim-tensorboard',
+  },
+  {
+    name: 'Use Aim with MLFlow',
+    url: 'https://docs.aimstack.io/docs/aim-mlflow',
+  },
+  {
+    name: 'Use Aim with Weights & Biases',
+    url: 'https://docs.aimstack.io/docs/aim-wandb',
+  },
+  {
+    name: 'Use Aim with Sacred',
+    url: 'https://docs.aimstack.io/docs/aim-sacred',
+  },
+];
+
+export { DOCUMENTATIONS, GUIDES, DEMOS, DASHBOARD_PAGE_GUIDES };
