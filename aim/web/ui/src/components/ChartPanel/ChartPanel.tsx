@@ -191,11 +191,13 @@ const ChartPanel = React.forwardRef(function ChartPanel(
                 </ErrorBoundary>
               </Grid>
             </ErrorBoundary>
-            <ErrorBoundary>
-              <Grid className='ChartPanel__controls ScrollBar__hidden' item>
-                {props.controls}
-              </Grid>
-            </ErrorBoundary>
+            {props.controls && (
+              <ErrorBoundary>
+                <Grid className='ChartPanel__controls ScrollBar__hidden' item>
+                  {props.controls}
+                </Grid>
+              </ErrorBoundary>
+            )}
           </>
         )}
       </Grid>

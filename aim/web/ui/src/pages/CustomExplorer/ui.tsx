@@ -55,7 +55,7 @@ const ui: IUIConfig = {
         const [editorValue, setEditorValue] =
           React.useState(`from aim-ui-client import metrics
 
-data = [[]]
+plots = [[]]
 
 metrics_list = []
 
@@ -76,26 +76,45 @@ for i, metric in enumerate(metrics):
   else:
     chart_index = len(metrics_list)
     metrics_list.append(metric.name)
-  if chart_index >= len(data):
-    data.append([])
-  data[chart_index].append({
-    "key": i,
+  if chart_index >= len(plots):
+    plots.append([])
+  plots[chart_index].append({
+    "key": f'{metric.name}',
     "data": {
       "xValues": metric.steps,
-      "yValues": calc_ema(list(metric.values), 0.6) # apply smoothing
+      # apply smoothing only on bleu metrics
+      "yValues": calc_ema(list(metric.values), 0.6) if metric.name == "bleu" else metric.values
     },
     # set line color
     "color": f'rgb({(i * 3 + 50) % 200}, {(i * 5 + 100) % 200}, {(i * 7 + 150) % 200})',
     # set line stroke style 
     "dasharray": "0" if metric.context.subset == "val" else "5 5"
   })
-        `);
-        const [result, setResult] = React.useState<any[]>([]);
+
+def on_active_point_change(val, is_active):
+  print(val.key, val.xValue, val.yValue)
+
+data = {
+  "plots": {
+    "data": plots,
+    "callbacks": {
+      "on_active_point_change": on_active_point_change
+    }
+  }
+}`);
+        const [result, setResult] = React.useState<Record<string, any>>({});
 
         React.useEffect(() => {
           async function main() {
-            pyodide.current = await (window as any).loadPyodide();
-            await pyodide.current.loadPackage('numpy');
+            pyodide.current = await (window as any).loadPyodide({
+              stdout: (...args: any[]) => {
+                document.getElementById(
+                  'console',
+                )!.innerHTML! += `<pre style='font-size: 12px'>${args.join(
+                  ', ',
+                )}</pre>`;
+              },
+            });
           }
           main();
         }, []);
@@ -137,7 +156,7 @@ for i, metric in enumerate(metrics):
           >
             <div
               style={{
-                width: '50%',
+                width: '40%',
                 height: '100%',
                 position: 'relative',
                 borderRight: '1px solid #ccc',
@@ -167,38 +186,52 @@ for i, metric in enumerate(metrics):
             </div>
             <div
               style={{
-                width: '50%',
+                width: '60%',
                 height: '100%',
                 position: 'relative',
                 flex: 1,
+                display: 'flex',
+                flexDirection: 'column',
               }}
             >
-              {result && (
-                <ChartPanel
-                  selectOptions={[]}
-                  chartType={ChartTypeEnum.LineChart}
-                  data={result}
-                  focusedState={{
-                    key: null,
-                    active: false,
-                  }}
-                  tooltip={{}}
-                  zoom={{}}
-                  onActivePointChange={props.onActivePointChange}
-                  chartProps={result.map(() => ({
-                    axesScaleType: {
-                      xAxis: ScaleEnum.Linear,
-                      yAxis: ScaleEnum.Linear,
-                    },
-                    ignoreOutliers: false,
-                    highlightMode: HighlightEnum.Off,
-                    curveInterpolation: CurveEnum.Linear,
-                  }))}
-                  resizeMode={props.resizeMode}
-                  onRunsTagsChange={props.onRunsTagsChange}
-                  controls={null}
-                />
+              {result.plots && (
+                <div style={{ flex: 0.7 }}>
+                  <ChartPanel
+                    selectOptions={[]}
+                    chartType={ChartTypeEnum.LineChart}
+                    data={result.plots.data}
+                    focusedState={{
+                      key: null,
+                      active: false,
+                    }}
+                    tooltip={{}}
+                    zoom={{}}
+                    onActivePointChange={
+                      result.plots.callbacks?.on_active_point_change ?? null
+                    }
+                    chartProps={result.plots.data.map(() => ({
+                      axesScaleType: {
+                        xAxis: ScaleEnum.Linear,
+                        yAxis: ScaleEnum.Linear,
+                      },
+                      ignoreOutliers: false,
+                      highlightMode: HighlightEnum.Off,
+                      curveInterpolation: CurveEnum.Linear,
+                    }))}
+                    onRunsTagsChange={() => null}
+                    controls={null}
+                  />
+                </div>
               )}
+              <div
+                style={{
+                  flex: 0.3,
+                  borderTop: '1px solid #ccc',
+                  padding: '6px 8px',
+                  overflow: 'auto',
+                }}
+                id='console'
+              />
             </div>
           </div>
         );
