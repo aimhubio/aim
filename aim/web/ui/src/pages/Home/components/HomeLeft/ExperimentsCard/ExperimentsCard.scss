@@ -12,31 +12,58 @@
     width: 1rem;
     height: 1rem;
   }
-  .SearchBar {
-    width: auto;
-    min-width: 250px;
-    flex-wrap: wrap;
-    .SearchInput {
-      margin-bottom: $space-xs;
-      margin-right: 0;
+  .DataList {
+    &__textsTable {
+      border: none;
     }
-  }
-  .selectedSelectIcon {
-    border-radius: $border-radius-xs;
-    width: 1rem;
-    height: 1rem;
-    background: $primary-color;
-    color: $white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  .partiallySelectedSelectIcon {
-    border-radius: $border-radius-xs;
-    width: 1rem;
-    height: 1rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    .SearchBar {
+      width: auto;
+      min-width: 250px;
+      // flex-wrap: wrap;
+      .SearchInput {
+        margin-bottom: $space-xs;
+        margin-right: 0;
+      }
+    }
+    .selectedSelectIcon {
+      border-radius: $border-radius-xs;
+      width: 1rem;
+      height: 1rem;
+      background: $primary-color;
+      color: $white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .partiallySelectedSelectIcon {
+      border-radius: $border-radius-xs;
+      width: 1rem;
+      height: 1rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .BaseTable {
+      background-color: transparent;
+      &__table {
+        background-color: transparent;
+      }
+      &__header {
+        &-row {
+          background-color: transparent;
+        }
+        &-cell {
+          border: none;
+          background-color: transparent;
+        }
+      }
+      &__row {
+        background-color: transparent;
+        &-cell {
+          background-color: transparent;
+          border: none;
+        }
+      }
+    }
   }
 }

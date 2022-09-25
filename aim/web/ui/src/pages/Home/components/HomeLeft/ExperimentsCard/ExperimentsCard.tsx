@@ -44,6 +44,7 @@ function ExperimentsCard() {
             disabled={!selectedRows.length}
           />,
         ]}
+        disableMatchBar={true}
       />
     </div>
   );
