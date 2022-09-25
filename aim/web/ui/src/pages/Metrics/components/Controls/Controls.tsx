@@ -78,8 +78,8 @@ function Controls(
 
   const tooltipChanged: boolean = React.useMemo(() => {
     return (
-      props.tooltip?.display !==
-        CONTROLS_DEFAULT_CONFIG.metrics.tooltip.display ||
+      props.tooltip?.appearance !==
+        CONTROLS_DEFAULT_CONFIG.metrics.tooltip.appearance ||
       props.tooltip.selectedFields?.length !==
         CONTROLS_DEFAULT_CONFIG.metrics.tooltip.selectedFields.length
     );
@@ -324,7 +324,7 @@ function Controls(
                 <TooltipContentPopover
                   selectOptions={props.selectOptions}
                   selectedFields={props.tooltip?.selectedFields}
-                  displayTooltip={props.tooltip?.display}
+                  tooltipAppearance={props.tooltip?.appearance}
                   onChangeTooltip={props.onChangeTooltip}
                 />
               }

@@ -16,6 +16,8 @@ import { IllustrationsEnum } from 'config/illustrationConfig/illustrationConfig'
 
 import blobsURIModel from 'services/models/media/blobsURIModel';
 
+import { TooltipAppearance } from 'types/services/models/metrics/metricsAppModel.d';
+
 import { IMediaPanelProps } from './MediaPanel.d';
 
 import './MediaPanel.scss';
@@ -298,7 +300,8 @@ function MediaPanel({
                         open={
                           resizeMode !== ResizeModeEnum.MaxHeight &&
                           !panelResizing &&
-                          (tooltip?.display || focusedState?.active)
+                          (tooltip?.appearance !== TooltipAppearance.Hide ||
+                            focusedState?.active)
                         }
                         chartType={tooltipType}
                         tooltipContent={tooltip?.content || {}}

@@ -7,6 +7,8 @@ import {
   MediaItemAlignmentEnum,
 } from 'config/enums/imageEnums';
 
+import { TooltipAppearance } from 'types/services/models/metrics/metricsAppModel.d';
+
 import {
   AggregationAreaMethods,
   AggregationLineMethods,
@@ -48,7 +50,7 @@ export const CONTROLS_DEFAULT_CONFIG = {
       isEnabled: false,
     },
     tooltip: {
-      display: true,
+      appearance: TooltipAppearance.Auto,
       selectedFields: [],
     },
     zoom: {
@@ -60,7 +62,7 @@ export const CONTROLS_DEFAULT_CONFIG = {
     curveInterpolation: CurveEnum.MonotoneX,
     isVisibleColorIndicator: false,
     tooltip: {
-      display: true,
+      appearance: TooltipAppearance.Auto,
       selectedFields: [],
     },
     sortFields: [],
@@ -71,7 +73,7 @@ export const CONTROLS_DEFAULT_CONFIG = {
     imageRendering: ImageRenderingEnum.Smooth,
     stacking: false,
     tooltip: {
-      display: true,
+      appearance: TooltipAppearance.Auto,
       selectedFields: [],
     },
     sortFields: [],
@@ -83,7 +85,7 @@ export const CONTROLS_DEFAULT_CONFIG = {
       isApplied: false,
     },
     tooltip: {
-      display: true,
+      appearance: TooltipAppearance.Auto,
       selectedFields: [],
     },
     sortFields: [],

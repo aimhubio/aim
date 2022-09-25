@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash-es';
 
 import { Checkbox, Divider, TextField, Typography } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
@@ -7,18 +8,22 @@ import {
   CheckBoxOutlineBlank,
 } from '@material-ui/icons';
 
-import { Badge, Text, ToggleButton } from 'components/kit';
+import { Badge, SelectDropdown, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import { ISelectDropdownOption } from 'components/kit/SelectDropdown';
 
 import { ITooltipContentPopoverProps } from 'types/components/TooltipContentPopover/TooltipContentPopover';
-import { IGroupingSelectOption } from 'types/services/models/metrics/metricsAppModel';
+import {
+  IGroupingSelectOption,
+  TooltipAppearance,
+} from 'types/services/models/metrics/metricsAppModel.d';
 
 import './TooltipContentPopover.scss';
 
 function TooltipContentPopover({
   onChangeTooltip,
   selectedFields = [],
-  displayTooltip = false,
+  tooltipAppearance = TooltipAppearance.Auto,
   selectOptions,
 }: ITooltipContentPopoverProps): React.FunctionComponentElement<React.ReactNode> {
   let [inputValue, setInputValue] = React.useState('');
@@ -43,8 +48,8 @@ function TooltipContentPopover({
     });
   }
   const onDisplayTooltipChange = React.useCallback(
-    (value, id): void => {
-      onChangeTooltip({ [id]: value === 'Show' });
+    (value): void => {
+      onChangeTooltip({ appearance: value.value });
     },
     [onChangeTooltip],
   );
@@ -63,6 +68,13 @@ function TooltipContentPopover({
         selectedFields.indexOf(a.value) - selectedFields.indexOf(b.value),
     );
   }, [selectOptions, selectedFields]);
+
+  const tooltipAppearanceOptions: ISelectDropdownOption[] =
+    React.useMemo(() => {
+      return Object.values(TooltipAppearance).map((option) => {
+        return { label: _.capitalize(option), value: option };
+      });
+    }, []);
 
   const options = React.useMemo(() => {
     if (inputValue.trim() !== '') {
@@ -153,17 +165,12 @@ function TooltipContentPopover({
             tint={50}
             className='TooltipContentPopover__subtitle'
           >
-            Toggle Tooltip Visibility
+            Tooltip Appearance
           </Text>
-          <ToggleButton
-            title='Select Mode'
-            id='display'
-            value={displayTooltip ? 'Show' : 'Hide'}
-            leftLabel='Hide'
-            rightLabel='Show'
-            leftValue={'Hide'}
-            rightValue={'Show'}
-            onChange={onDisplayTooltipChange}
+          <SelectDropdown
+            selectOptions={tooltipAppearanceOptions}
+            selected={tooltipAppearance}
+            handleSelect={onDisplayTooltipChange}
           />
         </div>
       </div>

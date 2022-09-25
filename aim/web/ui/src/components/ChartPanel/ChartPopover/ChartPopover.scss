@@ -2,15 +2,19 @@
 
 .ChartPopover {
   pointer-events: none;
-  z-index: 5!important;
+  z-index: 5 !important;
   height: 200px; // To not block table scroll
+
+  &.pinnedPopover {
+    position: absolute !important;
+  }
 
   > *:first-of-type {
     height: 200px; // To not block table scroll
   }
 
   &__content {
-    transform: none!important;
+    transform: none !important;
     width: toRem(230px);
     max-height: toRem(250px);
     background: rgba(255, 255, 255, 0.78);
@@ -19,6 +23,13 @@
     border: $border-main;
     backdrop-filter: blur(3px);
     overflow: hidden;
+    &__pinnedToTop {
+      top: 0 !important;
+    }
+    &__pinnedToBottom {
+      bottom: 0 !important;
+      top: auto !important;
+    }
     &__active {
       background: $white;
     }

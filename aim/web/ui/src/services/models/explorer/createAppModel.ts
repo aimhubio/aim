@@ -314,7 +314,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   CONTROLS_DEFAULT_CONFIG.metrics.aggregationConfig.isEnabled,
               },
               tooltip: {
-                display: CONTROLS_DEFAULT_CONFIG.metrics.tooltip.display,
+                appearance: CONTROLS_DEFAULT_CONFIG.metrics.tooltip.appearance,
                 selectedFields:
                   CONTROLS_DEFAULT_CONFIG.metrics.tooltip.selectedFields,
               },
@@ -412,7 +412,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 chartIndex: null,
               },
               tooltip: {
-                display: CONTROLS_DEFAULT_CONFIG.params.tooltip.display,
+                appearance: CONTROLS_DEFAULT_CONFIG.params.tooltip.appearance,
                 selectedFields:
                   CONTROLS_DEFAULT_CONFIG.params.tooltip.selectedFields,
               },
@@ -433,7 +433,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 chartIndex: null,
               },
               tooltip: {
-                display: CONTROLS_DEFAULT_CONFIG.scatters.tooltip.display,
+                appearance: CONTROLS_DEFAULT_CONFIG.scatters.tooltip.appearance,
                 selectedFields:
                   CONTROLS_DEFAULT_CONFIG.scatters.tooltip.selectedFields,
               },

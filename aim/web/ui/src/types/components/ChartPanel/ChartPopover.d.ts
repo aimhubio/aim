@@ -5,6 +5,7 @@ import {
   IAlignmentConfig,
   IFocusedState,
   ITooltipContent,
+  TooltipAppearance,
 } from 'types/services/models/metrics/metricsAppModel';
 
 import { ChartTypeEnum } from 'utils/d3';
@@ -22,6 +23,7 @@ export interface IChartPopover {
   className?: string;
   containerNode?: HTMLDivElement | null;
   tooltipContent: ITooltipContent;
+  tooltipAppearance?: TooltipAppearance;
   focusedState: IFocusedState;
   chartType: ChartTypeEnum;
   alignmentConfig?: IAlignmentConfig;

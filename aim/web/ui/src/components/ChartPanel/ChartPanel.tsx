@@ -13,6 +13,7 @@ import {
   IActivePoint,
   ISyncHoverStateArgs,
 } from 'types/utils/d3/drawHoverAttributes';
+import { TooltipAppearance } from 'types/services/models/metrics/metricsAppModel.d';
 
 import { ChartTypeEnum } from 'utils/d3';
 
@@ -179,10 +180,12 @@ const ChartPanel = React.forwardRef(function ChartPanel(
                       props.data.length > 0 &&
                       !props.panelResizing &&
                       !props.zoom?.active &&
-                      (props.tooltip?.display || props.focusedState.active)
+                      (props.tooltip?.appearance !== TooltipAppearance.Hide ||
+                        props.focusedState.active)
                     }
                     chartType={props.chartType}
                     tooltipContent={props?.tooltip?.content || {}}
+                    tooltipAppearance={props?.tooltip?.appearance}
                     focusedState={props.focusedState}
                     alignmentConfig={props.alignmentConfig}
                     reCreatePopover={props.focusedState.active}
