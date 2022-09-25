@@ -3,9 +3,9 @@
 .HomeRight {
   display: flex;
   flex-direction: column;
-  width: 25%;
-  max-width: 285px;
+  width: 285px;
   background-color: #fafafb;
+  overflow: auto;
   &__title {
     margin-top: $space-md;
     padding: 0 $space-lg;

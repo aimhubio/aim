@@ -11,7 +11,7 @@
     flex-direction: column;
     margin-top: $space-lg;
     padding: 0 $space-lg $space-unit;
-    border-bottom: $border-main;
+    border-bottom: $border-dark-lighter;
     &__title {
       display: flex;
       margin-bottom: $space-sm;
@@ -53,7 +53,7 @@
     }
   }
   &__changelog {
-    border-bottom: $border-main;
+    border-bottom: $border-dark-lighter;
     &__title {
       padding: $space-sm $space-lg 0;
     }

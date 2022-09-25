@@ -47,6 +47,7 @@ function useReleaseNotes() {
         onChangelogContentScroll,
       );
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading, mounted]);
 
   function onChangelogContentScroll() {

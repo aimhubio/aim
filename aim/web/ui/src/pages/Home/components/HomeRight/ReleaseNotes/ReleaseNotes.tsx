@@ -5,6 +5,8 @@ import ReleaseNoteItem from 'components/ReleaseNoteItem/ReleaseNoteItem';
 
 import { AIM_VERSION } from 'config/config';
 
+import GuideLinks from '../GuideDocs/GuideDocs';
+
 import useReleaseNotes from './useReleaseNotes';
 
 import './ReleaseNotes.scss';
@@ -82,6 +84,7 @@ function ReleaseNotes(): React.FunctionComponentElement<React.ReactNode> {
               </div>
             </div>
           )}
+          <GuideLinks />
         </>
       )}
     </div>
