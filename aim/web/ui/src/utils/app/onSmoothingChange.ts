@@ -2,9 +2,9 @@ import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import * as analytics from 'services/analytics';
 
-import { IOnSmoothingChange } from 'types/pages/metrics/Metrics';
 import { IModel, State } from 'types/services/models/model';
 import { IAppModelConfig } from 'types/services/models/explorer/createAppModel';
+import { ISmoothing } from 'types/services/models/metrics/metricsAppModel';
 
 import { CurveEnum } from 'utils/d3';
 
@@ -14,7 +14,7 @@ export default function onSmoothingChange<M extends State>({
   appName,
   updateModelData,
 }: {
-  args: IOnSmoothingChange;
+  args: Partial<ISmoothing>;
   model: IModel<M>;
   appName: string;
   updateModelData: (
@@ -24,7 +24,13 @@ export default function onSmoothingChange<M extends State>({
 }): void {
   const configData = model?.getState()?.config;
   if (configData?.chart) {
-    configData.chart = { ...configData.chart, ...args };
+    configData.chart = {
+      ...configData.chart,
+      smoothing: {
+        ...configData.chart.smoothing,
+        ...args,
+      },
+    };
     updateModelData(configData, true);
   }
   if (args.curveInterpolation) {
@@ -40,8 +46,8 @@ export default function onSmoothingChange<M extends State>({
   } else {
     analytics.trackEvent(
       // @ts-ignore
-      `${ANALYTICS_EVENT_KEYS[appName].chart.controls.selectSmoothingOptions} to "${configData?.chart.smoothingAlgorithm}"`,
-      { smoothingFactor: args.smoothingFactor },
+      `${ANALYTICS_EVENT_KEYS[appName].chart.controls.selectSmoothingOptions} to "${configData?.chart.smoothing.algorithm}"`,
+      { smoothingFactor: configData?.chart.smoothing.factor },
     );
   }
 }

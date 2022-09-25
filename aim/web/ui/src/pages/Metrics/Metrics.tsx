@@ -31,7 +31,7 @@ import { AppNameEnum } from 'services/models/explorer';
 import { ILine } from 'types/components/LineChart/LineChart';
 import { IMetricProps } from 'types/pages/metrics/Metrics';
 
-import { ChartTypeEnum } from 'utils/d3';
+import { ChartTypeEnum, CurveEnum } from 'utils/d3';
 
 import MetricsBar from './components/MetricsBar/MetricsBar';
 import Controls from './components/Controls/Controls';
@@ -49,7 +49,9 @@ function Metrics(
       (chartData: ILine[], index: number) => ({
         axesScaleType: props.axesScaleType,
         axesScaleRange: props.axesScaleRange,
-        curveInterpolation: props.curveInterpolation,
+        curveInterpolation: props.smoothing.isApplied
+          ? props.smoothing.curveInterpolation
+          : CurveEnum.Linear,
         ignoreOutliers: props.ignoreOutliers,
         highlightMode: props.highlightMode,
         aggregatedData: props.aggregatedData?.filter(
@@ -65,7 +67,8 @@ function Metrics(
   }, [
     props.lineChartData,
     props.axesScaleType,
-    props.curveInterpolation,
+    props.smoothing.curveInterpolation,
+    props.smoothing.isApplied,
     props.ignoreOutliers,
     props.highlightMode,
     props.zoom,
@@ -176,9 +179,7 @@ function Metrics(
                             chartProps={chartProps}
                             selectOptions={props.groupingSelectOptions}
                             tooltip={props.tooltip}
-                            smoothingAlgorithm={props.smoothingAlgorithm}
-                            smoothingFactor={props.smoothingFactor}
-                            curveInterpolation={props.curveInterpolation}
+                            smoothing={props.smoothing}
                             densityType={props.densityType}
                             ignoreOutliers={props.ignoreOutliers}
                             zoom={props.zoom}
