@@ -3,8 +3,7 @@
 .HomeRight {
   display: flex;
   flex-direction: column;
-  width: 25%;
-  min-width: 285px;
+  width: 285px;
   background-color: #fafafb;
   overflow: auto;
   &__title {

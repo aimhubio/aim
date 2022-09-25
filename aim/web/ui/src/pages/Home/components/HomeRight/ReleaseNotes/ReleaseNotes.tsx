@@ -45,9 +45,9 @@ function ReleaseNotes(): React.FunctionComponentElement<React.ReactNode> {
             </div>
           </div>
           {`v${AIM_VERSION}` === changelogData[0]?.tagName ? null : (
-            <div className='ReleaseNotes__Changelog'>
+            <div className='ReleaseNotes__changelog'>
               <Text
-                className='ReleaseNotes__Changelog__title'
+                className='ReleaseNotes__changelog__title'
                 component='h4'
                 tint={100}
                 weight={700}
@@ -56,7 +56,7 @@ function ReleaseNotes(): React.FunctionComponentElement<React.ReactNode> {
               </Text>
               <div
                 ref={releaseNoteRef}
-                className='ReleaseNotes__Changelog__content'
+                className='ReleaseNotes__changelog__content'
               >
                 {changelogData.map((item) => {
                   return (
@@ -70,9 +70,9 @@ function ReleaseNotes(): React.FunctionComponentElement<React.ReactNode> {
                 })}
               </div>
               <div
-                className={`ReleaseNotes__Changelog__currentRelease ${
+                className={`ReleaseNotes__changelog__currentRelease ${
                   scrollShadow
-                    ? 'ReleaseNotes__Changelog__currentRelease__scroll'
+                    ? 'ReleaseNotes__changelog__currentRelease__scroll'
                     : ''
                 }`}
               >

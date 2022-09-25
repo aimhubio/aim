@@ -26,6 +26,10 @@ function useReleaseNotes() {
     fetchCurrentRelease();
     return () => {
       releaseNotesEngine.releasesState.destroy();
+      releaseNoteRef?.current?.removeEventListener(
+        'scroll',
+        onChangelogContentScroll,
+      );
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -43,18 +47,18 @@ function useReleaseNotes() {
         onChangelogContentScroll,
       );
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading, mounted]);
 
   function onChangelogContentScroll() {
-    if (
+    const hasScrollShadow: boolean =
       releaseNoteRef!.current!.scrollTop + CHANGELOG_CONTENT_HEIGHT <
-      releaseNoteRef!.current!.scrollHeight
-    ) {
-      setScrollShadow(true);
-    } else {
-      setScrollShadow(false);
+      releaseNoteRef!.current!.scrollHeight;
+    if (hasScrollShadow !== scrollShadow) {
+      setScrollShadow(!!hasScrollShadow);
     }
   }
+
   React.useEffect(() => {
     if (releaseNotesStore.data?.length) {
       const currentRelease: IReleaseNote | undefined =
