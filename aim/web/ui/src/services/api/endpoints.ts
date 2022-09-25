@@ -34,8 +34,9 @@ const ENDPOINTS = {
     DELETE: '',
   },
   RELEASE_NOTES: {
-    BASE: 'api.github.com/repos/aimhubio/aim/releases',
+    BASE: 'https://api.github.com/repos/aimhubio/aim/releases',
     GET: '',
+    GET_BY_TAG_NAME: 'tags',
   },
 };
 
