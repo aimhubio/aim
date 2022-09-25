@@ -67,22 +67,19 @@
   width: 0.6875rem;
   height: 100%;
   position: absolute;
-  left: -0.8125rem;
+  left: -0.75rem;
   display: flex;
   align-items: center;
   justify-content: center;
 
   .icon-arrow-left {
-    opacity: 0;
-    font-size: 0.45rem;
     transition: all 0.18s ease-out;
-    color: $pico-30;
+    color: $pico-70;
   }
 }
 
 .Controls__anchor__arrow--opened {
   .icon-arrow-left {
-    opacity: 1;
     transform: rotate(180deg);
     color: $primary-color;
   }
