@@ -32,6 +32,18 @@ class FileSystemInspector:
     }
     warned_devices: Set[int] = set()
 
+    FORCE_USE_FILELOCK = None
+
+    @classmethod
+    def force_use_filelock(cls) -> bool:
+        if cls.FORCE_USE_FILELOCK is not None:
+            return cls.FORCE_USE_FILELOCK
+
+        from aim.sdk.configs import AIM_FORCE_USE_FILELOCK
+        cls.FORCE_USE_FILELOCK = os.environ.get(AIM_FORCE_USE_FILELOCK) is not None
+
+        return cls.FORCE_USE_FILELOCK
+
     @classmethod
     def _warn_only_once(
         cls,
@@ -141,10 +153,8 @@ def AutoFileLock(
         A timeout of 0 means, that there is exactly one attempt to acquire the
         file lock.
     """
-    from aim.sdk.configs import AIM_USE_FILELOCK_ONLY
 
-    if os.environ.get(AIM_USE_FILELOCK_ONLY):
-        # fall back to old lock functionality
+    if FileSystemInspector.force_use_filelock():
         return FileLock(lock_file, timeout)
 
     if not FileSystemInspector.needs_soft_lock(lock_file):
