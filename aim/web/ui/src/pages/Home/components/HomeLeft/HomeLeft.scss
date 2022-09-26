@@ -6,6 +6,8 @@
   min-width: 310px;
   width: 310px;
   background-color: $pico-2;
+  overflow: auto;
+  height: 100vh;
   &__title {
     padding: $space-unit;
   }
