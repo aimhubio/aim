@@ -1,10 +1,10 @@
 import React, { memo } from 'react';
-import ReactJson from 'react-json-view';
 import _ from 'lodash-es';
 
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import DictVisualizer from 'components/kit/DictVisualizer';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
@@ -30,11 +30,7 @@ function RunDetailParamsTab({
         {!_.isEmpty(runParams) ? (
           <div className='RunDetailParamsTabWrapper'>
             <div className='RunDetailParamsTab'>
-              <ReactJson
-                name={false}
-                theme='bright:inverted'
-                src={_.omit(runParams, '__system_params')}
-              />
+              <DictVisualizer src={_.omit(runParams, '__system_params')} />
             </div>
           </div>
         ) : (

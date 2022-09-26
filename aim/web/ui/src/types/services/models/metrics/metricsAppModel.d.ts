@@ -20,8 +20,9 @@ import {
   AggregationAreaMethods,
   AggregationLineMethods,
 } from 'utils/aggregateGroupData';
-import { AlignmentOptionsEnum, ZoomEnum } from 'utils/d3';
+import { AlignmentOptionsEnum, CurveEnum, ZoomEnum } from 'utils/d3';
 import { IRequestProgress } from 'utils/app/setRequestProgress';
+import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 
 import { IMetric } from './metricModel';
 import { IMetricTrace, IRun, ISequence } from './runModel';
@@ -244,4 +245,11 @@ export interface IAlignMetricsDataParams {
       slice: number[];
     }[];
   }[];
+}
+
+export interface ISmoothing {
+  algorithm: SmoothingAlgorithmEnum;
+  factor: number;
+  curveInterpolation: CurveEnum;
+  isApplied: boolean;
 }

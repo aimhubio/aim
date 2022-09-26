@@ -6,11 +6,10 @@ import {
 import { IAxisScale } from 'types/utils/d3/getAxisScale';
 
 import { AggregationAreaMethods } from 'utils/aggregateGroupData';
+import { CurveEnum, HighlightEnum } from 'utils/d3';
 
 import lineGenerator from './lineGenerator';
 import areaGenerator from './areaGenerator';
-
-import { CurveEnum, HighlightEnum } from './';
 
 function drawLines(args: IDrawLinesArgs): void {
   const {
