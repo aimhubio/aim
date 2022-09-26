@@ -28,7 +28,7 @@ function ReleaseNotes(): React.FunctionComponentElement<React.ReactNode> {
         <>
           <div className='ReleaseNotes__latest'>
             <div className='ReleaseNotes__latest__title'>
-              <Text component='h4' tint={100} weight={700}>
+              <Text component='h4' tint={100} weight={700} size={14}>
                 Aim {changelogData?.[0]?.tagName}
               </Text>
               <span>New</span>
@@ -51,6 +51,7 @@ function ReleaseNotes(): React.FunctionComponentElement<React.ReactNode> {
                 component='h4'
                 tint={100}
                 weight={700}
+                size={14}
               >
                 Changelog
               </Text>

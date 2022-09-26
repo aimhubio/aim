@@ -12,4 +12,5 @@ export interface IDataListProps {
   height?: string;
   tableClassName?: string;
   toolbarItems?: React.FunctionComponentElement<React.ReactNode>[];
+  disableMatchBar?: boolean;
 }
