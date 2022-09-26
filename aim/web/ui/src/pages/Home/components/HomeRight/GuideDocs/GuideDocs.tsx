@@ -44,6 +44,7 @@ function GuideDocs(): React.FunctionComponentElement<React.ReactNode> {
         component='h4'
         tint={100}
         weight={700}
+        size={14}
       >
         Guide
       </Text>

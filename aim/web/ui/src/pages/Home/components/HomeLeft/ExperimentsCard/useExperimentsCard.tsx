@@ -80,11 +80,11 @@ function useExperimentsCard() {
             checkedIcon={
               tableData.length === Object.keys(selectedRows)?.length ? (
                 <span className='selectedSelectIcon'>
-                  <Icon name='check' fontSize={9} />
+                  <Icon name='check' fontSize={8} />
                 </span>
               ) : (
                 <span className='partiallySelectedSelectIcon'>
-                  <Icon name='partially-selected' fontSize={16} />
+                  <Icon name='partially-selected' fontSize={12} />
                 </span>
               )
             }
@@ -92,7 +92,7 @@ function useExperimentsCard() {
             checked={!!selectedRows.length}
           />
         ),
-        width: '65px',
+        width: '20px',
         cellRenderer: ({ cellData }: any) => {
           return (
             <Checkbox
@@ -103,7 +103,7 @@ function useExperimentsCard() {
               checked={selectedRows.includes(cellData)}
               checkedIcon={
                 <span className='selectedSelectIcon'>
-                  <Icon name='check' fontSize={9} />
+                  <Icon name='check' fontSize={8} />
                 </span>
               }
               onClick={() => onRowSelect(cellData)}
@@ -115,7 +115,7 @@ function useExperimentsCard() {
         dataKey: 'name',
         key: 'name',
         title: (
-          <Text weight={600} size={14} tint={100}>
+          <Text weight={600} size={12} tint={100}>
             Experiment
             <Text
               weight={600}
@@ -127,16 +127,37 @@ function useExperimentsCard() {
             </Text>
           </Text>
         ),
-        width: 'calc(100% - 135px)',
-        cellRenderer: ({ cellData }: any) => <p title={cellData}>{cellData}</p>,
+        width: 'calc(100% - 50px)',
+        style: { paddingLeft: 10, paddingRight: 12 },
+        cellRenderer: ({ cellData }: any) => (
+          <Text component='p' size={12} title={cellData} tint={100}>
+            {cellData}
+          </Text>
+        ),
       },
       {
         dataKey: 'run_count',
         key: 'run_count',
-        title: 'Runs',
+        title: (
+          <Text style={{ paddingRight: 12 }} weight={600} size={12} tint={100}>
+            Runs
+          </Text>
+        ),
         flexGrow: 1,
-        width: '70px',
-        cellRenderer: ({ cellData }: any) => <p title={cellData}>{cellData}</p>,
+        width: '46px',
+        textAlign: 'right',
+        style: { textAlign: 'right' },
+        cellRenderer: ({ cellData }: any) => (
+          <Text
+            style={{ textAlign: 'right', width: '100%', paddingRight: 12 }}
+            component='p'
+            size={12}
+            tint={100}
+            title={cellData}
+          >
+            {cellData}
+          </Text>
+        ),
       },
     ],
     [tableData?.length, onRowSelect, selectedRows],
