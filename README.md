@@ -334,7 +334,7 @@ The high-level features we are going to work on the next few months
   - [ ] Integration with fast.ai (Start: _Aug 22 2022_)
   - [ ] Aim SDK low-level interface (Start: _Aug 22 2022_)
   - [ ] Project overview page (Start: _Sep 1 2022_)
-  - [ ] Remote tracking server horiztonal scaling (Start: _Sep 1 2022_)
+  - [ ] Remote tracking server scaling (Start: _Sep 1 2022_)
 
 ### To Do
 
