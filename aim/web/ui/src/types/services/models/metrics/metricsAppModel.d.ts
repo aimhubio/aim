@@ -182,12 +182,6 @@ export interface IMetricTableRowData {
   [key: string]: any;
 }
 
-export interface IGetDataAsLinesProps {
-  smoothingFactor?: number;
-  smoothingAlgorithm?: string;
-  collection?: IMetric[][];
-}
-
 export interface IOnGroupingSelectChangeParams {
   groupName: GroupNameEnum;
   list: string[];
