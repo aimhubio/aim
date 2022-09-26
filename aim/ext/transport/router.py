@@ -60,7 +60,7 @@ class RemoteRouterServicer(remote_router_pb2_grpc.RemoteRouterServiceServicer):
         try:
             worker = self.connect_client(request.client_uri)
             return rpc_messages.ClientConnectResponse(address=worker.address,
-                                                  status=rpc_messages.ClientConnectResponse.Status.OK)
+                                                      status=rpc_messages.ClientConnectResponse.Status.OK)
         except Exception as e:
             return rpc_messages.ClientConnectRequest(status=rpc_messages.ClientConnectResponse.Status.ERROR,
                                                      exception=build_exception(e))
@@ -120,7 +120,7 @@ def run_router(host, port, workers=1, ssl_keyfile=None, ssl_certfile=None):
         router.add_insecure_port(f'{host}:{port}')
 
     # start workers
-    for i in range(1, workers+1):
+    for i in range(1, workers + 1):
         worker_port = port + i
         worker = RemoteWorker(host, worker_port, ssl_keyfile, ssl_certfile)
         worker.start()
