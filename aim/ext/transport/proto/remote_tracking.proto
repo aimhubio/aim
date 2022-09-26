@@ -21,8 +21,9 @@ message ClientResourceCleanupResponse {
 
 message ResourceRequest {
     string resource_type = 1;
-    string client_uri = 2;
-    bytes args = 3;
+    string handler = 2;
+    string client_uri = 3;
+    bytes args = 4;
 }
 
 message ResourceResponse {

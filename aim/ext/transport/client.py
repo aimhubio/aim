@@ -2,6 +2,7 @@ import logging
 import os
 import threading
 import uuid
+import weakref
 from collections import defaultdict
 from copy import deepcopy
 from typing import Tuple
@@ -24,7 +25,7 @@ from aim.storage.treeutils import encode_tree, decode_tree
 
 
 DEFAULT_RETRY_INTERVAL = 0.1  # 100 ms
-DEFAULT_RETRY_COUNT = 1
+DEFAULT_RETRY_COUNT = 5
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +44,8 @@ class Client:
 
         self._id = str(uuid.uuid4())
         self._remote_path = remote_path
+
+        self._resource_pool = weakref.WeakValueDictionary()
 
         ssl_certfile = os.getenv(AIM_CLIENT_SSL_CERTIFICATES_FILE)
         msg_max_size = int(os.getenv(AIM_RT_MAX_MESSAGE_SIZE, AIM_RT_DEFAULT_MAX_MESSAGE_SIZE))
@@ -79,6 +82,16 @@ class Client:
         self._heartbeat_sender = RPCHeartbeatSender(self)
         self._heartbeat_sender.start()
         self._thread_local.atomic_instructions = None
+
+    def reinitialize_resource(self, handler):
+        # write some request to get a resource on server side with an already given handler
+        resource = self._resource_pool[handler]
+        self.get_resource_handler(resource, resource.resource_type, handler, resource.init_args)
+
+    def _reinitialize_all_resources(self):
+        handlers_list = list(self._resource_pool.keys())
+        for handler in handlers_list:
+            self.reinitialize_resource(handler)
 
     def _check_remote_version_compatibility(self):
         from aim.__version__ import __version__ as client_version
@@ -132,6 +145,18 @@ class Client:
         response = self._remote_router_stub.client_heartbeat(request)
         return response
 
+    def client_reconnect(self, ):
+        request = router_messages.ClientReConnectRequest(
+            client_uri=self.uri
+        )
+        response = self._remote_router_stub.client_re_connect(request)
+        if response.status == router_messages.ClientReConnectRequest.Status.ERROR:
+            raise_exception(response.exception)
+
+        self._reinitialize_all_resources()
+
+        return response
+
     def client_disconnect(self,):
         request = router_messages.ClientDisconnectRequest(
             client_uri=self.uri
@@ -149,15 +174,19 @@ class Client:
             raise_exception(response.exception)
         return response.version
 
-    def get_resource_handler(self, resource_type, args=()):
+    def get_resource_handler(self, resource, resource_type, handler='', args=()):
         request = rpc_messages.ResourceRequest(
             resource_type=resource_type,
+            handler=handler,
             client_uri=self.uri,
             args=args
         )
         response = self.remote.get_resource(request)
         if response.status == rpc_messages.ResourceResponse.Status.ERROR:
             raise_exception(response.exception)
+
+        self._resource_pool[response.handler] = resource
+
         return response.handler
 
     def release_resource(self, resource_handler):
@@ -168,6 +197,8 @@ class Client:
         response = self.remote.release_resource(request)
         if response.status == rpc_messages.ReleaseResourceResponse.Status.ERROR:
             raise_exception(response.exception)
+
+        del self._resource_pool[response.handler]
 
     def run_instruction(self, queue_id, resource, method, args=(), is_write_only=False):
         args = deepcopy(args)

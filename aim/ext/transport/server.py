@@ -8,9 +8,17 @@ from concurrent import futures
 import aim.ext.transport.remote_tracking_pb2 as rpc_messages
 import aim.ext.transport.remote_tracking_pb2_grpc as remote_tracking_pb2_grpc
 
-from aim.ext.transport.message_utils import pack_stream, unpack_bytes, unpack_stream, build_exception, ResourceObject
-from aim.ext.transport.handlers import get_tree, get_structured_run, get_repo
 from aim.ext.transport.config import AIM_RT_MAX_MESSAGE_SIZE, AIM_RT_DEFAULT_MAX_MESSAGE_SIZE
+from aim.ext.transport.handlers import get_tree, get_structured_run, get_repo
+from aim.ext.transport.message_utils import (
+    pack_stream,
+    unpack_bytes,
+    unpack_stream,
+    build_exception,
+    ResourceObject,
+    UnauthorizedRequestError
+)
+
 
 from aim.storage.treeutils import encode_tree, decode_tree
 
@@ -38,10 +46,6 @@ class ResourceTypeRegistry:
         return self._registry[type_name]
 
 
-class UnauthorizedRequestError(RuntimeError):
-    pass
-
-
 class RemoteTrackingServicer(remote_tracking_pb2_grpc.RemoteTrackingServiceServicer):
     resource_pool = dict()
     registry = ResourceTypeRegistry()
@@ -59,7 +63,11 @@ class RemoteTrackingServicer(remote_tracking_pb2_grpc.RemoteTrackingServiceServi
         return rpc_messages.ResourceResponse(status=rpc_messages.ResourceResponse.Status.OK)
 
     def get_resource(self, request: rpc_messages.ResourceRequest, _context):
-        resource_handler = _get_handler()
+        if not request.handler:
+            resource_handler = _get_handler()
+        else:
+            resource_handler = request.handler
+
         try:
             resource_cls = self.registry[request.resource_type]
             if len(request.args) > 0:
@@ -191,7 +199,7 @@ class RemoteTrackingServicer(remote_tracking_pb2_grpc.RemoteTrackingServiceServi
     def _verify_resource_handler(self, resource_handler, client_uri):
         res_info = self.resource_pool.get(resource_handler, None)
         if not res_info or res_info[0] != client_uri:
-            raise UnauthorizedRequestError()
+            raise UnauthorizedRequestError(resource_handler)
 
 
 def run_server(host, port, router_address, ssl_keyfile=None, ssl_certfile=None):
