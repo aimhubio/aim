@@ -8,28 +8,42 @@ import ListItem from 'components/kit/ListItem/ListItem';
 
 import { BookmarkIconType } from 'pages/Bookmarks/components/BookmarkCard/BookmarkCard';
 
-import useHomeBookmarks from './useHomeBookmarks';
+import useDashboardBookmarks from './useDashboardBookmarks';
 
-import './HomeBookmarks.scss';
+import './DashboardBookmarks.scss';
 
-function HomeBookmarks() {
-  const { bookmarksStore, handleClick } = useHomeBookmarks();
+function DashboardBookmarks() {
+  const { dashboardBookmarksStore, handleClick } = useDashboardBookmarks();
 
   return (
-    <div className='HomeBookmarks'>
-      <Text size={18}>Bookmarks</Text>
-      <div className='HomeBookmarks__list'>
-        {bookmarksStore.data?.map((dashboard: IDashboardData) => (
+    <div className='DashboardBookmarks'>
+      <Text
+        className='DashboardBookmarks__title'
+        size={14}
+        weight={700}
+        tint={100}
+        component='h3'
+      >
+        Bookmarks
+      </Text>
+      <div className='DashboardBookmarks__list'>
+        {dashboardBookmarksStore.data?.map((dashboard: IDashboardData) => (
           <Tooltip
             placement='bottom-start'
             title={dashboard.description}
             key={dashboard.id}
           >
             <div>
-              <ListItem className='HomeBookmarks__list__ListItem'>
-                <Icon name={BookmarkIconType[dashboard.app_type].name} box />
+              <ListItem
+                size='small'
+                className='DashboardBookmarks__list__ListItem'
+              >
+                <Icon
+                  fontSize={12}
+                  name={BookmarkIconType[dashboard.app_type].name}
+                />
                 <Text
-                  className='HomeBookmarks__list__ListItem__Text'
+                  className='DashboardBookmarks__list__ListItem__Text'
                   onClick={(e) => handleClick(e, dashboard)}
                   size={14}
                   tint={100}
@@ -38,7 +52,6 @@ function HomeBookmarks() {
                 </Text>
                 <div>
                   <Icon
-                    box
                     fontSize={12}
                     onClick={(e) => handleClick(e, dashboard, true)}
                     name='new-tab'
@@ -53,4 +66,4 @@ function HomeBookmarks() {
   );
 }
 
-export default React.memo(HomeBookmarks);
+export default React.memo(DashboardBookmarks);

@@ -3,7 +3,7 @@ import React from 'react';
 import { Text } from 'components/kit';
 
 import ExperimentsCard from './ExperimentsCard';
-import HomeBookmarks from './HomeBookmarks/HomeBookmarks';
+import HomeBookmarks from './DashboardBookmarks/DashboardBookmarks';
 import QuickLinks from './QuickLinks/QuickLinks';
 import TagsCard from './TagsCard/TagsCard';
 
