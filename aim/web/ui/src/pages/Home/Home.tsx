@@ -6,6 +6,7 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import { IHomeProps } from 'types/pages/home/Home';
 
 import Activity from './components/Activity/Activity';
+import ProjectContributions from './components/ProjectContributions/ProjectContributions';
 import HomeLeft from './components/HomeLeft/HomeLeft';
 import HomeRight from './components/HomeRight/HomeRight';
 import HomeMiddle from './components/HomeMiddle/HomeMiddle';
@@ -25,7 +26,8 @@ function Home({
         <HomeLeft />
         <div className='Home__middle'>
           <div className='Home__Activity__container'>
-            <Activity activityData={activityData} />
+            {/* <Activity activityData={activityData} /> */}
+            <ProjectContributions />
             <HomeMiddle />
           </div>
         </div>

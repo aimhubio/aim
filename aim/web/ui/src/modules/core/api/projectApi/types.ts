@@ -106,11 +106,11 @@ export type GetParamsResult = {
 };
 
 /**
- * type GetActivityResult
+ * type GetProjectContributionsResult
  * The response type of GET /projects/activity
  * This data is used by autosuggestions etc.
  */
-export type GetActivityResult = {
+export type GetProjectContributionsResult = {
   /**
    * Total number of experiments in a single repo/storage/project (.aim directory)
    */

@@ -1,3 +1,5 @@
+@use 'src/styles/abstracts' as *;
+
 .Visualizer {
   width: 100%;
   height: 100%;
@@ -7,6 +9,6 @@
   .VisualizerContainer {
     width: 100%;
     display: flex;
-    height: calc(100% - 3rem);
+    height: calc(100% - 5rem);
   }
 }

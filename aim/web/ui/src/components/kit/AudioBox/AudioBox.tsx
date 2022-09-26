@@ -2,9 +2,7 @@ import React from 'react';
 import moment from 'moment';
 import AudioPlayer from 'material-ui-audio-player';
 
-import { CircularProgress } from '@material-ui/core';
-
-import { Button, Icon, Slider, Text } from 'components/kit';
+import { Button, Icon, Slider, Spinner, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { BATCH_COLLECT_DELAY } from 'config/mediaConfigs/mediaConfigs';
@@ -334,10 +332,11 @@ function AudioBox({
                 src={src}
               />
               {processing ? (
-                <CircularProgress
+                <Spinner
                   className='Icon__container'
                   size={12}
-                  thickness={4}
+                  color='#414b6d'
+                  thickness={2}
                 />
               ) : (
                 <Icon name={isPlaying ? 'pause' : 'play'} />
@@ -348,10 +347,11 @@ function AudioBox({
           <AudioBoxVolume audio={audio} />
           <Button withOnlyIcon size='small' onClick={onDownload}>
             {processing ? (
-              <CircularProgress
+              <Spinner
                 className='Icon__container'
                 size={12}
-                thickness={4}
+                color='#414b6d'
+                thickness={2}
               />
             ) : (
               <Icon name='download' />

@@ -173,6 +173,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
                   <ChartPopover
                     containerNode={containerRef.current}
                     activePointRect={activePointRect}
+                    onRunsTagsChange={props.onRunsTagsChange}
                     open={
                       props.resizeMode !== ResizeModeEnum.MaxHeight &&
                       props.data.length > 0 &&

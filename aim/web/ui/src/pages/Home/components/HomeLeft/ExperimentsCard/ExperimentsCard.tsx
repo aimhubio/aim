@@ -3,8 +3,6 @@ import React from 'react';
 import DataList from 'components/kit/DataList';
 import { Text } from 'components/kit';
 
-import { RowHeightSize } from 'config/table/tableConfigs';
-
 import CompareSelectedRunsPopover from 'pages/Metrics/components/Table/CompareSelectedRunsPopover';
 
 import { AppNameEnum } from 'services/models/explorer';
@@ -24,7 +22,13 @@ function ExperimentsCard() {
   } = useExperimentsCard();
   return (
     <div className='ExperimentsCard'>
-      <Text className='ExperimentsCard__title' component='h3' size={18}>
+      <Text
+        className='ExperimentsCard__title'
+        component='h3'
+        size={14}
+        weight={700}
+        tint={100}
+      >
         Experiments
       </Text>
       <DataList
@@ -32,9 +36,9 @@ function ExperimentsCard() {
         tableColumns={tableColumns}
         tableData={tableData}
         isLoading={experimentsStore.loading}
-        height='350px'
-        rowHeight={RowHeightSize.sm}
+        height={Math.min(238, tableData.length * 24 + 56) + 'px'}
         searchableKeys={['name', 'run_count']}
+        rowHeight={24}
         illustrationConfig={{
           size: 'large',
           title: 'No Results',
@@ -47,6 +51,7 @@ function ExperimentsCard() {
             disabled={!selectedRows.length}
           />,
         ]}
+        disableMatchBar={true}
       />
     </div>
   );

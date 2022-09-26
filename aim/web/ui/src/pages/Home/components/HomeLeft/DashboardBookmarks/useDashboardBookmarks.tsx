@@ -4,18 +4,20 @@ import { useHistory } from 'react-router-dom';
 import { IResourceState } from 'modules/core/utils/createResource';
 import { IDashboardData } from 'modules/core/api/dashboardsApi';
 
-import createBookmarksEngine from './HomeBookmarksStore';
+import createBookmarksEngine from './DashboardBookmarksStore';
 
-function useHomeBookmarks() {
+function useDashboardBookmarks() {
   const history = useHistory();
-  const { current: bookmarksEngine } = React.useRef(createBookmarksEngine);
-  const bookmarksStore: IResourceState<IDashboardData> =
-    bookmarksEngine.bookmarksState((state) => state);
+  const { current: dashboardBookmarksEngine } = React.useRef(
+    createBookmarksEngine,
+  );
+  const dashboardBookmarksStore: IResourceState<IDashboardData[]> =
+    dashboardBookmarksEngine.dashboardBookmarksState((state) => state);
 
   React.useEffect(() => {
-    bookmarksEngine.fetchBookmarks();
+    dashboardBookmarksEngine.fetchDashboardBookmarks();
     return () => {
-      bookmarksEngine.bookmarksState.destroy();
+      dashboardBookmarksEngine.dashboardBookmarksState.destroy();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -44,7 +46,7 @@ function useHomeBookmarks() {
     [history],
   );
 
-  return { handleClick, bookmarksStore };
+  return { handleClick, dashboardBookmarksStore };
 }
 
-export default useHomeBookmarks;
+export default useDashboardBookmarks;

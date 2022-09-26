@@ -1,11 +1,10 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import { Tooltip } from '@material-ui/core';
 import { IBaseComponentProps } from 'modules/BaseExplorer/types';
 
 import ControlPopover from 'components/ControlPopover/ControlPopover';
-import { Icon } from 'components/kit';
+import { Button, Icon, Text } from 'components/kit';
 
 import BoxPropertiesPopover from './Popover';
 
@@ -25,24 +24,30 @@ function BoxProperties(props: IBoxPropertiesProps) {
   const boxProperties: IBoxConfigState = useStore(boxSelector);
   return (
     <ControlPopover
-      title='Box properties'
+      title='Configure box size'
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       anchor={({ onAnchorClick, opened }) => (
-        <Tooltip title='Box properties'>
-          <div
-            onClick={onAnchorClick}
-            className={classNames('Controls__anchor', {
+        <Button
+          size='xSmall'
+          onClick={onAnchorClick}
+          className={classNames('Control__anchor', {
+            active: opened || !boxProperties.isInitial,
+            outlined: !opened && !boxProperties.isInitial,
+          })}
+        >
+          <Icon
+            name='box-settings'
+            className={classNames('Control__anchor__icon', {
               active: opened || !boxProperties.isInitial,
-              outlined: !opened && !boxProperties.isInitial,
             })}
-          >
-            <Icon
-              className={classNames('Controls__icon', {
-                active: opened || !boxProperties.isInitial,
-              })}
-              name='box-settings'
-            />
-          </div>
-        </Tooltip>
+          />
+          <Text className='Control__anchor__label'>Box size</Text>
+          <Icon
+            name='arrow-down-contained'
+            className={classNames('Control__anchor__arrow', { opened })}
+            fontSize={6}
+          />
+        </Button>
       )}
       component={
         <BoxPropertiesPopover

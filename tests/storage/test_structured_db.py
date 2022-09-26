@@ -1,5 +1,6 @@
 from tests.base import PrefilledDataTestBase
 
+from aim.sdk.utils import generate_run_hash
 
 class TestStructuredDatabase(PrefilledDataTestBase):
     def test_entity_chaining_syntax(self):
@@ -13,12 +14,13 @@ class TestStructuredDatabase(PrefilledDataTestBase):
     def test_entity_relations(self):
         with self.repo.structured_db as db:
             db.create_experiment('my experiment')
-            for run in db.runs():
+            runs = [db.create_run(generate_run_hash()) for _ in range(10)]
+            for run in runs:
                 run.experiment = 'my experiment'
 
-            for run in db.runs():
-                self.assertEqual('my experiment', run.experiment_obj.name)
-                self.assertEqual(10, len(run.experiment_obj.runs))
+        for run in runs:
+            self.assertEqual('my experiment', run.experiment_obj.name)
+            self.assertEqual(10, len(run.experiment_obj.runs))
 
     def test_context_manager_nesting(self):
         with self.repo.structured_db as db1:

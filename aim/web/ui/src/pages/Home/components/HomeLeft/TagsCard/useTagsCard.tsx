@@ -1,9 +1,9 @@
 import React from 'react';
 import _ from 'lodash-es';
 
-import { IExperimentData } from 'modules/core/api/experimentsApi';
 import { IResourceState } from 'modules/core/utils/createResource';
 import { Checkbox } from '@material-ui/core';
+import { ITagData } from 'modules/core/api/tagsApi/types';
 
 import { Badge, Icon, Text } from 'components/kit';
 
@@ -13,7 +13,7 @@ function useTagsCard() {
   const tableRef = React.useRef<any>(null);
   const [selectedRows, setSelectedRows] = React.useState<string[]>([]);
   const { current: tagsEngine } = React.useRef(createTagsEngine);
-  const tagsStore: IResourceState<IExperimentData> = tagsEngine.tagsState(
+  const tagsStore: IResourceState<ITagData[]> = tagsEngine.tagsState(
     (state) => state,
   );
 
@@ -29,10 +29,10 @@ function useTagsCard() {
   const tableData = React.useMemo(() => {
     if (tagsStore.data) {
       return tagsStore.data.map(
-        ({ name, archived, run_count, color }: any, index: number) => {
+        ({ name, archived, run_count, color }: ITagData) => {
           return {
             key: name,
-            name: { name, color },
+            name: { label: name, color },
             archived,
             run_count,
             id: name,
@@ -54,7 +54,7 @@ function useTagsCard() {
       } else if (selectedRows.length) {
         setSelectedRows([]);
       } else {
-        setSelectedRows(tableData.map(({ name }: any) => name));
+        setSelectedRows(tableData.map(({ name }: any) => name.label));
       }
     },
     [selectedRows, tableData],
@@ -75,11 +75,11 @@ function useTagsCard() {
             checkedIcon={
               tableData.length === Object.keys(selectedRows)?.length ? (
                 <span className='selectedSelectIcon'>
-                  <Icon name='check' fontSize={9} />
+                  <Icon name='check' fontSize={8} />
                 </span>
               ) : (
                 <span className='partiallySelectedSelectIcon'>
-                  <Icon name='partially-selected' fontSize={16} />
+                  <Icon name='partially-selected' fontSize={12} />
                 </span>
               )
             }
@@ -87,7 +87,7 @@ function useTagsCard() {
             checked={!!selectedRows.length}
           />
         ),
-        width: '65px',
+        width: '20px',
         cellRenderer: ({ cellData }: any) => {
           return (
             <Checkbox
@@ -98,7 +98,7 @@ function useTagsCard() {
               checked={selectedRows.includes(cellData)}
               checkedIcon={
                 <span className='selectedSelectIcon'>
-                  <Icon name='check' fontSize={9} />
+                  <Icon name='check' fontSize={8} />
                 </span>
               }
               onClick={() => onRowSelect(cellData)}
@@ -110,7 +110,7 @@ function useTagsCard() {
         dataKey: 'name',
         key: 'name',
         title: (
-          <Text weight={600} size={14} tint={100}>
+          <Text weight={600} size={12} tint={100}>
             Name
             <Text
               weight={600}
@@ -122,14 +122,10 @@ function useTagsCard() {
             </Text>
           </Text>
         ),
-        width: 'calc(100% - 135px)',
-        cellRenderer: ({ cellData }: any) => (
-          <Badge
-            size='xSmall'
-            title={cellData.name}
-            label={cellData.name}
-            color={cellData.color}
-          />
+        width: 'calc(100% - 50px)',
+        style: { paddingLeft: 10, paddingRight: 12 },
+        cellRenderer: ({ cellData: { label, color } }: any) => (
+          <Badge label={label} color={color} size='xSmall' />
         ),
       },
       {
@@ -137,8 +133,19 @@ function useTagsCard() {
         key: 'run_count',
         title: 'Runs',
         flexGrow: 1,
-        width: '70px',
-        cellRenderer: ({ cellData }: any) => <p title={cellData}>{cellData}</p>,
+        style: { textAlign: 'right' },
+        width: '46px',
+        cellRenderer: ({ cellData }: any) => (
+          <Text
+            style={{ textAlign: 'right', width: '100%', paddingRight: 12 }}
+            component='p'
+            size={12}
+            tint={100}
+            title={cellData}
+          >
+            {cellData}
+          </Text>
+        ),
       },
     ],
     [tableData?.length, onRowSelect, selectedRows],

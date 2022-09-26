@@ -3,7 +3,8 @@
 .Visualizations {
   display: flex;
   flex: 1;
-  max-height: calc(100% - 8.25rem);
+  flex-direction: column;
+  overflow: hidden;
   position: relative;
   .ProgressBar__container {
     padding-bottom: 6 * $space-unit;

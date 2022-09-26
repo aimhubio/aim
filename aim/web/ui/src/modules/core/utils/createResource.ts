@@ -2,14 +2,14 @@ import { RequestOptions } from 'https';
 import create from 'zustand';
 
 export interface IResourceState<T> {
-  data: T[];
+  data: T | null;
   loading: boolean;
   error: any;
 }
 
 function createResource<T, GetterArgs = RequestOptions>(getter: any) {
   const state = create<IResourceState<T>>(() => ({
-    data: [],
+    data: null,
     loading: true,
     error: null,
   }));

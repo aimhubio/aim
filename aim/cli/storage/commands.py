@@ -1,12 +1,13 @@
 import click
+import collections
 import os
 from tqdm import tqdm
 
-from aim.cli.runs.utils import match_runs
+from aim.cli.runs.utils import list_repo_runs, match_runs
 from aim.cli.upgrade.utils import convert_2to3
 
 from aim.sdk.maintenance_run import MaintenanceRun
-from aim.sdk.utils import backup_run, restore_run_backup
+from aim.sdk.utils import backup_run, restore_run_backup, clean_repo_path
 from aim.sdk.repo import Repo
 
 
@@ -113,3 +114,69 @@ def restore_runs(ctx, hashes):
     else:
         click.echo('Something went wrong while restoring runs. Remaining runs are:', err=True)
         click.secho('\t'.join(remaining_runs), fg='yellow')
+
+
+@storage.command(name='prune')
+@click.pass_context
+def prune(ctx):
+    """Remove dangling/orphan params/sequences with no referring runs."""
+
+    def flatten(d, parent_path=None):
+        if parent_path and not isinstance(parent_path, tuple):
+            parent_path = (parent_path, )
+
+        all_paths = set()
+        for k, v in d.items():
+            if k == '__example_type__':
+                continue
+
+            new_path = parent_path + (k,) if parent_path else (k, )
+            all_paths.add(new_path)
+            if isinstance(v, collections.MutableMapping):
+                all_paths.update(flatten(v, new_path))
+
+        return all_paths
+
+    repo_path = ctx.obj['repo']
+    repo = Repo.from_path(repo_path)
+
+    subtrees_to_lookup = ('attrs', 'traces_types', 'contexts', 'traces')
+    repo_meta_tree = repo._get_meta_tree()
+
+    # set of all repo paths that can be left dangling after run deletion
+    repo_paths = set()
+    for key in subtrees_to_lookup:
+        try:
+            repo_paths.update(flatten(repo_meta_tree.collect(key, strict=False), parent_path=(key,)))
+        except KeyError:
+            pass
+
+    run_hashes = list_repo_runs(clean_repo_path(repo.path))
+    for run_hash in tqdm(run_hashes):
+        # construct unique paths set for each run
+        run_paths = set()
+        run_meta_tree = repo.request_tree('meta', run_hash, from_union=False, read_only=True).subtree('meta')
+        for key in subtrees_to_lookup:
+            try:
+                run_paths.update(flatten(run_meta_tree.collect(key, strict=False), parent_path=(key,)))
+            except KeyError:
+                pass
+
+        # update repo_paths keeping the elements that were not found in run_paths
+        repo_paths.difference_update(run_paths)
+
+        # if no paths are left in repo_paths set, means that we have no orphan paths
+        if not repo_paths:
+            break
+
+    # everything left in the `repo_paths` set is subject to be deleted
+    if not repo_paths:
+        click.echo('No orphan params were found')
+        return
+
+    # acquire index container to delete orphan paths
+    index_tree = repo._get_index_tree('meta', timeout=5).subtree('meta')
+
+    # start deleting with the deepest paths first to bypass the cases when parent path is deleted before the child
+    for path in sorted(repo_paths, key=len, reverse=True):
+        del index_tree[path]
