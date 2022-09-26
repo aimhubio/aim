@@ -1,5 +1,3 @@
-import { IOnSmoothingChange } from 'Metrics';
-
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { ILine } from 'components/LineChart/LineChart';
 
@@ -15,11 +13,11 @@ import {
   ITooltip,
   IChartZoom,
   IGroupingSelectOption,
+  ISmoothing,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IMetricProps } from 'types/pages/metrics/Metrics';
 
-import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
-import { ChartTypeEnum, CurveEnum } from 'utils/d3';
+import { ChartTypeEnum } from 'utils/d3';
 
 export interface IControlProps {
   chartProps: any[];
@@ -33,9 +31,7 @@ export interface IControlProps {
   aggregationConfig: IAggregationConfig;
   axesScaleType: IAxesScaleState;
   axesScaleRange: IAxesScaleRange;
-  smoothingAlgorithm: SmoothingAlgorithmEnum;
-  smoothingFactor: number;
-  curveInterpolation: CurveEnum;
+  smoothing: ISmoothing;
   alignmentConfig: IAlignmentConfig;
   densityType: DensityOptions;
   selectFormOptions: ISelectOption[];
@@ -43,7 +39,7 @@ export interface IControlProps {
   onIgnoreOutliersChange: () => void;
   onHighlightModeChange: (mode: number) => void;
   onDensityTypeChange: (type: DensityOptions) => void;
-  onSmoothingChange: (props: IOnSmoothingChange) => void;
+  onSmoothingChange: (props: Partial<ISmoothing>) => void;
   onAxesScaleTypeChange: (params: IAxesScaleState) => void;
   onAggregationConfigChange: (
     aggregationConfig: Partial<IAggregationConfig>,

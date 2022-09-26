@@ -1,9 +1,9 @@
 import React from 'react';
 
-import { CircularProgress, Grid } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 
 import HeatMap from 'components/HeatMap/HeatMap';
-import { Text } from 'components/kit';
+import { Spinner, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
@@ -35,7 +35,7 @@ function ProjectContributions(): React.FunctionComponentElement<React.ReactNode>
             </Text>
             <Text component='strong' size={36} weight={600} color='secondary'>
               {projectContributionsStore.data?.num_experiments ?? (
-                <CircularProgress className='ProjectContributions__loader' />
+                <Spinner className='Activity__loader' color='#fff' size={32} />
               )}
             </Text>
           </div>
@@ -45,7 +45,7 @@ function ProjectContributions(): React.FunctionComponentElement<React.ReactNode>
             </Text>
             <Text component='strong' size={36} weight={600} color='secondary'>
               {projectContributionsStore.data?.num_runs ?? (
-                <CircularProgress className='ProjectContributions__loader' />
+                <Spinner className='Activity__loader' color='#fff' size={32} />
               )}
             </Text>
           </div>

@@ -9,6 +9,7 @@ import ControlPopover from 'components/ControlPopover/ControlPopover';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import GroupedColumnHeader from 'components/Table/GroupedColumnHeader';
 import RunNameColumn from 'components/Table/RunNameColumn';
+import AttachedTagsList from 'components/AttachedTagsList/AttachedTagsList';
 
 import COLORS from 'config/colors/colors';
 import { TABLE_DATE_FORMAT } from 'config/dates/dates';
@@ -19,6 +20,7 @@ import { AppNameEnum } from 'services/models/explorer';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { IGroupingSelectOption } from 'types/services/models/imagesExplore/imagesExploreAppModel';
 import { IOnGroupingSelectChangeParams } from 'types/services/models/metrics/metricsAppModel';
+import { ITagInfo } from 'types/pages/tags/Tags';
 
 import contextToString from 'utils/contextToString';
 import { formatValue } from 'utils/formatValue';
@@ -130,6 +132,16 @@ function getImagesExploreTableColumns(
         : order?.middle?.includes('date')
         ? null
         : order?.right?.includes('date')
+        ? 'right'
+        : null,
+    },
+    {
+      key: 'tags',
+      content: <span>Tags</span>,
+      topHeader: 'Run',
+      pin: order?.left?.includes('tags')
+        ? 'left'
+        : order?.right?.includes('tags')
         ? 'right'
         : null,
     },
@@ -289,8 +301,19 @@ function getImagesExploreTableColumns(
   return columns;
 }
 
+const TagsColumn = (props: {
+  runHash: string;
+  tags: ITagInfo[];
+  onRunsTagsChange: (runHash: string, tags: ITagInfo[]) => void;
+  headerRenderer: () => React.ReactNode;
+  addTagButtonSize: 'xxSmall' | 'xSmall';
+}) => {
+  return <AttachedTagsList {...props} hasAttachedTagsPopup />;
+};
+
 function imagesExploreTableRowRenderer(
   rowData: any,
+  onRunsTagsChange: (runHash: string, tags: ITagInfo[]) => void,
   actions?: { [key: string]: (e: any) => void },
   groupHeaderRow = false,
   columns: string[] = [],
@@ -407,6 +430,16 @@ function imagesExploreTableRowRenderer(
       value: rowData.value,
       step: rowData.step,
       epoch: rowData.epoch,
+      tags: {
+        component: TagsColumn,
+        props: {
+          runHash: rowData.hash,
+          tags: rowData.tags,
+          onRunsTagsChange,
+          headerRenderer: () => <></>,
+          addTagButtonSize: 'xxSmall',
+        },
+      },
       time:
         rowData.time === null
           ? '-'

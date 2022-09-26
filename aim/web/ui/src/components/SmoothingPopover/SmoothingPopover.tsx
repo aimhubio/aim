@@ -5,6 +5,8 @@ import { Divider, MenuItem, Slider } from '@material-ui/core';
 import { Text, ToggleButton } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
+import { CONTROLS_DEFAULT_CONFIG } from 'config/controls/controlsDefaultConfig';
+
 import { ISmoothingPopoverProps } from 'types/components/SmoothingPopover/SmoothingPopover';
 
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
@@ -23,6 +25,7 @@ const emaProps = {
   step: 0.01,
   min: 0,
   max: 0.99,
+  default: CONTROLS_DEFAULT_CONFIG.metrics.smoothing.factor,
 };
 
 const cmaProps = {
@@ -36,23 +39,24 @@ const cmaProps = {
   step: 2,
   min: 1,
   max: 99,
+  default: 59,
 };
 
 function SmoothingPopover(
   props: ISmoothingPopoverProps,
 ): React.FunctionComponentElement<React.ReactNode> {
-  const [factor, setFactor] = React.useState<number>(props.smoothingFactor);
+  const [factor, setFactor] = React.useState<number>(props.smoothing.factor);
 
   const handleAlgorithmChange = React.useCallback(
     (event): void => {
       const factorMin: number =
         event.target.id === SmoothingAlgorithmEnum.EMA
-          ? emaProps.min
-          : cmaProps.min;
+          ? emaProps.default
+          : cmaProps.default;
       setFactor(factorMin);
       props.onSmoothingChange({
-        smoothingAlgorithm: event.target.id,
-        smoothingFactor: factorMin,
+        algorithm: event.target.id,
+        factor: factorMin,
       });
     },
     [props],
@@ -78,15 +82,15 @@ function SmoothingPopover(
     value: number | any,
   ): void {
     props.onSmoothingChange({
-      smoothingFactor: value,
+      factor: value,
     });
   }
 
   const sliderProps = React.useMemo(() => {
-    return props.smoothingAlgorithm === SmoothingAlgorithmEnum.EMA
+    return props.smoothing.algorithm === SmoothingAlgorithmEnum.EMA
       ? emaProps
       : cmaProps;
-  }, [props.smoothingAlgorithm]);
+  }, [props.smoothing.algorithm]);
 
   return (
     <ErrorBoundary>
@@ -112,14 +116,18 @@ function SmoothingPopover(
           <div>
             <MenuItem
               id={SmoothingAlgorithmEnum.EMA}
-              selected={props.smoothingAlgorithm === SmoothingAlgorithmEnum.EMA}
+              selected={
+                props.smoothing.algorithm === SmoothingAlgorithmEnum.EMA
+              }
               onClick={handleAlgorithmChange}
             >
               Exponential Moving Average
             </MenuItem>
             <MenuItem
               id={SmoothingAlgorithmEnum.CMA}
-              selected={props.smoothingAlgorithm === SmoothingAlgorithmEnum.CMA}
+              selected={
+                props.smoothing.algorithm === SmoothingAlgorithmEnum.CMA
+              }
               onClick={handleAlgorithmChange}
             >
               Centred Moving Average
@@ -140,7 +148,7 @@ function SmoothingPopover(
             leftLabel='Linear'
             leftValue={CurveEnum.Linear}
             rightValue={CurveEnum.MonotoneX}
-            value={props.curveInterpolation}
+            value={props.smoothing.curveInterpolation}
           />
         </div>
       </div>

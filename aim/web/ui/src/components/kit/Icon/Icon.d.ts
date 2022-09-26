@@ -147,4 +147,8 @@ export type IconName =
   | 'figures-explorer'
   | 'group-column'
   | 'image-group'
-  | 'partially-selected';
+  | 'partially-selected'
+  | 'arrow-left-contained'
+  | 'arrow-up-contained'
+  | 'arrow-right-contained'
+  | 'arrow-down-contained';

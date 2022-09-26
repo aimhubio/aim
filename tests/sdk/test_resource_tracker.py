@@ -1,16 +1,12 @@
 import time
 
 from tests.base import TestBase
-from tests.utils import remove_test_data
 
 from aim.sdk.types import QueryReportMode
 from aim.sdk import Run
 
 
 class TestRunResourceTracker(TestBase):
-    def tearDown(self):
-        remove_test_data()
-
     def test_default_tracking_interval(self):
         run = Run()  # default tracking interval 10s
         run_hash = run.hash

@@ -26,5 +26,6 @@ export interface IChartPopover {
   chartType: ChartTypeEnum;
   alignmentConfig?: IAlignmentConfig;
   reCreatePopover?: unknown;
+  onRunsTagsChange: (runHash: string, tags: ITagInfo[]) => void;
   selectOptions: IGroupingSelectOption[];
 }

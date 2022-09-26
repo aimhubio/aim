@@ -6,10 +6,32 @@
 
 - Add the ability to attach/remove tags on the Run Page (roubkar)
 - Support dictionary as an argument of `Run.track` (alberttorosyan)
+- Display the tags of the run in the tables of the explorers (VkoHov)
+- Revamp Figures explorer controls and grouping sections for better onboarding and usability (VkoHov, KaroMourad)
+- Replace the spinner loader with a lighter one (VkoHov)
+- Add fast.ai integration (tmynn)
+- Add command for dangling params cleanup (mihran113)
 
 ### Fixes:
 
+- Change unit-tests data isolation mechanism (alberttorosyan)
 - Adjust the visibility of the run color in tables (VkoHov)
+- Fix response headers for remote tracking server (mihran113)
+
+## 3.13.4 Sep 25, 2022
+
+- Add the ability to disable smoothing explicitly (KaroMourad)
+- Virtualize the run params list in the Run page (roubkar)
+
+## 3.13.3 Sep 16, 2022
+
+- Fix request cancellation on `Logs` tab (mihran113)
+- Fix the data live update handling in the Logs tab (VkoHov)
+
+## 3.13.2 Sep 10, 2022
+
+- Fix content overlapping issue of x-axis alignment dropdown (KaroMourad)
+- Fix the regression line rendering issue on Scatter plot exported image (KaroMourad)
 
 ## 3.13.1 Sep 1, 2022
 
