@@ -14,6 +14,7 @@
 
 ### Fixes:
 
+- Fix chart hovering issue occurring when "NaN" values are tracked (KaroMourad)
 - Change unit-tests data isolation mechanism (alberttorosyan)
 - Adjust the visibility of the run color in tables (VkoHov)
 - Fix response headers for remote tracking server (mihran113)
