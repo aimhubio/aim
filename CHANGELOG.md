@@ -11,6 +11,7 @@
 - Replace the spinner loader with a lighter one (VkoHov)
 - Add fast.ai integration (tmynn)
 - Add command for dangling params cleanup (mihran113)
+- Deprecate Python 3.6 (alberttorosyan)
 
 ### Fixes:
 
@@ -35,7 +36,8 @@
 
 ## 3.13.1 Sep 1, 2022
 
-- Add support for querying metrics by last value (mihran113)
+- Add support for quer
+  ying metrics by last value (mihran113)
 - Fix aim reindex command failure (alberttorosyan)
 - Fix issue with remote runs re-open (mihran113)
 - Deprecate custom set Run.hash values (alberttorosyan)
