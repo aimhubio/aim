@@ -530,7 +530,7 @@ const Table = React.forwardRef(function Table(
     const rightPane = tableContainerRef.current?.querySelector(
       '.Table__pane--right',
     );
-    let availableSpace = 0;
+    let availableSpace = tableContainerRef.current?.offsetWidth ?? 0;
 
     if (leftPane || rightPane) {
       availableSpace =

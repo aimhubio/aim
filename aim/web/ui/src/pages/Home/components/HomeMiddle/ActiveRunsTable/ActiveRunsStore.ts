@@ -8,8 +8,8 @@ import { parseStream } from 'utils/encoder/streamEncoding';
 function createActiveRunsEngine() {
   let { call, cancel } = createSearchRunRequest();
 
-  const { fetchData, state } = createResource<IRun<unknown>>(async () =>
-    parseStream(await call({ q: 'run.active == True' })),
+  const { fetchData, state } = createResource<IRun<unknown>[]>(async () =>
+    parseStream(await call({ q: '"test" in run.tags' })),
   );
   return { fetchActiveRuns: fetchData, activeRunsState: state };
 }
