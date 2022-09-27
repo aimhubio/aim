@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 def python_version_deprecation_check():
     import sys
     version_info = sys.version_info
-    if version_info.major == 3:
+    if version_info.major == 3 and version_info.minor == 6:
         deprecation_warning(remove_version='3.16', msg='Python 3.6 has reached EOL. '
                                                        'Aim support for Python 3.6 is deprecated!')
 
