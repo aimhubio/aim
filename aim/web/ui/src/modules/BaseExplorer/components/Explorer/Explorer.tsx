@@ -13,6 +13,9 @@ function Explorer({ configuration, engineInstance }: ExplorerProps) {
 
   useEffect(() => {
     engineInstance.initialize().then().catch();
+    return () => {
+      engineInstance.finalize();
+    };
   }, [engineInstance]);
 
   // @TODO handle error for networks

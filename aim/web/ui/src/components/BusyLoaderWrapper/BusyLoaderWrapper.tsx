@@ -1,9 +1,9 @@
 import React from 'react';
 
-import CircularProgress from '@material-ui/core/CircularProgress';
 import { Skeleton } from '@material-ui/lab';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import { Spinner } from 'components/kit';
 
 import { IBusyLoaderWrapperProps } from 'types/components/BusyLoaderWrapper/BusyLoaderWrapper';
 
@@ -25,7 +25,7 @@ function BusyLoaderWrapper({
         return <Skeleton {...loaderConfig} />;
       }
       default: {
-        return <CircularProgress {...loaderConfig} />;
+        return <Spinner {...loaderConfig} />;
       }
     }
   }

@@ -205,7 +205,6 @@ function createPipelineEngine<TStore, TObject>(
       reset,
       destroy: () => {
         pipeline.clearCache();
-        // pipeline.destroy();
       },
     },
   };

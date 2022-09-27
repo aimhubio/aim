@@ -13,7 +13,8 @@ class TestNoImagesRunQueryApi(ApiTestBase):
     def test_query_images_api_empty_result(self):
         client = self.client
 
-        response = client.get('/api/runs/search/images/')
+        query = self.isolated_query_patch()
+        response = client.get('/api/runs/search/images/', params={'q': query, 'report_progress': False})
         self.assertEqual(200, response.status_code)
         self.assertEqual(b'', response.content)
 
@@ -22,7 +23,7 @@ class RunImagesTestBase(ApiTestBase):
     @classmethod
     def setUpClass(cls) -> None:
         super().setUpClass()
-        run = Run(repo=cls.repo)
+        run = cls.create_run(repo=cls.repo)
         run['images_per_step'] = 16
         for step in range(100):
             images = generate_image_set(img_count=16, caption_prefix=f'Image {step}')
@@ -35,7 +36,8 @@ class TestRunImagesSearchApi(RunImagesTestBase):
     def test_query_images_api_defaults(self):
         client = self.client
 
-        response = client.get('/api/runs/search/images/', params={'q': '', 'report_progress': False})
+        query = self.isolated_query_patch()
+        response = client.get('/api/runs/search/images/', params={'q': query, 'report_progress': False})
         self.assertEqual(200, response.status_code)
 
         decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_content(chunk_size=512 * 1024)))
@@ -67,8 +69,9 @@ class TestRunImagesSearchApi(RunImagesTestBase):
     def test_query_images_api_custom_densities_dense(self):
         client = self.client
 
+        query = self.isolated_query_patch()
         response = client.get('/api/runs/search/images/',
-                              params={'record_density': 200, 'index_density': 10, 'report_progress': False})
+                              params={'q': query, 'record_density': 200, 'index_density': 10, 'report_progress': False})
         self.assertEqual(200, response.status_code)
 
         decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_content(chunk_size=512 * 1024),
@@ -84,7 +87,9 @@ class TestRunImagesSearchApi(RunImagesTestBase):
     def test_query_images_api_custom_densities_sparse(self):
         client = self.client
 
-        response = client.get('/api/runs/search/images/', params={'record_density': 10,
+        query = self.isolated_query_patch()
+        response = client.get('/api/runs/search/images/', params={'q': query,
+                                                                  'record_density': 10,
                                                                   'index_density': 4,
                                                                   'report_progress': False})
         self.assertEqual(200, response.status_code)
@@ -110,7 +115,9 @@ class TestRunImagesSearchApi(RunImagesTestBase):
     def test_query_images_api_custom_record_ranges(self, input_range, total_range, used_range, count):
         client = self.client
 
-        response = client.get('/api/runs/search/images/', params={'record_range': input_range,
+        query = self.isolated_query_patch()
+        response = client.get('/api/runs/search/images/', params={'q': query,
+                                                                  'record_range': input_range,
                                                                   'record_density': 100,
                                                                   'report_progress': False})
         self.assertEqual(200, response.status_code)
@@ -129,7 +136,9 @@ class TestRunImagesSearchApi(RunImagesTestBase):
     def test_query_images_api_calculate_ranges(self):
         client = self.client
 
+        query = self.isolated_query_patch()
         response = client.get('/api/runs/search/images/', params={
+            'q': query,
             'record_range': '10:20',
             'index_range': '3:6',
             'calc_ranges': True,
@@ -247,7 +256,7 @@ class TestImageListsAndSingleImagesSearchApi(ApiTestBase):
     def setUpClass(cls) -> None:
         super().setUpClass()
 
-        run = Run(system_tracking_interval=None)
+        run = cls.create_run(system_tracking_interval=None)
         cls.run_hash = run.hash
 
         for step in range(5):
@@ -258,8 +267,9 @@ class TestImageListsAndSingleImagesSearchApi(ApiTestBase):
     def test_search_simgle_image_only_default_index_range(self):
         client = self.client
 
+        query = self.isolated_query_patch('images.name == "single_images"')
         response = client.get('/api/runs/search/images/',
-                              params={'q': 'images.name == "single_images"', 'report_progress': False})
+                              params={'q': query, 'report_progress': False})
         self.assertEqual(200, response.status_code)
 
         decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_content(chunk_size=512 * 1024)))
@@ -280,7 +290,8 @@ class TestImageListsAndSingleImagesSearchApi(ApiTestBase):
     def test_mixed_search_default_index_range(self):
         client = self.client
 
-        response = client.get('/api/runs/search/images/', params={'q': '', 'report_progress': False})
+        query = self.isolated_query_patch()
+        response = client.get('/api/runs/search/images/', params={'q': query, 'report_progress': False})
         self.assertEqual(200, response.status_code)
 
         decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_content(chunk_size=512 * 1024)))
@@ -307,8 +318,9 @@ class TestImageListsAndSingleImagesSearchApi(ApiTestBase):
     def test_mixed_search_custom_index_range(self):
         client = self.client
 
+        query = self.isolated_query_patch()
         response = client.get('/api/runs/search/images/',
-                              params={'q': '', 'index_range': '3:5', 'report_progress': False})
+                              params={'q': query, 'index_range': '3:5', 'report_progress': False})
         self.assertEqual(200, response.status_code)
 
         decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_content(chunk_size=512 * 1024)))
@@ -347,7 +359,7 @@ class TestRunInfoApi(ApiTestBase):
         #      |                              -> floats
         #      -> context {'subset': 'val'}   -> floats
 
-        run1 = Run(system_tracking_interval=None)
+        run1 = cls.create_run(system_tracking_interval=None)
         cls.run1_hash = run1.hash
         images = generate_image_set(img_count=2, caption_prefix=f'Image 0')
         run1.track(images, name='image_lists', context={'subset': 'train'})
@@ -355,7 +367,7 @@ class TestRunInfoApi(ApiTestBase):
         run1.track(random.randint(100, 200), name='integers', context={'subset': 'train'})
         run1.track(random.random(), name='floats', context={'subset': 'val'})
 
-        run2 = Run(system_tracking_interval=None)
+        run2 = cls.create_run(system_tracking_interval=None)
         run2.track(images[0], name='single_images', context={'subset': 'val'})
         run2.track(random.random(), name='floats', context={'subset': 'train'})
         run2.track(random.random(), name='floats', context={'subset': 'val'})

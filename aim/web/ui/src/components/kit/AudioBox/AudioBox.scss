@@ -52,9 +52,6 @@
         }
       }
     }
-    .MuiCircularProgress-svg {
-      color: $pico-80;
-    }
     &__timer {
       display: flex;
       span {
@@ -75,9 +72,6 @@
           }
         }
       }
-    }
-    .Icon__container {
-      color: $pico-80;
     }
     .Slider {
       &:hover {
