@@ -84,8 +84,8 @@ RunMetricSearchApiOut = Dict[str, MetricSearchRunView]
 
 
 class RunSearchRunView(BaseModel):
-    params: dict
-    traces: List[TraceOverview]
+    params: Optional[dict]
+    traces: Optional[List[TraceOverview]]
     props: PropsView
 
 

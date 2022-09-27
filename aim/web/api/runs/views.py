@@ -59,6 +59,8 @@ async def run_search_api(q: Optional[str] = '',
                          offset: Optional[str] = None,
                          skip_system: Optional[bool] = True,
                          report_progress: Optional[bool] = True,
+                         exclude_params: Optional[bool] = False,
+                         exclude_traces: Optional[bool] = False,
                          x_timezone_offset: int = Header(default=0),):
     from aim.sdk.sequence_collection import QueryRunSequenceCollection
     repo = get_project_repo()
@@ -72,7 +74,9 @@ async def run_search_api(q: Optional[str] = '',
                                       report_mode=QueryReportMode.PROGRESS_TUPLE,
                                       timezone_offset=x_timezone_offset)
 
-    streamer = run_search_result_streamer(runs, limit, skip_system, report_progress)
+    streamer = run_search_result_streamer(runs, limit,
+                                          skip_system, report_progress,
+                                          exclude_params, exclude_traces)
     return StreamingResponse(streamer)
 
 
