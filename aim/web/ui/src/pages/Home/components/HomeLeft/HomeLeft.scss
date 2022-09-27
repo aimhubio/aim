@@ -9,7 +9,8 @@
   overflow: auto;
   height: 100vh;
   &__title {
-    padding: $space-unit;
+    margin-top: 1.25rem;
+    padding: 0 1.5rem;
   }
   .DataList {
     .CompareSelectedRunsPopover__trigger {

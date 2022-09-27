@@ -1,9 +1,10 @@
 import React from 'react';
+import { NavLink } from 'react-router-dom';
 
 import { IDashboardData } from 'modules/core/api/dashboardsApi';
 import { Tooltip } from '@material-ui/core';
 
-import { Icon, Text } from 'components/kit';
+import { Button, Icon, Text } from 'components/kit';
 import ListItem from 'components/kit/ListItem/ListItem';
 
 import { BookmarkIconType } from 'pages/Bookmarks/components/BookmarkCard/BookmarkCard';
@@ -62,6 +63,11 @@ function DashboardBookmarks() {
           </Tooltip>
         ))}
       </div>
+      <NavLink className='DashboardBookmarks__NavLink' to='/bookmarks'>
+        <Button fullWidth variant='outlined' size='xSmall'>
+          Show more
+        </Button>
+      </NavLink>
     </div>
   );
 }

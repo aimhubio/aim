@@ -152,7 +152,7 @@ import getClosestValue from 'utils/getClosestValue';
 import getObjectPaths from 'utils/getObjectPaths';
 import getSmoothenedData from 'utils/getSmoothenedData';
 import JsonToCSV from 'utils/JsonToCSV';
-import { setItem } from 'utils/storage';
+import { getItem, setItem } from 'utils/storage';
 import { encode } from 'utils/encoder/encoder';
 import onBookmarkCreate from 'utils/app/onBookmarkCreate';
 import onBookmarkUpdate from 'utils/app/onBookmarkUpdate';
@@ -193,6 +193,7 @@ import { onCopyToClipBoard } from 'utils/onCopyToClipBoard';
 import { getMetricsInitialRowData } from 'utils/app/getMetricsInitialRowData';
 import { getMetricHash } from 'utils/app/getMetricHash';
 import { getMetricLabel } from 'utils/app/getMetricLabel';
+import saveRecentSearches from 'utils/saveRecentSearches';
 
 import { AppDataTypeEnum, AppNameEnum } from './index';
 
@@ -630,6 +631,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               if (shouldUrlUpdate) {
                 updateURL({ configData, appName });
               }
+              saveRecentSearches(appName, query);
               updateData(runData);
             } catch (ex: Error | any) {
               if (ex.name === 'AbortError') {
@@ -2323,6 +2325,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   },
                 },
               });
+              saveRecentSearches(appName, query);
               if (shouldUrlUpdate) {
                 updateURL({ configData, appName });
               }
@@ -5680,6 +5683,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 liveUpdateInstance?.start({
                   q: configData?.select?.query,
                 });
+                //Changed the layout/styles of the experiments and tags tables to look more like lists|| Extend the contributions section (add activity feed under the contributions)
               } catch (ex: Error | any) {
                 if (ex.name === 'AbortError') {
                   onNotificationAdd({

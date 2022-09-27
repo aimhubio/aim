@@ -131,7 +131,11 @@ function useTagsCard() {
       {
         dataKey: 'run_count',
         key: 'run_count',
-        title: 'Runs',
+        title: (
+          <Text weight={600} size={12} tint={100}>
+            Runs
+          </Text>
+        ),
         flexGrow: 1,
         style: { textAlign: 'right' },
         width: '46px',

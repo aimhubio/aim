@@ -43,12 +43,22 @@ function QuickLinks(): React.FunctionComponentElement<React.ReactNode> {
 
   return (
     <div className='QuickLinks'>
-      <Text component='h3' size={18}>
-        Quick Links
+      <Text
+        className='QuickLinks__title'
+        component='h3'
+        size={14}
+        tint={100}
+        weight={700}
+      >
+        Quick navigation
       </Text>
       <div className='QuickLinks__list'>
         {linkItems.map((item: string) => (
-          <ListItem className='QuickLinks__list__ListItem' key={item}>
+          <ListItem
+            size='small'
+            className='QuickLinks__list__ListItem'
+            key={item}
+          >
             <Text
               className='QuickLinks__list__ListItem__Text'
               onClick={(e) => onClick(e, item)}
@@ -60,7 +70,6 @@ function QuickLinks(): React.FunctionComponentElement<React.ReactNode> {
             <Tooltip title='Explore in new tab'>
               <div>
                 <Icon
-                  box
                   fontSize={12}
                   onClick={(e) => onClick(e, item, true)}
                   name='new-tab'
@@ -69,6 +78,20 @@ function QuickLinks(): React.FunctionComponentElement<React.ReactNode> {
             </Tooltip>
           </ListItem>
         ))}
+        <ListItem size='small' className='QuickLinks__list__ListItem'>
+          <Text
+            className='QuickLinks__list__ListItem__Text'
+            size={14}
+            tint={100}
+          >
+            Latest 10 runs
+          </Text>
+          <Tooltip title='Explore in new tab'>
+            <div>
+              <Icon fontSize={12} name='new-tab' />
+            </div>
+          </Tooltip>
+        </ListItem>
       </div>
     </div>
   );
