@@ -84,7 +84,7 @@ function Visualizer(props: IVisualizationProps) {
     if (foundGroups) {
       return Object.keys(foundGroups)
         .filter((key: string) => foundGroups[key].type === GroupType.ROW)
-        .map((key: string, i: number, source: {}[]) => {
+        .map((key: string) => {
           const item = foundGroups[key];
           return {
             key: key,
@@ -105,7 +105,7 @@ function Visualizer(props: IVisualizationProps) {
               textAlign: 'right',
               textOverflow: 'ellipsis',
               lineHeight: '0.875rem',
-              zIndex: 1,
+              zIndex: foundGroups[key].order,
             },
           };
         });
@@ -117,7 +117,7 @@ function Visualizer(props: IVisualizationProps) {
     if (foundGroups) {
       return Object.keys(foundGroups)
         .filter((key: string) => foundGroups[key].type === GroupType.COLUMN)
-        .map((key: string, i: number) => {
+        .map((key: string) => {
           const item = foundGroups[key];
           return {
             key: key,
@@ -139,7 +139,7 @@ function Visualizer(props: IVisualizationProps) {
               overflow: 'hidden',
               whiteSpace: 'nowrap',
               textOverflow: 'ellipsis',
-              zIndex: 1,
+              zIndex: foundGroups[key].order,
             },
           };
         });
