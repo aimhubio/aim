@@ -7,10 +7,13 @@ $border: 1px solid $primary-color-10;
   display: flex;
   &__middle {
     width: 60%;
-    padding: 0 $space-unit;
+    padding: $space-md $space-lg;
     border: $border;
     display: flex;
     flex-direction: column;
+    &__title {
+      margin-bottom: $space-lg;
+    }
   }
   &__Explore__container {
     border-top: $border;

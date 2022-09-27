@@ -1,5 +1,4 @@
 import React from 'react';
-import _ from 'lodash-es';
 import { useHistory } from 'react-router-dom';
 
 import { MenuItem, Tooltip } from '@material-ui/core';

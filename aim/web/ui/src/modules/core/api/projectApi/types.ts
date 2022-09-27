@@ -1,4 +1,4 @@
-import { SequenceTypesEnum } from 'types/core/enums';
+import { SequenceTypesUnion } from 'types/core/enums';
 import { Context } from 'types/core/shared';
 
 /**
@@ -7,9 +7,13 @@ import { Context } from 'types/core/shared';
  */
 export type GetParamsQueryOptions = {
   /**
-   * Sequence name one of 'metric' | 'distributions' | 'images' | 'figures' | 'audio' etc.
+   * Sequence: array of sequence names or one of 'metric' | 'distributions' | 'images' | 'figures' | 'audio' etc. .
    */
-  sequence: SequenceTypesEnum;
+  sequence: SequenceTypesUnion | SequenceTypesUnion[];
+  /**
+   * Exclude 'params' from the response
+   */
+  exclude_params?: boolean;
 };
 
 /**

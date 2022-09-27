@@ -1,0 +1,13 @@
+@use 'src/styles/abstracts' as *;
+
+.ProjectStatistics {
+  &__totalRuns {
+    margin-bottom: $space-sm;
+  }
+  &__cards {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: $space-unit;
+  }
+}

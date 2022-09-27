@@ -26,19 +26,6 @@ function ProjectContributions(): React.FunctionComponentElement<React.ReactNode>
     <ErrorBoundary>
       <Grid className='ProjectContributions' container spacing={1}>
         <Grid item>
-          <Text component='h2' size={24} weight={600} tint={100}>
-            Statistics
-          </Text>
-          <div className='ProjectContributions__Statistics__card'>
-            <Text size={16} component='span' color='secondary'>
-              Experiments
-            </Text>
-            <Text component='strong' size={36} weight={600} color='secondary'>
-              {projectContributionsStore.data?.num_experiments ?? (
-                <CircularProgress className='ProjectContributions__loader' />
-              )}
-            </Text>
-          </div>
           <div className='ProjectContribution__Statistics__card'>
             <Text size={16} component='span' color='secondary'>
               Runs
