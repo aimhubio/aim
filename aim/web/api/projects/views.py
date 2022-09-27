@@ -118,7 +118,7 @@ async def update_pinned_metrics_api(request_data: ProjectPinnedSequencesApiIn):
 
 
 @projects_router.get('/params/', response_model=ProjectParamsOut, response_model_exclude_defaults=True)
-async def project_params_api(sequence: Optional[Tuple[str, ...]] = Query(())):
+async def project_params_api(sequence: Optional[Tuple[str, ...]] = Query(()), exclude_params: Optional[bool] = False):
     project = Project()
 
     if not project.exists():
@@ -132,9 +132,12 @@ async def project_params_api(sequence: Optional[Tuple[str, ...]] = Query(())):
     else:
         sequence = project.repo.available_sequence_types()
 
-    response = {
-        'params': project.repo.collect_params_info(),
-    }
+    if exclude_params:
+        response = {}
+    else:
+        response = {
+            'params': project.repo.collect_params_info(),
+        }
     response.update(**project.repo.collect_sequence_info(sequence))
     return response
 
