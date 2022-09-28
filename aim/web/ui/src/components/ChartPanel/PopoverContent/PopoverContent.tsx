@@ -1,16 +1,18 @@
 import React from 'react';
-import { Link as RouteLink } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import _ from 'lodash-es';
+import classNames from 'classnames';
 
-import { Divider, Link, Paper } from '@material-ui/core';
+import { Divider, Paper } from '@material-ui/core';
 
-import { Icon, Text } from 'components/kit';
+import { Button, Icon, Text } from 'components/kit';
 import AttachedTagsList from 'components/AttachedTagsList/AttachedTagsList';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { PathEnum } from 'config/enums/routesEnum';
 
 import { IPopoverContentProps } from 'types/components/ChartPanel/PopoverContent';
+import { TooltipAppearance } from 'types/services/models/metrics/metricsAppModel.d';
 
 import contextToString from 'utils/contextToString';
 import {
@@ -31,13 +33,16 @@ const PopoverContent = React.forwardRef(function PopoverContent(
   props: IPopoverContentProps,
   ref,
 ): React.FunctionComponentElement<React.ReactNode> {
+  const history = useHistory();
   const {
     tooltipContent,
+    tooltipAppearance = TooltipAppearance.Auto,
     focusedState,
     chartType,
     alignmentConfig,
     selectOptions,
     onRunsTagsChange,
+    onChangeTooltip,
   } = props;
   const {
     selectedProps = {},
@@ -46,6 +51,18 @@ const PopoverContent = React.forwardRef(function PopoverContent(
     context = {},
     run,
   } = tooltipContent || {};
+
+  const isPopoverPinned = React.useMemo(
+    () =>
+      tooltipAppearance === TooltipAppearance.Top ||
+      tooltipAppearance === TooltipAppearance.Bottom,
+    [tooltipAppearance],
+  );
+
+  const redirectToRun = () => {
+    history.push(PathEnum.Run_Detail.replace(':runHash', run?.hash));
+  };
+
   function renderPopoverHeader(): React.ReactNode {
     switch (chartType) {
       case ChartTypeEnum.LineChart: {
@@ -176,6 +193,91 @@ const PopoverContent = React.forwardRef(function PopoverContent(
     }
   }
 
+  function renderActionButtons(): React.ReactNode {
+    if (focusedState?.active && run?.hash && onChangeTooltip) {
+      return (
+        <div
+          className={classNames('PopoverContent__actionButtons', {
+            vertical: isPopoverPinned,
+          })}
+        >
+          <Button
+            className={classNames(
+              'PopoverContent__actionButtons__linkActionButton',
+            )}
+            onClick={redirectToRun}
+            withOnlyIcon
+            size='xSmall'
+          >
+            <Icon name='link' />
+          </Button>
+          <Divider orientation={isPopoverPinned ? 'horizontal' : 'vertical'} />
+          <Button
+            onClick={() =>
+              onChangeTooltip({ appearance: TooltipAppearance.Hide })
+            }
+            withOnlyIcon
+            size='xSmall'
+            className={classNames(
+              'PopoverContent__actionButtons__actionButton',
+              {
+                active: tooltipAppearance === TooltipAppearance.Hide,
+              },
+            )}
+          >
+            <Icon name='eye-fill-hide' />
+          </Button>
+          <Button
+            onClick={() =>
+              onChangeTooltip({ appearance: TooltipAppearance.Top })
+            }
+            withOnlyIcon
+            size='xSmall'
+            className={classNames(
+              'PopoverContent__actionButtons__actionButton',
+              {
+                active: tooltipAppearance === TooltipAppearance.Top,
+              },
+            )}
+          >
+            <Icon name='arrow-up' />
+          </Button>
+          <Button
+            onClick={() =>
+              onChangeTooltip({ appearance: TooltipAppearance.Auto })
+            }
+            withOnlyIcon
+            size='xSmall'
+            className={classNames(
+              'PopoverContent__actionButtons__actionButton',
+              {
+                active: tooltipAppearance === TooltipAppearance.Auto,
+              },
+            )}
+          >
+            <Icon name='chart-group' />
+          </Button>
+          <Button
+            onClick={() =>
+              onChangeTooltip({ appearance: TooltipAppearance.Bottom })
+            }
+            withOnlyIcon
+            size='xSmall'
+            className={classNames(
+              'PopoverContent__actionButtons__actionButton',
+              {
+                active: tooltipAppearance === TooltipAppearance.Bottom,
+              },
+            )}
+          >
+            <Icon name='arrow-down' />
+          </Button>
+        </div>
+      );
+    }
+    return <></>;
+  }
+
   return (
     <ErrorBoundary>
       <Paper
@@ -184,13 +286,23 @@ const PopoverContent = React.forwardRef(function PopoverContent(
         style={{ pointerEvents: focusedState?.active ? 'auto' : 'none' }}
         elevation={0}
       >
-        <div className='PopoverContent'>
+        <div
+          className={classNames('PopoverContent', {
+            PopoverContent__pinned: isPopoverPinned,
+            PopoverContent__fixed:
+              focusedState?.active && run?.hash && onChangeTooltip,
+          })}
+        >
+          {renderActionButtons()}
+          <Divider orientation={isPopoverPinned ? 'vertical' : 'horizontal'} />
           {renderPopoverHeader()}
           {_.isEmpty(selectedProps) ? null : (
             <ErrorBoundary>
-              <div>
-                <Divider />
-                <div className='PopoverContent__box'>
+              <div className='PopoverContent__boxWrapper'>
+                <Divider
+                  orientation={isPopoverPinned ? 'vertical' : 'horizontal'}
+                />
+                <div className='PopoverContent__box ScrollBar__hidden'>
                   {Object.keys(selectedProps).map((paramKey) => (
                     <div key={paramKey} className='PopoverContent__value'>
                       <Text size={12} tint={50}>
@@ -207,9 +319,11 @@ const PopoverContent = React.forwardRef(function PopoverContent(
           )}
           {_.isEmpty(groupConfig) ? null : (
             <ErrorBoundary>
-              <div>
-                <Divider />
-                <div className='PopoverContent__box'>
+              <div className='PopoverContent__boxWrapper'>
+                <Divider
+                  orientation={isPopoverPinned ? 'vertical' : 'horizontal'}
+                />
+                <div className='PopoverContent__box ScrollBar__hidden'>
                   <div className='PopoverContent__subtitle1'>Group Config</div>
                   {Object.keys(groupConfig).map((groupConfigKey: string) =>
                     _.isEmpty(groupConfig[groupConfigKey]) ? null : (
@@ -243,23 +357,11 @@ const PopoverContent = React.forwardRef(function PopoverContent(
           )}
           {focusedState?.active && run?.hash ? (
             <ErrorBoundary>
-              <div>
-                <Divider />
-                <div className='PopoverContent__box'>
-                  <Link
-                    to={PathEnum.Run_Detail.replace(':runHash', run?.hash)}
-                    component={RouteLink}
-                    className='PopoverContent__runDetails'
-                    underline='none'
-                  >
-                    <Icon name='link' />
-                    <div>Run Details</div>
-                  </Link>
-                </div>
-              </div>
-              <div>
-                <Divider />
-                <div className='PopoverContent__box'>
+              <div className='PopoverContent__boxWrapper'>
+                <Divider
+                  orientation={isPopoverPinned ? 'vertical' : 'horizontal'}
+                />
+                <div className='PopoverContent__box ScrollBar__hidden PopoverContent__tagBox'>
                   <ErrorBoundary>
                     <AttachedTagsList
                       runHash={run?.hash}

@@ -21,11 +21,19 @@ function ChartPopover(props: IChartPopover): JSX.Element {
     containerNode = document.body,
     selectOptions,
     tooltipAppearance,
+    onChangeTooltip,
   } = props;
   const [popoverPos, setPopoverPos] = React.useState<PopoverPosition | null>(
     null,
   );
   const [popoverNode, setPopoverNode] = React.useState<HTMLElement>();
+
+  const isPopoverPinned = React.useMemo(
+    () =>
+      tooltipAppearance === TooltipAppearance.Top ||
+      tooltipAppearance === TooltipAppearance.Bottom,
+    [tooltipAppearance],
+  );
 
   const onPopoverPositionChange = React.useCallback(
     (activePointRect: IChartPopover['activePointRect']) => {
@@ -60,18 +68,18 @@ function ChartPopover(props: IChartPopover): JSX.Element {
   ]);
 
   const anchorPosition = React.useMemo(() => {
-    if (
-      tooltipAppearance === TooltipAppearance.Top ||
-      tooltipAppearance === TooltipAppearance.Bottom
-    ) {
-      return { top: 0, left: 0 };
+    if (isPopoverPinned) {
+      return {
+        top: 0,
+        left: popoverPos?.left ?? props.activePointRect?.left ?? 0,
+      };
     } else if (popoverPos) {
       return popoverPos;
     } else if (props.activePointRect) {
       return props.activePointRect;
     }
     return undefined;
-  }, [popoverPos, props.activePointRect, tooltipAppearance]);
+  }, [popoverPos, props.activePointRect, isPopoverPinned]);
 
   return (
     <ErrorBoundary>
@@ -88,9 +96,7 @@ function ChartPopover(props: IChartPopover): JSX.Element {
         anchorPosition={anchorPosition}
         className={classNames('ChartPopover', {
           [className]: className,
-          pinnedPopover:
-            tooltipAppearance === TooltipAppearance.Top ||
-            tooltipAppearance === TooltipAppearance.Bottom,
+          pinnedPopover: isPopoverPinned,
         })}
         transitionDuration={{
           appear: 0,
@@ -102,6 +108,11 @@ function ChartPopover(props: IChartPopover): JSX.Element {
             setPopoverNode(node);
           },
         }}
+        transformOrigin={
+          isPopoverPinned
+            ? { vertical: 'center', horizontal: 'center' }
+            : { vertical: 'top', horizontal: 'left' }
+        }
         classes={{
           paper: classNames('ChartPopover__content', {
             ChartPopover__content__active: props.focusedState?.active,
@@ -116,10 +127,12 @@ function ChartPopover(props: IChartPopover): JSX.Element {
           <PopoverContent
             chartType={props.chartType}
             tooltipContent={props.tooltipContent}
+            tooltipAppearance={props.tooltipAppearance}
             focusedState={props.focusedState}
             alignmentConfig={props.alignmentConfig}
             selectOptions={selectOptions}
             onRunsTagsChange={props.onRunsTagsChange}
+            onChangeTooltip={onChangeTooltip}
           />
         </ErrorBoundary>
       </Popover>

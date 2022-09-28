@@ -12,7 +12,64 @@
     max-height: inherit;
     overflow: auto;
     padding-bottom: 3px;
+    position: relative;
 
+    &__fixed {
+      padding-top: 1.75rem;
+      &.PopoverContent__pinned {
+        padding-top: 0;
+        padding-left: 1.75rem;
+      }
+    }
+
+    &__actionButtons {
+      display: flex;
+      padding: $space-xxxxs;
+      height: 1.75rem;
+      position: absolute;
+      top: 0;
+      left: 0;
+      &__linkActionButton {
+        margin-right: $space-xxxxs;
+      }
+      &__actionButton {
+        margin-left: $space-xxxxs;
+        &.active {
+          background-color: $primary-color-10;
+          border: $border-main-active;
+        }
+      }
+      &.vertical {
+        flex-direction: column;
+        height: 100%;
+        .PopoverContent__actionButtons__linkActionButton {
+          margin-bottom: $space-xxxxs;
+          margin-right: 0;
+        }
+        .PopoverContent__actionButtons__actionButton {
+          margin-top: $space-xxxxs;
+          margin-left: 0;
+        }
+      }
+    }
+
+    &__pinned {
+      display: flex;
+      padding-bottom: 0;
+      height: toRem(136px);
+      overflow-y: hidden;
+      overflow-x: auto;
+      .PopoverContent__boxWrapper {
+        display: flex;
+        .PopoverContent__box {
+          overflow-y: auto;
+        }
+        .PopoverContent__tagBox {
+          overflow-y: hidden;
+          max-width: toRem(200px);
+        }
+      }
+    }
     &__box {
       padding: 0.625rem 1rem;
     }
@@ -48,20 +105,6 @@
     &__contextValue {
       margin-left: 0.5rem;
       font-weight: $font-400;
-    }
-
-    &__runDetails {
-      display: flex;
-      align-items: center;
-
-      .icon-link {
-        width: 24px;
-        height: 24px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-right: 8px;
-      }
     }
 
     &__subtitle1 {

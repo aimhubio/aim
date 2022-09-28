@@ -30,4 +30,5 @@ export interface IChartPopover {
   reCreatePopover?: unknown;
   onRunsTagsChange: (runHash: string, tags: ITagInfo[]) => void;
   selectOptions: IGroupingSelectOption[];
+  onChangeTooltip: (tooltip: ITooltip) => void;
 }

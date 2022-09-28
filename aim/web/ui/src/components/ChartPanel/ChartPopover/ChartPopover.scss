@@ -3,14 +3,16 @@
 .ChartPopover {
   pointer-events: none;
   z-index: 5 !important;
-  height: 200px; // To not block table scroll
+  height: toRem(200px); // To not block table scroll
 
   &.pinnedPopover {
     position: absolute !important;
+    width: 100%;
+    height: 100%;
   }
 
   > *:first-of-type {
-    height: 200px; // To not block table scroll
+    height: toRem(200px); // To not block table scroll
   }
 
   &__content {
@@ -24,11 +26,18 @@
     backdrop-filter: blur(3px);
     overflow: hidden;
     &__pinnedToTop {
-      top: 0 !important;
+      top: toRem(-136px) !important;
+      width: auto;
+      max-height: toRem(136px);
+      min-height: toRem(136px);
+      height: toRem(136px);
     }
     &__pinnedToBottom {
-      bottom: 0 !important;
-      top: auto !important;
+      top: 100% !important;
+      width: auto;
+      max-height: toRem(136px);
+      min-height: toRem(136px);
+      height: toRem(136px);
     }
     &__active {
       background: $white;
