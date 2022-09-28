@@ -26,6 +26,16 @@ async function searchRuns(
   ).body;
 }
 
+async function searchRun(
+  queryParams: RunsSearchQueryParams,
+): Promise<RunsSearchResult> {
+  return (
+    await api.makeAPIGetRequest(`${ENDPOINTS.RUNS.SEARCH}/run`, {
+      query_params: queryParams,
+    })
+  ).body;
+}
+
 function createSearchRunsRequest(
   sequenceType: SequenceTypesEnum,
 ): RequestInstance {
@@ -53,5 +63,5 @@ function createSearchRunsRequest(
   };
 }
 
-export { searchRuns, createSearchRunsRequest };
+export { searchRuns, createSearchRunsRequest, searchRun };
 export * from './types';

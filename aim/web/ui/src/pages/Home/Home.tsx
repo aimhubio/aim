@@ -10,6 +10,7 @@ import SetupGuide from './components/SetupGuide/SetupGuide';
 import ProjectContributions from './components/ProjectContributions/ProjectContributions';
 import HomeLeft from './components/HomeLeft/HomeLeft';
 import HomeRight from './components/HomeRight/HomeRight';
+import ContributionsFeed from './components/ContributionsFeed/ContributionsFeed';
 
 import './Home.scss';
 
@@ -27,6 +28,7 @@ function Home({
         <div className='Home__middle'>
           <div className='Home__Activity__container'>
             <ProjectContributions />
+            <ContributionsFeed />
           </div>
           {/* <div className='Home__Explore__container'>
             <SetupGuide askEmailSent={askEmailSent} onSendEmail={onSendEmail} />
