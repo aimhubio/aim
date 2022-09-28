@@ -112,14 +112,6 @@ function useTagsCard() {
         title: (
           <Text weight={600} size={12} tint={100}>
             Name
-            <Text
-              weight={600}
-              size={14}
-              tint={50}
-              className='RunOverviewTab__cardBox__tableTitleCount'
-            >
-              ({tableData?.length})
-            </Text>
           </Text>
         ),
         width: 'calc(100% - 50px)',
