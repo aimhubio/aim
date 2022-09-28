@@ -25,7 +25,6 @@ const Container = styled.div<IListItemProps | any>`
     }
   }
   .Text {
-    text-transform: capitalize;
     max-width: 100%;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -37,10 +36,16 @@ function ListItem({
   className = '',
   size = 'medium',
   children,
+  onClick,
   ...rest
 }: IListItemProps) {
   return (
-    <Container className={`ListItem ${className}`} size={size} {...rest}>
+    <Container
+      onClick={onClick ? onClick : () => null}
+      className={`ListItem ${className}`}
+      size={size}
+      {...rest}
+    >
       {children}
     </Container>
   );

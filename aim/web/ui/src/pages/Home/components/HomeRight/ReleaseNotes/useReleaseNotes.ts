@@ -22,17 +22,28 @@ function useReleaseNotes() {
   const releaseNoteRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
-    releaseNotesEngine.fetchReleases();
-    fetchCurrentRelease();
+    if (releaseNotesStore.data?.length) {
+      // detect current release in fetched release notes
+      const release: IReleaseNote | undefined = releaseNotesStore.data?.find(
+        (release: IReleaseNote) => release.tag_name === `v${AIM_VERSION}`,
+      );
+      if (release) {
+        setCurrentRelease(release);
+        setLoading(false);
+      } else {
+        fetchCurrentRelease();
+      }
+    } else {
+      releaseNotesEngine.fetchReleases();
+    }
     return () => {
-      releaseNotesEngine.releasesState.destroy();
       releaseNoteRef?.current?.removeEventListener(
         'scroll',
         onChangelogContentScroll,
       );
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [releaseNotesStore.data]);
 
   React.useEffect(() => {
     if (!loading) {
@@ -59,21 +70,7 @@ function useReleaseNotes() {
     }
   }
 
-  React.useEffect(() => {
-    if (releaseNotesStore.data?.length) {
-      const currentRelease: IReleaseNote | undefined =
-        releaseNotesStore.data?.find(
-          (release: IReleaseNote) => release.tag_name === `v${AIM_VERSION}`,
-        );
-      if (currentRelease) {
-        setCurrentRelease(currentRelease);
-      } else {
-        fetchCurrentRelease();
-      }
-    }
-  }, [releaseNotesStore.data]);
-
-  async function fetchCurrentRelease() {
+  async function fetchCurrentRelease(): Promise<void> {
     try {
       const data = await fetchReleaseByTagName(`v${AIM_VERSION}`);
       setCurrentRelease(data);
