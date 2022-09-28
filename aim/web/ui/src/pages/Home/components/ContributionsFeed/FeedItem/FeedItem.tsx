@@ -1,7 +1,7 @@
 import React from 'react';
 
-function FeedItem(): React.FunctionComponentElement<React.ReactNode> {
-  return <div>FeedItem</div>;
+function FeedItem(props: any): React.FunctionComponentElement<React.ReactNode> {
+  return <div className='FeedItem'></div>;
 }
 
 export default React.memo(FeedItem);

@@ -28,12 +28,12 @@ function Home({
         <div className='Home__middle'>
           <div className='Home__Activity__container'>
             <ProjectContributions />
-            <ContributionsFeed />
           </div>
           {/* <div className='Home__Explore__container'>
             <SetupGuide askEmailSent={askEmailSent} onSendEmail={onSendEmail} />
             <ExploreAim />
           </div> */}
+          <ContributionsFeed />
         </div>
         <HomeRight />
         {notifyData?.length > 0 && (
