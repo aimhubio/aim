@@ -93,6 +93,7 @@ const Table = React.forwardRef(function Table(
     columnsColorScales,
     onRowsVisibilityChange,
     visualizationElementType,
+    noColumnActions,
     ...props
   }: ITableProps,
   ref,
@@ -999,6 +1000,7 @@ const Table = React.forwardRef(function Table(
                         onRowSelect={onRowSelect}
                         columnsColorScales={columnsColorScales}
                         onToggleColumnsColorScales={onToggleColumnsColorScales}
+                        noColumnActions={noColumnActions}
                         {...props}
                       />
                     </ErrorBoundary>

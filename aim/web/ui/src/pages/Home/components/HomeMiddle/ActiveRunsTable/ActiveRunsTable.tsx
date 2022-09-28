@@ -20,6 +20,7 @@ function ActiveRunsTable() {
         custom
         topHeader
         multiSelect
+        noColumnActions
         showRowClickBehaviour={false}
         showResizeContainerActionBar={false}
         appName={AppNameEnum.RUNS} // @TODO: change to Dashboard

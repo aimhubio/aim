@@ -314,6 +314,7 @@ function Table(props) {
                 })}
               >
                 <Column
+                  noColumnActions={props.noColumnActions}
                   topHeader={true}
                   showTopHeaderContent={true}
                   showTopHeaderBorder={true}
@@ -393,6 +394,7 @@ function Table(props) {
               {leftPane.map((col, index) => (
                 <ErrorBoundary key={col.key}>
                   <Column
+                    noColumnActions={props.noColumnActions}
                     topHeader={props.topHeader}
                     showTopHeaderContent={showTopHeaderContent(index, col)}
                     showTopHeaderBorder={showTopHeaderContent(index, col, true)}
@@ -454,6 +456,7 @@ function Table(props) {
               return (
                 <ErrorBoundary key={col.key + index}>
                   <Column
+                    noColumnActions={props.noColumnActions}
                     topHeader={props.topHeader}
                     showTopHeaderContent={showTopHeaderContent(index, col)}
                     showTopHeaderBorder={showTopHeaderContent(index, col, true)}
@@ -517,6 +520,7 @@ function Table(props) {
               {rightPane.map((col, index) => (
                 <ErrorBoundary key={col.key}>
                   <Column
+                    noColumnActions={props.noColumnActions}
                     key={col.key}
                     topHeader={props.topHeader}
                     showTopHeaderContent={showTopHeaderContent(index, col)}
