@@ -1,6 +1,7 @@
 import React from 'react';
+import { omit } from 'lodash-es';
 
-import { ControlsConfigs } from 'modules/core/engine/store/controls';
+import { ControlsConfigs } from 'modules/core/engine/visualizations/controls';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
@@ -9,12 +10,16 @@ import { IControlsProps } from '../../types';
 import './Controls.scss';
 
 function Controls(props: IControlsProps) {
-  const { controls = [] } = props.engine as Record<'controls', ControlsConfigs>;
+  const { controls = [] } = props.engine.visualizations[
+    props.visualizationName
+  ] as Record<'controls', ControlsConfigs & { reset: () => void }>;
 
   const Components = React.useMemo(
     () =>
-      Object.entries(controls).map(([key, Control]) => {
+      Object.entries(omit(controls, ['reset'])).map(([key, Control]) => {
+        // @ts-ignore
         const Component = Control.component;
+
         return (
           <div key={key} className='Control'>
             <Component {...props} />
@@ -35,6 +40,6 @@ function Controls(props: IControlsProps) {
   );
 }
 
-Controls.displayName = 'Controls';
+Controls.diplayName = 'Controls';
 
 export default React.memo<IControlsProps>(Controls);

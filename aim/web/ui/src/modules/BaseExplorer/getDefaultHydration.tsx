@@ -1,17 +1,53 @@
 import React, { memo } from 'react';
 
-import { IBaseComponentProps } from 'modules/BaseExplorer/types';
-import { GroupingItem } from 'modules/BaseExplorer/components';
+import { ControlsConfigs } from 'modules/core/engine/visualizations/controls';
+import { GroupingConfigs } from 'modules/core/engine/explorer/groupings';
 import { GroupType, Order } from 'modules/core/pipeline';
-import { GroupingConfigs } from 'modules/core/engine/store/grouping';
 
 import { AimFlatObjectBase } from 'types/core/AimObjects';
+
+import { BoxProperties, CaptionProperties } from './components/Controls';
+import FullVewPopover from './components/BoxFullViewPopover';
+import Visualizer from './components/Visualizer';
+import BoxWrapper from './components/BoxWrapper';
+import { AdvancedQueryForm } from './components/QueryForm';
+import Controls from './components/Controls';
+import Grouping, { GroupingItem } from './components/Grouping';
+import { IBaseComponentProps } from './types';
+
+const controls: ControlsConfigs = {
+  boxProperties: {
+    component: BoxProperties,
+    settings: {
+      minWidth: 200,
+      maxWidth: 800,
+      minHeight: 200,
+      maxHeight: 800,
+      step: 10,
+    },
+    // no need to have state for boxProperties since it works with the state, which is responsible for grouping as well
+    // this is the reason for empty state, the state property is optional, just kept empty here to have an example for other controls
+    state: {
+      initialState: {},
+    },
+  },
+  captionProperties: {
+    component: CaptionProperties,
+    state: {
+      initialState: {
+        displayBoxCaption: true,
+        selectedFields: ['run.name', 'figures.name', 'figures.context'],
+      },
+    },
+  },
+};
 
 const groupings: GroupingConfigs = {
   [GroupType.COLUMN]: {
     component: memo((props: IBaseComponentProps) => (
       <GroupingItem groupName='columns' iconName='group-column' {...props} />
     )),
+
     // @ts-ignore
     styleApplier: (
       object: AimFlatObjectBase<any>,
@@ -79,4 +115,38 @@ const groupings: GroupingConfigs = {
   },
 };
 
-export default groupings;
+const defaultHydration = {
+  ObjectFullView: FullVewPopover,
+  BoxWrapper: BoxWrapper,
+  Visualizer: Visualizer,
+  QueryForm: AdvancedQueryForm,
+  Controls: Controls,
+  Groupings: Grouping,
+  documentationLink:
+    'https://aimstack.readthedocs.io/en/latest/ui/pages/explorers.html',
+  box: {
+    initialState: {
+      width: 400,
+      height: 400,
+      gap: 0,
+    },
+  },
+  controls,
+  groupings,
+  customStates: {
+    depthMap: {
+      initialState: {},
+    },
+  },
+};
+
+/**
+ * getDefaultHydration
+ * This file consists of explorer default configuration for ui components and explorer specific options
+ * May receive the configuration and return new hydrated object later
+ */
+function getDefaultHydration(): typeof defaultHydration {
+  return defaultHydration;
+}
+
+export default getDefaultHydration;
