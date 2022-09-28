@@ -23,7 +23,9 @@ function ReleaseNotes(): React.FunctionComponentElement<React.ReactNode> {
   return (
     <div className='ReleaseNotes'>
       {isLoading ? (
-        <Spinner />
+        <div className='ReleaseNotes__Spinner'>
+          <Spinner />
+        </div>
       ) : (
         <>
           <div className='ReleaseNotes__latest'>
