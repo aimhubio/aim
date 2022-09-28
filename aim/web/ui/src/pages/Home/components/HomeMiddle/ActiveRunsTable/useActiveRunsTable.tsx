@@ -14,6 +14,7 @@ import { IRun } from 'types/services/models/metrics/runModel';
 import { processDurationTime } from 'utils/processDurationTime';
 import contextToString from 'utils/contextToString';
 import { getMetricHash } from 'utils/app/getMetricHash';
+import { formatValue } from 'utils/formatValue';
 
 import createActiveRunsEngine from './ActiveRunsStore';
 
@@ -34,10 +35,21 @@ function useActiveRunsTable() {
   const metricsColumns = React.useMemo(() => {
     if (activeRunsStore.data) {
       const metrics: any = [];
-      activeRunsStore.data.forEach(
-        ({ traces }: IRun<unknown>, index: number) => {
-          traces.metric.forEach((trace: any) => {
-            const metricHash = getMetricHash(trace.name, trace.context as any);
+      const metricsValues: any = {};
+      activeRunsStore.data.forEach(({ hash, traces }: IRun<unknown>) => {
+        traces.metric.forEach((trace: any) => {
+          const metricHash = getMetricHash(trace.name, trace.context as any);
+
+          if (metricsValues.hasOwnProperty(metricHash)) {
+            metricsValues[metricHash][hash] = [
+              trace.last_value.last_step,
+              trace.last_value.last,
+            ];
+          } else {
+            metricsValues[metricHash] = {
+              [hash]: [trace.last_value.last_step, trace.last_value.last],
+            };
+
             const metricContext = contextToString(
               trace.context as Record<string, unknown>,
             ) as string;
@@ -52,14 +64,23 @@ function useActiveRunsTable() {
                 />
               ),
               topHeader: 'Run',
+              name: trace.name,
+              context: metricContext,
             });
-          });
-        },
-      );
+          }
+        });
+      });
 
-      return metrics;
+      return {
+        columns: _.orderBy(metrics, ['name', 'context'], ['asc', 'asc']) as any,
+        values: metricsValues,
+      };
     }
-    return {};
+
+    return {
+      columns: [],
+      values: [],
+    };
   }, [activeRunsStore.data]);
 
   // memoized table data
@@ -67,7 +88,7 @@ function useActiveRunsTable() {
     if (activeRunsStore.data) {
       return activeRunsStore.data.map(
         ({ props, hash }: IRun<unknown>, index: number) => {
-          return {
+          let row: any = {
             key: index,
             index,
             experiment: props.experiment?.name,
@@ -86,6 +107,20 @@ function useActiveRunsTable() {
               props.end_time ? props.end_time * 1000 : Date.now(),
             ),
           };
+
+          metricsColumns.columns.forEach((col: any) => {
+            const [step, value] = metricsColumns.values[col.key][hash] ?? [
+              null,
+              null,
+            ];
+            row[col.key] = {
+              content:
+                step === null
+                  ? '--'
+                  : `step: ${step} / value: ${formatValue(value)}`,
+            };
+          });
+          return row;
         },
       );
     }
@@ -118,7 +153,7 @@ function useActiveRunsTable() {
         topHeader: 'Run',
       },
     ];
-    return columns.concat(metricsColumns);
+    return columns.concat(metricsColumns.columns);
   }, [metricsColumns]);
 
   // Update the table data and columns when the activity data changes
