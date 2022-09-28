@@ -6,6 +6,8 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import blobsURIModel from 'services/models/media/blobsURIModel';
 
+import { TooltipAppearance } from 'types/services/models/metrics/metricsAppModel.d';
+
 import { ChartTypeEnum } from 'utils/d3';
 
 import { IImageFullViewPopoverProps } from './types.d';
@@ -58,6 +60,7 @@ function ImageFullViewPopover({
                 focusedState={{ active: true, key: null }}
                 selectOptions={selectOptions}
                 onRunsTagsChange={onRunsTagsChange}
+                tooltipAppearancePosition={TooltipAppearance.Auto}
               />
             </ErrorBoundary>
           </div>

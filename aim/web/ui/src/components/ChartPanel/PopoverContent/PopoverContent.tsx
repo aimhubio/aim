@@ -37,6 +37,7 @@ const PopoverContent = React.forwardRef(function PopoverContent(
   const {
     tooltipContent,
     tooltipAppearance = TooltipAppearance.Auto,
+    tooltipAppearancePosition,
     focusedState,
     chartType,
     alignmentConfig,
@@ -54,9 +55,9 @@ const PopoverContent = React.forwardRef(function PopoverContent(
 
   const isPopoverPinned = React.useMemo(
     () =>
-      tooltipAppearance === TooltipAppearance.Top ||
-      tooltipAppearance === TooltipAppearance.Bottom,
-    [tooltipAppearance],
+      tooltipAppearancePosition === TooltipAppearance.Top ||
+      tooltipAppearancePosition === TooltipAppearance.Bottom,
+    [tooltipAppearancePosition],
   );
 
   const redirectToRun = () => {

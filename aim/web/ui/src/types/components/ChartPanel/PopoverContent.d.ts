@@ -11,6 +11,7 @@ import { ChartTypeEnum } from 'utils/d3';
 export interface IPopoverContentProps {
   tooltipContent: ITooltipContent;
   tooltipAppearance?: TooltipAppearance;
+  tooltipAppearancePosition: TooltipAppearance;
   focusedState: IFocusedState;
   chartType: ChartTypeEnum;
   alignmentConfig?: IAlignmentConfig;
