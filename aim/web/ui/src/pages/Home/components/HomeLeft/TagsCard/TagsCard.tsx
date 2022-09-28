@@ -20,9 +20,16 @@ function TagsCard() {
     selectedRows,
     tagsQuery,
   } = useTagsCard();
+
   return (
     <div className='TagsCard'>
-      <Text className='TagsCard__title' component='h3' size={18}>
+      <Text
+        className='TagsCard__title'
+        component='h3'
+        size={14}
+        weight={700}
+        tint={100}
+      >
         Tags
       </Text>
       <DataList
@@ -30,8 +37,10 @@ function TagsCard() {
         tableColumns={tableColumns}
         tableData={tableData}
         isLoading={tagsStore.loading}
-        height='350px'
+        height={Math.min(238, tableData.length * 24 + 56) + 'px'}
         searchableKeys={['name', 'run_count']}
+        rowHeight={24}
+        disableMatchBar={true}
         illustrationConfig={{
           size: 'large',
           title: 'No Results',

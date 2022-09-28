@@ -58,7 +58,10 @@ function drawScatterTrendline({
     .datum(regressionPoints)
     .classed('RegressionLine', true)
     .attr('clip-path', `url(#${nameKey}-lines-rect-clip-${index})`)
-    .attr('d', line);
+    .attr('d', line)
+    .attr('stroke-width', 2.2)
+    .attr('fill', 'none')
+    .attr('stroke', '#E64E48FF'); // error-color
 }
 
 export default drawScatterTrendline;

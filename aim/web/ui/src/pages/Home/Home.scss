@@ -6,11 +6,11 @@ $border: 1px solid $primary-color-10;
   overflow: hidden;
   display: flex;
   &__middle {
-    width: 60%;
     padding: $space-md $space-lg;
     border: $border;
     display: flex;
     flex-direction: column;
+    flex: 1 1;
     &__title {
       margin-bottom: $space-lg;
     }

@@ -4,10 +4,10 @@ import {
 } from 'modules/core/api/dashboardsApi';
 import createResource from 'modules/core/utils/createResource';
 
-function createBookmarksEngine() {
+function createDashboardBookmarksEngine() {
   const { fetchData, state } =
     createResource<IDashboardData[]>(fetchDashboardsList);
-  return { fetchBookmarks: fetchData, bookmarksState: state };
+  return { fetchDashboardBookmarks: fetchData, dashboardBookmarksState: state };
 }
 
-export default createBookmarksEngine();
+export default createDashboardBookmarksEngine();

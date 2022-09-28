@@ -28,7 +28,7 @@ function Cell({
   let cellRef = React.useRef();
 
   React.useEffect(() => {
-    setColumnWidth(cellRef.current.offsetWidth);
+    setColumnWidth(cellRef.current?.offsetWidth ?? 0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -82,7 +82,9 @@ function Cell({
               isNumeric,
             })}
           >
-            {typeof item === 'object' && item?.hasOwnProperty('content')
+            {typeof item === 'object' && item?.hasOwnProperty('component')
+              ? <item.component {...item.props} /> ?? ''
+              : typeof item === 'object' && item?.hasOwnProperty('content')
               ? item?.content ?? ''
               : item ?? ''}
           </div>

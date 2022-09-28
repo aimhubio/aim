@@ -9,7 +9,8 @@ failed or stalled training runs.
 
 These are the required steps in order to turn on the training run status notifications.
 
-1. Configure notifiers. The notifier configuration is described in detail in [Configuring Notifiers](#configuring-notifiers) section. 
+1. Configure notifiers. The notifier configuration is described in detail in [Configuring Notifiers](#configuring-notifiers) section.
+
 2. Start notifier service:
     ```shell
     aim-watcher --repo <AIM_REPO_PATH> start

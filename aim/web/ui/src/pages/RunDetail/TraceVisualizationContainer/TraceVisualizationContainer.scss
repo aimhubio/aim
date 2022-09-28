@@ -25,5 +25,12 @@
     flex-direction: column;
     justify-content: space-between;
     background-color: $white;
+    &__suspenseLoaderContainer {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      width: 100%;
+    }
   }
 }

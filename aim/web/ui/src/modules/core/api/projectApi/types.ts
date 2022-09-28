@@ -55,7 +55,7 @@ export type GetParamsResult = {
    * ```
    * This record includes high level params of run, system defined params like __system_params, environment variables etc.
    */
-  params: Record<string, any>;
+  params?: Record<string, any>;
   /**
    * Context of tracked metrics sequences by passing name of sequence as`metric`
    * This generates by calling

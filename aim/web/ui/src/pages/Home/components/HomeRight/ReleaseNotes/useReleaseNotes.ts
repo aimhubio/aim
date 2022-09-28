@@ -96,6 +96,11 @@ function useReleaseNotes() {
       releaseNotesStore?.data?.some((release: IReleaseNote) => {
         const info = modifyReleaseNote(release.body);
         if (release.tag_name === `v${AIM_VERSION}`) {
+          data.push({
+            tagName: release.tag_name,
+            info: modifyReleaseNote(release.body),
+            url: release.html_url,
+          });
           return true;
         }
         if (info) {
