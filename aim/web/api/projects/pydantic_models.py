@@ -22,6 +22,7 @@ class ProjectParamsOut(BaseModel):
 class ProjectActivityApiOut(BaseModel):
     num_experiments: int
     num_runs: int
+    num_archived_runs: int
     activity_map: Dict[str, int] = {"2021-01-01": 54}
 
 
