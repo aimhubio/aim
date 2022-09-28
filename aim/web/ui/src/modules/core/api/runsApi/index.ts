@@ -26,16 +26,6 @@ async function searchRuns(
   ).body;
 }
 
-async function searchRun(
-  queryParams: RunsSearchQueryParams,
-): Promise<RunsSearchResult> {
-  return (
-    await api.makeAPIGetRequest(`${ENDPOINTS.RUNS.SEARCH}/run`, {
-      query_params: queryParams,
-    })
-  ).body;
-}
-
 function createSearchRunsRequest(
   sequenceType: SequenceTypesEnum,
 ): RequestInstance {
@@ -63,5 +53,30 @@ function createSearchRunsRequest(
   };
 }
 
-export { searchRuns, createSearchRunsRequest, searchRun };
+function createSearchRunRequest(): RequestInstance {
+  const controller = new AbortController();
+  const signal = controller.signal;
+
+  async function call(
+    queryParams: RunsSearchQueryParams,
+  ): Promise<RunsSearchResult> {
+    return (
+      await api.makeAPIGetRequest(`${ENDPOINTS.RUNS.SEARCH}/run`, {
+        query_params: queryParams,
+        signal,
+      })
+    ).body;
+  }
+
+  function cancel(): void {
+    controller.abort();
+  }
+
+  return {
+    call,
+    cancel,
+  };
+}
+
+export { searchRuns, createSearchRunsRequest, createSearchRunRequest };
 export * from './types';
