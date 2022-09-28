@@ -5,6 +5,7 @@ export interface IListItemProps
   className?: string;
   children?: React.ReactNode;
   size?: IListITemSize;
+  onClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
 }
 
 export type IListITemSize = 'small' | 'medium' | 'large';

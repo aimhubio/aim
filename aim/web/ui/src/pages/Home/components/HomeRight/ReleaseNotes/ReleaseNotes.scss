@@ -3,8 +3,11 @@
 .ReleaseNotes {
   display: flex;
   flex-direction: column;
-  .Spinner {
-    height: 100vh;
+  &__Spinner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: calc(100vh - 40px);
   }
   &__latest {
     display: flex;
