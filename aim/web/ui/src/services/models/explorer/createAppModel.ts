@@ -44,7 +44,6 @@ import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopo
 import { ILine } from 'types/components/LineChart/LineChart';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
-import { IOnSmoothingChange } from 'types/pages/metrics/Metrics';
 import { IMetric } from 'types/services/models/metrics/metricModel';
 import {
   IAggregationConfig,
@@ -56,6 +55,7 @@ import {
   IMetricTableRowData,
   IOnGroupingModeChangeParams,
   IOnGroupingSelectChangeParams,
+  ISmoothing,
   ITooltip,
 } from 'types/services/models/metrics/metricsAppModel';
 import {
@@ -291,11 +291,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 yAxis: CONTROLS_DEFAULT_CONFIG.metrics.axesScaleRange.yAxis,
                 xAxis: CONTROLS_DEFAULT_CONFIG.metrics.axesScaleRange.xAxis,
               },
-              curveInterpolation:
-                CONTROLS_DEFAULT_CONFIG.metrics.curveInterpolation,
-              smoothingAlgorithm:
-                CONTROLS_DEFAULT_CONFIG.metrics.smoothingAlgorithm,
-              smoothingFactor: CONTROLS_DEFAULT_CONFIG.metrics.smoothingFactor,
+              smoothing: {
+                algorithm: CONTROLS_DEFAULT_CONFIG.metrics.smoothing.algorithm,
+                factor: CONTROLS_DEFAULT_CONFIG.metrics.smoothing.factor,
+                curveInterpolation:
+                  CONTROLS_DEFAULT_CONFIG.metrics.smoothing.curveInterpolation,
+                isApplied: CONTROLS_DEFAULT_CONFIG.metrics.smoothing.isApplied,
+              },
               alignmentConfig: {
                 metric: CONTROLS_DEFAULT_CONFIG.metrics.alignmentConfig.metric,
                 type: CONTROLS_DEFAULT_CONFIG.metrics.alignmentConfig.type,
@@ -1025,13 +1027,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
             );
 
             let processedValues = [...values];
-            if (
-              configData?.chart?.smoothingAlgorithm &&
-              configData.chart.smoothingFactor
-            ) {
+            if (configData?.chart?.smoothing.isApplied) {
               processedValues = getSmoothenedData({
-                smoothingAlgorithm: configData?.chart.smoothingAlgorithm,
-                smoothingFactor: configData.chart.smoothingFactor,
+                smoothingAlgorithm: configData?.chart.smoothing.algorithm,
+                smoothingFactor: configData.chart.smoothing.factor,
                 data: processedValues,
               });
             }
@@ -1984,7 +1983,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             appName,
           });
         },
-        onSmoothingChange(args: IOnSmoothingChange): void {
+        onSmoothingChange(args: Partial<ISmoothing>): void {
           onSmoothingChange({ args, model, appName, updateModelData });
         },
         onIgnoreOutliersChange(): void {

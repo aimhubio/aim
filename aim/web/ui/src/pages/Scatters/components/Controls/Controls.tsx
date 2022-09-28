@@ -65,7 +65,7 @@ function Controls(
                       }`}
                       onClick={onAnchorClick}
                     >
-                      <Icon name='arrow-left' onClick={onAnchorClick} />
+                      <Icon name='arrow-left' fontSize={9} />
                     </span>
                     <Icon
                       className={`Controls__icon ${
