@@ -39,7 +39,7 @@ function useContributionsFeed() {
       // create a list of objects with month and contributions
 
       monthList.forEach((month: string) => {
-        data[month] = [];
+        data[month] = {};
       });
 
       // add contributions to the month list
@@ -57,7 +57,6 @@ function useContributionsFeed() {
         // create a contribution object
         const contribution = {
           name: props.name,
-          date: moment(props.creation_time * 1000).format(TABLE_DATE_FORMAT),
         };
 
         // check if the day already exists in the month list

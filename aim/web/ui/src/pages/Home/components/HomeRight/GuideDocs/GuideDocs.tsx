@@ -49,28 +49,30 @@ function GuideDocs(): React.FunctionComponentElement<React.ReactNode> {
         Guide
       </Text>
       <div className='GuideLinks__content'>
-        {guideLinks.map((link: { name: string; url: string }) => (
-          <ListItem size='small' key={link.url}>
-            <Text
-              className='GuideLinks__content--name'
-              onClick={(e) => onClick(e, link.url)}
-              size={12}
-              tint={100}
-            >
-              {link.name}
-            </Text>
-            <Tooltip title='Explore in new tab'>
-              <div>
-                <Icon
-                  box
-                  fontSize={12}
-                  onClick={(e) => onClick(e, link.url, true)}
-                  name='new-tab'
-                />
-              </div>
-            </Tooltip>
-          </ListItem>
-        ))}
+        {guideLinks.map(
+          (link: { name: string; url: string }, index: number) => (
+            <ListItem size='small' key={index}>
+              <Text
+                className='GuideLinks__content--name'
+                onClick={(e) => onClick(e, link.url)}
+                size={12}
+                tint={100}
+              >
+                {link.name}
+              </Text>
+              <Tooltip title='Explore in new tab'>
+                <div>
+                  <Icon
+                    box
+                    fontSize={12}
+                    onClick={(e) => onClick(e, link.url, true)}
+                    name='new-tab'
+                  />
+                </div>
+              </Tooltip>
+            </ListItem>
+          ),
+        )}
       </div>
       <a
         href={DOCUMENTATIONS.MAIN_PAGE}
