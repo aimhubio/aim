@@ -43,7 +43,7 @@
     "typeface-roboto": "^1.1.13",
     "web-vitals": "^1.0.1",
     "yup": "^0.32.9",
-    "zustand": "^4.0.0-rc.4"
+    "zustand": "^4.1.1"
   },
   "scripts": {
     "start": "react-app-rewired --max_old_space_size=4096 start",

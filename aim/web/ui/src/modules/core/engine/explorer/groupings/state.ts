@@ -2,8 +2,6 @@ import { omit } from 'lodash-es';
 
 import { Order } from 'modules/core/pipeline';
 
-import { createSliceState } from './utils';
-
 type StyleApplierCallback<S> = (
   object: any,
   group: Array<string>,
@@ -53,6 +51,7 @@ export type GroupingConfig<State extends object, Settings> = {
   // variant: 'structured' | 'joined'
   axisComponent?: Function;
 };
+
 function getCurrentValues(
   defaultValues: {
     orders: Order[];
@@ -103,50 +102,6 @@ function getCurrentValues(
   };
 }
 
-function createGrouping(config: GroupingConfig<unknown & object, any>) {
-  const {
-    name,
-    component,
-    styleApplier,
-    axisComponent,
-    state = { initialState: {} },
-    settings = {},
-    defaultApplications = null,
-  } = config;
-
-  const observableState = createSliceState(
-    state.initialState,
-    `groupings.${name}`,
-  );
-
-  return {
-    settings,
-    component,
-    styleApplier,
-    axisComponent,
-    observableState,
-    defaultApplications,
-  };
-}
-
-export type GroupingConfigs = Record<
-  string,
-  Omit<GroupingConfig<unknown & object, any>, 'name'>
->;
-
-function createGroupingsStateConfig(configs: GroupingConfigs = {}) {
-  const groupings: Record<string, any> = {};
-
-  Object.keys(configs).forEach((name: string) => {
-    groupings[name] = createGrouping({
-      name,
-      ...configs[name],
-    });
-  });
-
-  return createGroupingsSlice(groupings);
-}
-
 function createGroupingsSlice(groupings: Record<string, any>) {
   let initialState: Record<string, any> = {
     currentValues: {},
@@ -186,12 +141,16 @@ function createGroupingsSlice(groupings: Record<string, any>) {
         },
         {},
       );
-      set({
-        groupings: {
-          ...store.groupings,
-          currentValues: newValues,
+      set(
+        {
+          groupings: {
+            ...store.groupings,
+            currentValues: newValues,
+          },
         },
-      });
+        false,
+        '@UPDATE/GROUPING',
+      );
     };
     const reset = () => {
       const store = get().groupings.currentValues;
@@ -205,12 +164,16 @@ function createGroupingsSlice(groupings: Record<string, any>) {
         },
         {},
       );
-      set({
-        groupings: {
-          ...store.groupings,
-          currentValues: newValues,
+      set(
+        {
+          groupings: {
+            ...store.groupings,
+            currentValues: newValues,
+          },
         },
-      });
+        false,
+        '@RESET/GROUPING',
+      );
     };
     return {
       update,
@@ -227,4 +190,4 @@ function createGroupingsSlice(groupings: Record<string, any>) {
   };
 }
 
-export { createGroupingsStateConfig };
+export default createGroupingsSlice;
