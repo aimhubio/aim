@@ -241,7 +241,7 @@ const PopoverContent = React.forwardRef(function PopoverContent(
               },
             )}
           >
-            <Icon name='arrow-up' />
+            <Icon name='pin-to-top' />
           </Button>
           <Button
             onClick={() =>
@@ -256,7 +256,7 @@ const PopoverContent = React.forwardRef(function PopoverContent(
               },
             )}
           >
-            <Icon name='chart-group' />
+            <Icon name='flexible' />
           </Button>
           <Button
             onClick={() =>
@@ -271,7 +271,7 @@ const PopoverContent = React.forwardRef(function PopoverContent(
               },
             )}
           >
-            <Icon name='arrow-down' />
+            <Icon name='pin-to-bottom' />
           </Button>
         </div>
       );
