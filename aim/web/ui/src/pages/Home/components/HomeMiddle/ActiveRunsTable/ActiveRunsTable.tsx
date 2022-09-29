@@ -11,8 +11,11 @@ import { AppNameEnum } from 'services/models/explorer';
 
 import useActiveRunsTable from './useActiveRunsTable';
 
+import './ActiveRunsTable.scss';
+
 function ActiveRunsTable() {
   const {
+    data,
     tableRef,
     tableColumns,
     tableData,
@@ -23,40 +26,50 @@ function ActiveRunsTable() {
   } = useActiveRunsTable();
 
   return (
-    <div>
-      <Text component='h1'>In Progress Runs</Text>
-      <div className='DataList__toolbarItems'>
-        {
+    <div className='ActiveRunsTable'>
+      <div className='ActiveRunsTable__header'>
+        <Text
+          className='ActiveRunsTable__header__title'
+          component='h3'
+          size={14}
+          weight={700}
+          tint={100}
+        >
+          Active runs {data?.length ? `(${data?.length})` : ''}
+        </Text>
+        <div className='ActiveRunsTable__header__comparisonPopover'>
           <CompareSelectedRunsPopover
             key='compareSelectedRunsPopover'
             appName={'home' as AppNameEnum}
             query={comparisonQuery}
             disabled={Object.keys(selectedRows).length === 0}
           />
-        }
+        </div>
       </div>
-      <Table
-        custom
-        topHeader
-        multiSelect
-        noColumnActions
-        hideHeaderActions
-        showRowClickBehaviour={false}
-        showResizeContainerActionBar={false}
-        appName={AppNameEnum.RUNS} // @TODO: change to Dashboard
-        ref={tableRef}
-        columns={tableColumns}
-        data={tableData}
-        isLoading={loading}
-        height='350px'
-        rowHeight={RowHeightSize.sm}
-        illustrationConfig={{
-          size: 'large',
-          title: 'No active runs',
-        }}
-        selectedRows={selectedRows}
-        onRowSelect={onRowSelect}
-      />
+      <div className='ActiveRunsTable__table'>
+        <Table
+          custom
+          topHeader
+          multiSelect
+          noColumnActions
+          hideHeaderActions
+          showRowClickBehaviour={false}
+          showResizeContainerActionBar={false}
+          appName={AppNameEnum.RUNS} // @TODO: change to Dashboard
+          ref={tableRef}
+          columns={tableColumns}
+          data={tableData}
+          isLoading={loading}
+          height={'231px'}
+          rowHeight={RowHeightSize.sm}
+          illustrationConfig={{
+            size: 'large',
+            title: 'No active runs',
+          }}
+          selectedRows={selectedRows}
+          onRowSelect={onRowSelect}
+        />
+      </div>
     </div>
   );
 }

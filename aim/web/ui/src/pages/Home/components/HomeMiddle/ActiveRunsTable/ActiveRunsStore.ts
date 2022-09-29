@@ -9,7 +9,7 @@ function createActiveRunsEngine() {
   let { call, cancel } = createSearchRunRequest();
 
   const { fetchData, state } = createResource<IRun<unknown>[]>(async () =>
-    parseStream(await call({ q: '"test" in run.tags' })),
+    parseStream(await call({ q: '"test" in run.tags', exclude_params: true })),
   );
   return { fetchActiveRuns: fetchData, activeRunsState: state };
 }

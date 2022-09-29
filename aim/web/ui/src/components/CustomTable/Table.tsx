@@ -339,7 +339,7 @@ function Table(props) {
                             </span>
                           ) : (
                             <span className='Table__column__partiallySelectedSelectIcon'>
-                              <Icon name='partially-selected' fontSize={16} />
+                              <Icon name='partially-selected' fontSize={14} />
                             </span>
                           )
                         }
