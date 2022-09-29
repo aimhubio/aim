@@ -29,13 +29,10 @@
       text-overflow: ellipsis;
       overflow: hidden;
       white-space: nowrap;
+      color: $pico;
     }
     &__label {
       text-transform: capitalize;
-      color: $pico-80;
-    }
-    &__count {
-      color: $pico;
     }
   }
 }

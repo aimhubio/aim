@@ -29,7 +29,7 @@ function StatisticsCard({
         <Text
           className='StatisticsCard__info__label'
           size={10}
-          weight={500}
+          weight={600}
           title={`${label}`}
         >
           {label}

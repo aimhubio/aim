@@ -120,6 +120,10 @@ export type GetProjectContributionsResult = {
    */
   num_experiments: number;
   /**
+   * Total number of archived runs in a single repo/storage/project (.aim directory)
+   */
+  num_archived_runs: number;
+  /**
    * Total number of runs in a single repo/storage/project (.aim directory)
    */
   num_runs: number;

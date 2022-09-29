@@ -15,35 +15,58 @@ const statisticsInitialMap: Partial<
 > = {
   [SequenceTypesEnum.Metric]: {
     label: 'metrics',
-    trackedItemsCount: 0,
+    count: 0,
     icon: 'metrics',
     iconBgColor: '#7A4CE0',
   },
   [SequenceTypesEnum.Images]: {
     label: 'images',
     icon: 'images',
-    trackedItemsCount: 0,
+    count: 0,
     iconBgColor: '#F17922',
   },
   [SequenceTypesEnum.Figures]: {
     label: 'figures',
     icon: 'figures-explorer',
-    trackedItemsCount: 0,
+    count: 0,
     iconBgColor: '#18AB6D',
   },
-  // @TODO add this items when the corresponding explorers would be created
-  // [SequenceTypesEnum.Texts]: {
-  //   label: 'text',
-  //   icon: 'text',
-  //   trackedItemsCount: 0,
-  //   iconBgColor: '#E149A0',
-  // },
-  // [SequenceTypesEnum.Audios]: {
-  //   label: 'audio',
-  //   icon: 'figures-explorer',
-  //   trackedItemsCount: 0,
-  //   iconBgColor: '#FCB500',
-  // },
+  [SequenceTypesEnum.Texts]: {
+    label: 'text',
+    icon: 'text',
+    count: 0,
+    iconBgColor: '#E149A0',
+  },
+  [SequenceTypesEnum.Audios]: {
+    label: 'audio',
+    icon: 'figures-explorer',
+    count: 0,
+    iconBgColor: '#FCB500',
+  },
+  [SequenceTypesEnum.Distributions]: {
+    label: 'distributions',
+    icon: 'figures-explorer',
+    count: 0,
+    iconBgColor: '#FCB500',
+  },
+};
+
+const runsCountingInitialMap: Record<
+  'archived' | 'unarchived',
+  IProjectStatistic
+> = {
+  unarchived: {
+    label: 'unarchived',
+    icon: 'unarchive',
+    count: 0,
+    iconBgColor: '#1473E6',
+  },
+  archived: {
+    label: 'archived',
+    icon: 'archive',
+    count: 0,
+    iconBgColor: '#606986',
+  },
 };
 
 function ProjectStatistics() {
@@ -52,50 +75,70 @@ function ProjectStatistics() {
 
   const { statisticsMap, totalTrackedSequencesCount } = React.useMemo(() => {
     const statisticsMap = { ...statisticsInitialMap };
-    const trackedItemsCountBySequence: Partial<
-      Record<SequenceTypesUnion, number>
-    > = {};
+    const trackedItemsCountMap: Partial<Record<SequenceTypesUnion, number>> =
+      {};
     let totalTrackedSequencesCount = 0;
 
     for (let [seqName, seqData] of Object.entries(
       projectParamsStore.data || {},
     )) {
-      trackedItemsCountBySequence[seqName as SequenceTypesUnion] =
-        Object.entries(seqData).reduce((acc, [itemKey, itemData]) => {
+      const sequenceItemsCount = Object.entries(seqData).reduce(
+        (acc, [itemKey, itemData]) => {
           if (!itemKey.startsWith('__system__')) {
             acc += itemData.length;
-            totalTrackedSequencesCount += itemData.length;
           }
           return acc;
-        }, 0);
+        },
+        0,
+      );
+      totalTrackedSequencesCount += sequenceItemsCount;
+      trackedItemsCountMap[seqName as SequenceTypesUnion] = sequenceItemsCount;
     }
 
-    const entries = Object.entries(trackedItemsCountBySequence) as Array<
+    const entries = Object.entries(trackedItemsCountMap) as Array<
       [SequenceTypesUnion, number]
     >;
     entries.forEach(([seqName, trackedItemsCount]) => {
       const sequenceState = statisticsMap[seqName];
       if (sequenceState) {
-        sequenceState.trackedItemsCount = trackedItemsCount;
+        sequenceState.count = trackedItemsCount;
       }
     });
     return { statisticsMap, totalTrackedSequencesCount };
   }, [projectParamsStore]);
 
-  const totalRunsCount = React.useMemo(
-    () => projectContributionsStore.data?.num_runs || 0,
+  const { totalRunsCount, archivedRuns } = React.useMemo(
+    () => ({
+      totalRunsCount: projectContributionsStore.data?.num_runs || 0,
+      archivedRuns: projectContributionsStore.data?.num_archived_runs || 0,
+    }),
     [projectContributionsStore],
   );
-  const statisticsBarData = React.useMemo(() => {
-    return Object.values(statisticsMap).map((item) => ({
-      label: item.label,
-      color: item.iconBgColor,
-      percent:
-        totalTrackedSequencesCount === 0
-          ? 0
-          : (item.trackedItemsCount / totalTrackedSequencesCount) * 100,
-    }));
-  }, [statisticsMap, totalTrackedSequencesCount]);
+  const statisticsBarData = React.useMemo(
+    () =>
+      Object.values(statisticsMap).map((item) => ({
+        label: item.label,
+        color: item.iconBgColor,
+        percent:
+          totalTrackedSequencesCount === 0
+            ? 0
+            : (item.count / totalTrackedSequencesCount) * 100,
+      })),
+    [statisticsMap, totalTrackedSequencesCount],
+  );
+  const runsCountingMap = React.useMemo(
+    () => ({
+      unarchived: {
+        ...runsCountingInitialMap.unarchived,
+        count: totalRunsCount - archivedRuns,
+      },
+      archived: {
+        ...runsCountingInitialMap.archived,
+        count: archivedRuns,
+      },
+    }),
+    [archivedRuns, totalRunsCount],
+  );
   return (
     <div className='ProjectStatistics'>
       <Text
@@ -105,16 +148,38 @@ function ProjectStatistics() {
         weight={700}
         size={14}
       >
-        {totalRunsCount} runs containing
+        Total runs: {totalRunsCount}
       </Text>
       <div className='ProjectStatistics__cards'>
-        {Object.values(statisticsMap).map(
-          ({ label, icon, trackedItemsCount, iconBgColor }) => (
+        {Object.values(runsCountingMap).map(
+          ({ label, icon, count, iconBgColor }) => (
             <StatisticsCard
               key={label}
               label={label}
               icon={icon}
-              count={trackedItemsCount}
+              count={count}
+              iconBgColor={iconBgColor}
+            />
+          ),
+        )}
+      </div>
+      <Text
+        className='ProjectStatistics__trackedSequences'
+        component='p'
+        tint={100}
+        weight={700}
+        size={14}
+      >
+        Tracked sequences
+      </Text>
+      <div className='ProjectStatistics__cards'>
+        {Object.values(statisticsMap).map(
+          ({ label, icon, count, iconBgColor }) => (
+            <StatisticsCard
+              key={label}
+              label={label}
+              icon={icon}
+              count={count}
               iconBgColor={iconBgColor}
             />
           ),
