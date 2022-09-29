@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'icomoon';
-  src:  url('./fonts/icomoon.eot?9lls3l');
-  src:  url('./fonts/icomoon.eot?9lls3l#iefix') format('embedded-opentype'),
-    url('./fonts/icomoon.ttf?9lls3l') format('truetype'),
-    url('./fonts/icomoon.woff?9lls3l') format('woff'),
-    url('./fonts/icomoon.svg?9lls3l#icomoon') format('svg');
+  src:  url('./fonts/icomoon.eot?bn2d6u');
+  src:  url('./fonts/icomoon.eot?bn2d6u#iefix') format('embedded-opentype'),
+  url('./fonts/icomoon.ttf?bn2d6u') format('truetype'),
+  url('./fonts/icomoon.woff?bn2d6u') format('woff'),
+  url('./fonts/icomoon.svg?bn2d6u#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -25,6 +25,21 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-audio:before {
+  content: "\e987";
+}
+.icon-distributions:before {
+  content: "\e988";
+}
+.icon-pin-to-top:before {
+  content: "\e984";
+}
+.icon-pin-to-bottom:before {
+  content: "\e985";
+}
+.icon-flexible:before {
+  content: "\e986";
+}
 .icon-arrow-left-contained:before {
   content: "\e980";
 }
