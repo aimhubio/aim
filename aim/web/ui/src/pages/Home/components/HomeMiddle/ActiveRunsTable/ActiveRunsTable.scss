@@ -17,6 +17,12 @@
   border-top: none;
 }
 
+.ActiveRunsTable__table--loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+} 
+
 .ActiveRunsTable__table--empty {
   border: none;
 }
