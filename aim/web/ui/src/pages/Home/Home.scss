@@ -6,7 +6,7 @@ $border: 1px solid $primary-color-10;
   overflow: hidden;
   display: flex;
   &__middle {
-    padding: 0 $space-unit;
+    padding: $space-md $space-lg;
     border: $border;
     display: flex;
     flex-direction: column;
