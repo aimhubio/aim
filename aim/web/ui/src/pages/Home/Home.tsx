@@ -10,7 +10,7 @@ import ProjectContributions from './components/ProjectContributions/ProjectContr
 import ExploreSection from './components/ExploreSection/ExploreSection';
 import HomeRight from './components/HomeRight/HomeRight';
 import ProjectStatistics from './components/ProjectStatistics';
-import ActiveRunsTable from './components/HomeMiddle/ActiveRunsTable/ActiveRunsTable';
+import ActiveRunsTable from './components/ActiveRunsTable/ActiveRunsTable';
 
 import './Home.scss';
 
