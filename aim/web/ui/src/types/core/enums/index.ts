@@ -19,3 +19,8 @@ export enum AimObjectDepths {
   Step = 2,
   Index = 3,
 }
+
+/**
+ * Sequence names as union type
+ */
+export type SequenceTypesUnion = `${SequenceTypesEnum}`;

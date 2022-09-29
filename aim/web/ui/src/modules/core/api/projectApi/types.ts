@@ -1,4 +1,4 @@
-import { SequenceTypesEnum } from 'types/core/enums';
+import { SequenceTypesUnion } from 'types/core/enums';
 import { Context } from 'types/core/shared';
 
 /**
@@ -7,9 +7,13 @@ import { Context } from 'types/core/shared';
  */
 export type GetParamsQueryOptions = {
   /**
-   * Sequence name one of 'metric' | 'distributions' | 'images' | 'figures' | 'audio' etc.
+   * Sequence: array of sequence names or one of 'metric' | 'distributions' | 'images' | 'figures' | 'audio' etc. .
    */
-  sequence: SequenceTypesEnum;
+  sequence: SequenceTypesUnion | SequenceTypesUnion[];
+  /**
+   * Exclude 'params' from the response
+   */
+  exclude_params?: boolean;
 };
 
 /**
@@ -51,7 +55,7 @@ export type GetParamsResult = {
    * ```
    * This record includes high level params of run, system defined params like __system_params, environment variables etc.
    */
-  params: Record<string, any>;
+  params?: Record<string, any>;
   /**
    * Context of tracked metrics sequences by passing name of sequence as`metric`
    * This generates by calling
@@ -115,6 +119,10 @@ export type GetProjectContributionsResult = {
    * Total number of experiments in a single repo/storage/project (.aim directory)
    */
   num_experiments: number;
+  /**
+   * Total number of archived runs in a single repo/storage/project (.aim directory)
+   */
+  num_archived_runs: number;
   /**
    * Total number of runs in a single repo/storage/project (.aim directory)
    */

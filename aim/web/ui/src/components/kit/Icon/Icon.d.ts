@@ -151,4 +151,6 @@ export type IconName =
   | 'arrow-left-contained'
   | 'arrow-up-contained'
   | 'arrow-right-contained'
-  | 'arrow-down-contained';
+  | 'arrow-down-contained'
+  | 'audio'
+  | 'distributions';

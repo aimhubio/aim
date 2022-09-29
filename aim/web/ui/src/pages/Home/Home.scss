@@ -14,7 +14,7 @@ $border: 1px solid $primary-color-10;
     }
   }
   &__middle {
-    padding: 0 $space-unit;
+    padding: $space-md $space-lg;
     border: $border;
     display: flex;
     flex-direction: column;
@@ -24,9 +24,6 @@ $border: 1px solid $primary-color-10;
     border-top: $border;
     border-bottom: $border;
     display: flex;
-  }
-  &__Activity__container {
-    padding: $space-lg;
   }
   h2 {
     margin: 0 0 1rem 0;

@@ -1,7 +1,7 @@
 @use 'src/styles/abstracts' as *;
 
 .ActiveRunsTable {
-  padding: $space-lg 0;
+  margin-top: $space-lg;
 }
 
 .ActiveRunsTable__header {

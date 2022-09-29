@@ -1,0 +1,42 @@
+@use 'src/styles/abstracts' as *;
+
+.StatisticsCard {
+  padding: $space-xs;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  border-radius: $border-radius-sm;
+  min-width: toRem(130px);
+  max-width: toRem(130px);
+  &__iconWrapper {
+    width: 2rem;
+    min-width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    margin-right: $space-xs;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    &__icon {
+      color: white;
+    }
+  }
+  &__info {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    &__label,
+    &__count {
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      color: $pico;
+    }
+    &__label {
+      text-transform: capitalize;
+    }
+  }
+  &.highlighted {
+    box-shadow: 0 0 2px 0px $box-shadow-color;
+  }
+}
