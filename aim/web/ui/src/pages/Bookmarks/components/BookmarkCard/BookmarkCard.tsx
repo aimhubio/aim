@@ -20,6 +20,7 @@ import './BookmarkCard.scss';
 export const BookmarkIconType: {
   [key: string]: { name: IconName; tooltipTitle: string };
 } = {
+  runs: { name: 'runs', tooltipTitle: 'Runs Explorer' },
   images: { name: 'images', tooltipTitle: 'Images Explorer' },
   params: { name: 'params', tooltipTitle: 'Params Explorer' },
   metrics: { name: 'metrics', tooltipTitle: 'Metrics Explorer' },

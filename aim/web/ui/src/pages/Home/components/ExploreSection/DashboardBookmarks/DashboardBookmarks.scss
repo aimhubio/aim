@@ -10,17 +10,20 @@ $bookmark-height: 24px;
     margin-bottom: $space-xs;
   }
   &__list {
-    max-height: 5 * $bookmark-height + $bookmark-height/2;
+    max-height: 5 * $bookmark-height;
     overflow: auto;
     &__ListItem {
       &__Text {
         flex: 1;
         margin-left: $space-xs;
         text-transform: capitalize;
-        max-width: 100%;
-        text-overflow: ellipsis;
-        overflow: hidden;
       }
     }
+  }
+  &__NavLink {
+    margin-top: $space-unit;
+    text-decoration: none;
+    display: block;
+    padding: 0 $space-sm;
   }
 }

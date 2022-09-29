@@ -46,15 +46,19 @@ async def project_activity_api(x_timezone_offset: int = Header(default=0),
         raise HTTPException(status_code=404)
 
     num_runs = 0
+    num_archived_runs = 0
     activity_counter = Counter()
     for run in factory.runs():
         creation_time = run.created_at - timedelta(minutes=x_timezone_offset)
         activity_counter[creation_time.strftime('%Y-%m-%dT%H:00:00')] += 1
         num_runs += 1
+        if run.archived:
+            num_archived_runs += 1
 
     return {
         'num_experiments': len(factory.experiments()),
         'num_runs': num_runs,
+        'num_archived_runs': num_archived_runs,
         'activity_map': dict(activity_counter),
     }
 
