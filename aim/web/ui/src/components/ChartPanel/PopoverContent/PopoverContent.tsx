@@ -210,7 +210,7 @@ const PopoverContent = React.forwardRef(function PopoverContent(
             withOnlyIcon
             size='xSmall'
           >
-            <Icon name='link' />
+            <Icon name='new-tab' />
           </Button>
           <Divider orientation={isPopoverPinned ? 'horizontal' : 'vertical'} />
           <Button

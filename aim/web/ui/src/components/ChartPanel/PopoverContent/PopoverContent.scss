@@ -11,7 +11,7 @@
   .PopoverContent {
     max-height: inherit;
     overflow: auto;
-    padding-bottom: 3px;
+    padding-bottom: toRem(3px);
     position: relative;
 
     &__fixed {
@@ -67,6 +67,22 @@
         .PopoverContent__tagBox {
           overflow-y: hidden;
           max-width: toRem(200px);
+        }
+      }
+      .PopoverContent__tagBox {
+        overflow: hidden;
+        .AttachedTagsList {
+          max-height: calc(100% - 1.25rem);
+          height: calc(100% - 1.25rem);
+          position: relative;
+          &__tags {
+            max-height: 100%;
+          }
+          &__ControlPopover__anchor {
+            position: absolute;
+            right: 0;
+            top: -1.875rem;
+          }
         }
       }
     }
