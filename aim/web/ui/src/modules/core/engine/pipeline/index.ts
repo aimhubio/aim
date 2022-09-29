@@ -14,6 +14,7 @@ import createPipeline, {
 import { SequenceTypesEnum } from 'types/core/enums';
 
 import { PipelineStatusEnum, ProgressState } from '../types';
+import getUrlSearchParam from '../../utils/getUrlSearchParam';
 
 import createState, {
   CurrentGrouping,
@@ -32,6 +33,7 @@ export interface IPipelineEngine<TObject, TStore> {
     getSequenceName: () => SequenceTypesEnum;
     destroy: () => void;
     reset: () => void;
+    initialize: () => void;
   } & Omit<PipelineStateBridge<TObject, TStore>, 'selectors'> &
     PipelineStateBridge<TObject, TStore>['selectors'];
 }
@@ -192,6 +194,15 @@ function createPipelineEngine<TStore, TObject>(
     group(defaultGroupings);
   }
 
+  function initialize() {
+    const stateFromStorage = getUrlSearchParam('groupings') || {};
+
+    // update state
+    if (!isEmpty(stateFromStorage)) {
+      state.setCurrentGroupings(stateFromStorage);
+    }
+  }
+
   return {
     state: {
       pipeline: state.initialState,
@@ -203,6 +214,7 @@ function createPipelineEngine<TStore, TObject>(
       search,
       group,
       reset,
+      initialize,
       destroy: () => {
         pipeline.clearCache();
       },

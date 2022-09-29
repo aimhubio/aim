@@ -1,7 +1,13 @@
-import { omit } from 'lodash-es';
+import { isEmpty, omit } from 'lodash-es';
 
 import { Order } from 'modules/core/pipeline';
 import { createSliceState } from 'modules/core/utils/store';
+import getUrlSearchParam from 'modules/core/utils/getUrlSearchParam';
+
+import getUrlWithParam from 'utils/getUrlWithParam';
+import { encode } from 'utils/encoder/encoder';
+
+import updateUrlSearchParam from '../../../utils/updateUrlSearchParam';
 
 import createGroupingsSlice from './state';
 
@@ -120,20 +126,45 @@ function createGroupingsEngine(config: GroupingConfigs, store: any) {
     {},
   );
 
+  function update(
+    groupValues: Record<string, { orders: Order[]; fields: string[] }>,
+  ) {
+    methods.update(groupValues);
+    const url = updateUrlSearchParam('groupings', encode(groupValues));
+
+    if (url === `${window.location.pathname}${window.location.search}`) {
+      return;
+    }
+    window.history.pushState(null, '', url);
+  }
+
   function resetSlices() {
     slicesResetMethods.forEach((func) => {
       func();
     });
   }
 
+  function initialize() {
+    const stateFromStorage = getUrlSearchParam('groupings') || {};
+
+    // update state
+    if (!isEmpty(stateFromStorage)) {
+      methods.update(stateFromStorage);
+    }
+
+    console.log('state from storage ----> ', stateFromStorage);
+  }
+
   return {
     state: { groupings: state.initialState },
     engine: {
       ...omit(state, ['initialState', 'generateMethods', 'slices']),
-      ...methods,
+      reset: methods.reset,
+      update,
       ...slices,
       resetSlices,
       styleAppliers,
+      initialize,
     },
   };
 }

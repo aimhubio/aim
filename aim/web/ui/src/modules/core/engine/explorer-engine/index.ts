@@ -1,7 +1,7 @@
 import createReact, { StoreApi, UseBoundStore } from 'zustand';
 
 import createVanilla from 'zustand/vanilla';
-import { devtools } from 'zustand/middleware';
+import { devtools, subscribeWithSelector } from 'zustand/middleware';
 import { PipelineOptions } from 'modules/core/pipeline';
 import { ExplorerEngineConfiguration } from 'modules/BaseExplorer/types';
 
@@ -14,6 +14,7 @@ import { PipelineStatusEnum } from '../types';
 import createVisualizationsEngine from '../visualizations';
 import createExplorerAdditionalEngine from '../explorer';
 import createCustomStatesEngine, { CustomStatesEngine } from '../custom-states';
+import getUrlSearchParam from '../../utils/getUrlSearchParam';
 
 type State = {
   pipeline?: any;
@@ -212,14 +213,16 @@ function createEngine<TObject = any>(
   // @ts-ignore
   const store = createVanilla<StoreApi<object>>(
     // @ts-ignore
-    devtool
-      ? // @ts-ignore
-        devtools(buildEngine, {
-          name,
-          anonymousActionType: 'UNKNOWN_ACTION',
-          serialize: { options: true },
-        })
-      : buildEngine,
+    subscribeWithSelector(
+      devtool
+        ? // @ts-ignore
+          devtools(buildEngine, {
+            name,
+            anonymousActionType: 'UNKNOWN_ACTION',
+            serialize: { options: true },
+          })
+        : buildEngine,
+    ),
   );
 
   // @ts-ignore
@@ -228,6 +231,10 @@ function createEngine<TObject = any>(
    * An initializer to use for url sync and bookmarks data get
    */
   function initialize(): Promise<boolean> {
+    query.initialize(useReactStore);
+    groupings.initialize();
+    pipeline.initialize();
+
     // subscribe to history
     return new Promise((resolve, reject) => {
       instructions
@@ -237,6 +244,11 @@ function createEngine<TObject = any>(
             pipeline.changeCurrentPhaseOrStatus(
               PipelineStatusEnum.Insufficient_Resources,
             );
+          } else {
+            const stateFromStorage = getUrlSearchParam('query') || {};
+            if (stateFromStorage.readyQuery) {
+              pipeline.search(stateFromStorage.readyQuery);
+            }
           }
         })
         // eslint-disable-next-line no-console
