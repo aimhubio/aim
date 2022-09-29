@@ -15,6 +15,7 @@ import { SequenceTypesEnum } from 'types/core/enums';
 
 import { PipelineStatusEnum, ProgressState } from '../types';
 import getUrlSearchParam from '../../utils/getUrlSearchParam';
+import listenToSearchParam from '../../utils/listenToSearchParam';
 
 import createState, {
   CurrentGrouping,
@@ -201,6 +202,14 @@ function createPipelineEngine<TStore, TObject>(
     if (!isEmpty(stateFromStorage)) {
       state.setCurrentGroupings(stateFromStorage);
     }
+
+    listenToSearchParam<any>('groupings', (groupings: any) => {
+      group(groupings);
+    });
+    listenToSearchParam<any>('query', (query: any) => {
+      console.log('Searching', query);
+      search(query.readyQuery);
+    });
   }
 
   return {

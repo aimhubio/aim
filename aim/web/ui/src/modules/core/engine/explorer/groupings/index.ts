@@ -3,11 +3,10 @@ import { isEmpty, omit } from 'lodash-es';
 import { Order } from 'modules/core/pipeline';
 import { createSliceState } from 'modules/core/utils/store';
 import getUrlSearchParam from 'modules/core/utils/getUrlSearchParam';
+import updateUrlSearchParam from 'modules/core/utils/updateUrlSearchParam';
+import listenToSearchParam from 'modules/core/utils/listenToSearchParam';
 
-import getUrlWithParam from 'utils/getUrlWithParam';
 import { encode } from 'utils/encoder/encoder';
-
-import updateUrlSearchParam from '../../../utils/updateUrlSearchParam';
 
 import createGroupingsSlice from './state';
 
@@ -92,6 +91,8 @@ export type GroupingConfigs = Record<
   Omit<GroupingConfig<unknown & object, any>, 'name'>
 >;
 
+type GroupValues = Record<string, { orders: Order[]; fields: string[] }>;
+
 function createGroupingsEngine(config: GroupingConfigs, store: any) {
   const groupingSliceConfig: Record<string, any> = {};
 
@@ -126,9 +127,7 @@ function createGroupingsEngine(config: GroupingConfigs, store: any) {
     {},
   );
 
-  function update(
-    groupValues: Record<string, { orders: Order[]; fields: string[] }>,
-  ) {
+  function update(groupValues: GroupValues) {
     methods.update(groupValues);
     const url = updateUrlSearchParam('groupings', encode(groupValues));
 
@@ -152,7 +151,17 @@ function createGroupingsEngine(config: GroupingConfigs, store: any) {
       methods.update(stateFromStorage);
     }
 
-    console.log('state from storage ----> ', stateFromStorage);
+    listenToSearchParam<GroupValues>(
+      'groupings',
+      (data: GroupValues | null) => {
+        // update state
+        if (!isEmpty(data)) {
+          methods.update(data as GroupValues);
+        } else {
+          methods.reset();
+        }
+      },
+    );
   }
 
   return {

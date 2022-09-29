@@ -15,8 +15,9 @@ function createExplorerAdditionalEngine<T>(
   config: ExplorerEngineConfiguration,
   store: any,
 ) {
+  const queryState = createQueryState<T>(store);
   const query = {
-    ...createQueryState<T>(store),
+    ...queryState,
     initialize: (store: UseBoundStore<any>) => {
       // checks for storage type
       const stateFromStorage = getUrlSearchParam('query') || {};
@@ -47,7 +48,13 @@ function createExplorerAdditionalEngine<T>(
       );
 
       listenToSearchParam<any>('query', (query: any) => {
-        console.log('update history ----> ', query, store.getState().query);
+        if (!isEmpty(query)) {
+          console.log('updating form');
+          queryState.ranges.update(query.queryState.ranges);
+          queryState.form.update(query.queryState.form);
+        } else {
+          queryState.ranges.reset();
+        }
       });
     },
   };
