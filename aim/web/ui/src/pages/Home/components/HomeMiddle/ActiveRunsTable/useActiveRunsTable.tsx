@@ -42,6 +42,7 @@ function useActiveRunsTable() {
   const metricsColumns = React.useMemo(() => {
     if (activeRunsStore.data) {
       const metrics: any = [];
+      const systemMetrics: any = [];
       const metricsValues: any = {};
       activeRunsStore.data.forEach(({ hash, traces }: IRun<unknown>) => {
         traces.metric.forEach((trace: any) => {
@@ -61,7 +62,8 @@ function useActiveRunsTable() {
               trace.context as Record<string, unknown>,
             ) as string;
 
-            metrics.push({
+            const isSystem = isSystemMetric(trace.name);
+            const col = {
               key: metricHash,
               content: (
                 <Badge
@@ -70,18 +72,27 @@ function useActiveRunsTable() {
                   label={metricContext === '' ? 'Empty context' : metricContext}
                 />
               ),
-              topHeader: isSystemMetric(trace.name)
+              topHeader: isSystem
                 ? formatSystemMetricName(trace.name)
                 : trace.name,
               name: trace.name,
               context: metricContext,
-            });
+              isSystem,
+            };
+
+            if (isSystem) {
+              systemMetrics.push(col);
+            } else {
+              metrics.push(col);
+            }
           }
         });
       });
 
       return {
-        columns: _.orderBy(metrics, ['name', 'context'], ['asc', 'asc']) as any,
+        columns: _.orderBy(metrics, ['name', 'context'], ['asc', 'asc']).concat(
+          _.orderBy(systemMetrics, ['name', 'context'], ['asc', 'asc']),
+        ) as any,
         values: metricsValues,
       };
     }
@@ -130,6 +141,8 @@ function useActiveRunsTable() {
               content:
                 step === null
                   ? '--'
+                  : col.isSystem
+                  ? formatValue(value)
                   : `step: ${step} / value: ${formatValue(value)}`,
             };
           });
@@ -179,7 +192,7 @@ function useActiveRunsTable() {
     }
   }, [tableData, tableColumns]);
 
-  // on row selection
+  // Handler for row selection
   const onRowSelect = React.useCallback(
     ({ actionType, data }) => {
       let selected: Record<string, boolean> = { ...selectedRows };

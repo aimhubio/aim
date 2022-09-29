@@ -721,8 +721,16 @@ function Column({
                                         ? top
                                         : null,
                                   }}
-                                  onRowHover={() => onRowHover(item)}
-                                  onRowClick={() => onRowClick(item)}
+                                  onRowHover={
+                                    onRowHover
+                                      ? () => onRowHover(item)
+                                      : undefined
+                                  }
+                                  onRowClick={
+                                    onRowClick
+                                      ? () => onRowClick(item)
+                                      : undefined
+                                  }
                                   setColumnWidth={fixColumnWidth}
                                 />
                               </React.Fragment>
@@ -790,8 +798,12 @@ function Column({
                         box={{
                           top: firstVisibleCellTop === top ? top : null,
                         }}
-                        onRowHover={() => onRowHover(item)}
-                        onRowClick={() => onRowClick(item)}
+                        onRowHover={
+                          onRowHover ? () => onRowHover(item) : undefined
+                        }
+                        onRowClick={
+                          onRowClick ? () => onRowClick(item) : undefined
+                        }
                         setColumnWidth={fixColumnWidth}
                       />
                     ) : (
@@ -816,8 +828,12 @@ function Column({
                         box={{
                           top: firstVisibleCellTop === top ? top : null,
                         }}
-                        onRowHover={() => onRowHover(item)}
-                        onRowClick={() => onRowClick(item)}
+                        onRowHover={
+                          onRowHover ? () => onRowHover(item) : undefined
+                        }
+                        onRowClick={
+                          onRowClick ? () => onRowClick(item) : undefined
+                        }
                         setColumnWidth={fixColumnWidth}
                       />
                     )}

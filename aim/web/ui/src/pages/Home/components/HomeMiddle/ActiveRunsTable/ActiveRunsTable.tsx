@@ -1,4 +1,5 @@
 import * as React from 'react';
+import classNames from 'classnames';
 
 import { Text } from 'components/kit';
 import Table from 'components/Table/Table';
@@ -15,7 +16,6 @@ import './ActiveRunsTable.scss';
 
 function ActiveRunsTable() {
   const {
-    data,
     tableRef,
     tableColumns,
     tableData,
@@ -35,18 +35,23 @@ function ActiveRunsTable() {
           weight={700}
           tint={100}
         >
-          Active runs {data?.length ? `(${data?.length})` : ''}
+          Active runs {tableData.length > 0 ? `(${tableData.length})` : ''}
         </Text>
-        <div className='ActiveRunsTable__header__comparisonPopover'>
-          <CompareSelectedRunsPopover
-            key='compareSelectedRunsPopover'
-            appName={'home' as AppNameEnum}
-            query={comparisonQuery}
-            disabled={Object.keys(selectedRows).length === 0}
-          />
-        </div>
+        {tableData.length > 0 && (
+          <div className='ActiveRunsTable__header__comparisonPopover'>
+            <CompareSelectedRunsPopover
+              appName={'home' as AppNameEnum}
+              query={comparisonQuery}
+              disabled={Object.keys(selectedRows).length === 0}
+            />
+          </div>
+        )}
       </div>
-      <div className='ActiveRunsTable__table'>
+      <div
+        className={classNames('ActiveRunsTable__table', {
+          'ActiveRunsTable__table--empty': tableData.length === 0,
+        })}
+      >
         <Table
           custom
           topHeader
@@ -60,7 +65,7 @@ function ActiveRunsTable() {
           columns={tableColumns}
           data={tableData}
           isLoading={loading}
-          height={'231px'}
+          height='100%'
           rowHeight={RowHeightSize.sm}
           illustrationConfig={{
             size: 'large',

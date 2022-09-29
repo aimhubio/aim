@@ -993,7 +993,9 @@ const Table = React.forwardRef(function Table(
                         columns={columnsData.filter((col) => !col.isHidden)}
                         onGroupExpandToggle={onGroupExpandToggle}
                         onRowHover={rowHoverHandler}
-                        onRowClick={rowClickHandler}
+                        onRowClick={
+                          showRowClickBehaviour ? rowClickHandler : undefined
+                        }
                         listWindow={listWindow}
                         multiSelect={multiSelect}
                         selectedRows={selectedRows || {}}
