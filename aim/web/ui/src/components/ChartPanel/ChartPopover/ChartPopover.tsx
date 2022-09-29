@@ -91,12 +91,13 @@ function ChartPopover(props: IChartPopover): JSX.Element {
       return props.activePointRect;
     }
     return undefined;
-  }, [popoverPos, props.activePointRect, isPopoverPinned]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [popoverPos, props.activePointRect, tooltipAppearance]);
 
   return (
     <ErrorBoundary>
       <Popover
-        key={`popover-${props.reCreatePopover}`}
+        key={`popover-${props.reCreatePopover}-${tooltipAppearance}`}
         id={id}
         open={!!props.activePointRect && open}
         disableEnforceFocus={true} // the trap focus will not prevent focus from leaving the trap focus while open

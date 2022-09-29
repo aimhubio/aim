@@ -1,15 +1,12 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
 import _ from 'lodash-es';
 import classNames from 'classnames';
 
-import { Divider, Paper } from '@material-ui/core';
+import { Divider, Paper, Tooltip } from '@material-ui/core';
 
 import { Button, Icon, Text } from 'components/kit';
 import AttachedTagsList from 'components/AttachedTagsList/AttachedTagsList';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
-
-import { PathEnum } from 'config/enums/routesEnum';
 
 import { IPopoverContentProps } from 'types/components/ChartPanel/PopoverContent';
 import { TooltipAppearance } from 'types/services/models/metrics/metricsAppModel.d';
@@ -33,7 +30,6 @@ const PopoverContent = React.forwardRef(function PopoverContent(
   props: IPopoverContentProps,
   ref,
 ): React.FunctionComponentElement<React.ReactNode> {
-  const history = useHistory();
   const {
     tooltipContent,
     tooltipAppearance = TooltipAppearance.Auto,
@@ -59,10 +55,6 @@ const PopoverContent = React.forwardRef(function PopoverContent(
       tooltipAppearancePosition === TooltipAppearance.Bottom,
     [tooltipAppearancePosition],
   );
-
-  const redirectToRun = () => {
-    history.push(PathEnum.Run_Detail.replace(':runHash', run?.hash));
-  };
 
   function renderPopoverHeader(): React.ReactNode {
     switch (chartType) {
@@ -197,82 +189,76 @@ const PopoverContent = React.forwardRef(function PopoverContent(
   function renderActionButtons(): React.ReactNode {
     if (focusedState?.active && run?.hash && onChangeTooltip) {
       return (
-        <div
-          className={classNames('PopoverContent__actionButtons', {
-            vertical: isPopoverPinned,
-          })}
-        >
-          <Button
-            className={classNames(
-              'PopoverContent__actionButtons__linkActionButton',
-            )}
-            onClick={redirectToRun}
-            withOnlyIcon
-            size='xSmall'
-          >
-            <Icon name='new-tab' />
-          </Button>
-          <Divider orientation={isPopoverPinned ? 'horizontal' : 'vertical'} />
-          <Button
-            onClick={() =>
-              onChangeTooltip({ appearance: TooltipAppearance.Hide })
-            }
-            withOnlyIcon
-            size='xSmall'
-            className={classNames(
-              'PopoverContent__actionButtons__actionButton',
-              {
-                active: tooltipAppearance === TooltipAppearance.Hide,
-              },
-            )}
-          >
-            <Icon name='eye-fill-hide' />
-          </Button>
-          <Button
-            onClick={() =>
-              onChangeTooltip({ appearance: TooltipAppearance.Top })
-            }
-            withOnlyIcon
-            size='xSmall'
-            className={classNames(
-              'PopoverContent__actionButtons__actionButton',
-              {
-                active: tooltipAppearance === TooltipAppearance.Top,
-              },
-            )}
-          >
-            <Icon name='pin-to-top' />
-          </Button>
-          <Button
-            onClick={() =>
-              onChangeTooltip({ appearance: TooltipAppearance.Auto })
-            }
-            withOnlyIcon
-            size='xSmall'
-            className={classNames(
-              'PopoverContent__actionButtons__actionButton',
-              {
-                active: tooltipAppearance === TooltipAppearance.Auto,
-              },
-            )}
-          >
-            <Icon name='flexible' />
-          </Button>
-          <Button
-            onClick={() =>
-              onChangeTooltip({ appearance: TooltipAppearance.Bottom })
-            }
-            withOnlyIcon
-            size='xSmall'
-            className={classNames(
-              'PopoverContent__actionButtons__actionButton',
-              {
-                active: tooltipAppearance === TooltipAppearance.Bottom,
-              },
-            )}
-          >
-            <Icon name='pin-to-bottom' />
-          </Button>
+        <div className='PopoverContent__actionButtons'>
+          <Tooltip title='Pin to top'>
+            <div>
+              <Button
+                onClick={() =>
+                  onChangeTooltip({ appearance: TooltipAppearance.Top })
+                }
+                withOnlyIcon
+                size='xSmall'
+                className={classNames(
+                  'PopoverContent__actionButtons__actionButton',
+                  {
+                    active: tooltipAppearance === TooltipAppearance.Top,
+                  },
+                )}
+              >
+                <Icon
+                  name='pin-to-top'
+                  fontSize={16}
+                  className='PopoverContent__actionButtons__actionButton__icon'
+                />
+              </Button>
+            </div>
+          </Tooltip>
+          <Tooltip title='Flexible'>
+            <div>
+              <Button
+                onClick={() =>
+                  onChangeTooltip({ appearance: TooltipAppearance.Auto })
+                }
+                withOnlyIcon
+                size='xSmall'
+                className={classNames(
+                  'PopoverContent__actionButtons__actionButton',
+                  {
+                    active: tooltipAppearance === TooltipAppearance.Auto,
+                  },
+                )}
+              >
+                <Icon
+                  name='flexible'
+                  fontSize={16}
+                  className='PopoverContent__actionButtons__actionButton__icon'
+                />
+              </Button>
+            </div>
+          </Tooltip>
+          <Tooltip title='Pin to bottom'>
+            <div>
+              <Button
+                onClick={() =>
+                  onChangeTooltip({ appearance: TooltipAppearance.Bottom })
+                }
+                withOnlyIcon
+                size='xSmall'
+                className={classNames(
+                  'PopoverContent__actionButtons__actionButton',
+                  {
+                    active: tooltipAppearance === TooltipAppearance.Bottom,
+                  },
+                )}
+              >
+                <Icon
+                  name='pin-to-bottom'
+                  fontSize={16}
+                  className='PopoverContent__actionButtons__actionButton__icon'
+                />
+              </Button>
+            </div>
+          </Tooltip>
         </div>
       );
     }
@@ -287,6 +273,7 @@ const PopoverContent = React.forwardRef(function PopoverContent(
         style={{ pointerEvents: focusedState?.active ? 'auto' : 'none' }}
         elevation={0}
       >
+        {renderActionButtons()}
         <div
           className={classNames('PopoverContent', {
             PopoverContent__pinned: isPopoverPinned,
@@ -294,8 +281,6 @@ const PopoverContent = React.forwardRef(function PopoverContent(
               focusedState?.active && run?.hash && onChangeTooltip,
           })}
         >
-          {renderActionButtons()}
-          <Divider orientation={isPopoverPinned ? 'vertical' : 'horizontal'} />
           {renderPopoverHeader()}
           {_.isEmpty(selectedProps) ? null : (
             <ErrorBoundary>

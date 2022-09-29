@@ -14,41 +14,37 @@
     padding-bottom: toRem(3px);
     position: relative;
 
-    &__fixed {
-      padding-top: 1.75rem;
-      &.PopoverContent__pinned {
-        padding-top: 0;
-        padding-left: 1.75rem;
-      }
-    }
-
     &__actionButtons {
       display: flex;
       padding: $space-xxxxs;
-      height: 1.75rem;
+      height: 1.875rem;
       position: absolute;
-      top: 0;
-      left: 0;
-      &__linkActionButton {
-        margin-right: $space-xxxxs;
+      top: toRem(-28px);
+      left: toRem(-1px);
+      background: #fff;
+      border: $border-main;
+      border-bottom: transparent;
+      border-radius: $space-xxxs $space-xxxs 0 0;
+      box-shadow: -1px 1px 1px rgb(34 58 90 / 20%);
+      &::after {
+        content: '';
+        height: $space-xxxs;
+        width: calc(100% + 2px);
+        background: #fff;
+        position: absolute;
+        bottom: toRem(-2px);
+        left: toRem(-1px);
+        border-left: $border-main;
       }
       &__actionButton {
         margin-left: $space-xxxxs;
+        &__icon {
+          color: $pico-70;
+        }
         &.active {
-          background-color: $primary-color-10;
-          border: $border-main-active;
-        }
-      }
-      &.vertical {
-        flex-direction: column;
-        height: 100%;
-        .PopoverContent__actionButtons__linkActionButton {
-          margin-bottom: $space-xxxxs;
-          margin-right: 0;
-        }
-        .PopoverContent__actionButtons__actionButton {
-          margin-top: $space-xxxxs;
-          margin-left: 0;
+          .PopoverContent__actionButtons__actionButton__icon {
+            color: $primary-color;
+          }
         }
       }
     }
@@ -57,8 +53,7 @@
       display: flex;
       padding-bottom: 0;
       height: toRem(136px);
-      overflow-y: hidden;
-      overflow-x: auto;
+      overflow: unset;
       .PopoverContent__boxWrapper {
         display: flex;
         .PopoverContent__box {
