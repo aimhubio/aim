@@ -54,6 +54,7 @@ export const CONTROLS_DEFAULT_CONFIG = {
     },
     tooltip: {
       appearance: TooltipAppearance.Auto,
+      display: true,
       selectedFields: [],
     },
     zoom: {
@@ -66,6 +67,7 @@ export const CONTROLS_DEFAULT_CONFIG = {
     isVisibleColorIndicator: false,
     tooltip: {
       appearance: TooltipAppearance.Auto,
+      display: true,
       selectedFields: [],
     },
     sortFields: [],
@@ -77,6 +79,7 @@ export const CONTROLS_DEFAULT_CONFIG = {
     stacking: false,
     tooltip: {
       appearance: TooltipAppearance.Auto,
+      display: true,
       selectedFields: [],
     },
     sortFields: [],
@@ -89,6 +92,7 @@ export const CONTROLS_DEFAULT_CONFIG = {
     },
     tooltip: {
       appearance: TooltipAppearance.Auto,
+      display: true,
       selectedFields: [],
     },
     sortFields: [],

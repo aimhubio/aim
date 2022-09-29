@@ -52,7 +52,6 @@
     &__pinned {
       display: flex;
       padding-bottom: 0;
-      height: toRem(136px);
       overflow: unset;
       .PopoverContent__boxWrapper {
         display: flex;
@@ -90,6 +89,16 @@
         }
       }
     }
+
+    &__boxContainer {
+      display: flex;
+      flex-direction: column;
+      &.pinned {
+        max-height: 100%;
+        overflow-y: auto;
+      }
+    }
+
     &__box {
       padding: 0.625rem 1rem;
     }

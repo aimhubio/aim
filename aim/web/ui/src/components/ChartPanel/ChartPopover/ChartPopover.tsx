@@ -27,24 +27,12 @@ function ChartPopover(props: IChartPopover): JSX.Element {
     null,
   );
   const [popoverNode, setPopoverNode] = React.useState<HTMLElement>();
-  const [tooltipAppearancePosition, setTooltipAppearancePosition] =
-    React.useState<TooltipAppearance>(
-      tooltipAppearance !== TooltipAppearance.Hide
-        ? tooltipAppearance
-        : TooltipAppearance.Auto,
-    );
-
-  React.useEffect(() => {
-    if (tooltipAppearance !== TooltipAppearance.Hide) {
-      setTooltipAppearancePosition(tooltipAppearance);
-    }
-  }, [tooltipAppearance]);
 
   const isPopoverPinned = React.useMemo(
     () =>
-      tooltipAppearancePosition === TooltipAppearance.Top ||
-      tooltipAppearancePosition === TooltipAppearance.Bottom,
-    [tooltipAppearancePosition],
+      tooltipAppearance === TooltipAppearance.Top ||
+      tooltipAppearance === TooltipAppearance.Bottom,
+    [tooltipAppearance],
   );
 
   const onPopoverPositionChange = React.useCallback(
@@ -123,16 +111,16 @@ function ChartPopover(props: IChartPopover): JSX.Element {
         }}
         transformOrigin={
           isPopoverPinned
-            ? { vertical: 'top', horizontal: 'left' }
+            ? { vertical: 'top', horizontal: 'center' }
             : { vertical: 'top', horizontal: 'left' }
         }
         classes={{
           paper: classNames('ChartPopover__content', {
             ChartPopover__content__active: props.focusedState?.active,
             ChartPopover__content__pinnedToTop:
-              tooltipAppearancePosition === TooltipAppearance.Top,
+              tooltipAppearance === TooltipAppearance.Top,
             ChartPopover__content__pinnedToBottom:
-              tooltipAppearancePosition === TooltipAppearance.Bottom,
+              tooltipAppearance === TooltipAppearance.Bottom,
           }),
         }}
       >
@@ -141,7 +129,6 @@ function ChartPopover(props: IChartPopover): JSX.Element {
             chartType={props.chartType}
             tooltipContent={props.tooltipContent}
             tooltipAppearance={props.tooltipAppearance}
-            tooltipAppearancePosition={tooltipAppearancePosition}
             focusedState={props.focusedState}
             alignmentConfig={props.alignmentConfig}
             selectOptions={selectOptions}

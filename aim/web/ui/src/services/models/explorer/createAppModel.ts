@@ -317,6 +317,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               },
               tooltip: {
                 appearance: CONTROLS_DEFAULT_CONFIG.metrics.tooltip.appearance,
+                display: CONTROLS_DEFAULT_CONFIG.metrics.tooltip.display,
                 selectedFields:
                   CONTROLS_DEFAULT_CONFIG.metrics.tooltip.selectedFields,
               },
@@ -415,6 +416,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               },
               tooltip: {
                 appearance: CONTROLS_DEFAULT_CONFIG.params.tooltip.appearance,
+                display: CONTROLS_DEFAULT_CONFIG.params.tooltip.display,
                 selectedFields:
                   CONTROLS_DEFAULT_CONFIG.params.tooltip.selectedFields,
               },
@@ -436,6 +438,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               },
               tooltip: {
                 appearance: CONTROLS_DEFAULT_CONFIG.scatters.tooltip.appearance,
+                display: CONTROLS_DEFAULT_CONFIG.scatters.tooltip.display,
                 selectedFields:
                   CONTROLS_DEFAULT_CONFIG.scatters.tooltip.selectedFields,
               },

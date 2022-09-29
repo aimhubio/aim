@@ -93,7 +93,6 @@ export interface ITooltipContent {
 }
 
 export enum TooltipAppearance {
-  Hide = 'hide',
   Top = 'top',
   Auto = 'auto',
   Bottom = 'bottom',
@@ -101,6 +100,7 @@ export enum TooltipAppearance {
 
 export interface ITooltipConfig {
   appearance: TooltipAppearance;
+  display: boolean;
   selectedFields: string[];
 }
 

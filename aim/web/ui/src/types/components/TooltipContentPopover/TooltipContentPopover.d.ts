@@ -7,6 +7,7 @@ import {
 export interface ITooltipContentPopoverProps {
   selectOptions: IGroupingSelectOption[];
   selectedFields?: string[];
+  isTooltipDisplayed?: boolean;
   tooltipAppearance?: TooltipAppearance;
   onChangeTooltip: (tooltip: Partial<ITooltip>) => void;
 }

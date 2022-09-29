@@ -26,18 +26,14 @@
     backdrop-filter: blur(3px);
     overflow: unset;
     &__pinnedToTop {
-      top: toRem(-90px) !important;
+      top: toRem(-80px) !important;
       width: auto;
       max-height: toRem(130px);
-      min-height: toRem(130px);
-      height: toRem(130px);
     }
     &__pinnedToBottom {
       top: 100% !important;
       width: auto;
       max-height: toRem(130px);
-      min-height: toRem(130px);
-      height: toRem(130px);
     }
     &__active {
       background: $white;

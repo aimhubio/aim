@@ -8,7 +8,7 @@ import {
   CheckBoxOutlineBlank,
 } from '@material-ui/icons';
 
-import { Badge, SelectDropdown, Text } from 'components/kit';
+import { Badge, SelectDropdown, Text, ToggleButton } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import { ISelectDropdownOption } from 'components/kit/SelectDropdown';
 
@@ -24,6 +24,7 @@ function TooltipContentPopover({
   onChangeTooltip,
   selectedFields = [],
   tooltipAppearance = TooltipAppearance.Auto,
+  isTooltipDisplayed = true,
   selectOptions,
 }: ITooltipContentPopoverProps): React.FunctionComponentElement<React.ReactNode> {
   let [inputValue, setInputValue] = React.useState('');
@@ -47,7 +48,11 @@ function TooltipContentPopover({
       ),
     });
   }
-  const onDisplayTooltipChange = React.useCallback(
+  const onDisplayTooltipChange = React.useCallback((): void => {
+    onChangeTooltip({ display: !isTooltipDisplayed });
+  }, [onChangeTooltip, isTooltipDisplayed]);
+
+  const onTooltipAppearanceChange = React.useCallback(
     (value): void => {
       onChangeTooltip({ appearance: value.value });
     },
@@ -165,12 +170,32 @@ function TooltipContentPopover({
             tint={50}
             className='TooltipContentPopover__subtitle'
           >
+            Tooltip Visibility
+          </Text>
+          <ToggleButton
+            title='Select Visibility'
+            id='display'
+            value={isTooltipDisplayed ? 'Show' : 'Hide'}
+            leftLabel='Hide'
+            rightLabel='Show'
+            leftValue={'Hide'}
+            rightValue={'Show'}
+            onChange={onDisplayTooltipChange}
+          />
+        </div>
+        <Divider className='TooltipContentPopover__Divider' />
+        <div className='TooltipContentPopover__section'>
+          <Text
+            component='h4'
+            tint={50}
+            className='TooltipContentPopover__subtitle'
+          >
             Tooltip Appearance
           </Text>
           <SelectDropdown
             selectOptions={tooltipAppearanceOptions}
             selected={tooltipAppearance}
-            handleSelect={onDisplayTooltipChange}
+            handleSelect={onTooltipAppearanceChange}
           />
         </div>
       </div>

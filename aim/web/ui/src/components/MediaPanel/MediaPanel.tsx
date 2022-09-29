@@ -301,8 +301,7 @@ function MediaPanel({
                         open={
                           resizeMode !== ResizeModeEnum.MaxHeight &&
                           !panelResizing &&
-                          (tooltip?.appearance !== TooltipAppearance.Hide ||
-                            focusedState?.active)
+                          (tooltip?.display || focusedState?.active)
                         }
                         chartType={tooltipType}
                         tooltipContent={tooltip?.content || {}}

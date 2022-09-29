@@ -60,7 +60,6 @@ function ImageFullViewPopover({
                 focusedState={{ active: true, key: null }}
                 selectOptions={selectOptions}
                 onRunsTagsChange={onRunsTagsChange}
-                tooltipAppearancePosition={TooltipAppearance.Auto}
               />
             </ErrorBoundary>
           </div>

@@ -167,6 +167,7 @@ function Controls(
                 selectOptions={props.selectOptions}
                 selectedFields={props.tooltip?.selectedFields}
                 tooltipAppearance={props.tooltip?.appearance}
+                isTooltipDisplayed={props.tooltip?.display}
                 onChangeTooltip={props.onChangeTooltip}
               />
             }
