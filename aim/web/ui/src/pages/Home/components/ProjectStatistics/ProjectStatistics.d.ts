@@ -2,7 +2,7 @@ import { IconName } from 'components/kit/Icon';
 
 export interface IProjectStatistic {
   label: string;
-  runsCount: number;
+  trackedItemsCount: number;
+  iconBgColor: string;
   icon?: IconName;
-  iconBgColor?: string;
 }

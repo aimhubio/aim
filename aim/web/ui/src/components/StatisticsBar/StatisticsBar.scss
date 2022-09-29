@@ -1,0 +1,20 @@
+@use 'src/styles/abstracts' as *;
+
+.StatisticsBar {
+  position: relative;
+  background-color: $pico-2;
+  overflow: hidden;
+  &__item {
+    display: inline-flex;
+    height: 100%;
+    position: absolute;
+    &:first-child {
+      border-top-left-radius: $border-radius-sm;
+      border-bottom-left-radius: $border-radius-sm;
+    }
+    &:last-child {
+      border-top-right-radius: $border-radius-sm;
+      border-bottom-right-radius: $border-radius-sm;
+    }
+  }
+}
