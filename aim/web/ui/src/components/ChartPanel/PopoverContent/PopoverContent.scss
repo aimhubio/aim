@@ -56,6 +56,15 @@
       overflow: unset;
       .PopoverContent__boxWrapper {
         display: flex;
+        max-width: 20rem;
+
+        &.pinned {
+          flex-direction: column;
+          overflow-y: auto;
+          .PopoverContent__box {
+            overflow-y: unset;
+          }
+        }
         .PopoverContent__box {
           overflow-y: auto;
         }
@@ -116,6 +125,20 @@
     &__contextValue {
       margin-left: 0.5rem;
       font-weight: $font-400;
+    }
+
+    &__runDetails {
+      display: flex;
+      align-items: center;
+
+      .icon-link {
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 8px;
+      }
     }
 
     &__subtitle1 {

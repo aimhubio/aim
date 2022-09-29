@@ -1,12 +1,15 @@
 import React from 'react';
 import _ from 'lodash-es';
 import classNames from 'classnames';
+import { Link as RouteLink } from 'react-router-dom';
 
-import { Divider, Paper, Tooltip } from '@material-ui/core';
+import { Divider, Link, Paper, Tooltip } from '@material-ui/core';
 
 import { Button, Icon, Text } from 'components/kit';
 import AttachedTagsList from 'components/AttachedTagsList/AttachedTagsList';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+
+import { PathEnum } from 'config/enums/routesEnum';
 
 import { IPopoverContentProps } from 'types/components/ChartPanel/PopoverContent';
 import { TooltipAppearance } from 'types/services/models/metrics/metricsAppModel.d';
@@ -265,6 +268,39 @@ const PopoverContent = React.forwardRef(function PopoverContent(
     return <></>;
   }
 
+  function renderTags(): React.ReactNode {
+    return focusedState?.active && run?.hash ? (
+      <ErrorBoundary>
+        <div>
+          <Divider />
+          <div className='PopoverContent__box'>
+            <Link
+              to={PathEnum.Run_Detail.replace(':runHash', run?.hash)}
+              component={RouteLink}
+              className='PopoverContent__runDetails'
+              underline='none'
+            >
+              <Icon name='link' />
+              <div>Run Details</div>
+            </Link>
+          </div>
+        </div>
+        <div>
+          <Divider />
+          <div className='PopoverContent__box'>
+            <ErrorBoundary>
+              <AttachedTagsList
+                runHash={run?.hash}
+                tags={run?.props?.tags ?? []}
+                onRunsTagsChange={onRunsTagsChange}
+              />
+            </ErrorBoundary>
+          </div>
+        </div>
+      </ErrorBoundary>
+    ) : null;
+  }
+
   return (
     <ErrorBoundary>
       <Paper
@@ -281,7 +317,14 @@ const PopoverContent = React.forwardRef(function PopoverContent(
               focusedState?.active && run?.hash && onChangeTooltip,
           })}
         >
-          {renderPopoverHeader()}
+          <div
+            className={classNames('PopoverContent__boxWrapper', {
+              pinned: isPopoverPinned,
+            })}
+          >
+            {renderPopoverHeader()}
+            {isPopoverPinned && renderTags()}
+          </div>
           {_.isEmpty(selectedProps) ? null : (
             <ErrorBoundary>
               <div className='PopoverContent__boxWrapper'>
@@ -341,24 +384,7 @@ const PopoverContent = React.forwardRef(function PopoverContent(
               </div>
             </ErrorBoundary>
           )}
-          {focusedState?.active && run?.hash ? (
-            <ErrorBoundary>
-              <div className='PopoverContent__boxWrapper'>
-                <Divider
-                  orientation={isPopoverPinned ? 'vertical' : 'horizontal'}
-                />
-                <div className='PopoverContent__box ScrollBar__hidden PopoverContent__tagBox'>
-                  <ErrorBoundary>
-                    <AttachedTagsList
-                      runHash={run?.hash}
-                      tags={run?.props?.tags ?? []}
-                      onRunsTagsChange={onRunsTagsChange}
-                    />
-                  </ErrorBoundary>
-                </div>
-              </div>
-            </ErrorBoundary>
-          ) : null}
+          {!isPopoverPinned && renderTags()}
         </div>
       </Paper>
     </ErrorBoundary>

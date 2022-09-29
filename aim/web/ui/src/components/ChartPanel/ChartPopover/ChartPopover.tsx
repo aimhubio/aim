@@ -123,7 +123,7 @@ function ChartPopover(props: IChartPopover): JSX.Element {
         }}
         transformOrigin={
           isPopoverPinned
-            ? { vertical: 'center', horizontal: 'center' }
+            ? { vertical: 'top', horizontal: 'left' }
             : { vertical: 'top', horizontal: 'left' }
         }
         classes={{
