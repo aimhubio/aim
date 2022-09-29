@@ -1,4 +1,5 @@
 import * as React from 'react';
+import classNames from 'classnames';
 
 import { Icon, Text } from 'components/kit';
 
@@ -14,9 +15,25 @@ function StatisticsCard({
   icon,
   iconBgColor = '#fff',
   cardBgColor = hexToRgbA(iconBgColor, 0.1),
+  onMouseOver,
+  onMouseLeave,
+  highlighted,
 }: IStatisticsCardProps) {
+  const onSafeMouseOver = React.useCallback(
+    (id: string) => {
+      if (typeof onMouseOver === 'function') {
+        onMouseOver(id);
+      }
+    },
+    [onMouseOver],
+  );
   return (
-    <div className='StatisticsCard' style={{ backgroundColor: cardBgColor }}>
+    <div
+      onMouseLeave={onMouseLeave}
+      onMouseOver={() => onSafeMouseOver(label)}
+      className={classNames('StatisticsCard', { highlighted })}
+      style={{ backgroundColor: cardBgColor }}
+    >
       {icon && (
         <div
           className='StatisticsCard__iconWrapper'

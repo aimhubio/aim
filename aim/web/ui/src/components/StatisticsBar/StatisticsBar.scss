@@ -3,11 +3,21 @@
 .StatisticsBar {
   position: relative;
   background-color: $pico-2;
-  overflow: hidden;
   border-radius: $border-radius-sm;
   &__item {
     display: inline-flex;
     height: 100%;
     position: absolute;
+    &:first-child {
+      border-top-left-radius: $border-radius-sm;
+      border-bottom-left-radius: $border-radius-sm;
+    }
+    &:last-child {
+      border-top-right-radius: $border-radius-sm;
+      border-bottom-right-radius: $border-radius-sm;
+    }
+    &.highlighted {
+      box-shadow: 0 0 2px 1px currentColor;
+    }
   }
 }

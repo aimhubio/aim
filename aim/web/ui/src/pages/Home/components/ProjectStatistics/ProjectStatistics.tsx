@@ -4,50 +4,54 @@ import { Text } from 'components/kit';
 import StatisticsCard from 'components/StatisticsCard';
 import StatisticsBar from 'components/StatisticsBar';
 
-import { SequenceTypesEnum, SequenceTypesUnion } from 'types/core/enums';
+import { SequenceTypesEnum } from 'types/core/enums';
 
 import { IProjectStatistic, useProjectStatistics } from '.';
 
 import './ProjectStatistics.scss';
 
-const statisticsInitialMap: Partial<
-  Record<SequenceTypesUnion, IProjectStatistic>
-> = {
+const statisticsInitialMap: Record<string, IProjectStatistic> = {
   [SequenceTypesEnum.Metric]: {
-    label: 'metrics',
+    label: 'Metrics',
     count: 0,
     icon: 'metrics',
     iconBgColor: '#7A4CE0',
   },
+  systemMetrics: {
+    label: 'Sys. metrics',
+    count: 0,
+    icon: 'metrics',
+    iconBgColor: '#FCB500',
+  },
+  [SequenceTypesEnum.Distributions]: {
+    label: 'Distributions',
+    icon: 'distributions',
+    count: 0,
+    iconBgColor: '#0394B4',
+  },
   [SequenceTypesEnum.Images]: {
-    label: 'images',
+    label: 'Images',
     icon: 'images',
     count: 0,
     iconBgColor: '#F17922',
   },
-  [SequenceTypesEnum.Figures]: {
-    label: 'figures',
-    icon: 'figures-explorer',
+  [SequenceTypesEnum.Audios]: {
+    label: 'Audios',
+    icon: 'audio',
     count: 0,
-    iconBgColor: '#18AB6D',
+    iconBgColor: '#729B1B',
   },
   [SequenceTypesEnum.Texts]: {
-    label: 'text',
+    label: 'Texts',
     icon: 'text',
     count: 0,
     iconBgColor: '#E149A0',
   },
-  [SequenceTypesEnum.Audios]: {
-    label: 'audio',
+  [SequenceTypesEnum.Figures]: {
+    label: 'Figures',
     icon: 'figures-explorer',
     count: 0,
-    iconBgColor: '#FCB500',
-  },
-  [SequenceTypesEnum.Distributions]: {
-    label: 'distributions',
-    icon: 'figures-explorer',
-    count: 0,
-    iconBgColor: '#FCB500',
+    iconBgColor: '#18AB6D',
   },
 };
 
@@ -70,41 +74,34 @@ const runsCountingInitialMap: Record<
 };
 
 function ProjectStatistics() {
+  const [hoveredState, setHoveredState] = React.useState('');
   const { projectParamsStore, projectContributionsStore } =
     useProjectStatistics();
 
   const { statisticsMap, totalTrackedSequencesCount } = React.useMemo(() => {
-    const statisticsMap = { ...statisticsInitialMap };
-    const trackedItemsCountMap: Partial<Record<SequenceTypesUnion, number>> =
-      {};
+    const statistics = { ...statisticsInitialMap };
     let totalTrackedSequencesCount = 0;
 
     for (let [seqName, seqData] of Object.entries(
       projectParamsStore.data || {},
     )) {
-      const sequenceItemsCount = Object.entries(seqData).reduce(
-        (acc, [itemKey, itemData]) => {
-          if (!itemKey.startsWith('__system__')) {
-            acc += itemData.length;
-          }
-          return acc;
-        },
-        0,
-      );
-      totalTrackedSequencesCount += sequenceItemsCount;
-      trackedItemsCountMap[seqName as SequenceTypesUnion] = sequenceItemsCount;
-    }
-
-    const entries = Object.entries(trackedItemsCountMap) as Array<
-      [SequenceTypesUnion, number]
-    >;
-    entries.forEach(([seqName, trackedItemsCount]) => {
-      const sequenceState = statisticsMap[seqName];
-      if (sequenceState) {
-        sequenceState.count = trackedItemsCount;
+      let systemMetricsCount = 0;
+      let sequenceItemsCount = 0;
+      for (let [itemKey, itemData] of Object.entries(seqData)) {
+        if (itemKey.startsWith('__system__')) {
+          systemMetricsCount += itemData.length;
+        } else {
+          sequenceItemsCount += itemData.length;
+        }
       }
-    });
-    return { statisticsMap, totalTrackedSequencesCount };
+      totalTrackedSequencesCount += sequenceItemsCount;
+      statistics[seqName].count = sequenceItemsCount;
+      if (systemMetricsCount) {
+        totalTrackedSequencesCount += systemMetricsCount;
+        statistics.systemMetrics.count = systemMetricsCount;
+      }
+    }
+    return { statisticsMap: statistics, totalTrackedSequencesCount };
   }, [projectParamsStore]);
 
   const { totalRunsCount, archivedRuns } = React.useMemo(
@@ -117,6 +114,7 @@ function ProjectStatistics() {
   const statisticsBarData = React.useMemo(
     () =>
       Object.values(statisticsMap).map((item) => ({
+        highlighted: hoveredState === item.label,
         label: item.label,
         color: item.iconBgColor,
         percent:
@@ -124,7 +122,7 @@ function ProjectStatistics() {
             ? 0
             : (item.count / totalTrackedSequencesCount) * 100,
       })),
-    [statisticsMap, totalTrackedSequencesCount],
+    [statisticsMap, totalTrackedSequencesCount, hoveredState],
   );
   const runsCountingMap = React.useMemo(
     () => ({
@@ -139,6 +137,13 @@ function ProjectStatistics() {
     }),
     [archivedRuns, totalRunsCount],
   );
+  const onMouseOver = React.useCallback((id: string = '') => {
+    setHoveredState(id);
+  }, []);
+  const onMouseLeave = React.useCallback(() => {
+    setHoveredState('');
+  }, []);
+
   return (
     <div className='ProjectStatistics'>
       <Text
@@ -159,6 +164,9 @@ function ProjectStatistics() {
               icon={icon}
               count={count}
               iconBgColor={iconBgColor}
+              onMouseOver={onMouseOver}
+              onMouseLeave={onMouseLeave}
+              highlighted={hoveredState === label}
             />
           ),
         )}
@@ -181,12 +189,19 @@ function ProjectStatistics() {
               icon={icon}
               count={count}
               iconBgColor={iconBgColor}
+              onMouseOver={onMouseOver}
+              onMouseLeave={onMouseLeave}
+              highlighted={hoveredState === label}
             />
           ),
         )}
       </div>
       <div className='ProjectStatistics__bar'>
-        <StatisticsBar data={statisticsBarData} />
+        <StatisticsBar
+          data={statisticsBarData}
+          onMouseOver={onMouseOver}
+          onMouseLeave={onMouseLeave}
+        />
       </div>
     </div>
   );
