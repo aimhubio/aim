@@ -1,8 +1,6 @@
 import React, { memo, useMemo } from 'react';
 import _ from 'lodash-es';
 
-import { IInstructionsState } from 'modules/core/engine/store/instructionsSlice';
-import { QueryUIStateUnit } from 'modules/core/engine';
 import {
   Checkbox,
   Divider,
@@ -17,10 +15,13 @@ import {
 } from '@material-ui/icons';
 import { IQueryFormProps } from 'modules/BaseExplorer/types';
 import { getQueryFromRanges } from 'modules/core/utils/getQueryFromRanges';
-import { IRangesState } from 'modules/BaseExplorer/components/RangePanel/RangePanel.d';
 import { getQueryStringFromSelect } from 'modules/core/utils/getQueryStringFromSelect';
 import { getSelectFormOptions } from 'modules/core/utils/getSelectFormOptions';
-import { PipelineStatusEnum } from 'modules/core/engine';
+import { PipelineStatusEnum } from 'modules/core/engine/types';
+import {
+  QueryFormState,
+  QueryRangesState,
+} from 'modules/core/engine/explorer/query';
 
 import { Badge, Button, Icon, Text } from 'components/kit';
 import AutocompleteInput from 'components/AutocompleteInput';
@@ -42,20 +43,22 @@ type StatusCheckResult = {
   isInsufficientResources: boolean;
 };
 
-function QueryForm(props: IQueryFormProps) {
+function QueryForm(props: Omit<IQueryFormProps, 'visualizationName'>) {
   const [anchorEl, setAnchorEl] = React.useState<any>(null);
   const [searchValue, setSearchValue] = React.useState<string>('');
   const engine = props.engine;
-  const updateQuery = React.useRef(engine.queryUI.methods.update);
-  const queryable: IInstructionsState = engine.useStore(
-    engine.instructions.dataSelector,
+
+  const updateQuery = React.useRef(engine.query.form.update);
+  const queryable = engine.useStore(engine.instructions.stateSelector);
+  const sequenceName: SequenceTypesEnum = engine.pipeline.getSequenceName();
+
+  const query: QueryFormState = engine.useStore(
+    engine.query.form.stateSelector,
   );
-  const sequenceName: SequenceTypesEnum = engine.useStore(
-    (state: Record<string | number | symbol, unknown>) => state.sequenceName,
+  const ranges: QueryRangesState = engine.useStore(
+    engine.query.ranges.stateSelector,
   );
-  const query: QueryUIStateUnit = engine.useStore(engine.queryUI.stateSelector);
-  const ranges: IRangesState = engine.useStore(engine.ranges.stateSelector);
-  const status = engine.useStore(engine.pipelineStatusSelector);
+  const status = engine.useStore(engine.pipeline.statusSelector);
 
   const { isExecuting, isInsufficientResources } =
     useMemo((): StatusCheckResult => {
@@ -87,7 +90,7 @@ function QueryForm(props: IQueryFormProps) {
       //TODO: abort request
       return;
     } else {
-      engine.search({
+      engine.pipeline.search({
         q: getQueryStringFromSelect(query, sequenceName),
         report_progress: true,
         ...getQueryFromRanges(ranges),
@@ -368,7 +371,7 @@ function QueryForm(props: IQueryFormProps) {
             <SearchButton
               isFetching={isExecuting}
               onSubmit={onSubmit}
-              disabled={ranges?.isInputInvalid || isInsufficientResources}
+              disabled={!ranges?.isValid || isInsufficientResources}
             />
             <div className='QueryForm__search__actions'>
               <Tooltip title='Reset query'>
@@ -415,4 +418,10 @@ function QueryForm(props: IQueryFormProps) {
   );
 }
 
-export default memo(QueryForm);
+export const AdvancedQueryForm = memo(
+  (props: Omit<IQueryFormProps, 'visualizationName'>) => (
+    <QueryForm engine={props.engine} hasAdvancedMode />
+  ),
+);
+
+export default memo<Omit<IQueryFormProps, 'visualizationName'>>(QueryForm);

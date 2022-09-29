@@ -9,7 +9,7 @@ function VisualizerPanel(props: IVisualizerPanelProps) {
   return (
     <div className='VisualizerPanel'>
       {Grouping && <Grouping engine={engine} />}
-      <Controls engine={engine} />
+      <Controls engine={engine} visualizationName={props.visualizationName} />
     </div>
   );
 }

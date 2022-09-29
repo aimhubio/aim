@@ -18,28 +18,22 @@ import './BoxWrapper.scss';
 function BoxWrapper(props: IBoxWrapperProps<AimFlatObjectBase<any>>) {
   const {
     engine,
-    engine: {
-      useStore,
-      sequenceNameSelector,
-      boxConfig: { stateSelector: boxConfigStateSelector },
-      controls: {
-        captionProperties: { stateSelector: captionPropertiesStateSelector },
-      },
-    },
+    engine: { useStore },
     items,
     component: BoxContent,
     groupId,
     depthSelector,
     onDepthMapChange,
   } = props;
+  const vizEngine = engine.visualizations[props.visualizationName];
 
   const [fullView, setFullView] = React.useState<boolean>(false);
-  const sequenceName: SequenceTypesEnum = useStore(sequenceNameSelector);
-  const boxConfig = useStore(boxConfigStateSelector);
+  const sequenceName: SequenceTypesEnum = engine.pipeline.getSequenceName();
+  const boxConfig = useStore(vizEngine.box.stateSelector);
   const captionProperties: ICaptionProperties = useStore(
-    captionPropertiesStateSelector,
+    vizEngine.controls.captionProperties.stateSelector,
   );
-  const foundGroups = engine.useStore(engine.foundGroupsSelector);
+  const foundGroups = engine.useStore(engine.pipeline.foundGroupsSelector);
   const depth = engine.useStore(depthSelector(groupId));
   const captionBoxRef: React.RefObject<HTMLDivElement | null> =
     React.useRef<HTMLDivElement>(null);
@@ -111,6 +105,7 @@ function BoxWrapper(props: IBoxWrapperProps<AimFlatObjectBase<any>>) {
             data={currentItem}
             engine={engine}
             style={currentItem.style}
+            visualizationName={props.visualizationName}
           />
         )}
       </div>
@@ -124,6 +119,7 @@ function BoxWrapper(props: IBoxWrapperProps<AimFlatObjectBase<any>>) {
             captionBoxRef={captionBoxRef}
             engine={engine}
             item={currentItem}
+            visualizationName={props.visualizationName}
           />
         )}
       {fullView && (
@@ -135,7 +131,13 @@ function BoxWrapper(props: IBoxWrapperProps<AimFlatObjectBase<any>>) {
         >
           <div className='BoxWrapper__fullViewContent'>
             <div className='BoxWrapper__fullViewContent__box'>
-              {BoxContent && <BoxContent data={currentItem} engine={engine} />}
+              {BoxContent && (
+                <BoxContent
+                  data={currentItem}
+                  engine={engine}
+                  visualizationName={props.visualizationName}
+                />
+              )}
             </div>
           </div>
           {renderDepthSlider({

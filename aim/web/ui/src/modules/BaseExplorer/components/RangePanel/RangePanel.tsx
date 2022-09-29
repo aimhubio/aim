@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { QueryUIStateUnit } from 'modules/core/engine';
+import { QueryFormState } from 'modules/core/engine/explorer/query/state';
 import { getQueryFromRanges } from 'modules/core/utils/getQueryFromRanges';
 import { getQueryStringFromSelect } from 'modules/core/utils/getQueryStringFromSelect';
 
@@ -17,27 +17,27 @@ import './RangePanel.scss';
 
 function RangePanel(props: IRangePanelProps) {
   const engine = props.engine;
-  const sequenceName: SequenceTypesEnum = engine.useStore(
-    engine.sequenceNameSelector,
+  const sequenceName: SequenceTypesEnum = engine.pipeline.getSequenceName();
+  const query: QueryFormState = engine.useStore(
+    engine.query.form.stateSelector,
   );
-  const query: QueryUIStateUnit = engine.useStore(engine.queryUI.stateSelector);
-  const rangeState = engine.useStore(engine.ranges.stateSelector);
+  const rangeState = engine.useStore(engine.query.ranges.stateSelector);
   const isFetching: boolean =
-    engine.useStore(engine.pipelineStatusSelector) === 'fetching';
+    engine.useStore(engine.pipeline.stateSelector) === 'fetching';
 
   const onSubmit = React.useCallback(() => {
     if (isFetching) {
       //TODO: abort request
       return;
     } else {
-      engine.search({
+      engine.query.ranges.update({
+        ...rangeState,
+        isApplyButtonDisabled: true,
+      });
+      engine.pipeline.search({
         q: getQueryStringFromSelect(query, sequenceName),
         report_progress: true,
         ...getQueryFromRanges(rangeState),
-      });
-      engine.ranges.methods.update({
-        ...rangeState,
-        isApplyButtonDisabled: true,
       });
     }
   }, [engine, isFetching, query, sequenceName, rangeState]);
@@ -98,7 +98,7 @@ function RangePanel(props: IRangePanelProps) {
     }
 
     //updating the ranges data and setting the apply button disability
-    engine.ranges.methods.update({
+    engine.query.ranges.update({
       ...rangeState,
       ...updatedRangesState,
       isApplyButtonDisabled: true,
@@ -118,7 +118,6 @@ function RangePanel(props: IRangePanelProps) {
       !ranges?.index_range_total;
     return isOnlyOneStep && isOnlyOneIndex;
   }, [props.rangesData]);
-
   return (
     <form
       className='RangePanel'
