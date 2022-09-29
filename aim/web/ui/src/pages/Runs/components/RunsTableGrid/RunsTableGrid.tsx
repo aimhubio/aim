@@ -3,6 +3,7 @@ import { merge } from 'lodash-es';
 import { Badge } from 'components/kit';
 import RunNameColumn from 'components/Table/RunNameColumn';
 import GroupedColumnHeader from 'components/Table/GroupedColumnHeader';
+import AttachedTagsList from 'components/AttachedTagsList/AttachedTagsList';
 
 import COLORS from 'config/colors/colors';
 import { TABLE_DEFAULT_CONFIG } from 'config/table/tableConfigs';
@@ -89,6 +90,16 @@ function getRunsTableColumns(
       pin: order?.left?.includes('date')
         ? 'left'
         : order?.right?.includes('date')
+        ? 'right'
+        : null,
+    },
+    {
+      key: 'tags',
+      content: <span>Tags</span>,
+      topHeader: 'Run',
+      pin: order?.left?.includes('tags')
+        ? 'left'
+        : order?.right?.includes('tags')
         ? 'right'
         : null,
     },
@@ -192,6 +203,17 @@ function runsTableRowRenderer(
             run={rowData.run}
             runHash={rowData.hash}
             active={rowData.active}
+          />
+        ),
+      },
+      tags: {
+        content: (
+          <AttachedTagsList
+            runHash={rowData.hash}
+            tags={rowData.tags}
+            headerRenderer={() => <></>}
+            addTagButtonSize='xxSmall'
+            hasAttachedTagsPopup
           />
         ),
       },

@@ -86,7 +86,6 @@ function BoxVirtualizer(props: IBoxVirtualizerProps<AimFlatObjectBase<any>>) {
       item.style.top >= gridWindow.top - item.style.height &&
       item.style.top <= gridWindow.top + gridWindow.height,
   );
-
   const groupedByPosition = _.groupBy(filteredItems, (item) => {
     const rowId = item.groups?.rows ? item.groups.rows[0] : '';
     const columnId = item.groups?.columns ? item.groups.columns[0] : '';

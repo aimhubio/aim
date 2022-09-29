@@ -1,11 +1,10 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import { Tooltip } from '@material-ui/core';
 import { IBaseComponentProps } from 'modules/BaseExplorer/types';
 
+import { Button, Icon, Text } from 'components/kit';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
-import { Icon } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import CaptionPropertiesPopover from './CaptionPropertiesPopover';
@@ -15,40 +14,48 @@ import { ICaptionProperties, ICaptionPropertiesProps } from './';
 function CaptionProperties(props: ICaptionPropertiesProps) {
   const {
     engine,
-    engine: {
-      useStore,
-      controls: {
-        captionProperties: { stateSelector },
-      },
-    },
+    visualizationName,
+    engine: { useStore, visualizations },
   } = props;
-  const captionProperties: ICaptionProperties = useStore(stateSelector);
+  const vizEngine = visualizations[visualizationName];
+
+  const captionProperties: ICaptionProperties = useStore(
+    vizEngine.controls.captionProperties.stateSelector,
+  );
+
   return (
     <ErrorBoundary>
       <ControlPopover
         title='Configure box caption'
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         anchor={({ onAnchorClick, opened }) => (
-          <Tooltip title='Configure box caption'>
-            <div
-              onClick={onAnchorClick}
-              className={classNames('Controls__anchor', {
+          <Button
+            size='xSmall'
+            onClick={onAnchorClick}
+            className={classNames('Control__anchor', {
+              active: opened || !captionProperties.isInitial,
+              outlined: !opened && !captionProperties.isInitial,
+            })}
+          >
+            <Icon
+              name='info-circle-outline'
+              className={classNames('Control__anchor__icon', {
                 active: opened || !captionProperties.isInitial,
-                outlined: !captionProperties.isInitial,
               })}
-            >
-              <Icon
-                className={classNames('Controls__icon', {
-                  active: opened || !captionProperties.isInitial,
-                })}
-                name='info-circle-outline'
-              />
-            </div>
-          </Tooltip>
+            />
+            <Text className='Control__anchor__label'>Box caption</Text>
+            <Icon
+              name='arrow-down-contained'
+              className={classNames('Control__anchor__arrow', { opened })}
+              fontSize={6}
+            />
+          </Button>
         )}
         component={
           <CaptionPropertiesPopover
             engine={engine}
             captionProperties={captionProperties}
+            visualizationName={props.visualizationName}
           />
         }
       />

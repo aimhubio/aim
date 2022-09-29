@@ -262,6 +262,29 @@ time.
 See `AimCallback` source [here](https://github.com/aimhubio/aim/blob/main/aim/sdk/adapters/lightgbm.py).  
 Check out a simple regression task example [here](https://github.com/aimhubio/aim/blob/main/examples/lightgbm_track.py).
 
+### Integration with fastai
+
+Aim comes with a builtin callback designed to automatically track [fastai](https://docs.fast.ai/) trainings.
+It takes two steps to integrate Aim into your training script.
+
+Step 1: Explicitly import the `AimCallback` for tracking training metadata.
+
+```python
+from aim.sdk.adapters.fastai import AimCallback
+```
+
+Step 2: Pass the callback to `cbs` list upon initiating your training.
+
+```python
+learn = cnn_learner(dls, resnet18, pretrained=True,
+                    loss_func=CrossEntropyLossFlat(),
+                    metrics=accuracy, model_dir="/tmp/model/",
+                    cbs=AimCallback(repo='.', experiment='fastai_example'))
+```
+
+See `AimCallback` source [here](https://github.com/aimhubio/aim/blob/main/aim/sdk/adapters/fastai.py).  
+Check out a simple regression task example [here](https://github.com/aimhubio/aim/blob/main/examples/fastai_track.py).
+
 ### What's next?
 
 During the training process, you can start another terminal in the same directory, start `aim up` and you can observe

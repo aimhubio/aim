@@ -32,7 +32,9 @@ function GroupingPopover({
 }: IGroupingPopoverProps): React.FunctionComponentElement<React.ReactNode> {
   const { engine } = props;
   const [searchValue, setSearchValue] = React.useState('');
-  const availableModifiers = engine.useStore(engine.additionalDataSelector);
+  const availableModifiers = engine.useStore(
+    engine.pipeline.additionalDataSelector,
+  );
   const currentValues = engine.useStore(engine.groupings.currentValuesSelector);
 
   function onChange(
@@ -62,8 +64,12 @@ function GroupingPopover({
         orders: [],
       },
     );
+    engine.groupings.update({
+      ...currentValues,
+      [groupName]: { fields, orders },
+    });
 
-    engine.group({
+    engine.pipeline.group({
       ...currentValues,
       [groupName]: { fields, orders },
     });
@@ -113,14 +119,14 @@ function GroupingPopover({
 
   return (
     <ErrorBoundary>
-      <div className='GroupingPopover'>
-        <div className='GroupingPopover__container'>
-          <div className='GroupingPopover__container__select'>
+      <div className='BaseGroupingPopover'>
+        <div className='BaseGroupingPopover__container'>
+          <div className='BaseGroupingPopover__container__select'>
             <Text
               size={12}
               tint={50}
               component='h3'
-              className='GroupingPopover__subtitle'
+              className='BaseGroupingPopover__subtitle'
             >
               {inputLabel ?? `Select fields for grouping by ${groupName}`}
             </Text>
@@ -153,7 +159,7 @@ function GroupingPopover({
                 />
               )}
               renderTags={(value, getTagProps) => (
-                <div className='GroupingPopover__container__select__selectedFieldsContainer'>
+                <div className='BaseGroupingPopover__container__select__selectedFieldsContainer'>
                   {value.map((selected, i) => (
                     <Badge
                       key={i}
@@ -165,7 +171,7 @@ function GroupingPopover({
                 </div>
               )}
               renderOption={(option, { selected }) => (
-                <div className='GroupingPopover__option'>
+                <div className='BaseGroupingPopover__option'>
                   <Checkbox
                     color='primary'
                     size='small'
@@ -174,7 +180,10 @@ function GroupingPopover({
                     style={{ marginRight: 4 }}
                     checked={selected}
                   />
-                  <Text className='GroupingPopover__option__label' size={14}>
+                  <Text
+                    className='BaseGroupingPopover__option__label'
+                    size={14}
+                  >
                     {option.label}
                   </Text>
                 </div>
@@ -184,18 +193,18 @@ function GroupingPopover({
           {values.length > 0 && (
             <>
               <Divider />
-              <div className='GroupingPopover__option__chips'>
+              <div className='BaseGroupingPopover__option__chips'>
                 {values.map(
                   (
                     field: { value: IGroupingSelectOption; order: Order },
                     index: number,
                   ) => (
                     <div
-                      className='GroupingPopover__option__chip'
+                      className='BaseGroupingPopover__option__chip'
                       key={field.value.label}
                     >
                       <ToggleButton
-                        className='GroupingPopover__option__chip__toggle__button'
+                        className='BaseGroupingPopover__option__chip__toggle__button'
                         onChange={(value) => {
                           handleSelect(
                             values.map((v) => v.value),

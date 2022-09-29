@@ -1,11 +1,8 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import { Tooltip } from '@material-ui/core';
-import { IBaseComponentProps } from 'modules/BaseExplorer/types';
-
 import ControlPopover from 'components/ControlPopover/ControlPopover';
-import { Icon } from 'components/kit';
+import { Icon, Button, Text } from 'components/kit';
 
 import BoxPropertiesPopover from './Popover';
 
@@ -13,43 +10,45 @@ import { IBoxPropertiesProps, IBoxConfigState } from '.';
 
 function BoxProperties(props: IBoxPropertiesProps) {
   const {
-    engine,
-    engine: {
-      useStore,
-      boxConfig: { stateSelector: boxSelector },
-      controls: {
-        boxProperties: { settings },
-      },
-    },
+    visualizationName,
+    engine: { visualizations, useStore },
   } = props;
-  const boxProperties: IBoxConfigState = useStore(boxSelector);
+  const vizEngine = visualizations[visualizationName];
+
+  const boxProperties: IBoxConfigState = useStore(vizEngine.box.stateSelector);
   return (
     <ControlPopover
-      title='Box properties'
+      title='Configure box size'
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       anchor={({ onAnchorClick, opened }) => (
-        <Tooltip title='Box properties'>
-          <div
-            onClick={onAnchorClick}
-            className={classNames('Controls__anchor', {
+        <Button
+          size='xSmall'
+          onClick={onAnchorClick}
+          className={classNames('Control__anchor', {
+            active: opened || !boxProperties.isInitial,
+            outlined: !opened && !boxProperties.isInitial,
+          })}
+        >
+          <Icon
+            name='box-settings'
+            className={classNames('Control__anchor__icon', {
               active: opened || !boxProperties.isInitial,
-              outlined: !opened && !boxProperties.isInitial,
             })}
-          >
-            <Icon
-              className={classNames('Controls__icon', {
-                active: opened || !boxProperties.isInitial,
-              })}
-              name='box-settings'
-            />
-          </div>
-        </Tooltip>
+          />
+          <Text className='Control__anchor__label'>Box size</Text>
+          <Icon
+            name='arrow-down-contained'
+            className={classNames('Control__anchor__arrow', { opened })}
+            fontSize={6}
+          />
+        </Button>
       )}
       component={
         <BoxPropertiesPopover
-          update={engine.boxConfig.methods.update}
-          reset={engine.boxConfig.methods.reset}
+          update={vizEngine.box.methods.update}
+          reset={vizEngine.box.methods.reset}
           boxProperties={boxProperties}
-          settings={settings}
+          settings={vizEngine.controls.boxProperties.settings}
         />
       }
     />
@@ -58,4 +57,4 @@ function BoxProperties(props: IBoxPropertiesProps) {
 
 BoxProperties.displayName = 'BoxProperties';
 
-export default React.memo<IBaseComponentProps>(BoxProperties);
+export default React.memo<IBoxPropertiesProps>(BoxProperties);

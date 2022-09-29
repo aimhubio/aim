@@ -1,7 +1,7 @@
 import React from 'react';
-import ReactJson from 'react-json-view';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import DictVisualizer from 'components/kit/DictVisualizer';
 
 import { IJsonViewPopoverProps } from './types.d';
 
@@ -14,15 +14,15 @@ import './styles.scss';
 
 function JsonViewPopover({
   json,
+  dictVisualizerSize,
 }: IJsonViewPopoverProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <ErrorBoundary>
       <div className='JsonViewPopover'>
-        <ReactJson
-          style={{ width: '100%' }}
-          name={false}
-          theme='bright:inverted'
+        <DictVisualizer
           src={json}
+          style={dictVisualizerSize ?? { width: 300, height: 300 }}
+          autoScale
         />
       </div>
     </ErrorBoundary>

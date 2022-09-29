@@ -4,10 +4,8 @@ import classNames from 'classnames';
 import { NavLink, useLocation, useParams } from 'react-router-dom';
 import _ from 'lodash-es';
 
-import { CircularProgress } from '@material-ui/core';
-
 import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
-import { Button, Icon, Text } from 'components/kit';
+import { Button, Icon, Spinner, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { DATE_WITH_SECONDS } from 'config/dates/dates';
@@ -112,7 +110,7 @@ function RunSelectPopoverContent({
                 ))
               ) : (
                 <div className='RunSelectPopoverWrapper__loaderContainer'>
-                  <CircularProgress size={34} />
+                  <Spinner size={34} />
                 </div>
               )}
             </div>
@@ -122,7 +120,7 @@ function RunSelectPopoverContent({
             {isRunInfoLoading ||
             (_.isEmpty(runsOfExperiment) && isRunsOfExperimentLoading) ? (
               <div className='RunSelectPopoverWrapper__loaderContainer'>
-                <CircularProgress size={34} />
+                <Spinner size={34} />
               </div>
             ) : (
               <div
@@ -203,7 +201,7 @@ function RunSelectPopoverContent({
                           Load More
                         </Text>
                       ) : (
-                        <CircularProgress size={14} />
+                        <Spinner size={14} thickness={2} color='#414b6d' />
                       )}
                     </Button>
                   </div>

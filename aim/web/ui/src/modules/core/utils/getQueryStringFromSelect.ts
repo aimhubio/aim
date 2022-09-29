@@ -1,11 +1,11 @@
-import { QueryUIStateUnit } from 'modules/core/engine';
+import { QueryFormState } from 'modules/core/engine/explorer/query';
 
 import { SequenceTypesEnum } from 'types/core/enums';
 
 import { formatValue } from 'utils/formatValue';
 
 export function getQueryStringFromSelect(
-  queryData: QueryUIStateUnit,
+  queryData: QueryFormState,
   sequenceName: SequenceTypesEnum,
 ): string {
   let query = '';

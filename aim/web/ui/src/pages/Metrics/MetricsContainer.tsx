@@ -133,12 +133,10 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
         tableColumns={metricsData?.tableColumns!}
         aggregatedData={metricsData?.aggregatedData!}
         zoom={metricsData?.config?.chart?.zoom!}
-        curveInterpolation={metricsData?.config?.chart?.curveInterpolation!}
         highlightMode={metricsData?.config?.chart?.highlightMode!}
         axesScaleType={metricsData?.config?.chart?.axesScaleType!}
         axesScaleRange={metricsData?.config?.chart?.axesScaleRange!}
-        smoothingAlgorithm={metricsData?.config?.chart?.smoothingAlgorithm!}
-        smoothingFactor={metricsData?.config?.chart?.smoothingFactor!}
+        smoothing={metricsData?.config?.chart?.smoothing!}
         focusedState={metricsData?.config?.chart?.focusedState!}
         notifyData={metricsData?.notifyData!}
         tooltip={metricsData?.tooltip!}
@@ -163,6 +161,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
         columnsOrder={metricsData?.config?.table?.columnsOrder!}
         // methods
         onChangeTooltip={metricAppModel.onChangeTooltip}
+        onRunsTagsChange={metricAppModel.onRunsTagsChange}
         onIgnoreOutliersChange={metricAppModel.onIgnoreOutliersChange}
         onZoomChange={metricAppModel.onZoomChange}
         onHighlightModeChange={metricAppModel.onHighlightModeChange}

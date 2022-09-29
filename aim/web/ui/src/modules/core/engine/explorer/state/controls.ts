@@ -1,6 +1,6 @@
 import { omit } from 'lodash-es';
 
-import { createSliceState } from './utils';
+import { createSliceState } from 'modules/core/utils/store';
 
 export type ControlConfig<State extends object, Settings> = {
   /**
@@ -27,6 +27,10 @@ export type ControlConfig<State extends object, Settings> = {
 };
 
 export type ControlsConfigs = {
+  [name: string]: Omit<ControlConfig<unknown & object, any>, 'name'>;
+};
+
+export type ControlsConfigsNew = {
   [name: string]: Omit<ControlConfig<unknown & object, any>, 'name'>;
 };
 

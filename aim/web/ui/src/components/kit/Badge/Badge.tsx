@@ -89,7 +89,10 @@ function Badge({
         {onDelete && (
           <BadgeIcon
             color={color}
-            onClick={() => onDelete(value ?? label)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete(value ?? label);
+            }}
             className='Badge__deleteIcon'
           >
             <Icon color={color} name='close' />

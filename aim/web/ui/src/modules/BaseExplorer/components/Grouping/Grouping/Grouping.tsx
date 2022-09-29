@@ -7,7 +7,7 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import './Grouping.scss';
 
-function Grouping(props: IBaseComponentProps) {
+function Grouping(props: Omit<IBaseComponentProps, 'visualizationName'>) {
   const engine = props.engine;
   const currentValues = engine.useStore(engine.groupings.currentValuesSelector);
 
@@ -21,16 +21,14 @@ function Grouping(props: IBaseComponentProps) {
 
   return (
     <ErrorBoundary>
-      <div className='Grouping'>
-        <div className='Grouping__title'>
-          <Text size={12} weight={600}>
-            Group by
-          </Text>
-        </div>
-        <div className='Grouping__content'>{groupingItems}</div>
+      <div className='BaseGrouping'>
+        <Text size={12} weight={500} className='BaseGrouping__title'>
+          Group by:
+        </Text>
+        <div className='BaseGrouping__content'>{groupingItems}</div>
       </div>
     </ErrorBoundary>
   );
 }
 
-export default memo(Grouping);
+export default memo<Omit<IBaseComponentProps, 'visualizationName'>>(Grouping);

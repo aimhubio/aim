@@ -8,6 +8,7 @@ import ControlPopover from 'components/ControlPopover/ControlPopover';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import RunNameColumn from 'components/Table/RunNameColumn';
 import GroupedColumnHeader from 'components/Table/GroupedColumnHeader';
+import AttachedTagsList from 'components/AttachedTagsList/AttachedTagsList';
 
 import COLORS from 'config/colors/colors';
 import { TABLE_DEFAULT_CONFIG } from 'config/table/tableConfigs';
@@ -17,6 +18,7 @@ import { AppNameEnum } from 'services/models/explorer';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { IOnGroupingSelectChangeParams } from 'types/services/models/metrics/metricsAppModel';
 import { IGroupingSelectOption } from 'types/services/models/imagesExplore/imagesExploreAppModel';
+import { ITagInfo } from 'types/pages/tags/Tags';
 
 import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
@@ -133,6 +135,16 @@ function getParamsTableColumns(
       pin: order?.left?.includes('duration')
         ? 'left'
         : order?.right?.includes('duration')
+        ? 'right'
+        : null,
+    },
+    {
+      key: 'tags',
+      content: <span>Tags</span>,
+      topHeader: 'Run',
+      pin: order?.left?.includes('tags')
+        ? 'left'
+        : order?.right?.includes('tags')
         ? 'right'
         : null,
     },
@@ -368,8 +380,20 @@ function getParamsTableColumns(
   }
   return columns;
 }
+
+const TagsColumn = (props: {
+  runHash: string;
+  tags: ITagInfo[];
+  onRunsTagsChange: (runHash: string, tags: ITagInfo[]) => void;
+  headerRenderer: () => React.ReactNode;
+  addTagButtonSize: 'xxSmall' | 'xSmall';
+}) => {
+  return <AttachedTagsList {...props} hasAttachedTagsPopup />;
+};
+
 function paramsTableRowRenderer(
   rowData: any,
+  onRunsTagsChange: (runHash: string, tags: ITagInfo[]) => void,
   actions?: { [key: string]: (e: any) => void },
   groupHeaderRow = false,
   columns: string[] = [],
@@ -442,6 +466,16 @@ function paramsTableRowRenderer(
             hidden={rowData.isHidden}
           />
         ),
+      },
+      tags: {
+        component: TagsColumn,
+        props: {
+          runHash: rowData.hash,
+          tags: rowData.tags,
+          onRunsTagsChange,
+          headerRenderer: () => <></>,
+          addTagButtonSize: 'xxSmall',
+        },
       },
       actions: {
         content: (

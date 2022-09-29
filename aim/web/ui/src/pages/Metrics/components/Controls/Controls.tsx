@@ -4,11 +4,11 @@ import _ from 'lodash-es';
 
 import { Tooltip } from '@material-ui/core';
 
-import AggregationPopup from 'components/AggregationPopover/AggregationPopover';
-import SmootheningPopup from 'components/SmoothingPopover/SmoothingPopover';
-import ZoomInPopup from 'components/ZoomInPopover/ZoomInPopover';
-import ZoomOutPopup from 'components/ZoomOutPopover/ZoomOutPopover';
-import HighlightModePopup from 'components/HighlightModesPopover/HighlightModesPopover';
+import AggregationPopover from 'components/AggregationPopover/AggregationPopover';
+import SmootheningPopover from 'components/SmoothingPopover/SmoothingPopover';
+import ZoomInPopover from 'components/ZoomInPopover/ZoomInPopover';
+import ZoomOutPopover from 'components/ZoomOutPopover/ZoomOutPopover';
+import HighlightModePopover from 'components/HighlightModesPopover/HighlightModesPopover';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import AxesScalePopover from 'components/AxesScalePopover/AxesScalePopover';
 import AlignmentPopover from 'components/AxesPropsPopover/AxesPropsPopover';
@@ -61,21 +61,6 @@ function Controls(
     );
   }, [props.axesScaleRange]);
 
-  const smootheningChanged: boolean = React.useMemo(() => {
-    return (
-      props.smoothingFactor !==
-        CONTROLS_DEFAULT_CONFIG.metrics.smoothingFactor ||
-      props.curveInterpolation !==
-        CONTROLS_DEFAULT_CONFIG.metrics.curveInterpolation ||
-      props.smoothingAlgorithm !==
-        CONTROLS_DEFAULT_CONFIG.metrics.smoothingAlgorithm
-    );
-  }, [
-    props.smoothingAlgorithm,
-    props.smoothingFactor,
-    props.curveInterpolation,
-  ]);
-
   const tooltipChanged: boolean = React.useMemo(() => {
     return (
       props.tooltip?.display !==
@@ -126,20 +111,20 @@ function Controls(
                         })}
                         onClick={onAnchorClick}
                       >
-                        <Icon name='arrow-left' onClick={onAnchorClick} />
+                        <Icon name='arrow-left' fontSize={9} />
                       </span>
                     ) : null}
                     <Icon
+                      name='aggregation'
                       className={classNames('Controls__icon', {
                         active: props.aggregationConfig.isApplied,
                       })}
-                      name='aggregation'
                     />
                   </div>
                 </Tooltip>
               )}
               component={
-                <AggregationPopup
+                <AggregationPopover
                   aggregationConfig={props.aggregationConfig}
                   onChange={props.onAggregationConfigChange}
                 />
@@ -219,17 +204,35 @@ function Controls(
             <ControlPopover
               title='Chart smoothing options'
               anchor={({ onAnchorClick, opened }) => (
-                <Tooltip title='Chart smoothing options'>
+                <Tooltip
+                  title={
+                    props.smoothing.isApplied
+                      ? 'Disable smoothing'
+                      : 'Apply smoothing'
+                  }
+                >
                   <div
-                    onClick={onAnchorClick}
                     className={classNames('Controls__anchor', {
-                      active: opened || smootheningChanged,
-                      outlined: !opened && smootheningChanged,
+                      active: props.smoothing.isApplied,
+                      outlined: props.smoothing.isApplied,
                     })}
+                    onClick={() => {
+                      props.onSmoothingChange({
+                        isApplied: !props.smoothing?.isApplied,
+                      });
+                    }}
                   >
+                    <span
+                      className={classNames('Controls__anchor__arrow', {
+                        opened,
+                      })}
+                      onClick={onAnchorClick}
+                    >
+                      <Icon name='arrow-left' fontSize={9} />
+                    </span>
                     <Icon
                       className={classNames('Controls__icon', {
-                        active: opened || smootheningChanged,
+                        active: props.smoothing.isApplied,
                       })}
                       name='smoothing'
                     />
@@ -237,11 +240,9 @@ function Controls(
                 </Tooltip>
               )}
               component={
-                <SmootheningPopup
+                <SmootheningPopover
                   onSmoothingChange={props.onSmoothingChange}
-                  smoothingAlgorithm={props.smoothingAlgorithm}
-                  curveInterpolation={props.curveInterpolation}
-                  smoothingFactor={props.smoothingFactor}
+                  smoothing={props.smoothing}
                 />
               }
             />
@@ -290,7 +291,7 @@ function Controls(
                 </Tooltip>
               )}
               component={
-                <HighlightModePopup
+                <HighlightModePopover
                   mode={props.highlightMode}
                   onChange={props.onHighlightModeChange}
                 />
@@ -353,7 +354,7 @@ function Controls(
                       })}
                       onClick={onAnchorClick}
                     >
-                      <Icon name='arrow-left' />
+                      <Icon name='arrow-left' fontSize={9} />
                     </span>
                     <Icon
                       className={classNames('Controls__icon', {
@@ -365,7 +366,7 @@ function Controls(
                 </Tooltip>
               )}
               component={
-                <ZoomInPopup
+                <ZoomInPopover
                   mode={props.zoom?.mode}
                   onChange={props.onZoomChange}
                 />
@@ -399,7 +400,7 @@ function Controls(
                         })}
                         onClick={onAnchorClick}
                       >
-                        <Icon name='arrow-left' />
+                        <Icon name='arrow-left' fontSize={9} />
                       </span>
                     ) : null}
                     <Icon className='Controls__icon' name='zoom-out' />
@@ -407,7 +408,7 @@ function Controls(
                 </Tooltip>
               )}
               component={
-                <ZoomOutPopup
+                <ZoomOutPopover
                   zoomHistory={props.zoom?.history}
                   onChange={props.onZoomChange}
                 />

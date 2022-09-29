@@ -40,4 +40,5 @@ export interface IMediaPanelProps {
   sortFieldsDict?: { [key: string]: SortField };
   sortFields?: SortFields;
   illustrationConfig?: IIllustrationConfig;
+  onRunsTagsChange?: (runHash: string, tags: ITagInfo[]) => void;
 }
