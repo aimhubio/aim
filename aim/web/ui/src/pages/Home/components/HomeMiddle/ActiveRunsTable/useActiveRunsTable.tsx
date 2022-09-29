@@ -15,6 +15,8 @@ import { processDurationTime } from 'utils/processDurationTime';
 import contextToString from 'utils/contextToString';
 import { getMetricHash } from 'utils/app/getMetricHash';
 import { formatValue } from 'utils/formatValue';
+import { isSystemMetric } from 'utils/isSystemMetric';
+import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 
 import createActiveRunsEngine from './ActiveRunsStore';
 
@@ -63,7 +65,9 @@ function useActiveRunsTable() {
                   label={metricContext === '' ? 'Empty context' : metricContext}
                 />
               ),
-              topHeader: 'Run',
+              topHeader: isSystemMetric(trace.name)
+                ? formatSystemMetricName(trace.name)
+                : trace.name,
               name: trace.name,
               context: metricContext,
             });

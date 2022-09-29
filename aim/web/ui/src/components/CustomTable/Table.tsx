@@ -260,12 +260,10 @@ function Table(props) {
     props.updateColumns(columnsOrderClone);
   }
 
-  function showTopHeaderContent(index, col, add) {
+  function showTopHeaderContent(index, colTopHeader, add) {
     return (
       props.topHeader &&
-      sortedColumns[
-        (leftPane ? leftPane.length : 0) + (add ? index + 1 : index - 1)
-      ]?.topHeader !== col.topHeader
+      sortedColumns[add ? index + 1 : index - 1]?.topHeader !== colTopHeader
     );
   }
 
@@ -396,8 +394,15 @@ function Table(props) {
                   <Column
                     noColumnActions={props.noColumnActions}
                     topHeader={props.topHeader}
-                    showTopHeaderContent={showTopHeaderContent(index, col)}
-                    showTopHeaderBorder={showTopHeaderContent(index, col, true)}
+                    showTopHeaderContent={showTopHeaderContent(
+                      index,
+                      col.topHeader,
+                    )}
+                    showTopHeaderBorder={showTopHeaderContent(
+                      index,
+                      col.topHeader,
+                      true,
+                    )}
                     col={col}
                     data={props.data}
                     expanded={expanded}
@@ -458,8 +463,15 @@ function Table(props) {
                   <Column
                     noColumnActions={props.noColumnActions}
                     topHeader={props.topHeader}
-                    showTopHeaderContent={showTopHeaderContent(index, col)}
-                    showTopHeaderBorder={showTopHeaderContent(index, col, true)}
+                    showTopHeaderContent={showTopHeaderContent(
+                      leftPane.length + index,
+                      col.topHeader,
+                    )}
+                    showTopHeaderBorder={showTopHeaderContent(
+                      leftPane.length + index,
+                      col.topHeader,
+                      true,
+                    )}
                     col={col}
                     data={props.data}
                     expanded={expanded}
@@ -523,8 +535,15 @@ function Table(props) {
                     noColumnActions={props.noColumnActions}
                     key={col.key}
                     topHeader={props.topHeader}
-                    showTopHeaderContent={showTopHeaderContent(index, col)}
-                    showTopHeaderBorder={showTopHeaderContent(index, col, true)}
+                    showTopHeaderContent={showTopHeaderContent(
+                      index,
+                      col.topHeader,
+                    )}
+                    showTopHeaderBorder={showTopHeaderContent(
+                      index,
+                      col.topHeader,
+                      true,
+                    )}
                     col={col}
                     data={props.data}
                     expanded={expanded}

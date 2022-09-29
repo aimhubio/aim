@@ -21,6 +21,7 @@ function ActiveRunsTable() {
         topHeader
         multiSelect
         noColumnActions
+        hideHeaderActions
         showRowClickBehaviour={false}
         showResizeContainerActionBar={false}
         appName={AppNameEnum.RUNS} // @TODO: change to Dashboard
