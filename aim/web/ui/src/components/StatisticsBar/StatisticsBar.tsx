@@ -14,21 +14,21 @@ function StatisticsBar({
     const items = [];
     for (let i = 0; i < data.length; i++) {
       const item = data[i];
-      if (item.percent !== 0) {
-        const style = {
-          width: `${item.percent}%`,
-          left: i === 0 ? 0 : styles[i - 1].left + data[i - 1].percent,
-          backgroundColor: item.color,
-        };
-        styles.push(style);
-        items.push(
-          <span
-            key={`${item.label}-${item.color}`}
-            className='StatisticsBar__item'
-            style={{ ...style, left: style.left + '%' }}
-          />,
-        );
-      }
+      const prevItemLeftPos = styles[i - 1]?.left || 0;
+      const prevItemPercent = data[i - 1]?.percent || 0;
+      const style = {
+        width: `${item.percent}%`,
+        left: i === 0 ? 0 : prevItemLeftPos + prevItemPercent,
+        backgroundColor: item.color,
+      };
+      styles.push(style);
+      items.push(
+        <span
+          key={`${item.label}-${item.color}`}
+          className='StatisticsBar__item'
+          style={{ ...style, left: style.left + '%' }}
+        />,
+      );
     }
     return items;
   }, [data]);

@@ -25,7 +25,8 @@
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    &__label, &__count {
+    &__label,
+    &__count {
       text-overflow: ellipsis;
       overflow: hidden;
       white-space: nowrap;
