@@ -72,15 +72,16 @@ function GuideDocs(): React.FunctionComponentElement<React.ReactNode> {
           </ListItem>
         ))}
       </div>
-      <div className='GuideLinks--btn'>
-        <Button
-          fullWidth
-          variant='outlined'
-          onClick={(e) => onClick(e, DOCUMENTATIONS.MAIN_PAGE, true)}
-        >
+      <a
+        href={DOCUMENTATIONS.MAIN_PAGE}
+        className='GuideLinks--btn'
+        target='_blank'
+        rel='noreferrer'
+      >
+        <Button fullWidth variant='outlined' size='xSmall'>
           Documentations
         </Button>
-      </div>
+      </a>
     </div>
   );
 }

@@ -7,38 +7,40 @@ import CompareSelectedRunsPopover from 'pages/Metrics/components/Table/CompareSe
 
 import { AppNameEnum } from 'services/models/explorer';
 
-import useExperimentsCard from './useExperimentsCard';
+import useTagsCard from './useTagsCard';
 
-import './ExperimentsCard.scss';
+import './TagsCard.scss';
 
-function ExperimentsCard() {
+function TagsCard(): React.FunctionComponentElement<React.ReactNode> | null {
   const {
     tableRef,
     tableColumns,
     tableData,
-    experimentsStore,
+    tagsStore,
     selectedRows,
-    experimentsQuery,
-  } = useExperimentsCard();
-  return (
-    <div className='ExperimentsCard'>
+    tagsQuery,
+  } = useTagsCard();
+
+  return tagsStore.data?.length ? (
+    <div className='TagsCard'>
       <Text
-        className='ExperimentsCard__title'
+        className='TagsCard__title'
         component='h3'
         size={14}
         weight={700}
         tint={100}
       >
-        Experiments
+        Tags ({tagsStore.data.length})
       </Text>
       <DataList
         tableRef={tableRef}
         tableColumns={tableColumns}
         tableData={tableData}
-        isLoading={experimentsStore.loading}
+        isLoading={tagsStore.loading}
         height={Math.min(238, tableData.length * 24 + 56) + 'px'}
         searchableKeys={['name', 'run_count']}
         rowHeight={24}
+        disableMatchBar={true}
         illustrationConfig={{
           size: 'large',
           title: 'No Results',
@@ -47,16 +49,15 @@ function ExperimentsCard() {
           <CompareSelectedRunsPopover
             key='compareSelectedRunsPopover'
             appName={'home' as AppNameEnum}
-            query={experimentsQuery}
+            query={tagsQuery}
             disabled={!selectedRows.length}
           />,
         ]}
-        disableMatchBar={true}
       />
     </div>
-  );
+  ) : null;
 }
 
-ExperimentsCard.displayName = 'ExperimentsCard';
+TagsCard.displayName = 'TagsCard';
 
-export default React.memo(ExperimentsCard);
+export default React.memo(TagsCard);

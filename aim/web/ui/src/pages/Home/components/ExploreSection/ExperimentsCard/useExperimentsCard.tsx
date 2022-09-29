@@ -116,15 +116,7 @@ function useExperimentsCard() {
         key: 'name',
         title: (
           <Text weight={600} size={12} tint={100}>
-            Experiment
-            <Text
-              weight={600}
-              size={14}
-              tint={50}
-              className='RunOverviewTab__cardBox__tableTitleCount'
-            >
-              ({tableData?.length})
-            </Text>
+            Name
           </Text>
         ),
         width: 'calc(100% - 50px)',

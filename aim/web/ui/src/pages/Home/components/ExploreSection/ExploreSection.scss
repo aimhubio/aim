@@ -1,6 +1,6 @@
 @use 'src/styles/abstracts' as *;
 
-.HomeLeft {
+.ExploreSection {
   display: flex;
   flex-direction: column;
   min-width: 310px;
@@ -8,8 +8,18 @@
   background-color: $pico-2;
   overflow: auto;
   height: 100vh;
+  &__Spinner {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  &__loading {
+    display: none;
+  }
   &__title {
-    padding: $space-unit;
+    margin-top: 1.25rem;
+    padding: 0 1.5rem;
   }
   .DataList {
     .CompareSelectedRunsPopover__trigger {

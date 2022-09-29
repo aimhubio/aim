@@ -1,4 +1,4 @@
-import { IExperimentData } from 'pages/Home/components/HomeLeft/ExperimentsCard';
+import { IExperimentData } from 'pages/Home/components/ExploreSection/ExperimentsCard';
 
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 

@@ -9,7 +9,7 @@ import { IHomeProps } from 'types/pages/home/Home';
 import ExploreAim from './components/ExploreAim/ExploreAim';
 import SetupGuide from './components/SetupGuide/SetupGuide';
 import ProjectContributions from './components/ProjectContributions/ProjectContributions';
-import HomeLeft from './components/HomeLeft/HomeLeft';
+import ExploreSection from './components/ExploreSection/ExploreSection';
 import HomeRight from './components/HomeRight/HomeRight';
 import ProjectStatistics from './components/ProjectStatistics';
 
@@ -25,7 +25,7 @@ function Home({
   return (
     <ErrorBoundary>
       <section className='Home'>
-        <HomeLeft />
+        <ExploreSection />
         <div className='Home__middle'>
           <Text
             tint={100}
