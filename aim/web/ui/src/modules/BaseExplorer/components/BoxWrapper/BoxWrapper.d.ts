@@ -9,4 +9,5 @@ export interface IBoxWrapperProps<T> extends IBaseComponentProps {
   groupId: string;
   depthSelector: (groupKey: string) => (state: any) => number;
   onDepthMapChange: (value: number, groupId: string) => void;
+  visualizationName: string;
 }

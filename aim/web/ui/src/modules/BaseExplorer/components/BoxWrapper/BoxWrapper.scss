@@ -29,6 +29,7 @@
     background-color: white;
     width: calc(100% - 2px);
     height: 1.75rem;
+    margin-bottom: toRem(1px);
     & > .Slider {
       width: 100%;
       max-width: 46rem;
