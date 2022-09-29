@@ -11,12 +11,13 @@ import { TABLE_DATE_FORMAT } from 'config/dates/dates';
 
 import { IRun } from 'types/services/models/metrics/runModel';
 
-import { processDurationTime } from 'utils/processDurationTime';
 import contextToString from 'utils/contextToString';
+import { processDurationTime } from 'utils/processDurationTime';
 import { getMetricHash } from 'utils/app/getMetricHash';
 import { formatValue } from 'utils/formatValue';
 import { isSystemMetric } from 'utils/isSystemMetric';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
+import { decode, encode } from 'utils/encoder/encoder';
 
 import createActiveRunsEngine from './ActiveRunsStore';
 
@@ -25,6 +26,10 @@ function useActiveRunsTable() {
   const { current: activeRunsEngine } = React.useRef(createActiveRunsEngine);
   const activeRunsStore: IResourceState<IRun<unknown>[]> =
     activeRunsEngine.activeRunsState((state) => state);
+  const [selectedRows, setSelectedRows] = React.useState<
+    Record<string, boolean>
+  >({});
+  const [comparisonQuery, setComparisonQuery] = React.useState<string>('');
 
   React.useEffect(() => {
     activeRunsEngine.fetchActiveRuns();
@@ -92,8 +97,12 @@ function useActiveRunsTable() {
     if (activeRunsStore.data) {
       return activeRunsStore.data.map(
         ({ props, hash }: IRun<unknown>, index: number) => {
+          const key = encode({
+            hash,
+          });
           let row: any = {
-            key: index,
+            key,
+            selectKey: key,
             index,
             experiment: props.experiment?.name,
             run: {
@@ -170,12 +179,64 @@ function useActiveRunsTable() {
     }
   }, [tableData, tableColumns]);
 
+  // on row selection
+  const onRowSelect = React.useCallback(
+    ({ actionType, data }) => {
+      let selected: Record<string, boolean> = { ...selectedRows };
+      switch (actionType) {
+        case 'single':
+          if (selectedRows[data.key]) {
+            selected = _.omit(selectedRows, data.key);
+          } else {
+            selected[data.key] = true;
+          }
+          break;
+        case 'selectAll':
+          if (Array.isArray(data)) {
+            data.forEach((item: any) => {
+              if (!selectedRows[item.key]) {
+                selected[item.key] = true;
+              }
+            });
+          } else {
+            Object.values(data)
+              .reduce((acc: any[], value: any) => {
+                return acc.concat(value.items);
+              }, [])
+              .forEach((item: any) => {
+                if (!selectedRows[item.selectKey]) {
+                  selected[item.selectKey] = true;
+                }
+              });
+          }
+          break;
+        case 'removeAll':
+          if (Array.isArray(data)) {
+            selected = {};
+          }
+          break;
+      }
+
+      setSelectedRows(selected);
+
+      setComparisonQuery(
+        `run.hash in [${Object.keys(selected)
+          .map((key) => `"${JSON.parse(decode(key)).hash}"`)
+          .join(', ')}]`,
+      );
+    },
+    [selectedRows, tableData],
+  );
+
   return {
     data: activeRunsStore.data,
     tableData,
     tableColumns,
     tableRef,
     loading: activeRunsStore.loading,
+    selectedRows,
+    comparisonQuery,
+    onRowSelect,
   };
 }
 

@@ -862,7 +862,7 @@ const Table = React.forwardRef(function Table(
                 </div>
               )}
             </div>
-          ) : !isEmpty(selectedRows) && multiSelect ? (
+          ) : !hideHeaderActions && !isEmpty(selectedRows) && multiSelect ? (
             <div className='Table__header selectedRowActionsContainer'>
               <div className='selectedRowActionsContainer__selectedRowsCount'>
                 <Text size={14} tint={50}>
