@@ -20,6 +20,11 @@ $border: 1px solid $primary-color-10;
     display: flex;
     flex-direction: column;
     flex: 1 1;
+
+    &--centered {
+      align-items: center;
+      justify-content: center;
+    }
   }
   &__Explore__container {
     border-top: $border;

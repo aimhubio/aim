@@ -1,17 +1,17 @@
 import React from 'react';
+import classnames from 'classnames';
 
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
-import { Text } from 'components/kit';
+import { Spinner, Text } from 'components/kit';
 
 import { IHomeProps } from 'types/pages/home/Home';
 
 import ProjectContributions from './components/ProjectContributions/ProjectContributions';
 import ExploreSection from './components/ExploreSection/ExploreSection';
 import HomeRight from './components/HomeRight/HomeRight';
-import ProjectStatistics, {
-  useProjectStatistics,
-} from './components/ProjectStatistics';
+import ProjectStatistics from './components/ProjectStatistics';
+import useProjectContributions from './components/ProjectContributions/useProjectContributions';
 import ActiveRunsTable from './components/ActiveRunsTable/ActiveRunsTable';
 import QuickStart from './components/QuickStart';
 
@@ -24,16 +24,23 @@ function Home({
   onNotificationDelete,
   askEmailSent,
 }: IHomeProps): React.FunctionComponentElement<React.ReactNode> {
-  const { projectContributionsStore } = useProjectStatistics();
+  const { projectContributionsStore } = useProjectContributions();
 
   const totalRunsCount = projectContributionsStore.data?.num_runs ?? 0;
+  const isLoading = projectContributionsStore.loading;
 
   return (
     <ErrorBoundary>
       <section className='Home'>
         <ExploreSection />
-        <div className='Home__middle'>
-          {totalRunsCount === 0 ? (
+        <div
+          className={classnames('Home__middle', {
+            'Home__middle--centered': isLoading,
+          })}
+        >
+          {isLoading ? (
+            <Spinner />
+          ) : totalRunsCount === 0 ? (
             <QuickStart />
           ) : (
             <>
