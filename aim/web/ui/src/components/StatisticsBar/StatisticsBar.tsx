@@ -30,7 +30,6 @@ function StatisticsBar({
         width: `${item.percent.toFixed(2)}%`,
         left: i === 0 ? 0 : prevItemLeftPos + prevItemPercent,
         backgroundColor: item.color,
-        color: item.color,
       };
       styles.push(style);
     }

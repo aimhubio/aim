@@ -4,7 +4,11 @@ import { Text } from 'components/kit';
 import StatisticsCard from 'components/StatisticsCard';
 import StatisticsBar from 'components/StatisticsBar';
 
+import routes from 'routes/routes';
+
 import { SequenceTypesEnum } from 'types/core/enums';
+
+import { encode } from 'utils/encoder/encoder';
 
 import { IProjectStatistic, useProjectStatistics } from '.';
 
@@ -16,60 +20,76 @@ const statisticsInitialMap: Record<string, IProjectStatistic> = {
     count: 0,
     icon: 'metrics',
     iconBgColor: '#7A4CE0',
+    navLink: routes.METRICS.path,
+    title: 'Metrics Explorer',
   },
   systemMetrics: {
     label: 'Sys. metrics',
     count: 0,
     icon: 'metrics',
     iconBgColor: '#FCB500',
-  },
-  [SequenceTypesEnum.Distributions]: {
-    label: 'Distributions',
-    icon: 'distributions',
-    count: 0,
-    iconBgColor: '#0394B4',
-  },
-  [SequenceTypesEnum.Images]: {
-    label: 'Images',
-    icon: 'images',
-    count: 0,
-    iconBgColor: '#F17922',
-  },
-  [SequenceTypesEnum.Audios]: {
-    label: 'Audios',
-    icon: 'audio',
-    count: 0,
-    iconBgColor: '#729B1B',
-  },
-  [SequenceTypesEnum.Texts]: {
-    label: 'Texts',
-    icon: 'text',
-    count: 0,
-    iconBgColor: '#E149A0',
+    navLink: `${routes.METRICS.path}?select=${encode({
+      advancedQuery: "metric.name.startswith('__system__') == True",
+      advancedMode: true,
+    })}`,
+    title: 'Metrics Explorer',
   },
   [SequenceTypesEnum.Figures]: {
     label: 'Figures',
     icon: 'figures-explorer',
     count: 0,
     iconBgColor: '#18AB6D',
+    navLink: routes.FIGURES_EXPLORER.path,
+    title: 'Figures Explorer',
+  },
+  [SequenceTypesEnum.Images]: {
+    label: 'Images',
+    icon: 'images',
+    count: 0,
+    iconBgColor: '#F17922',
+    navLink: routes.IMAGE_EXPLORE.path,
+    title: 'Images Explorer',
+  },
+  [SequenceTypesEnum.Audios]: {
+    label: 'Audios',
+    icon: 'audio',
+    count: 0,
+    iconBgColor: '#729B1B',
+    navLink: '',
+    title: 'Explorer coming soon',
+  },
+  [SequenceTypesEnum.Texts]: {
+    label: 'Texts',
+    icon: 'text',
+    count: 0,
+    iconBgColor: '#E149A0',
+    navLink: '',
+    title: 'Explorer coming soon',
+  },
+  [SequenceTypesEnum.Distributions]: {
+    label: 'Distributions',
+    icon: 'distributions',
+    count: 0,
+    iconBgColor: '#0394B4',
+    navLink: '',
+    title: 'Explorer coming soon',
   },
 };
 
-const runsCountingInitialMap: Record<
-  'archived' | 'unarchived',
-  IProjectStatistic
-> = {
-  unarchived: {
-    label: 'unarchived',
+const runsCountingInitialMap: Record<'archived' | 'runs', IProjectStatistic> = {
+  runs: {
+    label: 'runs',
     icon: 'unarchive',
     count: 0,
     iconBgColor: '#1473E6',
+    navLink: routes.RUNS.path,
   },
   archived: {
     label: 'archived',
     icon: 'archive',
     count: 0,
     iconBgColor: '#606986',
+    navLink: `/runs?select=${encode({ query: 'run.archived == True' })}`,
   },
 };
 
@@ -126,8 +146,8 @@ function ProjectStatistics() {
   );
   const runsCountingMap = React.useMemo(
     () => ({
-      unarchived: {
-        ...runsCountingInitialMap.unarchived,
+      runs: {
+        ...runsCountingInitialMap.runs,
         count: totalRunsCount - archivedRuns,
       },
       archived: {
@@ -157,12 +177,13 @@ function ProjectStatistics() {
       </Text>
       <div className='ProjectStatistics__cards'>
         {Object.values(runsCountingMap).map(
-          ({ label, icon, count, iconBgColor }) => (
+          ({ label, icon, count, iconBgColor, navLink }) => (
             <StatisticsCard
               key={label}
               label={label}
               icon={icon}
               count={count}
+              navLink={navLink}
               iconBgColor={iconBgColor}
               onMouseOver={onMouseOver}
               onMouseLeave={onMouseLeave}
@@ -182,12 +203,14 @@ function ProjectStatistics() {
       </Text>
       <div className='ProjectStatistics__cards'>
         {Object.values(statisticsMap).map(
-          ({ label, icon, count, iconBgColor }) => (
+          ({ label, title, icon, count, iconBgColor, navLink }) => (
             <StatisticsCard
               key={label}
+              title={title}
               label={label}
               icon={icon}
               count={count}
+              navLink={navLink}
               iconBgColor={iconBgColor}
               onMouseOver={onMouseOver}
               onMouseLeave={onMouseLeave}
