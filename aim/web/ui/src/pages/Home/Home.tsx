@@ -11,6 +11,7 @@ import SetupGuide from './components/SetupGuide/SetupGuide';
 import ProjectContributions from './components/ProjectContributions/ProjectContributions';
 import ExploreSection from './components/ExploreSection/ExploreSection';
 import HomeRight from './components/HomeRight/HomeRight';
+import ContributionsFeed from './components/ContributionsFeed/ContributionsFeed';
 import ProjectStatistics from './components/ProjectStatistics';
 
 import './Home.scss';
@@ -36,13 +37,13 @@ function Home({
             Overview
           </Text>
           <ProjectStatistics />
-          <div className='Home__Activity__container'>
-            <ProjectContributions />
-          </div>
+          <ProjectContributions />
+
           {/* <div className='Home__Explore__container'>
             <SetupGuide askEmailSent={askEmailSent} onSendEmail={onSendEmail} />
             <ExploreAim />
           </div> */}
+          <ContributionsFeed />
         </div>
         <HomeRight />
         {notifyData?.length > 0 && (

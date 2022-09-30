@@ -5,10 +5,12 @@ $border: 1px solid $primary-color-10;
   background-color: #ffffff;
   overflow: hidden;
   display: flex;
+  height: 100vh;
   &__middle {
     padding: $space-md $space-lg;
     border: $border;
     display: flex;
+    overflow: auto;
     flex-direction: column;
     flex: 1 1;
   }
@@ -17,9 +19,7 @@ $border: 1px solid $primary-color-10;
     border-bottom: $border;
     display: flex;
   }
-  &__Activity__container {
-    padding: $space-lg;
-  }
+
   h2 {
     margin: 0 0 1rem 0;
   }
