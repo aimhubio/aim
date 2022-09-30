@@ -1,0 +1,16 @@
+@use 'src/styles/abstracts' as *;
+
+.ContributionsFeed {
+  border-top: none;
+  &__title {
+    margin-bottom: $space-sm;
+    padding: 0 $space-sm;
+  }
+  &__content {
+    margin-top: $space-sm;
+    padding-bottom: $space-xxxxs;
+    &-title {
+      margin-bottom: $space-sm;
+    }
+  }
+}

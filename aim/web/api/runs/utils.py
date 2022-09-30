@@ -55,7 +55,7 @@ def str_to_range(range_str: str):
 
 
 def get_run_params(run: Run, *, skip_system: bool):
-    params = run.get(..., resolve_objects=True)
+    params = run.get(..., {}, resolve_objects=True)
     if skip_system and '__system_params' in params:
         del params['__system_params']
     return params
