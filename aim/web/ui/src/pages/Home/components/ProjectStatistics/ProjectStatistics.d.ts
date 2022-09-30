@@ -5,4 +5,6 @@ export interface IProjectStatistic {
   count: number;
   iconBgColor: string;
   icon?: IconName;
+  navLink?: string;
+  title?: string;
 }

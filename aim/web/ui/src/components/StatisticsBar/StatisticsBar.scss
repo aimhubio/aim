@@ -17,7 +17,9 @@
       border-bottom-right-radius: $border-radius-sm;
     }
     &.highlighted {
-      box-shadow: 0 0 2px 1px currentColor;
+      transition: all 0.18s ease-out;
+      z-index: 1;
+      box-shadow: 0 2px 4px 0 #00000040, 0 0 0 2px white;
     }
   }
 }

@@ -31,12 +31,21 @@
       overflow: hidden;
       white-space: nowrap;
       color: $pico;
+      user-select: none;
     }
     &__label {
       text-transform: capitalize;
     }
   }
   &.highlighted {
-    box-shadow: 0 0 2px 0px $box-shadow-color;
+    cursor: pointer;
+    transition: all 0.18s ease-out;
+    box-shadow: 0 1px 4px 0 #0000003d;
+    .StatisticsCard__info__label, .StatisticsCard__info__count {
+      color: white;
+    }
+    .StatisticsCard__iconWrapper__icon {
+      color: $pico-80;
+    }
   }
 }
