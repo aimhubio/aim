@@ -11,7 +11,9 @@ function useProjectContributions() {
     engine.projectContributionsState((state) => state);
 
   React.useEffect(() => {
-    engine.fetchProjectContributions();
+    if (!projectContributionsStore.data) {
+      engine.fetchProjectContributions();
+    }
     return () => {
       engine.projectContributionsState.destroy();
     };
