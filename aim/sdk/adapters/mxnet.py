@@ -1,8 +1,8 @@
 import time
 import numpy as np
 from mxnet.gluon.contrib.estimator.utils import _check_metrics
-from mxnet.gluon.contrib.estimator import TrainBegin, TrainEnd, BatchBegin, BatchEnd
-from typing import Optional
+from mxnet.gluon.contrib.estimator import TrainBegin, TrainEnd, BatchBegin, BatchEnd, Estimator
+from typing import Optional, Union, Any, List
 from aim.sdk.run import Run
 from aim.ext.resource.configs import DEFAULT_SYSTEM_TRACKING_INT
 
@@ -27,12 +27,12 @@ class AimLoggingHandler(TrainBegin, TrainEnd, BatchBegin, BatchEnd):
         handler is.
     """
 
-    def __init__(self, log_interval='epoch',
+    def __init__(self, log_interval: Union[int, str] = 'epoch',
                  repo: Optional[str] = None,
                  experiment_name: Optional[str] = None,
                  system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT,
                  log_system_params: bool = True,
-                 metrics=None,
+                 metrics: List[Any] = None,
                  priority=np.Inf,):
         super().__init__()
         if not isinstance(log_interval, int) and log_interval != 'epoch':
@@ -55,7 +55,7 @@ class AimLoggingHandler(TrainBegin, TrainEnd, BatchBegin, BatchEnd):
         self._run = None
         self._run_hash = None
 
-    def train_begin(self, estimator, *args, **kwargs):
+    def train_begin(self, estimator: Optional[Estimator], *args, **kwargs):
         self.train_start = time.time()
         trainer = estimator.trainer
         optimizer = trainer.optimizer.__class__.__name__
@@ -85,7 +85,7 @@ class AimLoggingHandler(TrainBegin, TrainEnd, BatchBegin, BatchEnd):
 
         self.setup(estimator, params)
 
-    def train_end(self, estimator, *args, **kwargs):
+    def train_end(self, estimator: Optional[Estimator], *args, **kwargs):
         train_time = time.time() - self.train_start
         msg = 'Train finished using total %ds with %d epochs. ' % (train_time, self.current_epoch)
         # log every result in train stats including train/validation loss & metrics
@@ -94,11 +94,11 @@ class AimLoggingHandler(TrainBegin, TrainEnd, BatchBegin, BatchEnd):
             msg += '%s: %.4f, ' % (name, value)
         estimator.logger.info(msg.rstrip(', '))
 
-    def batch_begin(self, estimator, *args, **kwargs):
+    def batch_begin(self, estimator: Optional[Estimator], *args, **kwargs):
         if isinstance(self.log_interval, int):
             self.batch_start = time.time()
 
-    def batch_end(self, estimator, *args, **kwargs):
+    def batch_end(self, estimator: Optional[Estimator], *args, **kwargs):
         if isinstance(self.log_interval, int):
             batch_time = time.time() - self.batch_start
             msg = '[Epoch %d][Batch %d]' % (self.current_epoch, self.batch_index)
@@ -125,7 +125,7 @@ class AimLoggingHandler(TrainBegin, TrainEnd, BatchBegin, BatchEnd):
             self.setup()
         return self._run
 
-    def setup(self, estimator, args=None):
+    def setup(self, estimator: Optional[Estimator] = None, args=None):
         if not self._run:
             if self._run_hash:
                 self._run = Run(

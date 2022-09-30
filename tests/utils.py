@@ -37,7 +37,6 @@ def decode_encoded_tree_stream(stream: Iterator[bytes], concat_chunks=False) -> 
         for chunk in stream:
             data = prev_chunk_tail + chunk
             prev_chunk_tail = b''
-            print("processing chunk: ", len(chunk))
             while data:
                 try:
                     (key_size,), data_tail = struct.unpack('I', data[:4]), data[4:]
@@ -86,9 +85,7 @@ def create_run_params():
     }
 
 
-def fill_up_test_data():
-    remove_test_data()
-
+def fill_up_test_data(extra_params: dict = None):
     # put dummy data into test repo with 10 runs, tracking 2 metrics over 3 contexts
     repo = Repo.default_repo()
 
@@ -101,6 +98,7 @@ def fill_up_test_data():
         runs = []
         for idx in range(10):
             run = Run(repo=repo, system_tracking_interval=None)
+            run[...] = extra_params
             run['hparams'] = create_run_params()
             run['run_index'] = idx
             run['start_time'] = datetime.datetime.utcnow().isoformat()
@@ -122,20 +120,6 @@ def fill_up_test_data():
             run.finalize()
 
 
-def remove_test_data():
-    repo = Repo.default_repo()
-    repo.container_pool.clear()
-    repo.container_view_pool.clear()
-    repo.persistent_pool.clear()
-    truncate_structured_db(repo.structured_db)
-
-    repo_path_base = repo.path
-    shutil.rmtree(os.path.join(repo_path_base, 'meta'), ignore_errors=True)
-    shutil.rmtree(os.path.join(repo_path_base, 'seqs'), ignore_errors=True)
-    shutil.rmtree(os.path.join(repo_path_base, 'locks'), ignore_errors=True)
-    shutil.rmtree(os.path.join(repo_path_base, 'progress'), ignore_errors=True)
-
-
 def is_package_installed(pkg_name: str) -> bool:
     import importlib
     try:
@@ -144,3 +128,10 @@ def is_package_installed(pkg_name: str) -> bool:
         return False
     finally:
         return spec is not None
+
+
+def full_class_name(cls):
+    module = cls.__module__
+    if module == '__builtin__':
+        return cls.__name__  # avoid outputs like '__builtin__.str'
+    return module + '.' + cls.__name__

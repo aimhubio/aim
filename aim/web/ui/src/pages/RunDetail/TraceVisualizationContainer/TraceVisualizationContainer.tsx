@@ -103,7 +103,13 @@ function TraceVisualizationContainer({
           )}
         </div>
         <div className='VisualizerArea'>
-          <React.Suspense fallback={<Spinner />}>
+          <React.Suspense
+            fallback={
+              <div className='VisualizerArea__suspenseLoaderContainer'>
+                <Spinner />
+              </div>
+            }
+          >
             <Visualizer
               data={runTracesModelData?.data}
               isLoading={runTracesModelData?.isTraceBatchLoading}

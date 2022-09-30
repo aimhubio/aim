@@ -1,9 +1,8 @@
 import React from 'react';
 
-import { CircularProgress } from '@material-ui/core';
-
 import Table from 'components/Table/Table';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import { Spinner } from 'components/kit';
 
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 import { Request_Illustrations } from 'config/illustrationConfig/illustrationConfig';
@@ -98,7 +97,7 @@ function RunsTable({
         </div>
         {isInfiniteLoading && (
           <div className='Infinite_Loader'>
-            <CircularProgress />
+            <Spinner />
           </div>
         )}
       </div>

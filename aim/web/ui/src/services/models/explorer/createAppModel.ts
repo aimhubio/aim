@@ -2,7 +2,6 @@ import moment from 'moment';
 import { saveAs } from 'file-saver';
 import _ from 'lodash-es';
 
-import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { IPoint } from 'components/ScatterPlot';
 import { IAxesScaleRange } from 'components/AxesPropsPopover';
 
@@ -140,7 +139,12 @@ import toggleSelectAdvancedMode from 'utils/app/toggleSelectAdvancedMode';
 import updateColumnsWidths from 'utils/app/updateColumnsWidths';
 import updateSortFields from 'utils/app/updateTableSortFields';
 import contextToString from 'utils/contextToString';
-import { AlignmentOptionsEnum, ChartTypeEnum, ScaleEnum } from 'utils/d3';
+import {
+  AlignmentOptionsEnum,
+  ChartTypeEnum,
+  HighlightEnum,
+  ScaleEnum,
+} from 'utils/d3';
 import {
   decodeBufferPairs,
   decodePathsVals,

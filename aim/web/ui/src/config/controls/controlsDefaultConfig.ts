@@ -1,6 +1,3 @@
-import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
-import { ZoomEnum } from 'components/ZoomInPopover/ZoomInPopover';
-
 import { DensityOptions } from 'config/enums/densityEnum';
 import {
   ImageRenderingEnum,
@@ -16,6 +13,8 @@ import {
   CurveEnum,
   ScaleEnum,
   TrendlineTypeEnum,
+  HighlightEnum,
+  ZoomEnum,
 } from 'utils/d3';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 
