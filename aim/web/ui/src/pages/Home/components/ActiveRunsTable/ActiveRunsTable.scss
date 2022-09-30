@@ -9,6 +9,10 @@
   align-items: center;
   justify-content: space-between;
   height: 28px;
+
+  .CompareSelectedRunsPopover__trigger {
+    margin-right: 0 !important;
+  }
 }
 
 .ActiveRunsTable__table {
