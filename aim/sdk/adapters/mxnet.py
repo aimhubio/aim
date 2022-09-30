@@ -1,13 +1,13 @@
 import time
 import numpy as np
 from mxnet.gluon.contrib.estimator.utils import _check_metrics
-from mxnet.gluon.contrib.estimator import TrainBegin, TrainEnd, BatchBegin, BatchEnd, Estimator
+from mxnet.gluon.contrib.estimator import TrainBegin, TrainEnd, EpochBegin, EpochEnd, BatchBegin, BatchEnd, Estimator
 from typing import Optional, Union, Any, List
 from aim.sdk.run import Run
 from aim.ext.resource.configs import DEFAULT_SYSTEM_TRACKING_INT
 
 
-class AimLoggingHandler(TrainBegin, TrainEnd, BatchBegin, BatchEnd):
+class AimLoggingHandler(TrainBegin, TrainEnd, EpochBegin, EpochEnd, BatchBegin, BatchEnd):
     """Aim wrapper on top of the Mxnet Basic Logging Handler that applies to every Gluon estimator by default.
     :py:class:`AimLoggingHandler` logs hyper-parameters, training statistics,
     and other useful information during training
@@ -91,6 +91,34 @@ class AimLoggingHandler(TrainBegin, TrainEnd, BatchBegin, BatchEnd):
             name, value = metric.get()
             msg += '%s: %.4f, ' % (name, value)
         estimator.logger.info(msg.rstrip(', '))
+
+    def epoch_begin(self, estimator: Optional[Estimator], *args, **kwargs):
+        if isinstance(self.log_interval, int) or self.log_interval == 'epoch':
+            is_training = False
+            for metric in self.metrics:
+                if 'training' in metric.name:
+                    is_training = True
+            self.epoch_start = time.time()
+            if is_training:
+                estimator.logger.info("[Epoch %d] Begin, current learning rate: %.4f",
+                                      self.current_epoch, estimator.trainer.learning_rate)
+            else:
+                estimator.logger.info("Validation Begin")
+
+    def epoch_end(self, estimator: Optional[Estimator], *args, **kwargs):
+        if isinstance(self.log_interval, int) or self.log_interval == 'epoch':
+            epoch_time = time.time() - self.epoch_start
+            msg = '[Epoch %d] Finished in %.3fs, ' % (self.current_epoch, epoch_time)
+            for metric in self.metrics:
+                name, value = metric.get()
+                msg += '%s: %.4f, ' % (name, value)
+
+                context_name, metric_name = name.split(" ")
+                context = {'subset': context_name}
+                self._run.track(value, metric_name, step=self.batch_index, context=context)
+            estimator.logger.info(msg.rstrip(', '))
+        self.current_epoch += 1
+        self.batch_index = 0
 
     def batch_begin(self, estimator: Optional[Estimator], *args, **kwargs):
         if isinstance(self.log_interval, int):
