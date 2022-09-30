@@ -14,6 +14,7 @@ import ProjectStatistics from './components/ProjectStatistics';
 import useProjectContributions from './components/ProjectContributions/useProjectContributions';
 import ActiveRunsTable from './components/ActiveRunsTable/ActiveRunsTable';
 import QuickStart from './components/QuickStart';
+import AimIntegrations from './components/AimIntegrations';
 
 import './Home.scss';
 
@@ -57,6 +58,7 @@ function Home({
               <ProjectContributions />
             </>
           )}
+          {!isLoading && <AimIntegrations />}
         </div>
         <HomeRight />
         {notifyData?.length > 0 && (

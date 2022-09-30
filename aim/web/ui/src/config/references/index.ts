@@ -37,6 +37,26 @@ const DOCUMENTATIONS = {
         'https://aimstack.readthedocs.io/en/latest/ui/pages/explorers.html',
     },
   },
+  INTEGRATIONS: {
+    PYTORCH_LIGHTNING:
+      'https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-pytorch-lightning',
+    HUGGING_FACE:
+      'https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-hugging-face',
+    KERAS:
+      'https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-keras-tf-keras',
+    KERAS_TUNER:
+      'https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-kerastuner',
+    XGBOOST:
+      'https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-xgboost',
+    CATBOOST:
+      'https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-catboost',
+    FASTAI:
+      'https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-fastai',
+    LIGHT_GBM:
+      'https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-lightgbm',
+    PYTORCH_IGNITE:
+      'https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-pytorch-ignite',
+  },
 };
 
 const DEMOS = {
