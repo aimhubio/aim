@@ -15,6 +15,7 @@ function createResource<T, GetterArgs = RequestOptions>(getter: any) {
   }));
 
   async function fetchData(args?: GetterArgs) {
+    state.setState({ loading: true });
     const data = await getter(args);
     state.setState({ data, loading: false });
   }

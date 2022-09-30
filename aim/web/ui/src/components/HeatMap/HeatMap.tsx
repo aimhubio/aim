@@ -110,8 +110,9 @@ function HeatMap({
 
   function getItem(index: number) {
     const date = indexToDate(index);
-
+    // console.log(date);
     let item = null;
+
     for (let s = 0; s < data.length; s++) {
       if (
         data[s]?.[0].getFullYear() === date.getFullYear() &&
@@ -119,7 +120,6 @@ function HeatMap({
         data[s]?.[0].getDate() === date.getDate()
       ) {
         item = data[s];
-        break;
       }
     }
     return item;
@@ -129,7 +129,9 @@ function HeatMap({
     return Math.ceil((value / maxVal) * scaleRange);
   }
   function renderCell(index: number) {
+    // console.log(index);
     const dataItem = getItem(index);
+    // console.log(dataItem);
     const date = indexToDate(index);
     const scale =
       dataItem && Number.isInteger(dataItem?.[1]) ? getScale(dataItem[1]) : 0;

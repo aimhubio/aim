@@ -9,6 +9,7 @@ import { IHomeProps } from 'types/pages/home/Home';
 import ProjectContributions from './components/ProjectContributions/ProjectContributions';
 import ExploreSection from './components/ExploreSection/ExploreSection';
 import HomeRight from './components/HomeRight/HomeRight';
+import ContributionsFeed from './components/ContributionsFeed/ContributionsFeed';
 import ProjectStatistics from './components/ProjectStatistics';
 import ActiveRunsTable from './components/ActiveRunsTable/ActiveRunsTable';
 
@@ -37,6 +38,7 @@ function Home({
           <ProjectStatistics />
           <ActiveRunsTable />
           <ProjectContributions />
+          <ContributionsFeed />
         </div>
         <HomeRight />
         {notifyData?.length > 0 && (

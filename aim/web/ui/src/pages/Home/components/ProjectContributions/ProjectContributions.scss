@@ -1,12 +1,24 @@
+@use 'src/styles/abstracts' as *;
+
 .ProjectContributions {
+  margin: 1.75rem 0;
+  &__HeatMap {
+    display: flex;
+    overflow: hidden;
+    @media only screen and (max-width: 1452px) {
+      justify-content: flex-end;
+      .CalendarHeatmap__cell__info {
+        justify-content: flex-end;
+      }
+    }
+  }
   &__Statistics__card {
     background: linear-gradient(97.73deg, #8c32af 0%, #6bace5 100%);
     opacity: 0.8;
-    border-radius: 6px;
+    border-radius: $border-radius-main;
     width: 13.125em;
     height: 80px;
-    color: #ffffff;
-    padding: 0.5em 1em;
+    color: $white;
     position: relative;
     span {
       display: block;
