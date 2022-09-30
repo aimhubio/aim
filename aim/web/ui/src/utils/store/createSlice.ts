@@ -2,6 +2,13 @@ export type GetState<T> = () => T;
 
 export type SetState<T> = (state: (state: T) => T) => T;
 
+export interface SliceMethods<TState> {
+  update: (newValue: Partial<TState>) => void;
+  reset: () => void;
+}
+
+export type StateSelector<TState, TStore> = (store: TStore) => TState;
+
 /**
  * Creates a zustand store slice with name
  */

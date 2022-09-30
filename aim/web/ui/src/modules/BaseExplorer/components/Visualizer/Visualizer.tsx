@@ -22,20 +22,18 @@ import './Visualizer.scss';
 function Visualizer(props: IVisualizationProps) {
   const {
     engine,
-    engine: {
-      useStore,
-      boxConfig: { stateSelector: boxConfigSelector },
-      foundGroupsSelector,
-      dataSelector,
-      queryableDataSelector,
-    },
+    engine: { useStore, pipeline },
+    name,
     box: BoxContent,
     panelRenderer,
   } = props;
-  const boxConfig = useStore(boxConfigSelector);
-  const foundGroups = useStore(foundGroupsSelector);
-  const dataState = useStore(dataSelector);
-  const rangesData: IQueryableData = useStore(queryableDataSelector);
+
+  const foundGroups = useStore(pipeline.foundGroupsSelector);
+  const dataState = useStore(pipeline.dataSelector);
+  const rangesData: IQueryableData = useStore(pipeline.queryableDataSelector);
+
+  const vizEngine = engine.visualizations[name];
+  const boxConfig = useStore(vizEngine.box.stateSelector);
 
   const data = React.useMemo(() => {
     return dataState?.map((d: any, i: number) => {
@@ -60,7 +58,7 @@ function Visualizer(props: IVisualizationProps) {
       // listen to found groups
       function applyStyles(obj: any, group: any, iteration: number) {
         let style = {};
-        engine.styleAppliers.forEach((applier: any) => {
+        engine.groupings.styleAppliers.forEach((applier: any) => {
           style = {
             ...style,
             ...applier(obj, group, boxConfig, iteration),
@@ -79,14 +77,14 @@ function Visualizer(props: IVisualizationProps) {
         },
       };
     });
-  }, [dataState, foundGroups, boxConfig, engine.styleAppliers]);
+  }, [dataState, foundGroups, boxConfig, engine.groupings.styleAppliers]);
 
   // FOR ROWS
   const rowsAxisData = React.useMemo(() => {
     if (foundGroups) {
       return Object.keys(foundGroups)
         .filter((key: string) => foundGroups[key].type === GroupType.ROW)
-        .map((key: string, i: number, source: {}[]) => {
+        .map((key: string) => {
           const item = foundGroups[key];
           return {
             key: key,
@@ -107,7 +105,7 @@ function Visualizer(props: IVisualizationProps) {
               textAlign: 'right',
               textOverflow: 'ellipsis',
               lineHeight: '0.875rem',
-              zIndex: 1,
+              zIndex: foundGroups[key].order,
             },
           };
         });
@@ -119,7 +117,7 @@ function Visualizer(props: IVisualizationProps) {
     if (foundGroups) {
       return Object.keys(foundGroups)
         .filter((key: string) => foundGroups[key].type === GroupType.COLUMN)
-        .map((key: string, i: number) => {
+        .map((key: string) => {
           const item = foundGroups[key];
           return {
             key: key,
@@ -141,7 +139,7 @@ function Visualizer(props: IVisualizationProps) {
               overflow: 'hidden',
               whiteSpace: 'nowrap',
               textOverflow: 'ellipsis',
-              zIndex: 1,
+              zIndex: foundGroups[key].order,
             },
           };
         });
@@ -169,17 +167,20 @@ function Visualizer(props: IVisualizationProps) {
         {!_.isEmpty(dataState) && (
           <BoxVirtualizer
             data={data}
-            itemsRenderer={([groupId, items]) => (
-              <BoxWrapper
-                key={groupId}
-                groupId={groupId}
-                engine={engine}
-                component={BoxContent}
-                items={items}
-                depthSelector={depthSelector}
-                onDepthMapChange={onDepthMapChange}
-              />
-            )}
+            itemsRenderer={([groupId, items]) => {
+              return (
+                <BoxWrapper
+                  visualizationName={name}
+                  key={groupId}
+                  groupId={groupId}
+                  engine={engine}
+                  component={BoxContent}
+                  items={items}
+                  depthSelector={depthSelector}
+                  onDepthMapChange={onDepthMapChange}
+                />
+              );
+            }}
             offset={boxConfig.gap}
             axisData={{
               columns: columnsAxisData,

@@ -11,11 +11,12 @@
 - Replace the spinner loader with a lighter one (VkoHov)
 - Add fast.ai integration (tmynn)
 - Add command for dangling params cleanup (mihran113)
+- Deprecate Python 3.6 (alberttorosyan)
 - Add MXNet integration (tmynn)
-- Add command for dangling params cleanup (mihran113)
 
 ### Fixes:
 
+- Use empty dict as default when getting Run params (alberttorosyan)
 - Change unit-tests data isolation mechanism (alberttorosyan)
 - Adjust the visibility of the run color in tables (VkoHov)
 - Fix response headers for remote tracking server (mihran113)

@@ -1,7 +1,8 @@
 import React from 'react';
 
-export interface ICaptionBoxProps {
-  engine: IBaseComponentProps['engine'];
+import { IBaseComponentProps } from 'modules/BaseExplorer/types';
+
+export interface ICaptionBoxProps extends IBaseComponentProps {
   captionBoxRef: React.RefObject<HTMLDivElement>;
   item: any;
 }

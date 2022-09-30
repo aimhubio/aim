@@ -34,7 +34,7 @@ const RangePanelItem = ({
         },
         isApplyButtonDisabled: false,
       };
-      engine.ranges.methods.update(updatedRanges);
+      engine.query.ranges.update(updatedRanges);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [rangeState, sliderName],
@@ -51,7 +51,7 @@ const RangePanelItem = ({
         isApplyButtonDisabled: !metadata.isValid,
         isInputInvalid: !metadata.isValid,
       };
-      engine.ranges.methods.update(updatedRanges);
+      engine.query.ranges.update(updatedRanges);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [rangeState, sliderName],
