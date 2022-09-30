@@ -40,7 +40,6 @@
   &.highlighted {
     cursor: pointer;
     transition: all 0.18s ease-out;
-    box-shadow: 0 1px 4px 0 #0000003d;
     .StatisticsCard__info__label, .StatisticsCard__info__count {
       color: white;
     }

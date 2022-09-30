@@ -19,7 +19,8 @@
     &.highlighted {
       transition: all 0.18s ease-out;
       z-index: 1;
-      box-shadow: 0 2px 4px 0 #00000040, 0 0 0 2px white;
+      height: calc(100% + 2px);
+      margin-top: -1px;
     }
   }
 }

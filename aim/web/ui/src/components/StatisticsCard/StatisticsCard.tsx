@@ -54,7 +54,11 @@ function StatisticsCard({
               backgroundColor: navLink && highlighted ? '#fff' : iconBgColor,
             }}
           >
-            <Icon className='StatisticsCard__iconWrapper__icon' name={icon} />
+            <Icon
+              className='StatisticsCard__iconWrapper__icon'
+              name={icon}
+              color={navLink && highlighted ? iconBgColor : '#fff'}
+            />
           </div>
         )}
         <div className='StatisticsCard__info'>
