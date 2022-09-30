@@ -11,6 +11,7 @@
 - Replace the spinner loader with a lighter one (VkoHov)
 - Add fast.ai integration (tmynn)
 - Add command for dangling params cleanup (mihran113)
+- Deprecate Python 3.6 (alberttorosyan)
 
 ### Fixes:
 
