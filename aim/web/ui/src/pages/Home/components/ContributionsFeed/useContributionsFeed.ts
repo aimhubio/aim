@@ -11,45 +11,64 @@ import {
 
 import { IRun } from 'types/services/models/metrics/runModel';
 
+import projectContributionsEngine from '../ProjectContributions/ProjectContributionsStore';
+
 import contributionsFeedEngine from './ContributionsFeedStore';
 
 function useContributionsFeed() {
+  const [data, setData] = React.useState<any>([]);
   const { current: engine } = React.useRef(contributionsFeedEngine);
   const contributionsFeedStore: IResourceState<any[]> =
     engine.contributionsFeedState((state) => state);
+  const { current: contributionsEngine } = React.useRef(
+    projectContributionsEngine,
+  );
+  const projectContributionsStore =
+    contributionsEngine.projectContributionsState((state) => state);
+
+  // console.log(contributionsFeedStore.data);
   React.useEffect(() => {
-    engine.fetchContributionsFeed();
+    engine.fetchContributionsFeed({
+      limit: 25,
+      exclude_params: true,
+      exclude_traces: true,
+    });
     return () => {
       engine.contributionsFeedState.destroy();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  React.useEffect(() => {
+    if (contributionsFeedStore.data?.length) {
+      let newData = [...data, ...contributionsFeedStore.data];
+      setData(newData);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [contributionsFeedStore.data]);
+
   const memoizedData = React.useMemo(() => {
     // get existing month list from the contributionsFeedStore data
-    const data: { [key: string]: any } = {};
-    if (contributionsFeedStore.data?.length) {
-      const monthList = contributionsFeedStore.data?.reduce(
-        (acc, run: IRun<unknown>) => {
-          const { props } = run;
-          const month = moment(props.creation_time * 1000).format(
-            CONTRIBUTION_MONTH_FORMAT,
-          );
-          if (!acc.includes(month)) {
-            acc.push(month);
-          }
-          return acc;
-        },
-        [],
-      );
+    const feedData: { [key: string]: any } = {};
+    if (data.length) {
+      const monthList = data?.reduce((acc: any, run: IRun<unknown>) => {
+        const { props } = run;
+        const month = moment(props.creation_time * 1000).format(
+          CONTRIBUTION_MONTH_FORMAT,
+        );
+        if (!acc.includes(month)) {
+          acc.push(month);
+        }
+        return acc;
+      }, []);
       // create a list of objects with month and contributions
 
       monthList.forEach((month: string) => {
-        data[month] = {};
+        feedData[month] = {};
       });
 
       // add contributions to the month list
-      contributionsFeedStore.data?.forEach((run: IRun<unknown>) => {
+      data?.forEach((run: IRun<unknown>) => {
         const { props, hash } = run;
 
         // get the month
@@ -65,26 +84,41 @@ function useContributionsFeed() {
         // create a contribution object
         const contribution = {
           name: props.name,
-          creation_time: moment(props.creation_time * 1000).format(
+          date: moment(props.creation_time * 1000).format(
             CONTRIBUTION_TIME_FORMAT,
           ),
           hash,
           active: props.active,
+          creation_time: props.creation_time,
         };
 
         // check if the day already exists in the month list
-        if (data[month]?.[day]?.length) {
-          data[month][day].push(contribution);
+        if (feedData[month]?.[day]?.length) {
+          feedData[month][day].push(contribution);
         } else {
-          data[month][day] = [contribution];
+          feedData[month][day] = [contribution];
         }
       });
     }
-    return data;
-  }, [contributionsFeedStore.data]);
+    return feedData;
+  }, [data]);
+
+  function loadMore(): void {
+    if (contributionsFeedStore.data && !contributionsFeedStore.loading) {
+      engine.fetchContributionsFeed({
+        limit: 25,
+        exclude_params: true,
+        exclude_traces: true,
+        offset: data[data.length - 1].hash,
+      });
+    }
+  }
   return {
     isLoading: contributionsFeedStore.loading,
     data: memoizedData,
+    totalRunsCount: projectContributionsStore.data?.num_runs,
+    fetchedCount: data.length,
+    loadMore,
   };
 }
 

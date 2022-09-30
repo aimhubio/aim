@@ -1,15 +1,16 @@
 import React from 'react';
 
-import { Text } from 'components/kit';
+import { Button, Text } from 'components/kit';
 
 import useContributionsFeed from './useContributionsFeed';
 import FeedItem from './FeedItem/FeedItem';
 
 import './ContributionsFeed.scss';
 
-function ContributionsFeed(): React.FunctionComponentElement<React.ReactNode> {
-  const { data } = useContributionsFeed();
-  return (
+function ContributionsFeed(): React.FunctionComponentElement<React.ReactNode> | null {
+  const { data, loadMore, isLoading, totalRunsCount, fetchedCount } =
+    useContributionsFeed();
+  return totalRunsCount ? (
     <div className='ContributionsFeed'>
       <Text size={14} component='h3' tint={100} weight={700}>
         Activity
@@ -29,8 +30,18 @@ function ContributionsFeed(): React.FunctionComponentElement<React.ReactNode> {
           })}
         </div>
       ))}
+      {fetchedCount < totalRunsCount! ? (
+        <Button
+          variant='outlined'
+          fullWidth
+          size='xSmall'
+          onClick={isLoading ? undefined : loadMore}
+        >
+          {isLoading ? 'loading' : 'Show more activity'}
+        </Button>
+      ) : null}
     </div>
-  );
+  ) : null;
 }
 
 export default React.memo(ContributionsFeed);
