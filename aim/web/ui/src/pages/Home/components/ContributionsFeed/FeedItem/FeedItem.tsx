@@ -1,12 +1,46 @@
 import React from 'react';
 
+import { Icon, Text } from 'components/kit';
+import RunNameColumn from 'components/Table/RunNameColumn';
+
+import './FeedItem.scss';
+
 function FeedItem(props: any): React.FunctionComponentElement<React.ReactNode> {
-  console.log(props.data);
   return (
     <div className='FeedItem'>
-      {/* {props.info.map((item: string) => (
-        <div key={item}>{item}</div>
-      ))} */}
+      <div className='FeedItem__title'>
+        <Icon name='calendar' fontSize={10} box />
+        <Text tint={50} size={10} weight={700}>
+          {props.date.split('_').join(' ')}
+        </Text>
+      </div>
+      <div className='FeedItem__content'>
+        {props.data.length <= 5 ? (
+          props.data.map((item: any) => (
+            <div className='FeedItem__content__item' key={item.name}>
+              <Text size={12} tint={100}>
+                Started run:
+              </Text>
+              <Text size={12} tint={100} component='p'>
+                <RunNameColumn
+                  run={item.name}
+                  active={item.active}
+                  runHash={item.hash}
+                />
+              </Text>
+              <Text tint={50} size={10}>
+                {item.creation_time}
+              </Text>
+            </div>
+          ))
+        ) : (
+          <div className='FeedItem__content__item'>
+            <Text size={12} tint={100}>
+              Started {props.data.length} runs
+            </Text>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

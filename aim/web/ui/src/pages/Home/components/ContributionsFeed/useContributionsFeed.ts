@@ -3,7 +3,11 @@ import moment from 'moment';
 
 import { IResourceState } from 'modules/core/utils/createResource';
 
-import { CONTRIBUTION_DAY_FORMAT, TABLE_DATE_FORMAT } from 'config/dates/dates';
+import {
+  CONTRIBUTION_DAY_FORMAT,
+  CONTRIBUTION_MONTH_FORMAT,
+  CONTRIBUTION_TIME_FORMAT,
+} from 'config/dates/dates';
 
 import { IRun } from 'types/services/models/metrics/runModel';
 
@@ -28,7 +32,9 @@ function useContributionsFeed() {
       const monthList = contributionsFeedStore.data?.reduce(
         (acc, run: IRun<unknown>) => {
           const { props } = run;
-          const month = moment(props.creation_time * 1000).format('MMMM_YYYY');
+          const month = moment(props.creation_time * 1000).format(
+            CONTRIBUTION_MONTH_FORMAT,
+          );
           if (!acc.includes(month)) {
             acc.push(month);
           }
@@ -44,10 +50,12 @@ function useContributionsFeed() {
 
       // add contributions to the month list
       contributionsFeedStore.data?.forEach((run: IRun<unknown>) => {
-        const { props } = run;
+        const { props, hash } = run;
 
         // get the month
-        const month = moment(props.creation_time * 1000).format('MMMM_YYYY');
+        const month = moment(props.creation_time * 1000).format(
+          CONTRIBUTION_MONTH_FORMAT,
+        );
 
         // get the day of the month
         const day = moment(props.creation_time * 1000).format(
@@ -57,6 +65,11 @@ function useContributionsFeed() {
         // create a contribution object
         const contribution = {
           name: props.name,
+          creation_time: moment(props.creation_time * 1000).format(
+            CONTRIBUTION_TIME_FORMAT,
+          ),
+          hash,
+          active: props.active,
         };
 
         // check if the day already exists in the month list
