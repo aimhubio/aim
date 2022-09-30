@@ -66,4 +66,15 @@ export const RichEditorThemeColors = {
   fontFamilyMono: 'Inconsolata',
 };
 
+export const COLOR_BY_VALUE_TYPE: Record<string, string> = {
+  int: 'rgb(175, 85, 45)',
+  float: 'rgb(92, 129, 21)',
+  string: 'rgb(246, 103, 30)',
+  bool: 'rgb(169, 87, 153)',
+  object: 'rgb(73, 72, 73)',
+  array: 'rgb(73, 72, 73)',
+  nan: 'rgb(148, 148, 148)',
+  '': 'rgb(148, 148, 148)',
+};
+
 export default COLORS;
