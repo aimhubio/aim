@@ -1,6 +1,4 @@
-import { ReactJsonViewProps } from 'react-json-view';
-
-export interface IJsonViewPopoverProps extends Partial<ReactJsonViewProps> {
+export interface IJsonViewPopoverProps {
   json: object;
   dictVisualizerSize?: {
     width: number;
