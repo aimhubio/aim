@@ -45,6 +45,8 @@ function ChartPopover(props: IChartPopover): JSX.Element {
           activePointRect,
           popoverNode.getBoundingClientRect(),
           containerNode.getBoundingClientRect(),
+          isPopoverPinned,
+          tooltipAppearance,
         );
         setPopoverPos(pos);
       }
@@ -99,6 +101,14 @@ function ChartPopover(props: IChartPopover): JSX.Element {
           [className]: className,
           pinnedPopover: isPopoverPinned,
         })}
+        style={{
+          //@ts-ignore
+          '--pinned-popover-left':
+            (popoverPos?.left ?? props.activePointRect?.left ?? 0) + 'px',
+          '--pinned-popover-top': popoverPos?.top
+            ? popoverPos?.top + 'px'
+            : '100%',
+        }}
         transitionDuration={{
           appear: 0,
           enter: 50,

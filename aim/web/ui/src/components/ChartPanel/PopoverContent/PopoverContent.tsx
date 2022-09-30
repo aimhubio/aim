@@ -327,80 +327,88 @@ const PopoverContent = React.forwardRef(function PopoverContent(
             {renderPopoverHeader()}
             {isPopoverPinned && renderTags()}
           </div>
-          <div
-            className={classNames('PopoverContent__boxContainer', {
-              pinned: isPopoverPinned,
-            })}
-          >
-            {_.isEmpty(selectedProps) ? null : (
-              <ErrorBoundary>
-                <div className='PopoverContent__boxWrapper'>
-                  <Divider
-                    orientation={isPopoverPinned ? 'vertical' : 'horizontal'}
-                  />
-                  <div className='PopoverContent__box ScrollBar__hidden'>
-                    <div className='PopoverContent__subtitle1'>
-                      Selected Fields
-                    </div>
-                    {Object.keys(selectedProps).map((paramKey) => (
-                      <div key={paramKey} className='PopoverContent__value'>
-                        <Text size={12} tint={50}>
-                          {`${getValueByField(selectOptions, paramKey)}: `}
-                        </Text>
-                        <Text size={12}>
-                          {formatValue(selectedProps[paramKey])}
-                        </Text>
+          {!_.isEmpty(selectedProps) || !_.isEmpty(groupConfig) ? (
+            <div
+              className={classNames(
+                'PopoverContent__boxContainer ScrollBar__hidden',
+                {
+                  pinned: isPopoverPinned,
+                },
+              )}
+            >
+              {_.isEmpty(selectedProps) ? null : (
+                <ErrorBoundary>
+                  <div className='PopoverContent__boxWrapper'>
+                    <Divider
+                      orientation={isPopoverPinned ? 'vertical' : 'horizontal'}
+                    />
+                    <div className='PopoverContent__box ScrollBar__hidden'>
+                      <div className='PopoverContent__subtitle1'>
+                        Selected Fields
                       </div>
-                    ))}
-                  </div>
-                </div>
-              </ErrorBoundary>
-            )}
-            {_.isEmpty(groupConfig) ? null : (
-              <ErrorBoundary>
-                <div className='PopoverContent__boxWrapper'>
-                  <Divider
-                    orientation={isPopoverPinned ? 'vertical' : 'horizontal'}
-                  />
-                  <div className='PopoverContent__box ScrollBar__hidden'>
-                    <div className='PopoverContent__subtitle1'>
-                      Group Config
+                      {Object.keys(selectedProps).map((paramKey) => (
+                        <div key={paramKey} className='PopoverContent__value'>
+                          <Text size={12} tint={50}>
+                            {`${getValueByField(selectOptions, paramKey)}: `}
+                          </Text>
+                          <Text size={12}>
+                            {formatValue(selectedProps[paramKey])}
+                          </Text>
+                        </div>
+                      ))}
                     </div>
-                    {Object.keys(groupConfig).map((groupConfigKey: string) =>
-                      _.isEmpty(groupConfig[groupConfigKey]) ? null : (
-                        <React.Fragment key={groupConfigKey}>
-                          <div className='PopoverContent__subtitle2'>
-                            {groupConfigKey}
-                          </div>
-                          {Object.keys(groupConfig[groupConfigKey]).map(
-                            (item) => {
-                              let val = isSystemMetric(
-                                groupConfig[groupConfigKey][item],
-                              )
-                                ? formatSystemMetricName(
-                                    groupConfig[groupConfigKey][item],
-                                  )
-                                : groupConfig[groupConfigKey][item];
-                              return (
-                                <div
-                                  key={item}
-                                  className='PopoverContent__value'
-                                >
-                                  <Text size={12} tint={50}>{`${item}: `}</Text>
-                                  <Text size={12}>{formatValue(val)}</Text>
-                                </div>
-                              );
-                            },
-                          )}
-                        </React.Fragment>
-                      ),
-                    )}
                   </div>
-                </div>
-              </ErrorBoundary>
-            )}
-            {!isPopoverPinned && renderTags()}
-          </div>
+                </ErrorBoundary>
+              )}
+              {_.isEmpty(groupConfig) ? null : (
+                <ErrorBoundary>
+                  <div className='PopoverContent__boxWrapper'>
+                    <Divider
+                      orientation={isPopoverPinned ? 'vertical' : 'horizontal'}
+                    />
+                    <div className='PopoverContent__box ScrollBar__hidden'>
+                      <div className='PopoverContent__subtitle1'>
+                        Group Config
+                      </div>
+                      {Object.keys(groupConfig).map((groupConfigKey: string) =>
+                        _.isEmpty(groupConfig[groupConfigKey]) ? null : (
+                          <React.Fragment key={groupConfigKey}>
+                            <div className='PopoverContent__subtitle2'>
+                              {groupConfigKey}
+                            </div>
+                            {Object.keys(groupConfig[groupConfigKey]).map(
+                              (item) => {
+                                let val = isSystemMetric(
+                                  groupConfig[groupConfigKey][item],
+                                )
+                                  ? formatSystemMetricName(
+                                      groupConfig[groupConfigKey][item],
+                                    )
+                                  : groupConfig[groupConfigKey][item];
+                                return (
+                                  <div
+                                    key={item}
+                                    className='PopoverContent__value'
+                                  >
+                                    <Text
+                                      size={12}
+                                      tint={50}
+                                    >{`${item}: `}</Text>
+                                    <Text size={12}>{formatValue(val)}</Text>
+                                  </div>
+                                );
+                              },
+                            )}
+                          </React.Fragment>
+                        ),
+                      )}
+                    </div>
+                  </div>
+                </ErrorBoundary>
+              )}
+              {!isPopoverPinned && renderTags()}
+            </div>
+          ) : null}
         </div>
       </Paper>
     </ErrorBoundary>

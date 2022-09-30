@@ -7,6 +7,7 @@
   line-height: 15px;
   color: $pico-80;
   background-color: transparent;
+  height: var(--top);
 
   .PopoverContent {
     max-height: inherit;
@@ -60,6 +61,7 @@
         &.pinned {
           flex-direction: column;
           overflow-y: auto;
+          width: toRem(250px);
           .PopoverContent__box {
             overflow-y: unset;
           }
@@ -95,6 +97,7 @@
       flex-direction: column;
       &.pinned {
         max-height: 100%;
+        width: toRem(250px);
         overflow-y: auto;
       }
     }

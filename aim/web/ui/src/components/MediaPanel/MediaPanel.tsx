@@ -305,6 +305,7 @@ function MediaPanel({
                         }
                         chartType={tooltipType}
                         tooltipContent={tooltip?.content || {}}
+                        tooltipAppearance={tooltip?.appearance}
                         focusedState={focusedState}
                         selectOptions={selectOptions}
                         onRunsTagsChange={onRunsTagsChange}
