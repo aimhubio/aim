@@ -5,6 +5,14 @@ $border: 1px solid $primary-color-10;
   background-color: #ffffff;
   overflow: hidden;
   display: flex;
+  .DataList .BaseTable__row-cell {
+    p {
+      white-space: nowrap;
+      max-width: 100%;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+  }
   height: 100vh;
   &__middle {
     padding: $space-md $space-lg;
@@ -19,7 +27,6 @@ $border: 1px solid $primary-color-10;
     border-bottom: $border;
     display: flex;
   }
-
   h2 {
     margin: 0 0 1rem 0;
   }

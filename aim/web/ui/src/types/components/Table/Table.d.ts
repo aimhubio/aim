@@ -79,6 +79,7 @@ export interface ITableProps {
   disableRowClick?: boolean;
   columnsColorScales?: { [key: string]: boolean };
   visualizationElementType?: VisualizationElementEnum;
+  noColumnActions?: boolean;
 }
 
 export interface ITableRef {

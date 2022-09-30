@@ -6,13 +6,12 @@ import { Text } from 'components/kit';
 
 import { IHomeProps } from 'types/pages/home/Home';
 
-import ExploreAim from './components/ExploreAim/ExploreAim';
-import SetupGuide from './components/SetupGuide/SetupGuide';
 import ProjectContributions from './components/ProjectContributions/ProjectContributions';
 import ExploreSection from './components/ExploreSection/ExploreSection';
 import HomeRight from './components/HomeRight/HomeRight';
 import ContributionsFeed from './components/ContributionsFeed/ContributionsFeed';
 import ProjectStatistics from './components/ProjectStatistics';
+import ActiveRunsTable from './components/ActiveRunsTable/ActiveRunsTable';
 
 import './Home.scss';
 
@@ -37,12 +36,8 @@ function Home({
             Overview
           </Text>
           <ProjectStatistics />
+          <ActiveRunsTable />
           <ProjectContributions />
-
-          {/* <div className='Home__Explore__container'>
-            <SetupGuide askEmailSent={askEmailSent} onSendEmail={onSendEmail} />
-            <ExploreAim />
-          </div> */}
           <ContributionsFeed />
         </div>
         <HomeRight />
