@@ -18,7 +18,7 @@ function useProjectStatistics() {
   React.useEffect(() => {
     projectStatsEngine.fetchProjectParams();
     return () => {
-      projectStatsEngine.projectParamsState.destroy();
+      projectStatsEngine.destroy();
     };
   }, [projectStatsEngine]);
 

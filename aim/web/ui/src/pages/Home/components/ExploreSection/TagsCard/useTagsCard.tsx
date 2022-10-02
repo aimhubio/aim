@@ -20,7 +20,7 @@ function useTagsCard() {
   React.useEffect(() => {
     tagsEngine.fetchTags();
     return () => {
-      tagsEngine.tagsState.destroy();
+      tagsEngine.destroy();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

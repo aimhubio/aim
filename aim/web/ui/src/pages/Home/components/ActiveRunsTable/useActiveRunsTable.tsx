@@ -34,7 +34,7 @@ function useActiveRunsTable() {
   React.useEffect(() => {
     activeRunsEngine.fetchActiveRuns();
     return () => {
-      activeRunsEngine.activeRunsState.destroy();
+      activeRunsEngine.destroy();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

@@ -5,12 +5,12 @@ import {
 import createResource from 'modules/core/utils/createResource';
 
 function projectContributionsEngine() {
-  const { fetchData, state } = createResource<GetProjectContributionsResult>(
-    getProjectContributions,
-  );
+  const { fetchData, state, destroy } =
+    createResource<GetProjectContributionsResult>(getProjectContributions);
   return {
     fetchProjectContributions: fetchData,
     projectContributionsState: state,
+    destroy,
   };
 }
 
