@@ -1,6 +1,7 @@
 import { isEmpty } from 'lodash-es';
 import { UseBoundStore } from 'zustand';
 
+import history from 'history/browser';
 import { ExplorerEngineConfiguration } from 'modules/BaseExplorer/types';
 import listenToSearchParam from 'modules/core/utils/listenToSearchParam';
 import getUrlSearchParam from 'modules/core/utils/getUrlSearchParam';
@@ -28,34 +29,22 @@ function createExplorerAdditionalEngine<T>(
         query.form.update(stateFromStorage.queryState.form);
       }
 
-      // subscribe to changes
-      store.subscribe(
-        (state: any) => state.pipeline.currentQuery,
-        (data: any) => {
-          const url = updateUrlSearchParam(
-            'query',
-            encode({
-              queryState: store.getState().query,
-              readyQuery: data,
-            }),
-          );
-          if (url === `${window.location.pathname}${window.location.search}`) {
-            return;
+      const removeSearchParamListener = listenToSearchParam<any>(
+        'query',
+        (query: any) => {
+          if (!isEmpty(query)) {
+            queryState.ranges.update(query.queryState.ranges);
+            queryState.form.update(query.queryState.form);
+          } else {
+            queryState.reset();
           }
-
-          window.history.pushState(null, '', url);
         },
       );
 
-      listenToSearchParam<any>('query', (query: any) => {
-        if (!isEmpty(query)) {
-          console.log('updating form');
-          queryState.ranges.update(query.queryState.ranges);
-          queryState.form.update(query.queryState.form);
-        } else {
-          queryState.ranges.reset();
-        }
-      });
+      return () => {
+        console.log('destroying');
+        removeSearchParamListener();
+      };
     },
   };
   const groupings = createGroupingsEngine(config.groupings || {}, store);

@@ -1,5 +1,6 @@
 import { isEmpty, omit } from 'lodash-es';
 
+import history from 'history/browser';
 import { Order } from 'modules/core/pipeline';
 import { createSliceState } from 'modules/core/utils/store';
 import getUrlSearchParam from 'modules/core/utils/getUrlSearchParam';
@@ -129,12 +130,6 @@ function createGroupingsEngine(config: GroupingConfigs, store: any) {
 
   function update(groupValues: GroupValues) {
     methods.update(groupValues);
-    const url = updateUrlSearchParam('groupings', encode(groupValues));
-
-    if (url === `${window.location.pathname}${window.location.search}`) {
-      return;
-    }
-    window.history.pushState(null, '', url);
   }
 
   function resetSlices() {
@@ -154,6 +149,7 @@ function createGroupingsEngine(config: GroupingConfigs, store: any) {
     listenToSearchParam<GroupValues>(
       'groupings',
       (data: GroupValues | null) => {
+        console.log(data);
         // update state
         if (!isEmpty(data)) {
           methods.update(data as GroupValues);

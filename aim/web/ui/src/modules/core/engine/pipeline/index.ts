@@ -10,12 +10,16 @@ import createPipeline, {
   PipelineOptions,
   PipelinePhasesEnum,
 } from 'modules/core/pipeline';
+import history from 'history/browser';
 
 import { SequenceTypesEnum } from 'types/core/enums';
 
 import { PipelineStatusEnum, ProgressState } from '../types';
 import getUrlSearchParam from '../../utils/getUrlSearchParam';
 import listenToSearchParam from '../../utils/listenToSearchParam';
+import updateUrlSearchParam from '../../utils/updateUrlSearchParam';
+import { encode } from '../../../../utils/encoder/encoder';
+import { getRecordState } from '../../../BaseExplorer/components/RangePanel/helpers';
 
 import createState, {
   CurrentGrouping,
@@ -29,8 +33,8 @@ export interface IPipelineEngine<TObject, TStore> {
     pipeline: IPipelineState<TObject>;
   };
   engine: {
-    search: (params: RunsSearchQueryParams) => void;
-    group: (config: CurrentGrouping) => void;
+    search: (params: RunsSearchQueryParams, isInternal?: boolean) => void;
+    group: (config: CurrentGrouping, isInternal?: boolean) => void;
     getSequenceName: () => SequenceTypesEnum;
     destroy: () => void;
     reset: () => void;
@@ -111,11 +115,43 @@ function createPipelineEngine<TStore, TObject>(
    * @example
    *    pipeline.engine.search({ q: "run.hparams.batch_size>32"})
    * @param {RunsSearchQueryParams} params
+   * @param isInternal - indicates does it need to update current query or not
    */
-  function search(params: RunsSearchQueryParams): void {
+  function search(
+    params: RunsSearchQueryParams,
+    isInternal: boolean = false,
+  ): void {
     const currentGroupings = state.getCurrentGroupings();
 
     state.setCurrentQuery(params);
+    console.log('search');
+    if (!isInternal) {
+      const queryState = store.getState().query;
+
+      if (!queryState.ranges.isInitial) {
+        const url = updateUrlSearchParam(
+          'query',
+          encode({
+            queryState: {
+              ...queryState,
+              ranges: {
+                ...queryState.ranges,
+                isApplyButtonDisabled: true,
+              },
+            },
+            readyQuery: params,
+          }),
+        );
+
+        console.log(
+          'search going to update form',
+          url !== `${window.location.pathname}${window.location.search}`,
+        );
+        if (url !== `${window.location.pathname}${window.location.search}`) {
+          window.history.pushState(null, '', url);
+        }
+      }
+    }
 
     const groupOptions = Object.keys(currentGroupings).map((key: string) => ({
       type: key as GroupType,
@@ -141,6 +177,30 @@ function createPipelineEngine<TStore, TObject>(
         state.changeCurrentPhaseOrStatus(
           isEmpty(data) ? PipelineStatusEnum.Empty : state.getStatus(),
         );
+
+        if (!isInternal) {
+          const url = updateUrlSearchParam(
+            'query',
+            encode({
+              queryState: {
+                ...store.getState().query,
+                ranges: {
+                  ...store.getState().query.ranges,
+                  isApplyButtonDisabled: true,
+                },
+              },
+              readyQuery: params,
+            }),
+          );
+
+          console.log(
+            'search going to update record',
+            url !== `${window.location.pathname}${window.location.search}`,
+          );
+          if (url !== `${window.location.pathname}${window.location.search}`) {
+            window.history.pushState(null, '', url);
+          }
+        }
       })
       .catch((ex: unknown) => {});
   }
@@ -174,9 +234,22 @@ function createPipelineEngine<TStore, TObject>(
    * @example
    *     pipeline.engine.group(config)
    * @param {CurrentGrouping} config
+   * @param {boolean} isInternal - indicates called internally or from UI, if isInternal doesnt need to update current query
    */
-  function group(config: CurrentGrouping): void {
+  function group(config: CurrentGrouping, isInternal: boolean = false): void {
     state.setCurrentGroupings(config);
+    console.log('group');
+    if (!isInternal) {
+      const url = updateUrlSearchParam('groupings', encode(config));
+      console.log(
+        'update group',
+        url !== `${window.location.pathname}${window.location.search}`,
+      );
+
+      if (url !== `${window.location.pathname}${window.location.search}`) {
+        window.history.pushState(null, '', url);
+      }
+    }
 
     pipeline
       .execute({
@@ -204,11 +277,20 @@ function createPipelineEngine<TStore, TObject>(
     }
 
     listenToSearchParam<any>('groupings', (groupings: any) => {
-      group(groupings);
+      if (!isEmpty(groupings)) {
+        group(groupings, true);
+      } else {
+        group(defaultGroupings, true);
+      }
     });
+
     listenToSearchParam<any>('query', (query: any) => {
-      console.log('Searching', query);
-      search(query.readyQuery);
+      console.log('query changed');
+      if (!isEmpty(query)) {
+        search(query.readyQuery, true);
+      } else {
+        search({ q: '' }, true);
+      }
     });
   }
 

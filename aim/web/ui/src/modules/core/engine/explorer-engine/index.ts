@@ -34,7 +34,7 @@ export type EngineNew<
   visualizations: any;
 
   // methods
-  initialize: () => Promise<boolean>;
+  initialize: () => () => void;
   finalize: () => void;
 
   // store helpers
@@ -230,30 +230,33 @@ function createEngine<TObject = any>(
   /*
    * An initializer to use for url sync and bookmarks data get
    */
-  function initialize(): Promise<boolean> {
-    query.initialize(useReactStore);
+  function initialize(): () => void {
+    const deInitializeQuery = query.initialize(useReactStore);
     groupings.initialize();
     pipeline.initialize();
 
     // subscribe to history
-    return new Promise((resolve, reject) => {
-      instructions
-        .getInstructions()
-        .then((isEmpty) => {
-          if (isEmpty) {
-            pipeline.changeCurrentPhaseOrStatus(
-              PipelineStatusEnum.Insufficient_Resources,
-            );
-          } else {
-            const stateFromStorage = getUrlSearchParam('query') || {};
-            if (stateFromStorage.readyQuery) {
-              pipeline.search(stateFromStorage.readyQuery);
-            }
+    instructions
+      .getInstructions()
+      .then((isEmpty) => {
+        if (isEmpty) {
+          pipeline.changeCurrentPhaseOrStatus(
+            PipelineStatusEnum.Insufficient_Resources,
+          );
+        } else {
+          const stateFromStorage = getUrlSearchParam('query') || {};
+          if (stateFromStorage.readyQuery) {
+            pipeline.search(stateFromStorage.readyQuery, true);
           }
-        })
-        // eslint-disable-next-line no-console
-        .catch((err) => console.error(err));
-    });
+        }
+      })
+      // eslint-disable-next-line no-console
+      .catch((err) => console.error(err));
+
+    return () => {
+      deInitializeQuery();
+      finalize();
+    };
   }
   /**
    * Clean ups

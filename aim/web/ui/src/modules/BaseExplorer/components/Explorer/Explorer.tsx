@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 
 import Visualizations from '../Visualizations/Visualizations';
 import ExplorerBar from '../ExplorerBar';
@@ -10,11 +11,16 @@ function Explorer({ configuration, engineInstance }: ExplorerProps) {
   const { isLoading } = engineInstance.useStore(
     engineInstance.instructions.statusSelector,
   );
+  const history = useHistory();
 
   useEffect(() => {
-    engineInstance.initialize().then().catch();
+    const i = history.listen((d: any) => {
+      console.log('useeffect ----> ', d);
+    });
+    const finalize = engineInstance.initialize();
     return () => {
-      engineInstance.finalize();
+      finalize();
+      i();
     };
   }, [engineInstance]);
 

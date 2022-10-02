@@ -26,7 +26,7 @@ const FiguresExplorer = renderer(
       },
     },
   },
-  __DEV__,
+  true,
 );
 
 export default FiguresExplorer;

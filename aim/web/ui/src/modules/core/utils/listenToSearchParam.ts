@@ -1,4 +1,5 @@
 import type { Listener, Update } from 'history';
+import { Action } from 'history';
 
 import history from 'history/browser';
 
@@ -16,6 +17,7 @@ function createListener<T>(
     const searchParams = new URLSearchParams(update.location.search);
 
     const current = searchParams.get(param);
+    console.log({ latest, current, d: update, update: latest !== current });
 
     if (latest !== current) {
       if (current) {

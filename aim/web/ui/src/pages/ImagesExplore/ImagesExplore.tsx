@@ -45,6 +45,8 @@ import getStateFromUrl from 'utils/getStateFromUrl';
 import { ChartTypeEnum } from 'utils/d3';
 import { SortField, SortFields } from 'utils/getSortedFields';
 
+import useStore from '../../zus';
+
 import ImagesExploreAppBar from './components/ImagesExploreAppBar/ImagesExploreAppBar';
 
 import './ImagesExplore.scss';
@@ -215,10 +217,15 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  // @ts-ignore
+  const { update, test } = useStore();
 
   return (
     <ErrorBoundary>
       <div className='ImagesExplore__container' ref={wrapperElemRef}>
+        <button onClick={useStore.destroy}>deletee</button>
+        <button onClick={update}>update</button>
+        <div>{JSON.stringify(test)}</div>
         <section className='ImagesExplore__section'>
           <div className='ImagesExplore__section__appBarContainer ImagesExplore__fullHeight'>
             <ImagesExploreAppBar
