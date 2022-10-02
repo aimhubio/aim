@@ -1,8 +1,9 @@
 import React from 'react';
+import classnames from 'classnames';
 
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
-import { Text } from 'components/kit';
+import { Spinner, Text } from 'components/kit';
 
 import { IHomeProps } from 'types/pages/home/Home';
 
@@ -11,7 +12,9 @@ import ExploreSection from './components/ExploreSection/ExploreSection';
 import HomeRight from './components/HomeRight/HomeRight';
 import ContributionsFeed from './components/ContributionsFeed/ContributionsFeed';
 import ProjectStatistics from './components/ProjectStatistics';
+import useProjectContributions from './components/ProjectContributions/useProjectContributions';
 import ActiveRunsTable from './components/ActiveRunsTable/ActiveRunsTable';
+import QuickStart from './components/QuickStart';
 
 import './Home.scss';
 
@@ -22,23 +25,40 @@ function Home({
   onNotificationDelete,
   askEmailSent,
 }: IHomeProps): React.FunctionComponentElement<React.ReactNode> {
+  const { projectContributionsStore } = useProjectContributions();
+
+  const totalRunsCount = projectContributionsStore.data?.num_runs ?? 0;
+  const isLoading = projectContributionsStore.loading;
+
   return (
     <ErrorBoundary>
       <section className='Home'>
         <ExploreSection />
-        <div className='Home__middle'>
-          <Text
-            tint={100}
-            weight={600}
-            size={18}
-            className='Home__middle__title'
-          >
-            Overview
-          </Text>
-          <ProjectStatistics />
-          <ActiveRunsTable />
-          <ProjectContributions />
-          <ContributionsFeed />
+        <div
+          className={classnames('Home__middle', {
+            'Home__middle--centered': isLoading,
+          })}
+        >
+          {isLoading ? (
+            <Spinner />
+          ) : totalRunsCount === 0 ? (
+            <QuickStart />
+          ) : (
+            <>
+              <Text
+                tint={100}
+                weight={600}
+                size={18}
+                className='Home__middle__title'
+              >
+                Overview
+              </Text>
+              <ProjectStatistics />
+              <ActiveRunsTable />
+              <ProjectContributions />
+              <ContributionsFeed />
+            </>
+          )}
         </div>
         <HomeRight />
         {notifyData?.length > 0 && (

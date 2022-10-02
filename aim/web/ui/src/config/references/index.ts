@@ -2,6 +2,8 @@ const DOCUMENTATIONS = {
   MAIN_PAGE: 'https://aimstack.readthedocs.io',
   STABLE: 'https://aimstack.readthedocs.io/en/stable/',
   AIM_QL: 'https://aimstack.readthedocs.io/en/latest/using/search.html',
+  SUPPORTED_TYPES:
+    'https://aimstack.readthedocs.io/en/latest/quick_start/supported_types.html',
   EXPLORERS: {
     PARAMS: {
       MAIN: 'https://aimstack.readthedocs.io/en/latest/ui/pages/explorers.html#params-explorer',
