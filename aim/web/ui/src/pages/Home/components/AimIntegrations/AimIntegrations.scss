@@ -18,12 +18,14 @@
 }
 
 .AimIntegrations__section__accordion__summary {
-  padding: $space-sm $space-md !important;
+  padding: $space-xs $space-sm !important;
+  min-height: 42px !important;
+  max-height: 42px !important;
 }
 
 .AimIntegrations__section__accordion__details {
   display: block;
-  padding: $space-sm $space-md !important;
+  padding: $space-sm $space-sm!important;
 }
 
 .AimIntegrations__section__text {
