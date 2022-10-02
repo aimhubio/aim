@@ -104,7 +104,6 @@ for i in range(10):
             </a>
           </div>
         </div>
-        {/*{askEmailSent ? null : <AskForm onSendEmail={onSendEmail} />}*/}
       </div>
     </ErrorBoundary>
   );

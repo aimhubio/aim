@@ -23,10 +23,7 @@ const Bookmarks = React.lazy(
     ),
 );
 const Dashboard = React.lazy(
-  () =>
-    import(
-      /* webpackChunkName: "Dashboard" */ 'pages/Dashboard/DashboardContainer'
-    ),
+  () => import(/* webpackChunkName: "Dashboard" */ 'pages/Dashboard/Dashboard'),
 );
 const TagsContainer = React.lazy(
   () => import(/* webpackChunkName: "tags" */ 'pages/Tags/TagsContainer'),
@@ -60,13 +57,13 @@ export interface IRoute {
 }
 
 const routes = {
-  HOME: {
-    path: PathEnum.Home,
+  DASHBOARD: {
+    path: PathEnum.Dashboard,
     component: Dashboard,
     showInSidebar: false,
     displayName: null,
     isExact: true,
-    title: pageTitlesEnum.HOME,
+    title: pageTitlesEnum.DASHBOARD,
   },
   RUNS: {
     path: PathEnum.Runs,

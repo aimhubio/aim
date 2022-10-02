@@ -1,11 +1,8 @@
 import React from 'react';
 import classnames from 'classnames';
 
-import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import { Spinner, Text } from 'components/kit';
-
-import { IHomeProps } from 'types/pages/home/Home';
 
 import ProjectContributions from './components/ProjectContributions/ProjectContributions';
 import ExploreSection from './components/ExploreSection/ExploreSection';
@@ -19,13 +16,7 @@ import AimIntegrations from './components/AimIntegrations';
 
 import './Dashboard.scss';
 
-function Home({
-  activityData,
-  onSendEmail,
-  notifyData,
-  onNotificationDelete,
-  askEmailSent,
-}: IHomeProps): React.FunctionComponentElement<React.ReactNode> {
+function Dashboard(): React.FunctionComponentElement<React.ReactNode> {
   const { projectContributionsStore } = useProjectContributions();
 
   const totalRunsCount = projectContributionsStore.data?.num_runs ?? 0;
@@ -63,14 +54,8 @@ function Home({
           {!isLoading && <AimIntegrations />}
         </div>
         <HomeRight />
-        {notifyData?.length > 0 && (
-          <NotificationContainer
-            handleClose={onNotificationDelete}
-            data={notifyData}
-          />
-        )}
       </section>
     </ErrorBoundary>
   );
 }
-export default Home;
+export default Dashboard;
