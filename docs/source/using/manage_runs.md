@@ -63,6 +63,19 @@ To remove `Run`s using command line:
 aim runs rm run_hash_1 run_hash_2 run_hash_3
 ```
 
+
+#### Cleanup (prune) run params and metric names/contexts
+
+Due to the Aim storage structure, after runs are deleted their params and metric names/contexts 
+are still available for autocomplete in Aim UI explorers. 
+
+In order to clean up those dangling params and metric properties using command line:
+
+```shell
+aim storage prune
+```
+
+
 ### Upload runs
 
 Aim provides a way to create backup snapshots of a `.aim` repository in AWS s3.

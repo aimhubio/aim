@@ -18,6 +18,7 @@ import {
   IMetricAppModelState,
   SortField,
   ITooltipConfig,
+  ISmoothing,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IParamsAppModelState } from 'types/services/models/params/paramsAppModel';
 import { IRunsAppModelState } from 'types/services/models/runs/runsAppModel';
@@ -160,9 +161,7 @@ export interface ILineChartConfig {
   zoom: IChartZoom;
   axesScaleType: IAxesScaleState;
   axesScaleRange: IAxesScaleRange;
-  curveInterpolation: CurveEnum;
-  smoothingAlgorithm: SmoothingAlgorithmEnum;
-  smoothingFactor: number;
+  smoothing: ISmoothing;
   aggregationConfig: IAggregationConfig;
   densityType: DensityOptions;
   alignmentConfig: IAlignmentConfig;

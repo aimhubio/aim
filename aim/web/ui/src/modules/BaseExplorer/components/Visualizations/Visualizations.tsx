@@ -1,48 +1,52 @@
 import * as React from 'react';
+import { FunctionComponent } from 'react';
 
-import { PipelineStatusEnum } from 'modules/core/engine';
+import { PipelineStatusEnum } from 'modules/core/engine/types';
 import { IVisualizationsProps } from 'modules/BaseExplorer/types';
+import VisualizerPanel from 'modules/BaseExplorer/components/VisualizerPanel';
 
 import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 
 import ProgressBar from '../ProgressBar';
-import VisualizerPanel from '../VisualizerPanel';
 
 import './Visualizations.scss';
 
 function Visualizations(props: IVisualizationsProps) {
   const {
     engine,
-    engine: { pipelineStatusSelector, useStore },
+    engine: { pipeline, useStore },
     components,
+    visualizers,
   } = props;
 
-  const status = useStore(pipelineStatusSelector);
+  const status = useStore(pipeline.statusSelector);
 
-  const Visualizations = React.useMemo(
-    () =>
-      components.visualizations.map((Viz, index) => (
+  const Visualizations = React.useMemo(() => {
+    return Object.keys(visualizers).map((name: string, index: number) => {
+      const visualizer = visualizers[name];
+      const Viz = visualizer.component as FunctionComponent;
+
+      return (
         <Viz
-          key={Viz.displayName}
+          key={Viz.displayName || name}
+          // @ts-ignore
           engine={engine}
-          box={components.box}
+          name={name}
+          box={visualizer.box.component}
           panelRenderer={() => (
             <VisualizerPanel
               engine={engine}
-              controls={components.controls} // @TODO need to set "visualization.controls" instead of "components.controls"
+              // @ts-ignore
+              controls={visualizer.controlsContainer}
+              // @ts-ignore
               grouping={index === 0 ? components.grouping : null}
+              visualizationName={name}
             />
           )}
         />
-      )),
-    [
-      engine,
-      components.box,
-      components.controls,
-      components.visualizations,
-      components.grouping,
-    ],
-  );
+      );
+    });
+  }, [components, engine, visualizers]);
 
   const renderIllustration = React.useMemo(
     () =>

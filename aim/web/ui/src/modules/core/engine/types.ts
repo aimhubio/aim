@@ -1,35 +1,25 @@
 import { IRunProgressObject } from 'modules/core/api/runsApi';
+import { CustomStates } from 'modules/core/utils/store';
 
 import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
 
 import { GetState, SetState } from 'utils/store/createSlice';
 
-import { IQueryableData, Order, PipelinePhasesEnum } from '../pipeline';
-
-import { GroupingConfigs } from './store/grouping';
-import { ControlsConfigs } from './store/controls';
-import { IInstructionsState } from './store/instructionsSlice';
+import { GroupingConfigs } from './explorer/groupings';
+import { ControlsConfigs } from './visualizations/controls';
 
 export interface ProgressState extends IRunProgressObject {
   percent: number;
 }
-/*
-export const engineStoreReservedSliceKeys = {
-  initialized: 'initialized',
-  instructions: 'instructions',
-  groupings: 'groupings',
-  pipeline: 'pipeline',
-  query: 'query',
-  box: 'box',
-};*/
 
 export type EngineStoreReservedSliceKeys =
-  | 'initialized'
   | 'instructions'
   | 'groupings'
   | 'pipeline'
   | 'query'
-  | 'box';
+  | 'visualizations'
+  | 'controls'
+  | 'states';
 
 export type SliceCreationConfig<TSliceState> = {
   initialState: TSliceState;
@@ -39,7 +29,7 @@ export type StoreSliceCreator<TSliceState> = {
   [key: string]: SliceCreationConfig<TSliceState>;
 };
 
-interface StoreSliceMethods {
+export interface StoreSliceMethods {
   update: Function;
   reset(): void;
 }
@@ -75,40 +65,8 @@ export interface IEngineConfigFinal {
   styleAppliers?: {
     [key: string]: Function;
   };
-  states?: {
-    [name: string]: {
-      initialState: object;
-    };
-  };
+  states?: CustomStates;
 }
-
-export type ExplorerState = {
-  initialized: boolean;
-  instructions: IInstructionsState | object;
-  sequenceName: SequenceTypesEnum | null;
-  pipeline: {
-    currentPhase: PipelinePhasesEnum;
-    status: PipelineStatusEnum;
-    progress?: ProgressState;
-  };
-  groupings?: {
-    [key: string]: {
-      orders: Order[];
-      fields: string[];
-    };
-    // @ts-ignore
-    currentValues: {
-      [key: string]: {
-        orders: Order[];
-        fields: string[];
-      };
-    };
-  };
-  data: any;
-  additionalData: any;
-  foundGroups: any; // remove this
-  queryableData: IQueryableData;
-};
 
 export type ExplorerConfig = {
   sequenceName: SequenceTypesEnum;
@@ -146,3 +104,5 @@ export enum PipelineStatusEnum {
    */
   Processing = 'Processing',
 }
+
+export type SelectorCreator<TState, P> = (state: TState) => P;

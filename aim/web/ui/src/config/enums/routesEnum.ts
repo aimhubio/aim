@@ -14,6 +14,7 @@ enum PathEnum {
   Images_Explore_Id = '/images/:appId',
   Figures_Explorer = '/figures',
   Custom_Explorer = '/custom',
+  New_Figures_Explorer = '/new-fig',
 }
 
 export { PathEnum };

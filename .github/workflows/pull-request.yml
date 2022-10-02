@@ -63,6 +63,7 @@ jobs:
           pytest --cov-report term --cov-branch --cov-fail-under=50 --cov=aim/web --cov=aim/storage --cov=aim/sdk tests
 
   storage-performance-checks:
+    needs: run-checks
     concurrency: perf-tests
     runs-on: [self-hosted, performance-tests]
     name: Performance tests
