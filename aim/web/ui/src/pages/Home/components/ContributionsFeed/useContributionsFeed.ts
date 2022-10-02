@@ -34,7 +34,7 @@ function useContributionsFeed() {
       exclude_traces: true,
     });
     return () => {
-      engine.contributionsFeedState.destroy();
+      engine.destroy();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -91,8 +91,6 @@ function useContributionsFeed() {
           active: props.active,
           creation_time: props.creation_time,
         };
-
-        // check if the day already exists in the month list
         if (feedData[month]?.[day]?.length) {
           feedData[month][day].push(contribution);
         } else {

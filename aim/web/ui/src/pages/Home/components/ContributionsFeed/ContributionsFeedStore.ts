@@ -10,7 +10,7 @@ import { parseStream } from 'utils/encoder/streamEncoding';
 function createContributionsFeedEngine() {
   let { call, cancel } = createSearchRunRequest();
 
-  const { fetchData, state } = createResource<IRun<unknown>[]>(
+  const { fetchData, state, destroy } = createResource<IRun<unknown>[]>(
     async (queryParams: RequestOptions['query_params']) =>
       parseStream(await call(queryParams)),
   );
@@ -18,6 +18,7 @@ function createContributionsFeedEngine() {
     fetchContributionsFeed: (queryParams: RequestOptions['query_params']) =>
       fetchData(queryParams),
     contributionsFeedState: state,
+    destroy,
   };
 }
 

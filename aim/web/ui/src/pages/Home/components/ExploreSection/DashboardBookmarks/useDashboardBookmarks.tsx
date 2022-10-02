@@ -17,7 +17,7 @@ function useDashboardBookmarks() {
   React.useEffect(() => {
     dashboardBookmarksEngine.fetchDashboardBookmarks();
     return () => {
-      dashboardBookmarksEngine.dashboardBookmarksState.destroy();
+      dashboardBookmarksEngine.destroy();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

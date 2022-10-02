@@ -15,7 +15,7 @@ function useProjectContributions() {
       engine.fetchProjectContributions();
     }
     return () => {
-      engine.projectContributionsState.destroy();
+      engine.destroy();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

@@ -19,7 +19,7 @@ function useExperimentsCard() {
   React.useEffect(() => {
     experimentsEngine.fetchExperiments();
     return () => {
-      experimentsEngine.experimentsState.destroy();
+      experimentsEngine.destroy();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

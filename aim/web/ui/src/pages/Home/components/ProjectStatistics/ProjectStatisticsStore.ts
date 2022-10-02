@@ -4,7 +4,7 @@ import { getParams, GetParamsResult } from 'modules/core/api/projectApi';
 import { SequenceTypesEnum } from 'types/core/enums';
 
 function projectStatisticsEngine() {
-  const { fetchData, state } = createResource<GetParamsResult>(() =>
+  const { fetchData, state, destroy } = createResource<GetParamsResult>(() =>
     getParams({
       sequence: [
         SequenceTypesEnum.Metric,
@@ -17,7 +17,7 @@ function projectStatisticsEngine() {
       exclude_params: true,
     }),
   );
-  return { fetchProjectParams: fetchData, projectParamsState: state };
+  return { fetchProjectParams: fetchData, projectParamsState: state, destroy };
 }
 
 export default projectStatisticsEngine();
