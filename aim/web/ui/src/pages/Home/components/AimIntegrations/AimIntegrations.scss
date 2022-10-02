@@ -1,5 +1,9 @@
 @use 'src/styles/abstracts' as *;
 
+.AimIntegrations {
+  margin-top: $space-lg;
+}
+
 .AimIntegrations__section {
   padding: $space-lg 0;
 }
