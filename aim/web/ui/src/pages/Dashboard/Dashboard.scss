@@ -1,7 +1,7 @@
 @use 'src/styles/abstracts' as *;
 
 $border: 1px solid $primary-color-10;
-.Home {
+.Dashboard {
   background-color: #ffffff;
   overflow: hidden;
   display: flex;
@@ -14,7 +14,7 @@ $border: 1px solid $primary-color-10;
     }
   }
   height: 100vh;
-  
+
   &__middle {
     padding: $space-md $space-lg;
     border: $border;

@@ -8,7 +8,7 @@ import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 import homeAppModel from 'services/models/home/homeAppModel';
 import * as analytics from 'services/analytics';
 
-import Home from './Home';
+import Home from './Dashboard';
 
 function HomeContainer(): React.FunctionComponentElement<React.ReactNode> {
   const homeData = useModel(homeAppModel);

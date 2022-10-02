@@ -22,8 +22,11 @@ const Bookmarks = React.lazy(
       /* webpackChunkName: "bookmarks" */ 'pages/Bookmarks/BookmarksContainer'
     ),
 );
-const Home = React.lazy(
-  () => import(/* webpackChunkName: "home" */ 'pages/Home/HomeContainer'),
+const Dashboard = React.lazy(
+  () =>
+    import(
+      /* webpackChunkName: "Dashboard" */ 'pages/Dashboard/DashboardContainer'
+    ),
 );
 const TagsContainer = React.lazy(
   () => import(/* webpackChunkName: "tags" */ 'pages/Tags/TagsContainer'),
@@ -59,7 +62,7 @@ export interface IRoute {
 const routes = {
   HOME: {
     path: PathEnum.Home,
-    component: Home,
+    component: Dashboard,
     showInSidebar: false,
     displayName: null,
     isExact: true,

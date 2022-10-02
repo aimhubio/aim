@@ -17,7 +17,7 @@ import ActiveRunsTable from './components/ActiveRunsTable/ActiveRunsTable';
 import QuickStart from './components/QuickStart';
 import AimIntegrations from './components/AimIntegrations';
 
-import './Home.scss';
+import './Dashboard.scss';
 
 function Home({
   activityData,
@@ -33,11 +33,11 @@ function Home({
 
   return (
     <ErrorBoundary>
-      <section className='Home'>
+      <section className='Dashboard'>
         <ExploreSection />
         <div
-          className={classnames('Home__middle', {
-            'Home__middle--centered': isLoading,
+          className={classnames('Dashboard__middle', {
+            'Dashboard__middle--centered': isLoading,
           })}
         >
           {isLoading ? (
@@ -50,7 +50,7 @@ function Home({
                 tint={100}
                 weight={600}
                 size={18}
-                className='Home__middle__title'
+                className='Dashboard__middle__title'
               >
                 Overview
               </Text>
