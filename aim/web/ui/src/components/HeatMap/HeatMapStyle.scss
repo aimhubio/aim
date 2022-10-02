@@ -83,6 +83,7 @@
   margin-top: 1em;
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   .CalendarHeatmap__cell {
     cursor: default;
     &__wrapper {

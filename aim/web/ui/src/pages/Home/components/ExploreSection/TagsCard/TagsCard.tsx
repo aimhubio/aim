@@ -1,7 +1,8 @@
 import React from 'react';
+import { NavLink } from 'react-router-dom';
 
 import DataList from 'components/kit/DataList';
-import { Text } from 'components/kit';
+import { Button, Text } from 'components/kit';
 
 import CompareSelectedRunsPopover from 'pages/Metrics/components/Table/CompareSelectedRunsPopover';
 
@@ -21,7 +22,7 @@ function TagsCard(): React.FunctionComponentElement<React.ReactNode> | null {
     tagsQuery,
   } = useTagsCard();
 
-  return tagsStore.data?.length ? (
+  return (
     <div className='TagsCard'>
       <Text
         className='TagsCard__title'
@@ -30,32 +31,39 @@ function TagsCard(): React.FunctionComponentElement<React.ReactNode> | null {
         weight={700}
         tint={100}
       >
-        Tags ({tagsStore.data.length})
+        Tags {tagsStore?.data?.length ? `(${tagsStore?.data?.length})` : ''}
       </Text>
-      <DataList
-        tableRef={tableRef}
-        tableColumns={tableColumns}
-        tableData={tableData}
-        isLoading={tagsStore.loading}
-        height={Math.min(238, tableData.length * 24 + 56) + 'px'}
-        searchableKeys={['name', 'run_count']}
-        rowHeight={24}
-        disableMatchBar={true}
-        illustrationConfig={{
-          size: 'large',
-          title: 'No Results',
-        }}
-        toolbarItems={[
-          <CompareSelectedRunsPopover
-            key='compareSelectedRunsPopover'
-            appName={'home' as AppNameEnum}
-            query={tagsQuery}
-            disabled={!selectedRows.length}
-          />,
-        ]}
-      />
+      {tagsStore?.data?.length ? (
+        <DataList
+          tableRef={tableRef}
+          tableColumns={tableColumns}
+          tableData={tableData}
+          isLoading={tagsStore.loading}
+          height={Math.min(238, tableData.length * 24 + 56) + 'px'}
+          searchableKeys={['name', 'run_count']}
+          rowHeight={24}
+          disableMatchBar={true}
+          illustrationConfig={{
+            size: 'large',
+            title: 'No Results',
+          }}
+          toolbarItems={[
+            <CompareSelectedRunsPopover
+              key='compareSelectedRunsPopover'
+              appName={'home' as AppNameEnum}
+              query={tagsQuery}
+              disabled={!selectedRows.length}
+            />,
+          ]}
+        />
+      ) : null}
+      <NavLink className='TagsCard__NavLink' to='/tags'>
+        <Button fullWidth size='xSmall' variant='outlined'>
+          Explore tags
+        </Button>
+      </NavLink>
     </div>
-  ) : null;
+  );
 }
 
 TagsCard.displayName = 'TagsCard';
