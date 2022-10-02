@@ -71,9 +71,33 @@ function HeatMap({
 
   const diffDays = Math.floor(Math.abs((firstDay - lastDay) / oneDay));
 
-  const maxVal = Math.max(
-    ...data?.map((i: any) => i?.[1]).filter((i: any) => Number.isInteger(i)),
-  );
+  const maxVal = getMaxVal();
+
+  // get max run count in data
+  function getMaxVal() {
+    let maxValue = 0;
+    [...Array(diffDays).keys()].forEach((index) => {
+      let count = getRunCountByDay(index);
+      maxValue = count > maxValue ? count : maxValue;
+    });
+    return maxValue;
+  }
+
+  // get runs count by day index
+  function getRunCountByDay(dayIndex: number): number {
+    const date = indexToDate(dayIndex);
+    let count = 0;
+    for (let s = 0; s < data.length; s++) {
+      if (
+        data[s]?.[0].getFullYear() === date.getFullYear() &&
+        data[s]?.[0].getMonth() === date.getMonth() &&
+        data[s]?.[0].getDate() === date.getDate()
+      ) {
+        count += data[s][1];
+      }
+    }
+    return count;
+  }
 
   const orderedMonths = [
     ...months.slice(firstDay.getMonth()),
@@ -108,30 +132,18 @@ function HeatMap({
     return shiftDate(firstDay, x * 7 + y);
   }
 
+  // get date and run count for a specific day index
   function getItem(index: number) {
-    const date = indexToDate(index);
-    // console.log(date);
-    let item = null;
-
-    for (let s = 0; s < data.length; s++) {
-      if (
-        data[s]?.[0].getFullYear() === date.getFullYear() &&
-        data[s]?.[0].getMonth() === date.getMonth() &&
-        data[s]?.[0].getDate() === date.getDate()
-      ) {
-        item = data[s];
-      }
-    }
-    return item;
+    let count = getRunCountByDay(index);
+    return [data[0]?.[0], count];
   }
 
   function getScale(value: number) {
     return Math.ceil((value / maxVal) * scaleRange);
   }
   function renderCell(index: number) {
-    // console.log(index);
     const dataItem = getItem(index);
-    // console.log(dataItem);
+
     const date = indexToDate(index);
     const scale =
       dataItem && Number.isInteger(dataItem?.[1]) ? getScale(dataItem[1]) : 0;
@@ -139,7 +151,7 @@ function HeatMap({
       dataItem?.[1] !== 1 ? 's' : ''
     } on ${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
 
-    function onClickeCell(e: React.MouseEvent) {
+    function onClickCell(e: React.MouseEvent) {
       e.stopPropagation();
       onCellClick();
       if (scale) {
@@ -166,7 +178,7 @@ function HeatMap({
             <Tooltip title={tooltip}>
               <div
                 className={`CalendarHeatmap__cell CalendarHeatmap__cell--scale-${scale}`}
-                onClick={onClickeCell}
+                onClick={onClickCell}
                 role='navigation'
                 // className={classNames({
                 //   CalendarHeatmap__cell: true,
