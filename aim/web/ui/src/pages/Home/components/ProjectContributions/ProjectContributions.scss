@@ -7,9 +7,6 @@
     overflow: hidden;
     @media only screen and (max-width: 1452px) {
       justify-content: flex-end;
-      .CalendarHeatmap__cell__info {
-        justify-content: flex-end;
-      }
     }
   }
   &__Statistics__card {
