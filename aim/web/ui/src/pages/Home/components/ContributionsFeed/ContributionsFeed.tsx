@@ -37,7 +37,7 @@ function ContributionsFeed(): React.FunctionComponentElement<React.ReactNode> | 
           size='xSmall'
           onClick={isLoading ? undefined : loadMore}
         >
-          {isLoading ? 'loading' : 'Show more activity'}
+          {isLoading ? 'Loading...' : 'Show more activity'}
         </Button>
       ) : null}
     </div>
