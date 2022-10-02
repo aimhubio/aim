@@ -46,7 +46,7 @@ function ExperimentsCard(): React.FunctionComponentElement<React.ReactNode> | nu
         toolbarItems={[
           <CompareSelectedRunsPopover
             key='compareSelectedRunsPopover'
-            appName={'home' as AppNameEnum}
+            appName={'dashboard' as AppNameEnum}
             query={experimentsQuery}
             disabled={!selectedRows.length}
           />,

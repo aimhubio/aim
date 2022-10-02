@@ -12,7 +12,12 @@ import './QuickStart.scss';
 function QuickStart() {
   return (
     <div className='QuickStart'>
-      <Text tint={100} weight={600} size={18} className='Home__middle__title'>
+      <Text
+        tint={100}
+        weight={600}
+        size={18}
+        className='Dashboard__middle__title'
+      >
         Quick Start
       </Text>
       <div className='QuickStart__section'>

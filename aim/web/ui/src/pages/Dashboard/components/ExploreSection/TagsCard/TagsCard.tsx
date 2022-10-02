@@ -50,7 +50,7 @@ function TagsCard(): React.FunctionComponentElement<React.ReactNode> | null {
           toolbarItems={[
             <CompareSelectedRunsPopover
               key='compareSelectedRunsPopover'
-              appName={'home' as AppNameEnum}
+              appName={'dashboard' as AppNameEnum}
               query={tagsQuery}
               disabled={!selectedRows.length}
             />,

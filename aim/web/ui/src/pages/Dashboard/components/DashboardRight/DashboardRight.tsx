@@ -4,13 +4,13 @@ import { Text } from 'components/kit';
 
 import ReleaseNotes from './ReleaseNotes/ReleaseNotes';
 
-import './HomeRight.scss';
+import './DashboardRight.scss';
 
-function HomeRight(): React.FunctionComponentElement<React.ReactNode> {
+function DashboardRight(): React.FunctionComponentElement<React.ReactNode> {
   return (
-    <aside className='HomeRight'>
+    <aside className='DashboardRight'>
       <Text
-        className='HomeRight__title'
+        className='DashboardRight__title'
         component='h3'
         tint={100}
         size={18}
@@ -23,4 +23,4 @@ function HomeRight(): React.FunctionComponentElement<React.ReactNode> {
   );
 }
 
-export default React.memo(HomeRight);
+export default React.memo(DashboardRight);

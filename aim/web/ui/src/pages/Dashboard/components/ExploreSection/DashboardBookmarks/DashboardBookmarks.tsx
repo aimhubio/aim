@@ -68,7 +68,7 @@ function DashboardBookmarks(): React.FunctionComponentElement<React.ReactNode> |
       {dashboardBookmarksStore.data.length > 5 ? (
         <NavLink className='DashboardBookmarks__NavLink' to='/bookmarks'>
           <Button fullWidth variant='outlined' size='xSmall'>
-            Show more
+            See all bookmarks
           </Button>
         </NavLink>
       ) : null}

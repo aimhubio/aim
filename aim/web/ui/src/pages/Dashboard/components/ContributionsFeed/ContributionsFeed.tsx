@@ -34,7 +34,7 @@ function ContributionsFeed(): React.FunctionComponentElement<React.ReactNode> | 
         <Button
           variant='outlined'
           fullWidth
-          size='xSmall'
+          size='small'
           onClick={isLoading ? undefined : loadMore}
         >
           {isLoading ? 'Loading...' : 'Show more activity'}

@@ -72,7 +72,7 @@ function ExploreAim(): React.FunctionComponentElement<React.ReactNode> {
               rel='noreferrer'
               className='ExploreAim__social__item'
               onClick={() =>
-                trackEvent(ANALYTICS_EVENT_KEYS.home.slackCommunity)
+                trackEvent(ANALYTICS_EVENT_KEYS.dashboard.slackCommunity)
               }
             >
               <img src={slackIcon} alt='slack' />
@@ -87,7 +87,7 @@ function ExploreAim(): React.FunctionComponentElement<React.ReactNode> {
               rel='noreferrer'
               className='ExploreAim__social__item'
               onClick={() =>
-                trackEvent(ANALYTICS_EVENT_KEYS.home.createGithubIssue)
+                trackEvent(ANALYTICS_EVENT_KEYS.dashboard.createGithubIssue)
               }
             >
               <img src={githubIcon} alt='github' />

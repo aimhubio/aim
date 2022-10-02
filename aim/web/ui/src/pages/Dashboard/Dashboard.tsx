@@ -6,7 +6,7 @@ import { Spinner, Text } from 'components/kit';
 
 import ProjectContributions from './components/ProjectContributions/ProjectContributions';
 import ExploreSection from './components/ExploreSection/ExploreSection';
-import HomeRight from './components/HomeRight/HomeRight';
+import DashboardRight from './components/DashboardRight/DashboardRight';
 import ContributionsFeed from './components/ContributionsFeed/ContributionsFeed';
 import ProjectStatistics from './components/ProjectStatistics';
 import useProjectContributions from './components/ProjectContributions/useProjectContributions';
@@ -53,7 +53,7 @@ function Dashboard(): React.FunctionComponentElement<React.ReactNode> {
           )}
           {!isLoading && <AimIntegrations />}
         </div>
-        <HomeRight />
+        <DashboardRight />
       </section>
     </ErrorBoundary>
   );

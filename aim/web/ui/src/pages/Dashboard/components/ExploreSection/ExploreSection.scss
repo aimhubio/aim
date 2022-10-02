@@ -68,6 +68,9 @@
       .MuiOutlinedInput-root {
         background-color: $white;
       }
+      label {
+        font-size: $text-sm;
+      }
     }
     .selectedSelectIcon {
       border-radius: $border-radius-xs;

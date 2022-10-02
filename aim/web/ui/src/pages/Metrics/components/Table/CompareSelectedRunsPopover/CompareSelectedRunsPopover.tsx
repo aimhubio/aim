@@ -87,7 +87,7 @@ function CompareSelectedRunsPopover({
         )}
         component={
           <div className='CompareSelectedRunsPopover'>
-            {EXPLORE_SELECTED_RUNS_CONFIG[appName as AppNameEnum].map(
+            {EXPLORE_SELECTED_RUNS_CONFIG?.[appName as AppNameEnum]?.map(
               (item: AppNameEnum) => (
                 <MenuItem
                   className='CompareSelectedRunsPopover__item'

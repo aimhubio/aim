@@ -40,7 +40,7 @@ function ActiveRunsTable() {
         {tableData.length > 0 && (
           <div className='ActiveRunsTable__header__comparisonPopover'>
             <CompareSelectedRunsPopover
-              appName={'home' as AppNameEnum}
+              appName={'dashboard' as AppNameEnum}
               query={comparisonQuery}
               disabled={Object.keys(selectedRows).length === 0}
             />

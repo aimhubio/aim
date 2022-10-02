@@ -33,7 +33,7 @@ function ProjectContributions(): React.FunctionComponentElement<React.ReactNode>
             startDate={shiftDate(today, -10 * 30)}
             endDate={today}
             onCellClick={() => {
-              trackEvent(ANALYTICS_EVENT_KEYS.home.activityCellClick);
+              trackEvent(ANALYTICS_EVENT_KEYS.dashboard.activityCellClick);
             }}
             data={Object.keys(
               projectContributionsStore.data?.activity_map ?? {},

@@ -164,10 +164,10 @@ aim_logger.attach_output_handler(
             <AccordionSummary
               aria-controls='panel1d-content'
               id='panel1d-header'
-              expandIcon={<Icon name='arrow-down' fontSize={14} />}
+              expandIcon={<Icon name='arrow-down' fontSize={12} />}
               className='AimIntegrations__section__accordion__summary'
             >
-              <Text component='p' size={14} weight={500} tint={100}>
+              <Text component='p' size={12} weight={600} tint={100}>
                 {item.title}
               </Text>
             </AccordionSummary>
@@ -175,8 +175,8 @@ aim_logger.attach_output_handler(
               <CodeBlock code={item.code} />
               <Text
                 component='p'
-                size={14}
-                weight={500}
+                size={12}
+                weight={600}
                 tint={100}
                 className='AimIntegrations__section__text'
               >

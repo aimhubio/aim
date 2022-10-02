@@ -53,7 +53,7 @@ for i in range(10):
             href={DOCUMENTATIONS.STABLE}
             rel='noreferrer'
             className='SetupGuide__resources__item'
-            onClick={() => trackEvent(ANALYTICS_EVENT_KEYS.home.docs)}
+            onClick={() => trackEvent(ANALYTICS_EVENT_KEYS.dashboard.docs)}
           >
             <div className='SetupGuide__resources__item__icon'>
               <Icon
@@ -71,7 +71,7 @@ for i in range(10):
               href={GUIDES.SETUP.COLAB_EXAMPLE}
               rel='noreferrer'
               className='SetupGuide__resources__item'
-              onClick={() => trackEvent(ANALYTICS_EVENT_KEYS.home.colab)}
+              onClick={() => trackEvent(ANALYTICS_EVENT_KEYS.dashboard.colab)}
             >
               <div className='SetupGuide__resources__item__icon'>
                 <Icon
@@ -90,7 +90,9 @@ for i in range(10):
               href={DEMOS.MAIN}
               rel='noreferrer'
               className='SetupGuide__resources__item'
-              onClick={() => trackEvent(ANALYTICS_EVENT_KEYS.home.liveDemo)}
+              onClick={() =>
+                trackEvent(ANALYTICS_EVENT_KEYS.dashboard.liveDemo)
+              }
             >
               <div className='SetupGuide__resources__item__icon'>
                 <Icon
