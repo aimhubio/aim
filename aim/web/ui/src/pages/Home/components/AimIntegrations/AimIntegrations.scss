@@ -15,6 +15,10 @@
 .AimIntegrations__section__accordion {
   box-shadow: 0 0 0 1px $pico-20;
   margin: 0 !important;
+
+  &::before {
+    content: none;
+  }
 }
 
 .AimIntegrations__section__accordion__summary {
