@@ -72,7 +72,7 @@ function ActiveRunsTable() {
             height='100%'
             rowHeight={RowHeightSize.sm}
             illustrationConfig={{
-              size: 'medium',
+              size: 'large',
               title: 'No active runs',
             }}
             selectedRows={selectedRows}
