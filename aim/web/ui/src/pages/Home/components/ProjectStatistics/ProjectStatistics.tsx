@@ -79,7 +79,7 @@ const statisticsInitialMap: Record<string, IProjectStatistic> = {
 const runsCountingInitialMap: Record<'archived' | 'runs', IProjectStatistic> = {
   runs: {
     label: 'runs',
-    icon: 'unarchive',
+    icon: 'runs',
     count: 0,
     iconBgColor: '#1473E6',
     navLink: routes.RUNS.path,
