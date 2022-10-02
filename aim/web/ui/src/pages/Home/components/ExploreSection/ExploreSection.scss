@@ -24,7 +24,14 @@
   .DataList {
     .CompareSelectedRunsPopover__trigger {
       margin-right: 0 !important;
+      .Icon__container {
+        margin-right: $space-xxxs;
+      }
+      .Text {
+        font-size: $text-sm;
+      }
     }
+
     .IllustrationBlock {
       &__container {
         padding-bottom: 0;

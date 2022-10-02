@@ -65,11 +65,13 @@ function DashboardBookmarks(): React.FunctionComponentElement<React.ReactNode> |
             </Tooltip>
           ))}
       </div>
-      <NavLink className='DashboardBookmarks__NavLink' to='/bookmarks'>
-        <Button fullWidth variant='outlined' size='xSmall'>
-          Show more
-        </Button>
-      </NavLink>
+      {dashboardBookmarksStore.data.length > 5 ? (
+        <NavLink className='DashboardBookmarks__NavLink' to='/bookmarks'>
+          <Button fullWidth variant='outlined' size='xSmall'>
+            Show more
+          </Button>
+        </NavLink>
+      ) : null}
     </div>
   ) : null;
 }

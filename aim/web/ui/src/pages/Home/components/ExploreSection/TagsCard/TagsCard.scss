@@ -11,4 +11,9 @@
   .Badge {
     border-radius: $border-radius-sm;
   }
+  &__NavLink {
+    text-decoration: none;
+    display: block;
+    margin-top: $space-unit;
+  }
 }
