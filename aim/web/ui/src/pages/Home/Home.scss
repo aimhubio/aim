@@ -13,11 +13,14 @@ $border: 1px solid $primary-color-10;
       overflow: hidden;
     }
   }
+  height: 100vh;
+  
   &__middle {
     padding: $space-md $space-lg;
     border: $border;
     border-top: none;
     display: flex;
+    overflow: auto;
     flex-direction: column;
     flex: 1 1;
 

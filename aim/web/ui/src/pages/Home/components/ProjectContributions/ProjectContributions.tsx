@@ -24,40 +24,26 @@ function ProjectContributions(): React.FunctionComponentElement<React.ReactNode>
   let today = new Date();
   return (
     <ErrorBoundary>
-      <Grid className='ProjectContributions' container spacing={1}>
-        <Grid item>
-          <div className='ProjectContribution__Statistics__card'>
-            <Text size={16} component='span' color='secondary'>
-              Runs
-            </Text>
-            <Text component='strong' size={36} weight={600} color='secondary'>
-              {projectContributionsStore.data?.num_runs ?? (
-                <CircularProgress className='ProjectContributions__loader' />
-              )}
-            </Text>
-          </div>
-        </Grid>
-        <Grid xs item>
-          <Text component='h2' size={24} weight={600} tint={100}>
-            Activity
-          </Text>
-          <div className='ProjectContributions__HeatMap'>
-            <HeatMap
-              startDate={shiftDate(today, -10 * 30)}
-              endDate={today}
-              onCellClick={() => {
-                trackEvent(ANALYTICS_EVENT_KEYS.home.activityCellClick);
-              }}
-              data={Object.keys(
-                projectContributionsStore.data?.activity_map ?? {},
-              ).map((k) => [
-                new Date(k),
-                projectContributionsStore.data?.activity_map[k],
-              ])}
-            />
-          </div>
-        </Grid>
-      </Grid>
+      <div className='ProjectContributions'>
+        <Text component='h2' size={18} weight={600} tint={100}>
+          Contributions
+        </Text>
+        <div className='ProjectContributions__HeatMap'>
+          <HeatMap
+            startDate={shiftDate(today, -10 * 30)}
+            endDate={today}
+            onCellClick={() => {
+              trackEvent(ANALYTICS_EVENT_KEYS.home.activityCellClick);
+            }}
+            data={Object.keys(
+              projectContributionsStore.data?.activity_map ?? {},
+            ).map((k) => [
+              new Date(k),
+              projectContributionsStore.data?.activity_map[k],
+            ])}
+          />
+        </div>
+      </div>
     </ErrorBoundary>
   );
 }

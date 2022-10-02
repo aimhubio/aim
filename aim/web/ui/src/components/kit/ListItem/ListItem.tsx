@@ -18,7 +18,7 @@ const Container = styled.div<IListItemProps | any>`
   transition: all 0.18s ease-out;
   cursor: pointer;
   &:hover {
-    background-color: #f2f5fa;
+    background-color: #f4f4f6;
     color: #1473e6;
     .Text {
       color: #1473e6;
