@@ -301,7 +301,7 @@ export const ANALYTICS_EVENT_KEYS = {
     pageView: '[BookmarksPage] Page view',
     view: '[BookmarksPage] View bookmark',
   },
-  home: {
+  dashboard: {
     pageView: '[HomePage] Page view',
     activityCellClick: '[HomePage] Click on Activity cell',
     createGithubIssue: '[HomePage] Click on create gitHub issue',

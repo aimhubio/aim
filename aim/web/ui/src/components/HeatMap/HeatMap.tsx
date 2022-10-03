@@ -164,7 +164,7 @@ function HeatMap({
             .add(1, 'day')
             .format(DATE_QUERY_FORMAT)})`,
         });
-        analytics.trackEvent(ANALYTICS_EVENT_KEYS.home.activityCellClick);
+        analytics.trackEvent(ANALYTICS_EVENT_KEYS.dashboard.activityCellClick);
         history.push(`/runs?select=${search}`);
       }
     }
