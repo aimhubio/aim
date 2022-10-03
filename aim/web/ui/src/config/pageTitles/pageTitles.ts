@@ -1,5 +1,5 @@
 const pageTitles = {
-  HOME: '',
+  DASHBOARD: '',
   RUNS_EXPLORER: 'Runs Explorer',
   METRICS_EXPLORER: 'Metrics Explorer',
   PARAMS_EXPLORER: 'Params Explorer',

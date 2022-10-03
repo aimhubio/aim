@@ -143,5 +143,5 @@ export const EXPLORE_SELECTED_RUNS_CONFIG: {
     AppNameEnum.METRICS,
   ],
   [AppNameEnum.IMAGES]: [AppNameEnum.RUNS, AppNameEnum.METRICS],
-  home: [AppNameEnum.RUNS, AppNameEnum.METRICS, AppNameEnum.IMAGES],
+  dashboard: [AppNameEnum.RUNS, AppNameEnum.METRICS, AppNameEnum.IMAGES],
 };

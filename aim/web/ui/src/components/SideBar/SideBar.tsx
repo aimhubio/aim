@@ -44,7 +44,7 @@ function SideBar(): React.FunctionComponentElement<React.ReactNode> {
               exact={true}
               activeClassName={'Sidebar__NavLink--active'}
               className='Sidebar__NavLink'
-              to={routes.HOME.path}
+              to={routes.DASHBOARD.path}
             >
               <li className='Sidebar__List__item'>
                 <img src={logoImg} alt='logo' />
