@@ -1,5 +1,3 @@
-import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
-
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 
 import {
@@ -20,7 +18,7 @@ import {
 } from 'types/services/models/metrics/metricsAppModel';
 import { IRun } from 'types/services/models/metrics/runModel';
 
-import { CurveEnum } from 'utils/d3';
+import { CurveEnum, HighlightEnum } from 'utils/d3';
 
 import { IChartPanelProps } from '../ChartPanel/ChartPanel';
 
@@ -43,11 +41,11 @@ export interface ILineChartProps {
   nameKey?: string;
   aggregatedData?: IAggregatedData[];
   alignmentConfig?: IAlignmentConfig;
-  ignoreOutliers: boolean;
+  ignoreOutliers?: boolean;
   axesScaleType: IAxesScaleState;
   axesScaleRange?: IAxesScaleRange;
-  highlightMode: HighlightEnum;
-  curveInterpolation: CurveEnum;
+  highlightMode?: HighlightEnum;
+  curveInterpolation?: CurveEnum;
   syncHoverState?: (args: ISyncHoverStateArgs) => void;
   aggregationConfig?: IAggregationConfig;
   chartTitle?: IChartTitle;

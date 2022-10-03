@@ -6,12 +6,9 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { IZoomInPopoverProps } from 'types/components/ZoomInPopover/ZoomInPopover';
 
-import './ZoomInPopover.scss';
+import { ZoomEnum } from 'utils/d3';
 
-export enum ZoomEnum {
-  SINGLE = 0,
-  MULTIPLE = 1,
-}
+import './ZoomInPopover.scss';
 
 function ZoomInPopover({
   mode,
