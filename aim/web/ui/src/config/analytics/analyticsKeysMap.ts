@@ -48,7 +48,7 @@ export const ANALYTICS_EVENT_KEYS = {
           display:
             '[MetricsExplorer][Chart][Controls] Change tooltip visibility on hover',
           appearance:
-            '[MetricsExplorer][Chart][Controls] Change tooltip appearance mode',
+            '[MetricsExplorer][Chart][Controls] Change tooltip appearance mode to',
         },
         exportChart: '[MetricsExplorer][Chart][Controls] Export Chart as Image',
       },
@@ -103,7 +103,7 @@ export const ANALYTICS_EVENT_KEYS = {
           display:
             '[ParamsExplorer][Chart][Controls] Change tooltip visibility on hover',
           appearance:
-            '[ParamsExplorer][Chart][Controls] Change tooltip appearance mode',
+            '[ParamsExplorer][Chart][Controls] Change tooltip appearance mode to',
         },
         changeColorIndicatorMode:
           '[ParamsExplorer][Chart][Controls] Change color indicator mode', // to value
@@ -181,7 +181,7 @@ export const ANALYTICS_EVENT_KEYS = {
           display:
             '[ScattersExplorer][Chart][Controls] Change tooltip visibility on hover',
           appearance:
-            '[ScattersExplorer][Chart][Controls] Change tooltip appearance mode',
+            '[ScattersExplorer][Chart][Controls] Change tooltip appearance mode to',
         },
         exportChart:
           '[ScattersExplorer][Chart][Controls] Export Chart as Image',
@@ -243,7 +243,7 @@ export const ANALYTICS_EVENT_KEYS = {
           display:
             '[ImagesExplorer][Chart][Controls] Change tooltip visibility on hover',
           appearance:
-            '[ImagesExplorer][Chart][Controls] Change tooltip appearance mode',
+            '[ImagesExplorer][Chart][Controls] Change tooltip appearance mode to',
         },
       },
       openFullSizeMode:

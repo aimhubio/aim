@@ -64,7 +64,7 @@ export default function onChangeTooltip<M extends State>({
     if (tooltip.appearance) {
       analytics.trackEvent(
         // @ts-ignore
-        ANALYTICS_EVENT_KEYS[appName].chart.controls.tooltip.appearance,
+        `${ANALYTICS_EVENT_KEYS[appName].chart.controls.tooltip.appearance} ${tooltip.appearance}`,
       );
     } else if (tooltip.selectedFields) {
       analytics.trackEvent(
