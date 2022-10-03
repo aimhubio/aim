@@ -1,5 +1,3 @@
-import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
-
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { DensityOptions } from 'config/enums/densityEnum';
@@ -27,7 +25,7 @@ import {
   ITrendlineOptions,
 } from 'types/services/models/scatter/scatterAppModel';
 
-import { ChartTypeEnum, CurveEnum } from 'utils/d3';
+import { ChartTypeEnum, CurveEnum, HighlightEnum } from 'utils/d3';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 
 import { IImagesExploreAppModelState } from '../imagesExplore/imagesExploreAppModel';

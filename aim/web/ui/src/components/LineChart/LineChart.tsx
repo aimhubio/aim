@@ -21,6 +21,8 @@ import {
   drawBrush,
   drawHoverAttributes,
   drawUnableToRender,
+  CurveEnum,
+  HighlightEnum,
 } from 'utils/d3';
 
 import './LineChart.scss';
@@ -38,10 +40,10 @@ const LineChart = React.forwardRef(function LineChart(
     syncHoverState,
     axesScaleType,
     axesScaleRange,
-    ignoreOutliers,
+    ignoreOutliers = false,
     alignmentConfig,
-    highlightMode,
-    curveInterpolation,
+    highlightMode = HighlightEnum.Off,
+    curveInterpolation = CurveEnum.Linear,
     chartTitle,
     zoom,
     onZoomChange,
