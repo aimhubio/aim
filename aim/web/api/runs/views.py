@@ -22,6 +22,7 @@ from aim.web.api.runs.utils import (
     get_run_params,
     get_run_props,
     metric_search_result_streamer,
+    run_active_result_streamer,
     run_search_result_streamer,
     run_logs_streamer
 
@@ -29,6 +30,7 @@ from aim.web.api.runs.utils import (
 from aim.web.api.runs.pydantic_models import (
     MetricAlignApiIn,
     QuerySyntaxErrorOut,
+    RunActiveOut,
     RunTracesBatchApiIn,
     RunMetricCustomAlignApiOut,
     RunMetricSearchApiOut,
@@ -117,6 +119,16 @@ async def run_metric_search_api(q: Optional[str] = '',
                                      timezone_offset=x_timezone_offset,)
 
     streamer = metric_search_result_streamer(traces, skip_system, steps_num, x_axis, report_progress)
+    return StreamingResponse(streamer)
+
+
+@runs_router.get('/active/', response_model=RunActiveOut)
+async def get_active_runs_api(report_progress: Optional[bool] = True):
+    repo = get_project_repo()
+    repo._prepare_runs_cache()
+
+    streamer = run_active_result_streamer(repo)
+
     return StreamingResponse(streamer)
 
 

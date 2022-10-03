@@ -92,6 +92,11 @@ class RunSearchRunView(BaseModel):
 RunSearchApiOut = Dict[str, RunSearchRunView]
 
 
+class RunActiveOut(BaseModel):
+    traces: Dict[str, List[TraceOverview]]
+    props: PropsView
+
+
 # request models
 class AlignedTraceIn(BaseModel):
     context: dict

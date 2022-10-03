@@ -59,6 +59,7 @@ async def project_activity_api(x_timezone_offset: int = Header(default=0),
         'num_experiments': len(factory.experiments()),
         'num_runs': num_runs,
         'num_archived_runs': num_archived_runs,
+        'num_active_runs': len(project.repo.list_active_runs()),
         'activity_map': dict(activity_counter),
     }
 
