@@ -1,12 +1,9 @@
 import React from 'react';
 
-import { ITagData } from 'modules/core/api/tagsApi/types';
-import { IResourceState } from 'modules/core/utils/createResource';
-
 import { Spinner, Text } from 'components/kit';
 
 import ExperimentsCard from './ExperimentsCard';
-import HomeBookmarks from './DashboardBookmarks/DashboardBookmarks';
+import DashboardBookmarks from './DashboardBookmarks/DashboardBookmarks';
 import QuickLinks from './QuickLinks/QuickLinks';
 import TagsCard from './TagsCard/TagsCard';
 import RecentSearches from './RecentSearches/RecentSearches';
@@ -50,7 +47,7 @@ function ExploreSection(): React.FunctionComponentElement<React.ReactNode> {
       <div className={loading ? 'ExploreSection__loading' : ''}>
         <ExperimentsCard />
         <TagsCard />
-        <HomeBookmarks />
+        <DashboardBookmarks />
       </div>
     </aside>
   );
