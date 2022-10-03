@@ -13,6 +13,7 @@
 - Add command for dangling params cleanup (mihran113)
 - Add appearance modes to the chart popover (VkoHov)
 - Deprecate Python 3.6 (alberttorosyan)
+- Add MXNet integration (tmynn)
 
 ### Fixes:
 
