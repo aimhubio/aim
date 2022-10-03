@@ -44,8 +44,8 @@ const FiguresExplore = React.lazy(
   () => import(/* webpackChunkName: "figures" */ 'pages/FiguresExplorer'),
 );
 
-const CustomExplorer = React.lazy(
-  () => import(/* webpackChunkName: "custom" */ 'pages/CustomExplorer'),
+const Sandbox = React.lazy(
+  () => import(/* webpackChunkName: "sandbox" */ 'pages/Sandbox'),
 );
 
 export interface IRoute {
@@ -138,9 +138,9 @@ const routes = {
     isExact: true,
     title: pageTitlesEnum.FIGURES_EXPLORER,
   },
-  CUSTOM_EXPLORER: {
-    path: PathEnum.Custom_Explorer,
-    component: CustomExplorer,
+  SANDBOX: {
+    path: PathEnum.Sandbox,
+    component: Sandbox,
     showInSidebar: false,
     displayName: 'Explorer',
     isExact: true,

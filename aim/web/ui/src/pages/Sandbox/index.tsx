@@ -3,7 +3,6 @@ import * as React from 'react';
 import Editor from '@monaco-editor/react';
 import renderer, { getDefaultHydration } from 'modules/BaseExplorer';
 
-import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import ChartPanel from 'components/ChartPanel/ChartPanel';
 import { Button } from 'components/kit';
 
@@ -14,6 +13,7 @@ import {
   ChartTypeEnum,
   CurveEnum,
   ScaleEnum,
+  HighlightEnum,
 } from 'utils/d3';
 import { filterMetricsData } from 'utils/filterMetricData';
 
