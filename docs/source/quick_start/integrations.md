@@ -285,6 +285,30 @@ learn = cnn_learner(dls, resnet18, pretrained=True,
 See `AimCallback` source [here](https://github.com/aimhubio/aim/blob/main/aim/sdk/adapters/fastai.py).  
 Check out a simple regression task example [here](https://github.com/aimhubio/aim/blob/main/examples/fastai_track.py).
 
+### Integration with Optuna
+
+Aim provides a callback designed to automatically track [optuna](https://optuna.org/) trainings.
+The `as_multirun` is a boolean argument. If `as_multirun` is set True then the callback will create a run for each trial. Otherwise it will track all of the results in a single run.
+One can also use the decorator function `track_in_aim` to log inside the objective function.
+
+Step 1: Explicitly import the `AimCallback` for tracking training metadata.
+
+```python
+from aim.sdk.adapters.optuna import AimCallback
+```
+
+Step 2: Pass the callback to `cbs` list upon initiating your training.
+
+```python
+aim_callback = AimCallback(experiment_name="optuna_single_run")
+study.optimize(objective, n_trials=10, callbacks=[aim_callback])
+```
+
+See `AimCallback` source [here](https://github.com/aimhubio/aim/blob/main/aim/sdk/adapters/optuna.py).  
+Check out a simple objective optimization example [here](https://github.com/aimhubio/aim/blob/main/examples/optuna_track.py).
+
+
+
 ### What's next?
 
 During the training process, you can start another terminal in the same directory, start `aim up` and you can observe
