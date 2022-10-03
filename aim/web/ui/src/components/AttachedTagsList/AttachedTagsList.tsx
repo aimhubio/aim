@@ -64,14 +64,14 @@ function AttachedTagsList({
 
   React.useEffect(() => {
     if (runHash) {
-      if (!initialTags) {
+      if (!initialTags && !tags) {
         getRunInfo(runHash);
       }
     }
     return () => {
       getRunInfoRef.current?.abort();
     };
-  }, [runHash, initialTags, getRunInfo]);
+  }, [runHash, initialTags, getRunInfo, tags]);
 
   React.useEffect(() => {
     if (tags) {
@@ -137,7 +137,6 @@ function AttachedTagsList({
                       );
                     })}
                   </div>
-                  )
                 </div>
               }
             />
