@@ -81,7 +81,7 @@ function GuideDocs(): React.FunctionComponentElement<React.ReactNode> {
         rel='noreferrer'
       >
         <Button fullWidth variant='outlined' size='xSmall'>
-          Documentations
+          Docs
         </Button>
       </a>
     </div>
