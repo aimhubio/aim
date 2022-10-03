@@ -28,7 +28,7 @@ async function getParams(
 
 /**
  * function getProjectContributions
- * this call is used from home page to show project contributions data
+ * this call is used from DashboardPage page to show project contributions data
  */
 async function getProjectContributions(): Promise<GetProjectContributionsResult> {
   return (await api.makeAPIGetRequest(ENDPOINTS.PROJECTS.GET_ACTIVITY)).body;
