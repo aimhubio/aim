@@ -13,6 +13,21 @@ import { encode } from 'utils/encoder/encoder';
 
 import './QuickLinks.scss';
 
+const linkItems: { path: string; label: string }[] = [
+  {
+    path: 'active',
+    label: 'Active runs',
+  },
+  {
+    path: 'archived',
+    label: 'Archived runs',
+  },
+  {
+    path: 'latest',
+    label: "Last week's runs",
+  },
+];
+
 function QuickLinks(): React.FunctionComponentElement<React.ReactNode> {
   const history = useHistory();
 
@@ -24,10 +39,22 @@ function QuickLinks(): React.FunctionComponentElement<React.ReactNode> {
     (e: React.MouseEvent<HTMLElement>, value: string, newTab = false) => {
       e.stopPropagation();
       if (value) {
-        const query = `run.${value.toLowerCase()} == True`;
-        const search = encode({
-          query,
-        });
+        let search = {};
+        if (value === 'latest') {
+          search = encode({
+            query: `datetime(${moment()
+              .subtract(7, 'day')
+              .format(
+                DATE_QUERY_FORMAT,
+              )}) <= run.created_at < datetime(${moment().format(
+              DATE_QUERY_FORMAT,
+            )})`,
+          });
+        } else {
+          search = encode({
+            query: `run.${value.toLowerCase()} == True`,
+          });
+        }
         const path = `/runs?select=${search}`;
         if (newTab) {
           window.open(path, '_blank');
@@ -39,41 +66,6 @@ function QuickLinks(): React.FunctionComponentElement<React.ReactNode> {
     },
     [history],
   );
-
-  function exploreLastWeekRuns() {
-    const search = encode({
-      query: `datetime(${moment()
-        .subtract(7, 'day')
-        .format(
-          DATE_QUERY_FORMAT,
-        )}) <= run.created_at < datetime(${moment().format(
-        DATE_QUERY_FORMAT,
-      )})`,
-    });
-    history.push(`/runs?select=${search}`);
-  }
-
-  const linkItems: { path: string; label: string; handleClick: any }[] =
-    React.useMemo(() => {
-      return [
-        {
-          path: 'active',
-          label: 'Active runs',
-          handleClick: onClick,
-        },
-        {
-          path: 'archived',
-          label: 'Archived runs',
-          handleClick: onClick,
-        },
-        {
-          path: 'latest',
-          label: "Last week's runs",
-          handleClick: exploreLastWeekRuns,
-        },
-      ];
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
 
   return (
     <div className='QuickLinks'>
@@ -87,7 +79,7 @@ function QuickLinks(): React.FunctionComponentElement<React.ReactNode> {
         Quick navigation
       </Text>
       <div className='QuickLinks__list'>
-        {linkItems.map(({ label, path, handleClick }) => (
+        {linkItems.map(({ label, path }) => (
           <ListItem
             size='small'
             className='QuickLinks__list__ListItem'
@@ -95,7 +87,7 @@ function QuickLinks(): React.FunctionComponentElement<React.ReactNode> {
           >
             <Text
               className='QuickLinks__list__ListItem__Text'
-              onClick={(e) => handleClick(e, path)}
+              onClick={(e) => onClick(e, path)}
               size={12}
               tint={100}
             >
@@ -105,7 +97,7 @@ function QuickLinks(): React.FunctionComponentElement<React.ReactNode> {
               <div>
                 <Icon
                   fontSize={12}
-                  onClick={(e) => handleClick(e, path)}
+                  onClick={(e) => onClick(e, path, true)}
                   name='new-tab'
                 />
               </div>
