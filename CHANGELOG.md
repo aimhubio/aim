@@ -16,6 +16,7 @@
 
 ### Fixes:
 
+- Fix chart hovering issue occurring when "nan" values are tracked (KaroMourad)
 - Use empty dict as default when getting Run params (alberttorosyan)
 - Change unit-tests data isolation mechanism (alberttorosyan)
 - Adjust the visibility of the run color in tables (VkoHov)
