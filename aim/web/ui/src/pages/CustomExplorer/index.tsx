@@ -33,7 +33,7 @@ const FiguresExplorer = renderer(
           const {
             engine: { useStore, pipeline },
           } = props;
-          console.log(useStore(pipeline.dataSelector));
+
           const data = useStore(pipeline.dataSelector)?.map((item: any) => {
             const { values, steps, epochs, timestamps } = filterMetricsData(
               item.data,
@@ -80,7 +80,7 @@ for i, metric in enumerate(metrics):
   if chart_index >= len(plots):
     plots.append([])
   plots[chart_index].append({
-    "key": f'{metric.name}',
+    "key": i,
     "data": {
       "xValues": metric.steps,
       # apply smoothing only on bleu metrics
@@ -93,7 +93,7 @@ for i, metric in enumerate(metrics):
   })
 
 def on_active_point_change(val, is_active):
-  print(val.key, val.xValue, val.yValue)
+  print(f'{val.key}, {val.xValue}, {val.yValue}')
 
 data = {
   "plots": {
@@ -109,18 +109,18 @@ data = {
             async function main() {
               pyodide.current = await (window as any).loadPyodide({
                 stdout: (...args: any[]) => {
-                  document.getElementById(
-                    'console',
-                  )!.innerHTML! += `<pre style='font-size: 12px'>${args.join(
-                    ', ',
-                  )}</pre>`;
+                  const terminal = document.getElementById('console');
+                  if (terminal) {
+                    terminal.innerHTML! += `<p>>>> ${args.join(', ')}</p>`;
+                    terminal.scrollTop = terminal.scrollHeight;
+                  }
                 },
               });
             }
             main();
           }, []);
 
-          const execute = React.useCallback(() => {
+          const execute = React.useCallback(async () => {
             function toObject(x: any): any {
               if (x instanceof Map) {
                 return Object.fromEntries(
@@ -133,9 +133,9 @@ data = {
               }
             }
             try {
-              pyodide.current!.runPython(
-                editorValue.replace('aim-ui-client', 'js'),
-              );
+              const code = editorValue.replace('aim-ui-client', 'js');
+              await pyodide.current!.loadPackagesFromImports(code);
+              pyodide.current!.runPython(code);
               const resultData = pyodide.current.globals.get('data').toJs();
               console.log(resultData);
               const convertedResult = toObject(resultData);
@@ -224,7 +224,7 @@ data = {
                     />
                   </div>
                 )}
-                <div
+                <pre
                   style={{
                     flex: 0.3,
                     borderTop: '1px solid #ccc',
