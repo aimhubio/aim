@@ -26,7 +26,6 @@ function useContributionsFeed() {
   const projectContributionsStore =
     contributionsEngine.projectContributionsState((state) => state);
 
-  // console.log(contributionsFeedStore.data);
   React.useEffect(() => {
     engine.fetchContributionsFeed({
       limit: 25,
