@@ -4,7 +4,7 @@ import classnames from 'classnames';
 import Editor from '@monaco-editor/react';
 
 import ChartPanel from 'components/ChartPanel/ChartPanel';
-import { Button } from 'components/kit';
+import { Button, Spinner } from 'components/kit';
 
 import {
   AlignmentOptionsEnum,
@@ -16,6 +16,7 @@ import {
 import { filterMetricsData } from 'utils/filterMetricData';
 
 import { initialCode } from './sandboxCode';
+import DataGrid from './DataGrid';
 
 import './SandboxVisualizer.scss';
 
@@ -45,7 +46,7 @@ export default function SandboxVisualizer(props: any) {
 
   const [editorValue, setEditorValue] = React.useState(initialCode);
   const [result, setResult] = React.useState<Record<string, any>>({});
-  const [isProcessing, setIsProcessing] = React.useState(true);
+  const [isProcessing, setIsProcessing] = React.useState<boolean | null>(null);
 
   React.useEffect(() => {
     async function main() {
@@ -117,42 +118,63 @@ export default function SandboxVisualizer(props: any) {
         </div>
         <div
           className={classnames('SandboxVisualizer__main__components', {
+            'SandboxVisualizer__main__components--loading':
+              isProcessing === null,
             'SandboxVisualizer__main__components--processing': isProcessing,
           })}
         >
-          <div className='SandboxVisualizer__main__components__viz'>
-            {result.lines && (
-              <ChartPanel
-                selectOptions={[]}
-                chartType={ChartTypeEnum.LineChart}
-                data={result.lines.data}
-                focusedState={{
-                  key: null,
-                  active: false,
-                }}
-                tooltip={{}}
-                zoom={{}}
-                onActivePointChange={
-                  result.lines.callbacks?.on_active_point_change ?? null
-                }
-                chartProps={result.lines.data.map(() => ({
-                  axesScaleType: {
-                    xAxis: ScaleEnum.Linear,
-                    yAxis: ScaleEnum.Linear,
-                  },
-                  ignoreOutliers: false,
-                  highlightMode: HighlightEnum.Off,
-                  curveInterpolation: CurveEnum.Linear,
-                }))}
-                onRunsTagsChange={() => null}
-                controls={null}
+          {isProcessing === null ? (
+            <Spinner />
+          ) : (
+            <>
+              <div className='SandboxVisualizer__main__components__viz'>
+                {result.lines && (
+                  <div style={{ flex: 0.5 }}>
+                    <ChartPanel
+                      selectOptions={[]}
+                      chartType={ChartTypeEnum.LineChart}
+                      data={result.lines.data}
+                      focusedState={{
+                        key: null,
+                        active: false,
+                      }}
+                      tooltip={{}}
+                      zoom={{}}
+                      onActivePointChange={
+                        result.lines.callbacks?.on_active_point_change ?? null
+                      }
+                      chartProps={result.lines.data.map(() => ({
+                        axesScaleType: {
+                          xAxis: ScaleEnum.Linear,
+                          yAxis: ScaleEnum.Linear,
+                        },
+                        ignoreOutliers: false,
+                        highlightMode: HighlightEnum.Off,
+                        curveInterpolation: CurveEnum.Linear,
+                      }))}
+                      onRunsTagsChange={() => null}
+                      controls={null}
+                    />
+                  </div>
+                )}
+                {result.dataframe && (
+                  <div style={{ flex: 0.5, height: '50%' }}>
+                    <DataGrid
+                      data={
+                        typeof result.dataframe.data === 'string'
+                          ? JSON.parse(result.dataframe.data)
+                          : result.dataframe.data
+                      }
+                    />
+                  </div>
+                )}
+              </div>
+              <pre
+                id='console'
+                className='SandboxVisualizer__main__components__console'
               />
-            )}
-          </div>
-          <pre
-            id='console'
-            className='SandboxVisualizer__main__components__console'
-          />
+            </>
+          )}
         </div>
       </div>
     </div>

@@ -11,7 +11,7 @@
   display: flex;
   align-items: center;
   justify-content: end;
-  padding: 0 $space-sm;
+  padding: 0 $space-lg;
   border-bottom: $border-dark;
 }
 
@@ -23,20 +23,23 @@
 }
 
 .SandboxVisualizer__main__editor {
-  width: 30%;
   height: 100%;
   position: relative;
-  flex: 1;
+  flex: 0.35;
   border-right: $border-dark;
 }
 
 .SandboxVisualizer__main__components {
-  width: 70%;
   height: 100%;
   position: relative;
-  flex: 1;
+  flex: 0.65;
   display: flex;
   flex-direction: column;
+}
+
+.SandboxVisualizer__main__components--loading {
+  align-items: center;
+  justify-content: center;
 }
 
 .SandboxVisualizer__main__components--processing {
@@ -45,6 +48,9 @@
 
 .SandboxVisualizer__main__components__viz {
   flex: 0.9;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
 }
 
 .SandboxVisualizer__main__components__console {

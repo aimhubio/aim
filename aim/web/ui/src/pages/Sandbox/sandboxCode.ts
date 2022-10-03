@@ -1,6 +1,16 @@
 export const initialCode = `from aim-ui-client import metrics
+import pandas as pd
+import json
 
 lines = [[]]
+df_source = {
+  "run.name": [],
+  "metric.name": [],
+  # "metric.context": [],
+  "metric.value.min": [],
+  "metric.value.max": [],
+  "metric.value.last": []
+}
 
 metrics_list = []
 
@@ -23,6 +33,7 @@ for i, metric in enumerate(metrics):
     metrics_list.append(metric.name)
   if chart_index >= len(lines):
     lines.append([])
+  # add line
   lines[chart_index].append({
     "key": i,
     "data": {
@@ -35,9 +46,17 @@ for i, metric in enumerate(metrics):
     # set line stroke style 
     "dasharray": "0" if metric.context.subset == "val" else "5 5"
   })
+  # add row
+  df_source["run.name"].append(metric.run.name)
+  df_source["metric.name"].append(metric.name)
+  # dataframe["metric.context"].append(json.dumps(metric.context))
+  df_source["metric.value.min"].append(min(metric.values))
+  df_source["metric.value.max"].append(max(metric.values))
+  df_source["metric.value.last"].append(metric.values[-1])
+
 
 def on_active_point_change(val, is_active):
-  print(f'{val.key}, {val.xValue}, {val.yValue}')
+  print(f'{val.xValue}, {val.yValue}')
 
 data = {
   "lines": {
@@ -45,5 +64,10 @@ data = {
     "callbacks": {
       "on_active_point_change": on_active_point_change
     }
+  },
+  "dataframe": {
+    "data": pd.DataFrame(df_source).to_json(orient='records')
   }
-}`;
+}
+
+`;
