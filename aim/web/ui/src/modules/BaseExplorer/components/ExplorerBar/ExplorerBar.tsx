@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 
 import { MenuItem } from '@material-ui/core';
 import { IExplorerBarProps } from 'modules/BaseExplorer/types';
-import { PipelineStatusEnum } from 'modules/core/engine';
+import { PipelineStatusEnum } from 'modules/core/engine/types';
 
 import AppBar from 'components/AppBar/AppBar';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
@@ -12,9 +12,29 @@ import { Button, Icon } from 'components/kit';
 import './ExplorerBar.scss';
 
 function ExplorerBar(props: IExplorerBarProps) {
-  const isExecuting =
-    props.engine.useStore(props.engine.pipelineStatusSelector) ===
-    PipelineStatusEnum.Executing;
+  const status = props.engine.useStore(props.engine.pipeline.statusSelector);
+
+  const disableResetControls = React.useMemo(
+    () =>
+      [
+        PipelineStatusEnum.NeverExecuted,
+        PipelineStatusEnum.Empty,
+        PipelineStatusEnum.Insufficient_Resources,
+        PipelineStatusEnum.Executing,
+      ].indexOf(status) !== -1,
+    [status],
+  );
+
+  const resetToSystemDefaults = useCallback(() => {
+    if (!disableResetControls) {
+      props.engine.visualizations.reset();
+      props.engine.groupings.reset();
+      props.engine.pipeline.reset();
+    }
+  }, [props.engine, disableResetControls]);
+
+  const isExecuting = status === PipelineStatusEnum.Executing;
+
   return (
     <div>
       <AppBar title={props.explorerName} disabled={isExecuting}>
@@ -38,7 +58,10 @@ function ExplorerBar(props: IExplorerBarProps) {
               )}
               component={
                 <div className='ExplorerBar__popover'>
-                  <MenuItem onClick={props.engine.resetConfigs}>
+                  <MenuItem
+                    disabled={disableResetControls}
+                    onClick={resetToSystemDefaults}
+                  >
                     Reset Controls to System Defaults
                   </MenuItem>
                   <a

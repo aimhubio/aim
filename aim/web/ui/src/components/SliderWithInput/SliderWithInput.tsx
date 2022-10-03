@@ -76,7 +76,7 @@ function SliderWithInput({
             />
           ) : (
             <Slider
-              value={selectedRangeValue}
+              value={[...selectedRangeValue]}
               onChange={((e: any, value: any) => onRangeChange(value)) as any}
               min={min}
               max={max}
