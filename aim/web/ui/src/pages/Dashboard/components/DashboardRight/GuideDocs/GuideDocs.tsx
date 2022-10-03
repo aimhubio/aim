@@ -46,7 +46,7 @@ function GuideDocs(): React.FunctionComponentElement<React.ReactNode> {
         weight={700}
         size={14}
       >
-        Guide
+        Guides
       </Text>
       <div className='GuideLinks__content'>
         {guideLinks.map(

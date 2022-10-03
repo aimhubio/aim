@@ -132,23 +132,15 @@ function HeatMap({
     return shiftDate(firstDay, x * 7 + y);
   }
 
-  // get date and run count for a specific day index
-  function getItem(index: number) {
-    let count = getRunCountByDay(index);
-    return [data[0]?.[0], count];
-  }
-
   function getScale(value: number) {
     return Math.ceil((value / maxVal) * scaleRange);
   }
   function renderCell(index: number) {
-    const dataItem = getItem(index);
-
+    const runsCount = getRunCountByDay(index);
     const date = indexToDate(index);
-    const scale =
-      dataItem && Number.isInteger(dataItem?.[1]) ? getScale(dataItem[1]) : 0;
-    const tooltip = ` ${dataItem ? dataItem[1] : 0} tracked run${
-      dataItem?.[1] !== 1 ? 's' : ''
+    const scale = runsCount ? getScale(runsCount) : 0;
+    const tooltip = ` ${runsCount} tracked run${
+      runsCount !== 1 ? 's' : ''
     } on ${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
 
     function onClickCell(e: React.MouseEvent) {
@@ -177,17 +169,11 @@ function HeatMap({
           ) : (
             <Tooltip title={tooltip}>
               <div
-                className={`CalendarHeatmap__cell CalendarHeatmap__cell--scale-${scale}`}
+                className={`CalendarHeatmap__cell CalendarHeatmap__cell--scale-${
+                  scale || 0
+                }`}
                 onClick={onClickCell}
                 role='navigation'
-                // className={classNames({
-                //   CalendarHeatmap__cell: true,
-                //   [`CalendarHeatmap__cell--scale-${scale}`]:
-                //     Number.isInteger(scale),
-                // })}
-                // onClick={
-                //   !!onCellClick ? () => onCellClick(dataItem, date, index) : null
-                // }
               />
             </Tooltip>
           )}

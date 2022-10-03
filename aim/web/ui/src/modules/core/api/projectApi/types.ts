@@ -128,6 +128,10 @@ export type GetProjectContributionsResult = {
    */
   num_runs: number;
   /**
+   *  Number of active runs in a single repo/storage/project (.aim directory)
+   */
+  num_active_runs: number;
+  /**
    * Activity distribution by datetime (creating run, tracking etc.)
    * This data is used by the activity heatmap of main dashboard of UI
    */

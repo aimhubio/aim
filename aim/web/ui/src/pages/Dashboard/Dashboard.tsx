@@ -20,6 +20,7 @@ function Dashboard(): React.FunctionComponentElement<React.ReactNode> {
   const { projectContributionsStore } = useProjectContributions();
 
   const totalRunsCount = projectContributionsStore.data?.num_runs ?? 0;
+  const activeRunsCount = projectContributionsStore.data?.num_active_runs ?? 0;
   const isLoading = projectContributionsStore.loading;
 
   return (
@@ -46,7 +47,8 @@ function Dashboard(): React.FunctionComponentElement<React.ReactNode> {
                 Overview
               </Text>
               <ProjectStatistics />
-              <ActiveRunsTable />
+              {activeRunsCount ? <ActiveRunsTable /> : null}
+
               <ProjectContributions />
               <ContributionsFeed />
             </>

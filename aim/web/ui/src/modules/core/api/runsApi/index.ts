@@ -77,5 +77,34 @@ function createSearchRunRequest(): RequestInstance {
   };
 }
 
-export { searchRuns, createSearchRunsRequest, createSearchRunRequest };
+function createActiveRunsRequest(): RequestInstance {
+  const controller = new AbortController();
+  const signal = controller.signal;
+
+  async function call(
+    queryParams: RunsSearchQueryParams,
+  ): Promise<RunsSearchResult> {
+    return (
+      await api.makeAPIGetRequest(`${ENDPOINTS.RUNS.ACTIVE}`, {
+        signal,
+      })
+    ).body;
+  }
+
+  function cancel(): void {
+    controller.abort();
+  }
+
+  return {
+    call,
+    cancel,
+  };
+}
+
+export {
+  searchRuns,
+  createSearchRunsRequest,
+  createActiveRunsRequest,
+  createSearchRunRequest,
+};
 export * from './types';
