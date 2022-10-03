@@ -495,3 +495,7 @@ You can change exportable chart `image width`, `single chart height`, set `image
 Following image formats are available export: `SVG`, `JPEG`, `PNG`.
 
 <img width="100" alt="export format" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/scatters-explorer/export-format.png">
+
+### Figures Explorer
+
+#### Overview
