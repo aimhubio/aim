@@ -1,10 +1,8 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import { IBaseComponentProps } from 'modules/BaseExplorer/types';
-
 import ControlPopover from 'components/ControlPopover/ControlPopover';
-import { Button, Icon, Text } from 'components/kit';
+import { Icon, Button, Text } from 'components/kit';
 
 import BoxPropertiesPopover from './Popover';
 
@@ -12,16 +10,12 @@ import { IBoxPropertiesProps, IBoxConfigState } from '.';
 
 function BoxProperties(props: IBoxPropertiesProps) {
   const {
-    engine,
-    engine: {
-      useStore,
-      boxConfig: { stateSelector: boxSelector },
-      controls: {
-        boxProperties: { settings },
-      },
-    },
+    visualizationName,
+    engine: { visualizations, useStore },
   } = props;
-  const boxProperties: IBoxConfigState = useStore(boxSelector);
+  const vizEngine = visualizations[visualizationName];
+
+  const boxProperties: IBoxConfigState = useStore(vizEngine.box.stateSelector);
   return (
     <ControlPopover
       title='Configure box size'
@@ -51,10 +45,10 @@ function BoxProperties(props: IBoxPropertiesProps) {
       )}
       component={
         <BoxPropertiesPopover
-          update={engine.boxConfig.methods.update}
-          reset={engine.boxConfig.methods.reset}
+          update={vizEngine.box.methods.update}
+          reset={vizEngine.box.methods.reset}
           boxProperties={boxProperties}
-          settings={settings}
+          settings={vizEngine.controls.boxProperties.settings}
         />
       }
     />
@@ -63,4 +57,4 @@ function BoxProperties(props: IBoxPropertiesProps) {
 
 BoxProperties.displayName = 'BoxProperties';
 
-export default React.memo<IBaseComponentProps>(BoxProperties);
+export default React.memo<IBoxPropertiesProps>(BoxProperties);

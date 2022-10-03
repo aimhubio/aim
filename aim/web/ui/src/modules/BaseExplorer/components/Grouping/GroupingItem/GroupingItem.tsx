@@ -3,7 +3,7 @@ import _ from 'lodash-es';
 import classNames from 'classnames';
 
 import { Tooltip } from '@material-ui/core';
-import { PipelineStatusEnum } from 'modules/core/engine';
+import { PipelineStatusEnum } from 'modules/core/engine/types';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
@@ -24,10 +24,12 @@ function GroupingItem({
   ...props
 }: IGroupingItemProps): React.FunctionComponentElement<React.ReactNode> {
   const { engine } = props;
-  const availableModifiers = engine.useStore(engine.additionalDataSelector);
+  const availableModifiers = engine.useStore(
+    engine.pipeline.additionalDataSelector,
+  );
   const currentValues = engine.useStore(engine.groupings.currentValuesSelector);
   const isDisabled =
-    engine.useStore(engine.pipelineStatusSelector) ===
+    engine.useStore(engine.pipeline.statusSelector) ===
     PipelineStatusEnum.Executing;
 
   return (
@@ -38,28 +40,34 @@ function GroupingItem({
         transformOrigin={{ vertical: 'top', horizontal: 'left' }}
         anchor={({ onAnchorClick, opened }) => (
           <Tooltip title={`Group by ${groupName}`}>
-            <Button
-              size='xSmall'
-              disabled={isDisabled}
-              onClick={onAnchorClick}
-              className={classNames('BaseGroupingItem', {
-                active: opened,
-                outlined:
-                  !_.isNil(availableModifiers) &&
-                  !_.isEmpty(currentValues[groupName].fields),
-              })}
-            >
-              <Text size={12} weight={600} className='BaseGroupingItem__label'>
-                {groupName}
-              </Text>
-              <Icon
-                name='arrow-down-contained'
-                className={classNames('BaseGroupingItem__arrowIcon', {
-                  opened,
+            <>
+              <Button
+                size='xSmall'
+                disabled={isDisabled}
+                onClick={onAnchorClick}
+                className={classNames('BaseGroupingItem', {
+                  active: opened,
+                  outlined:
+                    !_.isNil(availableModifiers) &&
+                    !_.isEmpty(currentValues[groupName].fields),
                 })}
-                fontSize={6}
-              />
-            </Button>
+              >
+                <Text
+                  size={12}
+                  weight={600}
+                  className='BaseGroupingItem__label'
+                >
+                  {groupName}
+                </Text>
+                <Icon
+                  name='arrow-down-contained'
+                  className={classNames('BaseGroupingItem__arrowIcon', {
+                    opened,
+                  })}
+                  fontSize={6}
+                />
+              </Button>
+            </>
           </Tooltip>
         )}
         component={
