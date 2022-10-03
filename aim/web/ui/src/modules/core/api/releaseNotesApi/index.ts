@@ -14,6 +14,7 @@ async function fetchReleaseNotes(): Promise<IReleaseNote[]> {
   return (
     await api.makeAPIGetRequest(ENDPOINTS.RELEASE_NOTES.GET, {
       query_params: { per_page: 10 },
+      headers: {},
     })
   ).body;
 }
@@ -24,8 +25,11 @@ async function fetchReleaseNotes(): Promise<IReleaseNote[]> {
  * @returns {Promise<IReleaseNote>}
  */
 async function fetchLatestRelease(): Promise<IReleaseNote> {
-  return (await api.makeAPIGetRequest(`${ENDPOINTS.RELEASE_NOTES.GET}/latest}`))
-    .body;
+  return (
+    await api.makeAPIGetRequest(`${ENDPOINTS.RELEASE_NOTES.GET}/latest}`, {
+      headers: {},
+    })
+  ).body;
 }
 
 /**
@@ -34,8 +38,11 @@ async function fetchLatestRelease(): Promise<IReleaseNote> {
  * @returns {Promise<IReleaseNote>}
  */
 async function fetchReleaseById(id: string): Promise<IReleaseNote> {
-  return (await api.makeAPIGetRequest(`${ENDPOINTS.RELEASE_NOTES.GET}/${id}}`))
-    .body;
+  return (
+    await api.makeAPIGetRequest(`${ENDPOINTS.RELEASE_NOTES.GET}/${id}}`, {
+      headers: {},
+    })
+  ).body;
 }
 
 /**
@@ -48,6 +55,7 @@ async function fetchReleaseByTagName(tagName: string): Promise<IReleaseNote> {
   return (
     await api.makeAPIGetRequest(
       `${ENDPOINTS.RELEASE_NOTES.GET}${ENDPOINTS.RELEASE_NOTES.GET_BY_TAG_NAME}/${tagName}`,
+      { headers: {} },
     )
   ).body;
 }
