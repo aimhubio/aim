@@ -97,7 +97,7 @@ function useReleaseNotes() {
       .replace(/(\r\n|\n|\r)/g, '\n')
       .replace(/\*/g, '-')
       .replace(
-        /\sby\s\@[A-z\d](?:[A-z\d]|-(?=[A-z\d])){0,38}\s\w+\shttps\:\/\/github\.com\/((\w+\/?){4})/g,
+        /(\sby\s\@[A-z\d](?:[A-z\d]|-(?=[A-z\d])){0,38}\s\w+\shttps\:\/\/github\.com\/((\w+\/?){4}))/g,
         '',
       );
     return str.match(exp);

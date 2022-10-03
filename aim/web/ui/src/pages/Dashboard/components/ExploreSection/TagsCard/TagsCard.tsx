@@ -59,7 +59,7 @@ function TagsCard(): React.FunctionComponentElement<React.ReactNode> | null {
       ) : null}
       <NavLink className='TagsCard__NavLink' to='/tags'>
         <Button fullWidth size='xSmall' variant='outlined'>
-          {tagsStore?.data?.length ? 'Explore tags' : 'Create tag'}
+          {tagsStore?.data?.length ? 'Explore tags' : 'Create a new tag'}
         </Button>
       </NavLink>
     </div>

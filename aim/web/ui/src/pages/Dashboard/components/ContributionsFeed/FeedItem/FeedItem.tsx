@@ -20,13 +20,11 @@ function FeedItem(props: any): React.FunctionComponentElement<React.ReactNode> {
             <Text size={12} tint={100}>
               Started the run:
             </Text>
-            <Text size={12} tint={100} component='p'>
-              <RunNameColumn
-                run={item.name}
-                active={item.active}
-                runHash={item.hash}
-              />
-            </Text>
+            <RunNameColumn
+              run={item.name}
+              active={item.active}
+              runHash={item.hash}
+            />
             <Text tint={50} size={10}>
               {item.date}
             </Text>
