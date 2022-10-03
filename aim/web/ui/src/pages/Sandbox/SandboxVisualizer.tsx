@@ -1,4 +1,5 @@
 import * as React from 'react';
+import classnames from 'classnames';
 
 import Editor from '@monaco-editor/react';
 
@@ -44,16 +45,19 @@ export default function SandboxVisualizer(props: any) {
 
   const [editorValue, setEditorValue] = React.useState(initialCode);
   const [result, setResult] = React.useState<Record<string, any>>({});
+  const [isProcessing, setIsProcessing] = React.useState(true);
 
   React.useEffect(() => {
     async function main() {
       pyodide.current = await (window as any).loadPyodide({
         stdout: (...args: any[]) => {
-          const terminal = document.getElementById('console');
-          if (terminal) {
-            terminal.innerHTML! += `<p>>>> ${args.join(', ')}</p>`;
-            terminal.scrollTop = terminal.scrollHeight;
-          }
+          window.requestAnimationFrame(() => {
+            const terminal = document.getElementById('console');
+            if (terminal) {
+              terminal.innerHTML! += `<p>>>> ${args.join(', ')}</p>`;
+              terminal.scrollTop = terminal.scrollHeight;
+            }
+          });
         },
       });
 
@@ -75,12 +79,15 @@ export default function SandboxVisualizer(props: any) {
       }
     }
     try {
+      setIsProcessing(true);
       const code = editorValue.replace('aim-ui-client', 'js');
       await pyodide.current!.loadPackagesFromImports(code);
-      pyodide.current!.runPython(code);
-      const resultData = pyodide.current.globals.get('data').toJs();
-      const convertedResult = toObject(resultData);
-      setResult(convertedResult);
+      pyodide.current!.runPythonAsync(code).then(() => {
+        const resultData = pyodide.current.globals.get('data').toJs();
+        const convertedResult = toObject(resultData);
+        setResult(convertedResult);
+        setIsProcessing(false);
+      });
     } catch (ex) {
       console.log(ex);
     }
@@ -108,9 +115,13 @@ export default function SandboxVisualizer(props: any) {
             loading={<span />}
           />
         </div>
-        <div className='SandboxVisualizer__main__components'>
-          {result.lines && (
-            <div className='SandboxVisualizer__main__components__viz'>
+        <div
+          className={classnames('SandboxVisualizer__main__components', {
+            'SandboxVisualizer__main__components--processing': isProcessing,
+          })}
+        >
+          <div className='SandboxVisualizer__main__components__viz'>
+            {result.lines && (
               <ChartPanel
                 selectOptions={[]}
                 chartType={ChartTypeEnum.LineChart}
@@ -136,8 +147,8 @@ export default function SandboxVisualizer(props: any) {
                 onRunsTagsChange={() => null}
                 controls={null}
               />
-            </div>
-          )}
+            )}
+          </div>
           <pre
             id='console'
             className='SandboxVisualizer__main__components__console'

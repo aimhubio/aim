@@ -39,6 +39,10 @@
   flex-direction: column;
 }
 
+.SandboxVisualizer__main__components--processing {
+  filter: blur(5px);
+}
+
 .SandboxVisualizer__main__components__viz {
   flex: 0.9;
 }
