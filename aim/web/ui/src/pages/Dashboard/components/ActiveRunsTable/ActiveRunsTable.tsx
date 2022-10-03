@@ -40,7 +40,7 @@ function ActiveRunsTable() {
         {tableData.length > 0 && (
           <div className='ActiveRunsTable__header__comparisonPopover'>
             <CompareSelectedRunsPopover
-              appName={'dashboard' as AppNameEnum}
+              appName={'dashboard' as AppNameEnum} // @TODO: change to Dashboard
               query={comparisonQuery}
               disabled={Object.keys(selectedRows).length === 0}
             />
@@ -64,7 +64,7 @@ function ActiveRunsTable() {
             hideHeaderActions
             showRowClickBehaviour={false}
             showResizeContainerActionBar={false}
-            appName={AppNameEnum.RUNS} // @TODO: change to Dashboard
+            appName={'dashboard' as AppNameEnum} // @TODO: change to Dashboard
             ref={tableRef}
             columns={tableColumns}
             data={tableData}
