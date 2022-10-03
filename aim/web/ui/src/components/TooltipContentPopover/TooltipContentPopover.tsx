@@ -41,6 +41,7 @@ function TooltipContentPopover({
       }
     }
   }
+
   function handleSelect(values: IGroupingSelectOption[]) {
     onChangeTooltip({
       selectedFields: values.map((item: IGroupingSelectOption) =>
@@ -48,6 +49,7 @@ function TooltipContentPopover({
       ),
     });
   }
+
   const onDisplayTooltipChange = React.useCallback((): void => {
     onChangeTooltip({ display: !isTooltipDisplayed });
   }, [onChangeTooltip, isTooltipDisplayed]);
