@@ -27,7 +27,7 @@ const statisticsInitialMap: Record<string, IProjectStatistic> = {
     label: 'Sys. metrics',
     count: 0,
     icon: 'metrics',
-    iconBgColor: '#FCB500',
+    iconBgColor: '#AF4EAB',
     navLink: `${routes.METRICS.path}?select=${encode({
       advancedQuery: "metric.name.startswith('__system__') == True",
       advancedMode: true,
@@ -54,7 +54,7 @@ const statisticsInitialMap: Record<string, IProjectStatistic> = {
     label: 'Audios',
     icon: 'audio',
     count: 0,
-    iconBgColor: '#729B1B',
+    iconBgColor: '#FCB500',
     navLink: '',
     title: 'Explorer coming soon',
   },
@@ -94,7 +94,10 @@ const runsCountingInitialMap: Record<'archived' | 'runs', IProjectStatistic> = {
 };
 
 function ProjectStatistics() {
-  const [hoveredState, setHoveredState] = React.useState('');
+  const [hoveredState, setHoveredState] = React.useState({
+    source: '',
+    id: '',
+  });
   const { projectParamsStore, projectContributionsStore } =
     useProjectStatistics();
 
@@ -133,15 +136,17 @@ function ProjectStatistics() {
   );
   const statisticsBarData = React.useMemo(
     () =>
-      Object.values(statisticsMap).map((item) => ({
-        highlighted: hoveredState === item.label,
-        label: item.label,
-        color: item.iconBgColor,
-        percent:
-          totalTrackedSequencesCount === 0
-            ? 0
-            : (item.count / totalTrackedSequencesCount) * 100,
-      })),
+      Object.values(statisticsMap).map(
+        ({ label, iconBgColor = '#000', count }) => ({
+          highlighted: hoveredState.id === label,
+          label,
+          color: iconBgColor,
+          percent:
+            totalTrackedSequencesCount === 0
+              ? 0
+              : (count / totalTrackedSequencesCount) * 100,
+        }),
+      ),
     [statisticsMap, totalTrackedSequencesCount, hoveredState],
   );
   const runsCountingMap = React.useMemo(
@@ -157,13 +162,12 @@ function ProjectStatistics() {
     }),
     [archivedRuns, totalRunsCount],
   );
-  const onMouseOver = React.useCallback((id: string = '') => {
-    setHoveredState(id);
+  const onMouseOver = React.useCallback((id = '', source = '') => {
+    setHoveredState({ source, id });
   }, []);
   const onMouseLeave = React.useCallback(() => {
-    setHoveredState('');
+    setHoveredState({ source: '', id: '' });
   }, []);
-
   return (
     <div className='ProjectStatistics'>
       <Text
@@ -187,7 +191,8 @@ function ProjectStatistics() {
               iconBgColor={iconBgColor}
               onMouseOver={onMouseOver}
               onMouseLeave={onMouseLeave}
-              highlighted={hoveredState === label}
+              highlighted={!!navLink && hoveredState.id === label}
+              isLoading={projectContributionsStore.loading}
             />
           ),
         )}
@@ -214,7 +219,13 @@ function ProjectStatistics() {
               iconBgColor={iconBgColor}
               onMouseOver={onMouseOver}
               onMouseLeave={onMouseLeave}
-              highlighted={hoveredState === label}
+              highlighted={
+                !!navLink &&
+                hoveredState.source === 'card' &&
+                hoveredState.id === label
+              }
+              outlined={hoveredState.id === label}
+              isLoading={projectParamsStore.loading}
             />
           ),
         )}

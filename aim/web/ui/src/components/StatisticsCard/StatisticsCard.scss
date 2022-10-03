@@ -8,6 +8,8 @@
   border-radius: $border-radius-sm;
   min-width: toRem(130px);
   max-width: toRem(130px);
+  border: 1px solid transparent;
+  transition: all 0.18s ease-out;
   &__iconWrapper {
     width: 2rem;
     min-width: 2rem;
@@ -17,9 +19,6 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    &__icon {
-      color: white;
-    }
   }
   &__info {
     display: flex;
@@ -39,12 +38,5 @@
   }
   &.highlighted {
     cursor: pointer;
-    transition: all 0.18s ease-out;
-    .StatisticsCard__info__label, .StatisticsCard__info__count {
-      color: white;
-    }
-    .StatisticsCard__iconWrapper__icon {
-      color: $pico-80;
-    }
   }
 }
