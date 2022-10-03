@@ -170,7 +170,7 @@ function TooltipContentPopover({
             tint={50}
             className='TooltipContentPopover__subtitle'
           >
-            Tooltip Visibility
+            Tooltip Visibility On Hover
           </Text>
           <ToggleButton
             title='Select Visibility'
