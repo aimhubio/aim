@@ -9,6 +9,8 @@ const defaultConfig = getDefaultHydration();
 
 const FiguresExplorer = renderer(
   {
+    documentationLink:
+      'https://aimstack.readthedocs.io/en/latest/ui/pages/explorers.html#figures-explorer',
     sequenceName: SequenceTypesEnum.Figures,
     name: 'Figures Explorer',
     adapter: {
