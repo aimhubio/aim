@@ -341,9 +341,9 @@ Use select grouping dropdown which is located in the right top corner of the ima
 ###### How to use image grouping?
 
 - Click on grouping button
-- Select fields by which you want to groupe images
+- Select fields by which you want to group images
 
-Grouping will be apply after each field selection also you can select grouping mode (Group or Reverse)
+Grouping will be applied after each field selection also you can select grouping mode (Group or Reverse)
 
 <img alt="Images explore overview" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/images-explore/grouping-with-opened-dropdown.png">
 
@@ -499,3 +499,87 @@ Following image formats are available export: `SVG`, `JPEG`, `PNG`.
 ### Figures Explorer
 
 #### Overview
+
+Figures explorer allows easily query and compare tracked plotly figures and identify patterns, trends, outliers, and anomalies between your figures.
+
+<img alt="Figures explore overview" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/figures-explorer/figures-explorer.png">
+
+Features:
+
+- [Easily query your figures](#query-figures)
+- [Group figures by tracked parameters, step and index](#group-figures-by-tracked-parameters)
+- [Visualization](#visualization)
+  - [Figure full view](#figure-full-view)
+  - [Use controls to configure visualizer](#image-explorer-right-controls-panel)
+
+#### Query figures
+
+Use select form to easily query your figures. There are two option to query figures using dropdown, by using [Aim QL](../../using/search.html) language and advance mode for [Aim QL](../../using/search.html).
+
+<img alt="Figures explore search" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/figures-explorer/figures-search-bar.png">
+
+###### How to use select form?
+
+- Click on Figures button
+- Select options you want to use in query
+- Click on the Search button
+
+<img alt="Figures explore select form" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/figures-explorer/figures-select.png">
+
+###### How to reset select form value?
+
+<img alt="Figures explore reset select form" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/figures-explorer/figures-reset.png">
+
+###### How to use advanced query mode?
+
+- Click on pencil icon in right side of select form to show input
+- Type advance [Aim QL](../../using/search.html) query
+- Click on the Search button
+
+<img alt="Figures explore advanced search" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/figures-explorer/figures-advanced-search.png">
+
+### Grouping
+
+Easily group data by columns and rows with selected parameters. If objects shares the same group, they share the same position on visualization canvas as well.
+
+Find `Group by` section at the left bottom of query form.
+
+<img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/figures-explorer/group-location.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="groupby_stroke" />
+
+There are two different ways to group figures.
+- Group by Columns
+- Group by Rows
+
+##### Group by Columns
+To group figures by column, click on column dropdown from Group by section and select parameters you want to group with
+(Image select)
+
+##### Group by Rows
+
+#### Ordering groups
+
+You can order groups as well by simply clicking on ‘Asc’ or ‘Desc’ buttons placed with each selected parameter.
+
+
+### Visualization
+
+As a visualization area considered 2d canvas of boxes(cubes) and shows group names and values horizontally and vertically for the columns and rows respectively.
+
+<img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/figures-explorer/figures-visualizer.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="groupby_stroke" />
+
+Tracked plotly figures are rendered inside boxes.
+[describe single box component]
+
+#### Figure full view
+
+To see the entire information about plotly figure, and it's run simply click on the full view icon placed in the top right corner of each box.
+
+<img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/figures-explorer/full-view-icon.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="groupby_stroke" />
+
+The result will look like below.
+
+<img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/figures-explorer/box-full-view.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="groupby_stroke" />
+
+#### Visualization Controls
+[fill in]
+
