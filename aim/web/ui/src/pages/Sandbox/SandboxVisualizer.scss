@@ -43,18 +43,30 @@
 }
 
 .SandboxVisualizer__main__components--processing {
-  filter: blur(5px);
+  & > *:not(.SandboxVisualizer__main__components__spinner) {
+    filter: blur(5px);
+  }
+}
+
+.SandboxVisualizer__main__components__spinner {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .SandboxVisualizer__main__components__viz {
-  flex: 0.9;
+  flex: 0.8;
   display: flex;
   flex-direction: column;
   overflow: auto;
 }
 
 .SandboxVisualizer__main__components__console {
-  flex: 0.1;
+  flex: 0.2;
   border-top: $border-dark;
   padding: $space-xs;
   overflow: auto;

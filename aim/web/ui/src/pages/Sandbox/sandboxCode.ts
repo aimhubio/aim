@@ -6,10 +6,11 @@ lines = [[]]
 df_source = {
   "run.name": [],
   "metric.name": [],
-  # "metric.context": [],
+  "metric.context": [],
   "metric.value.min": [],
   "metric.value.max": [],
-  "metric.value.last": []
+  "metric.value.last": [],
+  "run.hparams.seed": []
 }
 
 metrics_list = []
@@ -49,11 +50,11 @@ for i, metric in enumerate(metrics):
   # add row
   df_source["run.name"].append(metric.run.name)
   df_source["metric.name"].append(metric.name)
-  # dataframe["metric.context"].append(json.dumps(metric.context))
+  df_source["metric.context"].append(repr(metric.context.to_py()))
   df_source["metric.value.min"].append(min(metric.values))
   df_source["metric.value.max"].append(max(metric.values))
   df_source["metric.value.last"].append(metric.values[-1])
-
+  df_source["run.hparams.seed"].append(metric.run.hparams.seed)
 
 def on_active_point_change(val, is_active):
   print(f'{val.xValue}, {val.yValue}')

@@ -44,7 +44,7 @@ export default function SandboxVisualizer(props: any) {
   (window as any).metrics = data;
   const pyodide = React.useRef<any>();
 
-  const [editorValue, setEditorValue] = React.useState(initialCode);
+  const editorValue = React.useRef(initialCode);
   const [result, setResult] = React.useState<Record<string, any>>({});
   const [isProcessing, setIsProcessing] = React.useState<boolean | null>(null);
 
@@ -81,7 +81,7 @@ export default function SandboxVisualizer(props: any) {
     }
     try {
       setIsProcessing(true);
-      const code = editorValue.replace('aim-ui-client', 'js');
+      const code = editorValue.current.replace('aim-ui-client', 'js');
       await pyodide.current!.loadPackagesFromImports(code);
       pyodide.current!.runPythonAsync(code).then(() => {
         const resultData = pyodide.current.globals.get('data').toJs();
@@ -111,8 +111,8 @@ export default function SandboxVisualizer(props: any) {
           <Editor
             language='python'
             height='100%'
-            value={editorValue}
-            onChange={(v) => setEditorValue(v!)}
+            value={editorValue.current}
+            onChange={(v) => (editorValue.current = v!)}
             loading={<span />}
           />
         </div>
@@ -123,58 +123,57 @@ export default function SandboxVisualizer(props: any) {
             'SandboxVisualizer__main__components--processing': isProcessing,
           })}
         >
-          {isProcessing === null ? (
-            <Spinner />
-          ) : (
-            <>
-              <div className='SandboxVisualizer__main__components__viz'>
-                {result.lines && (
-                  <div style={{ flex: 0.5 }}>
-                    <ChartPanel
-                      selectOptions={[]}
-                      chartType={ChartTypeEnum.LineChart}
-                      data={result.lines.data}
-                      focusedState={{
-                        key: null,
-                        active: false,
-                      }}
-                      tooltip={{}}
-                      zoom={{}}
-                      onActivePointChange={
-                        result.lines.callbacks?.on_active_point_change ?? null
-                      }
-                      chartProps={result.lines.data.map(() => ({
-                        axesScaleType: {
-                          xAxis: ScaleEnum.Linear,
-                          yAxis: ScaleEnum.Linear,
-                        },
-                        ignoreOutliers: false,
-                        highlightMode: HighlightEnum.Off,
-                        curveInterpolation: CurveEnum.Linear,
-                      }))}
-                      onRunsTagsChange={() => null}
-                      controls={null}
-                    />
-                  </div>
-                )}
-                {result.dataframe && (
-                  <div style={{ flex: 0.5, height: '50%' }}>
-                    <DataGrid
-                      data={
-                        typeof result.dataframe.data === 'string'
-                          ? JSON.parse(result.dataframe.data)
-                          : result.dataframe.data
-                      }
-                    />
-                  </div>
-                )}
-              </div>
-              <pre
-                id='console'
-                className='SandboxVisualizer__main__components__console'
-              />
-            </>
+          {isProcessing !== false && (
+            <div className='SandboxVisualizer__main__components__spinner'>
+              <Spinner />
+            </div>
           )}
+          <div className='SandboxVisualizer__main__components__viz'>
+            {result.lines && (
+              <div style={{ flex: 0.5 }}>
+                <ChartPanel
+                  selectOptions={[]}
+                  chartType={ChartTypeEnum.LineChart}
+                  data={result.lines.data}
+                  focusedState={{
+                    key: null,
+                    active: false,
+                  }}
+                  tooltip={{}}
+                  zoom={{}}
+                  onActivePointChange={
+                    result.lines.callbacks?.on_active_point_change ?? null
+                  }
+                  chartProps={result.lines.data.map(() => ({
+                    axesScaleType: {
+                      xAxis: ScaleEnum.Linear,
+                      yAxis: ScaleEnum.Linear,
+                    },
+                    ignoreOutliers: false,
+                    highlightMode: HighlightEnum.Off,
+                    curveInterpolation: CurveEnum.Linear,
+                  }))}
+                  onRunsTagsChange={() => null}
+                  controls={null}
+                />
+              </div>
+            )}
+            {result.dataframe && (
+              <div style={{ flex: 0.5, height: '50%' }}>
+                <DataGrid
+                  data={
+                    typeof result.dataframe.data === 'string'
+                      ? JSON.parse(result.dataframe.data)
+                      : result.dataframe.data
+                  }
+                />
+              </div>
+            )}
+          </div>
+          <pre
+            id='console'
+            className='SandboxVisualizer__main__components__console'
+          />
         </div>
       </div>
     </div>

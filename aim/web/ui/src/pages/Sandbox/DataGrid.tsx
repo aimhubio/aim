@@ -23,7 +23,6 @@ import { Rect, Text, Group, RegularPolygon } from 'react-konva';
 import { useMeasure } from 'react-use';
 
 export default ({ data }) => {
-  console.log(data);
   const dragHandleWidth = 2;
   const DraggableRect = (props) => {
     return (
