@@ -296,7 +296,7 @@ async def run_active_result_streamer(repo: 'Repo', report_progress: Optional[boo
 
             if report_progress:
                 yield collect_streamable_data(encode_tree(
-                    {f'progress_{progress_reports_sent}': (progress_reports_sent+1, active_runs_count)}
+                    {f'progress_{progress_reports_sent}': (progress_reports_sent + 1, active_runs_count)}
                 ))
                 progress_reports_sent += 1
     except asyncio.CancelledError:
