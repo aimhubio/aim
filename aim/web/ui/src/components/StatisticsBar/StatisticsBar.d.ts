@@ -9,7 +9,7 @@ export interface IStatisticsBarProps {
   data: Array<StatisticsBarItem>;
   width?: number | string;
   height?: number | string;
-  onMouseOver?: (label: string) => void;
+  onMouseOver?: (id: string, source: string) => void;
   onMouseLeave?: () => void;
 }
 
