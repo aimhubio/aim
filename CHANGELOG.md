@@ -13,6 +13,7 @@
 - Add command for dangling params cleanup (mihran113)
 - Deprecate Python 3.6 (alberttorosyan)
 - Add MXNet integration (tmynn)
+- Create a Dashboard page to provide a better onboarding experience (arsengit, roubkar, KaroMourad, mihran113)
 
 ### Fixes:
 
