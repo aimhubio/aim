@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash-es';
 
 import { IReleaseNote } from 'modules/core/api/releaseNotesApi/types';
 import { IResourceState } from 'modules/core/utils/createResource';
@@ -8,7 +9,7 @@ import { AIM_VERSION } from 'config/config';
 
 import createReleaseNotesEngine from './ReleasesStore';
 
-const CHANGELOG_CONTENT_HEIGHT = 290;
+const CHANGELOG_CONTENT_MAX_HEIGHT = 296;
 function useReleaseNotes() {
   const [loading, setLoading] = React.useState<boolean>(true);
   const [mounted, setMounted] = React.useState<boolean>(false);
@@ -50,7 +51,9 @@ function useReleaseNotes() {
       setMounted(true);
     }
     if (mounted && releaseNoteRef.current) {
-      if (releaseNoteRef?.current?.scrollHeight > CHANGELOG_CONTENT_HEIGHT) {
+      if (
+        releaseNoteRef?.current?.scrollHeight > CHANGELOG_CONTENT_MAX_HEIGHT
+      ) {
         setScrollShadow(true);
       }
       releaseNoteRef?.current?.addEventListener(
@@ -61,15 +64,12 @@ function useReleaseNotes() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading, mounted]);
 
-  function onChangelogContentScroll() {
+  const onChangelogContentScroll = _.throttle(() => {
     const hasScrollShadow: boolean =
-      releaseNoteRef!.current!.scrollTop + CHANGELOG_CONTENT_HEIGHT <
+      releaseNoteRef!.current!.scrollTop + CHANGELOG_CONTENT_MAX_HEIGHT <=
       releaseNoteRef!.current!.scrollHeight;
-    if (hasScrollShadow !== scrollShadow) {
-      setScrollShadow(!!hasScrollShadow);
-    }
-  }
-
+    setScrollShadow(hasScrollShadow);
+  }, 150);
   async function fetchCurrentRelease(): Promise<void> {
     try {
       const data = await fetchReleaseByTagName(`v${AIM_VERSION}`);
