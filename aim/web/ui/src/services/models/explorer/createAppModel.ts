@@ -2,7 +2,6 @@ import moment from 'moment';
 import { saveAs } from 'file-saver';
 import _ from 'lodash-es';
 
-import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { IPoint } from 'components/ScatterPlot';
 import { IAxesScaleRange } from 'components/AxesPropsPopover';
 
@@ -140,7 +139,12 @@ import toggleSelectAdvancedMode from 'utils/app/toggleSelectAdvancedMode';
 import updateColumnsWidths from 'utils/app/updateColumnsWidths';
 import updateSortFields from 'utils/app/updateTableSortFields';
 import contextToString from 'utils/contextToString';
-import { AlignmentOptionsEnum, ChartTypeEnum, ScaleEnum } from 'utils/d3';
+import {
+  AlignmentOptionsEnum,
+  ChartTypeEnum,
+  HighlightEnum,
+  ScaleEnum,
+} from 'utils/d3';
 import {
   decodeBufferPairs,
   decodePathsVals,
@@ -4977,24 +4981,30 @@ function createAppModel(appConfig: IAppInitialConfig) {
                           trace.name === value?.option_name &&
                           _.isEqual(trace.context, value?.context)
                         ) {
-                          values[i] = trace.last_value.last;
-                          if (dimension[i]) {
-                            dimension[i].values.push(trace.last_value.last);
-                            if (typeof trace.last_value.last === 'string') {
-                              dimension[i].scaleType = ScaleEnum.Point;
-                              dimension[i].dimensionType = 'metric';
-                            }
-                          } else {
+                          let lastValue = trace.last_value.last;
+                          const formattedLastValue = formatValue(
+                            lastValue,
+                            '-',
+                          );
+                          values[i] = lastValue;
+                          if (formattedLastValue !== '-') {
                             const metricLabel = getMetricLabel(
                               trace.name,
                               trace.context as any,
                             );
-                            dimension[i] = {
-                              values: [trace.last_value.last],
-                              scaleType: ScaleEnum.Linear,
-                              displayName: metricLabel,
-                              dimensionType: 'metric',
-                            };
+                            dimension[i].dimensionType = 'metric';
+                            dimension[i].displayName = metricLabel;
+                            if (typeof lastValue !== 'number') {
+                              dimension[i].scaleType = ScaleEnum.Point;
+                              values[i] = formattedLastValue;
+                            } else if (
+                              isNaN(lastValue) ||
+                              !isFinite(lastValue)
+                            ) {
+                              values[i] = formattedLastValue;
+                              dimension[i].scaleType = ScaleEnum.Point;
+                            }
+                            dimension[i].values.push(values[i]);
                           }
                         }
                       });
@@ -5002,7 +5012,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                       const paramValue = getValue(run.run.params, label, '-');
                       const formattedParam = formatValue(paramValue, '-');
                       values[i] = paramValue;
-                      if (formattedParam !== '-' && dimension[i]) {
+                      if (formattedParam !== '-') {
                         if (typeof paramValue !== 'number') {
                           dimension[i].scaleType = ScaleEnum.Point;
                           values[i] = formattedParam;
