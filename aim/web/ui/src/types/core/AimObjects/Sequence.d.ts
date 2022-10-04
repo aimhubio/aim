@@ -22,14 +22,14 @@ export interface MetricsBaseView extends SequenceBaseView {
 }
 
 export interface SequenceAlignedView extends SequenceBase {
-  x_axis_values: ?EncodedNumpyArray;
-  x_axis_iters: ?EncodedNumpyArray;
+  x_axis_values: EncodedNumpyArray | null;
+  x_axis_iters: EncodedNumpyArray | null;
 }
 
 export interface SequenceFullView extends SequenceAlignedView {
   slice: [number, number, number];
-  values: ?EncodedNumpyArray;
+  values: EncodedNumpyArray | null;
   epochs: Array<number>;
   iters: Array<number>;
-  timestamps: ?EncodedNumpyArray;
+  timestamps: EncodedNumpyArray | null;
 }
