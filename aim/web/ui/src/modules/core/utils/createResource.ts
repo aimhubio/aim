@@ -7,18 +7,25 @@ export interface IResourceState<T> {
   error: any;
 }
 
+const defaultState = {
+  data: null,
+  loading: true,
+  error: null,
+};
+
 function createResource<T, GetterArgs = RequestOptions>(getter: any) {
-  const state = create<IResourceState<T>>(() => ({
-    data: null,
-    loading: true,
-    error: null,
-  }));
+  const state = create<IResourceState<T>>(() => defaultState);
 
   async function fetchData(args?: GetterArgs) {
+    state.setState({ loading: true });
     const data = await getter(args);
     state.setState({ data, loading: false });
   }
-  return { fetchData, state };
+  function destroy() {
+    state.destroy();
+    state.setState(defaultState, true);
+  }
+  return { fetchData, state, destroy };
 }
 
 export default createResource;

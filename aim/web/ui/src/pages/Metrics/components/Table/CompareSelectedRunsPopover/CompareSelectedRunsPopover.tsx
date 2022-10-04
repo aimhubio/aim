@@ -1,5 +1,4 @@
 import React from 'react';
-import _ from 'lodash-es';
 import { useHistory } from 'react-router-dom';
 
 import { MenuItem, Tooltip } from '@material-ui/core';
@@ -88,7 +87,7 @@ function CompareSelectedRunsPopover({
         )}
         component={
           <div className='CompareSelectedRunsPopover'>
-            {EXPLORE_SELECTED_RUNS_CONFIG[appName as AppNameEnum].map(
+            {EXPLORE_SELECTED_RUNS_CONFIG?.[appName as AppNameEnum]?.map(
               (item: AppNameEnum) => (
                 <MenuItem
                   className='CompareSelectedRunsPopover__item'

@@ -1,5 +1,3 @@
-import { ZoomEnum } from 'components/ZoomInPopover/ZoomInPopover';
-
 import { GroupNameEnum } from 'config/grouping/GroupingPopovers';
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 
@@ -22,7 +20,7 @@ import {
   AggregationAreaMethods,
   AggregationLineMethods,
 } from 'utils/aggregateGroupData';
-import { AlignmentOptionsEnum, CurveEnum } from 'utils/d3';
+import { AlignmentOptionsEnum, CurveEnum, ZoomEnum } from 'utils/d3';
 import { IRequestProgress } from 'utils/app/setRequestProgress';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 
@@ -182,12 +180,6 @@ export interface IMetricTableRowData {
   epoch: string;
   time: number | null;
   [key: string]: any;
-}
-
-export interface IGetDataAsLinesProps {
-  smoothingFactor?: number;
-  smoothingAlgorithm?: string;
-  collection?: IMetric[][];
 }
 
 export interface IOnGroupingSelectChangeParams {

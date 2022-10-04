@@ -20,17 +20,13 @@ function saveRecentSearches(appName: string, query: string): void {
 
     // skip adding search if it already exists
     if (searchIndex !== -1) {
-      return;
-    }
-
-    // remove first element if array length is 3
-    if (recentSearches.length === 3) {
+      recentSearches.splice(searchIndex, 1);
+    } else if (recentSearches.length === 3) {
+      // remove first element if array length is 3
       recentSearches.shift();
     }
-
     // push new search to the start of array
     recentSearches.unshift({ explorer: appName, query });
-
     // save recent searches to local storage
     setItem('recentSearches', JSON.stringify(recentSearches));
   }

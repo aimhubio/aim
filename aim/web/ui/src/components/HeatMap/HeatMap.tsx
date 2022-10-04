@@ -71,9 +71,33 @@ function HeatMap({
 
   const diffDays = Math.floor(Math.abs((firstDay - lastDay) / oneDay));
 
-  const maxVal = Math.max(
-    ...data?.map((i: any) => i?.[1]).filter((i: any) => Number.isInteger(i)),
-  );
+  const maxVal = getMaxVal();
+
+  // get max run count in data
+  function getMaxVal() {
+    let maxValue = 0;
+    [...Array(diffDays).keys()].forEach((index) => {
+      let count = getRunCountByDay(index);
+      maxValue = count > maxValue ? count : maxValue;
+    });
+    return maxValue;
+  }
+
+  // get runs count by day index
+  function getRunCountByDay(dayIndex: number): number {
+    const date = indexToDate(dayIndex);
+    let count = 0;
+    for (let s = 0; s < data.length; s++) {
+      if (
+        data[s]?.[0].getFullYear() === date.getFullYear() &&
+        data[s]?.[0].getMonth() === date.getMonth() &&
+        data[s]?.[0].getDate() === date.getDate()
+      ) {
+        count += data[s][1];
+      }
+    }
+    return count;
+  }
 
   const orderedMonths = [
     ...months.slice(firstDay.getMonth()),
@@ -108,36 +132,18 @@ function HeatMap({
     return shiftDate(firstDay, x * 7 + y);
   }
 
-  function getItem(index: number) {
-    const date = indexToDate(index);
-
-    let item = null;
-    for (let s = 0; s < data.length; s++) {
-      if (
-        data[s]?.[0].getFullYear() === date.getFullYear() &&
-        data[s]?.[0].getMonth() === date.getMonth() &&
-        data[s]?.[0].getDate() === date.getDate()
-      ) {
-        item = data[s];
-        break;
-      }
-    }
-    return item;
-  }
-
   function getScale(value: number) {
     return Math.ceil((value / maxVal) * scaleRange);
   }
   function renderCell(index: number) {
-    const dataItem = getItem(index);
+    const runsCount = getRunCountByDay(index);
     const date = indexToDate(index);
-    const scale =
-      dataItem && Number.isInteger(dataItem?.[1]) ? getScale(dataItem[1]) : 0;
-    const tooltip = ` ${dataItem ? dataItem[1] : 0} tracked run${
-      dataItem?.[1] !== 1 ? 's' : ''
+    const scale = runsCount ? getScale(runsCount) : 0;
+    const tooltip = ` ${runsCount} tracked run${
+      runsCount !== 1 ? 's' : ''
     } on ${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
 
-    function onClickeCell(e: React.MouseEvent) {
+    function onClickCell(e: React.MouseEvent) {
       e.stopPropagation();
       onCellClick();
       if (scale) {
@@ -150,7 +156,7 @@ function HeatMap({
             .add(1, 'day')
             .format(DATE_QUERY_FORMAT)})`,
         });
-        analytics.trackEvent(ANALYTICS_EVENT_KEYS.home.activityCellClick);
+        analytics.trackEvent(ANALYTICS_EVENT_KEYS.dashboard.activityCellClick);
         history.push(`/runs?select=${search}`);
       }
     }
@@ -163,17 +169,11 @@ function HeatMap({
           ) : (
             <Tooltip title={tooltip}>
               <div
-                className={`CalendarHeatmap__cell CalendarHeatmap__cell--scale-${scale}`}
-                onClick={onClickeCell}
+                className={`CalendarHeatmap__cell CalendarHeatmap__cell--scale-${
+                  scale || 0
+                }`}
+                onClick={onClickCell}
                 role='navigation'
-                // className={classNames({
-                //   CalendarHeatmap__cell: true,
-                //   [`CalendarHeatmap__cell--scale-${scale}`]:
-                //     Number.isInteger(scale),
-                // })}
-                // onClick={
-                //   !!onCellClick ? () => onCellClick(dataItem, date, index) : null
-                // }
               />
             </Tooltip>
           )}

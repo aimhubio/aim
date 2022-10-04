@@ -1,8 +1,6 @@
 import * as d3 from 'd3';
 import _ from 'lodash-es';
 
-import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
-
 import {
   IActivePoint,
   IAxisLineData,
@@ -20,7 +18,7 @@ import { formatValueByAlignment } from '../formatByAlignment';
 
 import { getDimensionValue } from './getDimensionValue';
 
-import { CircleEnum, ScaleEnum } from './index';
+import { CircleEnum, ScaleEnum, HighlightEnum } from './index';
 
 function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
   const {

@@ -10,6 +10,7 @@ const ENDPOINTS = {
     BASE: '/runs',
     GET: '',
     SEARCH: 'search',
+    ACTIVE: 'active',
   },
 
   EXPERIMENTS: {

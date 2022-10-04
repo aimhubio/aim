@@ -6,14 +6,9 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { IHighlightModesPopoverProps } from 'types/components/HighlightModesPopover/HighlightModesPopover';
 
-import './HighlightModePopover.scss';
+import { HighlightEnum } from 'utils/d3';
 
-export enum HighlightEnum {
-  Off = 0,
-  Run = 1,
-  Metric = 2,
-  Custom = 3,
-}
+import './HighlightModePopover.scss';
 
 function HighlightModesPopover({
   mode,
