@@ -24,16 +24,8 @@
     border: $border-main;
     backdrop-filter: blur(3px);
     overflow: unset;
-    &__pinnedToTop {
-      top: var(--pinned-popover-top) !important;
-      left: var(--pinned-popover-left) !important;
+    &__pinned {
       width: auto;
-      max-height: toRem(130px);
-    }
-    &__pinnedToBottom {
-      top: var(--pinned-popover-top) !important;
-      width: auto;
-      left: var(--pinned-popover-left) !important;
       max-height: toRem(130px);
     }
     &__active {

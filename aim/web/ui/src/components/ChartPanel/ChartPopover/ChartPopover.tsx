@@ -69,21 +69,6 @@ function ChartPopover(props: IChartPopover): JSX.Element {
     onPopoverPositionChange,
   ]);
 
-  const anchorPosition = React.useMemo(() => {
-    if (isPopoverPinned) {
-      return {
-        top: 0,
-        left: popoverPos?.left ?? props.activePointRect?.left ?? 0,
-      };
-    } else if (popoverPos) {
-      return popoverPos;
-    } else if (props.activePointRect) {
-      return props.activePointRect;
-    }
-    return undefined;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [popoverPos, props.activePointRect, tooltipAppearance]);
-
   return (
     <ErrorBoundary>
       <Popover
@@ -96,19 +81,11 @@ function ChartPopover(props: IChartPopover): JSX.Element {
         disablePortal={true} // do not freeze app on scroll
         disableScrollLock={true} // do not freeze app on scroll
         anchorReference='anchorPosition'
-        anchorPosition={anchorPosition}
+        anchorPosition={popoverPos || props.activePointRect || undefined}
         className={classNames('ChartPopover', {
           [className]: className,
           pinnedPopover: isPopoverPinned,
         })}
-        style={{
-          //@ts-ignore
-          '--pinned-popover-left':
-            (popoverPos?.left ?? props.activePointRect?.left ?? 0) + 'px',
-          '--pinned-popover-top': popoverPos?.top
-            ? popoverPos?.top + 'px'
-            : '100%',
-        }}
         transitionDuration={{
           appear: 0,
           enter: 50,
@@ -119,18 +96,11 @@ function ChartPopover(props: IChartPopover): JSX.Element {
             setPopoverNode(node);
           },
         }}
-        transformOrigin={
-          isPopoverPinned
-            ? { vertical: 'top', horizontal: 'center' }
-            : { vertical: 'top', horizontal: 'left' }
-        }
+        transformOrigin={{ vertical: 'top', horizontal: 'left' }}
         classes={{
           paper: classNames('ChartPopover__content', {
             ChartPopover__content__active: props.focusedState?.active,
-            ChartPopover__content__pinnedToTop:
-              tooltipAppearance === TooltipAppearance.Top,
-            ChartPopover__content__pinnedToBottom:
-              tooltipAppearance === TooltipAppearance.Bottom,
+            ChartPopover__content__pinned: isPopoverPinned,
           }),
         }}
       >
