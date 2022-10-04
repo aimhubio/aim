@@ -1,7 +1,7 @@
 export interface IRunLogsTabProps {
   isRunLogsLoading: boolean;
   runHash: string;
-  runLogs: { [key: string]: any };
+  runLogs: { [key: string]: { index: string; value: string } };
   inProgress: boolean;
   updatedLogsCount: number;
 }

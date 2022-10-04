@@ -1,0 +1,60 @@
+@use 'src/styles/abstracts' as *;
+
+.DictVisualizer {
+  @include monospaceFontFamily();
+  width: 100%;
+  height: 100%;
+}
+.DictVisualizer__row {
+  display: flex;
+  align-items: center;
+
+  &:hover {
+    .DictVisualizer__row__copy {
+      visibility: visible;
+    }
+  }
+}
+
+.DictVisualizer__row__indent {
+  display: inline-block;
+  height: 100%;
+  margin-left: 9px; // based on icon size
+  margin-right: $space-md;
+  border-left: $border-dark;
+}
+
+.DictVisualizer__row__collapseToggler {
+  display: flex;
+  align-items: center;
+  margin-right: $space-xxxs;
+  cursor: pointer;
+}
+
+.DictVisualizer__row__content {
+  display: flex;
+  align-items: baseline;
+}
+
+.DictVisualizer__row__content__key {
+  margin-right: $space-xs;
+}
+
+.DictVisualizer__row__content__sub {
+  margin-right: $space-xxs;
+  font-style: italic;
+  white-space: nowrap;
+}
+
+.DictVisualizer__row__content__value {
+  white-space: nowrap;
+}
+
+.DictVisualizer__row__content__value--closing {
+  margin-left: 7px; // based on icon size
+}
+
+.DictVisualizer__row__copy {
+  margin-left: $space-xxxs;
+  visibility: hidden;
+}

@@ -2,7 +2,6 @@ import moment from 'moment';
 import { saveAs } from 'file-saver';
 import _ from 'lodash-es';
 
-import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { IPoint } from 'components/ScatterPlot';
 import { IAxesScaleRange } from 'components/AxesPropsPopover';
 
@@ -44,7 +43,6 @@ import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopo
 import { ILine } from 'types/components/LineChart/LineChart';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
-import { IOnSmoothingChange } from 'types/pages/metrics/Metrics';
 import { IMetric } from 'types/services/models/metrics/metricModel';
 import {
   IAggregationConfig,
@@ -56,6 +54,7 @@ import {
   IMetricTableRowData,
   IOnGroupingModeChangeParams,
   IOnGroupingSelectChangeParams,
+  ISmoothing,
   ITooltip,
 } from 'types/services/models/metrics/metricsAppModel';
 import {
@@ -140,7 +139,12 @@ import toggleSelectAdvancedMode from 'utils/app/toggleSelectAdvancedMode';
 import updateColumnsWidths from 'utils/app/updateColumnsWidths';
 import updateSortFields from 'utils/app/updateTableSortFields';
 import contextToString from 'utils/contextToString';
-import { AlignmentOptionsEnum, ChartTypeEnum, ScaleEnum } from 'utils/d3';
+import {
+  AlignmentOptionsEnum,
+  ChartTypeEnum,
+  HighlightEnum,
+  ScaleEnum,
+} from 'utils/d3';
 import {
   decodeBufferPairs,
   decodePathsVals,
@@ -291,11 +295,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 yAxis: CONTROLS_DEFAULT_CONFIG.metrics.axesScaleRange.yAxis,
                 xAxis: CONTROLS_DEFAULT_CONFIG.metrics.axesScaleRange.xAxis,
               },
-              curveInterpolation:
-                CONTROLS_DEFAULT_CONFIG.metrics.curveInterpolation,
-              smoothingAlgorithm:
-                CONTROLS_DEFAULT_CONFIG.metrics.smoothingAlgorithm,
-              smoothingFactor: CONTROLS_DEFAULT_CONFIG.metrics.smoothingFactor,
+              smoothing: {
+                algorithm: CONTROLS_DEFAULT_CONFIG.metrics.smoothing.algorithm,
+                factor: CONTROLS_DEFAULT_CONFIG.metrics.smoothing.factor,
+                curveInterpolation:
+                  CONTROLS_DEFAULT_CONFIG.metrics.smoothing.curveInterpolation,
+                isApplied: CONTROLS_DEFAULT_CONFIG.metrics.smoothing.isApplied,
+              },
               alignmentConfig: {
                 metric: CONTROLS_DEFAULT_CONFIG.metrics.alignmentConfig.metric,
                 type: CONTROLS_DEFAULT_CONFIG.metrics.alignmentConfig.type,
@@ -1025,13 +1031,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
             );
 
             let processedValues = [...values];
-            if (
-              configData?.chart?.smoothingAlgorithm &&
-              configData.chart.smoothingFactor
-            ) {
+            if (configData?.chart?.smoothing.isApplied) {
               processedValues = getSmoothenedData({
-                smoothingAlgorithm: configData?.chart.smoothingAlgorithm,
-                smoothingFactor: configData.chart.smoothingFactor,
+                smoothingAlgorithm: configData?.chart.smoothing.algorithm,
+                smoothingFactor: configData.chart.smoothing.factor,
                 data: processedValues,
               });
             }
@@ -1984,7 +1987,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             appName,
           });
         },
-        onSmoothingChange(args: IOnSmoothingChange): void {
+        onSmoothingChange(args: Partial<ISmoothing>): void {
           onSmoothingChange({ args, model, appName, updateModelData });
         },
         onIgnoreOutliersChange(): void {
@@ -4978,24 +4981,30 @@ function createAppModel(appConfig: IAppInitialConfig) {
                           trace.name === value?.option_name &&
                           _.isEqual(trace.context, value?.context)
                         ) {
-                          values[i] = trace.last_value.last;
-                          if (dimension[i]) {
-                            dimension[i].values.push(trace.last_value.last);
-                            if (typeof trace.last_value.last === 'string') {
-                              dimension[i].scaleType = ScaleEnum.Point;
-                              dimension[i].dimensionType = 'metric';
-                            }
-                          } else {
+                          let lastValue = trace.last_value.last;
+                          const formattedLastValue = formatValue(
+                            lastValue,
+                            '-',
+                          );
+                          values[i] = lastValue;
+                          if (formattedLastValue !== '-') {
                             const metricLabel = getMetricLabel(
                               trace.name,
                               trace.context as any,
                             );
-                            dimension[i] = {
-                              values: [trace.last_value.last],
-                              scaleType: ScaleEnum.Linear,
-                              displayName: metricLabel,
-                              dimensionType: 'metric',
-                            };
+                            dimension[i].dimensionType = 'metric';
+                            dimension[i].displayName = metricLabel;
+                            if (typeof lastValue !== 'number') {
+                              dimension[i].scaleType = ScaleEnum.Point;
+                              values[i] = formattedLastValue;
+                            } else if (
+                              isNaN(lastValue) ||
+                              !isFinite(lastValue)
+                            ) {
+                              values[i] = formattedLastValue;
+                              dimension[i].scaleType = ScaleEnum.Point;
+                            }
+                            dimension[i].values.push(values[i]);
                           }
                         }
                       });
@@ -5003,7 +5012,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                       const paramValue = getValue(run.run.params, label, '-');
                       const formattedParam = formatValue(paramValue, '-');
                       values[i] = paramValue;
-                      if (formattedParam !== '-' && dimension[i]) {
+                      if (formattedParam !== '-') {
                         if (typeof paramValue !== 'number') {
                           dimension[i].scaleType = ScaleEnum.Point;
                           values[i] = formattedParam;

@@ -1,3 +1,4 @@
+const webpack = require('webpack');
 const WebpackDynamicPublicPathPlugin = require('webpack-dynamic-public-path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
@@ -42,6 +43,12 @@ module.exports = {
     config.plugins.push(
       new WebpackDynamicPublicPathPlugin({
         externalPublicPath: 'window.externalPublicPath',
+      }),
+    );
+
+    config.plugins.push(
+      new webpack.DefinePlugin({
+        __DEV__: !isEnvProduction,
       }),
     );
     return config;

@@ -1,6 +1,3 @@
-import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
-import { ZoomEnum } from 'components/ZoomInPopover/ZoomInPopover';
-
 import { DensityOptions } from 'config/enums/densityEnum';
 import {
   ImageRenderingEnum,
@@ -16,6 +13,8 @@ import {
   CurveEnum,
   ScaleEnum,
   TrendlineTypeEnum,
+  HighlightEnum,
+  ZoomEnum,
 } from 'utils/d3';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 
@@ -36,9 +35,12 @@ export const CONTROLS_DEFAULT_CONFIG = {
       metric: '',
     },
     densityType: DensityOptions.Maximum,
-    smoothingFactor: 0,
-    curveInterpolation: CurveEnum.Linear,
-    smoothingAlgorithm: SmoothingAlgorithmEnum.EMA,
+    smoothing: {
+      algorithm: SmoothingAlgorithmEnum.EMA,
+      factor: 0.6,
+      curveInterpolation: CurveEnum.Linear,
+      isApplied: false,
+    },
     aggregationConfig: {
       methods: {
         area: AggregationAreaMethods.MIN_MAX,

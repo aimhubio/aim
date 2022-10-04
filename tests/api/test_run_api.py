@@ -13,7 +13,8 @@ class TestRunApi(PrefilledDataApiTestBase):
     def test_search_runs_api(self):
         client = self.client
 
-        response = client.get('/api/runs/search/run/', params={'q': 'run["name"] == "Run # 3"',
+        query = self.isolated_query_patch('run["name"] == "Run # 3"')
+        response = client.get('/api/runs/search/run/', params={'q': query,
                                                                'report_progress': False})
         self.assertEqual(200, response.status_code)
 
@@ -27,7 +28,8 @@ class TestRunApi(PrefilledDataApiTestBase):
     def test_search_runs_api_paginated(self):
         client = self.client
 
-        response = client.get('/api/runs/search/run/', params={'q': 'run["name"] in ["Run # 2","Run # 3"]',
+        query = self.isolated_query_patch('run["name"] in ["Run # 2","Run # 3"]')
+        response = client.get('/api/runs/search/run/', params={'q': query,
                                                                'limit': 1, 'report_progress': False})
         self.assertEqual(200, response.status_code)
 
@@ -39,7 +41,8 @@ class TestRunApi(PrefilledDataApiTestBase):
             offset = run_hash
             self.assertEqual('Run # 3', run['props']['name'])
 
-        response = client.get('/api/runs/search/run/', params={'q': 'run["name"] in ["Run # 2","Run # 3"]',
+        query = self.isolated_query_patch('run["name"] in ["Run # 2","Run # 3"]')
+        response = client.get('/api/runs/search/run/', params={'q': query,
                                                                'limit': 5,
                                                                'offset': offset,
                                                                'report_progress': False})
@@ -53,7 +56,8 @@ class TestRunApi(PrefilledDataApiTestBase):
     def test_search_metrics_api_default_step(self):
         client = self.client
 
-        response = client.get('/api/runs/search/metric/', params={'q': 'run["name"] == "Run # 3"',
+        query = self.isolated_query_patch('run["name"] == "Run # 3"')
+        response = client.get('/api/runs/search/metric/', params={'q': query,
                                                                   'report_progress': False})
         self.assertEqual(200, response.status_code)
 
@@ -79,7 +83,8 @@ class TestRunApi(PrefilledDataApiTestBase):
     def test_search_metrics_api_custom_step(self, step_count):
         client = self.client
 
-        response = client.get('/api/runs/search/metric/', params={'q': 'run["name"] == "Run # 3"',
+        query = self.isolated_query_patch('run["name"] == "Run # 3"')
+        response = client.get('/api/runs/search/metric/', params={'q': query,
                                                                   'p': step_count,
                                                                   'report_progress': False})
         self.assertEqual(200, response.status_code)
@@ -197,6 +202,6 @@ class TestRunApi(PrefilledDataApiTestBase):
     def _find_run_by_name(self, name: str) -> Run:
         repo = self.repo
         for run in repo.iter_runs():
-            if run.name == name or run['name'] == name:
+            if run.name == name or run.get('name') == name:
                 return run
         return None
