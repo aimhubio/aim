@@ -23,8 +23,8 @@ class AimCallback:
 
     .. note::
         Users who want to run multiple Optuna studies within the same process
-        should call ``aim.experiment.close()`` between subsequent calls to
-        ``study.optimize()``. Calling ``aim.experiment.close()`` is not necessary
+        should call ``close()`` method between subsequent calls to
+        ``study.optimize()``. Calling ``close()`` method is not necessary
         if you are running one Optuna study per process.
 
     .. note::
@@ -127,9 +127,7 @@ class AimCallback:
             for key, value in metrics.items():
                 self._run.set(key, value, strict=False)
 
-            self._run.close()
-            self._run = None
-            self._run_hash = None
+            self.close()
         else:
             for key, value in trial.params.items():
                 self._run.track(value, name=key, step=step)
@@ -162,6 +160,11 @@ class AimCallback:
         if args:
             for key, value in args.items():
                 self._run.set(key, value, strict=False)
+
+    def close(self) -> None:
+        self._run.close()
+        self._run = None
+        self._run_hash = None
 
     @experimental_func("3.0.0")
     def track_in_aim(self) -> Callable:
