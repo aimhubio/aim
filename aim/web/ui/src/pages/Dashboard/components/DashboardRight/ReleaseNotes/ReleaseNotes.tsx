@@ -14,6 +14,7 @@ import './ReleaseNotes.scss';
 function ReleaseNotes(): React.FunctionComponentElement<React.ReactNode> {
   const {
     changelogData,
+    LatestReleaseData,
     currentReleaseData,
     isLoading,
     releaseNoteRef,
@@ -31,12 +32,14 @@ function ReleaseNotes(): React.FunctionComponentElement<React.ReactNode> {
           <div className='ReleaseNotes__latest'>
             <div className='ReleaseNotes__latest__title'>
               <Text component='h4' tint={100} weight={700} size={14}>
-                Aim {changelogData?.[0]?.tagName}
+                Aim {LatestReleaseData?.tagName}
               </Text>
-              <span>New</span>
+              {`v${AIM_VERSION}` === LatestReleaseData?.tagName ? null : (
+                <span>New</span>
+              )}
             </div>
             <div className='ReleaseNotes__latest__content'>
-              {changelogData[0]?.info?.map((title: string, index: number) => (
+              {LatestReleaseData?.info?.map((title: string, index: number) => (
                 <div
                   className='ReleaseNotes__latest__content__item'
                   key={index}
@@ -46,7 +49,7 @@ function ReleaseNotes(): React.FunctionComponentElement<React.ReactNode> {
               ))}
             </div>
           </div>
-          {`v${AIM_VERSION}` === changelogData[0]?.tagName ? null : (
+          {`v${AIM_VERSION}` === LatestReleaseData?.tagName ? null : (
             <div className='ReleaseNotes__changelog'>
               <Text
                 className='ReleaseNotes__changelog__title'

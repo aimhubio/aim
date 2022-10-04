@@ -1,6 +1,8 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 
+import { Tooltip } from '@material-ui/core';
+
 import ListItem from 'components/kit/ListItem/ListItem';
 import { Icon } from 'components/kit';
 
@@ -34,12 +36,16 @@ function RecentSearchItem({
     [explorer, history, query],
   );
   return (
-    <ListItem size='small' onClick={(e) => onClick(e)}>
-      <Icon fontSize={12} name={BookmarkIconType[explorer].name} />
-      <pre ref={elementRef} data-lang={'python'}>
-        {query}
-      </pre>
-    </ListItem>
+    <Tooltip title={query}>
+      <div>
+        <ListItem size='small' onClick={(e) => onClick(e)}>
+          <Icon fontSize={12} name={BookmarkIconType[explorer].name} />
+          <pre ref={elementRef} data-lang={'python'}>
+            {query}
+          </pre>
+        </ListItem>
+      </div>
+    </Tooltip>
   );
 }
 export default React.memo(RecentSearchItem);

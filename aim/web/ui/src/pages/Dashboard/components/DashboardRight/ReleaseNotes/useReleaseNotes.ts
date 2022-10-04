@@ -81,9 +81,25 @@ function useReleaseNotes() {
     }
   }
 
-  function modifyReleaseNote(releaseBody: string): RegExpMatchArray | null {
+  function modifyReleaseNote(
+    releaseBody: string,
+  ): RegExpMatchArray | null | any {
+    let body = releaseBody;
+    const regTitle = /#{2}.+/g;
+    const regTitleMatch = body.match(regTitle)?.[0].replace(/#{2}/g, '');
+    return [regTitleMatch];
+  }
+
+  function getCurrentReleaseInfo(releaseBody: string): RegExpMatchArray | null {
     const exp = /(?:^|\n)(?:d.|[*+-]) [^]*?(?=\n(?:d.|[*+-])|$)/g;
-    let str = releaseBody.replace(/(\r\n|\n|\r)/g, '\n').replace(/\*/g, '-');
+    let body = releaseBody;
+    let str = body
+      .replace(/(\r\n|\n|\r)/g, '\n')
+      .replace(/\*/g, '-')
+      .replace(
+        /(\sby\s\@[A-z\d](?:[A-z\d]|-(?=[A-z\d])){0,38}\s\w+\shttps\:\/\/github\.com\/((\w+\/?){4}))/g,
+        '',
+      );
     return str.match(exp);
   }
 
@@ -123,9 +139,23 @@ function useReleaseNotes() {
     }
   }, [currentRelease]);
 
+  const LatestReleaseData:
+    | { tagName: string; info: any; url: string }
+    | undefined = React.useMemo(() => {
+    const latest = releaseNotesStore?.data?.[0];
+    if (latest) {
+      return {
+        tagName: latest?.tag_name,
+        info: getCurrentReleaseInfo(latest.body),
+        url: latest.html_url,
+      };
+    }
+  }, [releaseNotesStore.data]);
+
   return {
     changelogData,
     currentReleaseData,
+    LatestReleaseData,
     isLoading: loading,
     releaseNoteRef,
     scrollShadow,

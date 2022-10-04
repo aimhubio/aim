@@ -48,12 +48,11 @@ function Dashboard(): React.FunctionComponentElement<React.ReactNode> {
               </Text>
               <ProjectStatistics />
               {activeRunsCount ? <ActiveRunsTable /> : null}
-
               <ProjectContributions />
               <ContributionsFeed />
             </>
           )}
-          {!isLoading && <AimIntegrations />}
+          {!isLoading && !totalRunsCount && <AimIntegrations />}
         </div>
         <DashboardRight />
       </section>

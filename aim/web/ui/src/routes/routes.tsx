@@ -60,8 +60,9 @@ const routes = {
   DASHBOARD: {
     path: PathEnum.Dashboard,
     component: Dashboard,
-    showInSidebar: false,
-    displayName: null,
+    showInSidebar: true,
+    displayName: 'Dashboard',
+    icon: 'dashboard',
     isExact: true,
     title: pageTitlesEnum.DASHBOARD,
   },

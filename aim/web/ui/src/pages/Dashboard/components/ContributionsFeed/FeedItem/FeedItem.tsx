@@ -18,15 +18,13 @@ function FeedItem(props: any): React.FunctionComponentElement<React.ReactNode> {
         {props.data.map((item: any) => (
           <div className='FeedItem__content__item' key={item.name}>
             <Text size={12} tint={100}>
-              Started the run:
+              Started a run:
             </Text>
-            <Text size={12} tint={100} component='p'>
-              <RunNameColumn
-                run={item.name}
-                active={item.active}
-                runHash={item.hash}
-              />
-            </Text>
+            <RunNameColumn
+              run={item.name}
+              active={item.active}
+              runHash={item.hash}
+            />
             <Text tint={50} size={10}>
               {item.date}
             </Text>

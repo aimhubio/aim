@@ -25,7 +25,10 @@ function DashboardBookmarks(): React.FunctionComponentElement<React.ReactNode> |
         tint={100}
         component='h3'
       >
-        Bookmarks
+        Bookmarks{' '}
+        {dashboardBookmarksStore.data.length
+          ? `(${dashboardBookmarksStore.data.length})`
+          : ''}
       </Text>
       <div className='DashboardBookmarks__list'>
         {dashboardBookmarksStore.data
