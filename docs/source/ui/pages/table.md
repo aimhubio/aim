@@ -25,7 +25,7 @@ To undo the selection, hover over the selected row and click on the X button (ap
 
 To archive/unarchive a set of runs, select rows and click on the `Archive/Unarchive` button, which is located at the top of the table.
 
-<img style="border-radius: 8px; border: 1px solid #E8F1FC; height: 200px" alt="Archive/Unarchive the selected runs"" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/table/archive_a_batch_of_items.png">
+<img style="border-radius: 8px; border: 1px solid #E8F1FC; height: 200px; width: 100%" alt="Archive/Unarchive the selected runs" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/table/archive_a_batch_of_items.png">
 
 After clicking on the `Archive/Unarchive` button a popup appears, where `archived` and `unarchived` runs are divided into separate tables.
 
