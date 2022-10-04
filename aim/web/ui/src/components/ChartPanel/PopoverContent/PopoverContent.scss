@@ -57,6 +57,7 @@
       .PopoverContent__boxWrapper {
         display: flex;
         max-width: 20rem;
+        flex: 1;
 
         &.pinned {
           flex-direction: column;
@@ -99,6 +100,7 @@
         max-height: 100%;
         width: toRem(250px);
         overflow-y: auto;
+        margin-bottom: toRem(1px);
       }
     }
 
