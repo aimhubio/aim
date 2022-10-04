@@ -150,4 +150,7 @@ export type IconName =
   | 'arrow-left-contained'
   | 'arrow-up-contained'
   | 'arrow-right-contained'
-  | 'arrow-down-contained';
+  | 'arrow-down-contained'
+  | 'pin-to-top'
+  | 'pin-to-bottom'
+  | 'flexible';

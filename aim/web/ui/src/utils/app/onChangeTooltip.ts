@@ -61,9 +61,22 @@ export default function onChangeTooltip<M extends State>({
     };
     model.setState({ config: configData, tooltip: tooltipData });
     updateURL({ configData, appName });
+    if (tooltip.appearance) {
+      analytics.trackEvent(
+        // @ts-ignore
+        `${ANALYTICS_EVENT_KEYS[appName].chart.controls.tooltip.appearance} ${tooltip.appearance}`,
+      );
+    } else if (tooltip.selectedFields) {
+      analytics.trackEvent(
+        // @ts-ignore
+        ANALYTICS_EVENT_KEYS[appName].chart.controls.tooltip
+          .changeTooltipDisplay,
+      );
+    } else if (tooltip.hasOwnProperty('display')) {
+      analytics.trackEvent(
+        // @ts-ignore
+        ANALYTICS_EVENT_KEYS[appName].chart.controls.tooltip.display,
+      );
+    }
   }
-  analytics.trackEvent(
-    // @ts-ignore
-    ANALYTICS_EVENT_KEYS[appName].chart.controls.tooltip.changeTooltipContent,
-  );
 }

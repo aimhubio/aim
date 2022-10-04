@@ -15,6 +15,9 @@
   }
   &__section {
     margin: 0 $space-xs;
+    &:last-child {
+      padding-bottom: $space-unit;
+    }
   }
   &__SelectedTagsContainer {
     overflow: auto;
