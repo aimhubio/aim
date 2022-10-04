@@ -7,6 +7,7 @@ import { PipelinePhasesEnum, StatusChangeCallback } from '../types';
 
 import depthInterceptors from './depthInterceptors';
 import processor, { ProcessedData, ProcessInterceptor } from './processor';
+import AdapterError from './AdapterError';
 
 export type AdapterConfigOptions = {
   objectDepth: AimObjectDepths;
@@ -44,8 +45,11 @@ function baseProcessor(runs: RunSearchRunView[]): Promise<ProcessedData> {
   const { sequenceName, objectDepth } = adapterConfig;
   adapterConfig.statusChangeCallback &&
     adapterConfig.statusChangeCallback(PipelinePhasesEnum.Adopting);
-
-  return Promise.resolve(processor(runs, sequenceName, objectDepth));
+  try {
+    return Promise.resolve(processor(runs, sequenceName, objectDepth));
+  } catch (e) {
+    throw new AdapterError(e.message || e, e.detail);
+  }
 }
 
 function createAdapter({
