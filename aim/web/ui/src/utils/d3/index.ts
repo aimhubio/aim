@@ -32,6 +32,18 @@ enum CircleEnum {
   ActiveRadius = 5,
 }
 
+enum HighlightEnum {
+  Off = 0,
+  Run = 1,
+  Metric = 2,
+  Custom = 3,
+}
+
+enum ZoomEnum {
+  SINGLE = 0,
+  MULTIPLE = 1,
+}
+
 enum CurveEnum {
   Linear = 'curveLinear',
   Basis = 'curveBasis',
@@ -85,6 +97,8 @@ export {
   AlignmentOptionsEnum,
   PointSymbolEnum,
   TrendlineTypeEnum,
+  HighlightEnum,
+  ZoomEnum,
   clearArea,
   drawArea,
   drawAxes,

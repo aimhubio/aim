@@ -1,4 +1,4 @@
-import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
+import { HighlightEnum } from 'utils/d3';
 
 export interface IHighlightModesPopoverProps {
   mode: HighlightEnum;
