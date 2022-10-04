@@ -21,23 +21,21 @@ function getPositionBasedOnOverflow(
   const gap = 10;
 
   if (isPopoverPinned) {
-    if (activePointRect.left - popoverRect.width / 2 < containerRect.left) {
+    const anchorWidth = activePointRect.right - activePointRect.left;
+    const anchorCenter = activePointRect.right - anchorWidth / 2;
+    if (anchorCenter - popoverRect.width / 2 - gap < containerRect.left) {
       // left bound case
       left =
-        activePointRect.right +
-        gap -
-        (activePointRect.left - containerRect.left);
-    } else if (
-      activePointRect.right + popoverRect.width / 2 >
-      containerRect.right
-    ) {
+        activePointRect.right -
+        (activePointRect.right - containerRect.left) +
+        gap;
+    } else if (anchorCenter + popoverRect.width / 2 > containerRect.right) {
       left =
         activePointRect.left -
-        popoverRect.width -
-        gap +
-        (containerRect.right - activePointRect.right);
+        popoverRect.width +
+        (containerRect.right - activePointRect.left);
     } else {
-      left = activePointRect.right + gap - popoverRect.width / 2;
+      left = anchorCenter - popoverRect.width / 2;
     }
 
     if (tooltipAppearance === TooltipAppearance.Top) {
