@@ -153,4 +153,5 @@ export type IconName =
   | 'arrow-right-contained'
   | 'arrow-down-contained'
   | 'audio'
-  | 'distributions';
+  | 'distributions'
+  | 'dashboard';
