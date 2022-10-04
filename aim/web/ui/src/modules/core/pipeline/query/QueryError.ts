@@ -2,6 +2,20 @@ import { BaseErrorDetail } from '../../BaseError';
 import PipelineError from '../PipelineError';
 import { PipelinePhasesEnum } from '../types';
 
+/**
+ * @class FetchingError representing a fetching phase error object.
+ *
+ * Usage:
+ *  <pre>
+ *    new FetchingError()
+ *    new FetchingError(message)
+ *    new FetchingError(message, detail)
+ *  </pre>
+ *
+ * @param {string} message - fetching error message
+ * @param {BaseErrorDetail} detail - fetching error details
+ * @return {FetchingError} - fetching error object
+ */
 class FetchingError extends PipelineError {
   constructor(message?: string, detail?: BaseErrorDetail) {
     super(message, detail, PipelinePhasesEnum.Fetching);
@@ -9,6 +23,20 @@ class FetchingError extends PipelineError {
   }
 }
 
+/**
+ * @class DecodingError representing a decoding phase error object.
+ *
+ * Usage:
+ *  <pre>
+ *    new DecodingError()
+ *    new DecodingError(message)
+ *    new DecodingError(message, detail)
+ *  </pre>
+ *
+ * @param {string} message - decoding error message
+ * @param {BaseErrorDetail} detail - decoding error details
+ * @return {DecodingError} - decoding error object
+ */
 class DecodingError extends PipelineError {
   constructor(message?: string, detail?: BaseErrorDetail) {
     super(message, detail, PipelinePhasesEnum.Decoding);
