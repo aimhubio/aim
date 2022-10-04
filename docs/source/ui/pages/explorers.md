@@ -581,5 +581,5 @@ The result will look like below.
 <img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/figures-explorer/box-full-view.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="groupby_stroke" />
 
 #### Visualization Controls
-[fill in]
+
 
