@@ -62,9 +62,7 @@ class AimCallback:
 
         if not isinstance(metric_name, Sequence):
             raise TypeError(
-                "Expected metric_name to be string or sequence of strings, got {}.".format(
-                    type(metric_name)
-                )
+                f"Expected metric_name to be string or sequence of strings, got {type(metric_name)}."
             )
 
         self._metric_name = metric_name
@@ -84,21 +82,16 @@ class AimCallback:
         if isinstance(self._metric_name, str):
             if len(trial.values) > 1:
                 # Broadcast default name for multi-objective optimization.
-                names = ["{}_{}".format(self._metric_name, i) for i in range(len(trial.values))]
-
+                names = [f"{self._metric_name}_{i}" for i in range(len(trial.values))]
             else:
                 names = [self._metric_name]
-
         else:
             if len(self._metric_name) != len(trial.values):
                 raise ValueError(
                     "Running multi-objective optimization "
-                    "with {} objective values, but {} names specified. "
-                    "Match objective values and names, or use default broadcasting.".format(
-                        len(trial.values), len(self._metric_name)
-                    )
+                    f"with {len(trial.values)} objective values, but {len(self._metric_name)} names specified. "
+                    "Match objective values and names, or use default broadcasting."
                 )
-
             else:
                 names = [*self._metric_name]
 
@@ -113,7 +106,7 @@ class AimCallback:
 
         if not self._run:
             self.setup()
-            self._run["run_name"] = f"trial-{trial.number}"
+            self._run.name = f"trial-{trial.number}"
 
         for key, value in attributes.items():
             self._run.set(('hparams', key), value, strict=False)
@@ -162,9 +155,10 @@ class AimCallback:
                 self._run.set(key, value, strict=False)
 
     def close(self) -> None:
-        self._run.close()
-        self._run = None
-        self._run_hash = None
+        if self._run:
+            self._run.close()
+            self._run = None
+            self._run_hash = None
 
     @experimental_func("3.0.0")
     def track_in_aim(self) -> Callable:
@@ -180,13 +174,9 @@ class AimCallback:
         def decorator(func: ObjectiveFuncType) -> ObjectiveFuncType:
             @functools.wraps(func)
             def wrapper(trial: optuna.trial.Trial) -> Union[float, Sequence[float]]:
-
                 if not self._run:
                     self.setup()
-                    self._run["run_name"] = f"trial-{trial.number}"
-
+                    self._run.name = f"trial-{trial.number}"
                 return func(trial)
-
             return wrapper
-
         return decorator
