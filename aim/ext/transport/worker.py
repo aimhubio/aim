@@ -37,6 +37,14 @@ class RemoteWorker:
         return self._start_time
 
     @property
+    def host(self):
+        return self._host
+
+    @property
+    def port(self):
+        return self._port
+
+    @property
     def address(self):
         return f'{self._host}:{self._port}'
 

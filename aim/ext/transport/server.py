@@ -202,7 +202,7 @@ class RemoteTrackingServicer(remote_tracking_pb2_grpc.RemoteTrackingServiceServi
             raise UnauthorizedRequestError(resource_handler)
 
 
-def run_server(host, port, router_address, ssl_keyfile=None, ssl_certfile=None):
+def run_server(host, port, ssl_keyfile=None, ssl_certfile=None):
     # temporary workaround for M1 build
     import grpc
 

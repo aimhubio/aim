@@ -59,7 +59,7 @@ class RemoteRouterServicer(remote_router_pb2_grpc.RemoteRouterServiceServicer):
     def connect(self, request: rpc_messages.ConnectRequest, _context):
         try:
             worker = self.new_client(request.client_uri)
-            return rpc_messages.ConnectResponse(address=worker.address,
+            return rpc_messages.ConnectResponse(port=worker.address,
                                                 status=rpc_messages.ConnectResponse.Status.OK)
         except Exception as e:
             return rpc_messages.ConnectResponse(status=rpc_messages.ConnectResponse.Status.ERROR,
@@ -72,11 +72,11 @@ class RemoteRouterServicer(remote_router_pb2_grpc.RemoteRouterServiceServicer):
                 if client_uri in worker.clients:
                     if datetime.datetime.now() - worker.start_time > self.WORKER_START_GRACE_PERIOD:
                         worker.resart()
-                    return rpc_messages.ReconnectResponse(address=worker.address,
+                    return rpc_messages.ReconnectResponse(port=worker.port,
                                                           status=rpc_messages.ReconnectResponse.Status.OK)
             # if client wasn't found in the list of clients of any worker fallback to connection logic
             worker = self.new_client(client_uri)
-            return rpc_messages.ReconnectResponse(address=worker.address,
+            return rpc_messages.ReconnectResponse(port=worker.port,
                                                   status=rpc_messages.ReconnectResponse.Status.OK)
         except Exception as e:
             return rpc_messages.ReconnectResponse(status=rpc_messages.ReconnectResponse.Status.ERROR,

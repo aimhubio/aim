@@ -130,13 +130,18 @@ class Client:
         # further incompatibility list will be added manually
 
     def _get_worker_address(self):
+        worker_host = self._remote_path.rsplit(':', maxsplit=1)[0]
+        worker_port = self._get_worker_port()
+        return f'{worker_host}:{worker_port}'
+
+    def _get_worker_port(self):
         request = router_messages.ConnectRequest(
             client_uri=self.uri
         )
         response = self._remote_router_stub.connect(request)
         if response.status == router_messages.ConnectResponse.Status.ERROR:
             raise_exception(response.exception)
-        return response.address
+        return response.port
 
     def client_heartbeat(self):
         request = router_messages.HeartbeatRequest(

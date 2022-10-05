@@ -32,7 +32,7 @@ message ConnectRequest {
 }
 
 message ConnectResponse {
-    string address = 1;
+    string port = 1;
     enum Status {
         OK = 0;
         ERROR = 1;
@@ -46,7 +46,7 @@ message ReconnectRequest {
 }
 
 message ReconnectResponse {
-    string address = 1;
+    string port = 1;
     enum Status {
         OK = 0;
         ERROR = 1;
