@@ -22,19 +22,25 @@ function RecentSearchItem({
   const { elementRef } = useCodeHighlighter();
   const history = useHistory();
 
-  const onClick: (e: React.MouseEvent<HTMLElement>) => void = React.useCallback(
-    (e: React.MouseEvent<HTMLElement>) => {
-      e.stopPropagation();
-      const search = encode({
-        query,
-        advancedMode: true,
-        advancedQuery: query,
-      });
-      const path = `/${explorer}?select=${search}`;
-      history.push(path);
-    },
-    [explorer, history, query],
-  );
+  const onClick: (e: React.MouseEvent<HTMLElement>, newTab?: boolean) => void =
+    React.useCallback(
+      (e: React.MouseEvent<HTMLElement>, newTab?: boolean) => {
+        e.stopPropagation();
+        const search = encode({
+          query,
+          advancedMode: true,
+          advancedQuery: query,
+        });
+        const path = `/${explorer}?select=${search}`;
+        if (newTab) {
+          window.open(path, '_blank');
+          window.focus();
+          return;
+        }
+        history.push(path);
+      },
+      [explorer, history, query],
+    );
   return (
     <Tooltip title={query}>
       <div>
@@ -43,6 +49,11 @@ function RecentSearchItem({
           <pre ref={elementRef} data-lang={'python'}>
             {query}
           </pre>
+          <Icon
+            fontSize={12}
+            onClick={(e) => onClick(e, true)}
+            name='new-tab'
+          />
         </ListItem>
       </div>
     </Tooltip>

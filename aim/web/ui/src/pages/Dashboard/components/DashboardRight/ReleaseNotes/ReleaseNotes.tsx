@@ -39,27 +39,19 @@ function ReleaseNotes(): React.FunctionComponentElement<React.ReactNode> {
               )}
             </div>
             <div className='ReleaseNotes__latest__content'>
-              {LatestReleaseData?.info
-                ?.slice(0, 4)
-                ?.map((title: string, index: number) => (
-                  <div
-                    className='ReleaseNotes__latest__content__item'
-                    key={index}
-                  >
-                    <Text size={12}>{title.replace(/-/g, ' ')}</Text>
-                  </div>
-                ))}
-              {LatestReleaseData?.info?.length > 4 ? (
-                <a
-                  href={LatestReleaseData?.url}
-                  target='_blank'
-                  rel='noreferrer'
+              {LatestReleaseData?.info?.map((title: string, index: number) => (
+                <div
+                  className='ReleaseNotes__latest__content__item'
+                  key={index}
                 >
-                  <Button fullWidth variant='outlined' size='xSmall'>
-                    Show more
-                  </Button>
-                </a>
-              ) : null}
+                  <Text size={12}>{title.replace(/-/g, ' ')}</Text>
+                </div>
+              ))}
+              <a href={LatestReleaseData?.url} target='_blank' rel='noreferrer'>
+                <Button fullWidth variant='outlined' size='xSmall'>
+                  Full release notes
+                </Button>
+              </a>
             </div>
           </div>
           {`v${AIM_VERSION}` === LatestReleaseData?.tagName ? null : (
@@ -88,19 +80,21 @@ function ReleaseNotes(): React.FunctionComponentElement<React.ReactNode> {
                   );
                 })}
               </div>
-              <div
-                className={`ReleaseNotes__changelog__currentRelease ${
-                  scrollShadow
-                    ? 'ReleaseNotes__changelog__currentRelease__scroll'
-                    : ''
-                }`}
-              >
-                <ReleaseNoteItem
-                  tagName={`${currentReleaseData!.tagName} [current]`}
-                  info={currentReleaseData!.info}
-                  href={currentReleaseData!.url}
-                />
-              </div>
+              {currentReleaseData ? (
+                <div
+                  className={`ReleaseNotes__changelog__currentRelease ${
+                    scrollShadow
+                      ? 'ReleaseNotes__changelog__currentRelease__scroll'
+                      : ''
+                  }`}
+                >
+                  <ReleaseNoteItem
+                    tagName={`${currentReleaseData!.tagName} [current]`}
+                    info={currentReleaseData!.info}
+                    href={currentReleaseData!.url}
+                  />
+                </div>
+              ) : null}
             </div>
           )}
           <GuideLinks />

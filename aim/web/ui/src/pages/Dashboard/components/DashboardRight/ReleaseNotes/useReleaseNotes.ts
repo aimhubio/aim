@@ -77,8 +77,7 @@ function useReleaseNotes() {
       setCurrentRelease(data);
       setLoading(false);
     } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error(e);
+      setLoading(false);
     }
   }
 
@@ -87,19 +86,23 @@ function useReleaseNotes() {
     wrapper.innerHTML = marked.parse(releaseBody);
     const listElements: string[] = [];
     wrapper.querySelectorAll('li').forEach((li, index) => {
-      listElements.push(
-        li.innerText.replace(
-          /(\sby\s\@[A-z\d](?:[A-z\d]|-(?=[A-z\d])){0,38}\s\w+\shttps\:\/\/github\.com\/((\w+\/?){4}))/g,
-          '',
-        ),
-      );
+      if (index < 4) {
+        listElements.push(
+          li.innerText.replace(
+            /(\sby\s\@[A-z\d](?:[A-z\d]|-(?=[A-z\d])){0,38}\s\w+\shttps\:\/\/github\.com\/((\w+\/?){4}))/g,
+            '',
+          ),
+        );
+      } else {
+        return;
+      }
     });
     return listElements;
   }
 
   // function to modify release notes name
   function modifyReleaseName(releaseTitle: string): string {
-    return releaseTitle.replace(/(^\🚀\s*v\d+\.\d+\.\d+\s*\-\s*)/, ' - ');
+    return releaseTitle.replace(/(^\🚀\s*v\d+\.\d+\.\d+\s*\-\s*)/, '');
   }
 
   const changelogData: { tagName: string; info: any; url: string }[] =

@@ -14,8 +14,7 @@ function ReleaseNoteItem({
   return (
     <a target='_blank' className='ReleaseNoteItem' rel='noreferrer' {...rest}>
       <Text component='p' size={12}>
-        <span className='ReleaseNoteItem__tagName'>{tagName}</span>
-        {info}
+        <span className='ReleaseNoteItem__tagName'>{tagName}</span> - {info}
       </Text>
     </a>
   );
