@@ -6,10 +6,11 @@
   align-items: center;
   justify-content: flex-start;
   border-radius: $border-radius-sm;
-  min-width: toRem(130px);
-  max-width: toRem(130px);
+  min-width: toRem(132px);
+  max-width: toRem(132px);
   border: 1px solid transparent;
   transition: all 0.18s ease-out;
+  position: relative;
   &__iconWrapper {
     width: 2rem;
     min-width: 2rem;
@@ -35,6 +36,19 @@
     &__label {
       text-transform: capitalize;
     }
+  }
+  &__soonBadge {
+    position: absolute;
+    top: -8px;
+    right: -6px;
+    text-align: center;
+    white-space: nowrap;
+    padding: 1px 4px;
+    color: $pico;
+    border-radius: $border-radius-xss;
+    background-color: white;
+    box-shadow: 0 1px 2px 0 #00000029;
+    user-select: none;
   }
   &.highlighted {
     cursor: pointer;
