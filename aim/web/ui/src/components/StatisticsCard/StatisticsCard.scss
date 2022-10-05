@@ -8,7 +8,7 @@
   border-radius: $border-radius-sm;
   min-width: toRem(132px);
   max-width: toRem(132px);
-  border: 1px solid transparent;
+  border: $border-transparent;
   transition: all 0.18s ease-out;
   position: relative;
   &__iconWrapper {
@@ -39,11 +39,11 @@
   }
   &__soonBadge {
     position: absolute;
-    top: -8px;
-    right: -6px;
+    top: -$space-xs;
+    right: -$space-xxs;
     text-align: center;
     white-space: nowrap;
-    padding: 1px 4px;
+    padding: $space-xxxxxs $space-xxxs;
     color: $pico;
     border-radius: $border-radius-xss;
     background-color: white;
