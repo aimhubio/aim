@@ -90,7 +90,14 @@ export interface ITooltipContent {
   run?: IRun;
 }
 
+export enum TooltipAppearance {
+  Top = 'top',
+  Auto = 'auto',
+  Bottom = 'bottom',
+}
+
 export interface ITooltipConfig {
+  appearance: TooltipAppearance;
   display: boolean;
   selectedFields: string[];
 }

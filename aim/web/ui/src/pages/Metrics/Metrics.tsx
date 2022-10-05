@@ -172,6 +172,7 @@ function Metrics(
                         chartProps={chartProps}
                         resizeMode={props.resizeMode}
                         onRunsTagsChange={props.onRunsTagsChange}
+                        onChangeTooltip={props.onChangeTooltip}
                         controls={
                           <Controls
                             data={props.lineChartData}
