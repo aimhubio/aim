@@ -84,9 +84,12 @@ export default function SandboxVisualizer(props: any) {
       const code = editorValue.current.replace('aim-ui-client', 'js');
       await pyodide.current!.loadPackagesFromImports(code);
       pyodide.current!.runPythonAsync(code).then(() => {
-        const resultData = pyodide.current.globals.get('data').toJs();
-        const convertedResult = toObject(resultData);
-        setResult(convertedResult);
+        const layout = pyodide.current.globals.get('layout');
+        if (layout) {
+          const resultData = pyodide.current.globals.get('layout').toJs();
+          const convertedResult = toObject(resultData);
+          setResult(convertedResult);
+        }
         setIsProcessing(false);
       });
     } catch (ex) {

@@ -70,7 +70,7 @@ def on_active_point_change(val, is_active):
     }
     print(pd.DataFrame(d, index=[val.key]))
 
-data = {
+layout = {
   "lines": {
     "data": lines,
     "callbacks": {
