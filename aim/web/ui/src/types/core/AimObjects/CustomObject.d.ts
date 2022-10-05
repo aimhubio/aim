@@ -6,8 +6,8 @@ import { Params, RunProps } from './Run';
 export interface BaseRangeInfo {
   record_range_used: Tuple<number>;
   record_range_total: Tuple<number>;
-  index_range_used: ?Tuple<number>;
-  index_range_total: ?Tuple<number>;
+  index_range_used: Tuple<number> | null;
+  index_range_total: Tuple<number> | null;
 }
 
 export interface ObjectSequenceBase<T> extends BaseRangeInfo, SequenceBaseView {

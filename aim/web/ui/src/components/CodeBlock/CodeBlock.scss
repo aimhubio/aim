@@ -12,10 +12,10 @@
     margin: 0;
     font-style: normal;
     font-weight: $font-500;
-    font-size: $text-lg;
+    font-size: 15px;
     line-height: 1.3125em;
     overflow: auto;
-    @include monospaceFontFamily();
+    @include monospaceFontFamily(15px);
   }
   &__copy__button {
     top: 0.75rem;

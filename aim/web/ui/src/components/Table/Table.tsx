@@ -4,6 +4,7 @@
 import React from 'react';
 import { isEmpty, isEqual, isNil } from 'lodash-es';
 import { useResizeObserver } from 'hooks';
+import _ from 'lodash-es';
 
 import { Button, Icon, Text } from 'components/kit';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
@@ -92,6 +93,7 @@ const Table = React.forwardRef(function Table(
     columnsColorScales,
     onRowsVisibilityChange,
     visualizationElementType,
+    noColumnActions,
     ...props
   }: ITableProps,
   ref,
@@ -529,7 +531,7 @@ const Table = React.forwardRef(function Table(
     const rightPane = tableContainerRef.current?.querySelector(
       '.Table__pane--right',
     );
-    let availableSpace = 0;
+    let availableSpace = tableContainerRef.current?.offsetWidth ?? 0;
 
     if (leftPane || rightPane) {
       availableSpace =
@@ -743,6 +745,14 @@ const Table = React.forwardRef(function Table(
     }
   }, [appName, sameValueColumns, hiddenColumns]);
 
+  const selectedRunsQuery: string = React.useMemo(() => {
+    if (!_.isEmpty(selectedRows)) {
+      return `run.hash in [${_.uniq(
+        Object.values(selectedRows)?.map((row: any) => `"${row.runHash}"`),
+      ).join(',')}]`;
+    }
+  }, [selectedRows]);
+
   // The right check is !props.isInfiniteLoading && (isLoading || isNil(rowData))
   // but after setting isInfiniteLoading to true, the rowData becomes null, unnecessary renders happening
   // @TODO sanitize this point
@@ -852,7 +862,7 @@ const Table = React.forwardRef(function Table(
                 </div>
               )}
             </div>
-          ) : !isEmpty(selectedRows) && multiSelect ? (
+          ) : !hideHeaderActions && !isEmpty(selectedRows) && multiSelect ? (
             <div className='Table__header selectedRowActionsContainer'>
               <div className='selectedRowActionsContainer__selectedRowsCount'>
                 <Text size={14} tint={50}>
@@ -947,7 +957,7 @@ const Table = React.forwardRef(function Table(
               <div>
                 <CompareSelectedRunsPopover
                   appName={appName}
-                  selectedRows={selectedRows}
+                  query={selectedRunsQuery}
                 />
               </div>
             </div>
@@ -983,13 +993,16 @@ const Table = React.forwardRef(function Table(
                         columns={columnsData.filter((col) => !col.isHidden)}
                         onGroupExpandToggle={onGroupExpandToggle}
                         onRowHover={rowHoverHandler}
-                        onRowClick={rowClickHandler}
+                        onRowClick={
+                          showRowClickBehaviour ? rowClickHandler : undefined
+                        }
                         listWindow={listWindow}
                         multiSelect={multiSelect}
                         selectedRows={selectedRows || {}}
                         onRowSelect={onRowSelect}
                         columnsColorScales={columnsColorScales}
                         onToggleColumnsColorScales={onToggleColumnsColorScales}
+                        noColumnActions={noColumnActions}
                         {...props}
                       />
                     </ErrorBoundary>
@@ -1067,6 +1080,7 @@ const Table = React.forwardRef(function Table(
           size={illustrationConfig?.size || 'xLarge'}
           content={illustrationConfig?.content || ''}
           title={illustrationConfig?.title || ''}
+          showImage={illustrationConfig?.showImage}
         />
       )}
     </ErrorBoundary>

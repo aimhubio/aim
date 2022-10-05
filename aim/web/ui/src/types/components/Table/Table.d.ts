@@ -79,6 +79,7 @@ export interface ITableProps {
   disableRowClick?: boolean;
   columnsColorScales?: { [key: string]: boolean };
   visualizationElementType?: VisualizationElementEnum;
+  noColumnActions?: boolean;
 }
 
 export interface ITableRef {
@@ -104,4 +105,5 @@ export interface IIllustrationConfig {
   type?: IIllustrationBlockProps['type'];
   title?: IIllustrationBlockProps['title'];
   content?: IIllustrationBlockProps['content'];
+  showImage?: IIllustrationBlockProps['showImage'];
 }
