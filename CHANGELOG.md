@@ -15,6 +15,7 @@
 - Deprecate Python 3.6 (alberttorosyan)
 - Add MXNet integration (tmynn)
 - Create a Dashboard page to provide a better onboarding experience (arsengit, roubkar, KaroMourad, mihran113)
+- Add support for tracking jax device arrays (mihran113)
 
 ### Fixes:
 
