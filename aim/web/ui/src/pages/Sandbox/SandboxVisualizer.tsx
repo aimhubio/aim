@@ -130,7 +130,7 @@ export default function SandboxVisualizer(props: any) {
           )}
           <div className='SandboxVisualizer__main__components__viz'>
             {result.lines && (
-              <div style={{ flex: 0.5 }}>
+              <div style={{ flex: 1, minHeight: '50%' }}>
                 <ChartPanel
                   selectOptions={[]}
                   chartType={ChartTypeEnum.LineChart}
@@ -144,6 +144,7 @@ export default function SandboxVisualizer(props: any) {
                   onActivePointChange={
                     result.lines.callbacks?.on_active_point_change ?? null
                   }
+                  onChangeTooltip={() => null}
                   chartProps={result.lines.data.map(() => ({
                     axesScaleType: {
                       xAxis: ScaleEnum.Linear,
@@ -159,7 +160,7 @@ export default function SandboxVisualizer(props: any) {
               </div>
             )}
             {result.dataframe && (
-              <div style={{ flex: 0.5, height: '50%' }}>
+              <div style={{ flex: 1, minHeight: '50%' }}>
                 <DataGrid
                   data={
                     typeof result.dataframe.data === 'string'

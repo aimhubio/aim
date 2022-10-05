@@ -25,14 +25,29 @@
 .SandboxVisualizer__main__editor {
   height: 100%;
   position: relative;
-  flex: 0.35;
+  flex: 0.4;
   border-right: $border-dark;
+  display: flex;
+  flex-direction: column;
+}
+
+.SandboxVisualizer__main__editor__code {
+  flex: 0.8;
+}
+
+.SandboxVisualizer__main__editor__err {
+  @include monospaceFontFamily();
+  flex: 0.2;
+  border-top: $border-dark;
+  padding: $space-xs;
+  overflow: auto;
+  color: $error-color;
 }
 
 .SandboxVisualizer__main__components {
   height: 100%;
   position: relative;
-  flex: 0.65;
+  flex: 0.6;
   display: flex;
   flex-direction: column;
 }
@@ -66,9 +81,9 @@
 }
 
 .SandboxVisualizer__main__components__console {
+  @include monospaceFontFamily();
   flex: 0.2;
   border-top: $border-dark;
   padding: $space-xs;
   overflow: auto;
-  @include monospaceFontFamily();
 }

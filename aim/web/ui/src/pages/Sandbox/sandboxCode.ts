@@ -1,16 +1,16 @@
 export const initialCode = `from aim-ui-client import metrics
 import pandas as pd
-import json
+from datetime import datetime
 
 lines = [[]]
 df_source = {
   "run.name": [],
   "metric.name": [],
   "metric.context": [],
-  "metric.value.min": [],
-  "metric.value.max": [],
-  "metric.value.last": [],
-  "run.hparams.seed": []
+  "epoch": [],
+  "step": [],
+  "value": [],
+  "date": []
 }
 
 metrics_list = []
@@ -47,17 +47,28 @@ for i, metric in enumerate(metrics):
     # set line stroke style 
     "dasharray": "0" if metric.context.subset == "val" else "5 5"
   })
-  # add row
-  df_source["run.name"].append(metric.run.name)
-  df_source["metric.name"].append(metric.name)
-  df_source["metric.context"].append(repr(metric.context.to_py()))
-  df_source["metric.value.min"].append(min(metric.values))
-  df_source["metric.value.max"].append(max(metric.values))
-  df_source["metric.value.last"].append(metric.values[-1])
-  df_source["run.hparams.seed"].append(metric.run.hparams.seed)
+  # add dataframe rows
+  for i, s in enumerate(metric.steps):
+    df_source["run.name"].append(metric.run.name)
+    df_source["metric.name"].append(metric.name)
+    df_source["metric.context"].append(repr(metric.context.to_py()))
+    df_source["epoch"].append(metric.epochs[i])
+    df_source["step"].append(metric.steps[i])
+    df_source["value"].append(metric.values[i])
+    df_source["date"].append(datetime.fromtimestamp(metric.timestamps[i]).strftime('%d-%m-%y %H:%M:%S'))
 
 def on_active_point_change(val, is_active):
-  print(f'{val.xValue}, {val.yValue}')
+  if is_active:
+    metric = metrics[val.key]
+    point_index = list(metric.steps).index(val.xValue)
+    d = {
+      "run.name": metric.run.name,
+      "metric.name": metric.name,
+      "metric.context": repr(metric.context.to_py()),
+      "step": list(metric.steps)[point_index],
+      "value": list(metric.values)[point_index]
+    }
+    print(pd.DataFrame(d, index=[val.key]))
 
 data = {
   "lines": {
@@ -70,5 +81,4 @@ data = {
     "data": pd.DataFrame(df_source).to_json(orient='records')
   }
 }
-
 `;
