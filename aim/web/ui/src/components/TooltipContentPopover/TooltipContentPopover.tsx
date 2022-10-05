@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash-es';
 
 import { Checkbox, Divider, TextField, Typography } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
@@ -7,18 +8,23 @@ import {
   CheckBoxOutlineBlank,
 } from '@material-ui/icons';
 
-import { Badge, Text, ToggleButton } from 'components/kit';
+import { Badge, SelectDropdown, Text, ToggleButton } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import { ISelectDropdownOption } from 'components/kit/SelectDropdown';
 
 import { ITooltipContentPopoverProps } from 'types/components/TooltipContentPopover/TooltipContentPopover';
-import { IGroupingSelectOption } from 'types/services/models/metrics/metricsAppModel';
+import {
+  IGroupingSelectOption,
+  TooltipAppearance,
+} from 'types/services/models/metrics/metricsAppModel.d';
 
 import './TooltipContentPopover.scss';
 
 function TooltipContentPopover({
   onChangeTooltip,
   selectedFields = [],
-  displayTooltip = false,
+  tooltipAppearance = TooltipAppearance.Auto,
+  isTooltipDisplayed = true,
   selectOptions,
 }: ITooltipContentPopoverProps): React.FunctionComponentElement<React.ReactNode> {
   let [inputValue, setInputValue] = React.useState('');
@@ -35,6 +41,7 @@ function TooltipContentPopover({
       }
     }
   }
+
   function handleSelect(values: IGroupingSelectOption[]) {
     onChangeTooltip({
       selectedFields: values.map((item: IGroupingSelectOption) =>
@@ -42,9 +49,14 @@ function TooltipContentPopover({
       ),
     });
   }
-  const onDisplayTooltipChange = React.useCallback(
-    (value, id): void => {
-      onChangeTooltip({ [id]: value === 'Show' });
+
+  const onDisplayTooltipChange = React.useCallback((): void => {
+    onChangeTooltip({ display: !isTooltipDisplayed });
+  }, [onChangeTooltip, isTooltipDisplayed]);
+
+  const onTooltipAppearanceChange = React.useCallback(
+    (value): void => {
+      onChangeTooltip({ appearance: value.value });
     },
     [onChangeTooltip],
   );
@@ -63,6 +75,13 @@ function TooltipContentPopover({
         selectedFields.indexOf(a.value) - selectedFields.indexOf(b.value),
     );
   }, [selectOptions, selectedFields]);
+
+  const tooltipAppearanceOptions: ISelectDropdownOption[] =
+    React.useMemo(() => {
+      return Object.values(TooltipAppearance).map((option) => {
+        return { label: _.capitalize(option), value: option };
+      });
+    }, []);
 
   const options = React.useMemo(() => {
     if (inputValue.trim() !== '') {
@@ -153,17 +172,32 @@ function TooltipContentPopover({
             tint={50}
             className='TooltipContentPopover__subtitle'
           >
-            Toggle Tooltip Visibility
+            Tooltip Visibility On Hover
           </Text>
           <ToggleButton
-            title='Select Mode'
+            title='Select Visibility'
             id='display'
-            value={displayTooltip ? 'Show' : 'Hide'}
+            value={isTooltipDisplayed ? 'Show' : 'Hide'}
             leftLabel='Hide'
             rightLabel='Show'
             leftValue={'Hide'}
             rightValue={'Show'}
             onChange={onDisplayTooltipChange}
+          />
+        </div>
+        <Divider className='TooltipContentPopover__Divider' />
+        <div className='TooltipContentPopover__section'>
+          <Text
+            component='h4'
+            tint={50}
+            className='TooltipContentPopover__subtitle'
+          >
+            Tooltip Appearance
+          </Text>
+          <SelectDropdown
+            selectOptions={tooltipAppearanceOptions}
+            selected={tooltipAppearance}
+            handleSelect={onTooltipAppearanceChange}
           />
         </div>
       </div>
