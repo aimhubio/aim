@@ -44,7 +44,7 @@ export interface ITagInfo {
   archived: boolean;
   color: string;
   id: string;
-  comment: string;
+  description: string;
   name: string;
   run_count: number;
 }

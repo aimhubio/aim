@@ -1,9 +1,10 @@
 import React from 'react';
 import { Link as RouteLink } from 'react-router-dom';
+import classNames from 'classnames';
 
 import { Divider, Link } from '@material-ui/core';
 
-import { Badge, Button } from 'components/kit';
+import { Text, Button, Icon } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { PathEnum } from 'config/enums/routesEnum';
@@ -25,6 +26,31 @@ function SelectTag({
   const [tags, setTags] = React.useState<ITagInfo[]>([]);
   const getTagsRef = React.useRef<any>(null);
   const attachTagToRunRef = React.useRef<any>(null);
+  const deleteRunsTagRef = React.useRef<any>(null);
+
+  const deleteRunsTag = React.useCallback(
+    (run_id: string, tag: ITagInfo): void => {
+      deleteRunsTagRef.current = runsService?.deleteRunsTag(run_id, tag.id);
+      deleteRunsTagRef.current.call();
+    },
+    [],
+  );
+
+  const onAttachedTagDelete = React.useCallback(
+    (e): void => {
+      const tag_id = e.currentTarget?.id;
+      const tag = attachedTags.find((tag) => tag.id === tag_id);
+      if (tag) {
+        const resultTags: ITagInfo[] = attachedTags.filter(
+          (t) => tag.id !== t.id,
+        );
+        setAttachedTags(resultTags);
+        deleteRunsTag(runHash, tag);
+        onRunsTagsChange && onRunsTagsChange(runHash, resultTags);
+      }
+    },
+    [onRunsTagsChange, setAttachedTags, attachedTags, deleteRunsTag, runHash],
+  );
 
   const attachTagToRun = React.useCallback((tag: ITagInfo, run_id: string) => {
     attachTagToRunRef.current = runsService?.attachRunsTag(
@@ -63,16 +89,21 @@ function SelectTag({
         setTags(tags || []);
       });
     }
+  }, [runHash]);
+
+  React.useEffect(() => {
     return () => {
       getTagsRef.current?.abort();
+      attachTagToRunRef.current?.abort();
+      deleteRunsTagRef.current?.abort();
     };
-  }, [runHash]);
+  }, []);
 
   return (
     <ErrorBoundary>
       <div className='SelectTag'>
         {tags?.length > 0 ? (
-          <div className='SelectTag__tags'>
+          <div className='SelectTag__tags ScrollBar__hidden'>
             {tags.map((tag: ITagInfo) => {
               const tagAttached = attachedTags.find(
                 (attachedTag) => attachedTag.id === tag.id,
@@ -80,18 +111,42 @@ function SelectTag({
               return (
                 <div
                   key={tag.id}
-                  className={`SelectTag__tags__badge ${
-                    tagAttached ? 'outlined' : ''
-                  }`}
+                  className='SelectTag__tags__item'
+                  id={tag.id}
+                  onClick={(e) =>
+                    tagAttached ? onAttachedTagDelete(e) : onAttachedTagAdd(e)
+                  }
                 >
-                  <Badge
-                    color={tag.color}
-                    size='xSmall'
-                    label={tag.name}
-                    id={tag.id}
-                    startIcon={tagAttached && 'check'}
-                    onClick={onAttachedTagAdd}
-                  />
+                  {tagAttached && (
+                    <Icon
+                      name='check'
+                      className='SelectTag__tags__item__checkedIcon'
+                      fontSize={12}
+                    />
+                  )}
+                  <div className='SelectTag__tags__item__content'>
+                    <div className='SelectTag__tags__item__content__nameWrapper'>
+                      <span
+                        className='SelectTag__tags__item__content__nameWrapper__colorBadge'
+                        style={{ background: tag.color }}
+                      />
+                      <Text
+                        className='SelectTag__tags__item__content__nameWrapper__name'
+                        size={12}
+                        weight={500}
+                      >
+                        {tag.name}
+                      </Text>
+                    </div>
+                    <Text
+                      className='SelectTag__tags__item__content__description'
+                      size={10}
+                      tint={60}
+                      weight={500}
+                    >
+                      {tag.description}
+                    </Text>
+                  </div>
                 </div>
               );
             })}

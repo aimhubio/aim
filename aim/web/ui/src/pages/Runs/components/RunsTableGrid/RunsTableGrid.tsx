@@ -213,7 +213,7 @@ function runsTableRowRenderer(
             tags={rowData.tags}
             headerRenderer={() => <></>}
             addTagButtonSize='xxSmall'
-            hasAttachedTagsPopup
+            inlineAttachedTagsList
           />
         ),
       },
