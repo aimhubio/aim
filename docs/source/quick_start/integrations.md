@@ -270,7 +270,7 @@ It takes two steps to integrate Aim into your training script.
 Step 1: Explicitly import the `AimCallback` for tracking training metadata.
 
 ```python
-from aim.sdk.adapters.fastai import AimCallback
+from aim.fastai import AimCallback
 ```
 
 Step 2: Pass the callback to `cbs` list upon initiating your training.
@@ -284,6 +284,31 @@ learn = cnn_learner(dls, resnet18, pretrained=True,
 
 See `AimCallback` source [here](https://github.com/aimhubio/aim/blob/main/aim/sdk/adapters/fastai.py).  
 Check out a simple regression task example [here](https://github.com/aimhubio/aim/blob/main/examples/fastai_track.py).
+
+### Integration with MXNet
+
+To track MXNet experiments use Aim callback designed for [MXNet](https://mxnet.apache.org/) fit method.
+It takes two steps to integrate Aim into your training script.
+
+Step 1: Import the `AimLoggingHandler` for tracking training metadata.
+
+```python
+from aim.mxnet import AimLoggingHandler
+```
+
+Step 2: Pass a callback instance to `event_handlers` list upon initiating your training.
+
+```python
+aim_log_handler = AimLoggingHandler(repo='.', experiment_name='mxnet_example',
+                                    log_interval=1, metrics=[train_acc, train_loss, val_acc])
+
+est.fit(train_data=train_data_loader, val_data=val_data_loader,
+        epochs=num_epochs, event_handlers=[aim_log_handler])
+```
+
+See `AimCallback` source [here](https://github.com/aimhubio/aim/blob/main/aim/sdk/adapters/mxnet.py).  
+Check out a simple regression task example [here](https://github.com/aimhubio/aim/blob/main/examples/mxnet_track.py).
+
 
 ### What's next?
 
