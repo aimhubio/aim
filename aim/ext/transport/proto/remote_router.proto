@@ -27,11 +27,11 @@ message HeartbeatResponse {
     ExceptionResponse exception = 2;
 }
 
-message ClientConnectRequest {
+message ConnectRequest {
     string client_uri = 1;
 }
 
-message ClientConnectResponse {
+message ConnectResponse {
     string address = 1;
     enum Status {
         OK = 0;
@@ -41,11 +41,11 @@ message ClientConnectResponse {
     ExceptionResponse exception = 3;
 }
 
-message ClientReConnectRequest {
+message ReconnectRequest {
     string client_uri = 1;
 }
 
-message ClientReConnectResponse {
+message ReconnectResponse {
     string address = 1;
     enum Status {
         OK = 0;
@@ -55,11 +55,11 @@ message ClientReConnectResponse {
     ExceptionResponse exception = 3;
 }
 
-message ClientDisconnectRequest {
+message DisconnectRequest {
     string client_uri = 1;
 }
 
-message ClientDisconnectResponse {
+message DisconnectResponse {
     enum Status {
         OK = 0;
         ERROR = 1;
@@ -73,7 +73,7 @@ message ClientDisconnectResponse {
 service RemoteRouterService {
     rpc client_heartbeat(HeartbeatRequest) returns (HeartbeatResponse) {}
     rpc get_version(VersionRequest) returns (VersionResponse) {}
-    rpc client_connect(ClientConnectRequest) returns (ClientConnectResponse) {}
-    rpc client_re_connect(ClientReConnectRequest) returns (ClientReConnectResponse) {}
-    rpc client_disconnect(ClientDisconnectRequest) returns (ClientDisconnectResponse) {}
+    rpc connect(ConnectRequest) returns (ConnectResponse) {}
+    rpc reconnect(ReconnectRequest) returns (ReconnectResponse) {}
+    rpc disconnect(DisconnectRequest) returns (DisconnectResponse) {}
 }

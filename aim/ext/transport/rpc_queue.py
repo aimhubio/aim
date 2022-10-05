@@ -77,7 +77,7 @@ class RpcQueueWithRetry(object):
                     raise e
 
                 try:
-                    self._client().client_reconnect()
+                    self._client().reconnect()
                 except Exception:
                     pass
 

@@ -130,11 +130,11 @@ class Client:
         # further incompatibility list will be added manually
 
     def _get_worker_address(self):
-        request = router_messages.ClientConnectRequest(
+        request = router_messages.ConnectRequest(
             client_uri=self.uri
         )
-        response = self._remote_router_stub.client_connect(request)
-        if response.status == router_messages.ClientConnectResponse.Status.ERROR:
+        response = self._remote_router_stub.connect(request)
+        if response.status == router_messages.ConnectResponse.Status.ERROR:
             raise_exception(response.exception)
         return response.address
 
@@ -145,25 +145,25 @@ class Client:
         response = self._remote_router_stub.client_heartbeat(request)
         return response
 
-    def client_reconnect(self, ):
-        request = router_messages.ClientReConnectRequest(
+    def reconnect(self):
+        request = router_messages.ReconnectRequest(
             client_uri=self.uri
         )
-        response = self._remote_router_stub.client_re_connect(request)
-        if response.status == router_messages.ClientReConnectRequest.Status.ERROR:
+        response = self._remote_router_stub.reconnect(request)
+        if response.status == router_messages.ReconnectResponse.Status.ERROR:
             raise_exception(response.exception)
 
         self._reinitialize_all_resources()
 
         return response
 
-    def client_disconnect(self,):
-        request = router_messages.ClientDisconnectRequest(
+    def disconnect(self):
+        request = router_messages.DisconnectRequest(
             client_uri=self.uri
         )
-        response = self._remote_router_stub.client_disconnect(request)
+        response = self._remote_router_stub.disconnect(request)
 
-        if response.status == router_messages.ClientDisconnectResponse.Status.ERROR:
+        if response.status == router_messages.DisconnectResponse.Status.ERROR:
             raise_exception(response.exception)
 
     def get_version(self,):

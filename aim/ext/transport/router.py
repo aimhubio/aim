@@ -30,9 +30,9 @@ def _wait_forever(router, worker_pool, watchers=None):
 class RemoteRouterServicer(remote_router_pb2_grpc.RemoteRouterServiceServicer):
     worker_pool = []
     client_heartbeat_pool = dict()
-    WORKER_RESTART_DELTA = 5 * 60
+    WORKER_START_GRACE_PERIOD = 5 * 60
 
-    def connect_client(self, client_uri):
+    def new_client(self, client_uri):
         sorted_workers_pool = sorted(self.worker_pool, key=lambda w: w.client_count)
 
         worker = sorted_workers_pool[0]
@@ -56,42 +56,42 @@ class RemoteRouterServicer(remote_router_pb2_grpc.RemoteRouterServiceServicer):
                 exception=build_exception(e),
             )
 
-    def client_connect(self, request: rpc_messages.ClientConnectRequest, _context):
+    def connect(self, request: rpc_messages.ConnectRequest, _context):
         try:
-            worker = self.connect_client(request.client_uri)
-            return rpc_messages.ClientConnectResponse(address=worker.address,
-                                                      status=rpc_messages.ClientConnectResponse.Status.OK)
+            worker = self.new_client(request.client_uri)
+            return rpc_messages.ConnectResponse(address=worker.address,
+                                                status=rpc_messages.ConnectResponse.Status.OK)
         except Exception as e:
-            return rpc_messages.ClientConnectRequest(status=rpc_messages.ClientConnectResponse.Status.ERROR,
-                                                     exception=build_exception(e))
+            return rpc_messages.ConnectResponse(status=rpc_messages.ConnectResponse.Status.ERROR,
+                                                exception=build_exception(e))
 
-    def client_re_connect(self, request: rpc_messages.ClientReConnectRequest, _context):
+    def reconnect(self, request: rpc_messages.ReconnectRequest, _context):
         try:
             client_uri = request.client_uri
             for worker in self.worker_pool:
                 if client_uri in worker.clients:
-                    if datetime.datetime.now() - worker.start_time > self.WORKER_RESTART_DELTA:
+                    if datetime.datetime.now() - worker.start_time > self.WORKER_START_GRACE_PERIOD:
                         worker.resart()
-                    return rpc_messages.ClientReConnectResponse(address=worker.address,
-                                                                status=rpc_messages.ClientConnectResponse.Status.OK)
+                    return rpc_messages.ReconnectResponse(address=worker.address,
+                                                          status=rpc_messages.ReconnectResponse.Status.OK)
             # if client wasn't found in the list of clients of any worker fallback to connection logic
-            worker = self.connect_client(client_uri)
-            return rpc_messages.ClientReConnectResponse(address=worker.address,
-                                                        status=rpc_messages.ClientReConnectRequest.Status.OK)
+            worker = self.new_client(client_uri)
+            return rpc_messages.ReconnectResponse(address=worker.address,
+                                                  status=rpc_messages.ReconnectResponse.Status.OK)
         except Exception as e:
-            return rpc_messages.ClientReConnectResponse(status=rpc_messages.ClientReConnectResponse.Status.ERROR,
-                                                        exception=build_exception(e))
+            return rpc_messages.ReconnectResponse(status=rpc_messages.ReconnectResponse.Status.ERROR,
+                                                  exception=build_exception(e))
 
-    def client_disconnect(self, request: rpc_messages.ClientDisconnectRequest, _context):
+    def disconnect(self, request: rpc_messages.DisconnectRequest, _context):
         try:
             client_uri = request.client_uri
             for worker in RemoteRouterServicer.worker_pool:
                 worker.remove_client(client_uri)
 
-            return rpc_messages.ClientDisconnectResponse(status=rpc_messages.ClientDisconnectResponse.Status.OK)
+            return rpc_messages.DisconnectResponse(status=rpc_messages.DisconnectResponse.Status.OK)
         except Exception as e:
-            return rpc_messages.ClientDisconnectRequest(status=rpc_messages.ClientDisconnectResponse.Status.ERROR,
-                                                        exception=build_exception(e))
+            return rpc_messages.DisconnectResponse(status=rpc_messages.DisconnectResponse.Status.ERROR,
+                                                   exception=build_exception(e))
 
 
 def run_router(host, port, workers=1, ssl_keyfile=None, ssl_certfile=None):

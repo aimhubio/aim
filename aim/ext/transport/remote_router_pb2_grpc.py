@@ -28,20 +28,20 @@ class RemoteRouterServiceStub(object):
                 request_serializer=remote__router__pb2.VersionRequest.SerializeToString,
                 response_deserializer=remote__router__pb2.VersionResponse.FromString,
                 )
-        self.client_connect = channel.unary_unary(
-                '/RemoteRouterService/client_connect',
-                request_serializer=remote__router__pb2.ClientConnectRequest.SerializeToString,
-                response_deserializer=remote__router__pb2.ClientConnectResponse.FromString,
+        self.connect = channel.unary_unary(
+                '/RemoteRouterService/connect',
+                request_serializer=remote__router__pb2.ConnectRequest.SerializeToString,
+                response_deserializer=remote__router__pb2.ConnectResponse.FromString,
                 )
-        self.client_re_connect = channel.unary_unary(
-                '/RemoteRouterService/client_re_connect',
-                request_serializer=remote__router__pb2.ClientReConnectRequest.SerializeToString,
-                response_deserializer=remote__router__pb2.ClientReConnectResponse.FromString,
+        self.reconnect = channel.unary_unary(
+                '/RemoteRouterService/reconnect',
+                request_serializer=remote__router__pb2.ReconnectRequest.SerializeToString,
+                response_deserializer=remote__router__pb2.ReconnectResponse.FromString,
                 )
-        self.client_disconnect = channel.unary_unary(
-                '/RemoteRouterService/client_disconnect',
-                request_serializer=remote__router__pb2.ClientDisconnectRequest.SerializeToString,
-                response_deserializer=remote__router__pb2.ClientDisconnectResponse.FromString,
+        self.disconnect = channel.unary_unary(
+                '/RemoteRouterService/disconnect',
+                request_serializer=remote__router__pb2.DisconnectRequest.SerializeToString,
+                response_deserializer=remote__router__pb2.DisconnectResponse.FromString,
                 )
 
 
@@ -60,19 +60,19 @@ class RemoteRouterServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def client_connect(self, request, context):
+    def connect(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def client_re_connect(self, request, context):
+    def reconnect(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def client_disconnect(self, request, context):
+    def disconnect(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -91,20 +91,20 @@ def add_RemoteRouterServiceServicer_to_server(servicer, server):
                     request_deserializer=remote__router__pb2.VersionRequest.FromString,
                     response_serializer=remote__router__pb2.VersionResponse.SerializeToString,
             ),
-            'client_connect': grpc.unary_unary_rpc_method_handler(
-                    servicer.client_connect,
-                    request_deserializer=remote__router__pb2.ClientConnectRequest.FromString,
-                    response_serializer=remote__router__pb2.ClientConnectResponse.SerializeToString,
+            'connect': grpc.unary_unary_rpc_method_handler(
+                    servicer.connect,
+                    request_deserializer=remote__router__pb2.ConnectRequest.FromString,
+                    response_serializer=remote__router__pb2.ConnectResponse.SerializeToString,
             ),
-            'client_re_connect': grpc.unary_unary_rpc_method_handler(
-                    servicer.client_re_connect,
-                    request_deserializer=remote__router__pb2.ClientReConnectRequest.FromString,
-                    response_serializer=remote__router__pb2.ClientReConnectResponse.SerializeToString,
+            'reconnect': grpc.unary_unary_rpc_method_handler(
+                    servicer.reconnect,
+                    request_deserializer=remote__router__pb2.ReconnectRequest.FromString,
+                    response_serializer=remote__router__pb2.ReconnectResponse.SerializeToString,
             ),
-            'client_disconnect': grpc.unary_unary_rpc_method_handler(
-                    servicer.client_disconnect,
-                    request_deserializer=remote__router__pb2.ClientDisconnectRequest.FromString,
-                    response_serializer=remote__router__pb2.ClientDisconnectResponse.SerializeToString,
+            'disconnect': grpc.unary_unary_rpc_method_handler(
+                    servicer.disconnect,
+                    request_deserializer=remote__router__pb2.DisconnectRequest.FromString,
+                    response_serializer=remote__router__pb2.DisconnectResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -151,7 +151,7 @@ class RemoteRouterService(object):
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def client_connect(request,
+    def connect(request,
             target,
             options=(),
             channel_credentials=None,
@@ -161,14 +161,14 @@ class RemoteRouterService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/RemoteRouterService/client_connect',
-            remote__router__pb2.ClientConnectRequest.SerializeToString,
-            remote__router__pb2.ClientConnectResponse.FromString,
+        return grpc.experimental.unary_unary(request, target, '/RemoteRouterService/connect',
+            remote__router__pb2.ConnectRequest.SerializeToString,
+            remote__router__pb2.ConnectResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def client_re_connect(request,
+    def reconnect(request,
             target,
             options=(),
             channel_credentials=None,
@@ -178,14 +178,14 @@ class RemoteRouterService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/RemoteRouterService/client_re_connect',
-            remote__router__pb2.ClientReConnectRequest.SerializeToString,
-            remote__router__pb2.ClientReConnectResponse.FromString,
+        return grpc.experimental.unary_unary(request, target, '/RemoteRouterService/reconnect',
+            remote__router__pb2.ReconnectRequest.SerializeToString,
+            remote__router__pb2.ReconnectResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def client_disconnect(request,
+    def disconnect(request,
             target,
             options=(),
             channel_credentials=None,
@@ -195,8 +195,8 @@ class RemoteRouterService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/RemoteRouterService/client_disconnect',
-            remote__router__pb2.ClientDisconnectRequest.SerializeToString,
-            remote__router__pb2.ClientDisconnectResponse.FromString,
+        return grpc.experimental.unary_unary(request, target, '/RemoteRouterService/disconnect',
+            remote__router__pb2.DisconnectRequest.SerializeToString,
+            remote__router__pb2.DisconnectResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
