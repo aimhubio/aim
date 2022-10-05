@@ -1,5 +1,6 @@
 import React from 'react';
 import _ from 'lodash-es';
+import { marked } from 'marked';
 
 import { IReleaseNote } from 'modules/core/api/releaseNotesApi/types';
 import { IResourceState } from 'modules/core/utils/createResource';
@@ -81,47 +82,37 @@ function useReleaseNotes() {
     }
   }
 
-  function modifyReleaseNote(
-    releaseBody: string,
-  ): RegExpMatchArray | null | any {
-    let body = releaseBody;
-    const regTitle = /#{2}.+/g;
-    const regTitleMatch = body.match(regTitle)?.[0].replace(/#{2}/g, '');
-    return [regTitleMatch];
+  function getLatestReleaseInfo(releaseBody: string): RegExpMatchArray | null {
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = marked.parse(releaseBody);
+    const listElements: string[] = [];
+    wrapper.querySelectorAll('li').forEach((li, index) => {
+      listElements.push(
+        li.innerText.replace(
+          /(\sby\s\@[A-z\d](?:[A-z\d]|-(?=[A-z\d])){0,38}\s\w+\shttps\:\/\/github\.com\/((\w+\/?){4}))/g,
+          '',
+        ),
+      );
+    });
+    return listElements;
   }
 
-  function getCurrentReleaseInfo(releaseBody: string): RegExpMatchArray | null {
-    const exp = /(?:^|\n)(?:d.|[*+-]) [^]*?(?=\n(?:d.|[*+-])|$)/g;
-    let body = releaseBody;
-    let str = body
-      .replace(/(\r\n|\n|\r)/g, '\n')
-      .replace(/\*/g, '-')
-      .replace(
-        /(\sby\s\@[A-z\d](?:[A-z\d]|-(?=[A-z\d])){0,38}\s\w+\shttps\:\/\/github\.com\/((\w+\/?){4}))/g,
-        '',
-      );
-    return str.match(exp);
+  // function to modify release notes name
+  function modifyReleaseName(releaseTitle: string): string {
+    return releaseTitle.replace(/(^\🚀\s*v\d+\.\d+\.\d+\s*\-\s*)/, ' - ');
   }
 
   const changelogData: { tagName: string; info: any; url: string }[] =
     React.useMemo(() => {
       const data: { tagName: string; info: any; url: string }[] = [];
       releaseNotesStore?.data?.some((release: IReleaseNote) => {
-        const info = modifyReleaseNote(release.body);
+        data.push({
+          tagName: release.tag_name,
+          info: modifyReleaseName(release.name),
+          url: release.html_url,
+        });
         if (release.tag_name === `v${AIM_VERSION}`) {
-          data.push({
-            tagName: release.tag_name,
-            info: modifyReleaseNote(release.body),
-            url: release.html_url,
-          });
           return true;
-        }
-        if (info) {
-          data.push({
-            tagName: release.tag_name,
-            info: modifyReleaseNote(release.body),
-            url: release.html_url,
-          });
         }
       });
       return data;
@@ -133,7 +124,7 @@ function useReleaseNotes() {
     if (currentRelease) {
       return {
         tagName: currentRelease?.tag_name,
-        info: modifyReleaseNote(currentRelease?.body),
+        info: modifyReleaseName(currentRelease?.name),
         url: currentRelease.html_url,
       };
     }
@@ -146,7 +137,7 @@ function useReleaseNotes() {
     if (latest) {
       return {
         tagName: latest?.tag_name,
-        info: getCurrentReleaseInfo(latest.body),
+        info: getLatestReleaseInfo(latest.body),
         url: latest.html_url,
       };
     }

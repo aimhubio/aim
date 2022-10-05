@@ -44,8 +44,9 @@ function TagsCard(): React.FunctionComponentElement<React.ReactNode> | null {
           rowHeight={24}
           disableMatchBar={true}
           illustrationConfig={{
-            size: 'large',
+            size: 'small',
             title: 'No Results',
+            showImage: false,
           }}
           toolbarItems={[
             <CompareSelectedRunsPopover
@@ -59,7 +60,7 @@ function TagsCard(): React.FunctionComponentElement<React.ReactNode> | null {
       ) : null}
       <NavLink className='TagsCard__NavLink' to='/tags'>
         <Button fullWidth size='xSmall' variant='outlined'>
-          {tagsStore?.data?.length ? 'Explore tags' : 'Create a new tag'}
+          {tagsStore?.data?.length ? 'See all tags' : 'Create a new tag'}
         </Button>
       </NavLink>
     </div>

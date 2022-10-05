@@ -31,6 +31,10 @@
     &__content {
       display: flex;
       flex-direction: column;
+      a {
+        text-decoration: none;
+        display: block;
+      }
       &__item {
         display: flex;
         padding-left: 18px;

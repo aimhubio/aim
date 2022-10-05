@@ -84,19 +84,19 @@ const version: string = getDocsVersion();
 
 const DASHBOARD_PAGE_GUIDES: { name: string; url: string }[] = [
   {
-    name: 'Runs Management',
+    name: 'UI Runs Management',
     url: `https://aimstack.readthedocs.io/en/${version}/ui/pages/run_management.html`,
   },
   {
-    name: 'Explorers',
+    name: 'UI Explorers',
     url: `https://aimstack.readthedocs.io/en/${version}/ui/pages/explorers.html`,
   },
   {
-    name: 'Bookmarks',
+    name: 'UI Bookmarks',
     url: `https://aimstack.readthedocs.io/en/${version}/ui/pages/bookmarks.html`,
   },
   {
-    name: 'Tags page',
+    name: 'UI Tags page',
     url: `https://aimstack.readthedocs.io/en/${version}/ui/pages/tags.html`,
   },
   {

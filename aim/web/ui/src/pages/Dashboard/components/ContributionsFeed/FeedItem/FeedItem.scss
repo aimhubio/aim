@@ -26,6 +26,7 @@
       background-color: $primary-color-20;
     }
     &__item {
+      white-space: nowrap;
       display: flex;
       align-items: center;
       margin-bottom: $space-xs;

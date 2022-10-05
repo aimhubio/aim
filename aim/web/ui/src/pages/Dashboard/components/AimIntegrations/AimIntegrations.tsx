@@ -151,7 +151,7 @@ aim_logger.attach_output_handler(
   return (
     <div className='AimIntegrations'>
       <Text tint={100} weight={600} size={18}>
-        Integrations
+        Integrate Aim with your favorite ML framework
       </Text>
       <div className='AimIntegrations__section'>
         {integrations.map((item, i) => (

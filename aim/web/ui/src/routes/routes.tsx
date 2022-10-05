@@ -23,7 +23,7 @@ const Bookmarks = React.lazy(
     ),
 );
 const Dashboard = React.lazy(
-  () => import(/* webpackChunkName: "Dashboard" */ 'pages/Dashboard/Dashboard'),
+  () => import(/* webpackChunkName: "dashboard" */ 'pages/Dashboard/Dashboard'),
 );
 const TagsContainer = React.lazy(
   () => import(/* webpackChunkName: "tags" */ 'pages/Tags/TagsContainer'),

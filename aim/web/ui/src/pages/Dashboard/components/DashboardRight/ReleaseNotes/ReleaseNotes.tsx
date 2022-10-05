@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Spinner, Text } from 'components/kit';
+import { Button, Spinner, Text } from 'components/kit';
 import ReleaseNoteItem from 'components/ReleaseNoteItem/ReleaseNoteItem';
 
 import { AIM_VERSION } from 'config/config';
@@ -39,14 +39,27 @@ function ReleaseNotes(): React.FunctionComponentElement<React.ReactNode> {
               )}
             </div>
             <div className='ReleaseNotes__latest__content'>
-              {LatestReleaseData?.info?.map((title: string, index: number) => (
-                <div
-                  className='ReleaseNotes__latest__content__item'
-                  key={index}
+              {LatestReleaseData?.info
+                ?.slice(0, 4)
+                ?.map((title: string, index: number) => (
+                  <div
+                    className='ReleaseNotes__latest__content__item'
+                    key={index}
+                  >
+                    <Text size={12}>{title.replace(/-/g, ' ')}</Text>
+                  </div>
+                ))}
+              {LatestReleaseData?.info?.length > 4 ? (
+                <a
+                  href={LatestReleaseData?.url}
+                  target='_blank'
+                  rel='noreferrer'
                 >
-                  <Text size={12}>{title.replace(/-/g, ' ')}</Text>
-                </div>
-              ))}
+                  <Button fullWidth variant='outlined' size='xSmall'>
+                    Show more
+                  </Button>
+                </a>
+              ) : null}
             </div>
           </div>
           {`v${AIM_VERSION}` === LatestReleaseData?.tagName ? null : (
@@ -69,7 +82,7 @@ function ReleaseNotes(): React.FunctionComponentElement<React.ReactNode> {
                     <ReleaseNoteItem
                       key={item.tagName}
                       tagName={item.tagName}
-                      info={item.info[0]}
+                      info={item.info}
                       href={item.url}
                     />
                   );
@@ -84,7 +97,7 @@ function ReleaseNotes(): React.FunctionComponentElement<React.ReactNode> {
               >
                 <ReleaseNoteItem
                   tagName={`${currentReleaseData!.tagName} [current]`}
-                  info={currentReleaseData!.info[0]}
+                  info={currentReleaseData!.info}
                   href={currentReleaseData!.url}
                 />
               </div>

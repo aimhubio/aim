@@ -1,6 +1,5 @@
 @use 'src/styles/abstracts' as *;
 
-$border: 1px solid $primary-color-10;
 .Dashboard {
   background-color: #ffffff;
   overflow: hidden;
@@ -17,7 +16,7 @@ $border: 1px solid $primary-color-10;
 
   &__middle {
     padding: $space-md $space-lg;
-    border: $border;
+    border: $border-dark-lighter;
     border-top: none;
     display: flex;
     overflow: auto;
@@ -30,8 +29,8 @@ $border: 1px solid $primary-color-10;
     }
   }
   &__Explore__container {
-    border-top: $border;
-    border-bottom: $border;
+    border-top: $border-dark-lighter;
+    border-bottom: $border-dark-lighter;
     display: flex;
   }
   h2 {
