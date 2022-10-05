@@ -2,8 +2,6 @@ import * as React from 'react';
 import { useHistory } from 'react-router-dom';
 import classNames from 'classnames';
 
-import { Tooltip } from '@material-ui/core';
-
 import { Icon, Text } from 'components/kit';
 
 import hexToRgbA from 'utils/hexToRgbA';
@@ -35,10 +33,9 @@ function StatisticsCard({
     },
     [onMouseOver],
   );
-  const renderCount = isLoading ? '--' : count;
   const styles = {
     card: {
-      borderColor: `${outlined ? iconBgColor : 'transparent'}`,
+      borderColor: outlined ? iconBgColor : 'transparent',
       backgroundColor: highlighted ? iconBgColor : cardBgColor,
     },
     iconWrapper: {
@@ -49,44 +46,49 @@ function StatisticsCard({
     count: highlighted ? { color: '#fff' } : {},
   };
   return (
-    <Tooltip title={title} placement='top'>
-      <div
-        onClick={() => navLink && history.push(navLink)}
-        onMouseLeave={onMouseLeave}
-        onMouseOver={() => onSafeMouseOver(label)}
-        className={classNames('StatisticsCard', { highlighted })}
-        style={styles.card}
-      >
-        {icon && (
-          <div
-            className='StatisticsCard__iconWrapper'
-            style={styles.iconWrapper}
-          >
-            <Icon name={icon} color={styles.iconColor} />
-          </div>
-        )}
-        <div className='StatisticsCard__info'>
-          <Text
-            className='StatisticsCard__info__label'
-            size={10}
-            weight={600}
-            style={styles.label}
-          >
-            {label}
-          </Text>
-          <Tooltip title={renderCount}>
-            <Text
-              className='StatisticsCard__info__count'
-              size={16}
-              weight={600}
-              style={styles.count}
-            >
-              {renderCount}
-            </Text>
-          </Tooltip>
+    <div
+      onClick={() => navLink && history.push(navLink)}
+      onMouseLeave={onMouseLeave}
+      onMouseOver={() => onSafeMouseOver(label)}
+      className={classNames('StatisticsCard', { highlighted })}
+      style={styles.card}
+    >
+      {!navLink && (
+        <Text
+          component='p'
+          className='StatisticsCard__soonBadge'
+          weight={600}
+          size={8}
+        >
+          Coming soon
+        </Text>
+      )}
+
+      {icon && (
+        <div className='StatisticsCard__iconWrapper' style={styles.iconWrapper}>
+          <Icon name={icon} color={styles.iconColor} />
         </div>
+      )}
+      <div className='StatisticsCard__info'>
+        <Text
+          className='StatisticsCard__info__label'
+          size={10}
+          weight={600}
+          style={styles.label}
+        >
+          {label}
+        </Text>
+
+        <Text
+          className='StatisticsCard__info__count'
+          size={16}
+          weight={600}
+          style={styles.count}
+        >
+          <span>{isLoading ? '--' : count}</span>
+        </Text>
       </div>
-    </Tooltip>
+    </div>
   );
 }
 
