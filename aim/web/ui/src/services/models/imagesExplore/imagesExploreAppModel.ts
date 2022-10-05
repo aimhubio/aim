@@ -137,6 +137,7 @@ function getConfig(): IImagesExploreAppConfig {
       indexDensity: '5',
       recordDensity: '50',
       tooltip: {
+        appearance: CONTROLS_DEFAULT_CONFIG.images.tooltip.appearance,
         display: CONTROLS_DEFAULT_CONFIG.images.tooltip.display,
         selectedFields: CONTROLS_DEFAULT_CONFIG.images.tooltip.selectedFields,
       },
