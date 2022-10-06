@@ -8,6 +8,8 @@
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.60",
     "@monaco-editor/react": "4.4.4",
+    "@radix-ui/primitive": "^1.0.0",
+    "@stitches/react": "^1.2.8",
     "@types/marked": "^4.0.7",
     "@uiw/react-textarea-code-editor": "^1.4.14",
     "bs58check": "^2.1.2",
