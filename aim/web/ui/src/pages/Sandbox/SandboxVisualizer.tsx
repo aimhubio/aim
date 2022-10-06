@@ -97,6 +97,44 @@ export default function SandboxVisualizer(props: any) {
     }
   }, [editorValue]);
 
+  const vizElements = {
+    lines: (props: any) => (
+      <ChartPanel
+        selectOptions={[]}
+        chartType={ChartTypeEnum.LineChart}
+        data={props.data}
+        focusedState={{
+          key: null,
+          active: false,
+        }}
+        tooltip={{}}
+        zoom={{}}
+        onActivePointChange={props.callbacks?.on_active_point_change ?? null}
+        onChangeTooltip={() => null}
+        chartProps={props.data.map(() => ({
+          axesScaleType: {
+            xAxis: ScaleEnum.Linear,
+            yAxis: ScaleEnum.Linear,
+          },
+          ignoreOutliers: false,
+          highlightMode: HighlightEnum.Off,
+          curveInterpolation: CurveEnum.Linear,
+        }))}
+        onRunsTagsChange={() => null}
+        controls={null}
+      />
+    ),
+    dataframe: (props: any) => (
+      <DataGrid
+        data={
+          typeof props.data === 'string'
+            ? JSON.parse(result.dataframe.data)
+            : props.data
+        }
+      />
+    ),
+  };
+
   return (
     <div className='SandboxVisualizer'>
       <div className='SandboxVisualizer__panel'>
@@ -135,47 +173,18 @@ export default function SandboxVisualizer(props: any) {
             key={`${isProcessing}`}
             className='SandboxVisualizer__main__components__viz'
           >
-            {result.lines && (
-              <div style={{ flex: 1, minHeight: '50%' }}>
-                <ChartPanel
-                  selectOptions={[]}
-                  chartType={ChartTypeEnum.LineChart}
-                  data={result.lines.data}
-                  focusedState={{
-                    key: null,
-                    active: false,
-                  }}
-                  tooltip={{}}
-                  zoom={{}}
-                  onActivePointChange={
-                    result.lines.callbacks?.on_active_point_change ?? null
-                  }
-                  onChangeTooltip={() => null}
-                  chartProps={result.lines.data.map(() => ({
-                    axesScaleType: {
-                      xAxis: ScaleEnum.Linear,
-                      yAxis: ScaleEnum.Linear,
-                    },
-                    ignoreOutliers: false,
-                    highlightMode: HighlightEnum.Off,
-                    curveInterpolation: CurveEnum.Linear,
-                  }))}
-                  onRunsTagsChange={() => null}
-                  controls={null}
-                />
+            {Object.keys(result).map((vizType) => (
+              <div
+                key={vizType}
+                style={{
+                  flex: 1,
+                  minHeight: '50%',
+                  boxShadow: '0 0 0 1px #b5b9c5',
+                }}
+              >
+                {vizElements[vizType as 'lines' | 'dataframe'](result[vizType])}
               </div>
-            )}
-            {result.dataframe && (
-              <div style={{ flex: 1, minHeight: '50%' }}>
-                <DataGrid
-                  data={
-                    typeof result.dataframe.data === 'string'
-                      ? JSON.parse(result.dataframe.data)
-                      : result.dataframe.data
-                  }
-                />
-              </div>
-            )}
+            ))}
           </div>
           <pre
             id='console'
