@@ -6,6 +6,9 @@
   max-height: 240px;
   display: flex;
   flex-direction: column;
+  &__searchBarContainer {
+    padding: $space-xs;
+  }
   &__tags {
     overflow: auto;
     max-height: 200px;

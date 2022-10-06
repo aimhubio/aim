@@ -6,6 +6,7 @@ import { Divider, Link } from '@material-ui/core';
 
 import { Text, Button, Icon } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import SearchInput from 'components/kit/DataList/SearchBar/SearchInput';
 
 import { PathEnum } from 'config/enums/routesEnum';
 
@@ -25,6 +26,7 @@ function SelectTag({
   updatePopover,
 }: ISelectTagProps): JSX.Element {
   const [tags, setTags] = React.useState<ITagInfo[]>([]);
+  const [searchValue, setSearchValue] = React.useState<string>('');
   const [sortedTags, setSortedTags] = React.useState<
     ITagInfoWithSelectedProperty[]
   >([]);
@@ -137,6 +139,15 @@ function SelectTag({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [runHash]);
 
+  const filteredTagsList = React.useMemo(() => {
+    if (searchValue) {
+      return sortedTags.filter((tag) =>
+        tag.name.toLowerCase().includes(searchValue.toLowerCase()),
+      );
+    }
+    return sortedTags;
+  }, [searchValue, sortedTags]);
+
   React.useEffect(() => {
     return () => {
       getTagsRef.current?.abort();
@@ -148,9 +159,19 @@ function SelectTag({
   return (
     <ErrorBoundary>
       <div className='SelectTag'>
-        {tags?.length > 0 ? (
+        <div className='SelectTag__searchBarContainer'>
+          <SearchInput
+            value={searchValue}
+            onInputClear={() => setSearchValue('')}
+            onInputChange={(value) => setSearchValue(value)}
+            isDisabled={_.isEmpty(sortedTags)}
+            isValidInput={true}
+          />
+        </div>
+        <Divider />
+        {filteredTagsList?.length > 0 ? (
           <div className='SelectTag__tags ScrollBar__hidden'>
-            {sortedTags.map((tag: ITagInfoWithSelectedProperty) => {
+            {filteredTagsList.map((tag: ITagInfoWithSelectedProperty) => {
               return (
                 <div
                   key={tag.id}
@@ -199,7 +220,7 @@ function SelectTag({
         ) : (
           <div className='SelectTag__noTags'>
             <Text size={16} weight={500}>
-              No Tags
+              No Tags Found
             </Text>
           </div>
         )}
