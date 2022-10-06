@@ -206,7 +206,7 @@ function SelectTag({
               color='primary'
               className='SelectTag__createTag'
             >
-              Create Tag
+              Create New Tag
             </Button>
           </Link>
         </div>

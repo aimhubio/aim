@@ -14,6 +14,7 @@
 - Add top and bottom appearance modes to the chart popover (VkoHov)
 - Deprecate Python 3.6 (alberttorosyan)
 - Add MXNet integration (tmynn)
+- Create a Dashboard page to provide a better onboarding experience (arsengit, roubkar, KaroMourad, mihran113)
 
 ### Fixes:
 

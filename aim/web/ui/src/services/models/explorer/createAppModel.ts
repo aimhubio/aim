@@ -197,6 +197,7 @@ import { onCopyToClipBoard } from 'utils/onCopyToClipBoard';
 import { getMetricsInitialRowData } from 'utils/app/getMetricsInitialRowData';
 import { getMetricHash } from 'utils/app/getMetricHash';
 import { getMetricLabel } from 'utils/app/getMetricLabel';
+import saveRecentSearches from 'utils/saveRecentSearches';
 
 import { AppDataTypeEnum, AppNameEnum } from './index';
 
@@ -508,6 +509,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
     function initialize(appId: string): void {
       model.init();
+
       const state: Partial<IAppModelState> = {};
       if (grouping) {
         state.groupingSelectOptions = [];
@@ -528,6 +530,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       if (!appId) {
         setModelDefaultAppConfigData();
       }
+
       projectsService
         .getProjectParams(['metric'])
         .call()
@@ -635,6 +638,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               if (shouldUrlUpdate) {
                 updateURL({ configData, appName });
               }
+              saveRecentSearches(appName, query);
               updateData(runData);
             } catch (ex: Error | any) {
               if (ex.name === 'AbortError') {
@@ -2328,6 +2332,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   },
                 },
               });
+              saveRecentSearches(appName, query);
               if (shouldUrlUpdate) {
                 updateURL({ configData, appName });
               }
@@ -5691,6 +5696,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 liveUpdateInstance?.start({
                   q: configData?.select?.query,
                 });
+                //Changed the layout/styles of the experiments and tags tables to look more like lists|| Extend the contributions section (add activity feed under the contributions)
               } catch (ex: Error | any) {
                 if (ex.name === 'AbortError') {
                   onNotificationAdd({

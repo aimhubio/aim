@@ -1,0 +1,14 @@
+@use 'src/styles/abstracts' as *;
+
+.QuickStart__section {
+  padding: $space-lg 0;
+}
+
+.QuickStart__section__title {
+  margin-bottom: $space-sm;
+}
+
+.QuickStart__section__text {
+  font-style: italic;
+  margin-top: $space-sm;
+}
