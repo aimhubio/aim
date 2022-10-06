@@ -3,12 +3,12 @@
 .SelectTag {
   max-width: 20rem;
   width: 20rem;
-  height: toRem(240px);
+  max-height: 240px;
   display: flex;
   flex-direction: column;
   &__tags {
     overflow: auto;
-    max-height: toRem(200px);
+    max-height: 200px;
     flex: 1 1;
     .icon-check {
       padding: 0;
@@ -73,8 +73,8 @@
     padding: 1rem 0;
     display: flex;
     justify-content: center;
-    height: toRem(100px);
-    align-items: center;
+    flex: 1;
+    align-items: center; 
   }
 
   &__createTag__container {

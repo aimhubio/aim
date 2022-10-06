@@ -82,7 +82,9 @@ function AttachedTagsList({
     }
 
     return (
-      <div className='AttachedTagsList__noAttachedTags'>No attached tags</div>
+      <div className='AttachedTagsList__noAttachedTags'>
+        {inlineAttachedTagsList ? 'Click to edit tags' : 'No attached tags'}
+      </div>
     );
   }, [attachedTags]);
 
