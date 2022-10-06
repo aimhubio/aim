@@ -1,6 +1,6 @@
 import React from 'react';
+import _ from 'lodash-es';
 import { Link as RouteLink } from 'react-router-dom';
-import classNames from 'classnames';
 
 import { Divider, Link } from '@material-ui/core';
 
@@ -13,7 +13,7 @@ import tagsService from 'services/api/tags/tagsService';
 import runsService from 'services/api/runs/runsService';
 
 import { ISelectTagProps } from 'types/components/SelectTag/SelectTag';
-import { ITagInfo } from 'types/pages/tags/Tags';
+import { ITagInfo, ITagInfoWithSelectedProperty } from 'types/pages/tags/Tags';
 
 import './SelectTag.scss';
 
@@ -24,9 +24,23 @@ function SelectTag({
   onRunsTagsChange,
 }: ISelectTagProps): JSX.Element {
   const [tags, setTags] = React.useState<ITagInfo[]>([]);
+  const [sortedTags, setSortedTags] = React.useState<
+    ITagInfoWithSelectedProperty[]
+  >([]);
   const getTagsRef = React.useRef<any>(null);
   const attachTagToRunRef = React.useRef<any>(null);
   const deleteRunsTagRef = React.useRef<any>(null);
+
+  const addSelectedPropertyToTags = function (
+    tags: ITagInfo[],
+  ): ITagInfoWithSelectedProperty[] {
+    return tags.map((tag: ITagInfo) => {
+      const selected = !!attachedTags.find(
+        (attachedTag) => attachedTag.id === tag.id,
+      );
+      return { ...tag, selected };
+    });
+  };
 
   const deleteRunsTag = React.useCallback(
     (run_id: string, tag: ITagInfo): void => {
@@ -47,8 +61,17 @@ function SelectTag({
         setAttachedTags(resultTags);
         deleteRunsTag(runHash, tag);
         onRunsTagsChange && onRunsTagsChange(runHash, resultTags);
+        setSortedTags(
+          sortedTags.map((tag: ITagInfoWithSelectedProperty) => {
+            if (tag.id === tag_id) {
+              return { ...tag, selected: false };
+            }
+            return tag;
+          }),
+        );
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [onRunsTagsChange, setAttachedTags, attachedTags, deleteRunsTag, runHash],
   );
 
@@ -69,9 +92,18 @@ function SelectTag({
           setAttachedTags((prevState) => [...prevState, tag]);
           attachTagToRun(tag, runHash);
           onRunsTagsChange && onRunsTagsChange(runHash, [...attachedTags, tag]);
+          setSortedTags(
+            sortedTags.map((tag: ITagInfoWithSelectedProperty) => {
+              if (tag.id === tag_id) {
+                return { ...tag, selected: true };
+              }
+              return tag;
+            }),
+          );
         }
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       attachedTags,
       attachTagToRun,
@@ -85,10 +117,20 @@ function SelectTag({
   React.useEffect(() => {
     if (runHash) {
       getTagsRef.current = tagsService?.getTags();
-      getTagsRef.current.call().then((tags: any) => {
-        setTags(tags || []);
+      getTagsRef.current?.call().then((tags: ITagInfo[]) => {
+        setSortedTags(
+          tags
+            ? _.orderBy(
+                addSelectedPropertyToTags(tags),
+                ['selected', 'name'],
+                ['desc', 'asc'],
+              )
+            : [],
+        );
+        setTags(tags ?? []);
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [runHash]);
 
   React.useEffect(() => {
@@ -104,20 +146,17 @@ function SelectTag({
       <div className='SelectTag'>
         {tags?.length > 0 ? (
           <div className='SelectTag__tags ScrollBar__hidden'>
-            {tags.map((tag: ITagInfo) => {
-              const tagAttached = attachedTags.find(
-                (attachedTag) => attachedTag.id === tag.id,
-              );
+            {sortedTags.map((tag: ITagInfoWithSelectedProperty) => {
               return (
                 <div
                   key={tag.id}
                   className='SelectTag__tags__item'
                   id={tag.id}
                   onClick={(e) =>
-                    tagAttached ? onAttachedTagDelete(e) : onAttachedTagAdd(e)
+                    tag.selected ? onAttachedTagDelete(e) : onAttachedTagAdd(e)
                   }
                 >
-                  {tagAttached && (
+                  {tag.selected && (
                     <Icon
                       name='check'
                       className='SelectTag__tags__item__checkedIcon'
@@ -152,7 +191,11 @@ function SelectTag({
             })}
           </div>
         ) : (
-          <></>
+          <div className='SelectTag__noTags'>
+            <Text size={16} weight={500}>
+              No Tags
+            </Text>
+          </div>
         )}
         <Divider />
         <div className='SelectTag__createTag__container'>

@@ -48,6 +48,9 @@ export interface ITagInfo {
   name: string;
   run_count: number;
 }
+export interface ITagInfoWithSelectedProperty extends ITagInfo {
+  selected: boolean;
+}
 export interface ITagDetailProps {
   id: string;
   onSoftDeleteModalToggle: () => void;
