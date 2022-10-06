@@ -8,7 +8,8 @@ from aim.cli.upgrade.utils import convert_2to3
 
 from aim.sdk.maintenance_run import MaintenanceRun
 from aim.sdk.utils import backup_run, restore_run_backup, clean_repo_path
-from aim.sdk.repo import Repo
+from aim.sdk.repo import Repo, RepoStatus
+from aim.sdk.index_manager import RepoIndexManager
 
 
 @click.group()
@@ -87,7 +88,7 @@ def to_3_11(ctx, hashes):
 @click.argument('hashes', nargs=-1, type=str)
 @click.pass_context
 def restore_runs(ctx, hashes):
-    """Rollback Runs data for given run hashes to the previous ."""
+    """Rollback Runs data for given run hashes to the previous metric format. """
     if len(hashes) == 0:
         click.echo('Please specify at least one Run to delete.')
         exit(1)
@@ -180,3 +181,33 @@ def prune(ctx):
     # start deleting with the deepest paths first to bypass the cases when parent path is deleted before the child
     for path in sorted(repo_paths, key=len, reverse=True):
         del index_tree[path]
+
+
+@storage.command('reindex')
+@click.option('--finalize-only', required=False, is_flag=True, default=False)
+@click.pass_context
+def reindex(ctx, finalize_only):
+    """ Process runs left in 'in progress' state. """
+    repo_path = ctx.obj['repo']
+    repo_status = Repo.check_repo_status(repo_path)
+    if repo_status != RepoStatus.UPDATED:
+        click.echo(f'\'{repo_path}\' is not updated. Cannot run indexing.')
+    repo_inst = Repo.from_path(repo_path)
+    index_mng = RepoIndexManager.get_index_manager(repo_inst.path)
+    if finalize_only:
+        if not index_mng.reindex_needed:
+            click.echo('Index is up to date.')
+            return
+        confirmed = click.confirm(f'This command will try to finalize all stalled runs in aim repo located at '
+                                  f'\'{repo_path}\'. Do you want to proceed?')
+        if not confirmed:
+            return
+    else:
+        confirmed = click.confirm(f'This command will try to reindex all runs in aim repo located at '
+                                  f'\'{repo_path}\'. This process might take a while. Do you want to proceed?')
+        if not confirmed:
+            return
+
+    index_mng.reindex()
+    if not finalize_only:
+        index_mng.run_flushes_and_compactions()
