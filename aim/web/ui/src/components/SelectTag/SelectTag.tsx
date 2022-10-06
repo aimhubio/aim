@@ -61,8 +61,8 @@ function SelectTag({
         setAttachedTags(resultTags);
         deleteRunsTag(runHash, tag);
         onRunsTagsChange && onRunsTagsChange(runHash, resultTags);
-        setSortedTags(
-          sortedTags.map((tag: ITagInfoWithSelectedProperty) => {
+        setSortedTags((sT) =>
+          sT.map((tag: ITagInfoWithSelectedProperty) => {
             if (tag.id === tag_id) {
               return { ...tag, selected: false };
             }
@@ -92,8 +92,8 @@ function SelectTag({
           setAttachedTags((prevState) => [...prevState, tag]);
           attachTagToRun(tag, runHash);
           onRunsTagsChange && onRunsTagsChange(runHash, [...attachedTags, tag]);
-          setSortedTags(
-            sortedTags.map((tag: ITagInfoWithSelectedProperty) => {
+          setSortedTags((sT) =>
+            sT.map((tag: ITagInfoWithSelectedProperty) => {
               if (tag.id === tag_id) {
                 return { ...tag, selected: true };
               }
@@ -206,7 +206,7 @@ function SelectTag({
               color='primary'
               className='SelectTag__createTag'
             >
-              Create New Tag
+              Edit Tags
             </Button>
           </Link>
         </div>
