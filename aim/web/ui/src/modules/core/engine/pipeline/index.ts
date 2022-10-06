@@ -1,4 +1,4 @@
-import { isEmpty, omit } from 'lodash-es';
+import { isEmpty, isEqual, omit } from 'lodash-es';
 
 import {
   IRunProgressObject,
@@ -10,16 +10,15 @@ import createPipeline, {
   PipelineOptions,
   PipelinePhasesEnum,
 } from 'modules/core/pipeline';
-import history from 'history/browser';
 
 import { SequenceTypesEnum } from 'types/core/enums';
 
 import { PipelineStatusEnum, ProgressState } from '../types';
 import getUrlSearchParam from '../../utils/getUrlSearchParam';
-import listenToSearchParam from '../../utils/listenToSearchParam';
 import updateUrlSearchParam from '../../utils/updateUrlSearchParam';
 import { encode } from '../../../../utils/encoder/encoder';
 import { getRecordState } from '../../../BaseExplorer/components/RangePanel/helpers';
+import browserHistory from '../../services/browserHistory';
 
 import createState, {
   CurrentGrouping,
@@ -124,7 +123,7 @@ function createPipelineEngine<TStore, TObject>(
     const currentGroupings = state.getCurrentGroupings();
 
     state.setCurrentQuery(params);
-    console.log('search');
+
     if (!isInternal) {
       const queryState = store.getState().query;
 
@@ -148,7 +147,7 @@ function createPipelineEngine<TStore, TObject>(
           url !== `${window.location.pathname}${window.location.search}`,
         );
         if (url !== `${window.location.pathname}${window.location.search}`) {
-          window.history.pushState(null, '', url);
+          browserHistory.push(url, null);
         }
       }
     }
@@ -198,7 +197,7 @@ function createPipelineEngine<TStore, TObject>(
             url !== `${window.location.pathname}${window.location.search}`,
           );
           if (url !== `${window.location.pathname}${window.location.search}`) {
-            window.history.pushState(null, '', url);
+            browserHistory.push(url, null);
           }
         }
       })
@@ -239,15 +238,21 @@ function createPipelineEngine<TStore, TObject>(
   function group(config: CurrentGrouping, isInternal: boolean = false): void {
     state.setCurrentGroupings(config);
     console.log('group');
+
+    const equal = isEqual(config, defaultGroupings);
+    console.log(equal);
     if (!isInternal) {
-      const url = updateUrlSearchParam('groupings', encode(config));
+      const url = updateUrlSearchParam(
+        'groupings',
+        equal ? null : encode(config),
+      );
       console.log(
         'update group',
         url !== `${window.location.pathname}${window.location.search}`,
       );
 
       if (url !== `${window.location.pathname}${window.location.search}`) {
-        window.history.pushState(null, '', url);
+        browserHistory.push(url, null);
       }
     }
 
@@ -276,22 +281,30 @@ function createPipelineEngine<TStore, TObject>(
       state.setCurrentGroupings(stateFromStorage);
     }
 
-    listenToSearchParam<any>('groupings', (groupings: any) => {
-      if (!isEmpty(groupings)) {
-        group(groupings, true);
-      } else {
-        group(defaultGroupings, true);
-      }
-    });
+    browserHistory.listenSearchParam<any>(
+      'groupings',
+      (groupings: any) => {
+        if (!isEmpty(groupings)) {
+          group(groupings, true);
+        } else {
+          group(defaultGroupings, true);
+        }
+      },
+      ['PUSH'],
+    );
 
-    listenToSearchParam<any>('query', (query: any) => {
-      console.log('query changed');
-      if (!isEmpty(query)) {
-        search(query.readyQuery, true);
-      } else {
-        search({ q: '' }, true);
-      }
-    });
+    browserHistory.listenSearchParam<any>(
+      'query',
+      (query: any) => {
+        console.log('query changed');
+        if (!isEmpty(query)) {
+          search(query.readyQuery, true);
+        } else {
+          search({ q: '' }, true);
+        }
+      },
+      ['PUSH'],
+    );
   }
 
   return {

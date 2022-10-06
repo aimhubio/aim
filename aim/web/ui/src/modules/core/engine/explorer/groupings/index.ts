@@ -1,13 +1,9 @@
 import { isEmpty, omit } from 'lodash-es';
 
-import history from 'history/browser';
+import browserHistory from 'modules/core/services/browserHistory';
 import { Order } from 'modules/core/pipeline';
 import { createSliceState } from 'modules/core/utils/store';
 import getUrlSearchParam from 'modules/core/utils/getUrlSearchParam';
-import updateUrlSearchParam from 'modules/core/utils/updateUrlSearchParam';
-import listenToSearchParam from 'modules/core/utils/listenToSearchParam';
-
-import { encode } from 'utils/encoder/encoder';
 
 import createGroupingsSlice from './state';
 
@@ -146,10 +142,9 @@ function createGroupingsEngine(config: GroupingConfigs, store: any) {
       methods.update(stateFromStorage);
     }
 
-    listenToSearchParam<GroupValues>(
+    browserHistory.listenSearchParam<GroupValues>(
       'groupings',
       (data: GroupValues | null) => {
-        console.log(data);
         // update state
         if (!isEmpty(data)) {
           methods.update(data as GroupValues);
@@ -157,6 +152,7 @@ function createGroupingsEngine(config: GroupingConfigs, store: any) {
           methods.reset();
         }
       },
+      ['PUSH'],
     );
   }
 

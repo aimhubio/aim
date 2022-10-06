@@ -1,13 +1,9 @@
 import { isEmpty } from 'lodash-es';
 import { UseBoundStore } from 'zustand';
 
-import history from 'history/browser';
 import { ExplorerEngineConfiguration } from 'modules/BaseExplorer/types';
-import listenToSearchParam from 'modules/core/utils/listenToSearchParam';
 import getUrlSearchParam from 'modules/core/utils/getUrlSearchParam';
-import updateUrlSearchParam from 'modules/core/utils/updateUrlSearchParam';
-
-import { encode } from 'utils/encoder/encoder';
+import browserHistory from 'modules/core/services/browserHistory';
 
 import createQueryState from './query';
 import createGroupingsEngine from './groupings';
@@ -29,9 +25,10 @@ function createExplorerAdditionalEngine<T>(
         query.form.update(stateFromStorage.queryState.form);
       }
 
-      const removeSearchParamListener = listenToSearchParam<any>(
+      const removeSearchParamListener = browserHistory.listenSearchParam<any>(
         'query',
         (query: any) => {
+          console.log('query --->', query);
           if (!isEmpty(query)) {
             queryState.ranges.update(query.queryState.ranges);
             queryState.form.update(query.queryState.form);
@@ -39,6 +36,7 @@ function createExplorerAdditionalEngine<T>(
             queryState.reset();
           }
         },
+        ['PUSH'],
       );
 
       return () => {
