@@ -59,18 +59,6 @@ $ aim up [ARGS]
 | `--profiler`                | Enables API profiling which logs run trace inside `.aim/profiler` directory.                                     |
 | `--log-level`               | Specifies log level for python logging package. _`WARNING` by default, `DEBUG` when `--dev` option is provided_. |
 
-### reindex
-
-Update index to include all runs in Aim repo which are left in progress.
-
-```shell
-$ aim reindex [ARGS]
-```
-
-| Args                              | Description                                                                       |
-| --------------------------------- | --------------------------------------------------------------------------------- |
-| `--repo <repo_path>`              | Path to parent directory of `.aim` repo. _Current working directory by default_.  |
-| `--finalize-only`                 | Only finalize runs left in 'in progress' state. Do not attempt runs optimization. |
 
 ### server
 
@@ -200,7 +188,8 @@ __storage subcommands__
 | `upgrade 2to3`   | Upgrades legacy Aim repository from `2.x` to `3.0`.                                      |
 | `upgrade 3.11+`  | Update metric sequence data format for given runs. At least one run should be specified. |
 | `restore`        | Rollback `Run` to old metric format if run backup is available.                          |
-| `prune`          | Remove dangling params/sequences with no referring runs                                    |
+| `reindex`        | Update index to include all runs in Aim repo which are left in progress.                 |
+| `prune`          | Remove dangling params/sequences with no referring runs.                                 |
 
 
 **Sub-command: update 2to3**
@@ -228,6 +217,10 @@ $ aim storage upgrade 3.11+ [HASH] ...
 $ aim storage restore [HASH] ...
 ```
 
+**Sub-command: reindex**
+| Args                  | Description                                                                      |
+| --------------------- | ---------------------------------------------------------------------------------|
+| `--finalize-only`     | Only finalize runs left in 'in progress' state. Do not attempt runs optimization.|
 
 **Sub-command: prune**
 

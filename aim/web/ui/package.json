@@ -1,6 +1,6 @@
 {
   "name": "ui_v2",
-  "version": "3.13.4",
+  "version": "3.14.0",
   "private": true,
   "dependencies": {
     "@aksel/structjs": "^1.0.0",

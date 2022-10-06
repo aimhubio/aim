@@ -2233,6 +2233,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
         });
       }
 
+      function onModelRunsTagsChange(runHash: string, tags: ITagInfo[]): void {
+        onRunsTagsChange({ runHash, tags, model, updateModelData });
+      }
+
       function getRunsData(
         shouldUrlUpdate?: boolean,
         shouldResetSelectedRows?: boolean,
@@ -2774,11 +2778,15 @@ function createAppModel(appConfig: IAppInitialConfig) {
             });
             if (metricsCollection.config !== null) {
               rows[groupKey!].items.push(
-                isRawData ? rowValues : runsTableRowRenderer(rowValues),
+                isRawData
+                  ? rowValues
+                  : runsTableRowRenderer(rowValues, onModelRunsTagsChange),
               );
             } else {
               rows.push(
-                isRawData ? rowValues : runsTableRowRenderer(rowValues),
+                isRawData
+                  ? rowValues
+                  : runsTableRowRenderer(rowValues, onModelRunsTagsChange),
               );
             }
           });
@@ -2799,6 +2807,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             if (metricsCollection.config !== null && !isRawData) {
               rows[groupKey!].data = runsTableRowRenderer(
                 rows[groupKey!].data,
+                onModelRunsTagsChange,
                 true,
                 Object.keys(columnsValues),
               );
@@ -3138,6 +3147,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         onExportTableData,
         onNotificationDelete: onModelNotificationDelete,
         setDefaultAppConfigData: setModelDefaultAppConfigData,
+        onRunsTagsChange: onModelRunsTagsChange,
         changeLiveUpdateConfig,
         archiveRuns,
         deleteRuns,
