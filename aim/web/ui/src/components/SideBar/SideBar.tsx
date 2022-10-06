@@ -42,9 +42,8 @@ function SideBar(): React.FunctionComponentElement<React.ReactNode> {
           <ul className='Sidebar__List'>
             <NavLink
               exact={true}
-              activeClassName={'Sidebar__NavLink--active'}
               className='Sidebar__NavLink'
-              to={routes.HOME.path}
+              to={routes.DASHBOARD.path}
             >
               <li className='Sidebar__List__item'>
                 <img src={logoImg} alt='logo' />
@@ -59,7 +58,7 @@ function SideBar(): React.FunctionComponentElement<React.ReactNode> {
                     to={() => getPathFromStorage(path)}
                     exact={true}
                     isActive={(m, location) =>
-                      location.pathname.startsWith(path)
+                      location.pathname.split('/')[1] === path.split('/')[1]
                     }
                     activeClassName={'Sidebar__NavLink--active'}
                     className='Sidebar__NavLink'

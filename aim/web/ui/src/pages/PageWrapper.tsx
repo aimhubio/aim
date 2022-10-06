@@ -12,7 +12,7 @@ function PageWrapper(props: {
   const { title, path, children } = props;
 
   React.useEffect(() => {
-    if (path === PathEnum.Home) {
+    if (path === PathEnum.Dashboard) {
       setDocumentTitle();
     } else if (path !== PathEnum.Run_Detail) {
       setDocumentTitle(title, true);

@@ -1,0 +1,39 @@
+@use 'src/styles/abstracts' as *;
+
+.Dashboard {
+  background-color: #ffffff;
+  overflow: hidden;
+  display: flex;
+  .DataList .BaseTable__row-cell {
+    p {
+      white-space: nowrap;
+      max-width: 100%;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+  }
+  height: 100vh;
+
+  &__middle {
+    padding: $space-md $space-lg;
+    border: $border-dark-lighter;
+    border-top: none;
+    display: flex;
+    overflow: auto;
+    flex-direction: column;
+    flex: 1 1;
+
+    &--centered {
+      align-items: center;
+      justify-content: center;
+    }
+  }
+  &__Explore__container {
+    border-top: $border-dark-lighter;
+    border-bottom: $border-dark-lighter;
+    display: flex;
+  }
+  h2 {
+    margin: 0 0 1rem 0;
+  }
+}

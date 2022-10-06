@@ -46,15 +46,20 @@ async def project_activity_api(x_timezone_offset: int = Header(default=0),
         raise HTTPException(status_code=404)
 
     num_runs = 0
+    num_archived_runs = 0
     activity_counter = Counter()
     for run in factory.runs():
         creation_time = run.created_at - timedelta(minutes=x_timezone_offset)
         activity_counter[creation_time.strftime('%Y-%m-%dT%H:00:00')] += 1
         num_runs += 1
+        if run.archived:
+            num_archived_runs += 1
 
     return {
         'num_experiments': len(factory.experiments()),
         'num_runs': num_runs,
+        'num_archived_runs': num_archived_runs,
+        'num_active_runs': len(project.repo.list_active_runs()),
         'activity_map': dict(activity_counter),
     }
 
@@ -118,7 +123,8 @@ async def update_pinned_metrics_api(request_data: ProjectPinnedSequencesApiIn):
 
 
 @projects_router.get('/params/', response_model=ProjectParamsOut, response_model_exclude_defaults=True)
-async def project_params_api(sequence: Optional[Tuple[str, ...]] = Query(())):
+async def project_params_api(sequence: Optional[Tuple[str, ...]] = Query(()),
+                             exclude_params: Optional[bool] = False):
     project = Project()
 
     if not project.exists():
@@ -131,10 +137,12 @@ async def project_params_api(sequence: Optional[Tuple[str, ...]] = Query(())):
             raise HTTPException(status_code=400, detail=str(e))
     else:
         sequence = project.repo.available_sequence_types()
-
-    response = {
-        'params': project.repo.collect_params_info(),
-    }
+    if exclude_params:
+        response = {}
+    else:
+        response = {
+            'params': project.repo.collect_params_info(),
+        }
     response.update(**project.repo.collect_sequence_info(sequence))
     return response
 

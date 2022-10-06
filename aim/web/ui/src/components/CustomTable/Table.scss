@@ -109,6 +109,8 @@ $border-radius: 0.2rem;
 
 .Table__pane--selection {
   left: 0;
+  background: #fff;
+  z-index: 2;
   &.withShadow {
     box-shadow: 1px 0 3px 0 $cuddle;
   }
@@ -139,13 +141,13 @@ $border-radius: 0.2rem;
   .Table__column__defaultSelectIcon {
     border: 1.5px solid $pico-80;
     border-radius: $border-radius-xs;
-    width: 1rem;
-    height: 1rem;
+    width: 14px;
+    height: 14px;
   }
   .Table__column__selectedSelectIcon {
     border-radius: $border-radius-xs;
-    width: 1rem;
-    height: 1rem;
+    width: 14px;
+    height: 14px;
     background: $primary-color;
     color: $white;
     display: flex;
@@ -154,8 +156,8 @@ $border-radius: 0.2rem;
   }
   .Table__column__partiallySelectedSelectIcon {
     border-radius: $border-radius-xs;
-    width: 1rem;
-    height: 1rem;
+    width: 14px;
+    height: 14px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -188,6 +190,7 @@ $border-radius: 0.2rem;
     }
     .Table__cell {
       padding: 0;
+      border-right: 1px solid $border-color;
     }
     .Table__cell--header > *:first-child {
       margin-right: 0;

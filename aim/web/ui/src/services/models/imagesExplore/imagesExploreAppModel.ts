@@ -94,6 +94,7 @@ import { onCopyToClipBoard } from 'utils/onCopyToClipBoard';
 import getFilteredRow from 'utils/app/getFilteredRow';
 import { getMetricHash } from 'utils/app/getMetricHash';
 import onRunsTagsChange from 'utils/app/onRunsTagsChange';
+import saveRecentSearches from 'utils/saveRecentSearches';
 
 import createModel from '../model';
 import { AppNameEnum } from '../explorer';
@@ -418,6 +419,7 @@ function getImagesData(
           if (shouldUrlUpdate) {
             updateURL(configData);
           }
+          saveRecentSearches(AppNameEnum.IMAGES, query!);
         } catch (ex: Error | any) {
           if (ex.name === 'AbortError') {
             // Abort Error

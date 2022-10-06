@@ -227,7 +227,9 @@ async def metric_search_result_streamer(traces: SequenceCollection,
 async def run_search_result_streamer(runs: SequenceCollection,
                                      limit: int,
                                      skip_system: bool,
-                                     report_progress: Optional[bool] = True) -> bytes:
+                                     report_progress: Optional[bool] = True,
+                                     exclude_params: Optional[bool] = False,
+                                     exclude_traces: Optional[bool] = False) -> bytes:
     try:
         run_count = 0
         last_reported_progress_time = time.time()
@@ -247,11 +249,13 @@ async def run_search_result_streamer(runs: SequenceCollection,
             run = run_trace_collection.run
             run_dict = {
                 run.hash: {
-                    'params': get_run_params(run, skip_system=skip_system),
-                    'traces': run.collect_sequence_info(sequence_types='metric'),
                     'props': get_run_props(run)
                 }
             }
+            if not exclude_params:
+                run_dict[run.hash]['params'] = get_run_params(run, skip_system=skip_system)
+            if not exclude_traces:
+                run_dict[run.hash]['traces'] = run.collect_sequence_info(sequence_types='metric')
 
             encoded_tree = encode_tree(run_dict)
             yield collect_streamable_data(encoded_tree)
@@ -265,6 +269,36 @@ async def run_search_result_streamer(runs: SequenceCollection,
 
         if report_progress and progress:
             yield collect_streamable_data(encode_tree({f'progress_{progress_reports_sent}': progress}))
+    except asyncio.CancelledError:
+        pass
+
+
+async def run_active_result_streamer(repo: 'Repo', report_progress: Optional[bool] = True):
+    try:
+        active_run_hashes = repo.list_active_runs()
+
+        active_runs_count = len(active_run_hashes)
+        progress_reports_sent = 0
+
+        for run_hash in active_run_hashes:
+            await asyncio.sleep(ASYNC_SLEEP_INTERVAL)
+
+            run = Run(run_hash, repo=repo, read_only=True)
+            run_dict = {
+                run.hash: {
+                    'props': get_run_props(run),
+                    'traces': run.collect_sequence_info(sequence_types='metric')
+                }
+            }
+
+            encoded_tree = encode_tree(run_dict)
+            yield collect_streamable_data(encoded_tree)
+
+            if report_progress:
+                yield collect_streamable_data(encode_tree(
+                    {f'progress_{progress_reports_sent}': (progress_reports_sent + 1, active_runs_count)}
+                ))
+                progress_reports_sent += 1
     except asyncio.CancelledError:
         pass
 

@@ -42,6 +42,9 @@ export type RunsSearchQueryParams = {
    * This parameter is used to for simple sampling, indicates how many objects want to load
    */
   index_density?: number;
+
+  exclude_params?: boolean;
+  exclude_traces?: boolean;
 };
 
 /**
