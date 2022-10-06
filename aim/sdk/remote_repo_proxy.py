@@ -27,3 +27,6 @@ class RemoteRepoProxy:
 
     def list_all_runs(self):
         return self._rpc_client.run_instruction(-1, self._handler, 'list_all_runs', [])
+
+    def list_active_runs(self):
+        return self._rpc_client.run_instruction(-1, self._handler, 'list_active_runs', [])

@@ -233,6 +233,27 @@ _See documentation [here](https://aimstack.readthedocs.io/en/latest/quick_start/
 
 <details>
 <summary>
+  Integrate KerasTuner
+</summary>
+
+```python
+from aim.keras_tuner import AimCallback
+
+# ...
+tuner.search(
+    train_ds,
+    validation_data=test_ds,
+    callbacks=[AimCallback(tuner=tuner, repo='.', experiment='keras_tuner_test')],
+)
+# ...
+```
+
+_See documentation [here](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-kerastuner)._
+
+</details>
+
+<details>
+<summary>
   Integrate XGBoost
 </summary>
 
@@ -246,6 +267,98 @@ bst = xgb.train(param, xg_train, num_round, watchlist, callbacks=[aim_callback])
 ```
 
 _See documentation [here](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-xgboost)._
+</details>
+
+
+<details>
+<summary>
+  Integrate CatBoost
+</summary>
+
+```python
+from aim.catboost import AimLogger
+
+# ...
+model.fit(train_data, train_labels, log_cout=AimLogger(loss_function='Logloss'), logging_level="Info")
+# ...
+```
+
+_See documentation [here](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-catboost)._
+</details>
+
+
+
+<details>
+<summary>
+  Integrate fastai
+</summary>
+
+```python
+from aim.fastai import AimCallback
+
+# ...
+learn = cnn_learner(dls, resnet18, pretrained=True,
+                    loss_func=CrossEntropyLossFlat(),
+                    metrics=accuracy, model_dir="/tmp/model/",
+                    cbs=AimCallback(repo='.', experiment='fastai_test'))
+# ...
+```
+
+_See documentation [here](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-fastai)._
+</details>
+
+
+<details>
+<summary>
+  Integrate LightGBM
+</summary>
+
+```python
+from aim.lightgbm import AimCallback
+
+# ...
+aim_callback = AimCallback(experiment='lgb_test')
+aim_callback.experiment['hparams'] = params
+
+gbm = lgb.train(params,
+                lgb_train,
+                num_boost_round=20,
+                valid_sets=lgb_eval,
+                callbacks=[aim_callback, lgb.early_stopping(stopping_rounds=5)])
+# ...
+```
+
+_See documentation [here](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-lightgbm)._
+</details>
+
+
+<details>
+<summary>
+  Integrate PyTorch Ignite
+</summary>
+
+```python
+from aim.pytorch_ignite import AimLogger
+
+# ...
+aim_logger = AimLogger()
+
+aim_logger.log_params({
+    "model": model.__class__.__name__,
+    "pytorch_version": str(torch.__version__),
+    "ignite_version": str(ignite.__version__),
+})
+
+aim_logger.attach_output_handler(
+    trainer,
+    event_name=Events.ITERATION_COMPLETED,
+    tag="train",
+    output_transform=lambda loss: {'loss': loss}
+)
+# ...
+```
+
+_See documentation [here](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-pytorch-ignite)._
 </details>
 
 # Comparisons to familiar tools

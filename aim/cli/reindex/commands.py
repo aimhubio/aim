@@ -15,6 +15,11 @@ def reindex(repo, finalize_only):
     """
     Process runs left in 'in progress' state.
     """
+    from aim.utils.deprecation import deprecation_warning
+
+    deprecation_warning(remove_version='3.16', msg='`aim reindex` is deprecated! '
+                                                   'Use `aim storage reindex` command instead.')
+
     repo_path = clean_repo_path(repo) or Repo.default_repo_path()
     repo_status = Repo.check_repo_status(repo_path)
     if repo_status != RepoStatus.UPDATED:

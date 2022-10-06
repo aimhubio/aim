@@ -5,12 +5,11 @@ import { Tooltip } from '@material-ui/core';
 import LineChart from 'components/LineChart/LineChart';
 import { Badge, Text, Button, Spinner, Icon } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
-import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 
 import COLORS from 'config/colors/colors';
 
 import contextToString from 'utils/contextToString';
-import { CurveEnum, ScaleEnum } from 'utils/d3';
+import { CurveEnum, ScaleEnum, HighlightEnum } from 'utils/d3';
 import { isSystemMetric } from 'utils/isSystemMetric';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 

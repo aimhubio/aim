@@ -1,11 +1,10 @@
-import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
-import { ZoomEnum } from 'components/ZoomInPopover/ZoomInPopover';
-
 import { DensityOptions } from 'config/enums/densityEnum';
 import {
   ImageRenderingEnum,
   MediaItemAlignmentEnum,
 } from 'config/enums/imageEnums';
+
+import { TooltipAppearance } from 'types/services/models/metrics/metricsAppModel.d';
 
 import {
   AggregationAreaMethods,
@@ -16,6 +15,8 @@ import {
   CurveEnum,
   ScaleEnum,
   TrendlineTypeEnum,
+  HighlightEnum,
+  ZoomEnum,
 } from 'utils/d3';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 
@@ -51,6 +52,7 @@ export const CONTROLS_DEFAULT_CONFIG = {
       isEnabled: false,
     },
     tooltip: {
+      appearance: TooltipAppearance.Auto,
       display: true,
       selectedFields: [],
     },
@@ -63,6 +65,7 @@ export const CONTROLS_DEFAULT_CONFIG = {
     curveInterpolation: CurveEnum.MonotoneX,
     isVisibleColorIndicator: false,
     tooltip: {
+      appearance: TooltipAppearance.Auto,
       display: true,
       selectedFields: [],
     },
@@ -74,6 +77,7 @@ export const CONTROLS_DEFAULT_CONFIG = {
     imageRendering: ImageRenderingEnum.Smooth,
     stacking: false,
     tooltip: {
+      appearance: TooltipAppearance.Auto,
       display: true,
       selectedFields: [],
     },
@@ -86,6 +90,7 @@ export const CONTROLS_DEFAULT_CONFIG = {
       isApplied: false,
     },
     tooltip: {
+      appearance: TooltipAppearance.Auto,
       display: true,
       selectedFields: [],
     },

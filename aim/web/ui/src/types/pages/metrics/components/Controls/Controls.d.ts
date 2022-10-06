@@ -1,4 +1,3 @@
-import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { ILine } from 'components/LineChart/LineChart';
 
 import { DensityOptions } from 'config/enums/densityEnum';
@@ -17,7 +16,7 @@ import {
 } from 'types/services/models/metrics/metricsAppModel';
 import { IMetricProps } from 'types/pages/metrics/Metrics';
 
-import { ChartTypeEnum } from 'utils/d3';
+import { ChartTypeEnum, HighlightEnum } from 'utils/d3';
 
 export interface IControlProps {
   chartProps: any[];

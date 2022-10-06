@@ -1,0 +1,21 @@
+@use 'src/styles/abstracts' as *;
+
+.RecentSearches {
+  padding: 0 $space-sm $space-unit;
+  &__title {
+    margin-bottom: $space-xs;
+    padding: 0 $space-sm;
+  }
+
+  pre {
+    max-width: 100%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    font-size: 15px;
+    font-weight: $font-600;
+    @include monospaceFontFamily(15);
+    flex: 1 1;
+    margin: 0 $space-xs;
+  }
+}

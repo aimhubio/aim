@@ -39,6 +39,10 @@ function processLineChartData({
     const line: ILine = data[i];
     let { xValues, yValues } = line.data;
 
+    if (xValues.length === 0 || yValues.length === 0) {
+      continue;
+    }
+
     if (axesScaleType.yAxis === ScaleEnum.Log) {
       yValues = yValues.map((val) => (val <= 0 ? MIN_LOG_VALUE : val));
     }

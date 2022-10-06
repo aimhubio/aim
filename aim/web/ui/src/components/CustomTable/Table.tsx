@@ -260,12 +260,10 @@ function Table(props) {
     props.updateColumns(columnsOrderClone);
   }
 
-  function showTopHeaderContent(index, col, add) {
+  function showTopHeaderContent(index, colTopHeader, add) {
     return (
       props.topHeader &&
-      sortedColumns[
-        (leftPane ? leftPane.length : 0) + (add ? index + 1 : index - 1)
-      ]?.topHeader !== col.topHeader
+      sortedColumns[add ? index + 1 : index - 1]?.topHeader !== colTopHeader
     );
   }
 
@@ -314,6 +312,7 @@ function Table(props) {
                 })}
               >
                 <Column
+                  noColumnActions={props.noColumnActions}
                   topHeader={true}
                   showTopHeaderContent={true}
                   showTopHeaderBorder={true}
@@ -340,7 +339,7 @@ function Table(props) {
                             </span>
                           ) : (
                             <span className='Table__column__partiallySelectedSelectIcon'>
-                              <Icon name='partially-selected' fontSize={16} />
+                              <Icon name='partially-selected' fontSize={14} />
                             </span>
                           )
                         }
@@ -393,9 +392,17 @@ function Table(props) {
               {leftPane.map((col, index) => (
                 <ErrorBoundary key={col.key}>
                   <Column
+                    noColumnActions={props.noColumnActions}
                     topHeader={props.topHeader}
-                    showTopHeaderContent={showTopHeaderContent(index, col)}
-                    showTopHeaderBorder={showTopHeaderContent(index, col, true)}
+                    showTopHeaderContent={showTopHeaderContent(
+                      index,
+                      col.topHeader,
+                    )}
+                    showTopHeaderBorder={showTopHeaderContent(
+                      index,
+                      col.topHeader,
+                      true,
+                    )}
                     col={col}
                     data={props.data}
                     expanded={expanded}
@@ -454,9 +461,17 @@ function Table(props) {
               return (
                 <ErrorBoundary key={col.key + index}>
                   <Column
+                    noColumnActions={props.noColumnActions}
                     topHeader={props.topHeader}
-                    showTopHeaderContent={showTopHeaderContent(index, col)}
-                    showTopHeaderBorder={showTopHeaderContent(index, col, true)}
+                    showTopHeaderContent={showTopHeaderContent(
+                      leftPane.length + index,
+                      col.topHeader,
+                    )}
+                    showTopHeaderBorder={showTopHeaderContent(
+                      leftPane.length + index,
+                      col.topHeader,
+                      true,
+                    )}
                     col={col}
                     data={props.data}
                     expanded={expanded}
@@ -517,10 +532,18 @@ function Table(props) {
               {rightPane.map((col, index) => (
                 <ErrorBoundary key={col.key}>
                   <Column
+                    noColumnActions={props.noColumnActions}
                     key={col.key}
                     topHeader={props.topHeader}
-                    showTopHeaderContent={showTopHeaderContent(index, col)}
-                    showTopHeaderBorder={showTopHeaderContent(index, col, true)}
+                    showTopHeaderContent={showTopHeaderContent(
+                      index,
+                      col.topHeader,
+                    )}
+                    showTopHeaderBorder={showTopHeaderContent(
+                      index,
+                      col.topHeader,
+                      true,
+                    )}
                     col={col}
                     data={props.data}
                     expanded={expanded}

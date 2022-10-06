@@ -2,7 +2,6 @@ import moment from 'moment';
 import { saveAs } from 'file-saver';
 import _ from 'lodash-es';
 
-import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { IPoint } from 'components/ScatterPlot';
 import { IAxesScaleRange } from 'components/AxesPropsPopover';
 
@@ -140,7 +139,12 @@ import toggleSelectAdvancedMode from 'utils/app/toggleSelectAdvancedMode';
 import updateColumnsWidths from 'utils/app/updateColumnsWidths';
 import updateSortFields from 'utils/app/updateTableSortFields';
 import contextToString from 'utils/contextToString';
-import { AlignmentOptionsEnum, ChartTypeEnum, ScaleEnum } from 'utils/d3';
+import {
+  AlignmentOptionsEnum,
+  ChartTypeEnum,
+  HighlightEnum,
+  ScaleEnum,
+} from 'utils/d3';
 import {
   decodeBufferPairs,
   decodePathsVals,
@@ -193,6 +197,7 @@ import { onCopyToClipBoard } from 'utils/onCopyToClipBoard';
 import { getMetricsInitialRowData } from 'utils/app/getMetricsInitialRowData';
 import { getMetricHash } from 'utils/app/getMetricHash';
 import { getMetricLabel } from 'utils/app/getMetricLabel';
+import saveRecentSearches from 'utils/saveRecentSearches';
 
 import { AppDataTypeEnum, AppNameEnum } from './index';
 
@@ -316,6 +321,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   CONTROLS_DEFAULT_CONFIG.metrics.aggregationConfig.isEnabled,
               },
               tooltip: {
+                appearance: CONTROLS_DEFAULT_CONFIG.metrics.tooltip.appearance,
                 display: CONTROLS_DEFAULT_CONFIG.metrics.tooltip.display,
                 selectedFields:
                   CONTROLS_DEFAULT_CONFIG.metrics.tooltip.selectedFields,
@@ -414,6 +420,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 chartIndex: null,
               },
               tooltip: {
+                appearance: CONTROLS_DEFAULT_CONFIG.params.tooltip.appearance,
                 display: CONTROLS_DEFAULT_CONFIG.params.tooltip.display,
                 selectedFields:
                   CONTROLS_DEFAULT_CONFIG.params.tooltip.selectedFields,
@@ -435,6 +442,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 chartIndex: null,
               },
               tooltip: {
+                appearance: CONTROLS_DEFAULT_CONFIG.scatters.tooltip.appearance,
                 display: CONTROLS_DEFAULT_CONFIG.scatters.tooltip.display,
                 selectedFields:
                   CONTROLS_DEFAULT_CONFIG.scatters.tooltip.selectedFields,
@@ -501,6 +509,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
     function initialize(appId: string): void {
       model.init();
+
       const state: Partial<IAppModelState> = {};
       if (grouping) {
         state.groupingSelectOptions = [];
@@ -521,6 +530,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       if (!appId) {
         setModelDefaultAppConfigData();
       }
+
       projectsService
         .getProjectParams(['metric'])
         .call()
@@ -628,6 +638,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               if (shouldUrlUpdate) {
                 updateURL({ configData, appName });
               }
+              saveRecentSearches(appName, query);
               updateData(runData);
             } catch (ex: Error | any) {
               if (ex.name === 'AbortError') {
@@ -2222,6 +2233,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
         });
       }
 
+      function onModelRunsTagsChange(runHash: string, tags: ITagInfo[]): void {
+        onRunsTagsChange({ runHash, tags, model, updateModelData });
+      }
+
       function getRunsData(
         shouldUrlUpdate?: boolean,
         shouldResetSelectedRows?: boolean,
@@ -2321,6 +2336,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   },
                 },
               });
+              saveRecentSearches(appName, query);
               if (shouldUrlUpdate) {
                 updateURL({ configData, appName });
               }
@@ -2762,11 +2778,15 @@ function createAppModel(appConfig: IAppInitialConfig) {
             });
             if (metricsCollection.config !== null) {
               rows[groupKey!].items.push(
-                isRawData ? rowValues : runsTableRowRenderer(rowValues),
+                isRawData
+                  ? rowValues
+                  : runsTableRowRenderer(rowValues, onModelRunsTagsChange),
               );
             } else {
               rows.push(
-                isRawData ? rowValues : runsTableRowRenderer(rowValues),
+                isRawData
+                  ? rowValues
+                  : runsTableRowRenderer(rowValues, onModelRunsTagsChange),
               );
             }
           });
@@ -2787,6 +2807,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             if (metricsCollection.config !== null && !isRawData) {
               rows[groupKey!].data = runsTableRowRenderer(
                 rows[groupKey!].data,
+                onModelRunsTagsChange,
                 true,
                 Object.keys(columnsValues),
               );
@@ -3126,6 +3147,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         onExportTableData,
         onNotificationDelete: onModelNotificationDelete,
         setDefaultAppConfigData: setModelDefaultAppConfigData,
+        onRunsTagsChange: onModelRunsTagsChange,
         changeLiveUpdateConfig,
         archiveRuns,
         deleteRuns,
@@ -4977,24 +4999,30 @@ function createAppModel(appConfig: IAppInitialConfig) {
                           trace.name === value?.option_name &&
                           _.isEqual(trace.context, value?.context)
                         ) {
-                          values[i] = trace.last_value.last;
-                          if (dimension[i]) {
-                            dimension[i].values.push(trace.last_value.last);
-                            if (typeof trace.last_value.last === 'string') {
-                              dimension[i].scaleType = ScaleEnum.Point;
-                              dimension[i].dimensionType = 'metric';
-                            }
-                          } else {
+                          let lastValue = trace.last_value.last;
+                          const formattedLastValue = formatValue(
+                            lastValue,
+                            '-',
+                          );
+                          values[i] = lastValue;
+                          if (formattedLastValue !== '-') {
                             const metricLabel = getMetricLabel(
                               trace.name,
                               trace.context as any,
                             );
-                            dimension[i] = {
-                              values: [trace.last_value.last],
-                              scaleType: ScaleEnum.Linear,
-                              displayName: metricLabel,
-                              dimensionType: 'metric',
-                            };
+                            dimension[i].dimensionType = 'metric';
+                            dimension[i].displayName = metricLabel;
+                            if (typeof lastValue !== 'number') {
+                              dimension[i].scaleType = ScaleEnum.Point;
+                              values[i] = formattedLastValue;
+                            } else if (
+                              isNaN(lastValue) ||
+                              !isFinite(lastValue)
+                            ) {
+                              values[i] = formattedLastValue;
+                              dimension[i].scaleType = ScaleEnum.Point;
+                            }
+                            dimension[i].values.push(values[i]);
                           }
                         }
                       });
@@ -5002,7 +5030,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                       const paramValue = getValue(run.run.params, label, '-');
                       const formattedParam = formatValue(paramValue, '-');
                       values[i] = paramValue;
-                      if (formattedParam !== '-' && dimension[i]) {
+                      if (formattedParam !== '-') {
                         if (typeof paramValue !== 'number') {
                           dimension[i].scaleType = ScaleEnum.Point;
                           values[i] = formattedParam;
@@ -5678,6 +5706,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 liveUpdateInstance?.start({
                   q: configData?.select?.query,
                 });
+                //Changed the layout/styles of the experiments and tags tables to look more like lists|| Extend the contributions section (add activity feed under the contributions)
               } catch (ex: Error | any) {
                 if (ex.name === 'AbortError') {
                   onNotificationAdd({

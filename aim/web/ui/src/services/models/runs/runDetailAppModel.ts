@@ -4,6 +4,7 @@ import { IRunBatch } from 'pages/RunDetail/types';
 
 import runsService from 'services/api/runs/runsService';
 import * as analytics from 'services/analytics';
+import experimentsService from 'services/api/experiments/experimentsService';
 
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { IApiRequest } from 'types/services/services';
@@ -94,7 +95,7 @@ function getRunsOfExperiment(
   if (getRunsOfExperimentRequestRef) {
     getRunsOfExperimentRequestRef.abort();
   }
-  getRunsOfExperimentRequestRef = runsService.getRunsOfExperiment(
+  getRunsOfExperimentRequestRef = experimentsService.getRunsOfExperiment(
     runHash,
     params,
   );
