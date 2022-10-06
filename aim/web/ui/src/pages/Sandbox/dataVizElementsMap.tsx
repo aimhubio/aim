@@ -1,5 +1,7 @@
 import * as React from 'react';
 
+import Figures from 'modules/BaseExplorer/components/Figures/Figures';
+
 import ChartPanel from 'components/ChartPanel/ChartPanel';
 
 import { ChartTypeEnum, CurveEnum, ScaleEnum, HighlightEnum } from 'utils/d3';
@@ -39,5 +41,18 @@ export const dataVizElementsMap = {
         typeof props.data === 'string' ? JSON.parse(props.data) : props.data
       }
     />
+  ),
+  Plotly: (props: any) => (
+    <div
+      style={{
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
+      <Figures data={{ data: props }} style={{}} />
+    </div>
   ),
 };

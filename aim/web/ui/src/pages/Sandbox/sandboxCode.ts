@@ -1,6 +1,7 @@
 export const initialCode = `from aim-ui-client import metrics, set_layout
 import pandas as pd
 from datetime import datetime
+import plotly.express as px
 
 lines = [[]]
 df_source = {
@@ -70,6 +71,12 @@ def on_active_point_change(val, is_active):
     }
     print(pd.DataFrame(d, index=[val.key]))
 
+df = px.data.iris()
+fig = px.parallel_coordinates(df, color="species_id", labels={"species_id": "Species",
+                  "sepal_width": "Sepal Width", "sepal_length": "Sepal Length",
+                  "petal_width": "Petal Width", "petal_length": "Petal Length", },
+                    color_continuous_scale=px.colors.diverging.Tealrose, color_continuous_midpoint=2)
+
 layout = set_layout([[{
   "type": "LineChart",
   "data": lines,
@@ -79,5 +86,8 @@ layout = set_layout([[{
 }], [{
   "type": "DataFrame",
   "data": pd.DataFrame(df_source).to_json(orient='records'),
+}], [{
+  "type": "Plotly",
+  "data": fig.to_json()
 }]])
 `;

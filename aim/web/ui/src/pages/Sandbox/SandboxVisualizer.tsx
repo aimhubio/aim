@@ -58,6 +58,10 @@ export default function SandboxVisualizer(props: any) {
         },
       });
 
+      await pyodide.current.loadPackage('micropip');
+      const micropip = pyodide.current.pyimport('micropip');
+      await micropip.install('plotly');
+
       execute();
     }
     main();
@@ -135,17 +139,21 @@ export default function SandboxVisualizer(props: any) {
               <div
                 key={i}
                 style={{
+                  position: 'relative',
                   display: 'flex',
                   flex: 1,
                   boxShadow: '0 0 0 1px #b5b9c5',
+                  maxHeight: `${100 / result.length}%`,
                 }}
               >
                 {row.map((viz: any) => (
                   <div
                     key={viz.type}
                     style={{
+                      position: 'relative',
                       flex: 1,
                       boxShadow: '0 0 0 1px #b5b9c5',
+                      maxWidth: `${100 / row.length}%`,
                     }}
                   >
                     {dataVizElementsMap[viz.type as 'LineChart' | 'DataFrame'](
@@ -156,10 +164,12 @@ export default function SandboxVisualizer(props: any) {
               </div>
             ))}
           </div>
-          <pre
-            id='console'
-            className='SandboxVisualizer__main__components__console'
-          />
+          {isProcessing !== null && (
+            <pre
+              id='console'
+              className='SandboxVisualizer__main__components__console'
+            />
+          )}
         </div>
       </div>
     </div>
