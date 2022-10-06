@@ -3,20 +3,13 @@ import classnames from 'classnames';
 
 import Editor from '@monaco-editor/react';
 
-import ChartPanel from 'components/ChartPanel/ChartPanel';
 import { Button, Spinner } from 'components/kit';
 
-import {
-  AlignmentOptionsEnum,
-  ChartTypeEnum,
-  CurveEnum,
-  ScaleEnum,
-  HighlightEnum,
-} from 'utils/d3';
+import { AlignmentOptionsEnum } from 'utils/d3';
 import { filterMetricsData } from 'utils/filterMetricData';
 
 import { initialCode } from './sandboxCode';
-import DataGrid from './DataGrid';
+import { dataVizElementsMap } from './dataVizElementsMap';
 
 import './SandboxVisualizer.scss';
 
@@ -97,44 +90,6 @@ export default function SandboxVisualizer(props: any) {
     }
   }, [editorValue]);
 
-  const vizElements = {
-    lines: (props: any) => (
-      <ChartPanel
-        selectOptions={[]}
-        chartType={ChartTypeEnum.LineChart}
-        data={props.data}
-        focusedState={{
-          key: null,
-          active: false,
-        }}
-        tooltip={{}}
-        zoom={{}}
-        onActivePointChange={props.callbacks?.on_active_point_change ?? null}
-        onChangeTooltip={() => null}
-        chartProps={props.data.map(() => ({
-          axesScaleType: {
-            xAxis: ScaleEnum.Linear,
-            yAxis: ScaleEnum.Linear,
-          },
-          ignoreOutliers: false,
-          highlightMode: HighlightEnum.Off,
-          curveInterpolation: CurveEnum.Linear,
-        }))}
-        onRunsTagsChange={() => null}
-        controls={null}
-      />
-    ),
-    dataframe: (props: any) => (
-      <DataGrid
-        data={
-          typeof props.data === 'string'
-            ? JSON.parse(result.dataframe.data)
-            : props.data
-        }
-      />
-    ),
-  };
-
   return (
     <div className='SandboxVisualizer'>
       <div className='SandboxVisualizer__panel'>
@@ -182,7 +137,9 @@ export default function SandboxVisualizer(props: any) {
                   boxShadow: '0 0 0 1px #b5b9c5',
                 }}
               >
-                {vizElements[vizType as 'lines' | 'dataframe'](result[vizType])}
+                {dataVizElementsMap[vizType as 'linechart' | 'dataframe'](
+                  result[vizType],
+                )}
               </div>
             ))}
           </div>

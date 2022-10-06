@@ -71,7 +71,7 @@ def on_active_point_change(val, is_active):
     print(pd.DataFrame(d, index=[val.key]))
 
 layout = {
-  "lines": {
+  "linechart": {
     "data": lines,
     "callbacks": {
       "on_active_point_change": on_active_point_change
