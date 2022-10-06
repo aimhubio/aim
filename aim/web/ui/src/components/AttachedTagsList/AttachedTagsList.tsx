@@ -89,7 +89,7 @@ function AttachedTagsList({
   }, [attachedTags]);
 
   const renderAddTagsButton = React.useCallback(() => {
-    return !_.isEmpty(attachedTags) ? (
+    return (
       <Button
         withOnlyIcon
         size={addTagButtonSize}
@@ -97,16 +97,6 @@ function AttachedTagsList({
         className='AttachedTagsList__ControlPopover__editPopoverButton'
       >
         <Icon name='edit'></Icon>
-      </Button>
-    ) : (
-      <Button
-        size={addTagButtonSize}
-        color='primary'
-        variant='outlined'
-        className='AttachedTagsList__ControlPopover__attach'
-      >
-        <Icon name='plus' />
-        <span>Attach</span>
       </Button>
     );
   }, [attachedTags, addTagButtonSize]);
