@@ -147,10 +147,7 @@ function SelectTag({
 
   return (
     <ErrorBoundary>
-      <div
-        className='SelectTag'
-        style={{ height: Math.min(200, tags?.length * 32 + 40) }}
-      >
+      <div className='SelectTag'>
         {tags?.length > 0 ? (
           <div className='SelectTag__tags ScrollBar__hidden'>
             {sortedTags.map((tag: ITagInfoWithSelectedProperty) => {
@@ -184,14 +181,16 @@ function SelectTag({
                         {tag.name}
                       </Text>
                     </div>
-                    <Text
-                      className='SelectTag__tags__item__content__description'
-                      size={10}
-                      tint={60}
-                      weight={500}
-                    >
-                      {tag.description}
-                    </Text>
+                    {tag.description ? (
+                      <Text
+                        className='SelectTag__tags__item__content__description'
+                        size={10}
+                        tint={60}
+                        weight={500}
+                      >
+                        {tag.description}
+                      </Text>
+                    ) : null}
                   </div>
                 </div>
               );
