@@ -22,6 +22,7 @@ function SelectTag({
   attachedTags,
   setAttachedTags,
   onRunsTagsChange,
+  updatePopover,
 }: ISelectTagProps): JSX.Element {
   const [tags, setTags] = React.useState<ITagInfo[]>([]);
   const [sortedTags, setSortedTags] = React.useState<
@@ -128,6 +129,9 @@ function SelectTag({
             : [],
         );
         setTags(tags ?? []);
+        if (updatePopover) {
+          updatePopover(`${Date.now()}`);
+        }
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -143,7 +147,10 @@ function SelectTag({
 
   return (
     <ErrorBoundary>
-      <div className='SelectTag'>
+      <div
+        className='SelectTag'
+        style={{ height: Math.min(200, tags?.length * 32 + 40) }}
+      >
         {tags?.length > 0 ? (
           <div className='SelectTag__tags ScrollBar__hidden'>
             {sortedTags.map((tag: ITagInfoWithSelectedProperty) => {

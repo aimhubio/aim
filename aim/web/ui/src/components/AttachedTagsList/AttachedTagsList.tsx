@@ -29,6 +29,9 @@ function AttachedTagsList({
   const [attachedTags, setAttachedTags] = React.useState<ITagInfo[]>(
     tags ?? initialTags ?? [],
   );
+  const [selectTagsPopoverKey, setSelectTagPopoverKey] = React.useState(
+    `${Date.now()}`,
+  );
   const getRunInfoRef = React.useRef<any>(null);
 
   const getRunInfo = React.useCallback((runHash: string): void => {
@@ -145,6 +148,7 @@ function AttachedTagsList({
                 attachedTags={attachedTags}
                 setAttachedTags={setAttachedTags}
                 onRunsTagsChange={onRunsTagsChange}
+                updatePopover={setSelectTagPopoverKey}
               />
             }
           />
