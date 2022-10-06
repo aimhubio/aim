@@ -131,7 +131,10 @@ export default function SandboxVisualizer(props: any) {
               <Spinner />
             </div>
           )}
-          <div className='SandboxVisualizer__main__components__viz'>
+          <div
+            key={`${isProcessing}`}
+            className='SandboxVisualizer__main__components__viz'
+          >
             {result.lines && (
               <div style={{ flex: 1, minHeight: '50%' }}>
                 <ChartPanel
