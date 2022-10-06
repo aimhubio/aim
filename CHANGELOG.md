@@ -4,7 +4,6 @@
 
 ### Enhancements:
 
-- Move `aim reindex` command under `aim storage` group (mihran113)
 - Add the ability to attach/remove tags on the Run Page (roubkar)
 - Support dictionary as an argument of `Run.track` (alberttorosyan)
 - Display the tags of the run in the tables of the explorers (VkoHov)
@@ -25,6 +24,7 @@
 - Change unit-tests data isolation mechanism (alberttorosyan)
 - Adjust the visibility of the run color in tables (VkoHov)
 - Fix response headers for remote tracking server (mihran113)
+- Fix `TypeError`s in single run page (mihran113)
 
 ## 3.13.4 Sep 25, 2022
 
