@@ -7,7 +7,7 @@ import { ChartTypeEnum, CurveEnum, ScaleEnum, HighlightEnum } from 'utils/d3';
 import DataGrid from './DataGrid';
 
 export const dataVizElementsMap = {
-  linechart: (props: any) => (
+  LineChart: (props: any) => (
     <ChartPanel
       selectOptions={[]}
       chartType={ChartTypeEnum.LineChart}
@@ -33,7 +33,7 @@ export const dataVizElementsMap = {
       controls={null}
     />
   ),
-  dataframe: (props: any) => (
+  DataFrame: (props: any) => (
     <DataGrid
       data={
         typeof props.data === 'string' ? JSON.parse(props.data) : props.data

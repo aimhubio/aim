@@ -35,10 +35,13 @@ export default function SandboxVisualizer(props: any) {
   });
 
   (window as any).metrics = data;
+  (window as any).set_layout = (grid: any[][]) => {
+    return grid;
+  };
   const pyodide = React.useRef<any>();
 
   const editorValue = React.useRef(initialCode);
-  const [result, setResult] = React.useState<Record<string, any>>({});
+  const [result, setResult] = React.useState<Record<string, any>>([[]]);
   const [isProcessing, setIsProcessing] = React.useState<boolean | null>(null);
 
   React.useEffect(() => {
@@ -128,18 +131,28 @@ export default function SandboxVisualizer(props: any) {
             key={`${isProcessing}`}
             className='SandboxVisualizer__main__components__viz'
           >
-            {Object.keys(result).map((vizType) => (
+            {result.map((row: any[], i: number) => (
               <div
-                key={vizType}
+                key={i}
                 style={{
+                  display: 'flex',
                   flex: 1,
-                  minHeight: '50%',
                   boxShadow: '0 0 0 1px #b5b9c5',
                 }}
               >
-                {dataVizElementsMap[vizType as 'linechart' | 'dataframe'](
-                  result[vizType],
-                )}
+                {row.map((viz: any) => (
+                  <div
+                    key={viz.type}
+                    style={{
+                      flex: 1,
+                      boxShadow: '0 0 0 1px #b5b9c5',
+                    }}
+                  >
+                    {dataVizElementsMap[viz.type as 'LineChart' | 'DataFrame'](
+                      viz,
+                    )}
+                  </div>
+                ))}
               </div>
             ))}
           </div>

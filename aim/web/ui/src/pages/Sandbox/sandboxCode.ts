@@ -1,4 +1,4 @@
-export const initialCode = `from aim-ui-client import metrics
+export const initialCode = `from aim-ui-client import metrics, set_layout
 import pandas as pd
 from datetime import datetime
 
@@ -70,15 +70,14 @@ def on_active_point_change(val, is_active):
     }
     print(pd.DataFrame(d, index=[val.key]))
 
-layout = {
-  "linechart": {
-    "data": lines,
-    "callbacks": {
-      "on_active_point_change": on_active_point_change
-    }
-  },
-  "dataframe": {
-    "data": pd.DataFrame(df_source).to_json(orient='records')
+layout = set_layout([[{
+  "type": "LineChart",
+  "data": lines,
+  "callbacks": {
+    "on_active_point_change": on_active_point_change
   }
-}
+}], [{
+  "type": "DataFrame",
+  "data": pd.DataFrame(df_source).to_json(orient='records'),
+}]])
 `;
