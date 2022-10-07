@@ -60,7 +60,7 @@ function StatisticsCard({
           weight={600}
           size={8}
         >
-          Coming soon
+          Explorer coming soon
         </Text>
       )}
 
