@@ -35,9 +35,11 @@ export default function SandboxVisualizer(props: any) {
   });
 
   (window as any).metrics = data;
+
   (window as any).set_layout = (grid: any[][]) => {
     return grid;
   };
+
   const pyodide = React.useRef<any>();
 
   const editorValue = React.useRef(initialCode);
@@ -117,6 +119,9 @@ export default function SandboxVisualizer(props: any) {
             value={editorValue.current}
             onChange={(v) => (editorValue.current = v!)}
             loading={<span />}
+            options={{
+              tabSize: 4,
+            }}
           />
         </div>
         <div

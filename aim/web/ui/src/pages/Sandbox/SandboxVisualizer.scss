@@ -3,10 +3,12 @@
 .SandboxVisualizer {
   width: 100%;
   height: 100%;
+  max-width: 100%;
 }
 
 .SandboxVisualizer__panel {
   width: 100%;
+  max-width: 100%;
   height: 40px;
   display: flex;
   align-items: center;
@@ -17,6 +19,7 @@
 
 .SandboxVisualizer__main {
   width: 100%;
+  max-width: 100%;
   height: calc(100% - 40px);
   position: relative;
   display: flex;
@@ -46,6 +49,7 @@
 
 .SandboxVisualizer__main__components {
   height: 100%;
+  max-width: 60%;
   position: relative;
   flex: 0.6;
   display: flex;
@@ -76,6 +80,7 @@
 .SandboxVisualizer__main__components__viz {
   position: relative;
   width: 100%;
+  max-width: 100%;
   flex: 0.8;
   display: flex;
   flex-direction: column;

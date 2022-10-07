@@ -27,7 +27,7 @@ export default ({ data }) => {
   const DraggableRect = (props) => {
     return (
       <Rect
-        fill='blue'
+        fill='#1473e6'
         draggable
         hitStrokeWidth={20}
         onMouseEnter={() => (document.body.style.cursor = 'ew-resize')}
