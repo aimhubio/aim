@@ -2,9 +2,7 @@
 
 ## Unreleased
 
-### Fixes
-
-- Remove current release duplication on the Dashboard page (arsengit)
+- Fix the current release duplication highlighting issue on the Dashboard page (arsengit)
 
 ## 3.14.0 Oct 6, 2022
 
