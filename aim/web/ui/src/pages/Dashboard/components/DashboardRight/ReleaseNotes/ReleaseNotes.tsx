@@ -35,7 +35,7 @@ function ReleaseNotes(): React.FunctionComponentElement<React.ReactNode> {
                 Aim {LatestReleaseData?.tagName}
               </Text>
               {`v${AIM_VERSION}` === LatestReleaseData?.tagName ? null : (
-                <span>New</span>
+                <span>Latest</span>
               )}
             </div>
             <div className='ReleaseNotes__latest__content'>
@@ -49,7 +49,7 @@ function ReleaseNotes(): React.FunctionComponentElement<React.ReactNode> {
               ))}
               <a href={LatestReleaseData?.url} target='_blank' rel='noreferrer'>
                 <Button fullWidth variant='outlined' size='xSmall'>
-                  Full release notes
+                  Release notes
                 </Button>
               </a>
             </div>

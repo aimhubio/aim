@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.14.1 Oct 7, 2022
+
+- Fix the current release duplication highlighting issue on the Dashboard page (arsengit)
+
 ## 3.14.0 Oct 6, 2022
 
 ### Enhancements:
