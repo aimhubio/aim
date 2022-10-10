@@ -49,6 +49,8 @@ function createExplorer(
           box: {
             initialState:
               viz.box.initialState || defaultHydration.box.initialState,
+            hasDepthSlider:
+              viz.box.hasDepthSlider ?? defaultHydration.box.hasDepthSlider,
             component: viz.box.component,
           },
         };

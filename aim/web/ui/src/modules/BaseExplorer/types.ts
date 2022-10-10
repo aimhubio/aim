@@ -78,6 +78,7 @@ export interface IVisualizationsProps extends IBaseComponentProps {
 
 export interface IVisualizationProps extends IBaseComponentProps {
   box?: React.FunctionComponent<IBoxProps>;
+  hasDepthSlider: boolean;
   panelRenderer: () => React.ReactNode;
   name: string;
 }
@@ -86,6 +87,7 @@ export interface IProgressBarProps extends IBaseComponentProps {}
 
 export interface IBoxProps extends IBaseComponentProps {
   data: any;
+  items: any[];
   style?: React.CSSProperties;
 }
 

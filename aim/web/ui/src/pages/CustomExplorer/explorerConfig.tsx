@@ -3,17 +3,21 @@ import React, { memo } from 'react';
 import { ControlsConfigs } from 'modules/core/engine/visualizations/controls';
 import { GroupingConfigs } from 'modules/core/engine/explorer/groupings';
 import { GroupType, Order } from 'modules/core/pipeline';
+import {
+  BoxProperties,
+  CaptionProperties,
+} from 'modules/BaseExplorer/components/Controls';
+import FullVewPopover from 'modules/BaseExplorer/components/BoxFullViewPopover';
+import Visualizer from 'modules/BaseExplorer/components/Visualizer';
+import BoxWrapper from 'modules/BaseExplorer/components/BoxWrapper';
+import { AdvancedQueryForm } from 'modules/BaseExplorer/components/QueryForm';
+import Controls from 'modules/BaseExplorer/components/Controls';
+import Grouping, {
+  GroupingItem,
+} from 'modules/BaseExplorer/components/Grouping';
+import { IBaseComponentProps } from 'modules/BaseExplorer/types';
 
 import { AimFlatObjectBase } from 'types/core/AimObjects';
-
-import { BoxProperties, CaptionProperties } from './components/Controls';
-import FullVewPopover from './components/BoxFullViewPopover';
-import Visualizer from './components/Visualizer';
-import BoxWrapper from './components/BoxWrapper';
-import { AdvancedQueryForm } from './components/QueryForm';
-import Controls from './components/Controls';
-import Grouping, { GroupingItem } from './components/Grouping';
-import { IBaseComponentProps } from './types';
 
 const controls: ControlsConfigs = {
   boxProperties: {
@@ -36,7 +40,7 @@ const controls: ControlsConfigs = {
     state: {
       initialState: {
         displayBoxCaption: true,
-        selectedFields: ['run.name', 'figures.name', 'figures.context'],
+        selectedFields: ['run.name'],
       },
     },
   },
@@ -65,7 +69,7 @@ const groupings: GroupingConfigs = {
       };
     },
     defaultApplications: {
-      fields: ['run.hash', 'figures.name'],
+      fields: [],
       orders: [Order.ASC, Order.ASC],
     },
     // state: {
@@ -99,7 +103,7 @@ const groupings: GroupingConfigs = {
       };
     },
     defaultApplications: {
-      fields: ['record.step'],
+      fields: [],
       orders: [Order.DESC],
     },
     // state: {
@@ -115,7 +119,7 @@ const groupings: GroupingConfigs = {
   },
 };
 
-const defaultHydration = {
+const explorerConfig = {
   ObjectFullView: FullVewPopover,
   BoxWrapper: BoxWrapper,
   Visualizer: Visualizer,
@@ -130,7 +134,7 @@ const defaultHydration = {
       height: 400,
       gap: 0,
     },
-    hasDepthSlider: true,
+    hasDepthSlider: false,
   },
   controls,
   groupings,
@@ -141,13 +145,4 @@ const defaultHydration = {
   },
 };
 
-/**
- * getDefaultHydration
- * This file consists of explorer default configuration for ui components and explorer specific options
- * May receive the configuration and return new hydrated object later
- */
-function getDefaultHydration(): typeof defaultHydration {
-  return defaultHydration;
-}
-
-export default getDefaultHydration;
+export default explorerConfig;
