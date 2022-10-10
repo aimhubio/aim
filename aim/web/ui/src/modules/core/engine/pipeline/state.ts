@@ -239,6 +239,7 @@ function createState<TStore, TObject>(
             draft_state.pipeline.additionalData = additionalData;
             draft_state.pipeline.foundGroups = foundGroups;
             draft_state.pipeline.data = data as FlatList<Draft<TObject>>;
+            draft_state.pipeline.error = null;
             if (queryableData) {
               draft_state.pipeline.queryableData = queryableData;
             }
