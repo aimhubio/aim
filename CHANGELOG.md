@@ -21,8 +21,7 @@
 - Add fast.ai integration (tmynn)
 - Add command for dangling params cleanup (mihran113)
 - Add top and bottom appearance modes to the chart popover (VkoHov)
-- Deprecate Pytho
-  n 3.6 (alberttorosyan)
+- Deprecate Python 3.6 (alberttorosyan)
 - Add MXNet integration (tmynn)
 - Create a Dashboard page to provide a better onboarding experience (arsengit, roubkar, KaroMourad, mihran113)
 - Add support for tracking jax device arrays (mihran113)
