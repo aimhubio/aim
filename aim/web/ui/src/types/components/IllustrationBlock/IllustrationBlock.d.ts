@@ -19,4 +19,5 @@ export interface IIllustrationBlockProps {
     | 'tags';
   type?: IllustrationsEnum;
   size?: 'small' | 'medium' | 'large' | 'xLarge';
+  showImage?: boolean;
 }

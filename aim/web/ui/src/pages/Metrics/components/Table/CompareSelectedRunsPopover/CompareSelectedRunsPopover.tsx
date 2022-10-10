@@ -1,5 +1,4 @@
 import React from 'react';
-import _ from 'lodash-es';
 import { useHistory } from 'react-router-dom';
 
 import { MenuItem, Tooltip } from '@material-ui/core';
@@ -7,6 +6,7 @@ import { MenuItem, Tooltip } from '@material-ui/core';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import { Button, Icon, Text } from 'components/kit';
+import { IconName } from 'components/kit/Icon';
 
 import { EXPLORE_SELECTED_RUNS_CONFIG } from 'config/table/tableConfigs';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
@@ -21,8 +21,9 @@ import { ICompareSelectedRunsPopoverProps } from './CompareSelectedRunsPopover.d
 import './CompareSelectedRunsPopover.scss';
 
 function CompareSelectedRunsPopover({
-  selectedRows,
   appName,
+  query,
+  disabled = false,
 }: ICompareSelectedRunsPopoverProps): React.FunctionComponentElement<React.ReactNode> {
   const history = useHistory();
 
@@ -35,14 +36,6 @@ function CompareSelectedRunsPopover({
       e.stopPropagation();
       e.preventDefault();
       if (value) {
-        const runHashArray: string[] = _.uniq([
-          ...Object.values(selectedRows).map((row: any) => row.runHash),
-        ]);
-
-        const query = `run.hash in [${runHashArray
-          .map((hash) => `"${hash}"`)
-          .join(',')}]`;
-
         const search = encode({
           query,
           advancedMode: true,
@@ -61,7 +54,7 @@ function CompareSelectedRunsPopover({
         history.push(path);
       }
     },
-    [appName, history, selectedRows],
+    [appName, history, query],
   );
 
   return (
@@ -80,26 +73,27 @@ function CompareSelectedRunsPopover({
             variant='text'
             color='secondary'
             size='small'
+            disabled={disabled}
             onClick={onAnchorClick}
             className={`CompareSelectedRunsPopover__trigger ${
               opened ? 'opened' : ''
             }`}
           >
             <Icon fontSize={18} name='compare' />
-            <Text size={14} tint={100}>
+            <Text size={14} tint={disabled ? 50 : 100}>
               Compare
             </Text>
           </Button>
         )}
         component={
           <div className='CompareSelectedRunsPopover'>
-            {EXPLORE_SELECTED_RUNS_CONFIG[appName as AppNameEnum].map(
+            {EXPLORE_SELECTED_RUNS_CONFIG?.[appName as AppNameEnum]?.map(
               (item: AppNameEnum) => (
                 <MenuItem
                   className='CompareSelectedRunsPopover__item'
                   key={item}
                 >
-                  <Icon box name={item as any} />
+                  <Icon box name={item as IconName} />
                   <Text
                     size={14}
                     tint={100}

@@ -7,7 +7,6 @@ const endpoints = {
   GET_EXPERIMENTS: 'experiments',
   GET_RUN_INFO: (id: string) => `runs/${id}/info`,
   GET_RUN_LOGS: (id: string) => `runs/${id}/logs`,
-  GET_RUNS_BY_EXPERIMENT_ID: (id: string) => `experiments/${id}/runs`,
   GET_RUN_METRICS_BATCH_BY_TRACES: (id: string) =>
     `runs/${id}/metric/get-batch`,
   EDIT_RUN: (id: string) => `runs/${id}`,
@@ -37,13 +36,6 @@ function getRunLogs(id: string, record_range?: string) {
 
 function getRunInfo(id: string) {
   return API.get(endpoints.GET_RUN_INFO(id));
-}
-
-function getRunsOfExperiment(
-  id: string,
-  params: { limit: number; offset?: string } = { limit: 10 },
-) {
-  return API.get(endpoints.GET_RUNS_BY_EXPERIMENT_ID(id), params);
 }
 
 function getExperimentsData() {
@@ -123,7 +115,6 @@ const runsService = {
   getRunLogs,
   getRunMetricsBatch,
   getExperimentsData,
-  getRunsOfExperiment,
   archiveRun,
   deleteRun,
   attachRunsTag,

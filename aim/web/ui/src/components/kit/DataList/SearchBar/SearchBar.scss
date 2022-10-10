@@ -6,19 +6,7 @@
   margin-bottom: toRem(14px);
   align-items: center;
   max-width: 100%;
-  .SearchInput {
-    .EndAdornment {
-      .Icon__container {
-        font-size: $text-md;
-        &.icon-close {
-          font-size: $text-xs;
-        }
-      }
-    }
-    .MuiFormLabel-root {
-      top: $space-xxxxs;
-    }
-  }
+  
   .MatchIcons {
     display: flex;
     align-items: baseline;

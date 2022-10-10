@@ -6,6 +6,7 @@
   align-items: baseline;
   font-size: $text-sm;
   line-height: 15px;
+  position: relative;
   margin-top: $space-xs;
 
   &__title {
@@ -24,16 +25,20 @@
   &__tags {
     display: flex;
     flex-wrap: wrap;
-    overflow: auto;
+    overflow: hidden;
+    &__tagWrapper {
+      max-width: 100%;
+    }
 
     .Badge {
       margin-bottom: $space-xs;
       margin-right: $space-xs;
-      max-width: unset;
+      max-width: 100%;
     }
   }
 
   &__ControlPopover__anchor {
+    max-width: 100%;
     .icon-edit {
       width: 1.5rem;
       height: 1.5rem;
@@ -55,6 +60,12 @@
       margin-right: $space-xs;
     }
   }
+
+  &__ControlPopover__editPopoverButton {
+    position: absolute;
+    top: toRem(-26px);
+    right: 0;
+  }
 }
 
 .InlineAttachedTagsList {
@@ -62,6 +73,11 @@
   align-items: center;
   max-width: 100%;
   width: 100%;
+  .AttachedTagsList__ControlPopover__anchor {
+    max-width: 100%;
+    width: 100%;
+    cursor: text;
+  }
   .AttachedTagsList__tags {
     align-items: center;
     flex-wrap: unset;
