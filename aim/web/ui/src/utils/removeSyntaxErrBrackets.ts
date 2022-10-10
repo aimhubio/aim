@@ -1,7 +1,7 @@
 import { ISyntaxErrorDetail } from 'types/components/NotificationContainer/NotificationContainer';
 
 /**
- * @function removeSyntaxErrBrackets
+ * @function removeSyntaxErrBrackets - remove unused brackets from syntax error message
  * @param detail {ISyntaxErrorDetail} - syntax error detail
  * @param advancedModeOn {boolean} - advanced mode on/off
  *
