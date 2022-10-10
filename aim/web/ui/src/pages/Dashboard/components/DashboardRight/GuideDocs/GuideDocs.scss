@@ -1,7 +1,7 @@
 @use 'src/styles/abstracts' as *;
 
 .GuideLinks {
-  padding: $space-sm $space-sm $space-lg;
+  padding: $space-sm $space-sm $space-unit;
   display: flex;
   flex-direction: column;
   border-bottom: $border-dark-lighter;
