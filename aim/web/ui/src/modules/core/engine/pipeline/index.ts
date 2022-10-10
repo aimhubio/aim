@@ -13,7 +13,7 @@ import createPipeline, {
 
 import { SequenceTypesEnum } from 'types/core/enums';
 
-import { PipelineStatusEnum, ProgressState } from '../types';
+import { PipelineErrorType, PipelineStatusEnum, ProgressState } from '../types';
 
 import createState, {
   CurrentGrouping,
@@ -139,7 +139,7 @@ function createPipelineEngine<TStore, TObject>(
           isEmpty(data) ? PipelineStatusEnum.Empty : state.getStatus(),
         );
       })
-      .catch((ex: unknown) => {});
+      .catch(state.setError);
   }
 
   function normalizeGroupConfig(config: CurrentGrouping) {
