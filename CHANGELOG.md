@@ -1,6 +1,10 @@
 # Changelog
 
-## Unreleased
+## 3.14.1 Oct 7, 2022
+
+- Fix the current release duplication highlighting issue on the Dashboard page (arsengit)
+
+## 3.14.0 Oct 6, 2022
 
 ### Enhancements:
 
@@ -25,6 +29,7 @@
 - Change unit-tests data isolation mechanism (alberttorosyan)
 - Adjust the visibility of the run color in tables (VkoHov)
 - Fix response headers for remote tracking server (mihran113)
+- Fix `TypeError`s in single run page (mihran113)
 
 ## 3.13.4 Sep 25, 2022
 

@@ -156,7 +156,7 @@ async def run_params_api(run_id: str,
     response['props'].update({
         'notes': len(run.props.notes_obj)
     })
-    return JSONResponse(response)
+    return response
 
 
 @runs_router.post('/{run_id}/metric/get-batch/', response_model=RunMetricsBatchApiOut)
