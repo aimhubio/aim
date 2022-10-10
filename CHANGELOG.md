@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.14.2
+
+- Fix "`TypeError: check()` keywords must be strings" for `Run.metrics()` method (alberttorosyan)
 ## 3.14.1 Oct 7, 2022
 
 - Fix the current release duplication highlighting issue on the Dashboard page (arsengit)
@@ -17,7 +20,8 @@
 - Add fast.ai integration (tmynn)
 - Add command for dangling params cleanup (mihran113)
 - Add top and bottom appearance modes to the chart popover (VkoHov)
-- Deprecate Python 3.6 (alberttorosyan)
+- Deprecate Pytho
+  n 3.6 (alberttorosyan)
 - Add MXNet integration (tmynn)
 - Create a Dashboard page to provide a better onboarding experience (arsengit, roubkar, KaroMourad, mihran113)
 - Add support for tracking jax device arrays (mihran113)
