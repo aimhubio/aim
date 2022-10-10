@@ -1848,26 +1848,32 @@ function getQueryStringFromSelect(
     if (selectData.advancedMode) {
       query = selectData.advancedQuery;
     } else {
-      query = `${
-        selectData.query && !error?.message ? `(${selectData.query}) and ` : ''
-      }(${selectData.options
-        .map(
-          (option: ISelectOption) =>
-            `(images.name == "${option.value?.option_name}"${
-              option.value?.context === null
-                ? ''
-                : ' and ' +
-                  Object.keys(option.value?.context)
-                    .map(
-                      (item) =>
-                        `images.context.${item} == ${formatValue(
-                          (option.value?.context as any)[item],
-                        )}`,
-                    )
-                    .join(' and ')
-            })`,
-        )
-        .join(' or ')})`.trim();
+      const simpleInput =
+        selectData.query && !error?.message ? selectData.query : '';
+      const selections = selectData.options?.length
+        ? `(${selectData.options
+            .map(
+              (option: ISelectOption) =>
+                `(images.name == "${option.value?.option_name}"${
+                  option.value?.context === null
+                    ? ''
+                    : ' and ' +
+                      Object.keys(option.value?.context)
+                        .map(
+                          (item) =>
+                            `images.context.${item} == ${formatValue(
+                              (option.value?.context as any)[item],
+                            )}`,
+                        )
+                        .join(' and ')
+                })`,
+            )
+            .join(' or ')})`
+        : '';
+
+      query = `${simpleInput}${
+        simpleInput && selections ? ' and ' : ''
+      }${selections}`.trim();
     }
   }
 

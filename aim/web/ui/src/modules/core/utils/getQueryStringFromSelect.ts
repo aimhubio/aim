@@ -14,27 +14,26 @@ export function getQueryStringFromSelect(
       query = queryData.advancedInput || '';
     } else {
       const simpleInput = queryData.simpleInput || '';
-      const selections =
-        queryData.selections.length > 0
-          ? `(${queryData.selections
-              .map(
-                (option) =>
-                  `(${sequenceName}.name == "${option.value?.option_name}"${
-                    option.value?.context === null
-                      ? ''
-                      : ' and ' +
-                        Object.keys(option.value?.context)
-                          .map(
-                            (item) =>
-                              `${sequenceName}.context.${item} == ${formatValue(
-                                (option.value?.context)[item],
-                              )}`,
-                          )
-                          .join(' and ')
-                  })`,
-              )
-              .join(' or ')})`
-          : '';
+      const selections = queryData.selections?.length
+        ? `(${queryData.selections
+            .map(
+              (option) =>
+                `(${sequenceName}.name == "${option.value?.option_name}"${
+                  option.value?.context === null
+                    ? ''
+                    : ' and ' +
+                      Object.keys(option.value?.context)
+                        .map(
+                          (item) =>
+                            `${sequenceName}.context.${item} == ${formatValue(
+                              (option.value?.context)[item],
+                            )}`,
+                        )
+                        .join(' and ')
+                })`,
+            )
+            .join(' or ')})`
+        : '';
       query = `${simpleInput}${
         simpleInput && selections ? ' and ' : ''
       }${selections}`.trim();
