@@ -1,5 +1,4 @@
 import { createStitches } from '@stitches/react';
-
 import type * as Stitches from '@stitches/react';
 export type { VariantProps } from '@stitches/react';
 
@@ -17,46 +16,65 @@ export const {
   theme: {
     fonts: {
       inter: 'Inter, sans-serif',
-      mono: 'inconsolata, monospace',
+      mono: 'Inconsolata, monospace',
     },
     space: {
-      1: '5px',
-      2: '10px',
-      3: '15px',
-      4: '20px',
-      5: '25px',
-      6: '35px',
-      7: '45px',
-      8: '65px',
-      9: '80px',
+      1: '0.0625rem', // 1px
+      2: '0.125rem', // 2px
+      3: '0.25rem', // 4px
+      4: '0.375rem', // 6px
+      5: '0.5rem', // 8px
+      6: '0.625rem', // 10px
+      7: '0.75rem', // 12px
+      8: '0.875rem', // 14px
+      9: '1rem', // 16px
+      10: '1.125rem', // 18px
+      11: '1.25rem', // 20px
+      12: '1.375rem', // 22px
+      13: '1.5rem', // 24px
+      14: '1.625rem', // 26px
+      15: '1.75rem', // 28px
+      16: '1.875rem', // 30px
+      32: '2rem', // 32px
     },
     sizes: {
-      1: '5px',
-      2: '10px',
-      3: '15px',
-      4: '20px',
-      5: '25px',
-      6: '35px',
-      7: '45px',
-      8: '65px',
-      9: '80px',
+      20: '1.25rem', //20px
+      22: '1.375rem', //22px
+      24: '1.5rem', //24px
+      26: '1.625rem', //26px
+      28: '1.75rem', //28px
+      30: '1.875rem', //30px
+      32: '2rem', //32px
+      34: '2.125rem', //34px
+      36: '2.25rem', //36px
+      38: '2.375rem', //38px
+      40: '2.5rem', //40px
+      42: '2.625rem', //42px
+      44: '2.75rem', //44px
+      46: '2.875rem', //46px
+      48: '3rem', //48px
     },
     fontSizes: {
-      1: '12px',
-      2: '13px',
-      3: '15px',
-      4: '17px',
-      5: '19px',
-      6: '21px',
-      7: '27px',
-      8: '35px',
-      9: '59px',
+      8: '0.5rem', // 8px
+      10: '0.625rem', // 10px
+      12: '0.75rem', // 12px
+      14: '0.875rem', // 14px
+      16: '1rem', // 16px
+      18: '1.125rem', // 18px
+      20: '1.25rem', // 20px
+      22: '1.375rem', // 22px
+      24: '1.5rem', // 24px
+      26: '1.625rem', // 26px
+      28: '1.75rem', // 28px
+      30: '1.875rem', // 30px
+      32: '2rem', // 32px
     },
     radii: {
-      1: '4px',
-      2: '6px',
-      3: '8px',
-      4: '12px',
+      4: '0.25rem', // 4px
+      6: '0.375rem', // 6px
+      8: '0.5rem', // 8px
+      10: '0.625rem', // 10px
+      12: '0.75rem', // 12px
       round: '50%',
       pill: '9999px',
     },
@@ -205,6 +223,18 @@ export const {
       WebkitBackgroundClip: value,
       backgroundClip: value,
     }),
+
+    fontMono: (size: number) => {
+      const min_font_width = 114;
+      const font_size_unit_width = 2;
+      return {
+        fontFamily: '$mono',
+        fontVariationSettings: `'wdth' ${
+          min_font_width - size * font_size_unit_width
+        }`,
+        fontSize: `${size}px`,
+      };
+    },
   },
 });
 
