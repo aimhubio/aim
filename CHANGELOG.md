@@ -1,5 +1,7 @@
 # Changelog
 
+- Add the ability to highlight syntax error on QueryForm (KaroMourad)
+
 ## 3.14.2
 
 - Fix "`TypeError: check()` keywords must be strings" for `Run.metrics()` method (alberttorosyan)

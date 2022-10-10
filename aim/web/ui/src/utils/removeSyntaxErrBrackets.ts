@@ -4,6 +4,8 @@ import { ISyntaxErrorDetail } from 'types/components/NotificationContainer/Notif
  * @function removeSyntaxErrBrackets
  * @param detail {ISyntaxErrorDetail} - syntax error detail
  * @param advancedModeOn {boolean} - advanced mode on/off
+ *
+ * @return syntaxErrDetail - processed syntax error detail
  */
 function removeSyntaxErrBrackets(
   detail: ISyntaxErrorDetail,
