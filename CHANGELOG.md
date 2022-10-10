@@ -1,5 +1,9 @@
 # Changelog
 
+### Enhancements:
+
+- Add the ability to highlight syntax error on QueryForm (KaroMourad)
+
 ## 3.14.1 Oct 7, 2022
 
 - Fix the current release duplication highlighting issue on the Dashboard page (arsengit)
