@@ -166,7 +166,7 @@ function QueryForm(props: Omit<IQueryFormProps, 'visualizationName'>) {
       advancedModeOn: !query.advancedModeOn,
       advancedInput: q,
     });
-  }, [query, sequenceName, updateError.current, updateQuery.current]);
+  }, [query, sequenceName]);
 
   const options = React.useMemo(() => {
     const optionsData: ISelectOption[] = getSelectFormOptions(

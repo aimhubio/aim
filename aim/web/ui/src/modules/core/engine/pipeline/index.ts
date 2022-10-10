@@ -13,7 +13,7 @@ import createPipeline, {
 
 import { SequenceTypesEnum } from 'types/core/enums';
 
-import { PipelineErrorType, PipelineStatusEnum, ProgressState } from '../types';
+import { PipelineStatusEnum, ProgressState } from '../types';
 
 import createState, {
   CurrentGrouping,
