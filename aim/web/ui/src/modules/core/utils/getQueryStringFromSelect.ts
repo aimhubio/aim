@@ -13,26 +13,31 @@ export function getQueryStringFromSelect(
     if (queryData.advancedModeOn) {
       query = queryData.advancedInput || '';
     } else {
-      query = `${
-        queryData.simpleInput ? `${queryData.simpleInput} and ` : ''
-      }(${queryData.selections
-        .map(
-          (option) =>
-            `(${sequenceName}.name == "${option.value?.option_name}"${
-              option.value?.context === null
-                ? ''
-                : ' and ' +
-                  Object.keys(option.value?.context)
-                    .map(
-                      (item) =>
-                        `${sequenceName}.context.${item} == ${formatValue(
-                          (option.value?.context)[item],
-                        )}`,
-                    )
-                    .join(' and ')
-            })`,
-        )
-        .join(' or ')})`.trim();
+      const simpleInput = queryData.simpleInput || '';
+      const selections =
+        queryData.selections.length > 0
+          ? `(${queryData.selections
+              .map(
+                (option) =>
+                  `(${sequenceName}.name == "${option.value?.option_name}"${
+                    option.value?.context === null
+                      ? ''
+                      : ' and ' +
+                        Object.keys(option.value?.context)
+                          .map(
+                            (item) =>
+                              `${sequenceName}.context.${item} == ${formatValue(
+                                (option.value?.context)[item],
+                              )}`,
+                          )
+                          .join(' and ')
+                  })`,
+              )
+              .join(' or ')})`
+          : '';
+      query = `${simpleInput}${
+        simpleInput && selections ? ' and ' : ''
+      }${selections}`.trim();
     }
   }
   return query;
