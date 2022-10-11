@@ -63,6 +63,13 @@ def is_tf_tensor(inst):
     return inst_has_typename(inst, ['tensorflow', 'Tensor'])
 
 
+def is_jax_device_array(inst):
+    """
+    Check whether `inst` is instance of jax device array
+    """
+    return inst_has_typename(inst, ['jaxlib', 'xla_extension', 'DeviceArray'])
+
+
 def is_numpy_array(inst):
     """
     Check whether `inst` is instance of numpy array
@@ -95,6 +102,9 @@ def is_number(value):
     if is_numpy_number(value):
         return True
 
+    if is_jax_device_array(value):
+        return True
+
     if is_pytorch_tensor(value):
         return True
 
@@ -118,6 +128,9 @@ def convert_to_py_number(value) -> object:
         return value.item()
 
     if is_numpy_number(value):
+        return value.item()
+
+    if is_jax_device_array(value):
         return value.item()
 
     if is_pytorch_tensor(value):

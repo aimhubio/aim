@@ -41,6 +41,7 @@ export interface IChartPanelProps {
     activePoint: IActivePoint,
     focusedStateActive?: boolean,
   ) => void;
+  onChangeTooltip: (tooltip: ITooltip) => void;
   resizeMode?: ResizeModeEnum;
   selectOptions: IGroupingSelectOption[];
 }

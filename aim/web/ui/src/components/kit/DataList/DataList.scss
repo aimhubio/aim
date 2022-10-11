@@ -5,6 +5,12 @@
   flex-direction: column;
   width: 100%;
   max-height: 100%;
+  &__toolbarItems {
+    height: 2rem;
+    margin-left: $space-md;
+    display: flex;
+    align-items: center;
+  }
   &__textsTable {
     border: $border-grey;
     border-radius: $border-radius-md;
@@ -55,7 +61,7 @@
 
       &-cell {
         position: relative;
-        min-height: 28px;
+        min-height: 24px;
         max-height: 300px;
         padding: 0 $space-unit;
         border-right: unset;

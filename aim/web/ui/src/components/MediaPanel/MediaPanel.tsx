@@ -16,6 +16,8 @@ import { IllustrationsEnum } from 'config/illustrationConfig/illustrationConfig'
 
 import blobsURIModel from 'services/models/media/blobsURIModel';
 
+import { TooltipAppearance } from 'types/services/models/metrics/metricsAppModel.d';
+
 import { IMediaPanelProps } from './MediaPanel.d';
 
 import './MediaPanel.scss';
@@ -42,6 +44,7 @@ function MediaPanel({
   sortFieldsDict,
   sortFields,
   illustrationConfig,
+  onChangeTooltip = () => {},
   selectOptions = [],
   onRunsTagsChange = () => {},
 }: IMediaPanelProps): React.FunctionComponentElement<React.ReactNode> {
@@ -302,9 +305,11 @@ function MediaPanel({
                         }
                         chartType={tooltipType}
                         tooltipContent={tooltip?.content || {}}
+                        tooltipAppearance={tooltip?.appearance}
                         focusedState={focusedState}
                         selectOptions={selectOptions}
                         onRunsTagsChange={onRunsTagsChange}
+                        onChangeTooltip={onChangeTooltip}
                       />
                     </ErrorBoundary>
                   )}

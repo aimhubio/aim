@@ -448,6 +448,20 @@ class Repo:
     def list_all_runs(self) -> List[str]:
         return list(self._all_run_hashes())
 
+    def _active_run_hashes(self) -> Set[str]:
+        if self.is_remote_repo:
+            remote_repo = RemoteRepoProxy(self._client)
+            return set(remote_repo.list_active_runs())
+        else:
+            chunks_dir = os.path.join(self.path, 'meta', 'progress')
+            if os.path.exists(chunks_dir):
+                return set(os.listdir(chunks_dir))
+            else:
+                return set()
+
+    def list_active_runs(self) -> List[str]:
+        return list(self._active_run_hashes())
+
     def total_runs_count(self) -> int:
         db = self.structured_db
         if db:

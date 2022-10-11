@@ -41,4 +41,5 @@ export interface IMediaPanelProps {
   sortFields?: SortFields;
   illustrationConfig?: IIllustrationConfig;
   onRunsTagsChange?: (runHash: string, tags: ITagInfo[]) => void;
+  onChangeTooltip?: (tooltip: ITooltip) => void;
 }

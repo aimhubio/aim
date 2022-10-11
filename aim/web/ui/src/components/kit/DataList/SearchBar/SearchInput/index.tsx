@@ -24,14 +24,14 @@ function SearchInput({
         className={classNames('SearchInput', { activeCloseButton: !!value })}
       >
         <InputLabel htmlFor='search' variant='outlined' color='primary'>
-          Search for text
+          Search
         </InputLabel>
         <OutlinedInput
           fullWidth
           type='text'
           id='search'
           name='search'
-          label='Search for text'
+          label='Search'
           value={value}
           disabled={isDisabled}
           error={!isValidInput}
@@ -47,7 +47,7 @@ function SearchInput({
             />
           }
           style={{
-            height: 32,
+            height: 28,
           }}
         />
       </FormControl>

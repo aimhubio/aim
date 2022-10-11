@@ -137,6 +137,7 @@ function Scatters(
                         resizeMode={props.resizeMode}
                         selectOptions={props.groupingSelectOptions}
                         onRunsTagsChange={props.onRunsTagsChange}
+                        onChangeTooltip={props.onChangeTooltip}
                         controls={
                           <Controls
                             chartProps={chartProps}

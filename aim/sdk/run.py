@@ -638,7 +638,11 @@ class Run(BaseRun, StructuredRunMixin):
         sequence = seq_cls(sequence_name, context, self)
         return sequence if bool(sequence) else None
 
-    def collect_sequence_info(self, sequence_types: Tuple[str, ...], skip_last_value=False) -> Dict[str, list]:
+    def collect_sequence_info(
+            self,
+            sequence_types: Union[str, Tuple[str, ...]],
+            skip_last_value=False
+    ) -> Dict[str, list]:
         """Retrieve Run's all sequences general overview.
 
         Args:
