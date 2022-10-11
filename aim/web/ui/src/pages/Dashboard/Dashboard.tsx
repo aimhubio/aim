@@ -3,6 +3,7 @@ import classnames from 'classnames';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import { Spinner, Text } from 'components/kit';
+import Button from 'components/newKit/Button';
 
 import ProjectContributions from './components/ProjectContributions/ProjectContributions';
 import ExploreSection from './components/ExploreSection/ExploreSection';
@@ -32,7 +33,56 @@ function Dashboard(): React.FunctionComponentElement<React.ReactNode> {
             'Dashboard__middle--centered': isLoading,
           })}
         >
-          {isLoading ? (
+          <div className='flex fjb'>
+            <Button size='medium'>medium</Button>
+            <Button size='medium' color='secondary'>
+              medium
+            </Button>
+            <Button size='medium' color='success'>
+              medium
+            </Button>
+            <Button size='medium' color='error'>
+              medium
+            </Button>
+            <Button size='medium' color='warning'>
+              medium
+            </Button>
+          </div>
+          <div style={{ margin: '30px 0' }} className='flex fjb'>
+            <Button size='medium' variant='outlined'>
+              medium
+            </Button>
+            <Button size='medium' color='secondary' variant='outlined'>
+              medium
+            </Button>
+            <Button size='medium' color='success' variant='outlined'>
+              medium
+            </Button>
+            <Button size='medium' color='error' variant='outlined'>
+              medium
+            </Button>
+            <Button size='medium' color='warning' variant='outlined'>
+              medium
+            </Button>
+          </div>
+          <div className='flex fjb'>
+            <Button size='medium' variant='text'>
+              medium
+            </Button>
+            <Button size='medium' color='secondary' variant='text'>
+              medium
+            </Button>
+            <Button size='medium' color='success' variant='text'>
+              medium
+            </Button>
+            <Button size='medium' color='error' variant='text'>
+              medium
+            </Button>
+            <Button size='medium' color='warning' variant='text'>
+              medium
+            </Button>
+          </div>
+          {/* {isLoading ? (
             <Spinner />
           ) : totalRunsCount === 0 ? (
             <QuickStart />
@@ -52,7 +102,7 @@ function Dashboard(): React.FunctionComponentElement<React.ReactNode> {
               <ContributionsFeed />
             </>
           )}
-          {!isLoading && !totalRunsCount && <AimIntegrations />}
+          {!isLoading && !totalRunsCount && <AimIntegrations />} */}
         </div>
         <DashboardRight />
       </section>
