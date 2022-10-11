@@ -154,6 +154,9 @@ class ProxyTree(TreeView):
     ):
         self._rpc_client.run_instruction(self._hash, self._handler, 'finalize', (ResourceObject(index._handler),))
 
+    def from_data(self, data: Any):
+        self._rpc_client.run_instruction(self._hash, self._handler, 'from_data', (list(data),))
+
 
 class SubtreeView(TreeView):
     def __init__(self, tree: TreeView, path: Union[AimObjectKey, AimObjectPath]):

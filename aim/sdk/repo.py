@@ -55,6 +55,18 @@ def _get_tracking_queue():
     return None
 
 
+# TODO [AT]: replace with contextlib.nullcontext once Python 3.6 is dropped
+class nullcontext:
+    def __init__(self, enter_result=None):
+        self.enter_result = enter_result
+
+    def __enter__(self):
+        return self.enter_result
+
+    def __exit__(self, *excinfo):
+        pass
+
+
 class RepoAutoClean(AutoClean):
     PRIORITY = 30
 
@@ -841,42 +853,40 @@ class Repo:
         lock_path = os.path.join(self.path, 'meta', 'locks', run_hash)
         lock = AutoFileLock(lock_path, timeout=0)
         lock.acquire()
-        with dest_repo.structured_db:  # rollback destination db entity if subsequent actions fail.
+
+        db_context_manager = nullcontext() if dest_repo.is_remote_repo else dest_repo.structured_db
+        with db_context_manager:
             # copy run structured data
             source_structured_run = self.structured_db.find_run(run_hash)
             # create destination structured run db instance, set experiment and archived state
-            dest_structured_run = dest_repo.structured_db.create_run(run_hash, source_structured_run.created_at)
+            dest_structured_run = dest_repo.request_props(run_hash, read_only=False)
             dest_structured_run.experiment = source_structured_run.experiment
             dest_structured_run.archived = source_structured_run.archived
             # create and add to the destination run source tags
             for source_tag in source_structured_run.tags_obj:
-                try:
-                    dest_tag = dest_repo.structured_db.create_tag(source_tag.name)
-                    dest_tag.color = source_tag.color
-                    dest_tag.description = source_tag.description
-                except ValueError:
-                    pass  # if the tag already exists in destination db no need to do anything
+                if not dest_repo.is_remote_repo:
+                    try:
+                        dest_tag = dest_repo.structured_db.create_tag(source_tag.name)
+                        dest_tag.color = source_tag.color
+                        dest_tag.description = source_tag.description
+                    except ValueError:
+                        pass  # if the tag already exists in destination db no need to do anything
                 dest_structured_run.add_tag(source_tag.name)
 
             # copy run meta tree
-            source_meta_run_tree = self.request_tree(
-                'meta', run_hash, read_only=True, from_union=True
-            ).subtree('meta').subtree('chunks').subtree(run_hash)
-            dest_meta_run_tree = dest_repo.request_tree(
-                'meta', run_hash, read_only=False, from_union=True
-            ).subtree('meta').subtree('chunks').subtree(run_hash)
-            dest_meta_run_tree[...] = source_meta_run_tree[...]
+            source_meta_tree = self.request_tree('meta', run_hash, read_only=True, from_union=False)
+            dest_meta_tree = dest_repo.request_tree('meta', run_hash, read_only=False)
+            source_meta_tree.copy(dest_meta_tree)
+
+            # index destination Run metadata
+            dest_meta_run_tree = dest_meta_tree.subtree('meta').subtree('chunks').subtree(run_hash)
             dest_index = dest_repo._get_index_tree('meta', timeout=0).view(())
             dest_meta_run_tree.finalize(index=dest_index)
 
-            # copy run series tree
-            source_series_run_tree = self.request_tree(
-                'seqs', run_hash, read_only=True
-            ).subtree('seqs').subtree('chunks').subtree(run_hash)
-            dest_series_run_tree = dest_repo.request_tree(
-                'seqs', run_hash, read_only=False
-            ).subtree('seqs').subtree('chunks').subtree(run_hash)
-            dest_series_run_tree[...] = source_series_run_tree[...]
+            # copy run series container
+            source_series_tree = self.request_tree('seqs', run_hash, read_only=True, from_union=False)
+            dest_series_tree = dest_repo.request_tree('seqs', run_hash, read_only=False)
+            source_series_tree.copy(dest_series_tree)
 
     def close(self):
         if self._resources is None:

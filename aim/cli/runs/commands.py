@@ -62,13 +62,7 @@ def remove_runs(ctx, hashes):
 
 
 @runs.command(name='cp')
-@click.option('--destination', required=True,
-              type=click.Path(
-                  exists=True,
-                  file_okay=False,
-                  dir_okay=True,
-                  writable=True
-              ))
+@click.option('--destination', required=True)
 @click.argument('hashes', nargs=-1, type=str)
 @click.pass_context
 def copy_runs(ctx, destination, hashes):

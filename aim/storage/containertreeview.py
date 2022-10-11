@@ -201,3 +201,15 @@ class ContainerTreeView(TreeView):
         if not p:
             raise KeyError
         return p[0]
+
+    def copy(
+        self,
+        dest_tree: 'TreeView'
+    ):
+        dest_tree.from_data(self.container.items())
+
+    def from_data(self, data: Any):
+        batch = self.container.batch()
+        for key, value in data:
+            self.container.set(key, value, store_batch=batch)
+        self.container.commit(batch)

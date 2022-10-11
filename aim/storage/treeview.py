@@ -131,3 +131,12 @@ class TreeView:
         path: Union[AimObjectKey, AimObjectPath] = ()
     ) -> AimObjectKey:
         ...
+
+    def copy(
+        self,
+        dest_tree: 'TreeView'
+    ):
+        ...
+
+    def from_data(self, data: Any):
+        ...
