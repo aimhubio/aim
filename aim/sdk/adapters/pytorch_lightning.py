@@ -111,10 +111,12 @@ class AimLogger(Logger):
         assert rank_zero_only.rank == 0, \
             'experiment tried to log from global_rank != 0'
 
-        metric_items: Dict[str: Any] = {k:v for k, v in metrics.items()}
+        metric_items: Dict[str: Any] = {k: v for k, v in metrics.items()}
 
         if 'epoch' in metric_items:
-            epoch: int  = metric_items.pop('epoch')
+            epoch: int = metric_items.pop('epoch')
+        else:
+            epoch = None
 
         for k, v in metric_items.items():
             name = k

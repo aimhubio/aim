@@ -21,7 +21,8 @@
 - Add MXNet integration (tmynn)
 - Create a Dashboard page to provide a better onboarding experience (arsengit, roubkar, KaroMourad, mihran113)
 - Add support for tracking jax device arrays (mihran113)
-- Add epoch tracking fro Pytorch Lightning (tmynn)
+- Add Optuna integration (tmynn)
+- Add epoch tracking for PyTorch Lightning (tmynn)
 
 ### Fixes:
 
