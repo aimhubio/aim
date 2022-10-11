@@ -1,8 +1,4 @@
-export const initialCode = `from aim-ui-client import metrics, set_layout
-import pandas as pd
-from datetime import datetime
-import plotly.express as px
-
+export const coreComponentsCode = `
 def display(type, data, callbacks={}, options={}):
     return {
         "type": type,
@@ -11,89 +7,98 @@ def display(type, data, callbacks={}, options={}):
         "options": options
     }
 
-lines = [[]]
+def find(obj, element):
+    keys = element.split('.')
+    rv = obj.to_py()
+    for key in keys:
+        rv = rv[key]
+    return rv
 
-params_diff = {}
+colors = [
+    '#3E72E7',
+    '#18AB6D',
+    '#7A4CE0',
+    '#E149A0',
+    '#E43D3D',
+    '#E8853D',
+    '#0394B4',
+    '#729B1B',
+]
 
-df_source = {
-    "run.name": [],
-    "metric.name": [],
-    "metric.context": [],
-    "epoch": [],
-    "step": [],
-    "value": [],
-    "date": []
-}
+stroke_styles = [
+    'none',
+    '5 5',
+    '10 5 5 5',
+    '10 5 5 5 5 5',
+    '10 5 5 5 5 5 5 5',
+    '20 5 10 5',
+    '20 5 10 5 10 5',
+    '20 5 10 5 10 5 5 5',
+    '20 5 10 5 5 5 5 5',
+]
 
-metrics_list = []
-
-# smoothing section
-def calc_ema(values, factor):
-    if len(values) < 2:
-        return values
-    smoothed = [values[0]]
-    for i, _ in enumerate(values[1:], start=1):
-        smoothed.append(smoothed[i - 1] * factor + values[i] * (1 - factor))
-    return smoothed
-
-# map metrics to lines (charts)
-for i, metric in enumerate(metrics):
-    # set chart facet
-    if metric.name in metrics_list:
-        chart_index = metrics_list.index(metric.name)
-    else:
-        chart_index = len(metrics_list)
-        metrics_list.append(metric.name)
-    if chart_index >= len(lines):
-        lines.append([])
-    # add line
-    lines[chart_index].append({
-        "key": i,
-        "data": {
-          "xValues": metric.steps,
-          # apply smoothing only on bleu metrics
-          "yValues": calc_ema(list(metric.values), 0.6)
-        },
-        # set line color
-        "color": f'rgb({(i * 3 + 50) % 200}, {(i * 5 + 100) % 200}, {(i * 7 + 150) % 200})',
-        # set line stroke style 
-        "dasharray": "0" if metric.context.subset == "val" else "5 5"
-    })
-    # add dataframe rows
-    for i, s in enumerate(metric.steps):
-        df_source["run.name"].append(metric.run.name)
-        df_source["metric.name"].append(metric.name)
-        df_source["metric.context"].append(repr(metric.context.to_py()))
-        df_source["epoch"].append(metric.epochs[i])
-        df_source["step"].append(metric.steps[i])
-        df_source["value"].append(metric.values[i])
-        df_source["date"].append(datetime.fromtimestamp(metric.timestamps[i]).strftime('%d-%m-%y %H:%M:%S'))
-
-def on_active_point_change(val, is_active):
-    if is_active:
-        metric = metrics[val.key]
-        point_index = list(metric.steps).index(val.xValue)
-        d = {
-          "run.name": metric.run.name,
-          "metric.name": metric.name,
-          "metric.context": repr(metric.context.to_py()),
-          "step": list(metric.steps)[point_index],
-          "value": list(metric.values)[point_index]
-        }
-        print(pd.DataFrame(d, index=[val.key]))
-
-df = pd.DataFrame(df_source)
-
-fig = px.parallel_coordinates(df, color="value", dimensions=["run.name", "step", "value"],
-                    color_continuous_scale=px.colors.diverging.Tealrose, color_continuous_midpoint=2)
+def group(type, data, options):
+    group_map = {}
+    grouped_data = []
+    for i, item in enumerate(data):
+        group_values = []
+        for opt in options:
+            val = find(item, opt.replace("metric.", ""))
+            group_values.append(val)
+        group_key = hash(" ".join(map(str, group_values)))
+        if group_key not in group_map:
+            group_map[group_key] = {
+                "val": group_values,
+                "order": None
+            }
+        new_item = item.to_py()
+        new_item[type] = group_key
+        grouped_data.append(new_item)
+    sorted_groups = {k:v for k,v in sorted(group_map.items())}
+    i = 0;
+    for group_key in sorted_groups:
+        sorted_groups[group_key]["order"] = i
+        i = i + 1
+    return sorted_groups, grouped_data
 
 
-LineChart = display("LineChart", data=lines, callbacks={"on_active_point_change": on_active_point_change})
-DataFrame = display("DataFrame", data=df.to_json(orient='records'))
-ParPlot = display("Plotly", data=fig.to_json())
+def line_chart(data, x, y, color=[], stroke_style=[], facet=[], callbacks={}, options={}):
+    facet_map, facet_data = group("facet", data, facet)
+    color_map, color_data = group("color", data, color)
+    stroke_map, stroke_data = group("stroke_style", data, stroke_style)
+    lines = [None] * len(facet_map)
+    for i, el in enumerate(lines):
+        lines[i] = []
+    for i, item in enumerate(data):
+        item = item.to_py()
+        facet_val = facet_map[facet_data[i]["facet"]]["order"]
+        color_val = colors[color_map[color_data[i]["color"]]["order"] % len(colors)]
+        stroke_val = stroke_styles[stroke_map[stroke_data[i]["stroke_style"]]["order"] % len(stroke_styles)]
+        lines[facet_val].append({
+            "key": i,
+            "data": {
+                "xValues": item[x],
+                "yValues": item[y]
+            },
+            "color": color_val,
+            "dasharray": stroke_val
+        })
+
+    return {
+        "type": "LineChart",
+        "data": lines,
+        "callbacks": callbacks,
+        "options": options
+    }
+`;
+
+export const initialCode = `from aim-ui-client import metrics, set_layout
+
+LineChart = line_chart(data=metrics, x='steps', y='values', 
+                facet=["metric.name"], color=["run.name"], 
+                stroke_style=["metric.context"])
 
 layout = set_layout([
-    [LineChart, ParPlot], 
-    [DataFrame]
+    [LineChart]
 ])
 `;

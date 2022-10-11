@@ -8,7 +8,7 @@ import { Button, Spinner } from 'components/kit';
 import { AlignmentOptionsEnum } from 'utils/d3';
 import { filterMetricsData } from 'utils/filterMetricData';
 
-import { initialCode } from './sandboxCode';
+import { coreComponentsCode, initialCode } from './sandboxCode';
 import { dataVizElementsMap } from './dataVizElementsMap';
 
 import './SandboxVisualizer.scss';
@@ -60,9 +60,9 @@ export default function SandboxVisualizer(props: any) {
         },
       });
 
-      await pyodide.current.loadPackage('micropip');
-      const micropip = pyodide.current.pyimport('micropip');
-      await micropip.install('plotly');
+      // await pyodide.current.loadPackage('micropip');
+      // const micropip = pyodide.current.pyimport('micropip');
+      // await micropip.install('plotly');
 
       execute();
     }
@@ -85,15 +85,20 @@ export default function SandboxVisualizer(props: any) {
       setIsProcessing(true);
       const code = editorValue.current.replace('aim-ui-client', 'js');
       await pyodide.current!.loadPackagesFromImports(code);
-      pyodide.current!.runPythonAsync(code).then(() => {
-        const layout = pyodide.current.globals.get('layout');
-        if (layout) {
-          const resultData = pyodide.current.globals.get('layout').toJs();
-          const convertedResult = toObject(resultData);
-          setResult(convertedResult);
-        }
-        setIsProcessing(false);
-      });
+      pyodide
+        .current!.runPythonAsync(coreComponentsCode + code)
+        .then(() => {
+          const layout = pyodide.current.globals.get('layout');
+          if (layout) {
+            const resultData = pyodide.current.globals.get('layout').toJs();
+            const convertedResult = toObject(resultData);
+            setResult(convertedResult);
+          }
+          setIsProcessing(false);
+        })
+        .catch((ex: unknown) => {
+          console.log(ex);
+        });
     } catch (ex) {
       console.log(ex);
     }
@@ -121,6 +126,7 @@ export default function SandboxVisualizer(props: any) {
             loading={<span />}
             options={{
               tabSize: 4,
+              useTabStops: true,
             }}
           />
         </div>
@@ -151,21 +157,25 @@ export default function SandboxVisualizer(props: any) {
                   maxHeight: `${100 / result.length}%`,
                 }}
               >
-                {row.map((viz: any) => (
-                  <div
-                    key={viz.type}
-                    style={{
-                      position: 'relative',
-                      flex: 1,
-                      boxShadow: '0 0 0 1px #b5b9c5',
-                      maxWidth: `${100 / row.length}%`,
-                    }}
-                  >
-                    {dataVizElementsMap[viz.type as 'LineChart' | 'DataFrame'](
-                      viz,
-                    )}
-                  </div>
-                ))}
+                {row.map((viz: any) => {
+                  const vizFunc =
+                    dataVizElementsMap[
+                      viz.type as 'LineChart' | 'DataFrame' | 'Plotly'
+                    ];
+                  return (
+                    <div
+                      key={viz.type}
+                      style={{
+                        position: 'relative',
+                        flex: 1,
+                        boxShadow: '0 0 0 1px #b5b9c5',
+                        maxWidth: `${100 / row.length}%`,
+                      }}
+                    >
+                      {vizFunc(viz)}
+                    </div>
+                  );
+                })}
               </div>
             ))}
           </div>
