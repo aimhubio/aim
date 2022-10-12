@@ -154,13 +154,13 @@
 
   @keyframes inProgressIndicator {
     0% {
-      stroke-width: 0;
+      stroke-width: 0.6;
     }
     50% {
       stroke-width: 1.5;
     }
     100% {
-      stroke-width: 0;
+      stroke-width: 0.6;
     }
   }
 }

@@ -83,15 +83,19 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
     let closestCircles: INearestCircle[] = [];
     let minDistance: number = Infinity;
     for (let i = 0; i < data.length; i++) {
+      const item = data[i];
       for (let j = 0; j < scaledValues[i].length; j++) {
         const scaledValue = scaledValues[i][j];
         const rX = Math.abs(scaledValue.x - mouseX);
         const rY = Math.abs(scaledValue.y - mouseY);
         const r = Math.sqrt(rX * rX + rY * rY);
         if (r <= minDistance) {
+          const isLastCircle =
+            item.data.xValues.length > 0 && j === item.data.xValues.length - 1;
           const circle = {
-            key: data[i].key,
-            color: data[i].color || '#000',
+            key: item.key,
+            color: item.color || '#000',
+            inProgress: isLastCircle && !!item?.run?.props?.active,
             ...scaledValue,
           };
           if (r === minDistance) {
@@ -119,7 +123,8 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
       attrRef.current.xScale,
       false,
     );
-    for (const item of data) {
+    for (let i = 0; i < data.length; i++) {
+      const item = data[i];
       let index = 0;
       if (axesScaleType.xAxis !== ScaleEnum.Point) {
         index = d3.bisectCenter(
@@ -136,11 +141,16 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
       const x = item.data.xValues[index];
       const y = item.data.yValues[index];
       if ((x || x === 0) && x !== '-' && (y || y === 0) && y !== '-') {
+        const isLastCircle =
+          item.data.xValues.length > 0 &&
+          index === item.data.xValues.length - 1;
+
         nearestCircles.push({
           key: item.key,
           color: item.color || '#000',
           x: attrRef.current.xScale(x) || 0,
           y: attrRef.current.yScale(y) || 0,
+          inProgress: isLastCircle && !!item?.run?.props?.active,
         });
       }
     }
@@ -431,7 +441,7 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
       .raise();
   }
 
-  function drawFocusedCircle(key: string): void {
+  function drawFocusedCircle(key: string, inProgress: boolean = false): void {
     attrNodeRef.current
       .selectAll('circle')
       .attr('r', CircleEnum.Radius)
@@ -443,6 +453,7 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
     const newFocusedPoint = attrNodeRef.current.select(`[id=Circle-${key}]`);
     newFocusedPoint
       .classed('focus', true)
+      .classed('inProgressLineIndicator', inProgress)
       .attr('r', CircleEnum.ActiveRadius)
       .raise();
 
@@ -473,12 +484,13 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
       .attr('class', 'HoverCircle')
       .attr('id', (d: INearestCircle) => `Circle-${d.key}`)
       .attr('clip-path', `url(#${nameKey}-circles-rect-clip-${index})`)
-      .attr('cx', (d: INearestCircle) => d.x.toFixed(0))
-      .attr('cy', (d: INearestCircle) => d.y.toFixed(0))
+      .attr('cx', (d: INearestCircle) => d.x.toFixed(2))
+      .attr('cy', (d: INearestCircle) => d.y.toFixed(2))
       .attr('r', CircleEnum.Radius)
       .attr('stroke', (d: INearestCircle) => d.color)
       .attr('fill', (d: INearestCircle) => d.color)
       .attr('stroke-opacity', 1)
+      .classed('inProgressLineIndicator', (d: INearestCircle) => !!d.inProgress)
       .on('click', handlePointClick);
   }
 
@@ -547,6 +559,7 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
       yValue,
       xPos,
       yPos,
+      inProgress: !!circle.inProgress,
       chartIndex: index,
       pointRect: {
         top: chartRect.top + margin.top + boundedY - CircleEnum.ActiveRadius,
@@ -612,7 +625,7 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
     nearestCircles: INearestCircle[],
     force: boolean = false,
   ): IActivePoint {
-    // hover Line Changed case
+    // hover line changed case
     if (force || circle.key !== attrRef.current.lineKey) {
       setLinesHighlightMode();
       drawActiveLine(circle.key);
@@ -630,7 +643,7 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
       true,
     );
 
-    // hover Circle Changed case
+    // hover circle changed case
     if (
       force ||
       circle.key !== attrRef.current.activePoint?.key ||
@@ -686,10 +699,10 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
       const [mouseX, mouseY] = mousePosition;
       const closestCircle = getClosestCircle(mouseX, mouseY, data);
       if (closestCircle) {
-        let nearestCircles = getNearestCircles(closestCircle.x);
+        const nearestCircles = getNearestCircles(closestCircle.x);
         let activePoint = drawAttributes(closestCircle, nearestCircles, force);
         if (focusedStateActive) {
-          drawFocusedCircle(activePoint.key);
+          drawFocusedCircle(activePoint.key, activePoint.inProgress);
         }
         safeSyncHoverState({ activePoint, focusedStateActive, dataSelector });
       }
@@ -740,7 +753,7 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
           force,
         );
         if (focusedStateActive) {
-          drawFocusedCircle(activePoint.key);
+          drawFocusedCircle(activePoint.key, activePoint.inProgress);
         }
         safeSyncHoverState({ activePoint, focusedStateActive, dataSelector });
       }

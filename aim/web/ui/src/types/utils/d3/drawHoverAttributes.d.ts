@@ -61,6 +61,7 @@ export interface INearestCircle {
   y: number;
   key: string;
   color: string;
+  inProgress?: boolean;
 }
 
 export interface IActivePoint {
@@ -70,6 +71,7 @@ export interface IActivePoint {
   xPos: number;
   yPos: number;
   chartIndex: number;
+  inProgress?: boolean;
   pointRect: {
     top: number;
     bottom: number;
