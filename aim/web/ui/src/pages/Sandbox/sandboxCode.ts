@@ -42,9 +42,13 @@ def group(type, data, options):
     grouped_data = []
     for i, item in enumerate(data):
         group_values = []
-        for opt in options:
-            val = find(item, opt.replace("metric.", ""))
+        if callable(options):
+            val = options(item)
             group_values.append(val)
+        else:
+            for opt in options:
+                val = find(item, opt.replace("metric.", ""))
+                group_values.append(val)
         group_key = hash(" ".join(map(str, group_values)))
         if group_key not in group_map:
             group_map[group_key] = {
