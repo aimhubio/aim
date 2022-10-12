@@ -9,6 +9,8 @@
     "@material-ui/lab": "^4.0.0-alpha.60",
     "@monaco-editor/react": "4.4.4",
     "@storybook/react": "^6.5.12",
+    "@radix-ui/primitive": "^1.0.0",
+    "@stitches/react": "^1.2.8",
     "@types/marked": "^4.0.7",
     "@types/storybook__react": "^5.2.1",
     "@uiw/react-textarea-code-editor": "^1.4.14",
