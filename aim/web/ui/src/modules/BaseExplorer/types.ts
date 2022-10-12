@@ -74,6 +74,7 @@ export interface IControlsProps extends IBaseComponentProps {
 export interface IVisualizationsProps extends IBaseComponentProps {
   components: IUIComponents;
   visualizers: VisualizationsConfig;
+  forceRenderVisualizations?: boolean;
 }
 
 export interface IVisualizationProps extends IBaseComponentProps {
@@ -207,6 +208,11 @@ export declare interface ExplorerConfiguration
    * @default value is {}
    */
   readonly states?: CustomStates;
+
+  /**
+   * Do not check for pipeline status and skip rendering the illustrration block
+   */
+  forceRenderVisualizations?: boolean;
 }
 
 export declare interface ExplorerProps<

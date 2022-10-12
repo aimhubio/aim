@@ -5,10 +5,12 @@ import Editor from '@monaco-editor/react';
 
 import { Button, Spinner } from 'components/kit';
 
+import { getBasePath } from 'config/config';
+
 import { AlignmentOptionsEnum } from 'utils/d3';
 import { filterMetricsData } from 'utils/filterMetricData';
 
-import { coreComponentsCode, initialCode } from './sandboxCode';
+import { initialCode } from './sandboxCode';
 import { dataVizElementsMap } from './dataVizElementsMap';
 
 import './SandboxVisualizer.scss';
@@ -85,8 +87,13 @@ export default function SandboxVisualizer(props: any) {
       setIsProcessing(true);
       const code = editorValue.current.replace('aim-ui-client', 'js');
       await pyodide.current!.loadPackagesFromImports(code);
-      pyodide
-        .current!.runPythonAsync(coreComponentsCode + code)
+      pyodide.current.runPython(
+        await (
+          await fetch(`${getBasePath()}/static-files/aim_ui_core.py`)
+        ).text(),
+      );
+      pyodide.current
+        .runPythonAsync(code)
         .then(() => {
           const layout = pyodide.current.globals.get('layout');
           if (layout) {

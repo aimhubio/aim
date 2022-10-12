@@ -15,6 +15,9 @@ const FiguresExplorer = renderer(
     adapter: {
       objectDepth: AimObjectDepths.Sequence,
     },
+    components: {
+      queryForm: () => null,
+    },
     groupings: defaultConfig.groupings,
     visualizations: {
       vis1: {
@@ -26,6 +29,7 @@ const FiguresExplorer = renderer(
         },
       },
     },
+    forceRenderVisualizations: true,
   },
   __DEV__,
 );

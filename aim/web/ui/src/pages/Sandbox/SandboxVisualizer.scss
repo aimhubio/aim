@@ -32,6 +32,7 @@
   border-right: $border-dark;
   display: flex;
   flex-direction: column;
+  padding: $space-xs 0 0 $space-xs; 
 }
 
 .SandboxVisualizer__main__editor__code {

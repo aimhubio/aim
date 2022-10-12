@@ -17,6 +17,7 @@ function Visualizations(props: IVisualizationsProps) {
     engine: { pipeline, useStore },
     components,
     visualizers,
+    forceRenderVisualizations,
   } = props;
 
   const status = useStore(pipeline.statusSelector);
@@ -50,6 +51,7 @@ function Visualizations(props: IVisualizationsProps) {
 
   const renderIllustration = React.useMemo(
     () =>
+      !forceRenderVisualizations &&
       [
         PipelineStatusEnum.NeverExecuted,
         PipelineStatusEnum.Empty,
