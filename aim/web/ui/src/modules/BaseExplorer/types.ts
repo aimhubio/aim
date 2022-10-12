@@ -75,6 +75,7 @@ export interface IVisualizationsProps extends IBaseComponentProps {
   components: IUIComponents;
   visualizers: VisualizationsConfig;
   forceRenderVisualizations?: boolean;
+  displayProgress: boolean;
 }
 
 export interface IVisualizationProps extends IBaseComponentProps {
@@ -211,8 +212,17 @@ export declare interface ExplorerConfiguration
 
   /**
    * Do not check for pipeline status and skip rendering the illustrration block
+   * @optional
+   * @default value is false
    */
   forceRenderVisualizations?: boolean;
+
+  /**
+   * Check whether to render the progress bar for the search query
+   * @optional
+   * @default value is true
+   */
+  displayProgress?: boolean;
 }
 
 export declare interface ExplorerProps<

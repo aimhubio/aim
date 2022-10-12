@@ -30,6 +30,7 @@ const FiguresExplorer = renderer(
       },
     },
     forceRenderVisualizations: true,
+    displayProgress: false,
   },
   __DEV__,
 );

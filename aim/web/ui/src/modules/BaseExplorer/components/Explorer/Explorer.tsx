@@ -33,6 +33,7 @@ function Explorer({ configuration, engineInstance }: ExplorerProps) {
         forceRenderVisualizations={
           configuration.forceRenderVisualizations ?? false
         }
+        displayProgress={configuration.displayProgress ?? true}
         visualizers={configuration.visualizations}
         engine={engineInstance}
         components={{

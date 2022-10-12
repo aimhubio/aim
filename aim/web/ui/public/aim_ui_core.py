@@ -1,3 +1,32 @@
+####################
+### Bindings for fetching Aim Objects
+####################
+
+from js import search
+
+
+class Object:
+    def __init__(self, type):
+        self.type = type
+
+    async def get(self, query):
+        data = await search(query)
+        return data
+
+
+Metric = Object("metric")
+Image = Object("images")
+Figure = Object("figures")
+Audio = Object("audios")
+Text = Object("texts")
+Distribution = Object("distributions")
+
+
+####################
+### Bindings for visualizing data with data viz elements
+####################
+
+
 def display(type, data, callbacks={}, options={}):
     return {"type": type, "data": data, "callbacks": callbacks, "options": options}
 

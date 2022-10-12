@@ -7,6 +7,7 @@ import {
 import createPipeline, {
   GroupType,
   Order,
+  PipelineExecutionOptions,
   PipelineOptions,
   PipelinePhasesEnum,
 } from 'modules/core/pipeline';
@@ -32,6 +33,7 @@ export interface IPipelineEngine<TObject, TStore> {
     getSequenceName: () => SequenceTypesEnum;
     destroy: () => void;
     reset: () => void;
+    execute: (options: PipelineExecutionOptions) => Promise<any>;
   } & Omit<PipelineStateBridge<TObject, TStore>, 'selectors'> &
     PipelineStateBridge<TObject, TStore>['selectors'];
 }
@@ -203,6 +205,7 @@ function createPipelineEngine<TStore, TObject>(
       search,
       group,
       reset,
+      execute: pipeline.execute,
       destroy: () => {
         pipeline.clearCache();
       },

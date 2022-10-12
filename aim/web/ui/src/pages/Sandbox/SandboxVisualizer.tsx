@@ -17,30 +17,41 @@ import './SandboxVisualizer.scss';
 
 export default function SandboxVisualizer(props: any) {
   const {
-    engine: { useStore, pipeline },
+    engine: { pipeline },
   } = props;
-
-  const data = useStore(pipeline.dataSelector)?.map((item: any) => {
-    const { values, steps, epochs, timestamps } = filterMetricsData(
-      item.data,
-      AlignmentOptionsEnum.STEP,
-    );
-    return {
-      name: item.data.name,
-      context: item.data.context,
-      values: [...values],
-      steps: [...steps],
-      epochs: [...epochs],
-      timestamps: [...timestamps],
-      run: item.run,
-    };
-  });
-
-  (window as any).metrics = data;
 
   (window as any).set_layout = (grid: any[][]) => {
     return grid;
   };
+
+  async function queryData(query: string) {
+    const { data } = await pipeline.execute({
+      query: {
+        params: {
+          q: query,
+          report_progress: false,
+        },
+      },
+    });
+
+    return data.map((item: any) => {
+      const { values, steps, epochs, timestamps } = filterMetricsData(
+        item.data,
+        AlignmentOptionsEnum.STEP,
+      );
+      return {
+        name: item.data.name,
+        context: item.data.context,
+        values: [...values],
+        steps: [...steps],
+        epochs: [...epochs],
+        timestamps: [...timestamps],
+        run: item.run,
+      };
+    });
+  }
+
+  (window as any).search = queryData;
 
   const pyodide = React.useRef<any>();
 
@@ -66,6 +77,12 @@ export default function SandboxVisualizer(props: any) {
       // const micropip = pyodide.current.pyimport('micropip');
       // await micropip.install('plotly');
 
+      pyodide.current.runPython(
+        await (
+          await fetch(`${getBasePath()}/static-files/aim_ui_core.py`)
+        ).text(),
+      );
+
       execute();
     }
     main();
@@ -85,13 +102,10 @@ export default function SandboxVisualizer(props: any) {
     }
     try {
       setIsProcessing(true);
-      const code = editorValue.current.replace('aim-ui-client', 'js');
+      const code = editorValue.current
+        .replace('aim-ui-client', 'js')
+        .replaceAll('= Metric.get', '= await Metric.get');
       await pyodide.current!.loadPackagesFromImports(code);
-      pyodide.current.runPython(
-        await (
-          await fetch(`${getBasePath()}/static-files/aim_ui_core.py`)
-        ).text(),
-      );
       pyodide.current
         .runPythonAsync(code)
         .then(() => {

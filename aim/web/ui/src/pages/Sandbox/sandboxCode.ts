@@ -1,4 +1,6 @@
-export const initialCode = `from aim-ui-client import metrics, set_layout
+export const initialCode = `from aim-ui-client import set_layout
+
+metrics = Metric.get('metric.name == "best_loss"')
 
 LineChart = line_chart(data=metrics, x='steps', y='values', 
                 facet=["metric.name"], color=["run.name"], 

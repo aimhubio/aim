@@ -18,6 +18,7 @@ function Visualizations(props: IVisualizationsProps) {
     components,
     visualizers,
     forceRenderVisualizations,
+    displayProgress,
   } = props;
 
   const status = useStore(pipeline.statusSelector);
@@ -62,7 +63,7 @@ function Visualizations(props: IVisualizationsProps) {
 
   return (
     <div className='Visualizations'>
-      <ProgressBar engine={engine} />
+      {displayProgress && <ProgressBar engine={engine} />}
       {renderIllustration ? (
         <IllustrationBlock size='xLarge' page='figures' type={status} />
       ) : (
