@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { Icon } from 'components/kit';
+
 import { styled } from 'config/stitches/stitches.config';
 
 import { IButtonProps } from './Button.d';
@@ -7,43 +9,44 @@ import { IButtonProps } from './Button.d';
 function getStylesFromColor(
   color: IButtonProps['color'],
   variant: IButtonProps['variant'],
+  disabled: boolean | undefined,
 ) {
   switch (variant) {
     case 'contained':
       return {
-        backgroundColor: `$${color}100`,
+        bc: `$${color}${disabled ? 50 : 100}`,
         color: 'white',
         '&:hover': {
-          backgroundColor: `$${color}110`,
+          bc: `$${color}110`,
         },
         '&:active': {
-          backgroundColor: `$${color}120`,
+          bc: `$${color}120`,
         },
       };
     case 'outlined':
       return {
-        backgroundColor: 'white',
-        color: `$${color}100`,
-        boxShadow: 'inset 0px 0px 0px 1px',
+        bc: 'white',
+        color: `$${color}${disabled ? 50 : 100}`,
+        bs: '0px 0px 0px 1px',
         '&:hover': {
           backgroundColor: `$${color}10`,
           color: `$${color}110`,
         },
         '&:active': {
-          backgroundColor: `$${color}20`,
+          bc: `$${color}20`,
           color: `$${color}120`,
         },
       };
     case 'text':
       return {
-        backgroundColor: 'white',
-        color: `$${color}100`,
+        bc: 'white',
+        color: `$${color}${disabled ? 50 : 100}`,
         '&:hover': {
-          backgroundColor: `$${color}10`,
+          bc: `$${color}10`,
           color: `$${color}110`,
         },
         '&:active': {
-          backgroundColor: `$${color}20`,
+          bc: `$${color}20`,
           color: `$${color}120`,
         },
       };
@@ -52,116 +55,107 @@ function getStylesFromColor(
 
 const Container = styled('button', {
   all: 'unset',
-  display: 'inline-flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  lineHeight: 1,
-  fontWeight: 500,
+  display: 'flex',
+  ai: 'center',
+  jc: 'center',
+  fontWeight: '$2',
   cursor: 'pointer',
-  borderRadius: '3px',
+  borderRadius: '$1',
   transition: 'all 0.2s ease-in-out',
+  fontSize: '$3',
+  p: '0 $space$7',
   variants: {
-    // variant: {
-    //   contained: {},
-    //   text: {},
-    //   outlined: {
-    //     backgroundColor: 'white',
-    //   },
-    // },
-    // color: {
-    //   primary: {},
-    //   red: {},
-    // },
     size: {
       small: {
-        height: '$sizes$20',
-        padding: '0 $space$12',
-        fontSize: '$fontSizes$10',
+        height: '$sizes$1',
+        fontSize: '$fontSizes$2',
       },
       medium: {
-        height: '$sizes$24',
-        padding: '0 $space$12',
-        fontSize: '$fontSizes$12',
+        height: '$sizes$3',
       },
       large: {
-        height: '$sizes$28',
-        padding: '0 $space$12',
-        fontSize: '$fontSizes$12',
+        height: '$sizes$5',
       },
       xLarge: {
-        height: '$sizes$32',
-        padding: '0 $space$12',
-        fontSize: '$fontSizes$12',
+        height: '$sizes$7',
       },
     },
     disabled: {
       true: {
+        userSelect: 'none',
         cursor: 'not-allowed',
         pointerEvents: 'none',
-        opacity: 0.5,
+      },
+    },
+    startIcon: {
+      true: {},
+    },
+    endIcon: {
+      true: {},
+    },
+  },
+  compoundVariants: [
+    {
+      startIcon: true,
+      css: {
+        pl: '0',
+      },
+    },
+    {
+      endIcon: true,
+      css: {
+        pr: '0',
+      },
+    },
+  ],
+});
+
+const IconContainer = styled(Icon, {
+  size: '$sizes$1',
+  display: 'flex',
+  jc: 'center',
+  ai: 'center',
+});
+
+const IconLeft = styled(IconContainer, {
+  mr: '$space$2',
+  variants: {
+    size: {
+      small: {
+        ml: '$space$3',
+      },
+      medium: {
+        ml: '$space$4',
+      },
+      large: {
+        ml: '$space$5',
+      },
+      xLarge: {
+        ml: '$space$7',
+        size: '$sizes$3',
       },
     },
   },
+});
 
-  //   compoundVariants: [
-  //     {
-  //       color: 'primary',
-  //       variant: 'outlined',
-  //       css: {
-  //         color: '#105CB8',
-  //         boxShadow: 'inset 0px 0px 0px 1px #1473E6',
-  //         '&:hover': {
-  //           background: '#E8F1FD',
-  //         },
-  //         '&:active': {
-  //           color: '#0C4B97',
-  //           background: '#D0E3FA',
-  //         },
-  //       },
-  //     },
-  //     {
-  //       color: 'primary',
-  //       variant: 'contained',
-  //       css: {
-  //         color: 'white',
-  //         backgroundColor: '#1473E6',
-  //         '&:hover': { backgroundColor: '#105CB8' },
-  //         '&:active': { backgroundColor: '#0C4B97' },
-  //       },
-  //     },
-  //     {
-  //       color: 'primary',
-  //       disabled: 'true',
-  //       variant: 'outlined',
-  //       css: {
-  //         color: '#105CB8',
-  //         boxShadow: 'inset 0px 0px 0px 1px #1473E6',
-  //         '&:hover': {
-  //           background: '#E8F1FD',
-  //         },
-  //         '&:active': {
-  //           color: '#0C4B97',
-  //           background: '#D0E3FA',
-  //         },
-  //       },
-  //     },
-  //     {
-  //       color: 'primary',
-  //       variant: 'text',
-  //       css: {
-  //         color: '#105CB8',
-  //         '&:hover': {
-  //           background: '#E8F1FD',
-  //         },
-  //         '&:active': {
-  //           color: '#0C4B97',
-  //           background: '#D0E3FA',
-  //         },
-  //       },
-  //     },
-  //   ],
-  defaultVariants: {
-    // color: 'violet',
+const IconRight = styled(IconContainer, {
+  ml: '$space$2',
+  variants: {
+    size: {
+      small: {
+        mr: '$space$3',
+      },
+      medium: {
+        mr: '$space$4',
+      },
+      large: {
+        mr: '$space$5',
+      },
+      xLarge: {
+        mr: '$space$7',
+        size: '$sizes$3',
+      },
+    },
   },
 });
 
@@ -169,18 +163,28 @@ function Button({
   color = 'primary',
   size = 'small',
   variant = 'contained',
+  disabled,
+  startIcon,
+  endIcon,
   children,
   ...rest
 }: IButtonProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <Container
-      css={{ ...rest.style, ...getStylesFromColor(color, variant) }}
-      //   color={color}
+      css={{ ...rest.style, ...getStylesFromColor(color, variant, disabled) }}
       size={size}
-      disabled={rest.disabled}
+      disabled={disabled}
+      startIcon={!!startIcon}
+      endIcon={!!endIcon}
       {...rest}
     >
+      {startIcon ? (
+        <IconLeft size={size} className='startIcon' name={startIcon} />
+      ) : null}
       {children}
+      {endIcon ? (
+        <IconRight size={size} className='endIcon' name={endIcon} />
+      ) : null}
     </Container>
   );
 }
