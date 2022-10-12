@@ -24,7 +24,6 @@ class RobustExec(threading.Thread):
         self.stop_signal = stop_signal
 
     def join(self):
-        assert not self.stop_signal.is_set()
         while True:
             try:
                 # Pressing Ctrl-C will raise KeyboardInterrupt and stop only
