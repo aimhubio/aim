@@ -6,6 +6,7 @@ import { styled } from 'config/stitches/stitches.config';
 
 import { IButtonProps } from './Button.d';
 
+// function that returns a object with the styles
 function getStylesFromColor(
   color: IButtonProps['color'],
   variant: IButtonProps['variant'],
@@ -168,6 +169,16 @@ const IconRight = styled(IconContainer, {
   },
 });
 
+/**
+ * @property {IButtonProps['color']} color - color of the button
+ * @property {IButtonProps['size']} size - size of the button
+ * @property {IButtonProps['variant']} variant - variant of the button
+ * @property {IButtonProps['fullWidth']} fullWidth - whether the button should take the full width of its container
+ * @property {IButtonProps['disabled']} disabled - whether the button should be disabled
+ * @property {IButtonProps['startIcon']} startIcon - icon to be displayed on the left side of the button
+ * @property {IButtonProps['endIcon']} endIcon - icon to be displayed on the right side of the button
+ * @property {IButtonProps['children']} children - children to be displayed inside the button
+ */
 function Button({
   color = 'primary',
   size = 'small',
@@ -184,8 +195,8 @@ function Button({
       css={{ ...rest.style, ...getStylesFromColor(color, variant, disabled) }}
       size={size}
       disabled={disabled}
-      startIcon={!!startIcon}
-      endIcon={!!endIcon}
+      startIcon={Boolean(startIcon)}
+      endIcon={Boolean(endIcon)}
       fullWidth={fullWidth}
       {...rest}
     >
