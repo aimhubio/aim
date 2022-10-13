@@ -10,7 +10,7 @@ class Object:
         self.type = type
 
     async def get(self, query=""):
-        data = await search(query)
+        data = await search(self.type, query)
         return data
 
 

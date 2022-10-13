@@ -1,12 +1,10 @@
 import * as React from 'react';
 
-import renderer, { getDefaultHydration } from 'modules/BaseExplorer';
+import renderer from 'modules/BaseExplorer';
 
 import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
 
 import SandboxVisualizer from './SandboxVisualizer';
-
-const defaultConfig = getDefaultHydration();
 
 const FiguresExplorer = renderer(
   {
@@ -18,7 +16,6 @@ const FiguresExplorer = renderer(
     components: {
       queryForm: () => null,
     },
-    groupings: defaultConfig.groupings,
     visualizations: {
       vis1: {
         component: SandboxVisualizer as React.FunctionComponent,

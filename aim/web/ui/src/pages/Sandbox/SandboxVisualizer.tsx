@@ -7,47 +7,18 @@ import { Button, Spinner } from 'components/kit';
 
 import { getBasePath } from 'config/config';
 
-import { AlignmentOptionsEnum } from 'utils/d3';
-import { filterMetricsData } from 'utils/filterMetricData';
-
 import { initialCode } from './sandboxCode';
 import { dataVizElementsMap } from './dataVizElementsMap';
+import { search } from './search';
 
 import './SandboxVisualizer.scss';
+
+(window as any).search = search;
 
 export default function SandboxVisualizer(props: any) {
   const {
     engine: { pipeline },
   } = props;
-
-  async function queryData(query: string) {
-    const { data } = await pipeline.execute({
-      query: {
-        params: {
-          q: query,
-          report_progress: false,
-        },
-      },
-    });
-
-    return data.map((item: any) => {
-      const { values, steps, epochs, timestamps } = filterMetricsData(
-        item.data,
-        AlignmentOptionsEnum.STEP,
-      );
-      return {
-        name: item.data.name,
-        context: item.data.context,
-        values: [...values],
-        steps: [...steps],
-        epochs: [...epochs],
-        timestamps: [...timestamps],
-        run: item.run,
-      };
-    });
-  }
-
-  (window as any).search = queryData;
 
   const pyodide = React.useRef<any>();
 
@@ -100,7 +71,12 @@ export default function SandboxVisualizer(props: any) {
       setIsProcessing(true);
       const code = editorValue.current
         .replace('from aim-ui-client', '# from aim-ui-client')
-        .replaceAll('= Metric.get', '= await Metric.get');
+        .replaceAll('= Metric.get', '= await Metric.get')
+        .replaceAll('= Image.get', '= await Image.get')
+        .replaceAll('= Audio.get', '= await Audio.get')
+        .replaceAll('= Figure.get', '= await Figure.get')
+        .replaceAll('= Text.get', '= await Text.get')
+        .replaceAll('= Distribution.get', '= await Distribution.get');
       await pyodide.current!.loadPackagesFromImports(code);
       pyodide.current
         .runPythonAsync(code)
