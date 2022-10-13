@@ -131,3 +131,10 @@ def images_list(data):
         "type": "Images",
         "data": data,
     }
+
+
+def json(data):
+    return {
+        "type": "JSON",
+        "data": data,
+    }

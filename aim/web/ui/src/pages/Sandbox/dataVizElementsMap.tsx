@@ -3,6 +3,7 @@ import * as React from 'react';
 import Figures from 'modules/BaseExplorer/components/Figures/Figures';
 
 import ChartPanel from 'components/ChartPanel/ChartPanel';
+import DictVisualizer from 'components/kit/DictVisualizer';
 
 import { ChartTypeEnum, CurveEnum, ScaleEnum, HighlightEnum } from 'utils/d3';
 
@@ -57,4 +58,21 @@ export const dataVizElementsMap = {
     </div>
   ),
   Images: (props: any) => <ImagesList key={Date.now()} data={props.data} />,
+  JSON: (props: any) => (
+    <div
+      style={{
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
+      <DictVisualizer
+        src={props.data}
+        style={{ width: 300, height: 300 }}
+        autoScale
+      />
+    </div>
+  ),
 };
