@@ -84,6 +84,12 @@ function BoxWrapper(props: IBoxWrapperProps<AimFlatObjectBase<any>>) {
     boxConfig.height,
   ]);
 
+  React.useEffect(() => {
+    engine.events?.on('alert', (data: any) =>
+      console.log(data, currentItem?.style?.left),
+    );
+  }, []);
+
   return currentItem ? (
     <div
       className='BoxWrapper'
@@ -93,7 +99,20 @@ function BoxWrapper(props: IBoxWrapperProps<AimFlatObjectBase<any>>) {
       }}
     >
       <Button
-        onClick={() => setFullView(true)}
+        onClick={() => {
+          console.log(engine);
+          engine.events?.unsubscribe('alert', (data: any) =>
+            console.log(data, currentItem?.style?.left),
+          );
+        }}
+      >
+        unsubscribe
+      </Button>
+      <Button
+        onClick={() => {
+          setFullView(true);
+          engine.events.fire('alert', 'yes');
+        }}
         size='xSmall'
         withOnlyIcon
         className='BoxWrapper__fullScreen'

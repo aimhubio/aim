@@ -14,12 +14,14 @@ import { PipelineStatusEnum } from '../types';
 import createVisualizationsEngine from '../visualizations';
 import createExplorerAdditionalEngine from '../explorer';
 import createCustomStatesEngine, { CustomStatesEngine } from '../custom-states';
+import createEventSystemEngine from '../event-system';
 
 type State = {
   pipeline?: any;
   instructions?: any;
   explorer?: any;
   visualizations?: any;
+  events?: any;
 };
 
 export type EngineNew<
@@ -131,6 +133,16 @@ function getVisualizationsEngine(
   return visualizations.engine;
 }
 
+function getEventSystemEngine(
+  state: State, // mutable
+) {
+  const events = createEventSystemEngine();
+
+  state['events'] = events.state;
+
+  return events.engine;
+}
+
 function createEngine<TObject = any>(
   config: ExplorerEngineConfiguration,
   name: string = 'ExplorerEngine',
@@ -145,6 +157,7 @@ function createEngine<TObject = any>(
   let visualizations: any;
 
   let customStatesEngine: CustomStatesEngine;
+  let events: any;
   let query: any;
   let groupings: any;
 
@@ -203,9 +216,12 @@ function createEngine<TObject = any>(
     /**
      * @TODO add blobs_uri engine here
      */
-    /**
-     * @TODO add events service engine here
+
+    /*
+     * Event System
      */
+    events = getEventSystemEngine(state);
+
     return state;
   }
 
@@ -272,6 +288,7 @@ function createEngine<TObject = any>(
     groupings,
     // @ts-ignore
     pipeline,
+    events,
 
     finalize,
     initialize,
