@@ -7,6 +7,7 @@ import ChartPanel from 'components/ChartPanel/ChartPanel';
 import { ChartTypeEnum, CurveEnum, ScaleEnum, HighlightEnum } from 'utils/d3';
 
 import DataGrid from './DataGrid';
+import ImagesList from './ImagesList';
 
 export const dataVizElementsMap = {
   LineChart: (props: any) => (
@@ -55,4 +56,5 @@ export const dataVizElementsMap = {
       <Figures data={{ data: props }} style={{}} />
     </div>
   ),
+  Images: (props: any) => <ImagesList key={Date.now()} data={props.data} />,
 };

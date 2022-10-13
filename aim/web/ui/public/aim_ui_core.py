@@ -2,7 +2,7 @@
 ### Bindings for fetching Aim Objects
 ####################
 
-from js import search
+from js import search, updateLayout
 
 
 class Object:
@@ -29,6 +29,10 @@ Distribution = Object("distributions")
 
 def display(grid):
     return grid
+
+
+def update_layout(grid):
+    updateLayout(grid)
 
 
 def find(obj, element):
@@ -119,4 +123,11 @@ def line_chart(
         "data": lines,
         "callbacks": callbacks,
         "options": options,
+    }
+
+
+def images_list(data):
+    return {
+        "type": "Images",
+        "data": data,
     }

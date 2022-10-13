@@ -15,6 +15,18 @@ import './SandboxVisualizer.scss';
 
 (window as any).search = search;
 
+function toObject(x: any): any {
+  if (x instanceof Map) {
+    return Object.fromEntries(
+      Array.from(x.entries(), ([k, v]) => [k, toObject(v)]),
+    );
+  } else if (x instanceof Array) {
+    return x.map(toObject);
+  } else {
+    return x;
+  }
+}
+
 export default function SandboxVisualizer(props: any) {
   const {
     engine: { pipeline },
@@ -25,6 +37,10 @@ export default function SandboxVisualizer(props: any) {
   const editorValue = React.useRef(initialCode);
   const [result, setResult] = React.useState<Record<string, any>>([[]]);
   const [isProcessing, setIsProcessing] = React.useState<boolean | null>(null);
+
+  (window as any).updateLayout = (grid: any) => {
+    setResult(toObject(grid.toJs()));
+  };
 
   React.useEffect(() => {
     async function main() {
@@ -56,17 +72,6 @@ export default function SandboxVisualizer(props: any) {
   }, []);
 
   const execute = React.useCallback(async () => {
-    function toObject(x: any): any {
-      if (x instanceof Map) {
-        return Object.fromEntries(
-          Array.from(x.entries(), ([k, v]) => [k, toObject(v)]),
-        );
-      } else if (x instanceof Array) {
-        return x.map(toObject);
-      } else {
-        return x;
-      }
-    }
     try {
       setIsProcessing(true);
       const code = editorValue.current
@@ -76,7 +81,8 @@ export default function SandboxVisualizer(props: any) {
         .replaceAll('= Audio.get', '= await Audio.get')
         .replaceAll('= Figure.get', '= await Figure.get')
         .replaceAll('= Text.get', '= await Text.get')
-        .replaceAll('= Distribution.get', '= await Distribution.get');
+        .replaceAll('= Distribution.get', '= await Distribution.get')
+        .replaceAll('def ', 'async def ');
       await pyodide.current!.loadPackagesFromImports(code);
       pyodide.current
         .runPythonAsync(code)
