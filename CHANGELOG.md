@@ -1,6 +1,6 @@
 # Changelog
 
-- Fix in-progress training runs indicators overlapping issue in line chart (KaroMourad)
+- Fix active runs indicators overlapping issue in LineChart (KaroMourad)
 
 ## 3.14.1 Oct 7, 2022
 
