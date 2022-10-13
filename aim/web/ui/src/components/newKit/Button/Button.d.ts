@@ -10,6 +10,7 @@ export interface IButtonProps
   disabled?: boolean;
   startIcon?: IIconProps['name'];
   endIcon?: IIconProps['name'];
+  fullWidth?: boolean;
 }
 
 type sizeType = 'small' | 'medium' | 'large' | 'xLarge';

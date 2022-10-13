@@ -55,7 +55,8 @@ function getStylesFromColor(
 
 const Container = styled('button', {
   all: 'unset',
-  display: 'flex',
+  display: 'inline-flex',
+  width: 'fit-content',
   ai: 'center',
   jc: 'center',
   fontWeight: '$2',
@@ -63,21 +64,24 @@ const Container = styled('button', {
   borderRadius: '$1',
   transition: 'all 0.2s ease-in-out',
   fontSize: '$3',
-  p: '0 $space$7',
   variants: {
     size: {
       small: {
         height: '$sizes$1',
         fontSize: '$fontSizes$2',
+        p: '0 $space$7',
       },
       medium: {
         height: '$sizes$3',
+        p: '0 $space$8',
       },
       large: {
         height: '$sizes$5',
+        p: '0 $space$9',
       },
       xLarge: {
         height: '$sizes$7',
+        p: '0 $space$11',
       },
     },
     disabled: {
@@ -92,6 +96,11 @@ const Container = styled('button', {
     },
     endIcon: {
       true: {},
+    },
+    fullWidth: {
+      true: {
+        width: '100%',
+      },
     },
   },
   compoundVariants: [
@@ -163,6 +172,7 @@ function Button({
   color = 'primary',
   size = 'small',
   variant = 'contained',
+  fullWidth = false,
   disabled,
   startIcon,
   endIcon,
@@ -176,6 +186,7 @@ function Button({
       disabled={disabled}
       startIcon={!!startIcon}
       endIcon={!!endIcon}
+      fullWidth={fullWidth}
       {...rest}
     >
       {startIcon ? (
