@@ -20,10 +20,6 @@ export default function SandboxVisualizer(props: any) {
     engine: { pipeline },
   } = props;
 
-  (window as any).set_layout = (grid: any[][]) => {
-    return grid;
-  };
-
   async function queryData(query: string) {
     const { data } = await pipeline.execute({
       query: {
@@ -103,7 +99,7 @@ export default function SandboxVisualizer(props: any) {
     try {
       setIsProcessing(true);
       const code = editorValue.current
-        .replace('aim-ui-client', 'js')
+        .replace('from aim-ui-client', '# from aim-ui-client')
         .replaceAll('= Metric.get', '= await Metric.get');
       await pyodide.current!.loadPackagesFromImports(code);
       pyodide.current

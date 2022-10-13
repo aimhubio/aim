@@ -9,7 +9,7 @@ class Object:
     def __init__(self, type):
         self.type = type
 
-    async def get(self, query):
+    async def get(self, query=""):
         data = await search(query)
         return data
 
@@ -27,8 +27,8 @@ Distribution = Object("distributions")
 ####################
 
 
-def display(type, data, callbacks={}, options={}):
-    return {"type": type, "data": data, "callbacks": callbacks, "options": options}
+def display(grid):
+    return grid
 
 
 def find(obj, element):
