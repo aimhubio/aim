@@ -14,6 +14,48 @@ export const {
   reset,
 } = createStitches({
   theme: {
+    colors: {
+      // primary colors
+      primary10: '#E8F1FD',
+      primary20: '#D0E3FA',
+      primary30: '#B9D5F8',
+      primary50: '#8AB9F3',
+      primary100: '#1473E6',
+      primary110: '#105CB8',
+      primary120: '#0C4B97',
+      // secondary colors
+      secondary10: '#E2E6ED',
+      secondary20: '#E2E6ED',
+      secondary30: '#D4DAE3',
+      secondary50: '#B7C1D1',
+      secondary100: '#7084A2',
+      secondary110: '#546987',
+      secondary120: '#43526C',
+      // success colors
+      success10: '#E8F3EB',
+      success20: '#D1E6D7',
+      success30: '#BADCC3',
+      success50: '#8CC49B',
+      success100: '#30954C',
+      success110: '#188136',
+      success120: '#166F2F',
+      // error colors
+      error10: '#F9E7E6',
+      error20: '#F4CECC',
+      error30: '#EEB6B3',
+      error50: '#E38580',
+      error100: '#CC231A',
+      error110: '#BD0900',
+      error120: '#AD0900',
+      // warning colors
+      warning10: '#FEF7E8',
+      warning20: '#FAEECF',
+      warning30: '#FBE8B9',
+      warning50: '#F8D98B',
+      warning100: '#F2BB2E',
+      warning110: '#E6A90F',
+      warning120: '#D89F0E',
+    },
     fonts: {
       inter: 'Inter, sans-serif',
       mono: 'Inconsolata, monospace',
@@ -68,6 +110,14 @@ export const {
       11: '1.75rem', // 28px
       12: '1.875rem', // 30px
       13: '2rem', // 32px
+    },
+    fontWeights: {
+      1: 350,
+      2: 450,
+      3: 550,
+      4: 650,
+      5: 750,
+      6: 850,
     },
     radii: {
       1: '0.25rem', // 4px
