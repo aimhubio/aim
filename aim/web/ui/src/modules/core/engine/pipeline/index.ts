@@ -298,9 +298,9 @@ function createPipelineEngine<TStore, TObject>(
       (query: any) => {
         console.log('query changed');
         if (!isEmpty(query)) {
-          search(query.readyQuery, true);
+          search({ ...query.readyQuery, report_progress: true }, true);
         } else {
-          search({ q: '' }, true);
+          search({ q: '()', report_progress: true }, true);
         }
       },
       ['PUSH'],
