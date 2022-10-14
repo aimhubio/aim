@@ -11,8 +11,6 @@
     "@storybook/react": "^6.5.12",
     "@radix-ui/primitive": "^1.0.0",
     "@stitches/react": "^1.2.8",
-    "@types/marked": "^4.0.7",
-    "@types/storybook__react": "^5.2.1",
     "@uiw/react-textarea-code-editor": "^1.4.14",
     "bs58check": "^2.1.2",
     "classnames": "^2.3.1",
@@ -92,6 +90,8 @@
     ]
   },
   "devDependencies": {
+    "@types/marked": "^4.0.7",
+    "@types/storybook__react": "^5.2.1",
     "@storybook/addon-actions": "^6.5.12",
     "@storybook/addon-essentials": "^6.5.12",
     "@storybook/addon-interactions": "^6.5.12",
