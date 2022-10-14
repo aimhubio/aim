@@ -68,11 +68,7 @@ export const dataVizElementsMap = {
         justifyContent: 'center',
       }}
     >
-      <DictVisualizer
-        src={props.data}
-        style={{ width: 300, height: 300 }}
-        autoScale
-      />
+      <DictVisualizer src={props.data} />
     </div>
   ),
 };

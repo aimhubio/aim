@@ -28,10 +28,6 @@ Distribution = Object("distributions")
 
 
 def display(grid):
-    return grid
-
-
-def update_layout(grid):
     updateLayout(grid)
 
 

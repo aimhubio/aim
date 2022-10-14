@@ -1,4 +1,4 @@
-export const initialCode = `from aim-ui-client import Metric, Image, line_chart, images_list, json, display, update_layout
+export const initialCode = `from aim-ui-client import Metric, Image, line_chart, images_list, json, display
 
 metrics = Metric.get()
 
@@ -12,7 +12,7 @@ def on_active_point_change(val, is_active):
 
         JSON = json(metric.run)
 
-        update_layout([
+        display([
             [LineChart],
             [Images, JSON]
         ])
@@ -21,7 +21,7 @@ LineChart = line_chart(data=metrics, x='steps', y='values',
                 facet=["metric.name"], color=["run.name"],
                 callbacks={"on_active_point_change": on_active_point_change})
 
-layout = display([
+display([
     [LineChart],
     []
 ])

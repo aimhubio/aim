@@ -87,16 +87,11 @@ export default function SandboxVisualizer(props: any) {
       pyodide.current
         .runPythonAsync(code)
         .then(() => {
-          const layout = pyodide.current.globals.get('layout');
-          if (layout) {
-            const resultData = pyodide.current.globals.get('layout').toJs();
-            const convertedResult = toObject(resultData);
-            setResult(convertedResult);
-          }
           setIsProcessing(false);
         })
         .catch((ex: unknown) => {
           console.log(ex);
+          setIsProcessing(false);
         });
     } catch (ex) {
       console.log(ex);
