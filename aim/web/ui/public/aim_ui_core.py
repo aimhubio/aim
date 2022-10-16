@@ -3,6 +3,7 @@
 ####################
 
 from js import search, updateLayout
+import hashlib
 
 
 class Object:
@@ -75,7 +76,8 @@ def group(type, data, options):
             for opt in options:
                 val = find(item, opt.replace("metric.", ""))
                 group_values.append(val)
-        group_key = hash(" ".join(map(str, group_values)))
+        key = " ".join(map(str, group_values))
+        group_key = hashlib.md5(key.encode()).hexdigest()
         if group_key not in group_map:
             group_map[group_key] = {"val": group_values, "order": None}
         new_item = item.to_py()
