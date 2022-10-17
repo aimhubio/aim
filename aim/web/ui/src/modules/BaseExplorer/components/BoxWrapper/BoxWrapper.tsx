@@ -34,6 +34,7 @@ function BoxWrapper(props: IBoxWrapperProps<AimFlatObjectBase<any>>) {
   const captionProperties: ICaptionProperties = useStore(
     vizEngine.controls.captionProperties.stateSelector,
   );
+
   const foundGroups = engine.useStore(engine.pipeline.foundGroupsSelector);
   const depth = engine.useStore(depthSelector(groupId));
   const captionBoxRef: React.RefObject<HTMLDivElement | null> =
@@ -84,12 +85,6 @@ function BoxWrapper(props: IBoxWrapperProps<AimFlatObjectBase<any>>) {
     boxConfig.height,
   ]);
 
-  React.useEffect(() => {
-    engine.events?.on('alert', (data: any) =>
-      console.log(data, currentItem?.style?.left),
-    );
-  }, []);
-
   return currentItem ? (
     <div
       className='BoxWrapper'
@@ -99,20 +94,7 @@ function BoxWrapper(props: IBoxWrapperProps<AimFlatObjectBase<any>>) {
       }}
     >
       <Button
-        onClick={() => {
-          console.log(engine);
-          engine.events?.unsubscribe('alert', (data: any) =>
-            console.log(data, currentItem?.style?.left),
-          );
-        }}
-      >
-        unsubscribe
-      </Button>
-      <Button
-        onClick={() => {
-          setFullView(true);
-          engine.events.fire('alert', 'yes');
-        }}
+        onClick={() => setFullView(true)}
         size='xSmall'
         withOnlyIcon
         className='BoxWrapper__fullScreen'

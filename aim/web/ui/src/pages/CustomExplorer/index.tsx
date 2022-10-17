@@ -25,6 +25,15 @@ const CustomExplorer = renderer(
           hasDepthSlider: false,
         },
       },
+      vis2: {
+        component: explorerConfig.Visualizer as FunctionComponent,
+        controls: explorerConfig.controls,
+        box: {
+          component: CustomMetricVisualizer,
+          initialState: explorerConfig.box.initialState,
+          hasDepthSlider: false,
+        },
+      },
     },
   },
   __DEV__,
