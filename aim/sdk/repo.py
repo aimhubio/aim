@@ -135,10 +135,10 @@ class Repo:
             self._lock_path = os.path.join(self.path, '.repo_lock')
             self._lock = AutoFileLock(self._lock_path, timeout=10)
 
-            with self.lock():
-                status = self.check_repo_status(self.root_path)
-                self.structured_db = DB.from_path(self.path)
-                if init or status == RepoStatus.PATCH_REQUIRED:
+            status = self.check_repo_status(self.root_path)
+            self.structured_db = DB.from_path(self.path)
+            if init or status == RepoStatus.PATCH_REQUIRED:
+                with self._lock:
                     self.structured_db.run_upgrades()
                     with open(os.path.join(self.path, 'VERSION'), 'w') as version_fh:
                         version_fh.write('.'.join(map(str, DATA_VERSION)) + '\n')
@@ -157,16 +157,6 @@ class Repo:
 
     def __eq__(self, o: 'Repo') -> bool:
         return self.path == o.path
-
-    @contextmanager
-    def lock(self):
-        assert not self.is_remote_repo
-
-        self._lock.acquire()
-        try:
-            yield self._lock
-        finally:
-            self._lock.release()
 
     @classmethod
     def default_repo_path(cls) -> str:
@@ -391,18 +381,18 @@ class Repo:
         assert self.structured_db
         _props = None
 
-        with self.lock():
-            if self.run_props_cache_hint:
-                _props = self.structured_db.caches[self.run_props_cache_hint][hash_]
+        if self.run_props_cache_hint:
+            _props = self.structured_db.caches[self.run_props_cache_hint][hash_]
+        if not _props:
+            _props = self.structured_db.find_run(hash_)
             if not _props:
-                _props = self.structured_db.find_run(hash_)
-                if not _props:
-                    if read_only:
-                        raise RepoIntegrityError(f'Missing props for Run {hash_}')
-                    else:
+                if read_only:
+                    raise RepoIntegrityError(f'Missing props for Run {hash_}')
+                else:
+                    with self._lock:
                         _props = self.structured_db.create_run(hash_)
-                if self.run_props_cache_hint:
-                    self.structured_db.caches[self.run_props_cache_hint][hash_] = _props
+            if self.run_props_cache_hint:
+                self.structured_db.caches[self.run_props_cache_hint][hash_] = _props
 
         return _props
 
