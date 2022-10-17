@@ -9,6 +9,7 @@ import COLORS from 'config/colors/colors';
 import { TABLE_DEFAULT_CONFIG } from 'config/table/tableConfigs';
 
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
+import { ITagInfo } from 'types/pages/tags/Tags';
 
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
@@ -177,8 +178,19 @@ function getRunsTableColumns(
   return columns;
 }
 
+const TagsColumn = (props: {
+  runHash: string;
+  tags: ITagInfo[];
+  onRunsTagsChange: (runHash: string, tags: ITagInfo[]) => void;
+  headerRenderer: () => React.ReactNode;
+  addTagButtonSize: 'xxSmall' | 'xSmall';
+}) => {
+  return <AttachedTagsList {...props} inlineAttachedTagsList />;
+};
+
 function runsTableRowRenderer(
   rowData: any,
+  onRunsTagsChange: (runHash: string, tags: ITagInfo[]) => void,
   groupHeaderRow = false,
   columns: string[] = [],
 ) {
@@ -207,15 +219,14 @@ function runsTableRowRenderer(
         ),
       },
       tags: {
-        content: (
-          <AttachedTagsList
-            runHash={rowData.hash}
-            tags={rowData.tags}
-            headerRenderer={() => <></>}
-            addTagButtonSize='xxSmall'
-            hasAttachedTagsPopup
-          />
-        ),
+        component: TagsColumn,
+        props: {
+          runHash: rowData.hash,
+          tags: rowData.tags,
+          onRunsTagsChange,
+          headerRenderer: () => <></>,
+          addTagButtonSize: 'xxSmall',
+        },
       },
       actions: {
         content: null,

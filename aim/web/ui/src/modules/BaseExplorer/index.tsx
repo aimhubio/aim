@@ -1,64 +1,100 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 
-import createEngine, { IEngineConfigFinal } from 'modules/core/engine';
+import createEngine from 'modules/core/engine/explorer-engine';
+import { VisualizationConfig } from 'modules/core/engine/visualizations';
 
-import { IExplorerConfig, IBaseExplorerProps } from './types';
-import ExplorerBar from './components/ExplorerBar';
-import Visualizations from './components/Visualizations';
+import getDefaultHydration from './getDefaultHydration';
+import { ExplorerProps, ExplorerConfiguration } from './types';
+import Explorer from './components/Explorer';
 
-import './styles.scss';
-
-function BaseExplorer(props: IBaseExplorerProps) {
-  const {
-    ui: { components },
-    engineInstance,
-    explorerName,
-    documentationLink,
-  } = props;
-  const { initialized } = engineInstance.useStore(
-    engineInstance.engineStatusSelector,
-  );
-
-  useEffect(() => {
-    engineInstance.initialize();
-  }, [engineInstance]);
-
-  return (
-    initialized && (
-      <div className='Explorer'>
-        <ExplorerBar
-          engine={engineInstance}
-          explorerName={explorerName}
-          documentationLink={documentationLink}
-        />
-        {/* {__DEV__ && <Text>Engine status ::: status</Text>} */}
-        <components.queryForm engine={engineInstance} />
-        <Visualizations components={components} engine={engineInstance} />
-      </div>
-    )
-  );
+function createBasePathFromName(name: string) {
+  return name.toLowerCase().split(' ').join('-');
 }
 
-function createExplorer(config: IExplorerConfig): () => React.ReactElement {
-  const { ui, engine: EC } = config;
+export type ExplorerRenderer = (
+  configuration: ExplorerConfiguration,
+  devtools?: boolean,
+) => () => React.ReactElement;
 
-  const engineConfig: IEngineConfigFinal = {
-    defaultBoxConfig: ui.defaultBoxConfig,
-    sequenceName: EC.sequenceName,
-    useCache: EC.useCache,
-    adapter: {
-      objectDepth: EC.adapter.objectDepth,
-    },
-    states: config.states,
-    grouping: EC.grouping,
-    controls: EC.controls,
-  };
+/**
+ * createExplorer utility function to easily create new Explorer by providing the root component of the whole explorer
+ * This function is useful when creating custom Explorer with the explorer engine configuration
+ * This is useful when you want to create your own explorer with custom ui and functionalities
+ * The component will receive the  whole configuration
+ * @return (configuration: ExplorerConfiguration) => Component
+ * @param {React.FunctionComponent<ExplorerProps>} rootContainer - the root of the explorer, as a container of the whole explorer
+ */
+function createExplorer(
+  rootContainer: React.FunctionComponent<ExplorerProps>,
+): ExplorerRenderer {
+  function _rendererImpl<TObject = unknown>(
+    configuration: ExplorerConfiguration,
+    devtool: boolean = false,
+  ): () => React.ReactElement {
+    const defaultHydration = getDefaultHydration();
 
-  const engine = createEngine(engineConfig);
+    const { components, visualizations } = configuration;
 
-  return (): JSX.Element => (
-    <BaseExplorer {...config} engineInstance={engine} />
-  );
+    const visualizationsHydration = Object.keys(visualizations).reduce(
+      (
+        acc: {
+          [key: string]: VisualizationConfig;
+        },
+        name: string,
+      ) => {
+        const viz = visualizations[name];
+        acc[name] = {
+          ...viz,
+          controlsContainer: viz.controlsContainer || defaultHydration.Controls,
+          box: {
+            initialState:
+              viz.box.initialState || defaultHydration.box.initialState,
+            component: viz.box.component,
+          },
+        };
+        return acc;
+      },
+      {},
+    );
+
+    const hydration: ExplorerConfiguration = {
+      ...configuration,
+      documentationLink:
+        configuration.documentationLink || defaultHydration.documentationLink,
+      basePath:
+        configuration.basePath || createBasePathFromName(configuration.name),
+      components: {
+        groupingContainer:
+          components?.groupingContainer || defaultHydration.Groupings,
+        queryForm: components?.queryForm || defaultHydration.QueryForm,
+      },
+      groupings: configuration.groupings || defaultHydration.groupings,
+      visualizations: visualizationsHydration,
+      states: {
+        ...defaultHydration.customStates,
+        ...(configuration.states || {}),
+      },
+      enablePipelineCache: configuration.enablePipelineCache || true,
+    };
+
+    const engine = createEngine<TObject>(
+      hydration,
+      configuration.basePath,
+      devtool,
+    );
+
+    const Container: React.FunctionComponent<ExplorerProps<typeof engine>> =
+      rootContainer as React.FunctionComponent<ExplorerProps<typeof engine>>;
+
+    return () => (
+      <Container configuration={hydration} engineInstance={engine} />
+    );
+  }
+
+  return _rendererImpl;
 }
 
-export default createExplorer;
+const renderer = createExplorer(Explorer);
+
+export default renderer;
+export { getDefaultHydration };

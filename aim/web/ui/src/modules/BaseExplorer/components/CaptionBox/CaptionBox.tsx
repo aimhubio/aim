@@ -18,14 +18,18 @@ import './CaptionBox.scss';
 function CaptionBox(props: ICaptionBoxProps) {
   const {
     captionBoxRef,
+    visualizationName,
     engine: {
       useStore,
-      additionalDataSelector,
-      controls: {
-        captionProperties: { stateSelector },
-      },
+      visualizations,
+      pipeline: { additionalDataSelector },
     },
   } = props;
+  const {
+    controls: {
+      captionProperties: { stateSelector },
+    },
+  } = visualizations[visualizationName];
 
   const captionProperties = useStore(stateSelector);
   const availableModifiers = useStore(additionalDataSelector);

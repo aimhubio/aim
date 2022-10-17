@@ -1,4 +1,5 @@
 import React from 'react';
+import classNames from 'classnames';
 
 import { Popover, PopoverPosition } from '@material-ui/core';
 
@@ -6,6 +7,7 @@ import PopoverContent from 'components/ChartPanel/PopoverContent/PopoverContent'
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { IChartPopover } from 'types/components/ChartPanel/ChartPopover';
+import { TooltipAppearance } from 'types/services/models/metrics/metricsAppModel.d';
 
 import getPositionBasedOnOverflow from 'utils/getPositionBasedOnOverflow';
 
@@ -18,11 +20,20 @@ function ChartPopover(props: IChartPopover): JSX.Element {
     className = '',
     containerNode = document.body,
     selectOptions,
+    tooltipAppearance = TooltipAppearance.Auto,
+    onChangeTooltip,
   } = props;
   const [popoverPos, setPopoverPos] = React.useState<PopoverPosition | null>(
     null,
   );
   const [popoverNode, setPopoverNode] = React.useState<HTMLElement>();
+
+  const isPopoverPinned = React.useMemo(
+    () =>
+      tooltipAppearance === TooltipAppearance.Top ||
+      tooltipAppearance === TooltipAppearance.Bottom,
+    [tooltipAppearance],
+  );
 
   const onPopoverPositionChange = React.useCallback(
     (activePointRect: IChartPopover['activePointRect']) => {
@@ -34,6 +45,8 @@ function ChartPopover(props: IChartPopover): JSX.Element {
           activePointRect,
           popoverNode.getBoundingClientRect(),
           containerNode.getBoundingClientRect(),
+          isPopoverPinned,
+          tooltipAppearance,
         );
         setPopoverPos(pos);
       }
@@ -59,7 +72,7 @@ function ChartPopover(props: IChartPopover): JSX.Element {
   return (
     <ErrorBoundary>
       <Popover
-        key={`popover-${props.reCreatePopover}`}
+        key={`popover-${props.reCreatePopover}-${tooltipAppearance}`}
         id={id}
         open={!!props.activePointRect && open}
         disableEnforceFocus={true} // the trap focus will not prevent focus from leaving the trap focus while open
@@ -69,7 +82,10 @@ function ChartPopover(props: IChartPopover): JSX.Element {
         disableScrollLock={true} // do not freeze app on scroll
         anchorReference='anchorPosition'
         anchorPosition={popoverPos || props.activePointRect || undefined}
-        className={`ChartPopover ${className}`}
+        className={classNames('ChartPopover', {
+          [className]: className,
+          pinnedPopover: isPopoverPinned,
+        })}
         transitionDuration={{
           appear: 0,
           enter: 50,
@@ -80,20 +96,24 @@ function ChartPopover(props: IChartPopover): JSX.Element {
             setPopoverNode(node);
           },
         }}
+        transformOrigin={{ vertical: 'top', horizontal: 'left' }}
         classes={{
-          paper: `ChartPopover__content ${
-            props.focusedState?.active ? 'ChartPopover__content__active' : ''
-          }`,
+          paper: classNames('ChartPopover__content', {
+            ChartPopover__content__active: props.focusedState?.active,
+            ChartPopover__content__pinned: isPopoverPinned,
+          }),
         }}
       >
         <ErrorBoundary>
           <PopoverContent
             chartType={props.chartType}
             tooltipContent={props.tooltipContent}
+            tooltipAppearance={props.tooltipAppearance}
             focusedState={props.focusedState}
             alignmentConfig={props.alignmentConfig}
             selectOptions={selectOptions}
             onRunsTagsChange={props.onRunsTagsChange}
+            onChangeTooltip={onChangeTooltip}
           />
         </ErrorBoundary>
       </Popover>

@@ -1,5 +1,3 @@
-import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
-
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { DensityOptions } from 'config/enums/densityEnum';
@@ -18,6 +16,7 @@ import {
   IMetricAppModelState,
   SortField,
   ITooltipConfig,
+  ISmoothing,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IParamsAppModelState } from 'types/services/models/params/paramsAppModel';
 import { IRunsAppModelState } from 'types/services/models/runs/runsAppModel';
@@ -26,7 +25,7 @@ import {
   ITrendlineOptions,
 } from 'types/services/models/scatter/scatterAppModel';
 
-import { ChartTypeEnum, CurveEnum } from 'utils/d3';
+import { ChartTypeEnum, CurveEnum, HighlightEnum } from 'utils/d3';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 
 import { IImagesExploreAppModelState } from '../imagesExplore/imagesExploreAppModel';
@@ -160,9 +159,7 @@ export interface ILineChartConfig {
   zoom: IChartZoom;
   axesScaleType: IAxesScaleState;
   axesScaleRange: IAxesScaleRange;
-  curveInterpolation: CurveEnum;
-  smoothingAlgorithm: SmoothingAlgorithmEnum;
-  smoothingFactor: number;
+  smoothing: ISmoothing;
   aggregationConfig: IAggregationConfig;
   densityType: DensityOptions;
   alignmentConfig: IAlignmentConfig;

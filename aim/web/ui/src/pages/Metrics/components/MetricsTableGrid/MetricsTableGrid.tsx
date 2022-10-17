@@ -376,7 +376,7 @@ const TagsColumn = (props: {
   headerRenderer: () => React.ReactNode;
   addTagButtonSize: 'xxSmall' | 'xSmall';
 }) => {
-  return <AttachedTagsList {...props} hasAttachedTagsPopup />;
+  return <AttachedTagsList {...props} inlineAttachedTagsList />;
 };
 
 function metricsTableRowRenderer(

@@ -6,7 +6,7 @@ import NetworkService from 'services/NetworkService';
 import {
   GetParamsQueryOptions,
   GetParamsResult,
-  GetActivityResult,
+  GetProjectContributionsResult,
 } from './types';
 
 const api = new NetworkService(`${getAPIHost()}${ENDPOINTS.PROJECTS.BASE}`);
@@ -27,12 +27,12 @@ async function getParams(
 }
 
 /**
- * function getActivity
- * this call is used from home page to show activity data
+ * function getProjectContributions
+ * this call is used from DashboardPage page to show project contributions data
  */
-async function getActivity(): Promise<GetActivityResult> {
+async function getProjectContributions(): Promise<GetProjectContributionsResult> {
   return (await api.makeAPIGetRequest(ENDPOINTS.PROJECTS.GET_ACTIVITY)).body;
 }
 
-export { getParams, getActivity };
+export { getParams, getProjectContributions };
 export * from './types';

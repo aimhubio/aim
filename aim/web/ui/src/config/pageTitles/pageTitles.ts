@@ -1,5 +1,5 @@
 const pageTitles = {
-  HOME: '',
+  DASHBOARD: '',
   RUNS_EXPLORER: 'Runs Explorer',
   METRICS_EXPLORER: 'Metrics Explorer',
   PARAMS_EXPLORER: 'Params Explorer',
@@ -9,6 +9,7 @@ const pageTitles = {
   BOOKMARKS: 'Bookmarks',
   TAGS: 'Tags',
   RUN_DETAIL: '',
+  FIGURES_EXPLORER_NEW: 'New Figures',
 };
 
 export default pageTitles;

@@ -1,8 +1,6 @@
 import React from 'react';
 import { RouteChildrenProps } from 'react-router-dom';
 
-import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
-
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { DensityOptions } from 'config/enums/densityEnum';
@@ -29,6 +27,7 @@ import {
   IChartTitleData,
   IGroupingSelectOption,
   IChartZoom,
+  ISmoothing,
 } from 'types/services/models/metrics/metricsAppModel';
 import { ITableColumn } from 'types/components/TableColumns/TableColumns';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
@@ -42,9 +41,9 @@ import {
 import { ILine } from 'types/components/LineChart/LineChart';
 import { IAxesScaleRange } from 'types/components/AxesPropsPopover/AxesPropsPopover';
 import { IColumnsOrder } from 'types/services/models/explorer/createAppModel';
+import { ITagInfo } from 'types/tags/Tags';
 
-import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
-import { CurveEnum } from 'utils/d3';
+import { HighlightEnum } from 'utils/d3';
 import { IRequestProgress } from 'utils/app/setRequestProgress';
 
 export interface IMetricProps extends Partial<RouteChildrenProps> {
@@ -64,11 +63,9 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   ignoreOutliers: boolean;
   zoom: IChartZoom;
   densityType: DensityOptions;
-  curveInterpolation: CurveEnum;
   axesScaleType: IAxesScaleState;
   axesScaleRange: IAxesScaleRange;
-  smoothingAlgorithm: SmoothingAlgorithmEnum;
-  smoothingFactor: number;
+  smoothing: ISmoothing;
   focusedState: IFocusedState;
   highlightMode: HighlightEnum;
   groupingData: IGroupingConfig;
@@ -105,7 +102,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
     focusedStateActive?: boolean,
   ) => void;
   onHighlightModeChange: (mode: HighlightEnum) => void;
-  onSmoothingChange: (props: IOnSmoothingChange) => void;
+  onSmoothingChange: (args: Partial<ISmoothing>) => void;
   onTableRowHover: (rowKey?: string) => void;
   onTableRowClick: (rowKey?: string) => void;
   onAxesScaleTypeChange: (params: IAxesScaleState) => void;
@@ -153,10 +150,4 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   onRowSelect: any;
   archiveRuns: (ids: string[], archived: boolean) => void;
   deleteRuns: (ids: string[]) => void;
-}
-
-export interface IOnSmoothingChange {
-  smoothingAlgorithm?: SmoothingAlgorithmEnum;
-  smoothingFactor?: number;
-  curveInterpolation?: CurveEnum;
 }

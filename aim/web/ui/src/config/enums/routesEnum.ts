@@ -1,5 +1,5 @@
 enum PathEnum {
-  Home = '/',
+  Dashboard = '/',
   Runs = '/runs',
   Metrics = '/metrics',
   Metrics_Id = '/metrics/:appId',
@@ -13,6 +13,7 @@ enum PathEnum {
   Images_Explore = '/images',
   Images_Explore_Id = '/images/:appId',
   Figures_Explorer = '/figures',
+  New_Figures_Explorer = '/new-fig',
 }
 
 export { PathEnum };

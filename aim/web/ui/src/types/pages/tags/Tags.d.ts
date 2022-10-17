@@ -44,9 +44,12 @@ export interface ITagInfo {
   archived: boolean;
   color: string;
   id: string;
-  comment: string;
+  description: string;
   name: string;
   run_count: number;
+}
+export interface ITagInfoWithSelectedProperty extends ITagInfo {
+  selected: boolean;
 }
 export interface ITagDetailProps {
   id: string;
