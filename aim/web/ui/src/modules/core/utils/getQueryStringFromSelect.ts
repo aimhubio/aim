@@ -39,5 +39,5 @@ export function getQueryStringFromSelect(
       }${selections}`.trim();
     }
   }
-  return query;
+  return query || '()';
 }
