@@ -1,29 +1,48 @@
 import datetime
+
 from multiprocessing import Process
+from typing import Optional
+
 import aim.ext.transport.remote_tracking_pb2_grpc as remote_tracking_pb2_grpc
+from aim.ext.cleanup import AutoClean
+
+
+class RemoteWorkerAutoClean(AutoClean['RemoteWorker']):
+    PRIORITY = 120
+
+    def __init__(self, instance: 'RemoteWorker'):
+        super().__init__(instance)
+        self.worker_process = instance.worker_process
+
+    def _close(self) -> None:
+        self.worker_process.join()
 
 
 class RemoteWorker:
-    def __init__(self, host, port, ssl_keyfile, ssl_certfile):
-        from aim.ext.transport.server import run_server
-        self._process = Process(target=run_server, args=(host, port, ssl_keyfile, ssl_certfile))
+    WORKER_START_GRACE_PERIOD = 5 * 60  # 5 minutes
+
+    def __init__(self, target_f, *, host, port, ssl_keyfile=None, ssl_certfile=None):
+        self._resources: Optional[RemoteWorkerAutoClean] = None
+        self.worker_process = Process(target=target_f, args=(host, port, ssl_keyfile, ssl_certfile))
         self._host = host
         self._port = port
         self._ssl_keyfile = ssl_keyfile
         self._ssl_certfile = ssl_certfile
         self._start_time = None
         self._clients = []
+        self._resources = RemoteWorkerAutoClean(self)
 
     def start(self):
-        self._process.start()
+        self.worker_process.start()
         self._start_time = datetime.datetime.now()
 
     def stop(self):
-        self._process.join()
+        self.worker_process.join()
 
     def restart(self):
-        self.stop()
-        self.start()
+        if datetime.datetime.now() - self.start_time > self.WORKER_START_GRACE_PERIOD:
+            self.stop()
+            self.start()
 
     def add_client(self, client_uri):
         self._clients.append(client_uri)
@@ -31,6 +50,10 @@ class RemoteWorker:
     def remove_client(self, client_uri):
         if client_uri in self._clients:
             self._clients.remove(client_uri)
+
+    @property
+    def clients(self):
+        return self._clients
 
     @property
     def start_time(self):
@@ -42,7 +65,7 @@ class RemoteWorker:
 
     @property
     def port(self):
-        return self._port
+        return str(self._port)
 
     @property
     def address(self):

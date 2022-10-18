@@ -109,7 +109,7 @@ class RPCHeartbeatSender(object):
 
 
 class RPCHeartbeatWatcher:
-    CLIENT_KEEP_ALIVE_TIME_DEFAULT = 30 * 60
+    CLIENT_KEEP_ALIVE_TIME_DEFAULT = 30 * 60  # 30 minutes
 
     def __init__(self,
                  heartbeat_pool,

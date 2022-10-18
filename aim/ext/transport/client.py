@@ -203,7 +203,7 @@ class Client:
         if response.status == rpc_messages.ReleaseResourceResponse.Status.ERROR:
             raise_exception(response.exception)
 
-        del self._resource_pool[response.handler]
+        del self._resource_pool[resource_handler]
 
     def run_instruction(self, queue_id, resource, method, args=(), is_write_only=False):
         args = deepcopy(args)
@@ -217,6 +217,7 @@ class Client:
         if is_write_only:
             assert queue_id != -1
             self.get_queue(queue_id).register_task(
+                self,
                 self._run_write_instructions, list(encode_tree([(resource, method, args)])))
             return
 
@@ -271,6 +272,7 @@ class Client:
             return
 
         self.get_queue(queue_id).register_task(
+            self,
             self._run_write_instructions, list(encode_tree(self._thread_local.atomic_instructions)))
         self._thread_local.atomic_instructions = None
 
