@@ -187,6 +187,39 @@ def images_list(data, facet={"row": [], "column": []}, size={}):
     }
 
 
+def audios_list(data, facet={"row": [], "column": []}, size={}):
+    no_facet = False
+    if facet["row"] == [] and facet["column"] == []:
+        no_facet = True
+
+    row_map, row_data = group("row", data, facet["row"])
+    column_map, column_data = group("column", data, facet["column"])
+
+    audios = []
+    for i, item in enumerate(data):
+        item = item.to_py()
+        row_val = row_map[row_data[i]["row"]]
+        column_val = column_map[column_data[i]["column"]]
+        audios.append(
+            {
+                "key": i,
+                "data": item,
+                "row": row_val["order"],
+                "column": column_val["order"],
+                "row_val": row_val["val"],
+                "column_val": column_val["val"],
+                "row_options": facet["row"],
+                "column_options": facet["column"],
+            }
+        )
+    return {
+        "type": "Audios",
+        "data": audios,
+        "size": size,
+        "no_facet": no_facet,
+    }
+
+
 def json(
     data,
     facet={"row": [], "column": []},

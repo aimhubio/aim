@@ -9,6 +9,7 @@ import { ChartTypeEnum, CurveEnum, ScaleEnum, HighlightEnum } from 'utils/d3';
 
 import DataGrid from './DataGrid';
 import ImagesList from './ImagesList';
+import AudiosList from './AudiosList';
 
 export const dataVizElementsMap = {
   LineChart: (props: any) => (
@@ -60,6 +61,7 @@ export const dataVizElementsMap = {
     </div>
   ),
   Images: (props: any) => <ImagesList key={Date.now()} data={props.data} />,
+  Audios: (props: any) => <AudiosList key={Date.now()} data={props.data} />,
   JSON: (props: any) => (
     <div
       style={{
