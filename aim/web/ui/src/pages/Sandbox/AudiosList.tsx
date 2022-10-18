@@ -3,8 +3,6 @@ import * as _ from 'lodash-es';
 
 import AudioBox from 'components/kit/AudioBox';
 
-import { BATCH_SEND_DELAY } from 'config/mediaConfigs/mediaConfigs';
-
 import blobsURIModel from 'services/models/media/blobsURIModel';
 import audiosExploreService from 'services/api/audiosExplore/audiosExplore';
 
@@ -16,25 +14,12 @@ import {
 import arrayBufferToBase64 from 'utils/arrayBufferToBase64';
 
 function AudiosList(props: any) {
-  let blobUriArray = React.useRef<string[]>([]);
-  let timeoutID = React.useRef(0);
-  const requestRef = React.useRef<any>();
-
-  let [, setRenderKey] = React.useState(Date.now());
-
   const data = props.data.map((audio: any) => ({
     ...audio,
     ...audio.data.data,
     ...audio.data.audios,
     ...audio.data.record,
   }));
-
-  function addUriToList(blobUrl: string) {
-    if (!blobsURIModel.getState()[blobUrl]) {
-      blobUriArray.current.push(blobUrl);
-      getBatch();
-    }
-  }
 
   function getBlobsData(uris: string[]) {
     const request = audiosExploreService.getAudiosByURIs(uris);
@@ -65,54 +50,6 @@ function AudiosList(props: any) {
       },
     };
   }
-
-  const getBatch = _.throttle(() => {
-    if (timeoutID.current) {
-      window.clearTimeout(timeoutID.current);
-    }
-    timeoutID.current = window.setTimeout(() => {
-      if (!_.isEmpty(blobUriArray.current)) {
-        requestRef.current = getBlobsData(blobUriArray.current);
-        requestRef.current.call().then(() => {
-          blobUriArray.current = [];
-        });
-      }
-    }, BATCH_SEND_DELAY);
-  }, BATCH_SEND_DELAY);
-
-  // React.useEffect(() => {
-  //   let timeoutID: number;
-
-  //   let subscriptions: any[] = [];
-  //   for (let i = 0; i < data.length; i++) {
-  //     let image = data[i];
-  //     if (!blobsURIModel.getState()[image.blob_uri]) {
-  //       let subscription = blobsURIModel.subscribe(image.blob_uri, (data) => {
-  //         setRenderKey(Date.now());
-  //         subscription.unsubscribe();
-  //       });
-  //       timeoutID = window.setTimeout(() => {
-  //         if (blobsURIModel.getState()[image.blob_uri]) {
-  //           setRenderKey(Date.now());
-  //           subscription.unsubscribe();
-  //         } else {
-  //           addUriToList(image.blob_uri);
-  //         }
-  //       }, BATCH_COLLECT_DELAY);
-
-  //       subscriptions.push(subscription);
-  //     }
-  //   }
-
-  //   return () => {
-  //     if (timeoutID) {
-  //       clearTimeout(timeoutID);
-  //     }
-  //     if (subscriptions) {
-  //       subscriptions.forEach((sub: any) => sub.unsubscribe);
-  //     }
-  //   };
-  // }, []);
 
   return (
     <div
