@@ -55,6 +55,8 @@ export const {
       warning100: '#F2BB2E',
       warning110: '#E6A90F',
       warning120: '#D89F0E',
+      // text colors
+      textPrimary: '#161717',
     },
     fonts: {
       inter: 'Inter, sans-serif',
@@ -120,11 +122,14 @@ export const {
       6: 850,
     },
     radii: {
-      1: '0.25rem', // 4px
-      2: '0.375rem', // 6px
-      3: '0.5rem', // 8px
-      4: '0.625rem', // 10px
-      5: '0.75rem', // 12px
+      1: '0.0625rem', // 1px
+      2: '0.125rem', // 2px
+      3: '0.1875rem', // 3px
+      4: '0.25rem', // 4px
+      5: '0.375rem', // 6px
+      6: '0.5rem', // 8px
+      7: '0.625rem', // 10px
+      8: '0.75rem', // 12px
       round: '50%',
       pill: '9999px',
     },
@@ -147,6 +152,9 @@ export const {
     light: '(prefers-color-scheme: light)',
   },
   utils: {
+    inputBorder: () => ({
+      border: '1px solid $colors$secondary50',
+    }),
     p: (value: Stitches.PropertyValue<'padding'>) => ({
       padding: value,
     }),
