@@ -202,95 +202,80 @@ function VizContainer(props: any) {
     dataVizElementsMap[props.viz.type as 'LineChart' | 'DataFrame' | 'Plotly'];
 
   return (
-    <div
-      style={{
-        position: 'relative',
-        flex: 1,
-        backgroundColor: '#fff',
-        boxShadow: '0 0 0 1px #b5b9c5',
-        maxWidth: props.maxWidth,
-        margin: '5px',
-        background: '#fff',
-        backgroundImage: 'radial-gradient(#e8eaee 1px, transparent 0)',
-        backgroundSize: '10px 10px',
-        overflow: 'hidden',
-      }}
-    >
-      <div className='BoxVirtualizer'>
-        {rowsAxisItems && rowsAxisItems.length > 0 && (
-          <div className='BoxVirtualizer__placeholder' />
-        )}
-        <div
-          ref={container}
-          className='BoxVirtualizer__container'
-          onScroll={onScroll}
-        >
-          {((columnsAxisItems && columnsAxisItems.length > 0) ||
-            (rowsAxisItems && rowsAxisItems.length > 0)) && (
-            <div
-              className='BoxVirtualizer__container__horizontalRuler'
-              style={{
-                width: gridSize.width,
-              }}
-            >
-              {columnsAxisItems?.map((item: any, i) => (
-                <Tooltip key={i} title={item.value}>
-                  <div style={item.style}>
-                    <Text>{item.value}</Text>
-                  </div>
-                </Tooltip>
-              ))}
-            </div>
-          )}
-          {rowsAxisItems && rowsAxisItems.length > 0 && (
-            <div
-              className='BoxVirtualizer__container__verticalRuler'
-              style={{
-                height: gridSize.height,
-              }}
-            >
-              {rowsAxisItems?.map((item: any, i) => (
-                <div key={i} style={item.style}>
-                  <Tooltip title={item.value}>
-                    <span>
-                      <Text>{item.value}</Text>
-                    </span>
-                  </Tooltip>
-                </div>
-              ))}
-            </div>
-          )}
+    <div className='BoxVirtualizer'>
+      {rowsAxisItems && rowsAxisItems.length > 0 && (
+        <div className='BoxVirtualizer__placeholder' />
+      )}
+      <div
+        ref={container}
+        className='BoxVirtualizer__container'
+        onScroll={onScroll}
+      >
+        {((columnsAxisItems && columnsAxisItems.length > 0) ||
+          (rowsAxisItems && rowsAxisItems.length > 0)) && (
           <div
-            ref={grid}
-            className='BoxVirtualizer__grid'
+            className='BoxVirtualizer__container__horizontalRuler'
             style={{
               width: gridSize.width,
+            }}
+          >
+            {columnsAxisItems?.map((item: any, i) => (
+              <Tooltip key={i} title={item.value}>
+                <div style={item.style}>
+                  <Text>{item.value}</Text>
+                </div>
+              </Tooltip>
+            ))}
+          </div>
+        )}
+        {rowsAxisItems && rowsAxisItems.length > 0 && (
+          <div
+            className='BoxVirtualizer__container__verticalRuler'
+            style={{
               height: gridSize.height,
             }}
           >
-            {Object.entries(groupedByPosition).map(([groupId, items]) => (
-              <div
-                key={groupId}
-                style={{
-                  ...items[0].style,
-                  position: 'absolute',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backgroundColor: '#fff',
-                  boxShadow:
-                    '-1px -1px 0 0px #b5b9c5, inset -1px -1px 0 0px #b5b9c5',
-                }}
-              >
-                <div style={{ width: 'calc(100% - 2px)' }}>
-                  {vizFunc({
-                    ...props.viz,
-                    data: items,
-                  })}
-                </div>
+            {rowsAxisItems?.map((item: any, i) => (
+              <div key={i} style={item.style}>
+                <Tooltip title={item.value}>
+                  <span>
+                    <Text>{item.value}</Text>
+                  </span>
+                </Tooltip>
               </div>
             ))}
           </div>
+        )}
+        <div
+          ref={grid}
+          className='BoxVirtualizer__grid'
+          style={{
+            width: gridSize.width,
+            height: gridSize.height,
+          }}
+        >
+          {Object.entries(groupedByPosition).map(([groupId, items]) => (
+            <div
+              key={groupId}
+              style={{
+                ...items[0].style,
+                position: 'absolute',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: '#fff',
+                boxShadow:
+                  '-1px -1px 0 0px #b5b9c5, inset -1px -1px 0 0px #b5b9c5',
+              }}
+            >
+              <div style={{ width: 'calc(100% - 2px)', height: '100%' }}>
+                {vizFunc({
+                  ...props.viz,
+                  data: items,
+                })}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>

@@ -108,6 +108,9 @@ def line_chart(
     options={},
     size={},
 ):
+    no_facet = False
+    if facet["row"] == [] and facet["column"] == []:
+        no_facet = True
     row_map, row_data = group("row", data, facet["row"])
     column_map, column_data = group("column", data, facet["column"])
     color_map, color_data = group("color", data, color)
@@ -142,6 +145,7 @@ def line_chart(
         "callbacks": callbacks,
         "options": options,
         "size": size,
+        "no_facet": no_facet,
     }
 
 
