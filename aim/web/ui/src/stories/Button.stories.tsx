@@ -5,6 +5,17 @@ import Button from 'components/newKit/Button';
 export default {
   title: 'Kit/Inputs/Button',
   component: Button,
+  argTypes: {
+    color: {
+      control: 'select',
+    },
+    variant: {
+      control: 'select',
+    },
+    size: {
+      control: 'select',
+    },
+  },
 } as ComponentMeta<typeof Button>;
 
 const Template: ComponentStory<typeof Button> = (args) => <Button {...args} />;
