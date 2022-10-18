@@ -1,53 +1,51 @@
-export type IEventSystemState = Record<
-  string,
-  { eventName: string; callbacks: any[] }
->;
+import { StoreApi } from 'zustand';
+import produce, { Draft } from 'immer';
 
-type ExtractState = {
-  events: IEventSystemState;
-};
+export type IEventSystemState = Record<string, any[]>;
 
-function getInitialState(): ExtractState {
-  return { events: {} };
+type ExtractState<TStore> = {
+  eventsPayloads: IEventSystemState;
+} & TStore;
+
+function getInitialState(): IEventSystemState {
+  return {};
 }
 
-function createState(): any {
-  // store: StoreApi<ExtractState<TStore, TObject>>,
-  // initialState: IPipelineState<TObject>,
-  //   // let events: any = getInitialState();
-  //   // const methods = {
-  //   //   setEvent: (eventName: string, callBack: any) => {
-  //   //     if (events[eventName]) {
-  //   //       state.events[eventName].callbacks = [
-  //   //         ...state.events[eventName].callbacks,
-  //   //         callBack,
-  //   //       ];
-  //   //     } else {
-  //   //       state.events = {
-  //   //         ...state.events,
-  //   //         [eventName]: {
-  //   //           eventName: eventName,
-  //   //           callbacks: [callBack],
-  //   //         },
-  //   //       };
-  //   //     }
-  //   //   },
-  //   //   removeEvent: (eventName: string, callBack: any) => {
-  //   //     if (state?.events[eventName]) {
-  //   //       state.events[eventName].callbacks = state.events[
-  //   //         eventName
-  //   //       ].callbacks.filter(
-  //   //         (listenerCallback: any) => listenerCallback !== callBack,
-  //   //       );
-  //   //     }
-  //   //   },
-  //   // };
+export type EventsStateBridge = {
+  initialState: IEventSystemState;
+};
 
-  //   return {
-  //     // state,
-  //     // methods,
-  //   };
-  return {};
+function createState<TStore>(
+  store: StoreApi<ExtractState<TStore>>,
+  initialState: IEventSystemState,
+): any {
+  const methods: any = {
+    /**
+     * Function to  preserved payload of the event
+     * @param {string} eventName
+     * @param {any} payload
+     */
+    setEventPayload: (eventName: string, payload: any) =>
+      store.setState(
+        produce((draft_state: Draft<ExtractState<TStore>>) => {
+          draft_state.eventsPayloads[eventName] = payload;
+        }),
+        false,
+        // @ts-ignore
+        '@EVENTS/setEventPayload',
+      ),
+    /**
+     * Function to get the preserved payload of the event
+     * @param {string} eventName
+     */
+    getEventsPayload: (eventName: string) =>
+      store.getState()?.eventsPayloads?.[eventName] ?? null,
+  };
+
+  return {
+    initialState,
+    ...methods,
+  };
 }
 
 export { getInitialState };

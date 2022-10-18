@@ -135,8 +135,10 @@ function getVisualizationsEngine(
 
 function getEventSystemEngine(
   state: State, // mutable
+  set: any,
+  get: any,
 ) {
-  const events = createEventSystemEngine();
+  const events = createEventSystemEngine({ setState: set, getState: get });
 
   state['events'] = events.state;
 
@@ -220,7 +222,7 @@ function createEngine<TObject = any>(
     /*
      * Event System
      */
-    events = getEventSystemEngine(state);
+    events = getEventSystemEngine(state, set, get);
 
     return state;
   }

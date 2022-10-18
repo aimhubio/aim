@@ -1,9 +1,9 @@
-import _ from 'lodash-es';
+import createState, { getInitialState } from './state';
 
-// import createState, { getInitialState } from './state';
+function createEventSystemEngine(store: any): any {
+  const initialState = getInitialState();
+  const state = createState(store, initialState);
 
-function createEventSystemEngine(): any {
-  // const { state, methods } = createState();
   let events: any = {};
 
   /**
@@ -11,11 +11,14 @@ function createEventSystemEngine(): any {
    * @param {string} eventName
    * @param {any} payload
    */
-  function fire(eventName: string, payload: any) {
+  function fire(eventName: string, payload: any, setPayload: boolean = true) {
     if (events[eventName]) {
       events[eventName].callbacks.forEach((callback: any) =>
         callback(payload, events),
       );
+      if (setPayload) {
+        state.setEventPayload(eventName, payload);
+      }
     }
   }
 
@@ -68,12 +71,16 @@ function createEventSystemEngine(): any {
   }
 
   return {
+    state: {
+      payloads: state.initialState,
+    },
     engine: {
       fire,
       on,
       unsubscribe,
       once,
       listenerCount,
+      getEventsPayload: state.getEventsPayload,
     },
   };
 }
