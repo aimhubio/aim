@@ -4,7 +4,9 @@ import produce, { Draft } from 'immer';
 export type IEventSystemState = Record<string, any[]>;
 
 type ExtractState<TStore> = {
-  eventsPayloads: IEventSystemState;
+  events: {
+    payloads: IEventSystemState;
+  };
 } & TStore;
 
 function getInitialState(): IEventSystemState {
@@ -28,7 +30,7 @@ function createState<TStore>(
     setEventPayload: (eventName: string, payload: any) =>
       store.setState(
         produce((draft_state: Draft<ExtractState<TStore>>) => {
-          draft_state.eventsPayloads[eventName] = payload;
+          draft_state.events.payloads[eventName] = payload;
         }),
         false,
         // @ts-ignore
@@ -39,7 +41,7 @@ function createState<TStore>(
      * @param {string} eventName
      */
     getEventsPayload: (eventName: string) =>
-      store.getState()?.eventsPayloads?.[eventName] ?? null,
+      store.getState()?.events?.payloads?.[eventName] ?? null,
   };
 
   return {
