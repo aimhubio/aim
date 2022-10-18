@@ -268,7 +268,12 @@ function VizContainer(props: any) {
                   '-1px -1px 0 0px #b5b9c5, inset -1px -1px 0 0px #b5b9c5',
               }}
             >
-              <div style={{ width: 'calc(100% - 2px)', height: '100%' }}>
+              <div
+                style={{
+                  width: 'calc(100% - 2px)',
+                  height: 'calc(100% - 2px)',
+                }}
+              >
                 {vizFunc({
                   ...props.viz,
                   data: items,

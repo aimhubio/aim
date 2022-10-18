@@ -1,10 +1,14 @@
 import * as React from 'react';
 import * as _ from 'lodash-es';
 
-import MediaList from 'components/MediaList';
-import { MediaTypeEnum } from 'components/MediaPanel/config';
+import { Skeleton } from '@material-ui/lab';
 
-import { BATCH_SEND_DELAY } from 'config/mediaConfigs/mediaConfigs';
+import { Text } from 'components/kit';
+
+import {
+  BATCH_COLLECT_DELAY,
+  BATCH_SEND_DELAY,
+} from 'config/mediaConfigs/mediaConfigs';
 
 import blobsURIModel from 'services/models/media/blobsURIModel';
 import imagesExploreService from 'services/api/imagesExplore/imagesExploreService';
@@ -21,11 +25,13 @@ function ImagesList(props: any) {
   let timeoutID = React.useRef(0);
   const requestRef = React.useRef<any>();
 
+  let [, setRenderKey] = React.useState(Date.now());
+
   const data = props.data.map((image: any) => ({
     ...image,
-    ...image.data,
-    ...image.images,
-    ...image.record,
+    ...image.data.data,
+    ...image.data.images,
+    ...image.data.record,
   }));
 
   function addUriToList(blobUrl: string) {
@@ -79,6 +85,40 @@ function ImagesList(props: any) {
     }, BATCH_SEND_DELAY);
   }, BATCH_SEND_DELAY);
 
+  React.useEffect(() => {
+    let timeoutID: number;
+
+    let subscriptions: any[] = [];
+    for (let i = 0; i < data.length; i++) {
+      let image = data[i];
+      if (!blobsURIModel.getState()[image.blob_uri]) {
+        let subscription = blobsURIModel.subscribe(image.blob_uri, (data) => {
+          setRenderKey(Date.now());
+          subscription.unsubscribe();
+        });
+        timeoutID = window.setTimeout(() => {
+          if (blobsURIModel.getState()[image.blob_uri]) {
+            setRenderKey(Date.now());
+            subscription.unsubscribe();
+          } else {
+            addUriToList(image.blob_uri);
+          }
+        }, BATCH_COLLECT_DELAY);
+
+        subscriptions.push(subscription);
+      }
+    }
+
+    return () => {
+      if (timeoutID) {
+        clearTimeout(timeoutID);
+      }
+      if (subscriptions) {
+        subscriptions.forEach((sub: any) => sub.unsubscribe);
+      }
+    };
+  }, []);
+
   return (
     <div
       style={{
@@ -86,23 +126,33 @@ function ImagesList(props: any) {
         overflow: 'auto',
       }}
     >
-      <MediaList
-        data={data}
-        wrapperOffsetWidth={900}
-        addUriToList={addUriToList}
-        wrapperOffsetHeight={400}
-        mediaItemHeight={400}
-        focusedState={{ active: false, key: null }}
-        mediaType={MediaTypeEnum.IMAGE}
-        selectOptions={[]}
-        onRunsTagsChange={() => null}
-        additionalProperties={{
-          alignmentType: 'Height',
-          mediaItemSize: 100,
-          imageRendering: 'smooth',
-          stacking: false,
-        }}
-      />
+      {data.map((item: any, i: number) => (
+        <div
+          key={i}
+          style={{
+            margin: '5px',
+            height: 'calc(100% - 10px)',
+            flex: 1,
+          }}
+        >
+          {blobsURIModel.getState()[item.blob_uri] ? (
+            <img
+              style={{ maxHeight: '100%', maxWidth: '100%' }}
+              src={`data:image/${item.format};base64, ${
+                blobsURIModel.getState()[item.blob_uri]
+              }`}
+              alt={data.caption}
+            />
+          ) : (
+            <div style={{ height: '100%' }}>
+              <Skeleton variant='rect' height='100%' />
+            </div>
+          )}
+          <Text size={10} weight={400}>
+            {item.caption}
+          </Text>
+        </div>
+      ))}
     </div>
   );
 }

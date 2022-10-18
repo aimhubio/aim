@@ -12,6 +12,11 @@ class Object:
 
     async def get(self, query=""):
         data = await search(self.type, query)
+        items = []
+        for item in data:
+            d = item.to_py()
+            d["type"] = self.type
+            items.append(d)
         return data
 
 
@@ -88,7 +93,7 @@ def group(type, data, options):
         new_item[type] = group_key
         grouped_data.append(new_item)
     sorted_groups = {
-        k: v for k, v in sorted(group_map.items(), key=lambda x: x[1]["val"])
+        k: v for k, v in sorted(group_map.items(), key=lambda x: repr(x[1]["val"]))
     }
     i = 0
     for group_key in sorted_groups:
@@ -149,15 +154,50 @@ def line_chart(
     }
 
 
-def images_list(data):
+def images_list(data, facet={"row": [], "column": []}, size={}):
+    no_facet = False
+    if facet["row"] == [] and facet["column"] == []:
+        no_facet = True
+
+    row_map, row_data = group("row", data, facet["row"])
+    column_map, column_data = group("column", data, facet["column"])
+
+    images = []
+    for i, item in enumerate(data):
+        item = item.to_py()
+        row_val = row_map[row_data[i]["row"]]
+        column_val = column_map[column_data[i]["column"]]
+        images.append(
+            {
+                "key": i,
+                "data": item,
+                "row": row_val["order"],
+                "column": column_val["order"],
+                "row_val": row_val["val"],
+                "column_val": column_val["val"],
+                "row_options": facet["row"],
+                "column_options": facet["column"],
+            }
+        )
     return {
         "type": "Images",
-        "data": data,
+        "data": images,
+        "size": size,
+        "no_facet": no_facet,
     }
 
 
-def json(data):
+def json(
+    data,
+    facet={"row": [], "column": []},
+    size={},
+):
+    no_facet = False
+    if facet["row"] == [] and facet["column"] == []:
+        no_facet = True
     return {
         "type": "JSON",
         "data": data,
+        "size": size,
+        "no_facet": no_facet,
     }

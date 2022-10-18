@@ -166,9 +166,17 @@ export default function SandboxVisualizer() {
                       }}
                     >
                       {viz.no_facet ? (
-                        dataVizElementsMap[
-                          viz.type as 'LineChart' | 'DataFrame' | 'Plotly'
-                        ](viz)
+                        <div
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                            backgroundColor: '#fff',
+                          }}
+                        >
+                          {dataVizElementsMap[
+                            viz.type as 'LineChart' | 'DataFrame' | 'Plotly'
+                          ](viz)}
+                        </div>
                       ) : (
                         <VizContainer viz={viz} />
                       )}
