@@ -79,11 +79,17 @@ def group(type, data, options):
         key = " ".join(map(str, group_values))
         group_key = hashlib.md5(key.encode()).hexdigest()
         if group_key not in group_map:
-            group_map[group_key] = {"val": group_values, "order": None}
+            group_map[group_key] = {
+                "options": options,
+                "val": group_values,
+                "order": None,
+            }
         new_item = item.to_py()
         new_item[type] = group_key
         grouped_data.append(new_item)
-    sorted_groups = {k: v for k, v in sorted(group_map.items())}
+    sorted_groups = {
+        k: v for k, v in sorted(group_map.items(), key=lambda x: x[1]["val"])
+    }
     i = 0
     for group_key in sorted_groups:
         sorted_groups[group_key]["order"] = i
@@ -92,27 +98,41 @@ def group(type, data, options):
 
 
 def line_chart(
-    data, x, y, color=[], stroke_style=[], facet=[], callbacks={}, options={}
+    data,
+    x,
+    y,
+    color=[],
+    stroke_style=[],
+    facet={"row": [], "column": []},
+    callbacks={},
+    options={},
+    size={},
 ):
-    facet_map, facet_data = group("facet", data, facet)
+    row_map, row_data = group("row", data, facet["row"])
+    column_map, column_data = group("column", data, facet["column"])
     color_map, color_data = group("color", data, color)
     stroke_map, stroke_data = group("stroke_style", data, stroke_style)
-    lines = [None] * len(facet_map)
-    for i, el in enumerate(lines):
-        lines[i] = []
+    lines = []
     for i, item in enumerate(data):
         item = item.to_py()
-        facet_val = facet_map[facet_data[i]["facet"]]["order"]
+        row_val = row_map[row_data[i]["row"]]
+        column_val = column_map[column_data[i]["column"]]
         color_val = colors[color_map[color_data[i]["color"]]["order"] % len(colors)]
         stroke_val = stroke_styles[
             stroke_map[stroke_data[i]["stroke_style"]]["order"] % len(stroke_styles)
         ]
-        lines[facet_val].append(
+        lines.append(
             {
                 "key": i,
                 "data": {"xValues": item[x], "yValues": item[y]},
                 "color": color_val,
                 "dasharray": stroke_val,
+                "row": row_val["order"],
+                "column": column_val["order"],
+                "row_val": row_val["val"],
+                "column_val": column_val["val"],
+                "row_options": facet["row"],
+                "column_options": facet["column"],
             }
         )
 
@@ -121,6 +141,7 @@ def line_chart(
         "data": lines,
         "callbacks": callbacks,
         "options": options,
+        "size": size,
     }
 
 

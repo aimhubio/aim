@@ -8,8 +8,8 @@ import { Button, Spinner } from 'components/kit';
 import { getBasePath } from 'config/config';
 
 import { initialCode } from './sandboxCode';
-import { dataVizElementsMap } from './dataVizElementsMap';
 import { search } from './search';
+import VizContainer from './VizContainer';
 
 import './SandboxVisualizer.scss';
 
@@ -27,11 +27,7 @@ function toObject(x: any): any {
   }
 }
 
-export default function SandboxVisualizer(props: any) {
-  const {
-    engine: { pipeline },
-  } = props;
-
+export default function SandboxVisualizer() {
   const pyodide = React.useRef<any>();
 
   const editorValue = React.useRef(initialCode);
@@ -147,27 +143,16 @@ export default function SandboxVisualizer(props: any) {
                   position: 'relative',
                   display: 'flex',
                   flex: 1,
-                  boxShadow: '0 0 0 1px #b5b9c5',
                   maxHeight: `${100 / result.length}%`,
                 }}
               >
-                {row.map((viz: any) => {
-                  const vizFunc =
-                    dataVizElementsMap[
-                      viz.type as 'LineChart' | 'DataFrame' | 'Plotly'
-                    ];
+                {row.map((viz: any, i: number) => {
                   return (
-                    <div
-                      key={viz.type}
-                      style={{
-                        position: 'relative',
-                        flex: 1,
-                        boxShadow: '0 0 0 1px #b5b9c5',
-                        maxWidth: `${100 / row.length}%`,
-                      }}
-                    >
-                      {vizFunc(viz)}
-                    </div>
+                    <VizContainer
+                      key={i}
+                      viz={viz}
+                      maxWidth={`${100 / row.length}%`}
+                    />
                   );
                 })}
               </div>

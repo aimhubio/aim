@@ -15,7 +15,7 @@ export const dataVizElementsMap = {
     <ChartPanel
       selectOptions={[]}
       chartType={ChartTypeEnum.LineChart}
-      data={props.data}
+      data={[props.data]}
       focusedState={{
         key: null,
         active: false,
@@ -24,15 +24,17 @@ export const dataVizElementsMap = {
       zoom={{}}
       onActivePointChange={props.callbacks?.on_active_point_change ?? null}
       onChangeTooltip={() => null}
-      chartProps={props.data.map(() => ({
-        axesScaleType: {
-          xAxis: ScaleEnum.Linear,
-          yAxis: ScaleEnum.Linear,
+      chartProps={[
+        {
+          axesScaleType: {
+            xAxis: ScaleEnum.Linear,
+            yAxis: ScaleEnum.Linear,
+          },
+          ignoreOutliers: false,
+          highlightMode: HighlightEnum.Off,
+          curveInterpolation: CurveEnum.Linear,
         },
-        ignoreOutliers: false,
-        highlightMode: HighlightEnum.Off,
-        curveInterpolation: CurveEnum.Linear,
-      }))}
+      ]}
       onRunsTagsChange={() => null}
       controls={null}
     />

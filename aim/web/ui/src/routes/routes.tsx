@@ -143,9 +143,9 @@ const routes = {
     path: PathEnum.Sandbox,
     component: Sandbox,
     showInSidebar: false,
-    displayName: 'Explorer',
+    displayName: 'Sandbox',
     isExact: true,
-    title: pageTitlesEnum.METRICS_EXPLORER,
+    title: pageTitlesEnum.SANDBOX,
   },
   SCATTERS: {
     path: PathEnum.Scatters,

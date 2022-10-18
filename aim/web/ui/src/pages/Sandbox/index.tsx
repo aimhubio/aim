@@ -6,7 +6,7 @@ import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
 
 import SandboxVisualizer from './SandboxVisualizer';
 
-const FiguresExplorer = renderer(
+const Sandbox = renderer(
   {
     sequenceName: SequenceTypesEnum.Metric,
     name: 'Sandbox',
@@ -32,4 +32,4 @@ const FiguresExplorer = renderer(
   __DEV__,
 );
 
-export default FiguresExplorer;
+export default Sandbox;
