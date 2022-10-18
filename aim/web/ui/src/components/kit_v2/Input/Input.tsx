@@ -9,14 +9,7 @@ import { IInputProps } from './Input.d';
 const Container = styled('div', {
   display: 'flex',
   fd: 'column',
-  br: '$1',
-  variants: {
-    error: {
-      true: {
-        borderColor: '$red',
-      },
-    },
-  },
+  br: '$3',
 });
 
 const InputContainer = styled('input', {
@@ -24,7 +17,7 @@ const InputContainer = styled('input', {
   height: '100%',
   width: '100%',
   fontSize: '$3',
-  br: '$1',
+  br: '$3',
   color: '$textPrimary',
   pl: '$6',
   bs: '0px 0px 0px 1px $colors$secondary50',
@@ -35,6 +28,13 @@ const InputContainer = styled('input', {
   '&:hover': {
     outline: 'none',
     bs: '0px 0px 0px 1px $colors$secondary100',
+  },
+  variants: {
+    error: {
+      true: {
+        bs: '0px 0px 0px 1px red',
+      },
+    },
   },
 });
 
@@ -59,7 +59,7 @@ const ClearButtonContainer = styled('div', {
 const InputContent = styled('div', {
   display: 'flex',
   ai: 'center',
-  br: '$1',
+  br: '$3',
   position: 'relative',
   variants: {
     size: {
@@ -96,6 +96,17 @@ const InputContent = styled('div', {
   },
 });
 
+const Caption = styled('p', {
+  fontSize: '$2',
+  mt: '2px',
+  variants: {
+    error: {
+      true: {
+        color: 'red',
+      },
+    },
+  },
+});
 function Input({
   value,
   inputSize = 'medium',
@@ -119,24 +130,26 @@ function Input({
     if (value !== inputValue) {
       setInputValue(value);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
 
   return (
-    <Container error={error}>
+    <Container>
       <InputContent size={inputSize}>
         <InputContainer
           placeholder={placeholder}
           onChange={handleChange}
           value={inputValue}
+          error={error}
         />
         <ClearButtonContainer
           css={{ visibility: inputValue ? 'visible' : 'hidden' }}
           onClick={handleClear}
         >
-          <Icon fontSize={5} name='close' />
+          <Icon fontSize={4} name='close' />
         </ClearButtonContainer>
       </InputContent>
-      {error && <div>{error}</div>}
+      <Caption error={error}>error</Caption>
     </Container>
   );
 }

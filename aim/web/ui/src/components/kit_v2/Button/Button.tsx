@@ -62,7 +62,7 @@ const Container = styled('button', {
   jc: 'center',
   fontWeight: '$2',
   cursor: 'pointer',
-  borderRadius: '$1',
+  br: '$3',
   transition: 'all 0.2s ease-in-out',
   fontSize: '$3',
   variants: {
