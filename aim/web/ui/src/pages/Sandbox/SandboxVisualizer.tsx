@@ -186,12 +186,10 @@ export default function SandboxVisualizer() {
               </div>
             ))}
           </div>
-          {isProcessing !== null && (
-            <pre
-              id='console'
-              className='SandboxVisualizer__main__components__console'
-            />
-          )}
+          <pre
+            id='console'
+            className='SandboxVisualizer__main__components__console'
+          />
         </div>
       </div>
     </div>

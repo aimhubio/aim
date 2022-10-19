@@ -29,9 +29,9 @@ function ImagesList(props: any) {
 
   const data = props.data.map((image: any) => ({
     ...image,
-    ...image.data.data,
-    ...image.data.images,
-    ...image.data.record,
+    ...image.data,
+    ...image.images,
+    ...image.record,
   }));
 
   function addUriToList(blobUrl: string) {

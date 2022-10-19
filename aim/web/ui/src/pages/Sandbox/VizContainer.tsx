@@ -12,8 +12,8 @@ import { dataVizElementsMap } from './dataVizElementsMap';
 
 function VizContainer(props: any) {
   const boxSize = {
-    width: props.viz.size.width ?? 250,
-    height: props.viz.size.height ?? 180,
+    width: props.viz.size?.width ?? 250,
+    height: props.viz.size?.height ?? 180,
   };
   const data = React.useMemo(() => {
     return props.viz.data.map((item: any) => ({
@@ -198,9 +198,6 @@ function VizContainer(props: any) {
     };
   }, [data]);
 
-  const vizFunc =
-    dataVizElementsMap[props.viz.type as 'LineChart' | 'DataFrame' | 'Plotly'];
-
   return (
     <div className='BoxVirtualizer'>
       {rowsAxisItems && rowsAxisItems.length > 0 && (
@@ -274,7 +271,11 @@ function VizContainer(props: any) {
                   height: 'calc(100% - 2px)',
                 }}
               >
-                {vizFunc({
+                {dataVizElementsMap[
+                  (typeof props.viz.type === 'function'
+                    ? props.viz.type(items[0].type)
+                    : props.viz.type) as 'LineChart' | 'DataFrame' | 'Plotly'
+                ]({
                   ...props.viz,
                   data: items,
                 })}

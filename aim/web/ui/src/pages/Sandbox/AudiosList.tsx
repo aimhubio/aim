@@ -16,9 +16,9 @@ import arrayBufferToBase64 from 'utils/arrayBufferToBase64';
 function AudiosList(props: any) {
   const data = props.data.map((audio: any) => ({
     ...audio,
-    ...audio.data.data,
-    ...audio.data.audios,
-    ...audio.data.record,
+    ...audio.data,
+    ...audio.audios,
+    ...audio.record,
   }));
 
   function getBlobsData(uris: string[]) {

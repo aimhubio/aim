@@ -4,12 +4,11 @@ import * as _ from 'lodash-es';
 function TextList(props: any) {
   const data = props.data.map((text: any) => ({
     ...text,
-    ...text.data.data,
-    ...text.data.texts,
-    ...text.data.record,
+    ...text.data,
+    ...text.texts,
+    ...text.record,
   }));
 
-  console.log(data);
   return (
     <div
       style={{
