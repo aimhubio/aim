@@ -6,6 +6,7 @@ import { ControlsConfigs } from 'modules/core/engine/visualizations/controls';
 import { CustomStates } from 'modules/core/utils/store';
 
 import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
+import { AimFlatObjectBase } from 'types/core/AimObjects';
 
 import { VisualizationsConfig } from '../core/engine/visualizations';
 import { EngineNew } from '../core/engine/explorer-engine';
@@ -87,7 +88,7 @@ export interface IProgressBarProps extends IBaseComponentProps {}
 
 export interface IBoxProps extends IBaseComponentProps {
   data: any;
-  items: any[];
+  items: AimFlatObjectBase[];
   style?: React.CSSProperties;
 }
 

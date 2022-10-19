@@ -1,7 +1,7 @@
 import { StoreApi } from 'zustand';
 import produce, { Draft } from 'immer';
 
-export type IEventSystemState = Record<string, any[]>;
+export type IEventSystemState = Record<string, any>;
 
 type ExtractState<TStore> = {
   events: {
@@ -15,13 +15,20 @@ function getInitialState(): IEventSystemState {
 
 export type EventsStateBridge = {
   initialState: IEventSystemState;
+} & EventSystemMethods;
+
+export type EventSystemMethods = {
+  setEventPayload: (eventName: string, payload: any) => void;
+  getEventPayload: (eventName: string) => any;
 };
 
 function createState<TStore>(
   store: StoreApi<ExtractState<TStore>>,
   initialState: IEventSystemState,
-): any {
-  const methods: any = {
+): {
+  initialState: IEventSystemState;
+} & EventSystemMethods {
+  const methods: EventSystemMethods = {
     /**
      * Function to  preserved payload of the event
      * @param {string} eventName
@@ -40,7 +47,7 @@ function createState<TStore>(
      * Function to get the preserved payload of the event
      * @param {string} eventName
      */
-    getEventsPayload: (eventName: string) =>
+    getEventPayload: (eventName: string) =>
       store.getState()?.events?.payloads?.[eventName] ?? null,
   };
 

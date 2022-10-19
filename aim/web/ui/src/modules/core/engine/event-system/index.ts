@@ -1,21 +1,41 @@
-import createState, { getInitialState } from './state';
+import createState, { getInitialState, IEventSystemState } from './state';
 
-function createEventSystemEngine(store: any): any {
+type Callback = (payload: any) => void;
+
+export interface IEventSystemEngine {
+  state: {
+    payloads: IEventSystemState;
+  };
+  engine: {
+    fire: (eventName: string, payload: any, setPayload: boolean) => void;
+    on: (
+      eventName: string,
+      callback: (payload: any) => void,
+    ) => (payload: any) => void;
+    unsubscribe: (eventName: string, callback: Callback) => void;
+    once: (
+      eventName: string,
+      callback: Callback,
+    ) => (eventName: string, callback: Callback) => void;
+    getListenerCount: (eventName: string) => number;
+    getEventPayload: (eventName: string) => any;
+  };
+}
+
+function createEventSystemEngine<TStore>(store: any): IEventSystemEngine {
   const initialState = getInitialState();
-  const state = createState(store, initialState);
+  const state = createState<TStore>(store, initialState);
 
-  let events: any = {};
+  let events: Record<string, Callback[]> = {};
 
   /**
    * Function to fire an event
    * @param {string} eventName
-   * @param {any} payload
+   * @param {Callback} payload
    */
   function fire(eventName: string, payload: any, setPayload: boolean = true) {
     if (events[eventName]) {
-      events[eventName].callbacks.forEach((callback: any) =>
-        callback(payload, events),
-      );
+      events[eventName].forEach((callback: Callback) => callback(payload));
       if (setPayload) {
         state.setEventPayload(eventName, payload);
       }
@@ -25,26 +45,26 @@ function createEventSystemEngine(store: any): any {
   /**
    * Function to subscribe to event
    * @param {string} eventName
-   * @param {any} callBack
+   * @param {Callback} callback
    */
-  function on(eventName: string, callBack: any): any {
+  function on(eventName: string, callback: Callback): () => void {
     if (events[eventName]) {
-      events[eventName].callbacks = [...events[eventName].callbacks, callBack];
+      events[eventName] = [...events[eventName], callback];
     } else {
-      events[eventName] = { callbacks: [callBack] };
+      events[eventName] = [callback];
     }
-    return callBack;
+    return () => unsubscribe(eventName, callback);
   }
 
   /**
    * Function to unsubscribe to event
    * @param {string} eventName
-   * @param {any} callBack
+   * @param {Callback} callback
    */
-  function unsubscribe(eventName: string, callBack: any) {
+  function unsubscribe(eventName: string, callback: Callback) {
     if (events[eventName]) {
-      events[eventName].callbacks = events[eventName].callbacks.filter(
-        (listenerCallback: any) => listenerCallback !== callBack,
+      events[eventName] = events[eventName].filter(
+        (listenerCallback: any) => listenerCallback !== callback,
       );
     }
   }
@@ -52,11 +72,14 @@ function createEventSystemEngine(store: any): any {
   /**
    * Function to subscribe to event and remove it once it is fired
    * @param {string} eventName
-   * @param {any} callBack
+   * @param {Callback} callback
    */
-  function once(eventName: string, callBack: any) {
+  function once(
+    eventName: string,
+    callback: Callback,
+  ): (eventName: string, callback: Callback) => void {
     const onceWrapper = () => {
-      callBack();
+      callback(store.getState()?.events?.payloads?.[eventName] ?? null);
       unsubscribe(eventName, onceWrapper);
     };
     return on(eventName, onceWrapper);
@@ -66,8 +89,8 @@ function createEventSystemEngine(store: any): any {
    * Function to get the listener count of the event
    * @param {string} eventName
    */
-  function listenerCount(eventName: string) {
-    return events[eventName] ? events[eventName].callbacks.length : 0;
+  function getListenerCount(eventName: string) {
+    return events[eventName] ? events[eventName].length : 0;
   }
 
   return {
@@ -79,8 +102,8 @@ function createEventSystemEngine(store: any): any {
       on,
       unsubscribe,
       once,
-      listenerCount,
-      getEventsPayload: state.getEventsPayload,
+      getListenerCount,
+      getEventPayload: state.getEventPayload,
     },
   };
 }
