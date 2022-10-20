@@ -146,6 +146,7 @@ def GridCell(viz, facet={"row": [], "column": []}, size={}):
 
         union_viz["type"] = get_viz_for_type
         union_viz["data"] = items
+        union_viz["no_facet"] = no_facet
 
         return union_viz
     else:

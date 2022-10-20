@@ -1,4 +1,5 @@
 import * as React from 'react';
+import * as _ from 'lodash-es';
 import classnames from 'classnames';
 
 import Editor from '@monaco-editor/react';
@@ -154,13 +155,13 @@ export default function SandboxVisualizer() {
                       style={{
                         position: 'relative',
                         flex: 1,
-                        backgroundColor: '#fff',
+                        backgroundColor: '#f4f4f6',
                         boxShadow: '0 0 0 1px #b5b9c5',
                         maxWidth: `${100 / row.length}%`,
                         margin: '5px',
                         background: '#fff',
                         backgroundImage:
-                          'radial-gradient(#e8eaee 1px, transparent 0)',
+                          'radial-gradient(#d2d4dc 1px, transparent 0)',
                         backgroundSize: '10px 10px',
                         overflow: 'hidden',
                       }}
@@ -171,11 +172,32 @@ export default function SandboxVisualizer() {
                             width: '100%',
                             height: '100%',
                             backgroundColor: '#fff',
+                            overflow: 'auto',
                           }}
                         >
-                          {dataVizElementsMap[
-                            viz.type as 'LineChart' | 'DataFrame' | 'Plotly'
-                          ](viz)}
+                          {Object.values(_.groupBy(viz.data, 'type')).map(
+                            (vals, i) => (
+                              <div
+                                key={`${i}-${vals[0].type}`}
+                                style={{
+                                  width: 'calc(100% - 10px)',
+                                  height: 'calc(100% - 10px)',
+                                  padding: '5px',
+                                  margin: '5px',
+                                  border: '1px solid #d2d4dc',
+                                }}
+                              >
+                                {dataVizElementsMap[
+                                  (typeof viz.type === 'function'
+                                    ? viz.type(vals[0].type)
+                                    : viz.type) as 'LineChart'
+                                ]({
+                                  ...viz,
+                                  data: vals,
+                                })}
+                              </div>
+                            ),
+                          )}
                         </div>
                       ) : (
                         <VizContainer viz={viz} />

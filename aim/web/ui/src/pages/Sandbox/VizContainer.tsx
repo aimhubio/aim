@@ -258,28 +258,36 @@ function VizContainer(props: any) {
                 ...items[0].style,
                 position: 'absolute',
                 display: 'flex',
+                flexDirection: 'column',
                 alignItems: 'center',
-                justifyContent: 'center',
                 backgroundColor: '#fff',
                 boxShadow:
                   '-1px -1px 0 0px #b5b9c5, inset -1px -1px 0 0px #b5b9c5',
+                overflow: 'auto',
               }}
             >
-              <div
-                style={{
-                  width: 'calc(100% - 2px)',
-                  height: 'calc(100% - 2px)',
-                }}
-              >
-                {dataVizElementsMap[
-                  (typeof props.viz.type === 'function'
-                    ? props.viz.type(items[0].type)
-                    : props.viz.type) as 'LineChart' | 'DataFrame' | 'Plotly'
-                ]({
-                  ...props.viz,
-                  data: items,
-                })}
-              </div>
+              {Object.values(_.groupBy(items, 'type')).map((vals, i) => (
+                <div
+                  key={`${i}-${vals[0].type}`}
+                  style={{
+                    width: 'calc(100% - 10px)',
+                    height: 'calc(100% - 10px)',
+                    padding: '5px',
+                    margin: '5px',
+                    border: '1px solid #d2d4dc',
+                    flex: 1,
+                  }}
+                >
+                  {dataVizElementsMap[
+                    (typeof props.viz.type === 'function'
+                      ? props.viz.type(vals[0].type)
+                      : props.viz.type) as 'LineChart' | 'DataFrame' | 'Plotly'
+                  ]({
+                    ...props.viz,
+                    data: vals,
+                  })}
+                </div>
+              ))}
             </div>
           ))}
         </div>
