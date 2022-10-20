@@ -1,0 +1,79 @@
+syntax = "proto3";
+
+import "remote_tracking.proto";
+
+message VersionRequest {}
+
+message VersionResponse {
+    string version = 1;
+    enum Status {
+        OK = 0;
+        ERROR = 1;
+    }
+    Status status = 2;
+    ExceptionResponse exception = 3;
+}
+
+message HeartbeatRequest {
+    string client_uri = 1;
+}
+
+message HeartbeatResponse {
+    enum Status {
+        OK = 0;
+        ERROR = 1;
+    }
+    Status status = 1;
+    ExceptionResponse exception = 2;
+}
+
+message ConnectRequest {
+    string client_uri = 1;
+}
+
+message ConnectResponse {
+    string port = 1;
+    enum Status {
+        OK = 0;
+        ERROR = 1;
+    }
+    Status status = 2;
+    ExceptionResponse exception = 3;
+}
+
+message ReconnectRequest {
+    string client_uri = 1;
+}
+
+message ReconnectResponse {
+    string port = 1;
+    enum Status {
+        OK = 0;
+        ERROR = 1;
+    }
+    Status status = 2;
+    ExceptionResponse exception = 3;
+}
+
+message DisconnectRequest {
+    string client_uri = 1;
+}
+
+message DisconnectResponse {
+    enum Status {
+        OK = 0;
+        ERROR = 1;
+    }
+    Status status = 1;
+    ExceptionResponse exception = 3;
+}
+
+
+
+service RemoteRouterService {
+    rpc client_heartbeat(HeartbeatRequest) returns (HeartbeatResponse) {}
+    rpc get_version(VersionRequest) returns (VersionResponse) {}
+    rpc connect(ConnectRequest) returns (ConnectResponse) {}
+    rpc reconnect(ReconnectRequest) returns (ReconnectResponse) {}
+    rpc disconnect(DisconnectRequest) returns (DisconnectResponse) {}
+}
