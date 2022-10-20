@@ -7,7 +7,11 @@ export interface IEventSystemEngine {
     payloads: IEventSystemState;
   };
   engine: {
-    fire: (eventName: string, payload: any, setPayload: boolean) => void;
+    fire: (
+      eventName: string,
+      payload: any,
+      options: Record<string, any>,
+    ) => void;
     on: (
       eventName: string,
       callback: (payload: any) => void,
@@ -33,10 +37,14 @@ function createEventSystemEngine<TStore>(store: any): IEventSystemEngine {
    * @param {string} eventName
    * @param {Callback} payload
    */
-  function fire(eventName: string, payload: any, setPayload: boolean = true) {
+  function fire(
+    eventName: string,
+    payload: any,
+    options: Record<string, any> = { savePayload: true },
+  ) {
     if (events[eventName]) {
       events[eventName].forEach((callback: Callback) => callback(payload));
-      if (setPayload) {
+      if (options.savePayload) {
         state.setEventPayload(eventName, payload);
       }
     }

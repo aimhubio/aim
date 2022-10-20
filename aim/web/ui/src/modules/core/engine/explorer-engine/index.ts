@@ -14,7 +14,7 @@ import { PipelineStatusEnum } from '../types';
 import createVisualizationsEngine from '../visualizations';
 import createExplorerAdditionalEngine from '../explorer';
 import createCustomStatesEngine, { CustomStatesEngine } from '../custom-states';
-import createEventSystemEngine from '../event-system';
+import createEventSystemEngine, { IEventSystemEngine } from '../event-system';
 
 type State = {
   pipeline?: any;
@@ -32,6 +32,7 @@ export type EngineNew<
   // sub engines
   pipeline: IPipelineEngine<TObject, TStore>['engine'];
   instructions: IInstructionsEngine<TStore, SequenceName>['engine'];
+  events: IEventSystemEngine['engine'];
   visualizations: any;
 
   // methods
@@ -159,7 +160,7 @@ function createEngine<TObject = any>(
   let visualizations: any;
 
   let customStatesEngine: CustomStatesEngine;
-  let events: any;
+  let events: IEventSystemEngine['engine'];
   let query: any;
   let groupings: any;
 
@@ -290,6 +291,7 @@ function createEngine<TObject = any>(
     groupings,
     // @ts-ignore
     pipeline,
+    // @ts-ignore
     events,
 
     finalize,
