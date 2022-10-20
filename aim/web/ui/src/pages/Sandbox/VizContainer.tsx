@@ -270,8 +270,8 @@ function VizContainer(props: any) {
                 <div
                   key={`${i}-${vals[0].type}`}
                   style={{
-                    width: 'calc(100% - 10px)',
-                    height: 'calc(100% - 10px)',
+                    minWidth: 'calc(100% - 10px)',
+                    minHeight: 'calc(100% - 10px)',
                     padding: '5px',
                     margin: '5px',
                     border: '1px solid #d2d4dc',

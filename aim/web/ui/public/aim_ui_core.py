@@ -28,6 +28,19 @@ Text = Object("texts")
 Distribution = Object("distributions")
 
 
+def get_runs(data):
+    runs_map = {}
+    runs_list = []
+
+    for item in data:
+        run = item["run"]
+        if run["hash"] not in runs_map:
+            runs_map[run["hash"]] = True
+            runs_list.append({"run": run, "type": "run"})
+
+    return runs_list
+
+
 ####################
 ### Bindings for visualizing data with data viz elements
 ####################

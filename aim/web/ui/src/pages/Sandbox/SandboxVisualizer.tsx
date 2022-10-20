@@ -155,13 +155,13 @@ export default function SandboxVisualizer() {
                       style={{
                         position: 'relative',
                         flex: 1,
-                        backgroundColor: '#f4f4f6',
+                        backgroundColor: '#d2d4dc',
                         boxShadow: '0 0 0 1px #b5b9c5',
                         maxWidth: `${100 / row.length}%`,
                         margin: '5px',
                         background: '#fff',
                         backgroundImage:
-                          'radial-gradient(#d2d4dc 1px, transparent 0)',
+                          'radial-gradient(#b5b9c5 1px, transparent 0)',
                         backgroundSize: '10px 10px',
                         overflow: 'hidden',
                       }}
@@ -180,8 +180,8 @@ export default function SandboxVisualizer() {
                               <div
                                 key={`${i}-${vals[0].type}`}
                                 style={{
-                                  width: 'calc(100% - 10px)',
-                                  height: 'calc(100% - 10px)',
+                                  minWidth: 'calc(100% - 10px)',
+                                  minHeight: 'calc(100% - 10px)',
                                   padding: '5px',
                                   margin: '5px',
                                   border: '1px solid #d2d4dc',
