@@ -1,21 +1,19 @@
-export const initialCode = `from aim-ui-client import Grid, GridCell, Metric, Image, Audio, Text, get_runs, line_chart, images_list, audios_list, text_list, json
+export const initialCode = `from aim.asl.objects import Metric, Images, Audios, Figures, Texts 
+from aim.ui.layout import Grid, Cell
+from aim.ui.viz import LineChart, ImagesList, AudiosList, FiguresList, TextsList, JSON
+import plotly.graph_objects as go
 
-metrics = Metric.get()
+metrics = Metric.query()
 
-def on_click(val, is_active):
-    if is_active:
-        run = metrics[val.key]["run"]
-        Grid([
-            [GridCell(LineChart)],
-            [GridCell(json(run))]
-        ])
+fig = go.Figure()
+for metric in metrics:
+    fig.add_trace(go.Scatter(x=metric["steps"], y=metric["values"],
+                    mode='lines',
+                    name=metric["run"]["name"]))
 
-LineChart = line_chart(metrics, x='steps', y='values',
-                color=["run.name"],
-                stroke_style=["metric.context"],
-                callbacks={"on_active_point_change": on_click})
+figure = FiguresList(fig)
 
 Grid([
-    [GridCell(LineChart)]
+    [Cell(figure)]
 ])
 `;

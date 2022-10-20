@@ -54,10 +54,6 @@ export default function SandboxVisualizer() {
         },
       });
 
-      // await pyodide.current.loadPackage('micropip');
-      // const micropip = pyodide.current.pyimport('micropip');
-      // await micropip.install('plotly');
-
       pyodide.current.runPython(
         await (
           await fetch(`${getBasePath()}/static-files/aim_ui_core.py`)
@@ -73,15 +69,24 @@ export default function SandboxVisualizer() {
     try {
       setIsProcessing(true);
       const code = editorValue.current
-        .replace('from aim-ui-client', '# from aim-ui-client')
-        .replaceAll('= Metric.get', '= await Metric.get')
-        .replaceAll('= Image.get', '= await Image.get')
-        .replaceAll('= Audio.get', '= await Audio.get')
-        .replaceAll('= Figure.get', '= await Figure.get')
-        .replaceAll('= Text.get', '= await Text.get')
-        .replaceAll('= Distribution.get', '= await Distribution.get')
+        .replaceAll('from aim', '# from aim')
+        .replaceAll('import aim', '# import aim')
+        .replaceAll('= Metric.query', '= await Metric.query')
+        .replaceAll('= Images.query', '= await Images.query')
+        .replaceAll('= Audios.query', '= await Audios.query')
+        .replaceAll('= Figures.query', '= await Figures.query')
+        .replaceAll('= Texts.query', '= await Texts.query')
+        .replaceAll('= Distributions.query', '= await Distributions.query')
         .replaceAll('def ', 'async def ')
         .replaceAll('async async def ', 'async def ');
+      const packagesList = pyodide.current.pyodide_py.find_imports(code).toJs();
+
+      if (packagesList.includes('plotly')) {
+        await pyodide.current.loadPackage('micropip');
+        const micropip = pyodide.current.pyimport('micropip');
+        await micropip.install('plotly');
+      }
+
       await pyodide.current!.loadPackagesFromImports(code);
       pyodide.current
         .runPythonAsync(code)

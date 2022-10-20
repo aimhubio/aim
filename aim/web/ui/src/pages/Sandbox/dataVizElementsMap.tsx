@@ -1,7 +1,5 @@
 import * as React from 'react';
 
-import Figures from 'modules/BaseExplorer/components/Figures/Figures';
-
 import ChartPanel from 'components/ChartPanel/ChartPanel';
 import DictVisualizer from 'components/kit/DictVisualizer';
 
@@ -11,6 +9,7 @@ import DataGrid from './DataGrid';
 import ImagesList from './ImagesList';
 import AudiosList from './AudiosList';
 import TextList from './TextList';
+import FiguresList from './FiguresList';
 
 export const dataVizElementsMap = {
   LineChart: (props: any) => (
@@ -48,19 +47,7 @@ export const dataVizElementsMap = {
       }
     />
   ),
-  Plotly: (props: any) => (
-    <div
-      style={{
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-    >
-      <Figures data={{ data: props }} style={{}} />
-    </div>
-  ),
+  Plotly: (props: any) => <FiguresList key={Date.now()} data={props.data} />,
   Images: (props: any) => <ImagesList key={Date.now()} data={props.data} />,
   Audios: (props: any) => <AudiosList key={Date.now()} data={props.data} />,
   Text: (props: any) => <TextList key={Date.now()} data={props.data} />,

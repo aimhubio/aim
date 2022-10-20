@@ -10,7 +10,7 @@ class Object:
     def __init__(self, type):
         self.type = type
 
-    async def get(self, query=""):
+    async def query(self, query=""):
         data = await search(self.type, query)
         items = []
         for item in data:
@@ -21,11 +21,11 @@ class Object:
 
 
 Metric = Object("metric")
-Image = Object("images")
-Figure = Object("figures")
-Audio = Object("audios")
-Text = Object("texts")
-Distribution = Object("distributions")
+Images = Object("images")
+Figures = Object("figures")
+Audios = Object("audios")
+Texts = Object("texts")
+Distributions = Object("distributions")
 
 
 def get_runs(data):
@@ -117,7 +117,7 @@ def Grid(grid):
     updateLayout(grid)
 
 
-def GridCell(viz, facet={"row": [], "column": []}, size={}):
+def Cell(viz, facet={"row": [], "column": []}, size={}):
     if type(viz) is list:
         data = []
         for el in viz:
@@ -177,7 +177,7 @@ def GridCell(viz, facet={"row": [], "column": []}, size={}):
         return viz
 
 
-def line_chart(
+def LineChart(
     data,
     x,
     y,
@@ -210,7 +210,7 @@ def line_chart(
     }
 
 
-def images_list(data):
+def ImagesList(data):
     images = []
     for i, item in enumerate(data):
         image = item
@@ -223,7 +223,7 @@ def images_list(data):
     }
 
 
-def audios_list(data):
+def AudiosList(data):
     audios = []
     for i, item in enumerate(data):
         audio = item
@@ -236,7 +236,7 @@ def audios_list(data):
     }
 
 
-def text_list(data, color=[]):
+def TextsList(data, color=[]):
     color_map, color_data = group("color", data, color)
 
     texts = []
@@ -253,7 +253,30 @@ def text_list(data, color=[]):
     }
 
 
-def json(
+def FiguresList(data):
+    if type(data) is not list:
+        items = [data.to_json()]
+    else:
+        items = []
+        for d in data:
+            items.append(d.to_json())
+
+    figures = []
+    for i, item in enumerate(items):
+        figure = {
+            "key": i,
+            "data": item,
+        }
+
+        figures.append(figure)
+
+    return {
+        "type": "Plotly",
+        "data": figures,
+    }
+
+
+def JSON(
     data,
 ):
     return {
