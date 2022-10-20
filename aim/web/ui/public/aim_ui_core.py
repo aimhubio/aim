@@ -124,6 +124,13 @@ def GridCell(viz, facet={"row": [], "column": []}, size={}):
             data = data + el["data"]
     else:
         data = viz["data"]
+
+    if type(data) is not list:
+        viz["no_facet"] = True
+        viz["size"] = size
+
+        return viz
+
     no_facet = False
     if facet["row"] == [] and facet["column"] == []:
         no_facet = True

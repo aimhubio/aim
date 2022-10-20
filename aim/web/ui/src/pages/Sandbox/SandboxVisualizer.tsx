@@ -80,7 +80,8 @@ export default function SandboxVisualizer() {
         .replaceAll('= Figure.get', '= await Figure.get')
         .replaceAll('= Text.get', '= await Text.get')
         .replaceAll('= Distribution.get', '= await Distribution.get')
-        .replaceAll('def ', 'async def ');
+        .replaceAll('def ', 'async def ')
+        .replaceAll('async async def ', 'async def ');
       await pyodide.current!.loadPackagesFromImports(code);
       pyodide.current
         .runPythonAsync(code)
@@ -175,28 +176,44 @@ export default function SandboxVisualizer() {
                             overflow: 'auto',
                           }}
                         >
-                          {Object.values(_.groupBy(viz.data, 'type')).map(
-                            (vals, i) => (
-                              <div
-                                key={`${i}-${vals[0].type}`}
-                                style={{
-                                  minWidth: 'calc(100% - 10px)',
-                                  minHeight: 'calc(100% - 10px)',
-                                  padding: '5px',
-                                  margin: '5px',
-                                  border: '1px solid #d2d4dc',
-                                }}
-                              >
-                                {dataVizElementsMap[
-                                  (typeof viz.type === 'function'
-                                    ? viz.type(vals[0].type)
-                                    : viz.type) as 'LineChart'
-                                ]({
-                                  ...viz,
-                                  data: vals,
-                                })}
-                              </div>
-                            ),
+                          {Array.isArray(viz.data) ? (
+                            Object.values(_.groupBy(viz.data, 'type')).map(
+                              (vals, i) => (
+                                <div
+                                  key={`${i}-${vals[0].type}`}
+                                  style={{
+                                    minWidth: 'calc(100% - 10px)',
+                                    minHeight: 'calc(100% - 10px)',
+                                    height: 'calc(100% - 10px)',
+                                    padding: '5px',
+                                    margin: '5px',
+                                    border: '1px solid #d2d4dc',
+                                  }}
+                                >
+                                  {dataVizElementsMap[
+                                    (typeof viz.type === 'function'
+                                      ? viz.type(vals[0].type)
+                                      : viz.type) as 'LineChart'
+                                  ]({
+                                    ...viz,
+                                    data: vals,
+                                  })}
+                                </div>
+                              ),
+                            )
+                          ) : (
+                            <div
+                              style={{
+                                minWidth: 'calc(100% - 10px)',
+                                minHeight: 'calc(100% - 10px)',
+                                height: 'calc(100% - 10px)',
+                                padding: '5px',
+                                margin: '5px',
+                                border: '1px solid #d2d4dc',
+                              }}
+                            >
+                              {dataVizElementsMap[viz.type as 'LineChart'](viz)}
+                            </div>
                           )}
                         </div>
                       ) : (
