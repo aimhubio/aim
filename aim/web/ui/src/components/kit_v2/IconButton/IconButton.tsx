@@ -52,6 +52,7 @@ function IconButton({
 }: IIconButtonProps) {
   return (
     <Container
+      data-testid='icon-button'
       {...props}
       css={{ ...getButtonStyles(color, variant, disabled) }}
       size={size}

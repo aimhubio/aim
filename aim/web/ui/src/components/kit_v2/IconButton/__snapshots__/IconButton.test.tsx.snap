@@ -1,0 +1,27 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<IconButton icon="search" /> - Renders Correctly 1`] = `
+<DocumentFragment>
+  <button
+    class="c-fXoTAb c-fXoTAb-iQUHtZ-size-medium c-fXoTAb-ihtltCK-css"
+    test-id="icon-button"
+  >
+    <i
+      class="Icon__container icon-search "
+    />
+  </button>
+</DocumentFragment>
+`;
+
+exports[`<IconButton icon="search" /> Renders Correctly 1`] = `
+<DocumentFragment>
+  <button
+    class="c-fXoTAb c-fXoTAb-iQUHtZ-size-medium c-fXoTAb-ihtltCK-css"
+    data-testid="icon-button"
+  >
+    <i
+      class="Icon__container icon-search "
+    />
+  </button>
+</DocumentFragment>
+`;
