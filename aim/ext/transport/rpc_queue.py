@@ -2,6 +2,7 @@ import time
 import queue
 import logging
 import threading
+import weakref
 
 logger = logging.getLogger(__name__)
 
@@ -9,6 +10,8 @@ logger = logging.getLogger(__name__)
 class RpcQueueWithRetry(object):
     def __init__(self, name, max_queue_memory=0,
                  retry_count=0, retry_interval=0):
+
+        self._client = None
 
         self.retry_count = retry_count or 1
         self.retry_interval = retry_interval
@@ -24,7 +27,10 @@ class RpcQueueWithRetry(object):
         self._thread.daemon = True
         self._thread.start()
 
-    def register_task(self, task_f, *args):
+    def register_task(self, client, task_f, *args):
+        if not self._client:
+            self._client = weakref.ref(client)
+
         if self._shutdown:
             logger.debug('Cannot register task: rpc task queue is stopped.')
             return
@@ -59,6 +65,8 @@ class RpcQueueWithRetry(object):
         # temporary workaround for M1 build
         import grpc
 
+        from aim.ext.transport.message_utils import UnauthorizedRequestError
+
         retry = 0
         while retry < self.retry_count:
             try:
@@ -68,8 +76,20 @@ class RpcQueueWithRetry(object):
                 if e.code() != grpc.StatusCode.UNAVAILABLE:
                     raise e
 
+                try:
+                    self._client().reconnect()
+                except Exception:
+                    pass
+
                 retry += 1
                 logger.warning(f'Remote Server is unavailable, please check network connection: {e}, attempt: {retry}')
+                time.sleep(self.retry_interval)
+            except UnauthorizedRequestError as e:
+                try:
+                    self._client().reinitialize_resource(e.handler)
+                except Exception:
+                    pass
+                retry += 1
                 time.sleep(self.retry_interval)
         return False
 
