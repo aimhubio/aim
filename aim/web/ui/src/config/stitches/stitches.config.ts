@@ -57,6 +57,7 @@ export const {
       warning120: '#D89F0E',
       // text colors
       textPrimary: '#161717',
+      textPrimary50: '#8A8B8B',
     },
     fonts: {
       inter: 'Inter, sans-serif',
@@ -80,6 +81,9 @@ export const {
       15: '1.75rem', // 28px
       16: '1.875rem', // 30px
       17: '2rem', // 32px
+      18: '2.125rem', // 34px
+      19: '2.25rem', // 36px
+      20: '2.375rem', // 38px
     },
     sizes: {
       1: '1.25rem', //20px
@@ -269,8 +273,8 @@ export const {
     }),
 
     size: (value: Stitches.PropertyValue<'width'>) => ({
-      width: value,
-      height: value,
+      minWidth: value,
+      minHeight: value,
     }),
 
     appearance: (value: Stitches.PropertyValue<'appearance'>) => ({
