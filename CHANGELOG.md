@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.14.2
+
+- Implement ANSI to HTML formatting method for color formatting in the logs tab (VkoHov)
+
 ## 3.14.1 Oct 7, 2022
 
 - Fix the current release duplication highlighting issue on the Dashboard page (arsengit)
