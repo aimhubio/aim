@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- Implement vertically scalable version of Remote Tracking (mihran113, alberttorosyan)
+
+## 3.14.1 Oct 7, 2022
+
+- Fix the current release duplication highlighting issue on the Dashboard page (arsengit)
+
 ## 3.14.0 Oct 6, 2022
 
 ### Enhancements:
@@ -17,6 +25,7 @@
 - Add MXNet integration (tmynn)
 - Create a Dashboard page to provide a better onboarding experience (arsengit, roubkar, KaroMourad, mihran113)
 - Add support for tracking jax device arrays (mihran113)
+- Add Optuna integration (tmynn)
 
 ### Fixes:
 

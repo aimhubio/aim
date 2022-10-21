@@ -74,6 +74,7 @@ class RepoAutoClean(AutoClean):
         """Close the `Repo` and unmount the remote repository."""
         if self._client:
             self._client._heartbeat_sender.stop()
+            self._client.disconnect()
         if self._mount_root:
             logger.debug(f'Unmounting remote repository at {self._mount_root}')
             unmount_remote_repo(self.root_path, self._mount_root)
@@ -111,7 +112,6 @@ class Repo:
             remote_path = path.replace('aim://', '')
             self._client = Client(remote_path)
             self.root_path = remote_path
-            self._check_remote_version_compatibility()
         else:
             self.root_path = path
         self.path = os.path.join(self.root_path, get_aim_repo_name())
@@ -251,43 +251,6 @@ class Repo:
             else:
                 return RepoStatus.PATCH_REQUIRED
         return RepoStatus.UPDATED
-
-    def _check_remote_version_compatibility(self):
-        assert self.is_remote_repo
-        from aim.__version__ import __version__ as client_version
-        import grpc
-
-        error_message_template = 'The Aim Remote tracking server version ({}) '\
-                                 'is not compatible with the Aim client version ({}).'\
-                                 'Please upgrade either the Aim Client or the Aim Remote.'
-
-        warning_message_template = 'The Aim Remote tracking server version ({}) ' \
-                                   'and the Aim client version ({}) do not match.' \
-                                   'Consider upgrading either the client or remote tracking server.'
-
-        try:
-            remote_version = self._client.get_version()
-        except grpc.RpcError as e:
-            if e.code() == grpc.StatusCode.UNIMPLEMENTED:
-                remote_version = '<3.12.0'
-            else:
-                raise
-
-        # server doesn't yet have the `get_version()` method implemented
-        if remote_version == '<3.12.0':
-            RuntimeError(error_message_template.format(remote_version, client_version))
-
-        # compare versions
-        if client_version == remote_version:
-            return
-
-        # if the server has a newer version always force to upgrade the client
-        if client_version < remote_version:
-            raise RuntimeError(error_message_template.format(remote_version, client_version))
-
-        # for other mismatching versions throw a warning for now
-        logger.warning(warning_message_template.format(remote_version, client_version))
-        # further incompatibility list will be added manually
 
     @classmethod
     def get_version(cls, path: str):
