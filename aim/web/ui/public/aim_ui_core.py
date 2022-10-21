@@ -81,7 +81,7 @@ stroke_styles = [
 ]
 
 
-def group(type, data, options):
+def group(name, data, options):
     group_map = {}
     grouped_data = []
     for i, item in enumerate(data):
@@ -101,11 +101,27 @@ def group(type, data, options):
                 "val": group_values,
                 "order": None,
             }
-        item[type] = group_key
+        item[name] = group_key
         grouped_data.append(item)
-    sorted_groups = {
-        k: v for k, v in sorted(group_map.items(), key=lambda x: repr(x[1]["val"]))
-    }
+    for i, opt in enumerate(options):
+        sorted_groups = {
+            k: v
+            for k, v in sorted(
+                group_map.items(),
+                key=lambda x: (3, str(x[1]["val"][i]))
+                if type(x[1]["val"][i]) in [tuple, list, dict]
+                else (
+                    (0, int(x[1]["val"][i]))
+                    if str(x[1]["val"][i]).isdigit()
+                    else (
+                        (2, str(x[1]["val"][i]))
+                        if x[1]["val"][i] is None
+                        else (1, str(x[1]["val"][i]))
+                    )
+                ),
+            )
+        }
+
     i = 0
     for group_key in sorted_groups:
         sorted_groups[group_key]["order"] = i

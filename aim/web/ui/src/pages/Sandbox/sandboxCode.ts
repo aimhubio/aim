@@ -1,19 +1,27 @@
 export const initialCode = `from aim.asl.objects import Metric, Images, Audios, Figures, Texts 
 from aim.ui.layout import Grid, Cell
 from aim.ui.viz import LineChart, ImagesList, AudiosList, FiguresList, TextsList, JSON
-import plotly.graph_objects as go
 
 metrics = Metric.query()
+images = Images.query()
+audios = Audios.query()
+texts = Texts.query()
 
-fig = go.Figure()
-for metric in metrics:
-    fig.add_trace(go.Scatter(x=metric["steps"], y=metric["values"],
-                    mode='lines',
-                    name=metric["run"]["name"]))
+line_chart = LineChart(metrics, x='steps', y='values',
+                color=["run.name"],
+                stroke_style=["metric.context"])
 
-figure = FiguresList(fig)
+
+images_list = ImagesList(images)
+
+audios_list = AudiosList(audios)
+
+text_list = TextsList(texts, color=["record.step"])
+
+runs_table = Cell([line_chart, images_list, audios_list, text_list], 
+                facet={"row": ["run.name"], "column": ["type"]})
 
 Grid([
-    [Cell(figure)]
+    [runs_table]
 ])
 `;

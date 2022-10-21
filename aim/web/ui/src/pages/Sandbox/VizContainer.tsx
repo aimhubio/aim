@@ -259,7 +259,6 @@ function VizContainer(props: any) {
                 position: 'absolute',
                 display: 'flex',
                 flexDirection: 'column',
-                alignItems: 'center',
                 backgroundColor: '#fff',
                 boxShadow:
                   '-1px -1px 0 0px #b5b9c5, inset -1px -1px 0 0px #b5b9c5',
