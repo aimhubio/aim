@@ -1,4 +1,4 @@
-export const initialCode = `from aim.asl.objects import Metric, Images, Audios, Figures, Texts 
+export const initialCode = `from aim.sequences import Metric, Images, Audios, Figures, Texts 
 from aim.ui.layout import Grid, Cell
 from aim.ui.viz import LineChart, ImagesList, AudiosList, FiguresList, TextsList, JSON
 

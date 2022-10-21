@@ -199,8 +199,9 @@ def LineChart(
     y,
     color=[],
     stroke_style=[],
-    callbacks={},
     options={},
+    on_chart_hover=None,
+    on_point_click=None,
 ):
     color_map, color_data = group("color", data, color)
     stroke_map, stroke_data = group("stroke_style", data, stroke_style)
@@ -218,10 +219,22 @@ def LineChart(
 
         lines.append(line)
 
+    def on_active_point_change(val, is_active):
+        if is_active:
+            if callable(on_point_click):
+                data = val.to_py()
+                item = lines[data["key"]]
+                on_point_click(item)
+        else:
+            if callable(on_chart_hover):
+                data = val.to_py()
+                item = lines[data["key"]]
+                on_chart_hover(item)
+
     return {
         "type": "LineChart",
         "data": lines,
-        "callbacks": callbacks,
+        "callbacks": {"on_active_point_change": on_active_point_change},
         "options": options,
     }
 
