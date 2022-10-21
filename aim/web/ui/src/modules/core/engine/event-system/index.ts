@@ -1,3 +1,5 @@
+import _ from 'lodash-es';
+
 import createState, { getInitialState, IEventSystemState } from './state';
 
 type Callback = (payload: any) => void;
@@ -22,6 +24,7 @@ export interface IEventSystemEngine {
       callback: Callback,
     ) => (eventName: string, callback: Callback) => void;
     getListenerCount: (eventName: string) => number;
+    removeListeners: (eventName: string) => void;
     getEventPayload: (eventName: string) => any;
   };
 }
@@ -71,9 +74,7 @@ function createEventSystemEngine<TStore>(store: any): IEventSystemEngine {
    */
   function unsubscribe(eventName: string, callback: Callback) {
     if (events[eventName]) {
-      events[eventName] = events[eventName].filter(
-        (listenerCallback: any) => listenerCallback !== callback,
-      );
+      events[eventName].splice(events[eventName].indexOf(callback) >>> 0, 1);
     }
   }
 
@@ -101,6 +102,14 @@ function createEventSystemEngine<TStore>(store: any): IEventSystemEngine {
     return events[eventName] ? events[eventName].length : 0;
   }
 
+  /**
+   * Function to get the listener count of the event
+   * @param {string} eventName
+   */
+  function removeListeners(eventName: string) {
+    events = _.omit(events, eventName);
+  }
+
   return {
     state: {
       payloads: state.initialState,
@@ -111,6 +120,7 @@ function createEventSystemEngine<TStore>(store: any): IEventSystemEngine {
       unsubscribe,
       once,
       getListenerCount,
+      removeListeners,
       getEventPayload: state.getEventPayload,
     },
   };
