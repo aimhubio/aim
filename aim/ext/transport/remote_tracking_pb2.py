@@ -3,7 +3,6 @@
 # source: remote_tracking.proto
 """Generated protocol buffer code."""
 from google.protobuf import descriptor as _descriptor
-from google.protobuf import descriptor_pool as _descriptor_pool
 from google.protobuf import message as _message
 from google.protobuf import reflection as _reflection
 from google.protobuf import symbol_database as _symbol_database
@@ -14,31 +13,764 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x15remote_tracking.proto\"J\n\x11\x45xceptionResponse\x12\x13\n\x0bmodule_name\x18\x01 \x01(\t\x12\x12\n\nclass_name\x18\x02 \x01(\t\x12\x0c\n\x04\x61rgs\x18\x03 \x01(\t\"<\n\x12HealthCheckRequest\x12\x12\n\nclient_uri\x18\x01 \x01(\t\x12\x12\n\ncheck_type\x18\x02 \x01(\t\"\x86\x01\n\x13HealthCheckResponse\x12+\n\x06status\x18\x01 \x01(\x0e\x32\x1b.HealthCheckResponse.Status\x12%\n\texception\x18\x02 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"\x10\n\x0eVersionRequest\"\x8f\x01\n\x0fVersionResponse\x12\x0f\n\x07version\x18\x01 \x01(\t\x12\'\n\x06status\x18\x02 \x01(\x0e\x32\x17.VersionResponse.Status\x12%\n\texception\x18\x03 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"J\n\x0fResourceRequest\x12\x15\n\rresource_type\x18\x01 \x01(\t\x12\x12\n\nclient_uri\x18\x02 \x01(\t\x12\x0c\n\x04\x61rgs\x18\x03 \x01(\x0c\"\x91\x01\n\x10ResourceResponse\x12\x0f\n\x07handler\x18\x01 \x01(\t\x12(\n\x06status\x18\x02 \x01(\x0e\x32\x18.ResourceResponse.Status\x12%\n\texception\x18\x03 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"=\n\x16ReleaseResourceRequest\x12\x0f\n\x07handler\x18\x01 \x01(\t\x12\x12\n\nclient_uri\x18\x02 \x01(\t\"\x8e\x01\n\x17ReleaseResourceResponse\x12/\n\x06status\x18\x02 \x01(\x0e\x32\x1f.ReleaseResourceResponse.Status\x12%\n\texception\x18\x03 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"Z\n\rRequestHeader\x12\x0f\n\x07version\x18\x01 \x01(\t\x12\x0f\n\x07handler\x18\x02 \x01(\t\x12\x12\n\nclient_uri\x18\x03 \x01(\t\x12\x13\n\x0bmethod_name\x18\x04 \x01(\t\"X\n\x12InstructionRequest\x12 \n\x06header\x18\x01 \x01(\x0b\x32\x0e.RequestHeaderH\x00\x12\x11\n\x07message\x18\x02 \x01(\x0cH\x00\x42\r\n\x0binstruction\"\x8d\x01\n\x0eResponseHeader\x12\x0f\n\x07version\x18\x01 \x01(\t\x12&\n\x06status\x18\x02 \x01(\x0e\x32\x16.ResponseHeader.Status\x12%\n\texception\x18\x03 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"Z\n\x13InstructionResponse\x12!\n\x06header\x18\x01 \x01(\x0b\x32\x0f.ResponseHeaderH\x00\x12\x11\n\x07message\x18\x02 \x01(\x0cH\x00\x42\r\n\x0binstruction\"P\n\x18WriteInstructionsRequest\x12\x0f\n\x07version\x18\x01 \x01(\t\x12\x12\n\nclient_uri\x18\x02 \x01(\t\x12\x0f\n\x07message\x18\x03 \x01(\x0c\"\xa3\x01\n\x19WriteInstructionsResponse\x12\x0f\n\x07version\x18\x01 \x01(\t\x12\x31\n\x06status\x18\x02 \x01(\x0e\x32!.WriteInstructionsResponse.Status\x12%\n\texception\x18\x03 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\x32\xa1\x03\n\x15RemoteTrackingService\x12;\n\x0chealth_check\x12\x13.HealthCheckRequest\x1a\x14.HealthCheckResponse\"\x00\x12\x32\n\x0bget_version\x12\x0f.VersionRequest\x1a\x10.VersionResponse\"\x00\x12\x35\n\x0cget_resource\x12\x10.ResourceRequest\x1a\x11.ResourceResponse\"\x00\x12G\n\x10release_resource\x12\x17.ReleaseResourceRequest\x1a\x18.ReleaseResourceResponse\"\x00\x12\x42\n\x0frun_instruction\x12\x13.InstructionRequest\x1a\x14.InstructionResponse\"\x00(\x01\x30\x01\x12S\n\x16run_write_instructions\x12\x19.WriteInstructionsRequest\x1a\x1a.WriteInstructionsResponse\"\x00(\x01\x62\x06proto3')
+DESCRIPTOR = _descriptor.FileDescriptor(
+  name='remote_tracking.proto',
+  package='',
+  syntax='proto3',
+  serialized_options=None,
+  create_key=_descriptor._internal_create_key,
+  serialized_pb=b'\n\x15remote_tracking.proto\"J\n\x11\x45xceptionResponse\x12\x13\n\x0bmodule_name\x18\x01 \x01(\t\x12\x12\n\nclass_name\x18\x02 \x01(\t\x12\x0c\n\x04\x61rgs\x18\x03 \x01(\t\"2\n\x1c\x43lientResourceCleanupRequest\x12\x12\n\nclient_uri\x18\x01 \x01(\t\"\x9a\x01\n\x1d\x43lientResourceCleanupResponse\x12\x35\n\x06status\x18\x01 \x01(\x0e\x32%.ClientResourceCleanupResponse.Status\x12%\n\texception\x18\x02 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"[\n\x0fResourceRequest\x12\x15\n\rresource_type\x18\x01 \x01(\t\x12\x0f\n\x07handler\x18\x02 \x01(\t\x12\x12\n\nclient_uri\x18\x03 \x01(\t\x12\x0c\n\x04\x61rgs\x18\x04 \x01(\x0c\"\x91\x01\n\x10ResourceResponse\x12\x0f\n\x07handler\x18\x01 \x01(\t\x12(\n\x06status\x18\x02 \x01(\x0e\x32\x18.ResourceResponse.Status\x12%\n\texception\x18\x03 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"=\n\x16ReleaseResourceRequest\x12\x0f\n\x07handler\x18\x01 \x01(\t\x12\x12\n\nclient_uri\x18\x02 \x01(\t\"\x8e\x01\n\x17ReleaseResourceResponse\x12/\n\x06status\x18\x02 \x01(\x0e\x32\x1f.ReleaseResourceResponse.Status\x12%\n\texception\x18\x03 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"Z\n\rRequestHeader\x12\x0f\n\x07version\x18\x01 \x01(\t\x12\x0f\n\x07handler\x18\x02 \x01(\t\x12\x12\n\nclient_uri\x18\x03 \x01(\t\x12\x13\n\x0bmethod_name\x18\x04 \x01(\t\"X\n\x12InstructionRequest\x12 \n\x06header\x18\x01 \x01(\x0b\x32\x0e.RequestHeaderH\x00\x12\x11\n\x07message\x18\x02 \x01(\x0cH\x00\x42\r\n\x0binstruction\"\x8d\x01\n\x0eResponseHeader\x12\x0f\n\x07version\x18\x01 \x01(\t\x12&\n\x06status\x18\x02 \x01(\x0e\x32\x16.ResponseHeader.Status\x12%\n\texception\x18\x03 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"Z\n\x13InstructionResponse\x12!\n\x06header\x18\x01 \x01(\x0b\x32\x0f.ResponseHeaderH\x00\x12\x11\n\x07message\x18\x02 \x01(\x0cH\x00\x42\r\n\x0binstruction\"P\n\x18WriteInstructionsRequest\x12\x0f\n\x07version\x18\x01 \x01(\t\x12\x12\n\nclient_uri\x18\x02 \x01(\t\x12\x0f\n\x07message\x18\x03 \x01(\x0c\"\xa3\x01\n\x19WriteInstructionsResponse\x12\x0f\n\x07version\x18\x01 \x01(\t\x12\x31\n\x06status\x18\x02 \x01(\x0e\x32!.WriteInstructionsResponse.Status\x12%\n\texception\x18\x03 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\x32\x8d\x03\n\x15RemoteTrackingService\x12[\n\x18\x63leanup_client_resources\x12\x1d.ClientResourceCleanupRequest\x1a\x1e.ClientResourceCleanupResponse\"\x00\x12\x35\n\x0cget_resource\x12\x10.ResourceRequest\x1a\x11.ResourceResponse\"\x00\x12G\n\x10release_resource\x12\x17.ReleaseResourceRequest\x1a\x18.ReleaseResourceResponse\"\x00\x12\x42\n\x0frun_instruction\x12\x13.InstructionRequest\x1a\x14.InstructionResponse\"\x00(\x01\x30\x01\x12S\n\x16run_write_instructions\x12\x19.WriteInstructionsRequest\x1a\x1a.WriteInstructionsResponse\"\x00(\x01\x62\x06proto3'
+)
 
 
 
-_EXCEPTIONRESPONSE = DESCRIPTOR.message_types_by_name['ExceptionResponse']
-_HEALTHCHECKREQUEST = DESCRIPTOR.message_types_by_name['HealthCheckRequest']
-_HEALTHCHECKRESPONSE = DESCRIPTOR.message_types_by_name['HealthCheckResponse']
-_VERSIONREQUEST = DESCRIPTOR.message_types_by_name['VersionRequest']
-_VERSIONRESPONSE = DESCRIPTOR.message_types_by_name['VersionResponse']
-_RESOURCEREQUEST = DESCRIPTOR.message_types_by_name['ResourceRequest']
-_RESOURCERESPONSE = DESCRIPTOR.message_types_by_name['ResourceResponse']
-_RELEASERESOURCEREQUEST = DESCRIPTOR.message_types_by_name['ReleaseResourceRequest']
-_RELEASERESOURCERESPONSE = DESCRIPTOR.message_types_by_name['ReleaseResourceResponse']
-_REQUESTHEADER = DESCRIPTOR.message_types_by_name['RequestHeader']
-_INSTRUCTIONREQUEST = DESCRIPTOR.message_types_by_name['InstructionRequest']
-_RESPONSEHEADER = DESCRIPTOR.message_types_by_name['ResponseHeader']
-_INSTRUCTIONRESPONSE = DESCRIPTOR.message_types_by_name['InstructionResponse']
-_WRITEINSTRUCTIONSREQUEST = DESCRIPTOR.message_types_by_name['WriteInstructionsRequest']
-_WRITEINSTRUCTIONSRESPONSE = DESCRIPTOR.message_types_by_name['WriteInstructionsResponse']
-_HEALTHCHECKRESPONSE_STATUS = _HEALTHCHECKRESPONSE.enum_types_by_name['Status']
-_VERSIONRESPONSE_STATUS = _VERSIONRESPONSE.enum_types_by_name['Status']
-_RESOURCERESPONSE_STATUS = _RESOURCERESPONSE.enum_types_by_name['Status']
-_RELEASERESOURCERESPONSE_STATUS = _RELEASERESOURCERESPONSE.enum_types_by_name['Status']
-_RESPONSEHEADER_STATUS = _RESPONSEHEADER.enum_types_by_name['Status']
-_WRITEINSTRUCTIONSRESPONSE_STATUS = _WRITEINSTRUCTIONSRESPONSE.enum_types_by_name['Status']
+_CLIENTRESOURCECLEANUPRESPONSE_STATUS = _descriptor.EnumDescriptor(
+  name='Status',
+  full_name='ClientResourceCleanupResponse.Status',
+  filename=None,
+  file=DESCRIPTOR,
+  create_key=_descriptor._internal_create_key,
+  values=[
+    _descriptor.EnumValueDescriptor(
+      name='OK', index=0, number=0,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='ERROR', index=1, number=1,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+  ],
+  containing_type=None,
+  serialized_options=None,
+  serialized_start=281,
+  serialized_end=308,
+)
+_sym_db.RegisterEnumDescriptor(_CLIENTRESOURCECLEANUPRESPONSE_STATUS)
+
+_RESOURCERESPONSE_STATUS = _descriptor.EnumDescriptor(
+  name='Status',
+  full_name='ResourceResponse.Status',
+  filename=None,
+  file=DESCRIPTOR,
+  create_key=_descriptor._internal_create_key,
+  values=[
+    _descriptor.EnumValueDescriptor(
+      name='OK', index=0, number=0,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='ERROR', index=1, number=1,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+  ],
+  containing_type=None,
+  serialized_options=None,
+  serialized_start=281,
+  serialized_end=308,
+)
+_sym_db.RegisterEnumDescriptor(_RESOURCERESPONSE_STATUS)
+
+_RELEASERESOURCERESPONSE_STATUS = _descriptor.EnumDescriptor(
+  name='Status',
+  full_name='ReleaseResourceResponse.Status',
+  filename=None,
+  file=DESCRIPTOR,
+  create_key=_descriptor._internal_create_key,
+  values=[
+    _descriptor.EnumValueDescriptor(
+      name='OK', index=0, number=0,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='ERROR', index=1, number=1,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+  ],
+  containing_type=None,
+  serialized_options=None,
+  serialized_start=281,
+  serialized_end=308,
+)
+_sym_db.RegisterEnumDescriptor(_RELEASERESOURCERESPONSE_STATUS)
+
+_RESPONSEHEADER_STATUS = _descriptor.EnumDescriptor(
+  name='Status',
+  full_name='ResponseHeader.Status',
+  filename=None,
+  file=DESCRIPTOR,
+  create_key=_descriptor._internal_create_key,
+  values=[
+    _descriptor.EnumValueDescriptor(
+      name='OK', index=0, number=0,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='ERROR', index=1, number=1,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+  ],
+  containing_type=None,
+  serialized_options=None,
+  serialized_start=281,
+  serialized_end=308,
+)
+_sym_db.RegisterEnumDescriptor(_RESPONSEHEADER_STATUS)
+
+_WRITEINSTRUCTIONSRESPONSE_STATUS = _descriptor.EnumDescriptor(
+  name='Status',
+  full_name='WriteInstructionsResponse.Status',
+  filename=None,
+  file=DESCRIPTOR,
+  create_key=_descriptor._internal_create_key,
+  values=[
+    _descriptor.EnumValueDescriptor(
+      name='OK', index=0, number=0,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='ERROR', index=1, number=1,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+  ],
+  containing_type=None,
+  serialized_options=None,
+  serialized_start=281,
+  serialized_end=308,
+)
+_sym_db.RegisterEnumDescriptor(_WRITEINSTRUCTIONSRESPONSE_STATUS)
+
+
+_EXCEPTIONRESPONSE = _descriptor.Descriptor(
+  name='ExceptionResponse',
+  full_name='ExceptionResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='module_name', full_name='ExceptionResponse.module_name', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='class_name', full_name='ExceptionResponse.class_name', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='args', full_name='ExceptionResponse.args', index=2,
+      number=3, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=25,
+  serialized_end=99,
+)
+
+
+_CLIENTRESOURCECLEANUPREQUEST = _descriptor.Descriptor(
+  name='ClientResourceCleanupRequest',
+  full_name='ClientResourceCleanupRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='client_uri', full_name='ClientResourceCleanupRequest.client_uri', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=101,
+  serialized_end=151,
+)
+
+
+_CLIENTRESOURCECLEANUPRESPONSE = _descriptor.Descriptor(
+  name='ClientResourceCleanupResponse',
+  full_name='ClientResourceCleanupResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='status', full_name='ClientResourceCleanupResponse.status', index=0,
+      number=1, type=14, cpp_type=8, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='exception', full_name='ClientResourceCleanupResponse.exception', index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+    _CLIENTRESOURCECLEANUPRESPONSE_STATUS,
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=154,
+  serialized_end=308,
+)
+
+
+_RESOURCEREQUEST = _descriptor.Descriptor(
+  name='ResourceRequest',
+  full_name='ResourceRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='resource_type', full_name='ResourceRequest.resource_type', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='handler', full_name='ResourceRequest.handler', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='client_uri', full_name='ResourceRequest.client_uri', index=2,
+      number=3, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='args', full_name='ResourceRequest.args', index=3,
+      number=4, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=310,
+  serialized_end=401,
+)
+
+
+_RESOURCERESPONSE = _descriptor.Descriptor(
+  name='ResourceResponse',
+  full_name='ResourceResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='handler', full_name='ResourceResponse.handler', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='status', full_name='ResourceResponse.status', index=1,
+      number=2, type=14, cpp_type=8, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='exception', full_name='ResourceResponse.exception', index=2,
+      number=3, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+    _RESOURCERESPONSE_STATUS,
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=404,
+  serialized_end=549,
+)
+
+
+_RELEASERESOURCEREQUEST = _descriptor.Descriptor(
+  name='ReleaseResourceRequest',
+  full_name='ReleaseResourceRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='handler', full_name='ReleaseResourceRequest.handler', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='client_uri', full_name='ReleaseResourceRequest.client_uri', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=551,
+  serialized_end=612,
+)
+
+
+_RELEASERESOURCERESPONSE = _descriptor.Descriptor(
+  name='ReleaseResourceResponse',
+  full_name='ReleaseResourceResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='status', full_name='ReleaseResourceResponse.status', index=0,
+      number=2, type=14, cpp_type=8, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='exception', full_name='ReleaseResourceResponse.exception', index=1,
+      number=3, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+    _RELEASERESOURCERESPONSE_STATUS,
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=615,
+  serialized_end=757,
+)
+
+
+_REQUESTHEADER = _descriptor.Descriptor(
+  name='RequestHeader',
+  full_name='RequestHeader',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='version', full_name='RequestHeader.version', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='handler', full_name='RequestHeader.handler', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='client_uri', full_name='RequestHeader.client_uri', index=2,
+      number=3, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='method_name', full_name='RequestHeader.method_name', index=3,
+      number=4, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=759,
+  serialized_end=849,
+)
+
+
+_INSTRUCTIONREQUEST = _descriptor.Descriptor(
+  name='InstructionRequest',
+  full_name='InstructionRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='header', full_name='InstructionRequest.header', index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='message', full_name='InstructionRequest.message', index=1,
+      number=2, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+    _descriptor.OneofDescriptor(
+      name='instruction', full_name='InstructionRequest.instruction',
+      index=0, containing_type=None,
+      create_key=_descriptor._internal_create_key,
+    fields=[]),
+  ],
+  serialized_start=851,
+  serialized_end=939,
+)
+
+
+_RESPONSEHEADER = _descriptor.Descriptor(
+  name='ResponseHeader',
+  full_name='ResponseHeader',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='version', full_name='ResponseHeader.version', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='status', full_name='ResponseHeader.status', index=1,
+      number=2, type=14, cpp_type=8, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='exception', full_name='ResponseHeader.exception', index=2,
+      number=3, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+    _RESPONSEHEADER_STATUS,
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=942,
+  serialized_end=1083,
+)
+
+
+_INSTRUCTIONRESPONSE = _descriptor.Descriptor(
+  name='InstructionResponse',
+  full_name='InstructionResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='header', full_name='InstructionResponse.header', index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='message', full_name='InstructionResponse.message', index=1,
+      number=2, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+    _descriptor.OneofDescriptor(
+      name='instruction', full_name='InstructionResponse.instruction',
+      index=0, containing_type=None,
+      create_key=_descriptor._internal_create_key,
+    fields=[]),
+  ],
+  serialized_start=1085,
+  serialized_end=1175,
+)
+
+
+_WRITEINSTRUCTIONSREQUEST = _descriptor.Descriptor(
+  name='WriteInstructionsRequest',
+  full_name='WriteInstructionsRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='version', full_name='WriteInstructionsRequest.version', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='client_uri', full_name='WriteInstructionsRequest.client_uri', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='message', full_name='WriteInstructionsRequest.message', index=2,
+      number=3, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1177,
+  serialized_end=1257,
+)
+
+
+_WRITEINSTRUCTIONSRESPONSE = _descriptor.Descriptor(
+  name='WriteInstructionsResponse',
+  full_name='WriteInstructionsResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='version', full_name='WriteInstructionsResponse.version', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='status', full_name='WriteInstructionsResponse.status', index=1,
+      number=2, type=14, cpp_type=8, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='exception', full_name='WriteInstructionsResponse.exception', index=2,
+      number=3, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+    _WRITEINSTRUCTIONSRESPONSE_STATUS,
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1260,
+  serialized_end=1423,
+)
+
+_CLIENTRESOURCECLEANUPRESPONSE.fields_by_name['status'].enum_type = _CLIENTRESOURCECLEANUPRESPONSE_STATUS
+_CLIENTRESOURCECLEANUPRESPONSE.fields_by_name['exception'].message_type = _EXCEPTIONRESPONSE
+_CLIENTRESOURCECLEANUPRESPONSE_STATUS.containing_type = _CLIENTRESOURCECLEANUPRESPONSE
+_RESOURCERESPONSE.fields_by_name['status'].enum_type = _RESOURCERESPONSE_STATUS
+_RESOURCERESPONSE.fields_by_name['exception'].message_type = _EXCEPTIONRESPONSE
+_RESOURCERESPONSE_STATUS.containing_type = _RESOURCERESPONSE
+_RELEASERESOURCERESPONSE.fields_by_name['status'].enum_type = _RELEASERESOURCERESPONSE_STATUS
+_RELEASERESOURCERESPONSE.fields_by_name['exception'].message_type = _EXCEPTIONRESPONSE
+_RELEASERESOURCERESPONSE_STATUS.containing_type = _RELEASERESOURCERESPONSE
+_INSTRUCTIONREQUEST.fields_by_name['header'].message_type = _REQUESTHEADER
+_INSTRUCTIONREQUEST.oneofs_by_name['instruction'].fields.append(
+  _INSTRUCTIONREQUEST.fields_by_name['header'])
+_INSTRUCTIONREQUEST.fields_by_name['header'].containing_oneof = _INSTRUCTIONREQUEST.oneofs_by_name['instruction']
+_INSTRUCTIONREQUEST.oneofs_by_name['instruction'].fields.append(
+  _INSTRUCTIONREQUEST.fields_by_name['message'])
+_INSTRUCTIONREQUEST.fields_by_name['message'].containing_oneof = _INSTRUCTIONREQUEST.oneofs_by_name['instruction']
+_RESPONSEHEADER.fields_by_name['status'].enum_type = _RESPONSEHEADER_STATUS
+_RESPONSEHEADER.fields_by_name['exception'].message_type = _EXCEPTIONRESPONSE
+_RESPONSEHEADER_STATUS.containing_type = _RESPONSEHEADER
+_INSTRUCTIONRESPONSE.fields_by_name['header'].message_type = _RESPONSEHEADER
+_INSTRUCTIONRESPONSE.oneofs_by_name['instruction'].fields.append(
+  _INSTRUCTIONRESPONSE.fields_by_name['header'])
+_INSTRUCTIONRESPONSE.fields_by_name['header'].containing_oneof = _INSTRUCTIONRESPONSE.oneofs_by_name['instruction']
+_INSTRUCTIONRESPONSE.oneofs_by_name['instruction'].fields.append(
+  _INSTRUCTIONRESPONSE.fields_by_name['message'])
+_INSTRUCTIONRESPONSE.fields_by_name['message'].containing_oneof = _INSTRUCTIONRESPONSE.oneofs_by_name['instruction']
+_WRITEINSTRUCTIONSRESPONSE.fields_by_name['status'].enum_type = _WRITEINSTRUCTIONSRESPONSE_STATUS
+_WRITEINSTRUCTIONSRESPONSE.fields_by_name['exception'].message_type = _EXCEPTIONRESPONSE
+_WRITEINSTRUCTIONSRESPONSE_STATUS.containing_type = _WRITEINSTRUCTIONSRESPONSE
+DESCRIPTOR.message_types_by_name['ExceptionResponse'] = _EXCEPTIONRESPONSE
+DESCRIPTOR.message_types_by_name['ClientResourceCleanupRequest'] = _CLIENTRESOURCECLEANUPREQUEST
+DESCRIPTOR.message_types_by_name['ClientResourceCleanupResponse'] = _CLIENTRESOURCECLEANUPRESPONSE
+DESCRIPTOR.message_types_by_name['ResourceRequest'] = _RESOURCEREQUEST
+DESCRIPTOR.message_types_by_name['ResourceResponse'] = _RESOURCERESPONSE
+DESCRIPTOR.message_types_by_name['ReleaseResourceRequest'] = _RELEASERESOURCEREQUEST
+DESCRIPTOR.message_types_by_name['ReleaseResourceResponse'] = _RELEASERESOURCERESPONSE
+DESCRIPTOR.message_types_by_name['RequestHeader'] = _REQUESTHEADER
+DESCRIPTOR.message_types_by_name['InstructionRequest'] = _INSTRUCTIONREQUEST
+DESCRIPTOR.message_types_by_name['ResponseHeader'] = _RESPONSEHEADER
+DESCRIPTOR.message_types_by_name['InstructionResponse'] = _INSTRUCTIONRESPONSE
+DESCRIPTOR.message_types_by_name['WriteInstructionsRequest'] = _WRITEINSTRUCTIONSREQUEST
+DESCRIPTOR.message_types_by_name['WriteInstructionsResponse'] = _WRITEINSTRUCTIONSRESPONSE
+_sym_db.RegisterFileDescriptor(DESCRIPTOR)
+
 ExceptionResponse = _reflection.GeneratedProtocolMessageType('ExceptionResponse', (_message.Message,), {
   'DESCRIPTOR' : _EXCEPTIONRESPONSE,
   '__module__' : 'remote_tracking_pb2'
@@ -46,33 +778,19 @@ ExceptionResponse = _reflection.GeneratedProtocolMessageType('ExceptionResponse'
   })
 _sym_db.RegisterMessage(ExceptionResponse)
 
-HealthCheckRequest = _reflection.GeneratedProtocolMessageType('HealthCheckRequest', (_message.Message,), {
-  'DESCRIPTOR' : _HEALTHCHECKREQUEST,
+ClientResourceCleanupRequest = _reflection.GeneratedProtocolMessageType('ClientResourceCleanupRequest', (_message.Message,), {
+  'DESCRIPTOR' : _CLIENTRESOURCECLEANUPREQUEST,
   '__module__' : 'remote_tracking_pb2'
-  # @@protoc_insertion_point(class_scope:HealthCheckRequest)
+  # @@protoc_insertion_point(class_scope:ClientResourceCleanupRequest)
   })
-_sym_db.RegisterMessage(HealthCheckRequest)
+_sym_db.RegisterMessage(ClientResourceCleanupRequest)
 
-HealthCheckResponse = _reflection.GeneratedProtocolMessageType('HealthCheckResponse', (_message.Message,), {
-  'DESCRIPTOR' : _HEALTHCHECKRESPONSE,
+ClientResourceCleanupResponse = _reflection.GeneratedProtocolMessageType('ClientResourceCleanupResponse', (_message.Message,), {
+  'DESCRIPTOR' : _CLIENTRESOURCECLEANUPRESPONSE,
   '__module__' : 'remote_tracking_pb2'
-  # @@protoc_insertion_point(class_scope:HealthCheckResponse)
+  # @@protoc_insertion_point(class_scope:ClientResourceCleanupResponse)
   })
-_sym_db.RegisterMessage(HealthCheckResponse)
-
-VersionRequest = _reflection.GeneratedProtocolMessageType('VersionRequest', (_message.Message,), {
-  'DESCRIPTOR' : _VERSIONREQUEST,
-  '__module__' : 'remote_tracking_pb2'
-  # @@protoc_insertion_point(class_scope:VersionRequest)
-  })
-_sym_db.RegisterMessage(VersionRequest)
-
-VersionResponse = _reflection.GeneratedProtocolMessageType('VersionResponse', (_message.Message,), {
-  'DESCRIPTOR' : _VERSIONRESPONSE,
-  '__module__' : 'remote_tracking_pb2'
-  # @@protoc_insertion_point(class_scope:VersionResponse)
-  })
-_sym_db.RegisterMessage(VersionResponse)
+_sym_db.RegisterMessage(ClientResourceCleanupResponse)
 
 ResourceRequest = _reflection.GeneratedProtocolMessageType('ResourceRequest', (_message.Message,), {
   'DESCRIPTOR' : _RESOURCEREQUEST,
@@ -144,52 +862,71 @@ WriteInstructionsResponse = _reflection.GeneratedProtocolMessageType('WriteInstr
   })
 _sym_db.RegisterMessage(WriteInstructionsResponse)
 
-_REMOTETRACKINGSERVICE = DESCRIPTOR.services_by_name['RemoteTrackingService']
-if _descriptor._USE_C_DESCRIPTORS == False:
 
-  DESCRIPTOR._options = None
-  _EXCEPTIONRESPONSE._serialized_start=25
-  _EXCEPTIONRESPONSE._serialized_end=99
-  _HEALTHCHECKREQUEST._serialized_start=101
-  _HEALTHCHECKREQUEST._serialized_end=161
-  _HEALTHCHECKRESPONSE._serialized_start=164
-  _HEALTHCHECKRESPONSE._serialized_end=298
-  _HEALTHCHECKRESPONSE_STATUS._serialized_start=271
-  _HEALTHCHECKRESPONSE_STATUS._serialized_end=298
-  _VERSIONREQUEST._serialized_start=300
-  _VERSIONREQUEST._serialized_end=316
-  _VERSIONRESPONSE._serialized_start=319
-  _VERSIONRESPONSE._serialized_end=462
-  _VERSIONRESPONSE_STATUS._serialized_start=271
-  _VERSIONRESPONSE_STATUS._serialized_end=298
-  _RESOURCEREQUEST._serialized_start=464
-  _RESOURCEREQUEST._serialized_end=538
-  _RESOURCERESPONSE._serialized_start=541
-  _RESOURCERESPONSE._serialized_end=686
-  _RESOURCERESPONSE_STATUS._serialized_start=271
-  _RESOURCERESPONSE_STATUS._serialized_end=298
-  _RELEASERESOURCEREQUEST._serialized_start=688
-  _RELEASERESOURCEREQUEST._serialized_end=749
-  _RELEASERESOURCERESPONSE._serialized_start=752
-  _RELEASERESOURCERESPONSE._serialized_end=894
-  _RELEASERESOURCERESPONSE_STATUS._serialized_start=271
-  _RELEASERESOURCERESPONSE_STATUS._serialized_end=298
-  _REQUESTHEADER._serialized_start=896
-  _REQUESTHEADER._serialized_end=986
-  _INSTRUCTIONREQUEST._serialized_start=988
-  _INSTRUCTIONREQUEST._serialized_end=1076
-  _RESPONSEHEADER._serialized_start=1079
-  _RESPONSEHEADER._serialized_end=1220
-  _RESPONSEHEADER_STATUS._serialized_start=271
-  _RESPONSEHEADER_STATUS._serialized_end=298
-  _INSTRUCTIONRESPONSE._serialized_start=1222
-  _INSTRUCTIONRESPONSE._serialized_end=1312
-  _WRITEINSTRUCTIONSREQUEST._serialized_start=1314
-  _WRITEINSTRUCTIONSREQUEST._serialized_end=1394
-  _WRITEINSTRUCTIONSRESPONSE._serialized_start=1397
-  _WRITEINSTRUCTIONSRESPONSE._serialized_end=1560
-  _WRITEINSTRUCTIONSRESPONSE_STATUS._serialized_start=271
-  _WRITEINSTRUCTIONSRESPONSE_STATUS._serialized_end=298
-  _REMOTETRACKINGSERVICE._serialized_start=1563
-  _REMOTETRACKINGSERVICE._serialized_end=1980
+
+_REMOTETRACKINGSERVICE = _descriptor.ServiceDescriptor(
+  name='RemoteTrackingService',
+  full_name='RemoteTrackingService',
+  file=DESCRIPTOR,
+  index=0,
+  serialized_options=None,
+  create_key=_descriptor._internal_create_key,
+  serialized_start=1426,
+  serialized_end=1823,
+  methods=[
+  _descriptor.MethodDescriptor(
+    name='cleanup_client_resources',
+    full_name='RemoteTrackingService.cleanup_client_resources',
+    index=0,
+    containing_service=None,
+    input_type=_CLIENTRESOURCECLEANUPREQUEST,
+    output_type=_CLIENTRESOURCECLEANUPRESPONSE,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+  _descriptor.MethodDescriptor(
+    name='get_resource',
+    full_name='RemoteTrackingService.get_resource',
+    index=1,
+    containing_service=None,
+    input_type=_RESOURCEREQUEST,
+    output_type=_RESOURCERESPONSE,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+  _descriptor.MethodDescriptor(
+    name='release_resource',
+    full_name='RemoteTrackingService.release_resource',
+    index=2,
+    containing_service=None,
+    input_type=_RELEASERESOURCEREQUEST,
+    output_type=_RELEASERESOURCERESPONSE,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+  _descriptor.MethodDescriptor(
+    name='run_instruction',
+    full_name='RemoteTrackingService.run_instruction',
+    index=3,
+    containing_service=None,
+    input_type=_INSTRUCTIONREQUEST,
+    output_type=_INSTRUCTIONRESPONSE,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+  _descriptor.MethodDescriptor(
+    name='run_write_instructions',
+    full_name='RemoteTrackingService.run_write_instructions',
+    index=4,
+    containing_service=None,
+    input_type=_WRITEINSTRUCTIONSREQUEST,
+    output_type=_WRITEINSTRUCTIONSRESPONSE,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+])
+_sym_db.RegisterServiceDescriptor(_REMOTETRACKINGSERVICE)
+
+DESCRIPTOR.services_by_name['RemoteTrackingService'] = _REMOTETRACKINGSERVICE
+
 # @@protoc_insertion_point(module_scope)
