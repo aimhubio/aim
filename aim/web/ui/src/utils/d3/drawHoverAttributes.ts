@@ -366,23 +366,25 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
       if (!hoverLineY.empty()) {
         // update vertical hoverLine
         hoverLineY
-          .attr('x1', axisLineData.x1)
-          .attr('y1', axisLineData.y1)
-          .attr('x2', axisLineData.x2)
-          .attr('y2', axisLineData.y2);
+          .attr('x1', axisLineData.x1.toFixed(2))
+          .attr('y1', axisLineData.y1.toFixed(2))
+          .attr('x2', axisLineData.x2.toFixed(2))
+          .attr('y2', axisLineData.y2.toFixed(2));
       } else {
         // create vertical hoverLine
         attrNodeRef.current
           .append('line')
           .attr('id', 'HoverLine-y')
           .attr('class', 'HoverLine')
+          .style('stroke', '#94999f')
           .style('stroke-width', 1)
           .style('stroke-dasharray', '4 2')
           .style('fill', 'none')
-          .attr('x1', axisLineData.x1)
-          .attr('y1', axisLineData.y1)
-          .attr('x2', axisLineData.x2)
-          .attr('y2', axisLineData.y2)
+          .style('pointer-events', 'none')
+          .attr('x1', axisLineData.x1.toFixed(2))
+          .attr('y1', axisLineData.y1.toFixed(2))
+          .attr('x2', axisLineData.x2.toFixed(2))
+          .attr('y2', axisLineData.y2.toFixed(2))
           .lower();
       }
     }
@@ -421,9 +423,11 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
           .append('line')
           .attr('id', 'HoverLine-x')
           .attr('class', 'HoverLine')
+          .style('stroke', '#94999f')
           .style('stroke-width', 1)
           .style('stroke-dasharray', '4 2')
           .style('fill', 'none')
+          .style('pointer-events', 'none')
           .attr('x1', axisLineData.x1)
           .attr('y1', axisLineData.y1)
           .attr('x2', axisLineData.x2)
@@ -433,11 +437,12 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
     }
   }
 
-  function drawActiveCircle(key: string): void {
+  function drawActiveCircle(key: string, inProgress: boolean = false): void {
     attrNodeRef.current
       .select(`[id=Circle-${key}]`)
       .attr('r', CircleEnum.ActiveRadius)
       .classed('active', true)
+      .classed('inProgressLineIndicator', inProgress)
       .raise();
   }
 
@@ -490,7 +495,6 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
       .attr('stroke', (d: INearestCircle) => d.color)
       .attr('fill', (d: INearestCircle) => d.color)
       .attr('stroke-opacity', 1)
-      .classed('inProgressLineIndicator', (d: INearestCircle) => !!d.inProgress)
       .on('click', handlePointClick);
   }
 
@@ -614,7 +618,8 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
       .selectAll('circle')
       .attr('r', CircleEnum.Radius)
       .classed('active', false)
-      .classed('focus', false);
+      .classed('focus', false)
+      .classed('inProgressLineIndicator', false);
 
     clearHorizontalAxisLine();
     clearYAxisLabel();
@@ -657,7 +662,7 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
       drawHorizontalAxisLine(circle.y);
       drawXAxisLabel(xValue);
       drawYAxisLabel(yValue);
-      drawActiveCircle(circle.key);
+      drawActiveCircle(circle.key, circle.inProgress);
     }
 
     const activePoint = getActivePoint(circle, xValue, yValue);

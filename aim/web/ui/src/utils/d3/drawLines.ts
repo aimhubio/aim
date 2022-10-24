@@ -93,7 +93,7 @@ function drawLines(args: IDrawLinesArgs): void {
           return yScale(lastPoint[1]).toFixed(2);
         }
       })
-      .attr('r', 2)
+      .attr('r', 1.8)
       .raise();
   }
 
