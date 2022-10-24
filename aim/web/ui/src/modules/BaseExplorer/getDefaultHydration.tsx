@@ -130,6 +130,7 @@ const defaultHydration = {
       height: 400,
       gap: 0,
     },
+    hasDepthSlider: true,
   },
   controls,
   groupings,

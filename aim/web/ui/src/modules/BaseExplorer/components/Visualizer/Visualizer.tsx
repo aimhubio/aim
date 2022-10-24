@@ -25,6 +25,7 @@ function Visualizer(props: IVisualizationProps) {
     engine: { useStore, pipeline },
     name,
     box: BoxContent,
+    hasDepthSlider,
     panelRenderer,
   } = props;
 
@@ -175,6 +176,7 @@ function Visualizer(props: IVisualizationProps) {
                   groupId={groupId}
                   engine={engine}
                   component={BoxContent}
+                  hasDepthSlider={hasDepthSlider}
                   items={items}
                   depthSelector={depthSelector}
                   onDepthMapChange={onDepthMapChange}
