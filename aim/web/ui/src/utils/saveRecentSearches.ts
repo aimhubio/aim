@@ -23,7 +23,7 @@ function saveRecentSearches(appName: string, query: string): void {
       recentSearches.splice(searchIndex, 1);
     } else if (recentSearches.length === 3) {
       // remove first element if array length is 3
-      recentSearches.shift();
+      recentSearches.pop();
     }
     // push new search to the start of array
     recentSearches.unshift({ explorer: appName, query });
