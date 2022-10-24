@@ -37,6 +37,7 @@ def package_files(directory):
 
 migration_files = package_files('aim/web/migrations')
 storage_migration_files = package_files('aim/storage/migrations')
+notifier_files = package_files('aim/ext/notifier')
 version_files = ['../aim/VERSION', ]
 
 readme_file = 'README.md'
@@ -193,7 +194,7 @@ setup(
     setup_requires=SETUP_REQUIRED,
     install_requires=REQUIRED,
     packages=packages,
-    package_data={'aim': migration_files + storage_migration_files + version_files},
+    package_data={'aim': migration_files + storage_migration_files + notifier_files + version_files},
     include_package_data=True,
     classifiers=[
         'License :: OSI Approved :: MIT License',
