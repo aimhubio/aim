@@ -24,7 +24,7 @@ export interface IEventSystemEngine {
       callback: Callback,
     ) => (eventName: string, callback: Callback) => void;
     getListenerCount: (eventName: string) => number;
-    removeListeners: (eventName: string) => void;
+    removeEventListeners: (eventName: string) => void;
     getEventPayload: (eventName: string) => any;
   };
 }
@@ -106,7 +106,7 @@ function createEventSystemEngine<TStore>(store: any): IEventSystemEngine {
    * Function to get the listener count of the event
    * @param {string} eventName
    */
-  function removeListeners(eventName: string) {
+  function removeEventListeners(eventName: string) {
     events = _.omit(events, eventName);
   }
 
@@ -120,7 +120,7 @@ function createEventSystemEngine<TStore>(store: any): IEventSystemEngine {
       unsubscribe,
       once,
       getListenerCount,
-      removeListeners,
+      removeEventListeners,
       getEventPayload: state.getEventPayload,
     },
   };
