@@ -1843,41 +1843,45 @@ function getQueryStringFromSelect(
   selectData: IImagesExploreAppConfig['select'],
   error?: ISyntaxErrorDetails,
 ) {
-  let query: string | undefined = '';
-  if (selectData !== undefined) {
-    if (selectData.advancedMode) {
-      query = selectData.advancedQuery;
-    } else {
-      const simpleInput =
-        selectData.query && !error?.message ? selectData.query : '';
-      const selections = selectData.options?.length
-        ? `(${selectData.options
-            .map(
-              (option: ISelectOption) =>
-                `(images.name == "${option.value?.option_name}"${
-                  option.value?.context === null
-                    ? ''
-                    : ' and ' +
-                      Object.keys(option.value?.context)
-                        .map(
-                          (item) =>
-                            `images.context.${item} == ${formatValue(
-                              (option.value?.context as any)[item],
-                            )}`,
-                        )
-                        .join(' and ')
-                })`,
-            )
-            .join(' or ')})`
+  if (selectData === undefined) {
+    return '';
+  }
+  let query = '';
+  if (selectData.advancedMode) {
+    query = selectData.advancedQuery || '';
+  } else {
+    const simpleInput =
+      selectData.query?.trim() && !error?.message
+        ? `(${selectData.query.trim()})`
         : '';
+    const selections = selectData.options?.length
+      ? `(${selectData.options
+          .map(
+            (option: ISelectOption) =>
+              `(images.name == "${option.value?.option_name}"${
+                option.value?.context === null
+                  ? ''
+                  : ' and ' +
+                    Object.keys(option.value?.context)
+                      .map(
+                        (item) =>
+                          `images.context.${item} == ${formatValue(
+                            (option.value?.context as any)[item],
+                          )}`,
+                      )
+                      .join(' and ')
+              })`,
+          )
+          .join(' or ')})`
+      : '';
 
-      query = `${simpleInput}${
-        simpleInput && selections ? ' and ' : ''
-      }${selections}`.trim();
+    if (simpleInput && selections) {
+      query = `${simpleInput} and ${selections}`;
+    } else {
+      query = `${simpleInput}${selections}`;
     }
   }
-
-  return query;
+  return query.trim();
 }
 
 function onSelectAdvancedQueryChange(query: string) {
