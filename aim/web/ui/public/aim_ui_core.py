@@ -103,6 +103,7 @@ def group(name, data, options):
             }
         item[name] = group_key
         grouped_data.append(item)
+    sorted_groups = {}
     for i, opt in enumerate(options):
         sorted_groups = {
             k: v
@@ -156,15 +157,16 @@ def Cell(viz, facet={"row": [], "column": []}, size={}):
 
     items = []
     for i, item in enumerate(data):
-        row_val = row_map[row_data[i]["row"]]
-        column_val = column_map[column_data[i]["column"]]
+        if no_facet is False:
+            row_val = row_map[row_data[i]["row"]]
+            column_val = column_map[column_data[i]["column"]]
 
-        item["row"] = row_val["order"]
-        item["column"] = column_val["order"]
-        item["row_val"] = row_val["val"]
-        item["column_val"] = column_val["val"]
-        item["row_options"] = facet["row"]
-        item["column_options"] = facet["column"]
+            item["row"] = row_val["order"]
+            item["column"] = column_val["order"]
+            item["row_val"] = row_val["val"]
+            item["column_val"] = column_val["val"]
+            item["row_options"] = facet["row"]
+            item["column_options"] = facet["column"]
 
         items.append(item)
 
@@ -219,17 +221,17 @@ def LineChart(
 
         lines.append(line)
 
-    def on_active_point_change(val, is_active):
+    async def on_active_point_change(val, is_active):
         if is_active:
             if callable(on_point_click):
                 data = val.to_py()
                 item = lines[data["key"]]
-                on_point_click(item)
+                await on_point_click(item, data)
         else:
             if callable(on_chart_hover):
                 data = val.to_py()
                 item = lines[data["key"]]
-                on_chart_hover(item)
+                await on_chart_hover(item, data)
 
     return {
         "type": "LineChart",
@@ -305,10 +307,12 @@ def FiguresList(data):
     }
 
 
-def JSON(
-    data,
-):
+def JSON(data):
     return {
         "type": "JSON",
         "data": data,
     }
+
+
+def Table(data):
+    return {"type": "DataFrame", "data": data.to_json(orient="records")}

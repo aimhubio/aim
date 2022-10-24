@@ -155,6 +155,7 @@ export default function SandboxVisualizer() {
                 }}
               >
                 {row.map((viz: any, i: number) => {
+                  const Component = dataVizElementsMap[viz.type as 'LineChart'];
                   return (
                     <div
                       key={i}
@@ -183,28 +184,33 @@ export default function SandboxVisualizer() {
                         >
                           {Array.isArray(viz.data) ? (
                             Object.values(_.groupBy(viz.data, 'type')).map(
-                              (vals, i) => (
-                                <div
-                                  key={`${i}-${vals[0].type}`}
-                                  style={{
-                                    minWidth: 'calc(100% - 10px)',
-                                    minHeight: 'calc(100% - 10px)',
-                                    height: 'calc(100% - 10px)',
-                                    padding: '5px',
-                                    margin: '5px',
-                                    border: '1px solid #d2d4dc',
-                                  }}
-                                >
-                                  {dataVizElementsMap[
+                              (vals, i) => {
+                                const Component =
+                                  dataVizElementsMap[
                                     (typeof viz.type === 'function'
                                       ? viz.type(vals[0].type)
                                       : viz.type) as 'LineChart'
-                                  ]({
-                                    ...viz,
-                                    data: vals,
-                                  })}
-                                </div>
-                              ),
+                                  ];
+                                const compProps = {
+                                  ...viz,
+                                  data: vals,
+                                };
+                                return (
+                                  <div
+                                    key={`${i}-${vals[0].type}`}
+                                    style={{
+                                      minWidth: 'calc(100% - 10px)',
+                                      minHeight: 'calc(100% - 10px)',
+                                      height: 'calc(100% - 10px)',
+                                      padding: '5px',
+                                      margin: '5px',
+                                      border: '1px solid #d2d4dc',
+                                    }}
+                                  >
+                                    <Component {...compProps} />
+                                  </div>
+                                );
+                              },
                             )
                           ) : (
                             <div
@@ -217,7 +223,7 @@ export default function SandboxVisualizer() {
                                 border: '1px solid #d2d4dc',
                               }}
                             >
-                              {dataVizElementsMap[viz.type as 'LineChart'](viz)}
+                              <Component {...viz} />
                             </div>
                           )}
                         </div>

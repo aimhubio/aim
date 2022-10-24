@@ -265,29 +265,35 @@ function VizContainer(props: any) {
                 overflow: 'auto',
               }}
             >
-              {Object.values(_.groupBy(items, 'type')).map((vals, i) => (
-                <div
-                  key={`${i}-${vals[0].type}`}
-                  style={{
-                    minWidth: 'calc(100% - 10px)',
-                    minHeight: 'calc(100% - 10px)',
-                    height: 'calc(100% - 10px)',
-                    padding: '5px',
-                    margin: '5px',
-                    border: '1px solid #d2d4dc',
-                    flex: 1,
-                  }}
-                >
-                  {dataVizElementsMap[
+              {Object.values(_.groupBy(items, 'type')).map((vals, i) => {
+                const Component =
+                  dataVizElementsMap[
                     (typeof props.viz.type === 'function'
                       ? props.viz.type(vals[0].type)
                       : props.viz.type) as 'LineChart' | 'DataFrame' | 'Plotly'
-                  ]({
-                    ...props.viz,
-                    data: vals,
-                  })}
-                </div>
-              ))}
+                  ];
+
+                const compProps = {
+                  ...props.viz,
+                  data: vals,
+                };
+                return (
+                  <div
+                    key={`${i}-${vals[0].type}`}
+                    style={{
+                      minWidth: 'calc(100% - 10px)',
+                      minHeight: 'calc(100% - 10px)',
+                      height: 'calc(100% - 10px)',
+                      padding: '5px',
+                      margin: '5px',
+                      border: '1px solid #d2d4dc',
+                      flex: 1,
+                    }}
+                  >
+                    {<Component {...compProps} />}
+                  </div>
+                );
+              })}
             </div>
           ))}
         </div>

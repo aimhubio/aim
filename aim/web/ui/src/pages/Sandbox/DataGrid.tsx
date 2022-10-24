@@ -124,7 +124,7 @@ export default ({ data }) => {
       </React.Fragment>
     );
   };
-  const columnCount = Object.keys(data[0]).length;
+  const columnCount = Object.keys(data[0] ?? {}).length;
   const rowCount = data.length;
   const App = () => {
     const gridRef = useRef();
@@ -160,7 +160,7 @@ export default ({ data }) => {
           width={width}
           columnWidth={(index) => {
             if (index in columnWidthMap) return columnWidthMap[index];
-            return 150;
+            return 200;
           }}
           rowHeight={(index) => 20}
           showScrollbar={false}
@@ -176,7 +176,7 @@ export default ({ data }) => {
           ref={mainGridRef}
           columnWidth={(index) => {
             if (index in columnWidthMap) return columnWidthMap[index];
-            return 150;
+            return 200;
           }}
           rowHeight={(index) => 20}
           onScroll={({ scrollLeft }) => {
