@@ -2,7 +2,7 @@
 
 ## 3.14.2
 
-- Implement ANSI to HTML formatting method for color formatting in the logs tab (VkoHov)
+- Add support for text style formatting in the logs tab (VkoHov)
 
 ## 3.14.1 Oct 7, 2022
 

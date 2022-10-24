@@ -1,3 +1,5 @@
+// Adapted from ansi-to-html by Rob Burns
+// License: https://github.com/rburns/ansi-to-html/blob/master/LICENSE-MIT.txt
 import _ from 'lodash-es';
 
 interface Options {
