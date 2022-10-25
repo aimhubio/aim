@@ -60,6 +60,7 @@ const Container = styled('button', {
   width: 'fit-content',
   ai: 'center',
   jc: 'center',
+  lineHeight: 1,
   fontWeight: '$2',
   cursor: 'pointer',
   borderRadius: '$1',
@@ -181,7 +182,7 @@ const IconRight = styled(IconContainer, {
  */
 function Button({
   color = 'primary',
-  size = 'small',
+  size = 'medium',
   variant = 'contained',
   fullWidth = false,
   disabled,
