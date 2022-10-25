@@ -6,7 +6,7 @@ import DictVisualizer from 'components/kit/DictVisualizer';
 
 import { ChartTypeEnum, CurveEnum, ScaleEnum, HighlightEnum } from 'utils/d3';
 
-import DataGrid from './DataGrid';
+import DataTable from './DataTable';
 import ImagesList from './ImagesList';
 import AudiosList from './AudiosList';
 import TextList from './TextList';
@@ -49,7 +49,7 @@ export const dataVizElementsMap = {
     );
   },
   DataFrame: (props: any) => (
-    <DataGrid
+    <DataTable
       data={
         typeof props.data === 'string' ? JSON.parse(props.data) : props.data
       }

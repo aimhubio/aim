@@ -4,16 +4,16 @@ import { useResizeObserver } from 'hooks';
 
 import { Tooltip } from '@material-ui/core';
 
-import { Text } from 'components/kit';
+import { Button, Icon, Slider, Text } from 'components/kit';
 
 import { formatValue } from 'utils/formatValue';
 
 import { dataVizElementsMap } from './dataVizElementsMap';
 
-function VizContainer(props: any) {
+function GroupedBox(props: any) {
   const boxSize = {
-    width: props.viz.size?.width ?? 250,
-    height: props.viz.size?.height ?? 180,
+    width: props.viz.size?.width ?? 300,
+    height: props.viz.size?.height ?? 200,
   };
   const data = React.useMemo(() => {
     return props.viz.data.map((item: any) => ({
@@ -198,6 +198,10 @@ function VizContainer(props: any) {
     };
   }, [data]);
 
+  const sliderValues = Object.keys(props.sync.syncMap)
+    .map((key) => +key)
+    .sort((a, b) => a - b);
+
   return (
     <div className='BoxVirtualizer'>
       {rowsAxisItems && rowsAxisItems.length > 0 && (
@@ -275,7 +279,7 @@ function VizContainer(props: any) {
 
                 const compProps = {
                   ...props.viz,
-                  data: vals,
+                  data: vals.filter((v) => v.sync === props.sync.syncValue),
                 };
                 return (
                   <div
@@ -290,7 +294,114 @@ function VizContainer(props: any) {
                       flex: 1,
                     }}
                   >
-                    {<Component {...compProps} />}
+                    {sliderValues.length > 1 && (
+                      <div
+                        className='DepthSlider'
+                        style={{
+                          display: 'block',
+                          paddingTop: 0,
+                        }}
+                      >
+                        <Tooltip
+                          title={formatValue(
+                            props.sync.syncMap[props.sync.syncValue],
+                          )}
+                        >
+                          <div
+                            style={{
+                              display: 'inline-block',
+                              height: 12,
+                              whiteSpace: 'nowrap',
+                              maxWidth: '100%',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              textAlign: 'center',
+                              lineHeight: '10px',
+                            }}
+                          >
+                            <Text size={10}>
+                              {formatValue(
+                                props.sync.syncMap[props.sync.syncValue],
+                              )}
+                            </Text>
+                          </div>
+                        </Tooltip>
+                        <Slider
+                          label=''
+                          aria-labelledby='track-false-slider'
+                          track={false}
+                          valueLabelDisplay='off'
+                          getAriaValueText={(value) =>
+                            `${props.sync.syncMap[value]}`
+                          }
+                          value={props.sync.syncValue}
+                          onChange={(e, value) => props.sync.update(value)}
+                          step={null}
+                          marks={
+                            sliderValues.map((v) => ({
+                              value: v,
+                            })) as any
+                          }
+                          min={sliderValues[0]}
+                          max={sliderValues[sliderValues.length - 1]}
+                          style={{ width: '100%' }}
+                          prevIconNode={
+                            <Button
+                              onClick={() =>
+                                props.sync.syncValue !== sliderValues[0] &&
+                                props.sync.update(
+                                  sliderValues[
+                                    sliderValues.indexOf(props.sync.syncValue) -
+                                      1
+                                  ],
+                                )
+                              }
+                              className='prevIconBtn'
+                              disabled={
+                                props.sync.syncValue === sliderValues[0]
+                              }
+                              size='small'
+                              withOnlyIcon
+                            >
+                              <Icon name='arrow-left' fontSize={10} />
+                            </Button>
+                          }
+                          nextIconNode={
+                            <Button
+                              onClick={() =>
+                                props.sync.syncValue !==
+                                  sliderValues[sliderValues.length - 1] &&
+                                props.sync.update(
+                                  sliderValues[
+                                    sliderValues.indexOf(props.sync.syncValue) +
+                                      1
+                                  ],
+                                )
+                              }
+                              className='nextIconBtn'
+                              disabled={
+                                props.sync.syncValue ===
+                                sliderValues[sliderValues.length - 1]
+                              }
+                              size='small'
+                              withOnlyIcon
+                            >
+                              <Icon name='arrow-right' fontSize={10} />
+                            </Button>
+                          }
+                        />
+                      </div>
+                    )}
+                    <div
+                      style={{
+                        width: '100%',
+                        height: `calc(100% - ${
+                          sliderValues.length > 1 ? 28 + 12 : 0
+                        }px)`,
+                      }}
+                    >
+                      <Component {...compProps} />
+                    </div>
                   </div>
                 );
               })}
@@ -302,4 +413,4 @@ function VizContainer(props: any) {
   );
 }
 
-export default React.memo(VizContainer);
+export default React.memo(GroupedBox);

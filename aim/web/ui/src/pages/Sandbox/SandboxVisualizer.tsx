@@ -10,8 +10,7 @@ import { getBasePath } from 'config/config';
 
 import { initialCode } from './sandboxCode';
 import { search } from './search';
-import VizContainer from './VizContainer';
-import { dataVizElementsMap } from './dataVizElementsMap';
+import GridCell from './GridCell';
 
 import './SandboxVisualizer.scss';
 
@@ -155,82 +154,12 @@ export default function SandboxVisualizer() {
                 }}
               >
                 {row.map((viz: any, i: number) => {
-                  const Component = dataVizElementsMap[viz.type as 'LineChart'];
                   return (
-                    <div
+                    <GridCell
                       key={i}
-                      style={{
-                        position: 'relative',
-                        flex: 1,
-                        backgroundColor: '#d2d4dc',
-                        boxShadow: '0 0 0 1px #b5b9c5',
-                        maxWidth: `${100 / row.length}%`,
-                        margin: '5px',
-                        background: '#fff',
-                        backgroundImage:
-                          'radial-gradient(#b5b9c5 1px, transparent 0)',
-                        backgroundSize: '10px 10px',
-                        overflow: 'hidden',
-                      }}
-                    >
-                      {viz.no_facet ? (
-                        <div
-                          style={{
-                            width: '100%',
-                            height: '100%',
-                            backgroundColor: '#fff',
-                            overflow: 'auto',
-                          }}
-                        >
-                          {Array.isArray(viz.data) ? (
-                            Object.values(_.groupBy(viz.data, 'type')).map(
-                              (vals, i) => {
-                                const Component =
-                                  dataVizElementsMap[
-                                    (typeof viz.type === 'function'
-                                      ? viz.type(vals[0].type)
-                                      : viz.type) as 'LineChart'
-                                  ];
-                                const compProps = {
-                                  ...viz,
-                                  data: vals,
-                                };
-                                return (
-                                  <div
-                                    key={`${i}-${vals[0].type}`}
-                                    style={{
-                                      minWidth: 'calc(100% - 10px)',
-                                      minHeight: 'calc(100% - 10px)',
-                                      height: 'calc(100% - 10px)',
-                                      padding: '5px',
-                                      margin: '5px',
-                                      border: '1px solid #d2d4dc',
-                                    }}
-                                  >
-                                    <Component {...compProps} />
-                                  </div>
-                                );
-                              },
-                            )
-                          ) : (
-                            <div
-                              style={{
-                                minWidth: 'calc(100% - 10px)',
-                                minHeight: 'calc(100% - 10px)',
-                                height: 'calc(100% - 10px)',
-                                padding: '5px',
-                                margin: '5px',
-                                border: '1px solid #d2d4dc',
-                              }}
-                            >
-                              <Component {...viz} />
-                            </div>
-                          )}
-                        </div>
-                      ) : (
-                        <VizContainer viz={viz} />
-                      )}
-                    </div>
+                      viz={viz}
+                      maxWidth={`${100 / row.length}%`}
+                    />
                   );
                 })}
               </div>

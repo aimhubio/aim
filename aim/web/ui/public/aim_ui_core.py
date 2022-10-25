@@ -91,7 +91,10 @@ def group(name, data, options):
             group_values.append(val)
         else:
             for opt in options:
-                val = find(item, opt.replace("metric.", ""))
+                val = find(
+                    item,
+                    str(opt) if type(opt) is not str else opt.replace("metric.", ""),
+                )
                 group_values.append(val)
         key = " ".join(map(str, group_values))
         group_key = hashlib.md5(key.encode()).hexdigest()
@@ -134,7 +137,7 @@ def Grid(grid):
     updateLayout(grid)
 
 
-def Cell(viz, facet={"row": [], "column": []}, size={}):
+def Cell(viz, facet={"row": [], "column": []}, size={}, sync=[None]):
     if type(viz) is list:
         data = []
         for el in viz:
@@ -155,11 +158,15 @@ def Cell(viz, facet={"row": [], "column": []}, size={}):
     row_map, row_data = group("row", data, facet["row"])
     column_map, column_data = group("column", data, facet["column"])
 
+    sync_map, sync_data = group("sync", data, sync)
+
     items = []
-    for i, item in enumerate(data):
+    for i, elem in enumerate(data):
+        item = dict(elem)
         if no_facet is False:
             row_val = row_map[row_data[i]["row"]]
             column_val = column_map[column_data[i]["column"]]
+            sync_val = sync_map[sync_data[i]["sync"]]
 
             item["row"] = row_val["order"]
             item["column"] = column_val["order"]
@@ -167,6 +174,10 @@ def Cell(viz, facet={"row": [], "column": []}, size={}):
             item["column_val"] = column_val["val"]
             item["row_options"] = facet["row"]
             item["column_options"] = facet["column"]
+
+            item["sync"] = sync_val["order"]
+            item["sync_val"] = sync_val["val"]
+            item["sync_options"] = sync
 
         items.append(item)
 
