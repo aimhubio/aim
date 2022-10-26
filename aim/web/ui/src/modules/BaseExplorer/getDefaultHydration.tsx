@@ -38,6 +38,7 @@ const controls: ControlsConfigs = {
         displayBoxCaption: true,
         selectedFields: ['run.name', 'figures.name', 'figures.context'],
       },
+      persist: 'url',
     },
   },
 };

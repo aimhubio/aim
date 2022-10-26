@@ -1,4 +1,5 @@
 import createReact, { StoreApi, UseBoundStore } from 'zustand';
+import { Update } from 'history';
 
 import createVanilla from 'zustand/vanilla';
 import { devtools, subscribeWithSelector } from 'zustand/middleware';
@@ -10,11 +11,12 @@ import { SequenceTypesEnum } from 'types/core/enums';
 
 import createPipelineEngine, { IPipelineEngine } from '../pipeline';
 import createInstructionsEngine, { IInstructionsEngine } from '../instructions';
-import { PipelineStatusEnum } from '../types';
+import { PipelineStatusEnum, StatePersistOption } from '../types';
 import createVisualizationsEngine from '../visualizations';
 import createExplorerAdditionalEngine from '../explorer';
 import createCustomStatesEngine, { CustomStatesEngine } from '../custom-states';
 import getUrlSearchParam from '../../utils/getUrlSearchParam';
+import browserHistory from '../../services/browserHistory';
 
 type State = {
   pipeline?: any;
@@ -72,6 +74,7 @@ function getPipelineEngine(
     query: {
       useCache,
     },
+    persist: config.persist,
   };
 
   const pipeline = createPipelineEngine<object, AimFlatObjectBase<any>>(
@@ -106,11 +109,16 @@ function getExplorerAdditionalEngines(
   set: any,
   get: any,
   // state: State, // mutable
+  persist?: boolean, //StatePersistOption,
 ) {
-  return createExplorerAdditionalEngine<State>(config, {
-    setState: set,
-    getState: get,
-  });
+  return createExplorerAdditionalEngine<State>(
+    config,
+    {
+      setState: set,
+      getState: get,
+    },
+    persist,
+  );
 }
 
 function getVisualizationsEngine(
@@ -148,10 +156,8 @@ function createEngine<TObject = any>(
   let customStatesEngine: CustomStatesEngine;
   let query: any;
   let groupings: any;
-
+  let initialState = {};
   function buildEngine(set: any, get: any) {
-    let state = {};
-
     /**
      * Custom states
      */
@@ -163,8 +169,8 @@ function createEngine<TObject = any>(
       config.states,
     );
 
-    state = {
-      ...state,
+    initialState = {
+      ...initialState,
       ...customStates.state.initialState,
     };
     customStatesEngine = customStates.engine;
@@ -172,9 +178,14 @@ function createEngine<TObject = any>(
     /**
      * Explorer Additional, includes query and groupings
      */
-    const explorer = getExplorerAdditionalEngines(config, set, get);
-    state = {
-      ...state,
+    const explorer = getExplorerAdditionalEngines(
+      config,
+      set,
+      get,
+      config.persist,
+    );
+    initialState = {
+      ...initialState,
       ...explorer.initialState,
     };
 
@@ -184,17 +195,17 @@ function createEngine<TObject = any>(
     /**
      * Instructions
      */
-    instructions = getInstructionsEngine(config, set, get, state);
+    instructions = getInstructionsEngine(config, set, get, initialState);
 
     /**
      * Pipeline
      */
-    pipeline = getPipelineEngine(config, set, get, state);
+    pipeline = getPipelineEngine(config, set, get, initialState);
 
     /*
      * Visualizations
      */
-    visualizations = getVisualizationsEngine(config, set, get, state);
+    visualizations = getVisualizationsEngine(config, set, get, initialState);
 
     /** Additional **/
 
@@ -207,7 +218,7 @@ function createEngine<TObject = any>(
     /**
      * @TODO add events service engine here
      */
-    return state;
+    return initialState;
   }
 
   // @ts-ignore
@@ -231,9 +242,9 @@ function createEngine<TObject = any>(
    * An initializer to use for url sync and bookmarks data get
    */
   function initialize(): () => void {
-    const deInitializeQuery = query.initialize(useReactStore);
-    groupings.initialize();
-    pipeline.initialize();
+    const finalizeQuery = query.initialize();
+    const finalizeGrouping = groupings.initialize();
+    const finalizePipeline = pipeline.initialize();
 
     // subscribe to history
     instructions
@@ -243,7 +254,7 @@ function createEngine<TObject = any>(
           pipeline.changeCurrentPhaseOrStatus(
             PipelineStatusEnum.Insufficient_Resources,
           );
-        } else {
+        } else if (config.persist) {
           const stateFromStorage = getUrlSearchParam('query') || {};
           if (stateFromStorage.readyQuery) {
             pipeline.search(stateFromStorage.readyQuery, true);
@@ -253,8 +264,22 @@ function createEngine<TObject = any>(
       // eslint-disable-next-line no-console
       .catch((err) => console.error(err));
 
+    const removeHistoryListener =
+      config.persist &&
+      browserHistory.listen((update: Update) => {
+        console.log('render', update.location);
+        localStorage.setItem(
+          'figuresUrl',
+          update.location.pathname + update.location.search,
+        );
+      });
+
     return () => {
-      deInitializeQuery();
+      finalizeQuery();
+      finalizeGrouping();
+      finalizePipeline();
+      removeHistoryListener && removeHistoryListener();
+
       finalize();
     };
   }
@@ -267,7 +292,8 @@ function createEngine<TObject = any>(
   function finalize() {
     // @ts-ignore
     useReactStore.destroy(); // or engine.release/commit
-    pipeline.destroy(); // or pipeline release/commit
+    useReactStore.setState(initialState);
+    // pipeline.destroy(); // or pipeline release/commit
   }
 
   // @ts-ignore

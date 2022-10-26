@@ -30,6 +30,7 @@ export type PipelineOptions = {
     getLatestResult?: () => void;
     useCache?: boolean;
   };
+  persist?: boolean; // Later use
 };
 
 export type PipelineExecutionOptions = {

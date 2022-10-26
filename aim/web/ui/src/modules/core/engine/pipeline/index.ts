@@ -37,7 +37,7 @@ export interface IPipelineEngine<TObject, TStore> {
     getSequenceName: () => SequenceTypesEnum;
     destroy: () => void;
     reset: () => void;
-    initialize: () => void;
+    initialize: () => () => void;
   } & Omit<PipelineStateBridge<TObject, TStore>, 'selectors'> &
     PipelineStateBridge<TObject, TStore>['selectors'];
 }
@@ -124,7 +124,7 @@ function createPipelineEngine<TStore, TObject>(
 
     state.setCurrentQuery(params);
 
-    if (!isInternal) {
+    if (!isInternal && pipelineOptions.persist) {
       const queryState = store.getState().query;
 
       if (!queryState.ranges.isInitial) {
@@ -142,10 +142,6 @@ function createPipelineEngine<TStore, TObject>(
           }),
         );
 
-        console.log(
-          'search going to update form',
-          url !== `${window.location.pathname}${window.location.search}`,
-        );
         if (url !== `${window.location.pathname}${window.location.search}`) {
           browserHistory.push(url, null);
         }
@@ -177,7 +173,7 @@ function createPipelineEngine<TStore, TObject>(
           isEmpty(data) ? PipelineStatusEnum.Empty : state.getStatus(),
         );
 
-        if (!isInternal) {
+        if (!isInternal && pipelineOptions.persist) {
           const url = updateUrlSearchParam(
             'query',
             encode({
@@ -190,11 +186,6 @@ function createPipelineEngine<TStore, TObject>(
               },
               readyQuery: params,
             }),
-          );
-
-          console.log(
-            'search going to update record',
-            url !== `${window.location.pathname}${window.location.search}`,
           );
           if (url !== `${window.location.pathname}${window.location.search}`) {
             browserHistory.push(url, null);
@@ -237,18 +228,13 @@ function createPipelineEngine<TStore, TObject>(
    */
   function group(config: CurrentGrouping, isInternal: boolean = false): void {
     state.setCurrentGroupings(config);
-    console.log('group');
 
     const equal = isEqual(config, defaultGroupings);
-    console.log(equal);
-    if (!isInternal) {
+
+    if (!isInternal && pipelineOptions.persist) {
       const url = updateUrlSearchParam(
         'groupings',
         equal ? null : encode(config),
-      );
-      console.log(
-        'update group',
-        url !== `${window.location.pathname}${window.location.search}`,
       );
 
       if (url !== `${window.location.pathname}${window.location.search}`) {
@@ -274,37 +260,46 @@ function createPipelineEngine<TStore, TObject>(
   }
 
   function initialize() {
-    const stateFromStorage = getUrlSearchParam('groupings') || {};
+    if (pipelineOptions.persist) {
+      const stateFromStorage = getUrlSearchParam('groupings') || {};
+      // update state
+      if (!isEmpty(stateFromStorage)) {
+        state.setCurrentGroupings(stateFromStorage);
+      }
 
-    // update state
-    if (!isEmpty(stateFromStorage)) {
-      state.setCurrentGroupings(stateFromStorage);
+      const removeGroupingsListener = browserHistory.listenSearchParam<any>(
+        'groupings',
+        (groupings: any) => {
+          if (!isEmpty(groupings)) {
+            group(groupings, true);
+          } else {
+            group(defaultGroupings, true);
+          }
+        },
+        ['PUSH'],
+      );
+
+      const removeQueryListener = browserHistory.listenSearchParam<any>(
+        'query',
+        (query: any) => {
+          if (!isEmpty(query)) {
+            search({ ...query.readyQuery, report_progress: true }, true);
+          } else {
+            search({ q: '()', report_progress: true }, true);
+          }
+        },
+        ['PUSH'],
+      );
+      return () => {
+        removeGroupingsListener();
+        removeQueryListener();
+        // pipeline.clearCache();
+      };
     }
 
-    browserHistory.listenSearchParam<any>(
-      'groupings',
-      (groupings: any) => {
-        if (!isEmpty(groupings)) {
-          group(groupings, true);
-        } else {
-          group(defaultGroupings, true);
-        }
-      },
-      ['PUSH'],
-    );
-
-    browserHistory.listenSearchParam<any>(
-      'query',
-      (query: any) => {
-        console.log('query changed');
-        if (!isEmpty(query)) {
-          search({ ...query.readyQuery, report_progress: true }, true);
-        } else {
-          search({ q: '()', report_progress: true }, true);
-        }
-      },
-      ['PUSH'],
-    );
+    return () => {
+      // pipeline.clearCache();
+    };
   }
 
   return {
@@ -320,7 +315,10 @@ function createPipelineEngine<TStore, TObject>(
       reset,
       initialize,
       destroy: () => {
-        pipeline.clearCache();
+        /**
+         * This line creates some bugs right now, use this after creating complete clean-up mechanism for resources
+         */
+        // pipeline.clearCache();
       },
     },
   };

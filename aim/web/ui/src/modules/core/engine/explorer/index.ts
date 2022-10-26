@@ -1,5 +1,4 @@
 import { isEmpty } from 'lodash-es';
-import { UseBoundStore } from 'zustand';
 
 import { ExplorerEngineConfiguration } from 'modules/BaseExplorer/types';
 import getUrlSearchParam from 'modules/core/utils/getUrlSearchParam';
@@ -11,41 +10,47 @@ import createGroupingsEngine from './groupings';
 function createExplorerAdditionalEngine<T>(
   config: ExplorerEngineConfiguration,
   store: any,
+  persist?: boolean, // TODO later use StatePersistOption,
 ) {
   const queryState = createQueryState<T>(store);
   const query = {
     ...queryState,
-    initialize: (store: UseBoundStore<any>) => {
-      // checks for storage type
-      const stateFromStorage = getUrlSearchParam('query') || {};
+    initialize: () => {
+      if (persist) {
+        const stateFromStorage = getUrlSearchParam('query') || {};
 
-      // update state
-      if (!isEmpty(stateFromStorage)) {
-        query.ranges.update(stateFromStorage.queryState.ranges);
-        query.form.update(stateFromStorage.queryState.form);
+        // update state
+        if (!isEmpty(stateFromStorage)) {
+          query.ranges.update(stateFromStorage.queryState.ranges);
+          query.form.update(stateFromStorage.queryState.form);
+        }
+
+        const removeSearchParamListener = browserHistory.listenSearchParam<any>(
+          'query',
+          (query: any) => {
+            if (!isEmpty(query)) {
+              queryState.ranges.update(query.queryState.ranges);
+              queryState.form.update(query.queryState.form);
+            } else {
+              queryState.reset();
+            }
+          },
+          ['PUSH'],
+        );
+
+        return () => {
+          removeSearchParamListener();
+        };
       }
 
-      const removeSearchParamListener = browserHistory.listenSearchParam<any>(
-        'query',
-        (query: any) => {
-          console.log('query --->', query);
-          if (!isEmpty(query)) {
-            queryState.ranges.update(query.queryState.ranges);
-            queryState.form.update(query.queryState.form);
-          } else {
-            queryState.reset();
-          }
-        },
-        ['PUSH'],
-      );
-
-      return () => {
-        console.log('destroying');
-        removeSearchParamListener();
-      };
+      return () => {};
     },
   };
-  const groupings = createGroupingsEngine(config.groupings || {}, store);
+  const groupings = createGroupingsEngine(
+    config.groupings || {},
+    store,
+    persist,
+  );
 
   const initialState = {
     query: {

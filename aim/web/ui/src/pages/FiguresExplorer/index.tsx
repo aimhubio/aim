@@ -9,6 +9,7 @@ const defaultConfig = getDefaultHydration();
 
 const FiguresExplorer = renderer(
   {
+    persist: true,
     sequenceName: SequenceTypesEnum.Figures,
     name: 'Figures Explorer',
     adapter: {

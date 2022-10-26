@@ -106,3 +106,13 @@ export enum PipelineStatusEnum {
 }
 
 export type SelectorCreator<TState, P> = (state: TState) => P;
+
+export type PersistenceFunction = () => void;
+export enum PersistenceTypesEnum {
+  Url = 'url',
+  LocalStorage = 'localStorage',
+}
+
+export type StatePersistOption =
+  | `${PersistenceTypesEnum}`
+  | PersistenceFunction;
