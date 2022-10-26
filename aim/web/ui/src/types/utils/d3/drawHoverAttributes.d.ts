@@ -11,11 +11,15 @@ import {
 import { ScaleEnum, HighlightEnum } from 'utils/d3';
 
 import { IAxisScale } from './getAxisScale';
+import { IProcessedData } from './processLineChartData';
+
+export type HoverAttrData = ILine | IPoint;
 
 export interface IDrawHoverAttributesArgs {
   index: number;
   nameKey: string;
-  data: ILine[] | IPoint[];
+  data: HoverAttrData[];
+  processedData?: IProcessedData[];
   axesScaleType: { xAxis: ScaleEnum; yAxis: ScaleEnum };
   visAreaRef: React.MutableRefObject<>;
   attributesNodeRef: React.MutableRefObject<>;

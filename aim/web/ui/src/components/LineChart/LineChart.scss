@@ -46,9 +46,15 @@
     }
   }
   .Attributes {
-    &.highlight > .HoverCircle:not(.active):not(.focus) {
-      opacity: 0.5;
+    &.highlight {
+      .HoverCircle:not(.active):not(.focus) {
+        opacity: 0.5;
+      }
+      .inProgressLineIndicator:not(.active):not(.focus) {
+        opacity: 0.8;
+      }
     }
+
   }
   .ChartMouseValue {
     position: absolute;
@@ -100,15 +106,6 @@
       & > .AggrArea:not(.highlighted) {
         opacity: 0.2;
       }
-      .inProgressLineIndicator {
-        opacity: 0.5;
-        &.active {
-          opacity: 1;
-        }
-        &.highlighted {
-          opacity: 1;
-        }
-      }
     }
   }
   .Line {
@@ -141,10 +138,12 @@
   }
 
   .inProgressLineIndicator {
-    animation: inProgressIndicator 0.6s cubic-bezier(0.6, -0.03, 0.22, 0.76)
+    animation: inProgressIndicator 0.5s cubic-bezier(0.6, -0.03, 0.22, 0.76)
       infinite;
     opacity: 1;
     paint-order: stroke;
+    cursor: pointer;
+    filter: drop-shadow(0 0 0.5px #ffffff) drop-shadow(0 0 0.5px #ffffff) drop-shadow(0 0 0.5px #ffffff);
   }
 
   @keyframes inProgressIndicator {
