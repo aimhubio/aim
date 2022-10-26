@@ -11,6 +11,7 @@ const pageTitles = {
   RUN_DETAIL: '',
   FIGURES_EXPLORER_NEW: 'New Figures',
   SANDBOX: 'Sandbox',
+  NOTEBOOK: 'Notebook',
 };
 
 export default pageTitles;

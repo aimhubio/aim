@@ -48,6 +48,10 @@ const Sandbox = React.lazy(
   () => import(/* webpackChunkName: "sandbox" */ 'pages/Sandbox'),
 );
 
+const Notebook = React.lazy(
+  () => import(/* webpackChunkName: "notebook" */ 'pages/Notebook'),
+);
+
 export interface IRoute {
   path: PathEnum;
   component:
@@ -139,14 +143,6 @@ const routes = {
     isExact: true,
     title: pageTitlesEnum.FIGURES_EXPLORER,
   },
-  SANDBOX: {
-    path: PathEnum.Sandbox,
-    component: Sandbox,
-    showInSidebar: false,
-    displayName: 'Sandbox',
-    isExact: true,
-    title: pageTitlesEnum.SANDBOX,
-  },
   SCATTERS: {
     path: PathEnum.Scatters,
     component: Scatters,
@@ -189,6 +185,22 @@ const routes = {
     displayName: 'Run Detail',
     isExact: false,
     title: pageTitlesEnum.RUN_DETAIL,
+  },
+  SANDBOX: {
+    path: PathEnum.Sandbox,
+    component: Sandbox,
+    showInSidebar: false,
+    displayName: 'Sandbox',
+    isExact: true,
+    title: pageTitlesEnum.SANDBOX,
+  },
+  NOTEBOOK: {
+    path: PathEnum.Notebook,
+    component: Notebook,
+    showInSidebar: false,
+    displayName: 'Notebook',
+    isExact: true,
+    title: pageTitlesEnum.NOTEBOOK,
   },
 };
 
