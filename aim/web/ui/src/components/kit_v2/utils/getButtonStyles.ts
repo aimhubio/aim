@@ -19,7 +19,7 @@ export function getButtonStyles(
       };
     case 'outlined':
       return {
-        bc: 'white',
+        bc: 'transparent',
         color: `$${color}${disabled ? 50 : 100}`,
         bs: '0px 0px 0px 1px',
         '&:hover': {
@@ -33,7 +33,7 @@ export function getButtonStyles(
       };
     case 'text':
       return {
-        bc: 'white',
+        bc: 'transparent',
         color: `$${color}${disabled ? 50 : 100}`,
         '&:hover': {
           bc: `$${color}10`,

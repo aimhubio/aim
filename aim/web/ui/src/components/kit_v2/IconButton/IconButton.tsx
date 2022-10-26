@@ -21,17 +21,25 @@ const Container = styled('button', {
   fontSize: '$2',
   variants: {
     size: {
+      small: {
+        height: '$sizes$1',
+        fontSize: '$fontSizes$2',
+      },
       medium: {
-        size: '$1',
-        fontSize: '$2',
+        height: '$sizes$3',
       },
       large: {
-        size: '$2',
-        fontSize: '$3',
+        height: '$sizes$5',
       },
       xLarge: {
-        size: '$3',
-        fontSize: '$3',
+        height: '$sizes$7',
+      },
+    },
+    disabled: {
+      true: {
+        userSelect: 'none',
+        cursor: 'not-allowed',
+        pointerEvents: 'none',
       },
     },
     variant: {
@@ -52,11 +60,12 @@ function IconButton({
 }: IIconButtonProps) {
   return (
     <Container
-      data-testid='icon-button'
       {...props}
+      data-testid='icon-button'
       css={{ ...getButtonStyles(color, variant, disabled) }}
       size={size}
       variant={variant}
+      disabled={disabled}
     >
       <Icon name={icon} />
     </Container>
