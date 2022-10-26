@@ -1,5 +1,7 @@
 # Changelog
 
+- Fix active runs indicators overlapping issue in LineChart (KaroMourad)
+
 ## 3.14.2
 
 - Add support for text style formatting in the logs tab (VkoHov)
