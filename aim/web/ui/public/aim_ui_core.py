@@ -106,25 +106,33 @@ def group(name, data, options):
             }
         item[name] = group_key
         grouped_data.append(item)
-    sorted_groups = {}
-    for i, opt in enumerate(options):
+    sorted_groups = group_map
+    if callable(options):
         sorted_groups = {
             k: v
             for k, v in sorted(
-                group_map.items(),
-                key=lambda x: (3, str(x[1]["val"][i]))
-                if type(x[1]["val"][i]) in [tuple, list, dict]
-                else (
-                    (0, int(x[1]["val"][i]))
-                    if str(x[1]["val"][i]).isdigit()
-                    else (
-                        (2, str(x[1]["val"][i]))
-                        if x[1]["val"][i] is None
-                        else (1, str(x[1]["val"][i]))
-                    )
-                ),
+                sorted_groups.items(), key=lambda x: str(x[1]["val"]), reverse=True
             )
         }
+    else:
+        for i, opt in enumerate(options):
+            sorted_groups = {
+                k: v
+                for k, v in sorted(
+                    sorted_groups.items(),
+                    key=lambda x: (3, str(x[1]["val"][i]))
+                    if type(x[1]["val"][i]) in [tuple, list, dict]
+                    else (
+                        (0, int(x[1]["val"][i]))
+                        if str(x[1]["val"][i]).isdigit()
+                        else (
+                            (2, str(x[1]["val"][i]))
+                            if x[1]["val"][i] is None
+                            else (1, str(x[1]["val"][i]))
+                        )
+                    ),
+                )
+            }
 
     i = 0
     for group_key in sorted_groups:
