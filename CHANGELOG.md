@@ -1,5 +1,6 @@
 # Changelog
 
+- Fix issue with applying solid stroke-dasharray badge in table (KaroMourad)
 - Fix active runs indicators overlapping issue in LineChart (KaroMourad)
 
 ## 3.14.2
