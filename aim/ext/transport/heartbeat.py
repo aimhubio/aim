@@ -155,7 +155,9 @@ class RPCHeartbeatWatcher:
 
             time.sleep(1)
 
-            for client_uri, last_heartbeat_time in self._heartbeat_pool.items():
-                if datetime.datetime.now().timestamp() - last_heartbeat_time > self._client_keep_alive_time:
+            client_uris = list(self._heartbeat_pool.keys())
+            for client_uri in client_uris:
+                now = datetime.datetime.now().timestamp()
+                if now - self._heartbeat_pool[client_uri] > self._client_keep_alive_time:
                     self._release_client_resources(client_uri)
                     del self._heartbeat_pool[client_uri]
