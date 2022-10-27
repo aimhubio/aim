@@ -1,6 +1,6 @@
 import type { FunctionComponent } from 'react';
 import { StoreApi } from 'zustand';
-import { omit } from 'lodash-es';
+import { isEmpty, omit } from 'lodash-es';
 
 import {
   IBoxProps,
@@ -11,6 +11,11 @@ import {
 import { createSliceState } from 'modules/core/utils/store';
 
 import { ControlsConfigs } from '../explorer/state/controls';
+import { PersistenceTypesEnum } from '../types';
+import browserHistory from '../../services/browserHistory';
+import updateUrlSearchParam from '../../utils/updateUrlSearchParam';
+import { encode } from '../../../../utils/encoder/encoder';
+import getUrlSearchParam from '../../utils/getUrlSearchParam';
 
 import { createControlsStateConfig } from './controls';
 
@@ -119,6 +124,59 @@ function createVisualizationEngine<TStore>(
         // @ts-ignore
         controlsState.reset();
       },
+      initialize: () => {
+        const funcs: CallableFunction[] = [];
+        Object.keys(config.controls).forEach((key: string) => {
+          const control = config.controls[key];
+          const persistenceType = control?.state?.persist;
+          const persistenceKey = [visualizationName, 'c', key].join('-');
+          if (persistenceType) {
+            if (persistenceType === PersistenceTypesEnum.Url) {
+              const originalMethods =
+                // @ts-ignore
+                { ...controlsState.properties[key].methods };
+              const stateFromStorage = getUrlSearchParam(persistenceKey) || {};
+
+              // update state
+              if (!isEmpty(stateFromStorage)) {
+                originalMethods.update(stateFromStorage);
+              }
+              // @ts-ignore
+              controlsState.properties[key].methods.update = (d: any) => {
+                originalMethods.update(d);
+
+                const url = updateUrlSearchParam(persistenceKey, encode(d));
+
+                if (
+                  url !== `${window.location.pathname}${window.location.search}`
+                ) {
+                  browserHistory.push(url, null);
+                }
+              };
+
+              const removeListener = browserHistory.listenSearchParam<any>(
+                persistenceKey,
+                (data: any) => {
+                  if (isEmpty(data)) {
+                    // @ts-ignore
+                    originalMethods.reset();
+                  } else {
+                    // @ts-ignore
+                    originalMethods.update(data);
+                  }
+                },
+                ['PUSH'],
+              );
+
+              funcs.push(removeListener);
+            }
+          }
+        });
+
+        return () => {
+          funcs.forEach((func) => func());
+        };
+      },
     },
   };
 
@@ -173,12 +231,26 @@ function createVisualizationsEngine<TStore>(
       func();
     });
   }
+
+  function initialize() {
+    const funcs: CallableFunction[] = [];
+    Object.values(obj.engine).forEach((e: any) => {
+      const func = e.initialize();
+      funcs.push(func);
+    });
+
+    return () => {
+      funcs.forEach((func) => func());
+    };
+  }
+
   return {
     state: {
       [VISUALIZATIONS_STATE_PREFIX]: obj.state,
     },
     engine: {
       ...obj.engine,
+      initialize,
       reset: resetVisualizationsState,
     },
   };

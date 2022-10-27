@@ -245,6 +245,7 @@ function createEngine<TObject = any>(
     const finalizeQuery = query.initialize();
     const finalizeGrouping = groupings.initialize();
     const finalizePipeline = pipeline.initialize();
+    const finalizeVisualizations = visualizations.initialize();
 
     // subscribe to history
     instructions
@@ -267,7 +268,6 @@ function createEngine<TObject = any>(
     const removeHistoryListener =
       config.persist &&
       browserHistory.listen((update: Update) => {
-        console.log('render', update.location);
         localStorage.setItem(
           'figuresUrl',
           update.location.pathname + update.location.search,
@@ -278,6 +278,7 @@ function createEngine<TObject = any>(
       finalizeQuery();
       finalizeGrouping();
       finalizePipeline();
+      finalizeVisualizations();
       removeHistoryListener && removeHistoryListener();
 
       finalize();

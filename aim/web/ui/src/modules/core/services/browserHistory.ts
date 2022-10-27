@@ -14,10 +14,7 @@ function createListener<T>(
   let latest: string | null = new URLSearchParams(history.location.search).get(
     param,
   );
-  console.log('registering ', param);
   return (update: Update) => {
-    console.log('calling listener', param);
-
     const searchParams = new URLSearchParams(update.location.search);
     const current = searchParams.get(param);
 
