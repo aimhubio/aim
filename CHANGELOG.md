@@ -1,5 +1,17 @@
 # Changelog
 
+- Fix active runs indicators overlapping issue in LineChart (KaroMourad)
+
+## 3.14.2
+
+- Add support for text style formatting in the logs tab (VkoHov)
+- Fix "`TypeError: check()` keywords must be strings" for `Run.metrics()` method (alberttorosyan)
+- Fix run info API call error when tag color/description is None (alberttorosyan)
+
+## 3.14.1 Oct 7, 2022
+
+- Fix the current release duplication highlighting issue on the Dashboard page (arsengit)
+
 ## 3.14.0 Oct 6, 2022
 
 ### Enhancements:

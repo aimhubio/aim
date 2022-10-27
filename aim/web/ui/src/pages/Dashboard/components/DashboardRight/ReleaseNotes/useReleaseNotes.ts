@@ -109,14 +109,14 @@ function useReleaseNotes() {
     React.useMemo(() => {
       const data: { tagName: string; info: any; url: string }[] = [];
       releaseNotesStore?.data?.some((release: IReleaseNote) => {
+        if (release.tag_name === `v${AIM_VERSION}`) {
+          return true;
+        }
         data.push({
           tagName: release.tag_name,
           info: modifyReleaseName(release.name),
           url: release.html_url,
         });
-        if (release.tag_name === `v${AIM_VERSION}`) {
-          return true;
-        }
       });
       return data;
     }, [releaseNotesStore.data]);
