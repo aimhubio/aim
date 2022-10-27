@@ -2,8 +2,6 @@ import * as React from 'react';
 import * as _ from 'lodash-es';
 import classnames from 'classnames';
 
-import Editor from '@monaco-editor/react';
-
 import { Button, Spinner } from 'components/kit';
 
 import { getBasePath } from 'config/config';
@@ -12,28 +10,11 @@ import { search } from 'pages/Sandbox/search';
 
 (window as any).search = search;
 
-function toObject(x: any): any {
-  if (x instanceof Map) {
-    return Object.fromEntries(
-      Array.from(x.entries(), ([k, v]) => [k, toObject(v)]),
-    );
-  } else if (x instanceof Array) {
-    return x.map(toObject);
-  } else {
-    return x;
-  }
-}
-
 export default function SandboxVisualizer() {
   const pyodide = React.useRef<any>();
+  const [isLoading, setIsLoading] = React.useState<boolean>(true);
 
-  const editorValue = React.useRef('');
-  const [result, setResult] = React.useState<Record<string, any>>([[]]);
-  const [isProcessing, setIsProcessing] = React.useState<boolean | null>(null);
-
-  (window as any).updateLayout = (grid: any) => {
-    setResult(toObject(grid.toJs()));
-  };
+  (window as any).updateLayout = () => {};
 
   React.useEffect(() => {
     async function main() {
@@ -55,47 +36,12 @@ export default function SandboxVisualizer() {
         ).text(),
       );
 
-      execute();
+      setIsLoading(false);
     }
     main();
   }, []);
 
-  const execute = React.useCallback(async () => {
-    try {
-      setIsProcessing(true);
-      const code = editorValue.current
-        .replaceAll('from aim', '# from aim')
-        .replaceAll('import aim', '# import aim')
-        .replaceAll('= Metric.query', '= await Metric.query')
-        .replaceAll('= Images.query', '= await Images.query')
-        .replaceAll('= Audios.query', '= await Audios.query')
-        .replaceAll('= Figures.query', '= await Figures.query')
-        .replaceAll('= Texts.query', '= await Texts.query')
-        .replaceAll('= Distributions.query', '= await Distributions.query')
-        .replaceAll('def ', 'async def ')
-        .replaceAll('async async def ', 'async def ');
-      const packagesList = pyodide.current.pyodide_py.find_imports(code).toJs();
-
-      if (packagesList.includes('plotly')) {
-        await pyodide.current.loadPackage('micropip');
-        const micropip = pyodide.current.pyimport('micropip');
-        await micropip.install('plotly');
-      }
-
-      await pyodide.current!.loadPackagesFromImports(code);
-      pyodide.current
-        .runPythonAsync(code)
-        .then(() => {
-          setIsProcessing(false);
-        })
-        .catch((ex: unknown) => {
-          console.log(ex);
-          setIsProcessing(false);
-        });
-    } catch (ex) {
-      console.log(ex);
-    }
-  }, [editorValue]);
-
-  return <div className='NotebookVisualizer'></div>;
+  return (
+    <div className='NotebookVisualizer'>{isLoading ? <Spinner /> : null}</div>
+  );
 }
