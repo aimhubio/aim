@@ -5,8 +5,6 @@ import { Order } from 'modules/core/pipeline';
 import { createSliceState } from 'modules/core/utils/store';
 import getUrlSearchParam from 'modules/core/utils/getUrlSearchParam';
 
-import { StatePersistOption } from '../../types';
-
 import createGroupingsSlice from './state';
 
 type StyleApplierCallback<S> = (

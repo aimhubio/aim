@@ -64,8 +64,6 @@ function createExplorer(
       ...configuration,
       documentationLink:
         configuration.documentationLink || defaultHydration.documentationLink,
-      basePath:
-        configuration.basePath || createBasePathFromName(configuration.name),
       components: {
         groupingContainer:
           components?.groupingContainer || defaultHydration.Groupings,
@@ -80,9 +78,14 @@ function createExplorer(
       enablePipelineCache: configuration.enablePipelineCache || true,
     };
 
+    const basePath =
+      configuration.basePath || createBasePathFromName(configuration.name);
+    const engineName = createBasePathFromName(configuration.name);
+
     const engine = createEngine<TObject>(
       hydration,
-      configuration.basePath,
+      basePath,
+      engineName,
       devtool,
     );
 

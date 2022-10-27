@@ -96,7 +96,6 @@ function createVisualizationEngine<TStore>(
   config: VisualizationConfig,
   visualizationName: string,
   store: StoreApi<TStore>,
-  engineName?: string,
 ) {
   const controlsState = createState(store, visualizationName, config.controls);
 
@@ -133,7 +132,7 @@ function createVisualizationEngine<TStore>(
         customControlResets.forEach((func) => func());
       },
 
-      initialize: () => {
+      initialize: (keyNamePrefix: string = 'core-viz') => {
         const funcs: CallableFunction[] = [];
         Object.keys(config.controls).forEach((key: string) => {
           const control = config.controls[key];
@@ -198,11 +197,11 @@ function createVisualizationEngine<TStore>(
           }
         });
 
-        const boxPersistenceKey = `${engineName}.${createVisualizationStatePrefix(
-          visualizationName,
-        )}.box`;
-
         if (config.box.persist) {
+          const boxPersistenceKey = `${keyNamePrefix}.${createVisualizationStatePrefix(
+            visualizationName,
+          )}.box`;
+
           const boxStateFromStorage =
             getStateFromLocalStorage(boxPersistenceKey);
           const originalMethods = { ...boxMethods };
@@ -256,7 +255,6 @@ function createVisualizationsEngine<TStore>(
         config[name],
         name,
         store,
-        'figures',
       );
 
       // @ts-ignore
@@ -284,10 +282,10 @@ function createVisualizationsEngine<TStore>(
     });
   }
 
-  function initialize() {
+  function initialize(engineName: string = 'core-viz') {
     const funcs: CallableFunction[] = [];
     Object.values(obj.engine).forEach((e: any) => {
-      const func = e.initialize();
+      const func = e.initialize(engineName);
       funcs.push(func);
     });
 

@@ -10,15 +10,15 @@ import createPipeline, {
   PipelineOptions,
   PipelinePhasesEnum,
 } from 'modules/core/pipeline';
+import getUrlSearchParam from 'modules/core/utils/getUrlSearchParam';
+import updateUrlSearchParam from 'modules/core/utils/updateUrlSearchParam';
+import browserHistory from 'modules/core/services/browserHistory';
 
 import { SequenceTypesEnum } from 'types/core/enums';
 
+import { encode } from 'utils/encoder/encoder';
+
 import { PipelineStatusEnum, ProgressState } from '../types';
-import getUrlSearchParam from '../../utils/getUrlSearchParam';
-import updateUrlSearchParam from '../../utils/updateUrlSearchParam';
-import { encode } from '../../../../utils/encoder/encoder';
-import { getRecordState } from '../../../BaseExplorer/components/RangePanel/helpers';
-import browserHistory from '../../services/browserHistory';
 
 import createState, {
   CurrentGrouping,
@@ -142,6 +142,7 @@ function createPipelineEngine<TStore, TObject>(
           }),
         );
 
+        // TODO move check into custom push method
         if (url !== `${window.location.pathname}${window.location.search}`) {
           browserHistory.push(url, null);
         }

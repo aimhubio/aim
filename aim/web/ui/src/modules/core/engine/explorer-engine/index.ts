@@ -142,6 +142,7 @@ function getVisualizationsEngine(
 
 function createEngine<TObject = any>(
   config: ExplorerEngineConfiguration,
+  basePath: string,
   name: string = 'ExplorerEngine',
   devtool: boolean = false,
 ): EngineNew<object, AimFlatObjectBase<TObject>, typeof config.sequenceName> {
@@ -245,7 +246,7 @@ function createEngine<TObject = any>(
     const finalizeQuery = query.initialize();
     const finalizeGrouping = groupings.initialize();
     const finalizePipeline = pipeline.initialize();
-    const finalizeVisualizations = visualizations.initialize();
+    const finalizeVisualizations = visualizations.initialize(name);
 
     // subscribe to history
     instructions
