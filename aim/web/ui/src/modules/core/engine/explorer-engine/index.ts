@@ -7,6 +7,7 @@ import { PipelineOptions } from 'modules/core/pipeline';
 import { ExplorerEngineConfiguration } from 'modules/BaseExplorer/types';
 import getUrlSearchParam from 'modules/core/utils/getUrlSearchParam';
 import browserHistory from 'modules/core/services/browserHistory';
+import getQueryParamsFromState from 'modules/core/utils/getQueryParamsFromState';
 
 import { AimFlatObjectBase } from 'types/core/AimObjects';
 import { SequenceTypesEnum } from 'types/core/enums';
@@ -258,8 +259,11 @@ function createEngine<TObject = any>(
           );
         } else if (config.persist) {
           const stateFromStorage = getUrlSearchParam('query') || {};
-          if (stateFromStorage.readyQuery) {
-            pipeline.search(stateFromStorage.readyQuery, true);
+          if (stateFromStorage.form && stateFromStorage.ranges) {
+            pipeline.search(
+              getQueryParamsFromState(stateFromStorage, config.sequenceName),
+              true,
+            );
           }
         }
       })

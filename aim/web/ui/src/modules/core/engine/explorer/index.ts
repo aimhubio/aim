@@ -4,7 +4,7 @@ import { ExplorerEngineConfiguration } from 'modules/BaseExplorer/types';
 import getUrlSearchParam from 'modules/core/utils/getUrlSearchParam';
 import browserHistory from 'modules/core/services/browserHistory';
 
-import createQueryState from './query';
+import createQueryState, { QueryState } from './query';
 import createGroupingsEngine from './groupings';
 
 function createExplorerAdditionalEngine<T>(
@@ -21,16 +21,16 @@ function createExplorerAdditionalEngine<T>(
 
         // update state
         if (!isEmpty(stateFromStorage)) {
-          query.ranges.update(stateFromStorage.queryState.ranges);
-          query.form.update(stateFromStorage.queryState.form);
+          query.ranges.update(stateFromStorage.ranges);
+          query.form.update(stateFromStorage.form);
         }
 
         const removeSearchParamListener = browserHistory.listenSearchParam<any>(
           'query',
-          (query: any) => {
+          (query: QueryState) => {
             if (!isEmpty(query)) {
-              queryState.ranges.update(query.queryState.ranges);
-              queryState.form.update(query.queryState.form);
+              queryState.ranges.update(query.ranges);
+              queryState.form.update(query.form);
             } else {
               queryState.reset();
             }

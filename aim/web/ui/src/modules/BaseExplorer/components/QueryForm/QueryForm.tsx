@@ -22,6 +22,7 @@ import {
   QueryFormState,
   QueryRangesState,
 } from 'modules/core/engine/explorer/query';
+import getQueryParamsFromState from 'modules/core/utils/getQueryParamsFromState';
 
 import { Badge, Button, Icon, Text } from 'components/kit';
 import AutocompleteInput from 'components/AutocompleteInput';
@@ -91,9 +92,14 @@ function QueryForm(props: Omit<IQueryFormProps, 'visualizationName'>) {
       return;
     } else {
       engine.pipeline.search({
-        q: getQueryStringFromSelect(query, sequenceName),
+        ...getQueryParamsFromState(
+          {
+            form: query,
+            ranges,
+          },
+          sequenceName,
+        ),
         report_progress: true,
-        ...getQueryFromRanges(ranges),
       });
     }
   }, [engine, isExecuting, query, sequenceName, ranges]);

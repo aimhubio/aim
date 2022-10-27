@@ -8,6 +8,8 @@ import { Button, Icon, Text } from 'components/kit';
 
 import { SequenceTypesEnum } from 'types/core/enums';
 
+import getQueryParamsFromState from '../../../core/utils/getQueryParamsFromState';
+
 import { getRecordState } from './helpers';
 import RangePanelItem from './RangePanelItem';
 
@@ -35,9 +37,14 @@ function RangePanel(props: IRangePanelProps) {
         isApplyButtonDisabled: true,
       });
       engine.pipeline.search({
-        q: getQueryStringFromSelect(query, sequenceName),
+        ...getQueryParamsFromState(
+          {
+            ranges: rangeState,
+            form: query,
+          },
+          sequenceName,
+        ),
         report_progress: true,
-        ...getQueryFromRanges(rangeState),
       });
     }
   }, [engine, isFetching, query, sequenceName, rangeState]);

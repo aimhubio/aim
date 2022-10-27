@@ -13,12 +13,14 @@ import createPipeline, {
 import getUrlSearchParam from 'modules/core/utils/getUrlSearchParam';
 import updateUrlSearchParam from 'modules/core/utils/updateUrlSearchParam';
 import browserHistory from 'modules/core/services/browserHistory';
+import getQueryParamsFromState from 'modules/core/utils/getQueryParamsFromState';
 
 import { SequenceTypesEnum } from 'types/core/enums';
 
 import { encode } from 'utils/encoder/encoder';
 
 import { PipelineStatusEnum, ProgressState } from '../types';
+import { QueryState } from '../explorer/query';
 
 import createState, {
   CurrentGrouping,
@@ -131,14 +133,11 @@ function createPipelineEngine<TStore, TObject>(
         const url = updateUrlSearchParam(
           'query',
           encode({
-            queryState: {
-              ...queryState,
-              ranges: {
-                ...queryState.ranges,
-                isApplyButtonDisabled: true,
-              },
+            ...queryState,
+            ranges: {
+              ...queryState.ranges,
+              isApplyButtonDisabled: true,
             },
-            readyQuery: params,
           }),
         );
 
@@ -178,14 +177,11 @@ function createPipelineEngine<TStore, TObject>(
           const url = updateUrlSearchParam(
             'query',
             encode({
-              queryState: {
-                ...store.getState().query,
-                ranges: {
-                  ...store.getState().query.ranges,
-                  isApplyButtonDisabled: true,
-                },
+              ...store.getState().query,
+              ranges: {
+                ...store.getState().query.ranges,
+                isApplyButtonDisabled: true,
               },
-              readyQuery: params,
             }),
           );
           if (url !== `${window.location.pathname}${window.location.search}`) {
@@ -280,17 +276,27 @@ function createPipelineEngine<TStore, TObject>(
         ['PUSH'],
       );
 
-      const removeQueryListener = browserHistory.listenSearchParam<any>(
-        'query',
-        (query: any) => {
-          if (!isEmpty(query)) {
-            search({ ...query.readyQuery, report_progress: true }, true);
-          } else {
-            search({ q: '()', report_progress: true }, true);
-          }
-        },
-        ['PUSH'],
-      );
+      const removeQueryListener =
+        browserHistory.listenSearchParam<QueryState | null>(
+          'query',
+          (query: QueryState | null) => {
+            if (!isEmpty(query)) {
+              search(
+                {
+                  ...getQueryParamsFromState(
+                    query as QueryState,
+                    options.sequenceName,
+                  ),
+                  report_progress: true,
+                },
+                true,
+              );
+            } else {
+              search({ q: '()', report_progress: true }, true);
+            }
+          },
+          ['PUSH'],
+        );
       return () => {
         removeGroupingsListener();
         removeQueryListener();
