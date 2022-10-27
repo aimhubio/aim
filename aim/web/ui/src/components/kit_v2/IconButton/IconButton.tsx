@@ -16,23 +16,23 @@ const Container = styled('button', {
   jc: 'center',
   fontWeight: '$2',
   cursor: 'pointer',
-  borderRadius: '$1',
-  transition: 'all 0.2s ease-in-out',
+  br: '$3',
+  transition: 'all 0.2s ease-out',
   fontSize: '$2',
   variants: {
     size: {
       small: {
-        height: '$sizes$1',
+        size: '$sizes$1',
         fontSize: '$fontSizes$2',
       },
       medium: {
-        height: '$sizes$3',
+        size: '$sizes$3',
       },
       large: {
-        height: '$sizes$5',
+        size: '$sizes$5',
       },
       xLarge: {
-        height: '$sizes$7',
+        size: '$sizes$7',
       },
     },
     disabled: {
@@ -50,26 +50,35 @@ const Container = styled('button', {
   },
 });
 
-function IconButton({
-  icon,
-  size = 'medium',
-  color = 'primary',
-  variant = 'contained',
-  disabled = false,
-  ...props
-}: IIconButtonProps) {
-  return (
-    <Container
-      {...props}
-      data-testid='icon-button'
-      css={{ ...getButtonStyles(color, variant, disabled) }}
-      size={size}
-      variant={variant}
-      disabled={disabled}
-    >
-      <Icon name={icon} />
-    </Container>
-  );
-}
+const IconButton = React.forwardRef<
+  React.ElementRef<typeof Container>,
+  IIconButtonProps
+>(
+  (
+    {
+      icon,
+      size = 'medium',
+      color = 'primary',
+      variant = 'contained',
+      disabled = false,
+      ...props
+    }: IIconButtonProps,
+    forwardedRef,
+  ) => {
+    return (
+      <Container
+        {...props}
+        data-testid='icon-button'
+        css={{ ...getButtonStyles(color, variant, disabled) }}
+        size={size}
+        variant={variant}
+        disabled={disabled}
+        ref={forwardedRef}
+      >
+        <Icon name={icon} />
+      </Container>
+    );
+  },
+);
 
 export default React.memo(IconButton);

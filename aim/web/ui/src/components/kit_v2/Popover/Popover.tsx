@@ -5,7 +5,6 @@ import * as PopoverPrimitive from '@radix-ui/react-popover';
 import { styled, keyframes } from 'config/stitches/stitches.config';
 
 import { IPopoverProps } from './Popover.d';
-
 const slideUpAndFade = keyframes({
   '0%': { opacity: 0, transform: 'translateY(2px)' },
   '100%': { opacity: 1, transform: 'translateY(0)' },
@@ -68,11 +67,6 @@ const PopoverContainer = styled(PopoverPrimitive.Root, {
 const PopoverTrigger = PopoverPrimitive.Trigger;
 const PopoverContent = Content;
 
-const TriggerWrapper = styled('span', {
-  all: 'unset',
-  display: 'inline-block',
-});
-
 function Popover({
   trigger,
   content,
@@ -83,24 +77,19 @@ function Popover({
 }: IPopoverProps) {
   const [open, setOpen] = React.useState(false);
 
-  const isTriggerFunction = React.useMemo(() => {
-    return typeof trigger === 'function';
-  }, [trigger]);
-
-  const handleOpenChange = React.useCallback(
-    (open: boolean) => setOpen(open),
-    [],
-  );
+  const handleOpenChange = React.useCallback((val: boolean) => {
+    setOpen(val);
+  }, []);
 
   return (
     <PopoverContainer
-      onOpenChange={isTriggerFunction ? handleOpenChange : undefined}
+      onOpenChange={
+        typeof trigger === 'function' ? handleOpenChange : undefined
+      }
       defaultOpen={defaultOpen}
     >
       <PopoverTrigger asChild>
-        <TriggerWrapper>
-          {typeof trigger === 'function' ? trigger({ open }) : trigger}
-        </TriggerWrapper>
+        {typeof trigger === 'function' ? trigger({ open }) : trigger}
       </PopoverTrigger>
       <PopoverContent
         sideOffset={placementOffset}

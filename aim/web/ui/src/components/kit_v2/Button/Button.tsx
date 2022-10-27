@@ -63,7 +63,7 @@ const Container = styled('button', {
   lineHeight: 1,
   fontWeight: '$2',
   cursor: 'pointer',
-  borderRadius: '$1',
+  br: '$3',
   transition: 'all 0.2s ease-in-out',
   fontSize: '$3',
   variants: {
@@ -180,36 +180,47 @@ const IconRight = styled(IconContainer, {
  * @property {IButtonProps['endIcon']} endIcon - icon to be displayed on the right side of the button
  * @property {IButtonProps['children']} children - children to be displayed inside the button
  */
-function Button({
-  color = 'primary',
-  size = 'medium',
-  variant = 'contained',
-  fullWidth = false,
-  disabled,
-  startIcon,
-  endIcon,
-  children,
-  ...rest
-}: IButtonProps): React.FunctionComponentElement<React.ReactNode> {
-  return (
-    <Container
-      css={{ ...rest.style, ...getStylesFromColor(color, variant, disabled) }}
-      size={size}
-      disabled={disabled}
-      startIcon={Boolean(startIcon)}
-      endIcon={Boolean(endIcon)}
-      fullWidth={fullWidth}
-      {...rest}
-    >
-      {startIcon ? (
-        <IconLeft size={size} className='startIcon' name={startIcon} />
-      ) : null}
-      {children}
-      {endIcon ? (
-        <IconRight size={size} className='endIcon' name={endIcon} />
-      ) : null}
-    </Container>
-  );
-}
+
+const Button = React.forwardRef<
+  React.ElementRef<typeof Container>,
+  IButtonProps
+>(
+  (
+    {
+      children,
+      color = 'primary',
+      size = 'medium',
+      variant = 'contained',
+      fullWidth = false,
+      disabled,
+      startIcon,
+      endIcon,
+      ...rest
+    }: IButtonProps,
+    forwardedRef,
+  ) => {
+    return (
+      <Container
+        data-testid='button'
+        css={{ ...rest.style, ...getStylesFromColor(color, variant, disabled) }}
+        size={size}
+        disabled={disabled}
+        startIcon={Boolean(startIcon)}
+        endIcon={Boolean(endIcon)}
+        fullWidth={fullWidth}
+        ref={forwardedRef}
+        {...rest}
+      >
+        {startIcon ? (
+          <IconLeft size={size} className='startIcon' name={startIcon} />
+        ) : null}
+        {children}
+        {endIcon ? (
+          <IconRight size={size} className='endIcon' name={endIcon} />
+        ) : null}
+      </Container>
+    );
+  },
+);
 
 export default React.memo(Button);

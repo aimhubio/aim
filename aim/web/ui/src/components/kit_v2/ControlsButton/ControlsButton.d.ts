@@ -43,5 +43,5 @@ export interface IControlsButtonProps {
   /**
    * @description The disabled state of the button
    */
-  disabled?: false;
+  disabled?: boolean;
 }

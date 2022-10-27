@@ -17,8 +17,8 @@ const Trigger = styled('button', {
   lineHeight: 1,
   fontWeight: '$2',
   cursor: 'pointer',
-  borderRadius: '$1',
-  transition: 'all 0.2s ease-in-out',
+  borderRadius: '$3',
+  transition: 'all 0.2s ease-out',
   fontSize: '$3',
   color: ' #5A667A',
   '&:hover': {
@@ -53,6 +53,14 @@ const Trigger = styled('button', {
         height: '$7',
         pl: '$7',
         pr: '$6',
+      },
+    },
+    disabled: {
+      true: {
+        userSelect: 'none',
+        cursor: 'not-allowed',
+        pointerEvents: 'none',
+        color: '$secondary50',
       },
     },
   },
@@ -173,49 +181,61 @@ const RightIcon = styled(IconButton, {
   width: '$1',
 });
 
-function ControlsButton({
-  children,
-  open,
-  rightIcon,
-  size = 'md',
-  hasAppliedValues = false,
-  appliedValuesCount,
-  leftIcon,
-  ...props
-}: IControlsButtonProps) {
-  return (
-    <Trigger
-      {...props}
-      focused={open}
-      applied={hasAppliedValues}
-      size={size}
-      rightIcon={!!rightIcon}
-      leftIcon={!!leftIcon}
-    >
-      {leftIcon ? <LeftIcon fontSize={10} name={leftIcon} /> : null}
-      {children}
-      {appliedValuesCount ? (
-        <AppliedCount>{appliedValuesCount}</AppliedCount>
-      ) : null}
-      <ArrowIcon
-        fontSize={6}
+const ControlsButton = React.forwardRef<
+  React.ElementRef<typeof Trigger>,
+  IControlsButtonProps
+>(
+  (
+    {
+      children,
+      open,
+      rightIcon,
+      size = 'md',
+      hasAppliedValues = false,
+      appliedValuesCount,
+      leftIcon,
+      disabled,
+      ...props
+    }: IControlsButtonProps,
+    forwardedRef,
+  ) => {
+    return (
+      <Trigger
+        {...props}
+        focused={open}
+        applied={hasAppliedValues}
         size={size}
         rightIcon={!!rightIcon}
-        name={`arrow-${open ? 'up' : 'down'}-contained` as IconName}
-      />
-      {rightIcon ? (
-        <RightIcon
-          onClick={(e) => {
-            e.preventDefault();
-            rightIcon.onClick();
-          }}
-          icon={rightIcon.name}
-          variant='text'
-          color='secondary'
+        leftIcon={!!leftIcon}
+        disabled={disabled}
+        ref={forwardedRef}
+      >
+        {leftIcon ? <LeftIcon fontSize={10} name={leftIcon} /> : null}
+        {children}
+        {appliedValuesCount ? (
+          <AppliedCount>{appliedValuesCount}</AppliedCount>
+        ) : null}
+        <ArrowIcon
+          fontSize={6}
+          size={size}
+          rightIcon={!!rightIcon}
+          name={`arrow-${open ? 'up' : 'down'}-contained` as IconName}
         />
-      ) : null}
-    </Trigger>
-  );
-}
+        {rightIcon?.name ? (
+          <RightIcon
+            onClick={(e: React.SyntheticEvent) => {
+              e.preventDefault();
+              rightIcon?.onClick();
+            }}
+            disabled={disabled}
+            icon={rightIcon?.name}
+            variant='text'
+            color='secondary'
+          />
+        ) : null}
+      </Trigger>
+    );
+  },
+);
 
 export default React.memo(ControlsButton);

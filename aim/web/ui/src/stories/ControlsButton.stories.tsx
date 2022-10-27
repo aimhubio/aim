@@ -1,23 +1,22 @@
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 
-import Button from 'components/kit_v2/ControlsButton';
+import ControlButton from 'components/kit_v2/ControlsButton';
 import Popover from 'components/kit_v2/Popover';
 
 export default {
   title: 'Kit/Inputs',
-  component: Button,
+  component: ControlButton,
   argTypes: {
     size: {
       control: 'select',
     },
-    rightIcon: {},
   },
-} as ComponentMeta<typeof Button>;
+} as ComponentMeta<typeof ControlButton>;
 
-const Template: ComponentStory<typeof Button> = (args) => (
+const Template: ComponentStory<typeof ControlButton> = (args) => (
   <Popover
     content={<div>Control Popover</div>}
-    trigger={({ open }) => <Button {...args} open={open} />}
+    trigger={({ open }) => <ControlButton {...args} open={open} />}
   />
 );
 
