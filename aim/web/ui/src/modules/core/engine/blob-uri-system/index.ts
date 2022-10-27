@@ -24,13 +24,9 @@ export interface IBlobURISystemEngine {
 
 const BATCH_SEND_DELAY = 1000;
 
-// function createBlobURISystemEngine<TStore>(store: any): IEventSystemEngine {
 function createBlobURISystemEngine(
   sequenceType: SequenceTypesEnum,
 ): IBlobURISystemEngine {
-  //   const initialState = getInitialState();
-  //   const state = createState<TStore>(store, initialState);
-
   let blobsData: Record<string, string> = {};
   let blobsSubscriptions: Record<string, Callback[]> = {};
   let blobUriQueue: string[] = [];
