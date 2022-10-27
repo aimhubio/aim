@@ -7,6 +7,7 @@
 - Add support for text style formatting in the logs tab (VkoHov)
 - Fix "`TypeError: check()` keywords must be strings" for `Run.metrics()` method (alberttorosyan)
 - Fix run info API call error when tag color/description is None (alberttorosyan)
+- Fix remote heartbeat resource cleanup (mihran113)
 
 ## 3.14.1 Oct 7, 2022
 
