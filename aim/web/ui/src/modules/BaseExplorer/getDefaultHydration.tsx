@@ -126,6 +126,7 @@ const defaultHydration = {
   documentationLink:
     'https://aimstack.readthedocs.io/en/latest/ui/pages/explorers.html',
   box: {
+    persist: true,
     initialState: {
       width: 400,
       height: 400,

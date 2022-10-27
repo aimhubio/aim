@@ -9,17 +9,20 @@ import {
   IVisualizationProps,
 } from 'modules/BaseExplorer/types';
 import { createSliceState } from 'modules/core/utils/store';
+import updateUrlSearchParam from 'modules/core/utils/updateUrlSearchParam';
+import browserHistory from 'modules/core/services/browserHistory';
+import getUrlSearchParam from 'modules/core/utils/getUrlSearchParam';
+
+import getStateFromLocalStorage from 'utils/getStateFromLocalStorage';
+import { encode } from 'utils/encoder/encoder';
 
 import { ControlsConfigs } from '../explorer/state/controls';
 import { PersistenceTypesEnum } from '../types';
-import browserHistory from '../../services/browserHistory';
-import updateUrlSearchParam from '../../utils/updateUrlSearchParam';
-import { encode } from '../../../../utils/encoder/encoder';
-import getUrlSearchParam from '../../utils/getUrlSearchParam';
 
 import { createControlsStateConfig } from './controls';
 
 type BoxConfig = {
+  persist?: boolean; // TODO later use StatePersistTypesEnum
   initialState: {
     width: number;
     height: number;
@@ -93,10 +96,11 @@ function createVisualizationEngine<TStore>(
   config: VisualizationConfig,
   visualizationName: string,
   store: StoreApi<TStore>,
+  engineName?: string,
 ) {
   const controlsState = createState(store, visualizationName, config.controls);
 
-  const boxConfigState = createSliceState<BoxConfig['initialState']>(
+  const boxConfigState = createSliceState<BoxState>(
     config.box.initialState,
     `${createVisualizationStatePrefix(visualizationName)}.box`,
   );
@@ -108,6 +112,8 @@ function createVisualizationEngine<TStore>(
     },
   };
   const boxMethods = boxConfigState.methods(store.setState, store.getState);
+
+  const customControlResets: CallableFunction[] = [];
 
   const engine = {
     [visualizationName]: {
@@ -123,7 +129,10 @@ function createVisualizationEngine<TStore>(
         boxMethods.reset();
         // @ts-ignore
         controlsState.reset();
+
+        customControlResets.forEach((func) => func());
       },
+
       initialize: () => {
         const funcs: CallableFunction[] = [];
         Object.keys(config.controls).forEach((key: string) => {
@@ -154,6 +163,22 @@ function createVisualizationEngine<TStore>(
                 }
               };
 
+              // @ts-ignore
+              controlsState.properties[key].methods.reset = () => {
+                originalMethods.reset();
+
+                const url = updateUrlSearchParam(persistenceKey, null);
+
+                if (
+                  url !== `${window.location.pathname}${window.location.search}`
+                ) {
+                  browserHistory.push(url, null);
+                }
+              };
+              customControlResets.push(
+                // @ts-ignore
+                controlsState.properties[key].methods.reset,
+              );
               const removeListener = browserHistory.listenSearchParam<any>(
                 persistenceKey,
                 (data: any) => {
@@ -172,6 +197,32 @@ function createVisualizationEngine<TStore>(
             }
           }
         });
+
+        const boxPersistenceKey = `${engineName}.${createVisualizationStatePrefix(
+          visualizationName,
+        )}.box`;
+
+        if (config.box.persist) {
+          const boxStateFromStorage =
+            getStateFromLocalStorage(boxPersistenceKey);
+          const originalMethods = { ...boxMethods };
+
+          if (!isEmpty(boxStateFromStorage)) {
+            boxMethods.update(boxStateFromStorage);
+          } else {
+            boxMethods.reset();
+          }
+
+          boxMethods.reset = () => {
+            originalMethods.reset();
+            localStorage.removeItem(boxPersistenceKey);
+          };
+
+          boxMethods.update = (newValue: Partial<BoxState>) => {
+            originalMethods.update(newValue);
+            localStorage.setItem(boxPersistenceKey, encode(newValue));
+          };
+        }
 
         return () => {
           funcs.forEach((func) => func());
@@ -205,6 +256,7 @@ function createVisualizationsEngine<TStore>(
         config[name],
         name,
         store,
+        'figures',
       );
 
       // @ts-ignore

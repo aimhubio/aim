@@ -8,7 +8,7 @@ import { Button, Icon, Text } from 'components/kit';
 
 import { SequenceTypesEnum } from 'types/core/enums';
 
-import { getRangeAndDensityData, getRecordState } from './helpers';
+import { getRecordState } from './helpers';
 import RangePanelItem from './RangePanelItem';
 
 import { IRangePanelProps } from './';

@@ -5,18 +5,18 @@ import createVanilla from 'zustand/vanilla';
 import { devtools, subscribeWithSelector } from 'zustand/middleware';
 import { PipelineOptions } from 'modules/core/pipeline';
 import { ExplorerEngineConfiguration } from 'modules/BaseExplorer/types';
+import getUrlSearchParam from 'modules/core/utils/getUrlSearchParam';
+import browserHistory from 'modules/core/services/browserHistory';
 
 import { AimFlatObjectBase } from 'types/core/AimObjects';
 import { SequenceTypesEnum } from 'types/core/enums';
 
 import createPipelineEngine, { IPipelineEngine } from '../pipeline';
 import createInstructionsEngine, { IInstructionsEngine } from '../instructions';
-import { PipelineStatusEnum, StatePersistOption } from '../types';
+import { PipelineStatusEnum } from '../types';
 import createVisualizationsEngine from '../visualizations';
 import createExplorerAdditionalEngine from '../explorer';
 import createCustomStatesEngine, { CustomStatesEngine } from '../custom-states';
-import getUrlSearchParam from '../../utils/getUrlSearchParam';
-import browserHistory from '../../services/browserHistory';
 
 type State = {
   pipeline?: any;

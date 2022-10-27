@@ -50,6 +50,9 @@ function createExplorer(
             initialState:
               viz.box.initialState || defaultHydration.box.initialState,
             component: viz.box.component,
+            persist: viz.box.hasOwnProperty('persist')
+              ? viz.box.persist
+              : defaultHydration.box.persist,
           },
         };
         return acc;
