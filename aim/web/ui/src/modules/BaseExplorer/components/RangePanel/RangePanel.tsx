@@ -1,14 +1,11 @@
 import React from 'react';
 
 import { QueryFormState } from 'modules/core/engine/explorer/query/state';
-import { getQueryFromRanges } from 'modules/core/utils/getQueryFromRanges';
-import { getQueryStringFromSelect } from 'modules/core/utils/getQueryStringFromSelect';
+import getQueryParamsFromState from 'modules/core/utils/getQueryParamsFromState';
 
 import { Button, Icon, Text } from 'components/kit';
 
 import { SequenceTypesEnum } from 'types/core/enums';
-
-import getQueryParamsFromState from '../../../core/utils/getQueryParamsFromState';
 
 import { getRecordState } from './helpers';
 import RangePanelItem from './RangePanelItem';
