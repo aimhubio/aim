@@ -14,10 +14,7 @@ export interface IEventSystemEngine {
       payload: any,
       options: Record<string, any>,
     ) => void;
-    on: (
-      eventName: string,
-      callback: (payload: any) => void,
-    ) => (payload: any) => void;
+    on: (eventName: string, callback: Callback) => Callback;
     unsubscribe: (eventName: string, callback: Callback) => void;
     once: (
       eventName: string,
@@ -38,7 +35,7 @@ function createEventSystemEngine<TStore>(store: any): IEventSystemEngine {
   /**
    * Function to fire an event
    * @param {string} eventName
-   * @param {Callback} payload
+   * @param {any} payload
    */
   function fire(
     eventName: string,
