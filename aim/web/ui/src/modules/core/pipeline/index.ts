@@ -110,7 +110,7 @@ async function execute(options: PipelineExecutionOptions): Promise<any> {
   } catch (e) {
     callbacks.statusChangeCallback &&
       callbacks.statusChangeCallback(PipelinePhasesEnum.Waiting);
-    throw new PipelineError(e.message || e, e.detail, e.source);
+    throw new PipelineError(e.message || e, e.detail, e.source).getError();
   }
 }
 

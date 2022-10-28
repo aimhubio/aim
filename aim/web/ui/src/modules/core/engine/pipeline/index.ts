@@ -189,7 +189,10 @@ function createPipelineEngine<TStore, TObject>(
           }
         }
       })
-      .catch((ex: unknown) => {});
+      .catch((err) => {
+        state.setError(err);
+        state.changeCurrentPhaseOrStatus(PipelineStatusEnum.Failed);
+      });
   }
 
   function normalizeGroupConfig(config: CurrentGrouping) {

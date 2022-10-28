@@ -89,7 +89,7 @@ function AttachedTagsList({
         {inlineAttachedTagsList ? 'Click to edit tags' : 'No attached tags'}
       </div>
     );
-  }, [attachedTags]);
+  }, [attachedTags, inlineAttachedTagsList]);
 
   const renderAddTagsButton = React.useCallback(() => {
     return (
@@ -99,7 +99,7 @@ function AttachedTagsList({
         color='secondary'
         className='AttachedTagsList__ControlPopover__editPopoverButton'
       >
-        <Icon name='edit'></Icon>
+        <Icon name='edit' />
       </Button>
     );
   }, [attachedTags, addTagButtonSize]);

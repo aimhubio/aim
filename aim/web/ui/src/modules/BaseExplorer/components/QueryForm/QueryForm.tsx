@@ -34,6 +34,7 @@ import { ISelectOption } from 'types/services/models/explorer/createAppModel';
 import { SequenceTypesEnum } from 'types/core/enums';
 
 import getAdvancedSuggestion from 'utils/getAdvancedSuggestions';
+import removeSyntaxErrBrackets from 'utils/removeSyntaxErrBrackets';
 
 import SearchButton from './SearchButton';
 
@@ -60,6 +61,8 @@ function QueryForm(props: Omit<IQueryFormProps, 'visualizationName'>) {
     engine.query.ranges.stateSelector,
   );
   const status = engine.useStore(engine.pipeline.statusSelector);
+  const error = engine.useStore(engine.pipeline.errorSelector);
+  const updateError = React.useRef(engine.pipeline.setError);
 
   const { isExecuting, isInsufficientResources } =
     useMemo((): StatusCheckResult => {
@@ -76,6 +79,32 @@ function QueryForm(props: Omit<IQueryFormProps, 'visualizationName'>) {
 
       return result;
     }, [status]);
+
+  const processedError = React.useMemo(() => {
+    if (error) {
+      let message = error.message || 'Something went wrong';
+      let detail = { ...(error.detail || {}) };
+      if (message === 'SyntaxError') {
+        const syntaxErrDetail = removeSyntaxErrBrackets(
+          detail,
+          query.advancedModeOn,
+        );
+        return {
+          message: `Query syntax error at line (${syntaxErrDetail.line}, ${
+            syntaxErrDetail.offset
+          }${
+            syntaxErrDetail.end_offset &&
+            syntaxErrDetail.end_offset !== syntaxErrDetail.offset
+              ? `-${syntaxErrDetail.end_offset}`
+              : ''
+          })`,
+          detail: syntaxErrDetail,
+        };
+      }
+      return { message, detail };
+    }
+    return;
+  }, [error, query.advancedModeOn]);
 
   const onInputChange = React.useCallback(
     (val: string) => {
@@ -138,6 +167,7 @@ function QueryForm(props: Omit<IQueryFormProps, 'visualizationName'>) {
     if (q === '()') {
       q = '';
     }
+    updateError.current(null);
     updateQuery.current({
       advancedModeOn: !query.advancedModeOn,
       advancedInput: q,
@@ -234,6 +264,7 @@ function QueryForm(props: Omit<IQueryFormProps, 'visualizationName'>) {
                     value={query.advancedInput}
                     onChange={onInputChange}
                     onEnter={onSubmit}
+                    error={processedError}
                   />
                 </div>
               </ErrorBoundary>
@@ -328,17 +359,15 @@ function QueryForm(props: Omit<IQueryFormProps, 'visualizationName'>) {
                     </Text>
                   )}
                   <div className='QueryForm__tags ScrollBar__hidden'>
-                    {query.selections?.map((tag: ISelectOption) => {
-                      return (
-                        <Badge
-                          size='large'
-                          key={tag.label}
-                          label={tag.label}
-                          disabled={isExecuting}
-                          onDelete={onSelectOptionDelete}
-                        />
-                      );
-                    })}
+                    {query.selections?.map((tag: ISelectOption) => (
+                      <Badge
+                        size='large'
+                        key={tag.label}
+                        label={tag.label}
+                        disabled={isExecuting}
+                        onDelete={onSelectOptionDelete}
+                      />
+                    ))}
                   </div>
                   {query.selections.length > 1 && (
                     <span
@@ -368,6 +397,7 @@ function QueryForm(props: Omit<IQueryFormProps, 'visualizationName'>) {
                 value={query.simpleInput}
                 context={autocompleteContext.suggestions}
                 onEnter={onSubmit}
+                error={processedError}
               />
             </div>
           )}
