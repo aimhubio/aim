@@ -3,7 +3,7 @@
 ## 3.14.2
 
 - Add support to sync explorer state through url on Base and Figures Explorers (rubenaprikyan)
-- Add Support to highlight syntax error in Figures Explorer (KaroMourad)
+- Add support to highlight syntax error in Figures Explorer (KaroMourad)
 - Fix issue with applying solid stroke styles on stroke badge in table (KaroMourad)
 - Fix active runs indicators overlapping issue in LineChart (KaroMourad)
 - Add support for text style formatting in the logs tab (VkoHov)
