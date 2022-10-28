@@ -125,6 +125,7 @@ function createPipelineEngine<TStore, TObject>(
     const currentGroupings = state.getCurrentGroupings();
 
     state.setCurrentQuery(params);
+    state.setError(null);
 
     if (!isInternal && pipelineOptions.persist) {
       const queryState = store.getState().query;

@@ -265,6 +265,7 @@ function QueryForm(props: Omit<IQueryFormProps, 'visualizationName'>) {
                     onChange={onInputChange}
                     onEnter={onSubmit}
                     error={processedError}
+                    forceRemoveError={true}
                   />
                 </div>
               </ErrorBoundary>
@@ -398,6 +399,7 @@ function QueryForm(props: Omit<IQueryFormProps, 'visualizationName'>) {
                 context={autocompleteContext.suggestions}
                 onEnter={onSubmit}
                 error={processedError}
+                forceRemoveError={true}
               />
             </div>
           )}
