@@ -3,6 +3,7 @@ import datetime
 from multiprocessing import Process
 from typing import Optional
 
+import aim.ext.transport.remote_tracking_pb2 as rpc_messages
 import aim.ext.transport.remote_tracking_pb2_grpc as remote_tracking_pb2_grpc
 from aim.ext.cleanup import AutoClean
 
@@ -86,5 +87,5 @@ class RemoteWorker:
             _remote_worker_channel = grpc.insecure_channel(self.address)
 
         _remote_worker_stub = remote_tracking_pb2_grpc.RemoteTrackingServiceStub(_remote_worker_channel)
-
-        _remote_worker_stub.cleanup_client_resources(client_uri)
+        request = rpc_messages.ClientResourceCleanupRequest(client_uri=client_uri)
+        _remote_worker_stub.cleanup_client_resources(request)
