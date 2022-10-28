@@ -1,26 +1,32 @@
-export const initialCode = `from aim.sequences import Images, Audios, Figures, Texts 
+export const initialCode = `from aim.sequences import Metric 
 from aim.ui.layout import Grid, Cell
-from aim.ui.viz import ImagesList, AudiosList, FiguresList, TextsList
+from aim.ui.viz import LineChart, Table
 
-images = Images.query()
-audios = Audios.query()
-texts = Texts.query()
+metrics = Metric.query()
 
-images_list = ImagesList(images)
+def show_dataframe(metric, point):
+    metric_df = Metric.dataframe(metric["key"])
+    table = Table(metric_df)
+    
+    Grid([
+        [line_chart_cell],
+        [Cell(table)]
+    ])
 
-audios_list = AudiosList(audios)
+line_chart = LineChart(metrics, x='steps', y='values',
+                color=["run.name"],
+                stroke_style=["metric.context"],
+                on_point_click=show_dataframe)
 
-text_list = TextsList(texts, color=["record.step"])
-
-runs_table = Cell(
-                [images_list, audios_list, text_list], 
-                facet={
-                    "row": ["run.name"], 
-                    "column": ["sequence.type","sequence.name"]
-                },
-                stack=["record.step"])
+line_chart_cell = Cell(
+                    line_chart, 
+                    facet={
+                        "row": ["metric.name"], 
+                        "column": ["run.name"]
+                    })
 
 Grid([
-    [runs_table]
+    [line_chart_cell],
+    []
 ])
 `;

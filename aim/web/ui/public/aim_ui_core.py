@@ -7,20 +7,47 @@ import hashlib
 
 
 class Object:
-    def __init__(self, type):
+    def __init__(self, type, methods={}):
         self.type = type
+        self.methods = methods
+        self.items = []
 
     async def query(self, query=""):
         data = await search(self.type, query)
         items = []
         for item in data:
-            d = item.to_py()
+            d = dict(item.to_py())
             d["type"] = self.type
             items.append(d)
+        self.items = items
         return items
 
 
-Metric = Object("metric")
+class MetricObject(Object):
+    def dataframe(self, key):
+        import pandas as pd
+
+        metric = self.items[key]
+
+        df_source = {
+            "run.hash": [],
+            "metric.name": [],
+            "metric.context": [],
+            "step": [],
+            "value": [],
+        }
+
+        for i, s in enumerate(metric["steps"]):
+            df_source["run.hash"].append(metric["run"]["hash"])
+            df_source["metric.name"].append(metric["name"])
+            df_source["metric.context"].append(str(metric["context"]))
+            df_source["step"].append(metric["steps"][i])
+            df_source["value"].append(metric["values"][i])
+
+        return pd.DataFrame(df_source)
+
+
+Metric = MetricObject("metric")
 Images = Object("images")
 Figures = Object("figures")
 Audios = Object("audios")

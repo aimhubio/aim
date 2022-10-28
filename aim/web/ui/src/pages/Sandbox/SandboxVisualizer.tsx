@@ -53,6 +53,8 @@ export default function SandboxVisualizer() {
         },
       });
 
+      await pyodide.current.loadPackage('pandas');
+
       pyodide.current.runPython(
         await (
           await fetch(`${getBasePath()}/static-files/aim_ui_core.py`)
