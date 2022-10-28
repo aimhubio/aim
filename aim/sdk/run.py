@@ -23,7 +23,7 @@ from aim.ext.utils import (
 )
 from aim.sdk.types import AimObject
 from aim.sdk.configs import AIM_RUN_INDEXING_TIMEOUT
-
+from aim.sdk.logging import LogRecord, LogRecords
 from aim.storage.treeview import TreeView
 from aim.storage.context import Context
 from aim.storage import treeutils
@@ -449,6 +449,34 @@ class Run(BaseRun, StructuredRunMixin):
         """
 
         self._tracker(value, name, step, epoch, context=context)
+
+    # logging API
+    def log(self, msg: str, *, level: int, **params):
+        self.track(LogRecord(msg, level, **params), name='__log_records')
+
+    def warning(self, msg, **params):
+        self.log(msg, level=logging.WARNING, **params)
+
+    def error(self, msg, **params):
+        self.log(msg, level=logging.ERROR, **params)
+
+    def critical(self, msg, **params):
+        self.log(msg, level=logging.CRITICAL, **params)
+
+    def info(self, msg, **params):
+        self.log(msg, level=logging.INFO, **params)
+
+    def debug(self, msg, **params):
+        self.log(msg, level=logging.DEBUG, **params)
+
+    def get_log_records(self) -> Optional[LogRecords]:
+        """Retrieve duplicated terminal logs for a run
+
+                Returns:
+                    :obj:`Sequence` object if exists, `None` otherwise.
+                """
+        return self._get_sequence('log_records', '__log_records', Context({}))
+
 
     @property
     def props(self):
