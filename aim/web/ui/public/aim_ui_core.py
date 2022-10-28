@@ -145,7 +145,7 @@ def Grid(grid):
     updateLayout(grid)
 
 
-def Cell(viz, facet={"row": [], "column": []}, size={}, sync=[None]):
+def Cell(viz, facet={"row": [], "column": []}, size={}, stack=[None]):
     if type(viz) is list:
         data = []
         for el in viz:
@@ -166,7 +166,7 @@ def Cell(viz, facet={"row": [], "column": []}, size={}, sync=[None]):
     row_map, row_data = group("row", data, facet["row"])
     column_map, column_data = group("column", data, facet["column"])
 
-    sync_map, sync_data = group("sync", data, sync)
+    stack_map, stack_data = group("stack", data, stack)
 
     items = []
     for i, elem in enumerate(data):
@@ -174,7 +174,7 @@ def Cell(viz, facet={"row": [], "column": []}, size={}, sync=[None]):
         if no_facet is False:
             row_val = row_map[row_data[i]["row"]]
             column_val = column_map[column_data[i]["column"]]
-            sync_val = sync_map[sync_data[i]["sync"]]
+            stack_val = stack_map[stack_data[i]["stack"]]
 
             item["row"] = row_val["order"]
             item["column"] = column_val["order"]
@@ -183,9 +183,9 @@ def Cell(viz, facet={"row": [], "column": []}, size={}, sync=[None]):
             item["row_options"] = facet["row"]
             item["column_options"] = facet["column"]
 
-            item["sync"] = sync_val["order"]
-            item["sync_val"] = sync_val["val"]
-            item["sync_options"] = sync
+            item["stack"] = stack_val["order"]
+            item["stack_val"] = stack_val["val"]
+            item["stack_options"] = stack
 
         items.append(item)
 

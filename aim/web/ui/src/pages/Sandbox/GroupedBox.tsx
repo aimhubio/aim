@@ -198,7 +198,7 @@ function GroupedBox(props: any) {
     };
   }, [data]);
 
-  const sliderValues = Object.keys(props.sync.syncMap)
+  const sliderValues = Object.keys(props.stack.stackMap)
     .map((key) => +key)
     .sort((a, b) => a - b);
 
@@ -279,7 +279,7 @@ function GroupedBox(props: any) {
 
                 const compProps = {
                   ...props.viz,
-                  data: vals.filter((v) => v.sync === props.sync.syncValue),
+                  data: vals.filter((v) => v.stack === props.stack.stackValue),
                 };
                 return (
                   <div
@@ -304,7 +304,7 @@ function GroupedBox(props: any) {
                       >
                         <Tooltip
                           title={formatValue(
-                            props.sync.syncMap[props.sync.syncValue],
+                            props.stack.stackMap[props.stack.stackValue],
                           )}
                         >
                           <div
@@ -321,7 +321,7 @@ function GroupedBox(props: any) {
                           >
                             <Text size={10}>
                               {formatValue(
-                                props.sync.syncMap[props.sync.syncValue],
+                                props.stack.stackMap[props.stack.stackValue],
                               )}
                             </Text>
                           </div>
@@ -332,10 +332,10 @@ function GroupedBox(props: any) {
                           track={false}
                           valueLabelDisplay='off'
                           getAriaValueText={(value) =>
-                            `${props.sync.syncMap[value]}`
+                            `${props.stack.stackMap[value]}`
                           }
-                          value={props.sync.syncValue}
-                          onChange={(e, value) => props.sync.update(value)}
+                          value={props.stack.stackValue}
+                          onChange={(e, value) => props.stack.update(value)}
                           step={null}
                           marks={
                             sliderValues.map((v) => ({
@@ -348,17 +348,18 @@ function GroupedBox(props: any) {
                           prevIconNode={
                             <Button
                               onClick={() =>
-                                props.sync.syncValue !== sliderValues[0] &&
-                                props.sync.update(
+                                props.stack.stackValue !== sliderValues[0] &&
+                                props.stack.update(
                                   sliderValues[
-                                    sliderValues.indexOf(props.sync.syncValue) -
-                                      1
+                                    sliderValues.indexOf(
+                                      props.stack.stackValue,
+                                    ) - 1
                                   ],
                                 )
                               }
                               className='prevIconBtn'
                               disabled={
-                                props.sync.syncValue === sliderValues[0]
+                                props.stack.stackValue === sliderValues[0]
                               }
                               size='small'
                               withOnlyIcon
@@ -369,18 +370,19 @@ function GroupedBox(props: any) {
                           nextIconNode={
                             <Button
                               onClick={() =>
-                                props.sync.syncValue !==
+                                props.stack.stackValue !==
                                   sliderValues[sliderValues.length - 1] &&
-                                props.sync.update(
+                                props.stack.update(
                                   sliderValues[
-                                    sliderValues.indexOf(props.sync.syncValue) +
-                                      1
+                                    sliderValues.indexOf(
+                                      props.stack.stackValue,
+                                    ) + 1
                                   ],
                                 )
                               }
                               className='nextIconBtn'
                               disabled={
-                                props.sync.syncValue ===
+                                props.stack.stackValue ===
                                 sliderValues[sliderValues.length - 1]
                               }
                               size='small'

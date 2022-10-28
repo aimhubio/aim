@@ -7,25 +7,25 @@ import GroupedBox from './GroupedBox';
 function GridCell(props: any) {
   const Component = dataVizElementsMap[props.viz.type as 'LineChart'];
 
-  const syncMap = React.useMemo(() => {
-    const syncValues: any = {};
+  const stackMap = React.useMemo(() => {
+    const stackValues: any = {};
     const data = props.viz.data;
 
     for (let i = 0; i < data.length; i++) {
-      syncValues[data[i].sync] = data[i].sync_val;
+      stackValues[data[i].stack] = data[i].stack_val;
     }
-    return syncValues;
+    return stackValues;
   }, [props.viz.data]);
 
-  const [syncValue, setSyncValue] = React.useState<number>();
+  const [stackValue, setStackValue] = React.useState<number>();
 
-  const sliderValues = Object.keys(syncMap)
+  const sliderValues = Object.keys(stackMap)
     .map((key) => +key)
     .sort((a, b) => a - b);
 
   React.useEffect(() => {
-    setSyncValue(sliderValues[0]);
-  }, [syncMap]);
+    setStackValue(sliderValues[0]);
+  }, [stackMap]);
 
   return (
     <div
@@ -97,7 +97,7 @@ function GridCell(props: any) {
       ) : (
         <GroupedBox
           viz={props.viz}
-          sync={{ syncMap, syncValue, update: setSyncValue }}
+          stack={{ stackMap, stackValue, update: setStackValue }}
         />
       )}
     </div>
