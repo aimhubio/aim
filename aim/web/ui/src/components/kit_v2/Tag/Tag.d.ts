@@ -14,12 +14,6 @@ export interface ITagProps {
    */
   size?: 'xs' | 'sm' | 'md' | 'lg';
   /**
-   * @description Tag variant
-   * @default 'default'
-   * @type 'default' | 'outline'
-   */
-  variant?: 'default' | 'outline';
-  /**
    * @description Tag delete callback
    * @default undefined
    */

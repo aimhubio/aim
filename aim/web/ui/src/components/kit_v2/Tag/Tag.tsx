@@ -8,8 +8,18 @@ import { styled } from 'config/stitches/stitches.config';
 import { ITagProps } from './Tag.d';
 
 const getColors = (color: string, disabled: boolean) => {
+  if (color) {
+    return {
+      backgroundColor: `${color}`,
+    };
+  }
   return {
-    backgroundColor: `${color}`,
+    bc: 'white',
+    bs: '0 0 0 1px $colors$secondary50',
+    color: disabled ? '$textPrimary50' : '$textPrimary',
+    '&:hover': {
+      bc: '$colors$secondary10',
+    },
   };
 };
 
@@ -21,6 +31,7 @@ const TagContainer = styled('div', {
   color: '$textPrimary',
   fontWeight: '$2',
   lineHeight: '1',
+  transition: 'all 0.2s ease-out',
   variants: {
     font: {
       mono: {

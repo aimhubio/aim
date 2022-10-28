@@ -23,6 +23,5 @@ const Template: ComponentStory<typeof Tag> = (args) => <Tag {...args} />;
 export const Contained = Template.bind({});
 
 Contained.args = {
-  color: ' #E6CCFF',
   label: 'Contained Button',
 };
