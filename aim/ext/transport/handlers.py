@@ -1,9 +1,14 @@
 import os
+import uuid
 
 from aim.sdk import Repo
 from aim.ext.transport.config import AIM_SERVER_MOUNTED_REPO_PATH
 from aim.ext.transport.message_utils import unpack_args
 from aim.storage.treeutils import decode_tree
+
+
+def get_handler():
+    return str(uuid.uuid4())
 
 
 def get_tree(args: bytes):

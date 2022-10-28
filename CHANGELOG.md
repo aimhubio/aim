@@ -4,6 +4,7 @@
 
 ### Enhancements:
 
+- Implement vertically scalable version of Remote Tracking (mihran113, alberttorosyan)
 - Add Optuna integration (tmynn)
 - Add epoch tracking for PyTorch Lightning (tmynn)
 
