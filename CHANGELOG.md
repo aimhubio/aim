@@ -1,6 +1,6 @@
 # Changelog
 
-- Add the ability to highlight syntax error in Figures Explorer (KaroMourad)
+- Support syntax error highlighting in Figures Explorer (KaroMourad)
 - Fix issue with applying solid stroke styles on stroke badge in table (KaroMourad)
 - Fix active runs indicators overlapping issue in LineChart (KaroMourad)
 
