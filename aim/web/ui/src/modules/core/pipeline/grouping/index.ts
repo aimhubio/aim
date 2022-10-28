@@ -66,7 +66,7 @@ export function grouping({
       };
     });
   } catch (e) {
-    throw new GroupingError(e.message || e, e.detail);
+    throw new GroupingError(e.message || e, e.detail).getError();
   }
 
   return {

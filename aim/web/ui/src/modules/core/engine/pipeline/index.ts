@@ -139,7 +139,10 @@ function createPipelineEngine<TStore, TObject>(
           isEmpty(data) ? PipelineStatusEnum.Empty : state.getStatus(),
         );
       })
-      .catch((ex: unknown) => {});
+      .catch((err) => {
+        state.setError(err);
+        state.changeCurrentPhaseOrStatus(PipelineStatusEnum.Failed);
+      });
   }
 
   function normalizeGroupConfig(config: CurrentGrouping) {

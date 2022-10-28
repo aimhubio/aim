@@ -51,7 +51,7 @@ function ChartPopover(props: IChartPopover): JSX.Element {
         setPopoverPos(pos);
       }
     },
-    [containerNode, popoverNode],
+    [containerNode, popoverNode, isPopoverPinned, tooltipAppearance],
   );
 
   React.useEffect(() => {

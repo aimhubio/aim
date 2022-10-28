@@ -1,6 +1,7 @@
 # Changelog
 
-- Fix issue with applying solid stroke-dasharray badge in table (KaroMourad)
+- Support syntax error highlighting in Figures Explorer (KaroMourad)
+- Fix issue with applying solid stroke styles on stroke badge in table (KaroMourad)
 - Fix active runs indicators overlapping issue in LineChart (KaroMourad)
 
 ## 3.14.2
