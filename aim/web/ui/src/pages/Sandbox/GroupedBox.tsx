@@ -396,7 +396,7 @@ function GroupedBox(props: any) {
                       style={{
                         width: '100%',
                         height: `calc(100% - ${
-                          sliderValues.length > 1 ? 28 + 12 : 0
+                          sliderValues.length > 1 ? 48 : 0
                         }px)`,
                       }}
                     >
