@@ -92,6 +92,13 @@ export function storageDataToFlatList(
           ...trace_context[sequenceName],
         };
 
+        let sequenceData = {
+          sequence: {
+            ...trace_context[sequenceName],
+            type: sequenceName,
+          },
+        };
+
         sequenceInfo = sequenceInfo.concat(
           getObjectPaths(trace_context[sequenceName], sequenceName),
         );
@@ -107,6 +114,7 @@ export function storageDataToFlatList(
           const object: AimFlatObjectBase = {
             key: buildObjectHash(objectHashCreator),
             ...collectedDataByDepth,
+            ...sequenceData,
             data: depthInterceptor(trace).data,
           };
           objectList.push(object);
@@ -136,6 +144,7 @@ export function storageDataToFlatList(
               const object = {
                 key: buildObjectHash(objectHashCreator),
                 ...collectedDataByDepth,
+                ...sequenceData,
                 data: depthInterceptor(sequence).data,
               };
 
@@ -160,6 +169,7 @@ export function storageDataToFlatList(
               const object = {
                 key: buildObjectHash(objectHashCreator),
                 ...collectedDataByDepth,
+                ...sequenceData,
                 data: depthInterceptor(rec).data, // change to just blob_uri similar to Mahnerak' flat list
               };
 

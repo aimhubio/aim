@@ -18,7 +18,7 @@ audios_list = AudiosList(audios)
 text_list = TextsList(texts, color=["record.step"])
 
 runs_table = Cell([line_chart, images_list, audios_list, text_list], 
-                facet={"row": ["run.name"], "column": ["type"]},
+                facet={"row": ["run.name"], "column": ["sequence.type"]},
                 sync=["type"])
 
 Grid([

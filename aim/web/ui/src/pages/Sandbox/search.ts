@@ -64,13 +64,13 @@ export async function search(sequenceName: SequenceTypesEnum, query: string) {
             AlignmentOptionsEnum.STEP,
           );
           return {
-            name: item.data.name,
-            context: item.data.context,
+            ...item.data,
             values: [...values],
             steps: [...steps],
             epochs: [...epochs],
             timestamps: [...timestamps],
             run: item.run,
+            sequence: item.sequence,
           };
         });
       } else {
