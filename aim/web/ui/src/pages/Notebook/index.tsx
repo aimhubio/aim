@@ -23,6 +23,7 @@ const Sandbox = renderer(
         box: {
           component: () => null,
           initialState: {} as any,
+          hasDepthSlider: false,
         },
       },
     },
