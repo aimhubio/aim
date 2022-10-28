@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.14.2
+## 3.14.2 Oct 28, 2022
 
 - Add support to sync explorer state through url on Base and Figures Explorers (rubenaprikyan)
 - Add support to highlight syntax error in Figures Explorer (KaroMourad)
