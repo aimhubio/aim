@@ -116,3 +116,13 @@ export interface BaseErrorType {
 export interface PipelineErrorType extends BaseErrorType {
   source: string;
 }
+
+export type PersistenceFunction = () => void;
+export enum PersistenceTypesEnum {
+  Url = 'url',
+  LocalStorage = 'localStorage',
+}
+
+export type StatePersistOption =
+  | `${PersistenceTypesEnum}`
+  | PersistenceFunction;

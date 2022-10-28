@@ -1,11 +1,11 @@
 # Changelog
 
-- Support syntax error highlighting in Figures Explorer (KaroMourad)
-- Fix issue with applying solid stroke styles on stroke badge in table (KaroMourad)
-- Fix active runs indicators overlapping issue in LineChart (KaroMourad)
-
 ## 3.14.2
 
+- Add support to sync explorer state through url on Base and Figures Explorers (rubenaprikyan)
+- Add support to highlight syntax error in Figures Explorer (KaroMourad)
+- Fix issue with applying solid stroke styles on stroke badge in table (KaroMourad)
+- Fix active runs indicators overlapping issue in LineChart (KaroMourad)
 - Add support for text style formatting in the logs tab (VkoHov)
 - Fix "`TypeError: check()` keywords must be strings" for `Run.metrics()` method (alberttorosyan)
 - Fix run info API call error when tag color/description is None (alberttorosyan)

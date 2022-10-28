@@ -9,6 +9,7 @@ import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
 
 import { VisualizationsConfig } from '../core/engine/visualizations';
 import { EngineNew } from '../core/engine/explorer-engine';
+import { StatePersistOption } from '../core/engine/types';
 
 export interface IEngineStates {
   [key: string]: {
@@ -103,6 +104,11 @@ export interface IBaseComponentProps {
 }
 
 export declare interface ExplorerEngineConfiguration {
+  /**
+   * @optional
+   * Useful when it need to persist query and grouping states through url
+   */
+  persist?: boolean; // TODO later use StatePersistOption;
   /**
    * Enable/disable pipeline cache
    * @optional
