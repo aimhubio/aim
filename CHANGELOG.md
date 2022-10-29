@@ -1,6 +1,8 @@
 # Changelog
 
-- Fix querying all data on empty query (KaroMourad)
+## 3.14.3 Oct 29, 2022
+
+- Fix search for empty queries in explorers (KaroMourad)
 
 ## 3.14.2 Oct 28, 2022
 
