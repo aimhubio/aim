@@ -1,5 +1,7 @@
 # Changelog
 
+- Fix querying all data on empty query (KaroMourad)
+
 ## 3.14.2 Oct 28, 2022
 
 - Add support to sync explorer state through url on Base and Figures Explorers (rubenaprikyan)
