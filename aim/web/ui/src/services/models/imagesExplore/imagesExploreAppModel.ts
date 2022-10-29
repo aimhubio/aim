@@ -1843,10 +1843,10 @@ function getQueryStringFromSelect(
   selectData: IImagesExploreAppConfig['select'],
   error?: ISyntaxErrorDetails,
 ) {
+  let query = '()';
   if (selectData === undefined) {
-    return '';
+    return query;
   }
-  let query = '';
   if (selectData.advancedMode) {
     query = selectData.advancedQuery || '';
   } else {
@@ -1881,7 +1881,7 @@ function getQueryStringFromSelect(
       query = `${simpleInput}${selections}`;
     }
   }
-  return query.trim();
+  return query.trim() || '()';
 }
 
 function onSelectAdvancedQueryChange(query: string) {

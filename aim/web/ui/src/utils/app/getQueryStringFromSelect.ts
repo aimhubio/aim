@@ -9,10 +9,10 @@ export default function getQueryStringFromSelect(
   selectData: ISelectConfig,
   error?: ISyntaxErrorDetails,
 ) {
+  let query = '()';
   if (selectData === undefined) {
-    return '';
+    return query;
   }
-  let query = '';
   if (selectData.advancedMode) {
     query = selectData.advancedQuery || '';
   } else {
@@ -50,5 +50,5 @@ export default function getQueryStringFromSelect(
       query = `${simpleInput}${selections}`;
     }
   }
-  return query.trim();
+  return query.trim() || '()';
 }
