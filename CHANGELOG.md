@@ -4,7 +4,6 @@
 
 ### Enhancements:
 
-- Add Optuna integration (tmynn)
 - Add epoch tracking for PyTorch Lightning (tmynn)
 
 ## 3.14.1 Oct 7, 2022
@@ -29,7 +28,6 @@
 - Create a Dashboard page to provide a better onboarding experience (arsengit, roubkar, KaroMourad, mihran113)
 - Add support for tracking jax device arrays (mihran113)
 - Add Optuna integration (tmynn)
-- Add epoch tracking for PyTorch Lightning (tmynn)
 
 ### Fixes:
 
