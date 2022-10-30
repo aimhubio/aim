@@ -142,7 +142,7 @@ const routes = {
     path: PathEnum.Audio_Explorer,
     component: AudioExplorer,
     showInSidebar: true,
-    icon: 'figures-explorer',
+    icon: 'audio',
     displayName: 'Audio',
     isExact: true,
     title: pageTitlesEnum.AUDIOS_EXPLORER,
