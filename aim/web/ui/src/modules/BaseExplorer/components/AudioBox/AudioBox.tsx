@@ -36,7 +36,7 @@ function AudioBox(
 
   React.useEffect(() => {
     let timeoutID: number;
-    let unsubscribe: any;
+    let unsubscribe: () => void;
     if (processing) {
       if (blobData === null) {
         if (engine.blobURI.getBlobData(blob_uri)) {
@@ -132,7 +132,7 @@ function AudioBox(
       engine.blobURI
         .getBlobsData([blob_uri])
         .call()
-        .then((a: any) => {
+        .then(() => {
           setIsPlaying(!isPlaying);
         });
     }
@@ -146,7 +146,7 @@ function AudioBox(
       engine.blobURI
         .getBlobsData([blob_uri])
         .call()
-        .then((a: any) => {
+        .then(() => {
           handleDownload();
         });
     }
