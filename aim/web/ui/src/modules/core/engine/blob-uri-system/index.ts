@@ -27,10 +27,11 @@ const BATCH_SEND_DELAY = 1000;
 function createBlobURISystemEngine(
   sequenceType: SequenceTypesEnum,
 ): IBlobURISystemEngine {
-  let blobsData: Record<string, string> = {};
-  let blobsSubscriptions: Record<string, Callback[]> = {};
+  const blobsData: Record<string, string> = {};
+  const blobsSubscriptions: Record<string, Callback[]> = {};
   let blobUriQueue: string[] = [];
   let timeoutID: number | null = null;
+
   const request = createBlobsRequest(sequenceType);
 
   /**
