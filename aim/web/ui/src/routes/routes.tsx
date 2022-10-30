@@ -145,7 +145,7 @@ const routes = {
     icon: 'figures-explorer',
     displayName: 'Audio',
     isExact: true,
-    title: pageTitlesEnum.FIGURES_EXPLORER,
+    title: pageTitlesEnum.AUDIOS_EXPLORER,
   },
   SCATTERS: {
     path: PathEnum.Scatters,
