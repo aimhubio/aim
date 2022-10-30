@@ -206,7 +206,7 @@ function AudioBox(
           </div>
           <AudioBoxProgress audio={audio} isPlaying={isPlaying} src={src} />
           <AudioBoxVolume audio={audio} />
-          <Button withOnlyIcon size='small' onClick={onDownload}>
+          <Button withOnlyIcon size='xSmall' onClick={onDownload}>
             {processing ? (
               <Spinner
                 className='Icon__container'

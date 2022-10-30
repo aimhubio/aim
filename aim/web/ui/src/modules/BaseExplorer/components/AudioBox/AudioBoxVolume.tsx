@@ -41,7 +41,7 @@ function AudiosVolumeController({ audio }: IAudioBoxVolumeProps) {
         <Button
           onClick={onVolumeToggle}
           withOnlyIcon
-          size='small'
+          size='xSmall'
           className='AudioBox__controllers__volume--button'
         >
           <Icon name={volume === 0 ? 'voice-off' : 'voice-on'} />
