@@ -320,7 +320,7 @@ One can also use the decorator function `track_in_aim` to log inside the objecti
 Step 1: Explicitly import the `AimCallback` for tracking training metadata.
 
 ```python
-from aim.sdk.adapters.optuna import AimCallback
+from aim.optuna import AimCallback
 ```
 
 Step 2: Pass the callback to `cbs` list upon initiating your training.
@@ -332,6 +332,27 @@ study.optimize(objective, n_trials=10, callbacks=[aim_callback])
 
 See `AimCallback` source [here](https://github.com/aimhubio/aim/blob/main/aim/sdk/adapters/optuna.py).  
 Check out a simple objective optimization example [here](https://github.com/aimhubio/aim/blob/main/examples/optuna_track.py).
+
+### Integration with PaddlePaddle
+
+Aim provides a built in callback to easily track [PaddlePaddle](https://www.paddlepaddle.org.cn/en) trainings.
+It takes two steps to integrate Aim into your training script.
+
+Step 1: Explicitly import the `AimCallback` for tracking training metadata.
+
+```python
+from aim.paddle import AimCallback
+```
+
+Step 2: Pass the callback to `callbacks` list upon initiating your training.
+
+```python
+callback = AimCallback(repo='.', experiment='paddle_test')
+model.fit(train_dataset, eval_dataset, batch_size=64, callbacks=callback)
+```
+
+See `AimCallback` source [here](https://github.com/aimhubio/aim/blob/main/aim/sdk/adapters/paddle.py).  
+Check out a simple objective optimization example [here](https://github.com/aimhubio/aim/blob/main/examples/paddle_track.py).
 
 
 
