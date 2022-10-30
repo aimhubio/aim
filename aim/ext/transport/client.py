@@ -1,11 +1,16 @@
+import logging
 import os
-import uuid
-from copy import deepcopy
 import threading
-from typing import Tuple
+import uuid
+import weakref
 from collections import defaultdict
+from copy import deepcopy
+from typing import Tuple
+
 import aim.ext.transport.remote_tracking_pb2 as rpc_messages
+import aim.ext.transport.remote_router_pb2 as router_messages
 import aim.ext.transport.remote_tracking_pb2_grpc as remote_tracking_pb2_grpc
+import aim.ext.transport.remote_router_pb2_grpc as remote_router_pb2_grpc
 
 from aim.ext.transport.message_utils import pack_stream, unpack_stream, raise_exception
 from aim.ext.transport.rpc_queue import RpcQueueWithRetry
@@ -20,7 +25,9 @@ from aim.storage.treeutils import encode_tree, decode_tree
 
 
 DEFAULT_RETRY_INTERVAL = 0.1  # 100 ms
-DEFAULT_RETRY_COUNT = 1
+DEFAULT_RETRY_COUNT = 5
+
+logger = logging.getLogger(__name__)
 
 
 class Client:
@@ -38,6 +45,8 @@ class Client:
         self._id = str(uuid.uuid4())
         self._remote_path = remote_path
 
+        self._resource_pool = weakref.WeakValueDictionary()
+
         ssl_certfile = os.getenv(AIM_CLIENT_SSL_CERTIFICATES_FILE)
         msg_max_size = int(os.getenv(AIM_RT_MAX_MESSAGE_SIZE, AIM_RT_DEFAULT_MAX_MESSAGE_SIZE))
         options = [
@@ -45,43 +54,144 @@ class Client:
             ('grpc.max_receive_message_length', msg_max_size)
         ]
 
+        # open a channel with router
         if ssl_certfile:
             with open(ssl_certfile, 'rb') as f:
                 root_certificates = grpc.ssl_channel_credentials(f.read())
-            self._remote_channel = grpc.secure_channel(remote_path, root_certificates, options=options)
+            self._remote_router_channel = grpc.secure_channel(remote_path, root_certificates, options=options)
         else:
-            self._remote_channel = grpc.insecure_channel(remote_path, options=options)
+            self._remote_router_channel = grpc.insecure_channel(remote_path, options=options)
+        self._remote_router_stub = remote_router_pb2_grpc.RemoteRouterServiceStub(self._remote_router_channel)
+
+        # check client/server version compatibility
+        self._check_remote_version_compatibility()
+
+        # get the available worker address
+        self._remote_worker_address = self._get_worker_address()
+
+        # open a channel with worker for further communication
+        if ssl_certfile:
+            self._remote_channel = grpc.secure_channel(self._remote_worker_address,
+                                                       root_certificates,
+                                                       options=options)
+        else:
+            self._remote_channel = grpc.insecure_channel(self._remote_worker_address, options=options)
 
         self._remote_stub = remote_tracking_pb2_grpc.RemoteTrackingServiceStub(self._remote_channel)
+
         self._heartbeat_sender = RPCHeartbeatSender(self)
         self._heartbeat_sender.start()
         self._thread_local.atomic_instructions = None
 
-    def health_check(self, health_check_type='heartbeat'):
-        request = rpc_messages.HealthCheckRequest(
-            client_uri=self.uri,
-            check_type=health_check_type,
+    def reinitialize_resource(self, handler):
+        # write some request to get a resource on server side with an already given handler
+        resource = self._resource_pool[handler]
+        self.get_resource_handler(resource, resource.resource_type, handler, resource.init_args)
+
+    def _reinitialize_all_resources(self):
+        handlers_list = list(self._resource_pool.keys())
+        for handler in handlers_list:
+            self.reinitialize_resource(handler)
+
+    def _check_remote_version_compatibility(self):
+        from aim.__version__ import __version__ as client_version
+        import grpc
+
+        error_message_template = 'The Aim Remote tracking server version ({}) '\
+                                 'is not compatible with the Aim client version ({}).'\
+                                 'Please upgrade either the Aim Client or the Aim Remote.'
+
+        warning_message_template = 'The Aim Remote tracking server version ({}) ' \
+                                   'and the Aim client version ({}) do not match.' \
+                                   'Consider upgrading either the client or remote tracking server.'
+
+        try:
+            remote_version = self.get_version()
+        except grpc.RpcError as e:
+            if e.code() == grpc.StatusCode.UNIMPLEMENTED:
+                remote_version = '<3.14.0'
+            else:
+                raise
+
+        # server doesn't yet have the `get_version()` method implemented
+        if remote_version == '<3.14.0':
+            RuntimeError(error_message_template.format(remote_version, client_version))
+
+        # compare versions
+        if client_version == remote_version:
+            return
+
+        # if the server has a newer version always force to upgrade the client
+        if client_version < remote_version:
+            raise RuntimeError(error_message_template.format(remote_version, client_version))
+
+        # for other mismatching versions throw a warning for now
+        logger.warning(warning_message_template.format(remote_version, client_version))
+        # further incompatibility list will be added manually
+
+    def _get_worker_address(self):
+        worker_host = self._remote_path.rsplit(':', maxsplit=1)[0]
+        worker_port = self._get_worker_port()
+        return f'{worker_host}:{worker_port}'
+
+    def _get_worker_port(self):
+        request = router_messages.ConnectRequest(
+            client_uri=self.uri
         )
-        response = self.remote.health_check(request)
+        response = self._remote_router_stub.connect(request)
+        if response.status == router_messages.ConnectResponse.Status.ERROR:
+            raise_exception(response.exception)
+        return response.port
+
+    def client_heartbeat(self):
+        request = router_messages.HeartbeatRequest(
+            client_uri=self.uri,
+        )
+        response = self._remote_router_stub.client_heartbeat(request)
         return response
 
-    def get_version(self,):
-        request = rpc_messages.VersionRequest()
-        response = self.remote.get_version(request)
+    def reconnect(self):
+        request = router_messages.ReconnectRequest(
+            client_uri=self.uri
+        )
+        response = self._remote_router_stub.reconnect(request)
+        if response.status == router_messages.ReconnectResponse.Status.ERROR:
+            raise_exception(response.exception)
 
-        if response.status == rpc_messages.ResourceResponse.Status.ERROR:
+        self._reinitialize_all_resources()
+
+        return response
+
+    def disconnect(self):
+        request = router_messages.DisconnectRequest(
+            client_uri=self.uri
+        )
+        response = self._remote_router_stub.disconnect(request)
+
+        if response.status == router_messages.DisconnectResponse.Status.ERROR:
+            raise_exception(response.exception)
+
+    def get_version(self,):
+        request = router_messages.VersionRequest()
+        response = self._remote_router_stub.get_version(request)
+
+        if response.status == router_messages.VersionResponse.Status.ERROR:
             raise_exception(response.exception)
         return response.version
 
-    def get_resource_handler(self, resource_type, args=()):
+    def get_resource_handler(self, resource, resource_type, handler='', args=()):
         request = rpc_messages.ResourceRequest(
             resource_type=resource_type,
+            handler=handler,
             client_uri=self.uri,
             args=args
         )
         response = self.remote.get_resource(request)
         if response.status == rpc_messages.ResourceResponse.Status.ERROR:
             raise_exception(response.exception)
+
+        self._resource_pool[response.handler] = resource
+
         return response.handler
 
     def release_resource(self, resource_handler):
@@ -92,6 +202,8 @@ class Client:
         response = self.remote.release_resource(request)
         if response.status == rpc_messages.ReleaseResourceResponse.Status.ERROR:
             raise_exception(response.exception)
+
+        del self._resource_pool[resource_handler]
 
     def run_instruction(self, queue_id, resource, method, args=(), is_write_only=False):
         args = deepcopy(args)
@@ -105,6 +217,7 @@ class Client:
         if is_write_only:
             assert queue_id != -1
             self.get_queue(queue_id).register_task(
+                self,
                 self._run_write_instructions, list(encode_tree([(resource, method, args)])))
             return
 
@@ -159,6 +272,7 @@ class Client:
             return
 
         self.get_queue(queue_id).register_task(
+            self,
             self._run_write_instructions, list(encode_tree(self._thread_local.atomic_instructions)))
         self._thread_local.atomic_instructions = None
 

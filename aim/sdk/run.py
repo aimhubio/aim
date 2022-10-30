@@ -92,6 +92,10 @@ class RunAutoClean(AutoClean['Run']):
             logger.debug('Stopping resource tracker')
             self._system_resource_tracker.stop()
 
+    def empty_rpc_queue(self):
+        if self.repo.is_remote_repo:
+            self.repo._client.get_queue(self.hash).wait_for_finish()
+
     def finalize_rpc_queue(self):
         if self.repo.is_remote_repo:
             self.repo._client.get_queue(self.hash).stop()
@@ -105,6 +109,7 @@ class RunAutoClean(AutoClean['Run']):
             logger.debug(f'Run {self.hash} is read-only, skipping cleanup')
             return
         self.finalize_system_tracker()
+        self.empty_rpc_queue()
         self.finalize_run()
         self.finalize_rpc_queue()
         if self._checkins is not None:

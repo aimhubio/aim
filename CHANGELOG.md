@@ -4,6 +4,7 @@
 
 ### Enhancements:
 
+- Implement vertically scalable version of Remote Tracking (mihran113, alberttorosyan)
 - Add epoch tracking for PyTorch Lightning (tmynn)
 
 ## 3.14.1 Oct 7, 2022

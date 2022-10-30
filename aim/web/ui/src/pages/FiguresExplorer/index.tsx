@@ -21,6 +21,7 @@ const FiguresExplorer = renderer(
         controls: defaultConfig.controls,
         box: {
           component: Figures,
+          hasDepthSlider: defaultConfig.box.hasDepthSlider,
           initialState: defaultConfig.box.initialState,
         },
       },

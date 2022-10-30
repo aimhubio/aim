@@ -18,15 +18,10 @@ class RemoteTrackingServiceStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.health_check = channel.unary_unary(
-                '/RemoteTrackingService/health_check',
-                request_serializer=remote__tracking__pb2.HealthCheckRequest.SerializeToString,
-                response_deserializer=remote__tracking__pb2.HealthCheckResponse.FromString,
-                )
-        self.get_version = channel.unary_unary(
-                '/RemoteTrackingService/get_version',
-                request_serializer=remote__tracking__pb2.VersionRequest.SerializeToString,
-                response_deserializer=remote__tracking__pb2.VersionResponse.FromString,
+        self.cleanup_client_resources = channel.unary_unary(
+                '/RemoteTrackingService/cleanup_client_resources',
+                request_serializer=remote__tracking__pb2.ClientResourceCleanupRequest.SerializeToString,
+                response_deserializer=remote__tracking__pb2.ClientResourceCleanupResponse.FromString,
                 )
         self.get_resource = channel.unary_unary(
                 '/RemoteTrackingService/get_resource',
@@ -53,13 +48,7 @@ class RemoteTrackingServiceStub(object):
 class RemoteTrackingServiceServicer(object):
     """Missing associated documentation comment in .proto file."""
 
-    def health_check(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def get_version(self, request, context):
+    def cleanup_client_resources(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -92,15 +81,10 @@ class RemoteTrackingServiceServicer(object):
 
 def add_RemoteTrackingServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'health_check': grpc.unary_unary_rpc_method_handler(
-                    servicer.health_check,
-                    request_deserializer=remote__tracking__pb2.HealthCheckRequest.FromString,
-                    response_serializer=remote__tracking__pb2.HealthCheckResponse.SerializeToString,
-            ),
-            'get_version': grpc.unary_unary_rpc_method_handler(
-                    servicer.get_version,
-                    request_deserializer=remote__tracking__pb2.VersionRequest.FromString,
-                    response_serializer=remote__tracking__pb2.VersionResponse.SerializeToString,
+            'cleanup_client_resources': grpc.unary_unary_rpc_method_handler(
+                    servicer.cleanup_client_resources,
+                    request_deserializer=remote__tracking__pb2.ClientResourceCleanupRequest.FromString,
+                    response_serializer=remote__tracking__pb2.ClientResourceCleanupResponse.SerializeToString,
             ),
             'get_resource': grpc.unary_unary_rpc_method_handler(
                     servicer.get_resource,
@@ -133,7 +117,7 @@ class RemoteTrackingService(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
-    def health_check(request,
+    def cleanup_client_resources(request,
             target,
             options=(),
             channel_credentials=None,
@@ -143,26 +127,9 @@ class RemoteTrackingService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/RemoteTrackingService/health_check',
-            remote__tracking__pb2.HealthCheckRequest.SerializeToString,
-            remote__tracking__pb2.HealthCheckResponse.FromString,
-            options, channel_credentials,
-            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
-
-    @staticmethod
-    def get_version(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/RemoteTrackingService/get_version',
-            remote__tracking__pb2.VersionRequest.SerializeToString,
-            remote__tracking__pb2.VersionResponse.FromString,
+        return grpc.experimental.unary_unary(request, target, '/RemoteTrackingService/cleanup_client_resources',
+            remote__tracking__pb2.ClientResourceCleanupRequest.SerializeToString,
+            remote__tracking__pb2.ClientResourceCleanupResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
