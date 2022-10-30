@@ -20,6 +20,7 @@ type BoxConfig = {
     height: number;
     gap: number;
   };
+  hasDepthSlider: boolean;
   component: FunctionComponent<IBoxProps>;
 };
 
