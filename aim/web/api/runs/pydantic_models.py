@@ -51,8 +51,8 @@ class PropsView(BaseModel):
     class Tag(BaseModel):
         id: UUID
         name: str
-        color: str
-        description: str
+        color: Optional[str] = None
+        description: Optional[str] = None
 
     class Experiment(BaseModel):
         id: UUID

@@ -102,7 +102,6 @@ function drawBrush(args: IDrawBrushArgs): void {
       attributesRef.current.xScale,
       attributesRef.current.yScale,
     );
-    attributesRef.current.updateFocusedChart?.();
   }
 
   // This remove the grey brush area as soon as the selection has been done

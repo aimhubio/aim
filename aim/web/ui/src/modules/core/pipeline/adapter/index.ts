@@ -48,7 +48,7 @@ function baseProcessor(runs: RunSearchRunView[]): Promise<ProcessedData> {
   try {
     return Promise.resolve(processor(runs, sequenceName, objectDepth));
   } catch (e) {
-    throw new AdapterError(e.message || e, e.detail);
+    throw new AdapterError(e.message || e, e.detail).getError();
   }
 }
 
