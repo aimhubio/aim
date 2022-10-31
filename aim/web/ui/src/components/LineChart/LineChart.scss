@@ -25,32 +25,36 @@
   &.zoomMode rect {
     cursor: zoom-in;
   }
-  .HoverLine {
-    stroke: #94999f; /* var(--grey-light) */
-  }
   .HoverCircle {
     cursor: pointer;
     opacity: 1;
-    stroke-width: 1.45;
+    stroke-width: 2.4;
     fill: white;
     border-radius: 50%;
+    paint-order: stroke;
     /* on click */
     &.focus {
-      stroke-width: 2;
+      stroke-width: 4;
       clip-path: unset;
       &__shadow {
-        stroke-width: 10;
+        stroke-width: 12;
       }
     }
     /* on hover */
     &.active {
-      stroke-width: 2.6;
+      stroke-width: 5;
     }
   }
   .Attributes {
-    &.highlight > .HoverCircle:not(.active):not(.focus) {
-      opacity: 0.5;
+    &.highlight {
+      .HoverCircle:not(.active):not(.focus) {
+        opacity: 0.5;
+      }
+      .inProgressLineIndicator:not(.active):not(.focus) {
+        opacity: 0.8;
+      }
     }
+
   }
   .ChartMouseValue {
     position: absolute;
@@ -96,7 +100,7 @@
         }
       }
       & > .Line:not(.active):not(.highlighted):not(.aggregated) {
-        stroke-width: 1.45;
+        stroke-width: 1.5;
         opacity: 0.2;
       }
       & > .AggrArea:not(.highlighted) {
@@ -105,7 +109,7 @@
     }
   }
   .Line {
-    stroke-width: 1.45;
+    stroke-width: 1.5;
     opacity: 1;
     &.active {
       opacity: 1;
@@ -118,12 +122,12 @@
     &.aggregated {
       opacity: 0;
       stroke-width: 0.4;
-      &.highlighted {
-        opacity: 0.5;
-        stroke-width: 2.8;
-      }
       &.active {
         opacity: 0.8;
+        stroke-width: 3;
+      }
+      &.highlighted {
+        opacity: 0.5;
         stroke-width: 2.8;
       }
     }
@@ -136,31 +140,21 @@
   .inProgressLineIndicator {
     animation: inProgressIndicator 0.5s cubic-bezier(0.6, -0.03, 0.22, 0.76)
       infinite;
-    stroke-width: 1;
     opacity: 1;
-  }
-
-  .Lines.highlight {
-    .inProgressLineIndicator {
-      opacity: 0.2;
-      &.active {
-        opacity: 1;
-      }
-      &.highlighted {
-        opacity: 1;
-      }
-    }
+    paint-order: stroke;
+    cursor: pointer;
+    filter: drop-shadow(0 0 0.5px #ffffff) drop-shadow(0 0 0.5px #ffffff) drop-shadow(0 0 0.5px #ffffff);
   }
 
   @keyframes inProgressIndicator {
     0% {
-      stroke-width: 0;
+      stroke-width: 3;
     }
     50% {
-      stroke-width: 1.5;
+      stroke-width: 5;
     }
     100% {
-      stroke-width: 0;
+      stroke-width: 3;
     }
   }
 }
