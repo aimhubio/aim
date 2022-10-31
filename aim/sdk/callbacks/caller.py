@@ -66,7 +66,7 @@ class Caller(object, metaclass=CallerMeta):
                     callback(self, *args, **kwargs)
                 except Exception as e:  # noqa
                     # Handle ALL exceptions. Do not throw error if one of the callbacks failed.
-                    logger.warning(f'Failed to run callback \'{callback.name}\'.')
+                    logger.warning(f'Failed to run callback \'{callback.__name__}\'.')
                     logger.warning(f'Reason: {e}')
             return res
 
