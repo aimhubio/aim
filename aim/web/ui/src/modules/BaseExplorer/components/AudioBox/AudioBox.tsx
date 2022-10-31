@@ -72,6 +72,18 @@ function AudioBox(
   }, [processing]);
 
   React.useEffect(() => {
+    const unsubscribe = engine.events.on('onAudioPlay', (payload: string) => {
+      if (payload !== blob_uri) {
+        setIsPlaying(false);
+      }
+    });
+    return () => {
+      unsubscribe();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  React.useEffect(() => {
     if (blobData) {
       const audioRef = new Audio();
       audioRef.autoplay = true;
@@ -126,6 +138,7 @@ function AudioBox(
 
   function onPLayChange(): void {
     if (audio) {
+      engine.events.fire('onAudioPlay', blob_uri);
       setIsPlaying(!isPlaying);
     } else {
       setProcessing(true);
@@ -133,6 +146,7 @@ function AudioBox(
         .getBlobsData([blob_uri])
         .call()
         .then(() => {
+          engine.events.fire('onAudioPlay', blob_uri);
           setIsPlaying(!isPlaying);
         });
     }
