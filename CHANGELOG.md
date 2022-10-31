@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.14.4
+
+- Display the group property name in the images and audio tabs (VkoHov)
+
 ## 3.14.3 Oct 29, 2022
 
 - Fix search for empty queries in explorers (KaroMourad)

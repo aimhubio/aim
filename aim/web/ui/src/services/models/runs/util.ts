@@ -287,6 +287,7 @@ export function processImagesData(
   const groupingSelectOptions = params
     ? getGroupingSelectOptions({
         params: getObjectPaths(params, params),
+        sequenceName: 'images',
       })
     : [];
   let images: IProcessedImageData[] = [];
@@ -342,6 +343,7 @@ export function processAudiosData(
   const groupingSelectOptions = params
     ? getGroupingSelectOptions({
         params: getObjectPaths(params, params),
+        sequenceName: 'audios',
       })
     : [];
   let audiosSetData: any[] = [];
