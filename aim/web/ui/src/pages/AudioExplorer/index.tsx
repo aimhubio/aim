@@ -13,8 +13,10 @@ import { AimFlatObjectBase } from 'types/core/AimObjects';
 
 const AudioExplorer = renderer(
   {
-    sequenceName: SequenceTypesEnum.Audios,
     name: 'Audio Explorer',
+    sequenceName: SequenceTypesEnum.Audios,
+    basePath: 'audios',
+    persist: true,
     adapter: {
       objectDepth: AimObjectDepths.Index,
     },
