@@ -72,27 +72,24 @@
   &.zoomMode rect {
     cursor: zoom-in;
   }
-  .HoverLine {
-    stroke: #94999f; /* var(--grey-light) */
-  }
   .HoverCircle {
     cursor: pointer;
     opacity: 1;
-    stroke-width: 1.45;
+    stroke-width: 3;
     fill: white;
-    outline: 0 solid;
     border-radius: 50%;
+    paint-order: stroke;
     /* on click */
     &.focus {
-      stroke-width: 2;
+      stroke-width: 4;
       clip-path: unset;
       &__shadow {
-        stroke-width: 10;
+        stroke-width: 12;
       }
     }
     /* on hover */
     &.active {
-      stroke-width: 2.6;
+      stroke-width: 5;
     }
   }
   .Attributes {
@@ -132,20 +129,20 @@
       }
     }
     &.highlight > .Line:not(.active):not(.highlighted) {
-      stroke-width: 1;
+      stroke-width: 1.5;
       opacity: 0.2;
     }
   }
   .Line {
-    stroke-width: 2;
+    stroke-width: 1.5;
     opacity: 0.3;
     &.active {
       opacity: 1;
-      stroke-width: 3px;
+      stroke-width: 3;
     }
     &.highlighted {
       opacity: 1;
-      stroke-width: 2px;
+      stroke-width: 2;
     }
   }
 }

@@ -1,6 +1,6 @@
 import type { FunctionComponent } from 'react';
 import { StoreApi } from 'zustand';
-import { omit } from 'lodash-es';
+import { isEmpty, omit } from 'lodash-es';
 
 import {
   IBoxProps,
@@ -9,12 +9,20 @@ import {
   IVisualizationProps,
 } from 'modules/BaseExplorer/types';
 import { createSliceState } from 'modules/core/utils/store';
+import updateUrlSearchParam from 'modules/core/utils/updateUrlSearchParam';
+import browserHistory from 'modules/core/services/browserHistory';
+import getUrlSearchParam from 'modules/core/utils/getUrlSearchParam';
+
+import getStateFromLocalStorage from 'utils/getStateFromLocalStorage';
+import { encode } from 'utils/encoder/encoder';
 
 import { ControlsConfigs } from '../explorer/state/controls';
+import { PersistenceTypesEnum } from '../types';
 
 import { createControlsStateConfig } from './controls';
 
 type BoxConfig = {
+  persist?: boolean; // TODO later use StatePersistTypesEnum
   initialState: {
     width: number;
     height: number;
@@ -92,7 +100,7 @@ function createVisualizationEngine<TStore>(
 ) {
   const controlsState = createState(store, visualizationName, config.controls);
 
-  const boxConfigState = createSliceState<BoxConfig['initialState']>(
+  const boxConfigState = createSliceState<BoxState>(
     config.box.initialState,
     `${createVisualizationStatePrefix(visualizationName)}.box`,
   );
@@ -104,6 +112,8 @@ function createVisualizationEngine<TStore>(
     },
   };
   const boxMethods = boxConfigState.methods(store.setState, store.getState);
+
+  const customControlResets: CallableFunction[] = [];
 
   const engine = {
     [visualizationName]: {
@@ -119,6 +129,104 @@ function createVisualizationEngine<TStore>(
         boxMethods.reset();
         // @ts-ignore
         controlsState.reset();
+
+        customControlResets.forEach((func) => func());
+      },
+
+      initialize: (keyNamePrefix: string = 'core-viz') => {
+        const funcs: CallableFunction[] = [];
+        Object.keys(config.controls).forEach((key: string) => {
+          const control = config.controls[key];
+          const persistenceType = control?.state?.persist;
+          const persistenceKey = [visualizationName, 'c', key].join('-');
+          if (persistenceType) {
+            if (persistenceType === PersistenceTypesEnum.Url) {
+              const originalMethods =
+                // @ts-ignore
+                { ...controlsState.properties[key].methods };
+              const stateFromStorage = getUrlSearchParam(persistenceKey) || {};
+
+              // update state
+              if (!isEmpty(stateFromStorage)) {
+                originalMethods.update(stateFromStorage);
+              }
+              // @ts-ignore
+              controlsState.properties[key].methods.update = (d: any) => {
+                originalMethods.update(d);
+
+                const url = updateUrlSearchParam(persistenceKey, encode(d));
+
+                if (
+                  url !== `${window.location.pathname}${window.location.search}`
+                ) {
+                  browserHistory.push(url, null);
+                }
+              };
+
+              // @ts-ignore
+              controlsState.properties[key].methods.reset = () => {
+                originalMethods.reset();
+
+                const url = updateUrlSearchParam(persistenceKey, null);
+
+                if (
+                  url !== `${window.location.pathname}${window.location.search}`
+                ) {
+                  browserHistory.push(url, null);
+                }
+              };
+              customControlResets.push(
+                // @ts-ignore
+                controlsState.properties[key].methods.reset,
+              );
+              const removeListener = browserHistory.listenSearchParam<any>(
+                persistenceKey,
+                (data: any) => {
+                  if (isEmpty(data)) {
+                    // @ts-ignore
+                    originalMethods.reset();
+                  } else {
+                    // @ts-ignore
+                    originalMethods.update(data);
+                  }
+                },
+                ['PUSH'],
+              );
+
+              funcs.push(removeListener);
+            }
+          }
+        });
+
+        if (config.box.persist) {
+          const boxPersistenceKey = `${keyNamePrefix}.${createVisualizationStatePrefix(
+            visualizationName,
+          )}.box`;
+
+          const boxStateFromStorage =
+            getStateFromLocalStorage(boxPersistenceKey);
+          const originalMethods = { ...boxMethods };
+
+          if (!isEmpty(boxStateFromStorage)) {
+            boxMethods.update(boxStateFromStorage);
+          } else {
+            boxMethods.reset();
+          }
+
+          boxMethods.reset = () => {
+            originalMethods.reset();
+            localStorage.removeItem(boxPersistenceKey);
+          };
+
+          boxMethods.update = (newValue: Partial<BoxState>) => {
+            originalMethods.update(newValue);
+            localStorage.setItem(boxPersistenceKey, encode(newValue));
+          };
+        }
+
+        return () => {
+          funcs.forEach((func) => func());
+        };
       },
     },
   };
@@ -174,12 +282,26 @@ function createVisualizationsEngine<TStore>(
       func();
     });
   }
+
+  function initialize(engineName: string = 'core-viz') {
+    const funcs: CallableFunction[] = [];
+    Object.values(obj.engine).forEach((e: any) => {
+      const func = e.initialize(engineName);
+      funcs.push(func);
+    });
+
+    return () => {
+      funcs.forEach((func) => func());
+    };
+  }
+
   return {
     state: {
       [VISUALIZATIONS_STATE_PREFIX]: obj.state,
     },
     engine: {
       ...obj.engine,
+      initialize,
       reset: resetVisualizationsState,
     },
   };

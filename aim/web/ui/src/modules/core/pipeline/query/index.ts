@@ -49,7 +49,7 @@ async function executeBaseQuery(
   try {
     data = (await config.currentQueryRequest?.call(query)) as ReadableStream; // @TODO write better code to avoid null check
   } catch (e) {
-    throw new FetchingError(e.message || e, e.detail);
+    throw new FetchingError(e.message || e, e.detail).getError();
   }
 
   if (config.statusChangeCallback) {
@@ -67,7 +67,7 @@ async function executeBaseQuery(
     }
     return result;
   } catch (e) {
-    throw new DecodingError(e.message || e, e.detail);
+    throw new DecodingError(e.message || e, e.detail).getError();
   }
 }
 
