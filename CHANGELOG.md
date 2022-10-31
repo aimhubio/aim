@@ -2,7 +2,7 @@
 
 ## 3.14.4
 
-- Display the group property name in the images and audio tabs (VkoHov)
+- Fix the group property name visibility in the images and audio tabs (VkoHov)
 
 ## 3.14.3 Oct 29, 2022
 
