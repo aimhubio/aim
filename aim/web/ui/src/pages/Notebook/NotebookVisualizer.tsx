@@ -18,13 +18,13 @@ export default function SandboxVisualizer() {
   const [isLoading, setIsLoading] = React.useState<boolean>(true);
   const [cells, setCells] = React.useState([
     {
-      initialCode: `from aim.sequences import Metric, Images, Audios, Figures, Texts 
+      code: `from aim.sequences import Metric, Images, Audios, Figures, Texts 
 from aim.ui.layout import Grid, Cell
 from aim.ui.viz import LineChart, ImagesList, AudiosList, TextsList, FiguresList, Table, JSON`,
       key: `${Date.now()}`,
       readOnly: true,
     },
-    { initialCode: '', key: `${Date.now()}`, readOnly: false },
+    { code: '', key: `${Date.now()}`, readOnly: false },
   ]);
 
   (window as any).updateLayout = () => {};
@@ -68,7 +68,7 @@ from aim.ui.viz import LineChart, ImagesList, AudiosList, TextsList, FiguresList
                   c
                     .slice(0, i + 1)
                     .concat({
-                      initialCode: '',
+                      code: '',
                       key: `${Date.now()}`,
                       readOnly: false,
                     })

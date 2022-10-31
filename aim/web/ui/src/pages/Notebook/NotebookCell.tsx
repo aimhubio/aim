@@ -23,9 +23,9 @@ function toObject(x: any): any {
 let lineHeight = 18;
 
 function NotebookCell(props: any) {
-  const { pyodide, initialCode, readOnly } = props;
+  const { pyodide, code, readOnly } = props;
 
-  const editorValue = React.useRef(initialCode);
+  const editorValue = React.useRef(code);
   const editorRef = React.useRef<any>();
 
   const [result, setResult] = React.useState<Record<string, any>>([[]]);
