@@ -43,9 +43,6 @@ const ImagesExplore = React.lazy(
 const FiguresExplore = React.lazy(
   () => import(/* webpackChunkName: "figures" */ 'pages/FiguresExplorer'),
 );
-const AudioExplorer = React.lazy(
-  () => import(/* webpackChunkName: "figures" */ 'pages/AudioExplorer'),
-);
 
 export interface IRoute {
   path: PathEnum;
@@ -135,15 +132,6 @@ const routes = {
     showInSidebar: true,
     icon: 'figures-explorer',
     displayName: 'Figures',
-    isExact: true,
-    title: pageTitlesEnum.FIGURES_EXPLORER,
-  },
-  AUDIO_EXPLORER: {
-    path: PathEnum.Audio_Explorer,
-    component: AudioExplorer,
-    showInSidebar: true,
-    icon: 'figures-explorer',
-    displayName: 'Audio',
     isExact: true,
     title: pageTitlesEnum.FIGURES_EXPLORER,
   },
