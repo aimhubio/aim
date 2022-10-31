@@ -171,7 +171,7 @@ function AudioBox(
     <ErrorBoundary>
       <div className='AudioBox'>
         <div className='AudioBox__controllers'>
-          <div className='AudioBox__controllers__Player'>
+          <div className='AudioBox__controllers__player'>
             {audio ? (
               <Button
                 onClick={onPLayChange}
@@ -206,18 +206,20 @@ function AudioBox(
           </div>
           <AudioBoxProgress audio={audio} isPlaying={isPlaying} src={src} />
           <AudioBoxVolume audio={audio} />
-          <Button withOnlyIcon size='xSmall' onClick={onDownload}>
-            {processing ? (
-              <Spinner
-                className='Icon__container'
-                size={12}
-                color='#414b6d'
-                thickness={2}
-              />
-            ) : (
-              <Icon name='download' />
-            )}
-          </Button>
+          <div className='AudioBox__controllers__download'>
+            <Button withOnlyIcon size='xSmall' onClick={onDownload}>
+              {processing ? (
+                <Spinner
+                  className='Icon__container'
+                  size={12}
+                  color='#414b6d'
+                  thickness={2}
+                />
+              ) : (
+                <Icon name='download' />
+              )}
+            </Button>
+          </div>
         </div>
         <Text
           title={caption || ''}

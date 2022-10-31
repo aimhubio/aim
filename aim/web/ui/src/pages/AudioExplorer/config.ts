@@ -1,0 +1,42 @@
+import CaptionProperties from 'modules/BaseExplorer/components/Controls/CaptionProperties';
+import { getDefaultHydration } from 'modules/BaseExplorer';
+import { GroupType, Order } from 'modules/core/pipeline';
+import { defaultHydration } from 'modules/BaseExplorer/getDefaultHydration';
+
+export const getAudiosDefaultConfig = (): typeof defaultHydration => {
+  const defaultConfig = getDefaultHydration();
+
+  return {
+    ...defaultConfig,
+    groupings: {
+      ...defaultConfig.groupings,
+      [GroupType.COLUMN]: {
+        ...defaultConfig.groupings[GroupType.COLUMN],
+        defaultApplications: {
+          orders: defaultConfig.groupings[GroupType.COLUMN].defaultApplications
+            ?.orders ?? [Order.ASC, Order.ASC],
+          fields: ['run.hash', 'audios.name'],
+        },
+      },
+    },
+    controls: {
+      captionProperties: {
+        component: CaptionProperties,
+        state: {
+          initialState: {
+            displayBoxCaption: true,
+            selectedFields: ['run.name', 'audios.name', 'audios.context'],
+          },
+        },
+      },
+    },
+    box: {
+      ...defaultConfig.box,
+      initialState: {
+        width: 300,
+        height: 250,
+        gap: 0,
+      },
+    },
+  };
+};
