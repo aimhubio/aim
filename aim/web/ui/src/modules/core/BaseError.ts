@@ -1,7 +1,4 @@
-export type BaseErrorDetail = string | Record<string, any>;
-interface BaseError extends Error {
-  detail?: BaseErrorDetail;
-}
+import { BaseErrorType } from './engine/types';
 /**
  * @class BaseError representing an Aim error object.
  *
@@ -13,14 +10,24 @@ interface BaseError extends Error {
  *  </pre>
  *
  * @param {string} message - error message
- * @param {BaseErrorDetail} detail - error details
+ * @param {Record<string, any>} detail - error details
  * @return {BaseError} - Aim error object
  */
+
 class BaseError extends Error {
-  constructor(message?: string, detail?: BaseErrorDetail) {
+  detail: Record<string, any>;
+  constructor(message?: string, detail: Record<string, any> = {}) {
     super(message);
     this.name = this.constructor.name;
     this.detail = detail;
+  }
+
+  getError(): BaseErrorType {
+    return {
+      name: this.name,
+      message: this.message,
+      detail: this.detail,
+    };
   }
 }
 

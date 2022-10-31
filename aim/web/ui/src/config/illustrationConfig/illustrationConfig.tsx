@@ -26,6 +26,7 @@ const Illustrations_List: { [key: string]: string } = {
   [PipelineStatusEnum.NeverExecuted]: exploreData,
   [PipelineStatusEnum.Insufficient_Resources]: exploreData,
   [PipelineStatusEnum.Empty]: emptySearch,
+  [PipelineStatusEnum.Failed]: wrongSearch,
 };
 
 const Request_Illustrations = {
@@ -145,6 +146,7 @@ const Illustration_Title_Config: { [key: string]: object | any } = {
         to learn more.
       </>
     ),
+    [PipelineStatusEnum.Failed]: 'Incorrect Query',
     [PipelineStatusEnum.Insufficient_Resources]: (
       <span>You don't have any tracked figures</span>
     ),

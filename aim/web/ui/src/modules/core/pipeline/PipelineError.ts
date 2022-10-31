@@ -1,8 +1,6 @@
-import BaseError, { BaseErrorDetail } from '../BaseError';
+import BaseError from '../BaseError';
+import { PipelineErrorType } from '../engine/types';
 
-interface PipelineError extends BaseError {
-  source: string;
-}
 /**
  * @class PipelineError representing a pipeline phase error object.
  *
@@ -15,19 +13,29 @@ interface PipelineError extends BaseError {
  *  </pre>
  *
  * @param {string} message - pipeline error message
- * @param {BaseErrorDetail} detail - pipeline error details
+ * @param {Record<string, any>} detail - pipeline error details
  * @param {string} source - source of the pipeline error
  * @return {PipelineError} - pipeline error object
  */
 class PipelineError extends BaseError {
+  source: string;
   constructor(
     message?: string,
-    detail?: BaseErrorDetail,
+    detail?: Record<string, any>,
     source: string = 'unknown',
   ) {
     super(message, detail);
     this.source = source;
     this.name = this.constructor.name;
+  }
+
+  getError(): PipelineErrorType {
+    return {
+      name: this.name,
+      message: this.message,
+      detail: this.detail,
+      source: this.source,
+    };
   }
 }
 

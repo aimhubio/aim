@@ -52,6 +52,9 @@ function createExplorer(
             hasDepthSlider:
               viz.box.hasDepthSlider ?? defaultHydration.box.hasDepthSlider,
             component: viz.box.component,
+            persist: viz.box.hasOwnProperty('persist')
+              ? viz.box.persist
+              : defaultHydration.box.persist,
           },
         };
         return acc;
@@ -63,8 +66,6 @@ function createExplorer(
       ...configuration,
       documentationLink:
         configuration.documentationLink || defaultHydration.documentationLink,
-      basePath:
-        configuration.basePath || createBasePathFromName(configuration.name),
       components: {
         groupingContainer:
           components?.groupingContainer || defaultHydration.Groupings,
@@ -79,9 +80,14 @@ function createExplorer(
       enablePipelineCache: configuration.enablePipelineCache || true,
     };
 
+    const basePath =
+      configuration.basePath || createBasePathFromName(configuration.name);
+    const engineName = createBasePathFromName(configuration.name);
+
     const engine = createEngine<TObject>(
       hydration,
-      configuration.basePath,
+      basePath,
+      engineName,
       devtool,
     );
 

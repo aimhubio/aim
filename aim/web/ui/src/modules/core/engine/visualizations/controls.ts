@@ -2,6 +2,8 @@ import { omit } from 'lodash-es';
 
 import { createSliceState } from 'modules/core/utils/store';
 
+import { StatePersistOption } from '../types';
+
 export type ControlConfig<State extends object, Settings> = {
   /**
    * Name of control, using as unique key of control
@@ -14,6 +16,7 @@ export type ControlConfig<State extends object, Settings> = {
    */
   state?: {
     initialState: State;
+    persist?: StatePersistOption;
   };
   /**
    * Static settings, i.e.

@@ -1,7 +1,7 @@
 import React from 'react';
 import _ from 'lodash-es';
 
-import { Checkbox, Divider, TextField, Typography } from '@material-ui/core';
+import { Checkbox, Divider, TextField } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
 import {
   CheckBox as CheckBoxIcon,
@@ -137,18 +137,19 @@ function TooltipContentPopover({
               />
             )}
             renderOption={(option, { selected }) => (
-              <React.Fragment>
+              <div className='TooltipContentPopover__option'>
                 <Checkbox
                   color='primary'
+                  size='small'
                   icon={<CheckBoxOutlineBlank />}
                   checkedIcon={<CheckBoxIcon />}
                   style={{ marginRight: 4 }}
                   checked={selected}
                 />
-                <Typography noWrap={true} title={option.label}>
+                <Text className='GroupingPopover__option__label' size={14}>
                   {option.label}
-                </Typography>
-              </React.Fragment>
+                </Text>
+              </div>
             )}
             renderTags={(value, getTagProps) => (
               <div className='TooltipContentPopover__SelectedTagsContainer'>
