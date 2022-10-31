@@ -19,13 +19,17 @@ import createVisualizationsEngine from '../visualizations';
 import createExplorerAdditionalEngine from '../explorer';
 import createCustomStatesEngine, { CustomStatesEngine } from '../custom-states';
 import createEventSystemEngine, { IEventSystemEngine } from '../event-system';
+import createBlobURISystemEngine, {
+  IBlobURISystemEngine,
+} from '../blob-uri-system';
 
 type State = {
   pipeline?: any;
   instructions?: any;
   explorer?: any;
   visualizations?: any;
-  events?: any;
+  events?: IEventSystemEngine['state'];
+  blobURI?: any;
 };
 
 export type EngineNew<
@@ -156,6 +160,12 @@ function getEventSystemEngine(
   return events.engine;
 }
 
+function getBlobURIEngine(config: ExplorerEngineConfiguration) {
+  const blobURI = createBlobURISystemEngine(config.sequenceName);
+
+  return blobURI.engine;
+}
+
 function createEngine<TObject = any>(
   config: ExplorerEngineConfiguration,
   basePath: string,
@@ -172,6 +182,7 @@ function createEngine<TObject = any>(
 
   let customStatesEngine: CustomStatesEngine;
   let events: IEventSystemEngine['engine'];
+  let blobURI: IBlobURISystemEngine['engine'];
   let query: any;
   let groupings: any;
   let initialState = {};
@@ -238,6 +249,10 @@ function createEngine<TObject = any>(
     /**
      * @TODO add blobs_uri engine here
      */
+    /*
+     * Blob URI System
+     */
+    blobURI = getBlobURIEngine(config);
 
     return initialState;
   }
@@ -340,7 +355,8 @@ function createEngine<TObject = any>(
     pipeline,
     // @ts-ignore
     events,
-
+    // @ts-ignore
+    blobURI,
     finalize,
     initialize,
   };

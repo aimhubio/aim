@@ -59,7 +59,9 @@ async function executeBaseQuery(
   const progressCallback: RequestProgressCallback | undefined =
     query.report_progress ? config.requestProgressCallback : undefined;
   try {
-    const result = parseStream<Array<RunSearchRunView>>(data, progressCallback);
+    const result = parseStream<Array<RunSearchRunView>>(data, {
+      progressCallback,
+    });
     if (config.cache) {
       config.cache.set(query, result);
     }
