@@ -35,6 +35,11 @@
   color: inherit;
 }
 
+.NotebookCell__error {
+  color: $error-color;
+  padding: $space-xs $space-sm;
+}
+
 .NotebookCell__grid {
   max-height: 50vh;
   position: relative;

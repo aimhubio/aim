@@ -31,6 +31,7 @@ function NotebookCell(props: any) {
   const [result, setResult] = React.useState<Record<string, any>>([[]]);
   const [isProcessing, setIsProcessing] = React.useState<boolean | null>(null);
   const [editorHeight, setEditorHeight] = React.useState(lineHeight);
+  const [error, setError] = React.useState<string | null>(null);
 
   const execute = React.useCallback(async () => {
     try {
@@ -67,10 +68,11 @@ def Grid(grid):
       pyodide.current
         .runPythonAsync(code)
         .then(() => {
+          setError(null);
           setIsProcessing(false);
         })
-        .catch((ex: unknown) => {
-          console.log(ex);
+        .catch((ex: Error) => {
+          setError(ex.message);
           setIsProcessing(false);
         });
     } catch (ex) {
@@ -134,6 +136,8 @@ def Grid(grid):
       </div>
       {isProcessing === null ? null : isProcessing ? (
         <Spinner />
+      ) : error ? (
+        <pre className='NotebookCell__error'>{error}</pre>
       ) : (
         <div className='NotebookCell__grid'>
           {result.map((row: any[], i: number) => (
