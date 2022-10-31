@@ -128,15 +128,14 @@ def Grid(grid):
             onClick={execute}
             size='xSmall'
             className='NotebookCell__editor__runButton'
+            disabled={!!isProcessing}
           >
-            <Icon name='play' />
+            {isProcessing ? <Spinner size={12} /> : <Icon name='play' />}
             <Text className='NotebookCell__editor__runButton__text'>Run</Text>
           </Button>
         )}
       </div>
-      {isProcessing === null ? null : isProcessing ? (
-        <Spinner />
-      ) : error ? (
+      {error ? (
         <pre className='NotebookCell__error'>{error}</pre>
       ) : (
         <div className='NotebookCell__grid'>
