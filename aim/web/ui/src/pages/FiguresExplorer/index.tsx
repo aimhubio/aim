@@ -9,6 +9,7 @@ const defaultConfig = getDefaultHydration();
 
 const FiguresExplorer = renderer(
   {
+    persist: true,
     sequenceName: SequenceTypesEnum.Figures,
     name: 'Figures Explorer',
     adapter: {
@@ -21,12 +22,13 @@ const FiguresExplorer = renderer(
         controls: defaultConfig.controls,
         box: {
           component: Figures,
+          hasDepthSlider: defaultConfig.box.hasDepthSlider,
           initialState: defaultConfig.box.initialState,
         },
       },
     },
   },
-  __DEV__,
+  true,
 );
 
 export default FiguresExplorer;

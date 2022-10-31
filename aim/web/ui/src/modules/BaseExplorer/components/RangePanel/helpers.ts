@@ -32,3 +32,36 @@ export function getRangeAndDensityData(
 
   return { density, slice };
 }
+
+export function getRecordState(rangesData: any, rangeState: any) {
+  const updatedRangesState: {
+    record?: { slice: [number, number]; density: number };
+    index?: { slice: [number, number]; density: number };
+  } = {};
+
+  // checking is record data exist
+  if (rangesData?.ranges?.record_range_total) {
+    const { record_range_used, record_range_total } = rangesData?.ranges;
+
+    // setting record range slice and density
+    updatedRangesState.record = getRangeAndDensityData(
+      record_range_total,
+      record_range_used,
+      rangeState.record?.density ?? 50,
+    );
+  }
+
+  // checking is index data exist
+  if (rangesData?.ranges?.index_range_total) {
+    const { index_range_total, index_range_used } = rangesData?.ranges;
+
+    // setting index range slice and density
+    updatedRangesState.index = getRangeAndDensityData(
+      index_range_total,
+      index_range_used,
+      rangeState.index?.density ?? 5,
+    );
+  }
+
+  return updatedRangesState;
+}

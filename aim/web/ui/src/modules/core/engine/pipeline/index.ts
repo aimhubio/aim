@@ -1,4 +1,4 @@
-import { isEmpty, omit } from 'lodash-es';
+import { isEmpty, isEqual, omit } from 'lodash-es';
 
 import {
   IRunProgressObject,
@@ -10,10 +10,17 @@ import createPipeline, {
   PipelineOptions,
   PipelinePhasesEnum,
 } from 'modules/core/pipeline';
+import getUrlSearchParam from 'modules/core/utils/getUrlSearchParam';
+import updateUrlSearchParam from 'modules/core/utils/updateUrlSearchParam';
+import browserHistory from 'modules/core/services/browserHistory';
+import getQueryParamsFromState from 'modules/core/utils/getQueryParamsFromState';
 
 import { SequenceTypesEnum } from 'types/core/enums';
 
+import { encode } from 'utils/encoder/encoder';
+
 import { PipelineStatusEnum, ProgressState } from '../types';
+import { QueryState } from '../explorer/query';
 
 import createState, {
   CurrentGrouping,
@@ -27,11 +34,12 @@ export interface IPipelineEngine<TObject, TStore> {
     pipeline: IPipelineState<TObject>;
   };
   engine: {
-    search: (params: RunsSearchQueryParams) => void;
-    group: (config: CurrentGrouping) => void;
+    search: (params: RunsSearchQueryParams, isInternal?: boolean) => void;
+    group: (config: CurrentGrouping, isInternal?: boolean) => void;
     getSequenceName: () => SequenceTypesEnum;
     destroy: () => void;
     reset: () => void;
+    initialize: () => () => void;
   } & Omit<PipelineStateBridge<TObject, TStore>, 'selectors'> &
     PipelineStateBridge<TObject, TStore>['selectors'];
 }
@@ -108,11 +116,38 @@ function createPipelineEngine<TStore, TObject>(
    * @example
    *    pipeline.engine.search({ q: "run.hparams.batch_size>32"})
    * @param {RunsSearchQueryParams} params
+   * @param isInternal - indicates does it need to update current query or not
    */
-  function search(params: RunsSearchQueryParams): void {
+  function search(
+    params: RunsSearchQueryParams,
+    isInternal: boolean = false,
+  ): void {
     const currentGroupings = state.getCurrentGroupings();
 
     state.setCurrentQuery(params);
+    state.setError(null);
+
+    if (!isInternal && pipelineOptions.persist) {
+      const queryState = store.getState().query;
+
+      if (!queryState.ranges.isInitial) {
+        const url = updateUrlSearchParam(
+          'query',
+          encode({
+            ...queryState,
+            ranges: {
+              ...queryState.ranges,
+              isApplyButtonDisabled: true,
+            },
+          }),
+        );
+
+        // TODO move check into custom push method
+        if (url !== `${window.location.pathname}${window.location.search}`) {
+          browserHistory.push(url, null);
+        }
+      }
+    }
 
     const groupOptions = Object.keys(currentGroupings).map((key: string) => ({
       type: key as GroupType,
@@ -138,8 +173,27 @@ function createPipelineEngine<TStore, TObject>(
         state.changeCurrentPhaseOrStatus(
           isEmpty(data) ? PipelineStatusEnum.Empty : state.getStatus(),
         );
+
+        if (!isInternal && pipelineOptions.persist) {
+          const url = updateUrlSearchParam(
+            'query',
+            encode({
+              ...store.getState().query,
+              ranges: {
+                ...store.getState().query.ranges,
+                isApplyButtonDisabled: true,
+              },
+            }),
+          );
+          if (url !== `${window.location.pathname}${window.location.search}`) {
+            browserHistory.push(url, null);
+          }
+        }
       })
-      .catch((ex: unknown) => {});
+      .catch((err) => {
+        state.setError(err);
+        state.changeCurrentPhaseOrStatus(PipelineStatusEnum.Failed);
+      });
   }
 
   function normalizeGroupConfig(config: CurrentGrouping) {
@@ -171,9 +225,23 @@ function createPipelineEngine<TStore, TObject>(
    * @example
    *     pipeline.engine.group(config)
    * @param {CurrentGrouping} config
+   * @param {boolean} isInternal - indicates called internally or from UI, if isInternal doesnt need to update current query
    */
-  function group(config: CurrentGrouping): void {
+  function group(config: CurrentGrouping, isInternal: boolean = false): void {
     state.setCurrentGroupings(config);
+
+    const equal = isEqual(config, defaultGroupings);
+
+    if (!isInternal && pipelineOptions.persist) {
+      const url = updateUrlSearchParam(
+        'groupings',
+        equal ? null : encode(config),
+      );
+
+      if (url !== `${window.location.pathname}${window.location.search}`) {
+        browserHistory.push(url, null);
+      }
+    }
 
     pipeline
       .execute({
@@ -192,6 +260,59 @@ function createPipelineEngine<TStore, TObject>(
     group(defaultGroupings);
   }
 
+  function initialize() {
+    if (pipelineOptions.persist) {
+      const stateFromStorage = getUrlSearchParam('groupings') || {};
+      // update state
+      if (!isEmpty(stateFromStorage)) {
+        state.setCurrentGroupings(stateFromStorage);
+      }
+
+      const removeGroupingsListener = browserHistory.listenSearchParam<any>(
+        'groupings',
+        (groupings: any) => {
+          if (!isEmpty(groupings)) {
+            group(groupings, true);
+          } else {
+            group(defaultGroupings, true);
+          }
+        },
+        ['PUSH'],
+      );
+
+      const removeQueryListener =
+        browserHistory.listenSearchParam<QueryState | null>(
+          'query',
+          (query: QueryState | null) => {
+            if (!isEmpty(query)) {
+              search(
+                {
+                  ...getQueryParamsFromState(
+                    query as QueryState,
+                    options.sequenceName,
+                  ),
+                  report_progress: true,
+                },
+                true,
+              );
+            } else {
+              search({ q: '()', report_progress: true }, true);
+            }
+          },
+          ['PUSH'],
+        );
+      return () => {
+        removeGroupingsListener();
+        removeQueryListener();
+        // pipeline.clearCache();
+      };
+    }
+
+    return () => {
+      // pipeline.clearCache();
+    };
+  }
+
   return {
     state: {
       pipeline: state.initialState,
@@ -203,8 +324,12 @@ function createPipelineEngine<TStore, TObject>(
       search,
       group,
       reset,
+      initialize,
       destroy: () => {
-        pipeline.clearCache();
+        /**
+         * This line creates some bugs right now, use this after creating complete clean-up mechanism for resources
+         */
+        // pipeline.clearCache();
       },
     },
   };

@@ -6,9 +6,11 @@ import { ControlsConfigs } from 'modules/core/engine/visualizations/controls';
 import { CustomStates } from 'modules/core/utils/store';
 
 import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
+import { AimFlatObjectBase } from 'types/core/AimObjects';
 
 import { VisualizationsConfig } from '../core/engine/visualizations';
 import { EngineNew } from '../core/engine/explorer-engine';
+import { StatePersistOption } from '../core/engine/types';
 
 export interface IEngineStates {
   [key: string]: {
@@ -78,6 +80,7 @@ export interface IVisualizationsProps extends IBaseComponentProps {
 
 export interface IVisualizationProps extends IBaseComponentProps {
   box?: React.FunctionComponent<IBoxProps>;
+  hasDepthSlider: boolean;
   panelRenderer: () => React.ReactNode;
   name: string;
 }
@@ -86,6 +89,7 @@ export interface IProgressBarProps extends IBaseComponentProps {}
 
 export interface IBoxProps extends IBaseComponentProps {
   data: any;
+  items: AimFlatObjectBase[];
   style?: React.CSSProperties;
 }
 
@@ -103,6 +107,11 @@ export interface IBaseComponentProps {
 }
 
 export declare interface ExplorerEngineConfiguration {
+  /**
+   * @optional
+   * Useful when it need to persist query and grouping states through url
+   */
+  persist?: boolean; // TODO later use StatePersistOption;
   /**
    * Enable/disable pipeline cache
    * @optional

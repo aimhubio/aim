@@ -1,14 +1,13 @@
 import React from 'react';
 
 import { QueryFormState } from 'modules/core/engine/explorer/query/state';
-import { getQueryFromRanges } from 'modules/core/utils/getQueryFromRanges';
-import { getQueryStringFromSelect } from 'modules/core/utils/getQueryStringFromSelect';
+import getQueryParamsFromState from 'modules/core/utils/getQueryParamsFromState';
 
 import { Button, Icon, Text } from 'components/kit';
 
 import { SequenceTypesEnum } from 'types/core/enums';
 
-import { getRangeAndDensityData } from './helpers';
+import { getRecordState } from './helpers';
 import RangePanelItem from './RangePanelItem';
 
 import { IRangePanelProps } from './';
@@ -35,9 +34,14 @@ function RangePanel(props: IRangePanelProps) {
         isApplyButtonDisabled: true,
       });
       engine.pipeline.search({
-        q: getQueryStringFromSelect(query, sequenceName),
+        ...getQueryParamsFromState(
+          {
+            ranges: rangeState,
+            form: query,
+          },
+          sequenceName,
+        ),
         report_progress: true,
-        ...getQueryFromRanges(rangeState),
       });
     }
   }, [engine, isFetching, query, sequenceName, rangeState]);
@@ -67,35 +71,7 @@ function RangePanel(props: IRangePanelProps) {
 
   React.useEffect(() => {
     // creating the empty ranges state
-    const updatedRangesState: {
-      record?: { slice: [number, number]; density: number };
-      index?: { slice: [number, number]; density: number };
-    } = {};
-
-    // checking is record data exist
-    if (props.rangesData?.ranges?.record_range_total) {
-      const { record_range_used, record_range_total } =
-        props.rangesData?.ranges;
-
-      // setting record range slice and density
-      updatedRangesState.record = getRangeAndDensityData(
-        record_range_total,
-        record_range_used,
-        rangeState.record?.density ?? 50,
-      );
-    }
-
-    // checking is index data exist
-    if (props.rangesData?.ranges?.index_range_total) {
-      const { index_range_total, index_range_used } = props.rangesData?.ranges;
-
-      // setting index range slice and density
-      updatedRangesState.index = getRangeAndDensityData(
-        index_range_total,
-        index_range_used,
-        rangeState.index?.density ?? 5,
-      );
-    }
+    const updatedRangesState = getRecordState(props.rangesData, rangeState);
 
     //updating the ranges data and setting the apply button disability
     engine.query.ranges.update({

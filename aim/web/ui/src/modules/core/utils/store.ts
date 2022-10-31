@@ -2,7 +2,10 @@ import { get as getValue, set as setValue } from 'lodash-es';
 import produce, { Draft } from 'immer';
 
 import { buildObjectHash } from 'modules/core/utils/hashing';
-import { GenerateStoreMethods } from 'modules/core/engine/types';
+import {
+  GenerateStoreMethods,
+  StatePersistOption,
+} from 'modules/core/engine/types';
 
 import { SliceMethods, StateSelector } from 'utils/store/createSlice';
 
@@ -91,5 +94,6 @@ export type PreCreatedStateSlice = {
 export type CustomStates<T = any> = {
   [key: string]: {
     initialState: Record<string, T>;
+    persist?: StatePersistOption;
   };
 };
