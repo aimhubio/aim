@@ -1,4 +1,3 @@
-import { BaseErrorDetail } from '../../BaseError';
 import PipelineError from '../PipelineError';
 import { PipelinePhasesEnum } from '../types';
 
@@ -13,11 +12,11 @@ import { PipelinePhasesEnum } from '../types';
  *  </pre>
  *
  * @param {string} message - grouping error message
- * @param {BaseErrorDetail} detail - grouping error details
+ * @param {Record<string, any>} detail - grouping error details
  * @return {GroupingError} - grouping error object
  */
 class GroupingError extends PipelineError {
-  constructor(message?: string, detail?: BaseErrorDetail) {
+  constructor(message?: string, detail: Record<string, any> = {}) {
     super(message, detail, PipelinePhasesEnum.Grouping);
     this.name = this.constructor.name;
   }

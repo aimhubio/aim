@@ -1,4 +1,3 @@
-import { BaseErrorDetail } from '../../BaseError';
 import PipelineError from '../PipelineError';
 import { PipelinePhasesEnum } from '../types';
 
@@ -13,11 +12,11 @@ import { PipelinePhasesEnum } from '../types';
  *  </pre>
  *
  * @param {string} message - adapter error message
- * @param {BaseErrorDetail} detail - adapter error details
+ * @param {Record<string, any>} detail - adapter error details
  * @return {AdapterError} - adapter error object
  */
 class AdapterError extends PipelineError {
-  constructor(message?: string, detail?: BaseErrorDetail) {
+  constructor(message?: string, detail: Record<string, any> = {}) {
     super(message, detail, PipelinePhasesEnum.Adopting);
     this.name = this.constructor.name;
   }
