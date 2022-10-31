@@ -12,9 +12,9 @@ function Explorer({ configuration, engineInstance }: ExplorerProps) {
   );
 
   useEffect(() => {
-    engineInstance.initialize().then().catch();
+    const finalize = engineInstance.initialize();
     return () => {
-      engineInstance.finalize();
+      finalize();
     };
   }, [engineInstance]);
 
