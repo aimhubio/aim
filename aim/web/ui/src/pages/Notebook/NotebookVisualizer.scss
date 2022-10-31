@@ -1,0 +1,53 @@
+@use './src/styles/abstracts' as *;
+
+.NotebookVisualizer {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  padding: $space-md $space-lg;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: auto;
+}
+
+.NotebookCell {
+  width: 100%;
+  border: $border-dark;
+  border-radius: $border-radius-sm;
+  padding: $space-xxxs;
+
+}
+
+.NotebookCell__editor {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  height: fit-content;
+}
+
+.NotebookCell__editor--readOnly {
+  opacity: 0.7;
+}
+
+.NotebookCell__editor__runButton__text {
+  margin-left: $space-xxs;
+  color: inherit;
+}
+
+.NotebookCell__grid {
+  max-height: 50vh;
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  background-color: $pico-5;
+}
+
+.NotebookVisualizer__addCell__text {
+  margin-left: $space-xxs;
+  color: inherit;
+}
+

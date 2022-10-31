@@ -1,18 +1,31 @@
 import * as React from 'react';
 import * as _ from 'lodash-es';
-import classnames from 'classnames';
 
-import { Button, Spinner } from 'components/kit';
+import { Button, Icon, Spinner, Text } from 'components/kit';
 
 import { getBasePath } from 'config/config';
 
 import { search } from 'pages/Sandbox/search';
+
+import NotebookCell from './NotebookCell';
+
+import './NotebookVisualizer.scss';
 
 (window as any).search = search;
 
 export default function SandboxVisualizer() {
   const pyodide = React.useRef<any>();
   const [isLoading, setIsLoading] = React.useState<boolean>(true);
+  const [cells, setCells] = React.useState([
+    {
+      initialCode: `from aim.sequences import Metric, Images, Audios, Figures, Texts 
+from aim.ui.layout import Grid, Cell
+from aim.ui.viz import LineChart, ImagesList, AudiosList, TextsList, FiguresList, Table, JSON`,
+      key: `${Date.now()}`,
+      readOnly: true,
+    },
+    { initialCode: '', key: `${Date.now()}`, readOnly: false },
+  ]);
 
   (window as any).updateLayout = () => {};
 
@@ -42,6 +55,37 @@ export default function SandboxVisualizer() {
   }, []);
 
   return (
-    <div className='NotebookVisualizer'>{isLoading ? <Spinner /> : null}</div>
+    <div className='NotebookVisualizer'>
+      {isLoading ? (
+        <Spinner />
+      ) : (
+        cells.map((cell, i) => (
+          <React.Fragment key={cell.key}>
+            <NotebookCell pyodide={pyodide} {...cell} />
+            <Button
+              onClick={() =>
+                setCells((c) =>
+                  c
+                    .slice(0, i + 1)
+                    .concat({
+                      initialCode: '',
+                      key: `${Date.now()}`,
+                      readOnly: false,
+                    })
+                    .concat(c.slice(i + 1)),
+                )
+              }
+              size='xSmall'
+              className='NotebookVisualizer__addCell'
+            >
+              <Icon name='plus' />
+              <Text className='NotebookVisualizer__addCell__text'>
+                Add cell
+              </Text>
+            </Button>
+          </React.Fragment>
+        ))
+      )}
+    </div>
   );
 }
