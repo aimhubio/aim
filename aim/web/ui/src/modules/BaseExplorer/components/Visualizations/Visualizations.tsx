@@ -55,6 +55,7 @@ function Visualizations(props: IVisualizationsProps) {
         PipelineStatusEnum.NeverExecuted,
         PipelineStatusEnum.Empty,
         PipelineStatusEnum.Insufficient_Resources,
+        PipelineStatusEnum.Failed,
       ].indexOf(status) !== -1,
     [status],
   );

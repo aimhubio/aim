@@ -1,4 +1,3 @@
-import { BaseErrorDetail } from '../../BaseError';
 import PipelineError from '../PipelineError';
 import { PipelinePhasesEnum } from '../types';
 
@@ -13,11 +12,11 @@ import { PipelinePhasesEnum } from '../types';
  *  </pre>
  *
  * @param {string} message - fetching error message
- * @param {BaseErrorDetail} detail - fetching error details
+ * @param {Record<string, any>} detail - fetching error details
  * @return {FetchingError} - fetching error object
  */
 class FetchingError extends PipelineError {
-  constructor(message?: string, detail?: BaseErrorDetail) {
+  constructor(message?: string, detail: Record<string, any> = {}) {
     super(message, detail, PipelinePhasesEnum.Fetching);
     this.name = this.constructor.name;
   }
@@ -34,11 +33,11 @@ class FetchingError extends PipelineError {
  *  </pre>
  *
  * @param {string} message - decoding error message
- * @param {BaseErrorDetail} detail - decoding error details
+ * @param {Record<string, any>} detail - decoding error details
  * @return {DecodingError} - decoding error object
  */
 class DecodingError extends PipelineError {
-  constructor(message?: string, detail?: BaseErrorDetail) {
+  constructor(message?: string, detail: Record<string, any> = {}) {
     super(message, detail, PipelinePhasesEnum.Decoding);
     this.name = this.constructor.name;
   }
