@@ -3,14 +3,17 @@ import React from 'react';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import Icon from 'components/kit/Icon';
 
-import { styled } from 'config/stitches/stitches.config';
+import { ColorPaletteEnum, styled } from 'config/stitches/stitches.config';
 
-import { ITagProps } from './Tag.d';
+import { IBadgeProps } from './Badge.d';
 
 const getColors = (color: string, disabled: boolean) => {
   if (color) {
     return {
-      backgroundColor: `${color}`,
+      bc: `$${color}${disabled ? 50 : 70}`,
+      '&:hover': {
+        bc: `$${color}80`,
+      },
     };
   }
   return {
@@ -23,7 +26,7 @@ const getColors = (color: string, disabled: boolean) => {
   };
 };
 
-const TagContainer = styled('div', {
+const BadgeContainer = styled('div', {
   width: 'fit-content',
   display: 'inline-flex',
   ai: 'center',
@@ -65,6 +68,7 @@ const TagContainer = styled('div', {
         userSelect: 'none',
         cursor: 'not-allowed',
         pointerEvents: 'none',
+        color: '$textPrimary50',
       },
     },
   },
@@ -97,22 +101,35 @@ const RightIcon = styled(Icon, {
   },
 });
 
-const Tag = React.forwardRef<React.ElementRef<typeof TagContainer>, ITagProps>(
+/**
+ * Badge component params
+ * @param {string} label - Label of the badge
+ * @param {string} size - Size of the badge
+ * @param {ColorPaletteEnum} color - Color of the badge
+ * @param {boolean} disabled - Disabled state of the badge
+ * @param {boolean} monospace - Monospace font of the badge
+ * @param {function} onDelete - Callback function for delete action
+ */
+
+const Badge = React.forwardRef<
+  React.ElementRef<typeof BadgeContainer>,
+  IBadgeProps
+>(
   (
     {
-      color = '',
+      label,
       size = 'md',
+      color = ColorPaletteEnum.pink,
       monospace = false,
       disabled = false,
       onDelete,
-      label,
       ...rest
-    }: ITagProps,
+    }: IBadgeProps,
     forwardedRef,
   ): React.FunctionComponentElement<React.ReactNode> => {
     return (
       <ErrorBoundary>
-        <TagContainer
+        <BadgeContainer
           {...rest}
           size={size}
           css={getColors(color, disabled)}
@@ -123,7 +140,7 @@ const Tag = React.forwardRef<React.ElementRef<typeof TagContainer>, ITagProps>(
           disabled={disabled}
         >
           {label}
-          {onDelete && (
+          {onDelete ? (
             <RightIcon
               role='button'
               name='close'
@@ -131,13 +148,13 @@ const Tag = React.forwardRef<React.ElementRef<typeof TagContainer>, ITagProps>(
               size={size}
               onClick={() => onDelete(label)}
             />
-          )}
-        </TagContainer>
+          ) : null}
+        </BadgeContainer>
       </ErrorBoundary>
     );
   },
 );
 
-Tag.displayName = 'Tag';
+Badge.displayName = 'Badge';
 
-export default Tag;
+export default Badge;
