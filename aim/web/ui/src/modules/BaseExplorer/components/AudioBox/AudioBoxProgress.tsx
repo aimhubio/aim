@@ -28,8 +28,8 @@ function AudioBoxProgress({ audio, isPlaying, src }: IAudioBoxProgressProps) {
   function startTimer(): void {
     clearInterval(intervalRef.current);
     intervalRef.current = setInterval(() => {
-      setTrackProgress(Math.round(audio.currentTime));
-    }, 300);
+      setTrackProgress(audio.currentTime);
+    }, 100);
   }
 
   function onProgressChange(e: any, value: number | number[]): void {
@@ -72,9 +72,10 @@ function AudioBoxProgress({ audio, isPlaying, src }: IAudioBoxProgressProps) {
         onChangeCommitted={onTimerChange}
         onChange={onProgressChange}
         value={trackProgress}
-        step={1}
+        step={0.1}
         max={Math.round(audio?.duration)}
         min={0}
+        disabled={!audio}
       />
       <div
         className={`AudioBox__controllers__timer ${
