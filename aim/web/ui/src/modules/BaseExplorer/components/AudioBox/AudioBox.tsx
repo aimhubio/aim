@@ -30,11 +30,11 @@ function AudioBox(
   const [isPlaying, setIsPlaying] = React.useState<boolean>(false);
   const [audio, setAudio] = React.useState<any>(null);
   const [processing, setProcessing] = React.useState<boolean>(false);
-  let [src, setSrc] = React.useState<string>('');
-  let [blobData, setBlobData] = React.useState<string>(
+  const [src, setSrc] = React.useState<string>('');
+  const [blobData, setBlobData] = React.useState<string>(
     engine.blobURI.getBlobData(blob_uri),
   );
-  let [muted, setMuted] = React.useState<boolean>(true);
+  const [muted, setMuted] = React.useState<boolean>(true);
 
   React.useEffect(() => {
     let timeoutID: number;

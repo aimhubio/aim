@@ -2,6 +2,8 @@ import React from 'react';
 import moment from 'moment';
 import AudioPlayer from 'material-ui-audio-player';
 
+import AudioBoxVolume from 'modules/BaseExplorer/components/AudioBox/AudioBoxVolume';
+
 import { Button, Icon, Slider, Spinner, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
@@ -11,11 +13,7 @@ import blobsURIModel from 'services/models/media/blobsURIModel';
 
 import contextToString from 'utils/contextToString';
 
-import {
-  IAudioBoxProps,
-  IAudiBoxProgressProps,
-  IAudioBoxVolumeProps,
-} from './AudioBox.d';
+import { IAudioBoxProps, IAudiBoxProgressProps } from './AudioBox.d';
 
 import './AudioBox.scss';
 
@@ -100,63 +98,6 @@ function AudiBoxProgress({ audio, isPlaying, src }: IAudiBoxProgressProps) {
         <Text weight={400} size={8}>
           / {(audio && formatDuration()) || '00:00'}
         </Text>
-      </div>
-    </ErrorBoundary>
-  );
-}
-
-function AudioBoxVolume({ audio }: IAudioBoxVolumeProps) {
-  const [volume, setVolume] = React.useState<number>(0.99);
-
-  function onVolumeChange(e: any, value: number | number[]): void {
-    if (audio) {
-      audio.volume = value as number;
-      setVolume(value as number);
-    }
-  }
-
-  React.useEffect(() => {
-    if (audio) {
-      audio.volume = volume;
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [volume]);
-
-  function onVolumeToggle(): void {
-    if (audio) {
-      if (audio.volume === 0) {
-        setVolume(0.99);
-      } else {
-        setVolume(0);
-      }
-    }
-  }
-
-  return (
-    <ErrorBoundary>
-      <div
-        className={`AudioBox__controllers__volume ${
-          audio ? '' : 'AudioBox__controllers__volume-disabled'
-        }`}
-      >
-        <Button
-          onClick={onVolumeToggle}
-          withOnlyIcon
-          size='small'
-          className='AudioBox__controllers__volume--button'
-        >
-          <Icon name={volume === 0 ? 'voice-off' : 'voice-on'} />
-        </Button>
-        <div className='AudioBox__controllers__volume__Slider'>
-          <Slider
-            onChange={onVolumeChange}
-            value={volume}
-            step={0.01}
-            defaultValue={1}
-            max={0.99}
-            min={0}
-          />
-        </div>
       </div>
     </ErrorBoundary>
   );
