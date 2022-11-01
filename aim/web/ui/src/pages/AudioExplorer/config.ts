@@ -34,8 +34,8 @@ export const getAudiosDefaultConfig = (): typeof defaultHydration => {
     box: {
       ...defaultConfig.box,
       initialState: {
-        width: 300,
-        height: 250,
+        width: 350,
+        height: 170,
         gap: 0,
       },
     },

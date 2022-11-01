@@ -1,6 +1,8 @@
 import React from 'react';
 import AudioPlayer from 'material-ui-audio-player';
 
+import { Tooltip } from '@material-ui/core';
+
 import { Button, Icon, Spinner, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
@@ -235,14 +237,18 @@ function AudioBox(
             </Button>
           </div>
         </div>
-        <Text
-          title={caption || ''}
-          className='AudioBox__caption'
-          size={8}
-          weight={400}
-        >
-          {caption || ''}
-        </Text>
+        <Tooltip title={caption || ''}>
+          <div>
+            <Text
+              title={caption || ''}
+              className='AudioBox__caption'
+              size={8}
+              weight={400}
+            >
+              {caption || ''}
+            </Text>
+          </div>
+        </Tooltip>
       </div>
     </ErrorBoundary>
   );
