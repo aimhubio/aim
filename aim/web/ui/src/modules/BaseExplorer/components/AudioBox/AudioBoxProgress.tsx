@@ -82,11 +82,11 @@ function AudioBoxProgress({ audio, isPlaying, src }: IAudioBoxProgressProps) {
           audio?.duration > 3600 ? 'AudioBox__controllers__timer-long' : ''
         }`}
       >
-        <Text weight={400} size={8}>
+        <Text weight={400} size={12}>
           {(audio && formatProgress()) || '00:00'}
         </Text>
-        <Text weight={400} size={8}>
-          / {(audio && formatDuration()) || '00:00'}
+        <Text weight={400} size={12}>
+          /{(audio && formatDuration()) || '00:00'}
         </Text>
       </div>
     </ErrorBoundary>
