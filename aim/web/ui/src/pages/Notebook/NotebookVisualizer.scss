@@ -36,8 +36,14 @@
 }
 
 .NotebookCell__error {
-  color: $error-color;
   padding: $space-xs $space-sm;
+  color: $error-color;
+}
+
+.NotebookCell__repr {
+  padding: $space-xs $space-sm;
+  white-space: normal;
+  word-break: break-word;
 }
 
 .NotebookCell__grid {

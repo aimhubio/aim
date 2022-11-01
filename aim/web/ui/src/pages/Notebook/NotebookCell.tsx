@@ -32,6 +32,7 @@ function NotebookCell(props: any) {
   const [isProcessing, setIsProcessing] = React.useState<boolean | null>(null);
   const [editorHeight, setEditorHeight] = React.useState(lineHeight);
   const [error, setError] = React.useState<string | null>(null);
+  const [reprValue, setReprValue] = React.useState<any>(null);
 
   const execute = React.useCallback(async () => {
     try {
@@ -67,7 +68,8 @@ def Grid(grid):
       await pyodide.current!.loadPackagesFromImports(code);
       pyodide.current
         .runPythonAsync(code)
-        .then(() => {
+        .then((val: any) => {
+          setReprValue(toObject(val));
           setError(null);
           setIsProcessing(false);
         })
@@ -137,6 +139,8 @@ def Grid(grid):
       </div>
       {error ? (
         <pre className='NotebookCell__error'>{error}</pre>
+      ) : reprValue ? (
+        <pre className='NotebookCell__repr'>{reprValue}</pre>
       ) : (
         <div className='NotebookCell__grid'>
           {result.map((row: any[], i: number) => (
