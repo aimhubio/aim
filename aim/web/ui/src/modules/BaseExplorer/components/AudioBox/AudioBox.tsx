@@ -2,6 +2,7 @@ import React from 'react';
 import AudioPlayer from 'material-ui-audio-player';
 
 import { Tooltip } from '@material-ui/core';
+import { IBoxProps } from 'modules/BaseExplorer/types';
 
 import { Button, Icon, Spinner, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
@@ -12,27 +13,27 @@ import contextToString from 'utils/contextToString';
 
 import AudioBoxProgress from './AudioBoxProgress';
 import AudioBoxVolume from './AudioBoxVolume';
-import { IAudioBoxProps } from './AudioBox.d';
 
 import './AudioBox.scss';
 
 function AudioBox(
-  props: IAudioBoxProps,
+  props: IBoxProps,
 ): React.FunctionComponentElement<React.ReactNode> {
   const {
-    engine,
+    engine: { events, blobURI },
     data: {
       data: { blob_uri, format, index, caption },
       audios,
       record,
     },
+    isFullView,
   } = props;
   const [isPlaying, setIsPlaying] = React.useState<boolean>(false);
   const [audio, setAudio] = React.useState<any>(null);
   const [processing, setProcessing] = React.useState<boolean>(false);
   const [src, setSrc] = React.useState<string>('');
   const [blobData, setBlobData] = React.useState<string>(
-    engine.blobURI.getBlobData(blob_uri),
+    blobURI.getBlobData(blob_uri),
   );
   const [muted, setMuted] = React.useState<boolean>(true);
 
@@ -41,16 +42,16 @@ function AudioBox(
     let unsubscribe: () => void;
     if (processing) {
       if (blobData === null) {
-        if (engine.blobURI.getBlobData(blob_uri)) {
-          setBlobData(engine.blobURI.getBlobData(blob_uri));
+        if (blobURI.getBlobData(blob_uri)) {
+          setBlobData(blobURI.getBlobData(blob_uri));
         } else {
-          unsubscribe = engine.blobURI.on(blob_uri, (blobData: string) => {
+          unsubscribe = blobURI.on(blob_uri, (blobData: string) => {
             setBlobData(blobData);
             unsubscribe();
           });
           timeoutID = window.setTimeout(() => {
-            if (engine.blobURI.getBlobData(blob_uri)) {
-              setBlobData(engine.blobURI.getBlobData(blob_uri));
+            if (blobURI.getBlobData(blob_uri)) {
+              setBlobData(blobURI.getBlobData(blob_uri));
               unsubscribe();
             } else {
               // addUriToList(blob_uri);
@@ -74,11 +75,17 @@ function AudioBox(
   }, [processing]);
 
   React.useEffect(() => {
-    const unsubscribe = engine.events.on('onAudioPlay', (payload: string) => {
-      if (payload !== blob_uri) {
-        setIsPlaying(false);
-      }
-    });
+    const unsubscribe = events.on(
+      'onAudioPlay',
+      (payload: { blob_uri: string; isFullView: boolean }) => {
+        if (
+          payload.blob_uri !== blob_uri ||
+          payload.isFullView !== isFullView
+        ) {
+          setIsPlaying(false);
+        }
+      },
+    );
     return () => {
       unsubscribe();
     };
@@ -140,15 +147,15 @@ function AudioBox(
 
   function onPLayChange(): void {
     if (audio) {
-      engine.events.fire('onAudioPlay', blob_uri);
+      events.fire('onAudioPlay', { blob_uri, isFullView });
       setIsPlaying(!isPlaying);
     } else {
       setProcessing(true);
-      engine.blobURI
+      blobURI
         .getBlobsData([blob_uri])
         .call()
         .then(() => {
-          engine.events.fire('onAudioPlay', blob_uri);
+          events.fire('onAudioPlay', { blob_uri, isFullView });
           setIsPlaying(!isPlaying);
         });
     }
@@ -159,7 +166,7 @@ function AudioBox(
       handleDownload();
     } else {
       setProcessing(true);
-      engine.blobURI
+      blobURI
         .getBlobsData([blob_uri])
         .call()
         .then(() => {

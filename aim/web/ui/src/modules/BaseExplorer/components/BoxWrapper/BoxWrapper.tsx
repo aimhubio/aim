@@ -140,6 +140,7 @@ function BoxWrapper(props: IBoxWrapperProps<AimFlatObjectBase<any>>) {
                   items={items}
                   engine={engine}
                   visualizationName={props.visualizationName}
+                  isFullView
                 />
               )}
             </div>
