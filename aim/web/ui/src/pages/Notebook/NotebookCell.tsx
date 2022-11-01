@@ -141,7 +141,7 @@ def Grid(grid):
         <pre className='NotebookCell__error'>{error}</pre>
       ) : reprValue ? (
         <pre className='NotebookCell__repr'>{reprValue}</pre>
-      ) : (
+      ) : result.flat().length > 0 ? (
         <div className='NotebookCell__grid'>
           {result.map((row: any[], i: number) => (
             <div
@@ -165,7 +165,7 @@ def Grid(grid):
             </div>
           ))}
         </div>
-      )}
+      ) : null}
     </div>
   );
 }

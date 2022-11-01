@@ -47,7 +47,8 @@
 }
 
 .NotebookCell__grid {
-  max-height: 50vh;
+  max-height: 100vh;
+  min-height: 500px;
   position: relative;
   width: 100%;
   max-width: 100%;
@@ -55,6 +56,7 @@
   flex-direction: column;
   overflow: auto;
   background-color: $pico-5;
+  border: $border-dark;
 }
 
 .NotebookVisualizer__addCell__text {
