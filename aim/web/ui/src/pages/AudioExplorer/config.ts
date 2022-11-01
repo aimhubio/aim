@@ -27,6 +27,7 @@ export const getAudiosDefaultConfig = (): typeof defaultHydration => {
             displayBoxCaption: true,
             selectedFields: ['run.name', 'audios.name', 'audios.context'],
           },
+          persist: 'url',
         },
       },
     },
