@@ -8,24 +8,27 @@ import IconButton from '../IconButton';
 
 import { IQueryBadgeProps } from './QueryBadge.d';
 
-const Container = styled(ButtonGroup, {
-  all: 'unset',
-  display: 'inline-flex',
-  width: 'fit-content',
-  ai: 'center',
-  jc: 'center',
-  fontWeight: '$2',
-  cursor: 'pointer',
-  br: '$3',
-  lineHeight: '1',
-  transition: 'all 0.2s ease-in-out',
-  bs: '$1',
-  fontSize: '$3',
+const ButtonWrapper = styled(Button, {
   variants: {
-    size: {},
+    size: {
+      xs: {
+        p: '0 $space$4',
+      },
+      sm: {
+        p: '0 $space$4',
+      },
+      md: {
+        p: '0 $space$5',
+      },
+      lg: {
+        p: '0 $space$6',
+      },
+      xl: {
+        p: '0 $space$7',
+      },
+    },
   },
 });
-
 /**
  * @component QueryBadge
  * @description QueryBadge component
@@ -34,7 +37,7 @@ const Container = styled(ButtonGroup, {
  * @param {boolean} disabled - disabled state of the QueryBadge
  */
 
-const QueryBadge = React.forwardRef<React.ElementRef<typeof Container>, any>(
+const QueryBadge = React.forwardRef<React.ElementRef<typeof ButtonGroup>, any>(
   (
     {
       size,
@@ -43,13 +46,17 @@ const QueryBadge = React.forwardRef<React.ElementRef<typeof Container>, any>(
       children,
       ...props
     }: IQueryBadgeProps,
-    forwardedRed,
+    forwardedRef,
   ): React.FunctionComponentElement<React.ReactNode> => {
     return (
-      <ButtonGroup {...props} color={color} size={size} variant='outlined'>
-        <Button>button</Button>
-        <Button>button</Button>
-        <Button>button</Button>
+      <ButtonGroup
+        {...props}
+        color={'primary'}
+        size={'xl'}
+        variant='outlined'
+        ref={forwardedRef}
+      >
+        <Button>run dataset.name {'>'} 0</Button>
         <IconButton icon='eye-show-outline' />
       </ButtonGroup>
     );

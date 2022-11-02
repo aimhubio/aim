@@ -63,12 +63,18 @@ const Container = styled('button', {
   fontWeight: '$2',
   cursor: 'pointer',
   br: '$3',
+  lineHeight: '1',
   transition: 'all 0.2s ease-in-out',
   fontSize: '$3',
   variants: {
     size: {
-      sm: {
+      xs: {
         height: '$sizes$1',
+        fontSize: '$fontSizes$2',
+        p: '0 $space$7',
+      },
+      sm: {
+        height: '$sizes$2',
         fontSize: '$fontSizes$2',
         p: '0 $space$7',
       },
@@ -131,6 +137,9 @@ const IconLeft = styled(IconContainer, {
   mr: '$space$2',
   variants: {
     size: {
+      xs: {
+        ml: '$space$3',
+      },
       sm: {
         ml: '$space$3',
       },
@@ -152,6 +161,9 @@ const IconRight = styled(IconContainer, {
   ml: '$space$2',
   variants: {
     size: {
+      xs: {
+        mr: '$space$3',
+      },
       sm: {
         mr: '$space$3',
       },

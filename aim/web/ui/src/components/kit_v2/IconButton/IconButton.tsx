@@ -21,8 +21,12 @@ const Container = styled('button', {
   fontSize: '$2',
   variants: {
     size: {
-      sm: {
+      xs: {
         size: '$1',
+        fontSize: '$2',
+      },
+      sm: {
+        size: '$2',
         fontSize: '$2',
       },
       md: {

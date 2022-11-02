@@ -47,7 +47,7 @@ export interface IButtonProps
 }
 
 // Button component size types
-export type ButtonSizeType = 'sm' | 'md' | 'lg' | 'xl';
+export type ButtonSizeType = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
 // Button component variants
 type ButtonVariantType = 'text' | 'outlined' | 'contained';

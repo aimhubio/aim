@@ -13,15 +13,21 @@ const Container = styled('div', {
   br: '$3',
   fontWeight: '$2',
   overflow: 'hidden',
-  boxShadow: '0px 0px 0px 1px',
+  p: '1px',
+  bs: 'inset 0 0 0 1px',
   '& > button': {
     br: '0',
-    bs: 'unset',
+    bs: 'none',
     '&:not(:first-of-type)': {
-      bs: 'inset 0 0 0 1px',
+      borderLeft: '1px solid',
     },
-    '&:hover': {
-      bs: 'inset 0 0 0 1px',
+    '&:first-of-type': {
+      borderTopLeftRadius: '$3',
+      borderBottomLeftRadius: '$3',
+    },
+    '&:last-of-type': {
+      borderTopRightRadius: '$3',
+      borderBottomRightRadius: '$3',
     },
   },
 });
@@ -42,6 +48,9 @@ const ButtonGroup = React.forwardRef<
       ref={forwardedRef}
       css={{
         color: `$${props.color}100`,
+        '& > button': {
+          borderColor: `$colors$${props.color}100`,
+        },
       }}
     >
       {childrenWIthProps}

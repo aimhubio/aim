@@ -14,8 +14,8 @@ export interface IIconButtonProps
   color?: colorType;
   /**
    * @description The size of the icon button
-   * @example 'medium'
-   * @default 'medium'
+   * @example 'md'
+   * @default 'md'
    */
   size?: sizeType;
   /**
@@ -33,7 +33,7 @@ export interface IIconButtonProps
 }
 
 // IconButton component size types
-type sizeType = 'md' | 'lg' | 'xl';
+type sizeType = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
 // IconButton component variants
 type variantType = 'text' | 'outlined' | 'contained';
