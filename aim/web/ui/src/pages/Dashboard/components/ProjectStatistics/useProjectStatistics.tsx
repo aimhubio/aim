@@ -22,6 +22,7 @@ function useProjectStatistics() {
     return () => {
       projectStatsEngine.destroy();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectStatsEngine]);
 
   return { projectParamsStore, projectContributionsStore };
