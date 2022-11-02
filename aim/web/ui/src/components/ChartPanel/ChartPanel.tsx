@@ -14,10 +14,11 @@ import {
   ISyncHoverStateArgs,
 } from 'types/utils/d3/drawHoverAttributes';
 
-import { ChartTypeEnum } from 'utils/d3';
+import { ChartTypeEnum, drawLegends } from 'utils/d3';
 
-import ChartPopover from './ChartPopover/ChartPopover';
-import ChartGrid from './ChartGrid/ChartGrid';
+import ChartPopover from './ChartPopover';
+import ChartGrid from './ChartGrid';
+import ChartLegends from './ChartLegends';
 
 import './ChartPanel.scss';
 
@@ -169,6 +170,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
                     chartPanelOffsetHeight={props.chartPanelOffsetHeight}
                   />
                 </Grid>
+                <ChartLegends data={props.legendsData} />
                 <ErrorBoundary>
                   <ChartPopover
                     containerNode={containerRef.current}

@@ -198,6 +198,7 @@ import { getMetricsInitialRowData } from 'utils/app/getMetricsInitialRowData';
 import { getMetricHash } from 'utils/app/getMetricHash';
 import { getMetricLabel } from 'utils/app/getMetricLabel';
 import saveRecentSearches from 'utils/saveRecentSearches';
+import getLegendsData from 'utils/app/getLegendsData';
 
 import { AppDataTypeEnum, AppNameEnum } from './index';
 
@@ -1163,6 +1164,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
         },
       ];
 
+      const legendsData = getLegendsData(
+        data,
+        groupingSelectOptions,
+        configData?.grouping,
+        [GroupNameEnum.COLOR, GroupNameEnum.STROKE, GroupNameEnum.CHART],
+      );
+
       const tableData = getDataAsTableRows(
         data,
         configData?.chart?.focusedState.xValue ?? null,
@@ -1208,6 +1216,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           processedData: data,
           model: model as IModel<IMetricAppModelState>,
         }),
+        legendsData,
         tableData: tableData.rows,
         tableColumns,
         sameValueColumns: tableData.sameValueColumns,
@@ -1252,6 +1261,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
           value: 'lastValue',
         },
       ];
+
+      const legendsData = getLegendsData(
+        data,
+        groupingSelectOptions,
+        configData?.grouping,
+        [GroupNameEnum.COLOR, GroupNameEnum.STROKE, GroupNameEnum.CHART],
+      );
 
       const tableData = getDataAsTableRows(
         data,
@@ -1303,6 +1319,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           processedData: data,
           model: model as IModel<IMetricAppModelState>,
         }),
+        legendsData,
         tableData: tableData.rows,
         tableColumns: tableColumns,
         sameValueColumns: tableData.sameValueColumns,
@@ -1667,7 +1684,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           const tooltipData = {
             ...configData?.chart?.tooltip,
             content: getTooltipContent({
-              groupingItems: [
+              groupingNames: [
                 GroupNameEnum.COLOR,
                 GroupNameEnum.STROKE,
                 GroupNameEnum.CHART,
@@ -2028,7 +2045,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         onChangeTooltip(tooltip: Partial<ITooltip>): void {
           onChangeTooltip({
             tooltip,
-            groupingItems: [
+            groupingNames: [
               GroupNameEnum.COLOR,
               GroupNameEnum.STROKE,
               GroupNameEnum.CHART,
@@ -4185,7 +4202,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const tooltipData = {
           ...configData?.chart?.tooltip,
           content: getTooltipContent({
-            groupingItems: [
+            groupingNames: [
               GroupNameEnum.COLOR,
               GroupNameEnum.STROKE,
               GroupNameEnum.CHART,
@@ -4686,7 +4703,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           onChangeTooltip(tooltip: Partial<ITooltip>): void {
             onChangeTooltip({
               tooltip,
-              groupingItems: [
+              groupingNames: [
                 GroupNameEnum.COLOR,
                 GroupNameEnum.STROKE,
                 GroupNameEnum.CHART,
@@ -5892,7 +5909,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const tooltipData = {
           ...configData?.chart?.tooltip,
           content: getTooltipContent({
-            groupingItems: [GroupNameEnum.COLOR, GroupNameEnum.CHART],
+            groupingNames: [GroupNameEnum.COLOR, GroupNameEnum.CHART],
             groupingSelectOptions,
             data,
             configData,
@@ -6184,7 +6201,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           onChangeTooltip(tooltip: Partial<ITooltip>): void {
             onChangeTooltip({
               tooltip,
-              groupingItems: [GroupNameEnum.COLOR, GroupNameEnum.CHART],
+              groupingNames: [GroupNameEnum.COLOR, GroupNameEnum.CHART],
               model,
               appName,
             });

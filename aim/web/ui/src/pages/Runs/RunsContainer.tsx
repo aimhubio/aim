@@ -40,7 +40,7 @@ function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
   React.useEffect(() => {
     runsAppModel.initialize();
     analytics.pageView(ANALYTICS_EVENT_KEYS.runs.pageView);
-    const unListenHistory = history.listen((location) => {
+    const unListenHistory = history.listen(() => {
       if (!!runsData?.config!) {
         if (
           runsData.config.select !== getStateFromUrl('search') &&

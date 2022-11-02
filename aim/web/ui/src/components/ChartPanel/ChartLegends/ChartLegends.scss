@@ -1,0 +1,42 @@
+.ChartLegends {
+  position: relative;
+  background-color: white;
+  box-shadow: -1px -1px 0 0 #e8e8e8;
+  padding: 4px;
+  &__container {
+    height: 100%;
+    width: 300px;
+    overflow: auto;
+  }
+  &.hide {
+    animation: legendsFadeOut 0.3s ease-in-out forwards;
+    @keyframes legendsFadeOut {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+    }
+  }
+  &.display {
+    animation: legendsFadeIn 0.3s ease-in-out forwards;
+    @keyframes legendsFadeIn {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+  }
+  &.pin {
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+}

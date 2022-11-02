@@ -127,6 +127,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
         panelResizing={panelResizing}
         lineChartData={metricsData?.lineChartData!}
         chartTitleData={metricsData?.chartTitleData!}
+        legendsData={metricsData?.legendsData!}
         ignoreOutliers={metricsData?.config?.chart?.ignoreOutliers!}
         tableData={metricsData?.tableData!}
         sameValueColumns={metricsData?.sameValueColumns!}

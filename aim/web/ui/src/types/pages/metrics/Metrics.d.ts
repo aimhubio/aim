@@ -28,6 +28,7 @@ import {
   IGroupingSelectOption,
   IChartZoom,
   ISmoothing,
+  LegendsDataType,
 } from 'types/services/models/metrics/metricsAppModel';
 import { ITableColumn } from 'types/components/TableColumns/TableColumns';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
@@ -57,6 +58,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   lineChartData: ILine[][];
   panelResizing: boolean;
   chartTitleData: IChartTitleData;
+  legendsData: LegendsDataType;
   tableData: IMetricTableRowData[];
   aggregatedData: IAggregatedData[];
   tableColumns: ITableColumn[];

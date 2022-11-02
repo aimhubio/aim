@@ -12,6 +12,7 @@ import {
   IAlignmentConfig,
   IChartZoom,
   IGroupingSelectOption,
+  LegendsDataType,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IHighPlotProps } from 'types/components/HighPlot/HighPlot';
 
@@ -27,6 +28,7 @@ export interface IChartPanelProps {
   aggregationConfig?: IAggregationConfig;
   alignmentConfig?: IAlignmentConfig;
   zoom?: Partial<IChartZoom>;
+  legendsData?: LegendsDataType;
   chartPanelOffsetHeight?: number;
   // chartProps: Omit<
   //   ILineChartProps | IHighPlotProps,

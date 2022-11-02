@@ -6,6 +6,8 @@
     overflow: hidden;
     height: 100%;
     border-right: $border-separator;
+    position: relative;
+    display: flex;
     &__resizing {
       display: flex;
       width: 100%;

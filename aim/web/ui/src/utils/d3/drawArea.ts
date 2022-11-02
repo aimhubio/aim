@@ -64,6 +64,7 @@ function drawArea(args: IDrawAreaArgs): void {
 
   svgNodeRef.current = visArea
     .append('svg')
+    .attr('class', 'Visualization')
     .attr('id', `${nameKey}-svg-area-${index}`)
     .attr('width', `${width}px`)
     .attr('height', `${height}px`)

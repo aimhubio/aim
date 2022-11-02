@@ -45,25 +45,23 @@ function Metrics(
   const [isProgressBarVisible, setIsProgressBarVisible] =
     React.useState<boolean>(false);
   const chartProps: any[] = React.useMemo(() => {
-    return (props.lineChartData || []).map(
-      (chartData: ILine[], index: number) => ({
-        axesScaleType: props.axesScaleType,
-        axesScaleRange: props.axesScaleRange,
-        curveInterpolation: props.smoothing.isApplied
-          ? props.smoothing.curveInterpolation
-          : CurveEnum.Linear,
-        ignoreOutliers: props.ignoreOutliers,
-        highlightMode: props.highlightMode,
-        aggregatedData: props.aggregatedData?.filter(
-          (data) => data.chartIndex === index,
-        ),
-        zoom: props.zoom,
-        chartTitle: props.chartTitleData[index],
-        aggregationConfig: props.aggregationConfig,
-        alignmentConfig: props.alignmentConfig,
-        onZoomChange: props.onZoomChange,
-      }),
-    );
+    return (props.lineChartData || []).map((chartData: ILine[], i: number) => ({
+      axesScaleType: props.axesScaleType,
+      axesScaleRange: props.axesScaleRange,
+      curveInterpolation: props.smoothing.isApplied
+        ? props.smoothing.curveInterpolation
+        : CurveEnum.Linear,
+      ignoreOutliers: props.ignoreOutliers,
+      highlightMode: props.highlightMode,
+      aggregatedData: props.aggregatedData?.filter(
+        (data) => data.chartIndex === i,
+      ),
+      zoom: props.zoom,
+      chartTitle: props.chartTitleData[i],
+      aggregationConfig: props.aggregationConfig,
+      alignmentConfig: props.alignmentConfig,
+      onZoomChange: props.onZoomChange,
+    }));
   }, [
     props.lineChartData,
     props.axesScaleType,
@@ -168,9 +166,10 @@ function Metrics(
                         tooltip={props.tooltip}
                         alignmentConfig={props.alignmentConfig}
                         zoom={props.zoom}
-                        onActivePointChange={props.onActivePointChange}
+                        legendsData={props.legendsData}
                         chartProps={chartProps}
                         resizeMode={props.resizeMode}
+                        onActivePointChange={props.onActivePointChange}
                         onRunsTagsChange={props.onRunsTagsChange}
                         onChangeTooltip={props.onChangeTooltip}
                         controls={

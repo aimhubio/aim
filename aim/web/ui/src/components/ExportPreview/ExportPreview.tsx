@@ -67,25 +67,25 @@ function ExportPreview({
         wrapper.style.backgroundColor = 'white';
         wrapper.style.fill = 'white';
       }
-      const svgElements = chartPanel.querySelectorAll('svg');
-      const gridColumns = Math.round(panelWidth / svgElements[0].clientWidth);
+      const svgVizNodes = chartPanel.querySelectorAll('svg.Visualization');
+      const gridColumns = Math.round(panelWidth / svgVizNodes[0].clientWidth);
       let gridRows = 0;
-      svgElements?.forEach((svgElement, index) => {
+      svgVizNodes?.forEach((svgVizNode, index) => {
         if (index !== 0 && index % gridColumns === 0) {
           gridRows++;
         }
         const clearedSvgElement = clearChart(
-          svgElement.cloneNode(true) as SVGSVGElement,
+          svgVizNode.cloneNode(true) as SVGSVGElement,
         );
         const columnIndex = index % gridColumns;
         clearedSvgElement.setAttribute(
           'x',
-          columnIndex * svgElement.clientWidth + 'px',
+          columnIndex * svgVizNode.clientWidth + 'px',
         );
         if (gridRows) {
           clearedSvgElement.setAttribute(
             'y',
-            gridRows * svgElement.clientHeight + 'px',
+            gridRows * svgVizNode.clientHeight + 'px',
           );
         }
         const rect = clearedSvgElement.querySelector('rect');

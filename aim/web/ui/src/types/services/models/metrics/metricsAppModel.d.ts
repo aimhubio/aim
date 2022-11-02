@@ -41,6 +41,7 @@ export interface IMetricAppModelState {
   lineChartData: ILine[][];
   chartTitleData: IChartTitleData;
   aggregatedData: IAggregatedData[];
+  legendsData: LegendsDataType;
   tooltip: ITooltip;
   tableData: any[];
   tableColumns: ITableColumn[];
@@ -109,7 +110,7 @@ export interface ITooltip extends Partial<ITooltipConfig> {
 export interface IMetricsCollection<T> {
   key?: string;
   groupKey?: string;
-  config: { [key: string]: string } | null;
+  config: Record<string, string> | null;
   color: string | null;
   dasharray: string | null;
   chartIndex: number;
@@ -253,4 +254,21 @@ export interface ISmoothing {
   factor: number;
   curveInterpolation: CurveEnum;
   isApplied: boolean;
+}
+
+export interface LegendRowDataType {
+  key: string;
+  config: Record<string, string[]>;
+  color?: string;
+  dasharray?: string;
+  chartIndex?: number;
+}
+
+export interface LegendType {
+  keys: string[];
+  rows: LegendRowDataType[];
+}
+
+export interface LegendsDataType {
+  [key: string]: LegendType;
 }

@@ -15,6 +15,7 @@ import getCoordinates from './getCoordinates';
 import drawPoints from './drawPoints';
 import drawScatterTrendline from './drawScatterTrendline';
 import drawUnableToRender from './drawUnableToRender';
+import drawLegends from './drawLegends';
 
 const gradientStartColor = '#2980B9';
 const gradientEndColor = '#E74C3C';
@@ -116,6 +117,7 @@ export {
   drawPoints,
   drawScatterTrendline,
   drawUnableToRender,
+  drawLegends,
   gradientStartColor,
   gradientEndColor,
   MIN_LOG_VALUE,

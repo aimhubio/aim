@@ -1182,7 +1182,7 @@ function onActivePointChange(
 
   const tooltipContent = configData.images?.focusedState?.key
     ? getTooltipContent({
-        groupingItems: [GroupNameEnum.ROW],
+        groupingNames: [GroupNameEnum.ROW],
         groupingSelectOptions,
         data,
         configData,
@@ -1228,7 +1228,7 @@ function onChangeTooltip(tooltipObj: Partial<ITooltip>): void {
 
     const tooltipContent = configData.images?.focusedState?.key
       ? getTooltipContent({
-          groupingItems: [GroupNameEnum.ROW],
+          groupingNames: [GroupNameEnum.ROW],
           groupingSelectOptions,
           data,
           configData,
