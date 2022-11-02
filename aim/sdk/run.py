@@ -500,7 +500,9 @@ class Run(BaseRun, StructuredRunMixin):
             >>> for metric in run.metrics():
             >>>     metric.values.sparse_numpy()
         """
-        return SingleRunSequenceCollection(self)
+        from aim.sdk.sequences.metric import Metric
+        self.repo._prepare_runs_cache()
+        return SingleRunSequenceCollection(self, seq_cls=Metric)
 
     def __eq__(self, other: 'Run') -> bool:
         return self.hash == other.hash and self.repo == other.repo

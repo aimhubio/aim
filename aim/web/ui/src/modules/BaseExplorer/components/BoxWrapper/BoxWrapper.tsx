@@ -21,6 +21,7 @@ function BoxWrapper(props: IBoxWrapperProps<AimFlatObjectBase<any>>) {
     engine: { useStore },
     items,
     component: BoxContent,
+    hasDepthSlider,
     groupId,
     depthSelector,
     onDepthMapChange,
@@ -33,6 +34,7 @@ function BoxWrapper(props: IBoxWrapperProps<AimFlatObjectBase<any>>) {
   const captionProperties: ICaptionProperties = useStore(
     vizEngine.controls.captionProperties.stateSelector,
   );
+
   const foundGroups = engine.useStore(engine.pipeline.foundGroupsSelector);
   const depth = engine.useStore(depthSelector(groupId));
   const captionBoxRef: React.RefObject<HTMLDivElement | null> =
@@ -63,7 +65,7 @@ function BoxWrapper(props: IBoxWrapperProps<AimFlatObjectBase<any>>) {
   }, [foundGroups, currentItem]);
 
   const renderDepthSlider = (props: Partial<IDepthSliderProps> = {}) => {
-    return items.length > 1 ? (
+    return hasDepthSlider && items.length > 1 ? (
       <DepthSlider
         items={items}
         depth={depth}
@@ -103,6 +105,7 @@ function BoxWrapper(props: IBoxWrapperProps<AimFlatObjectBase<any>>) {
         {BoxContent && (
           <BoxContent
             data={currentItem}
+            items={items}
             engine={engine}
             style={currentItem.style}
             visualizationName={props.visualizationName}
@@ -134,6 +137,7 @@ function BoxWrapper(props: IBoxWrapperProps<AimFlatObjectBase<any>>) {
               {BoxContent && (
                 <BoxContent
                   data={currentItem}
+                  items={items}
                   engine={engine}
                   visualizationName={props.visualizationName}
                 />
