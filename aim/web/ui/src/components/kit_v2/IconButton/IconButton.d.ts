@@ -33,7 +33,7 @@ export interface IIconButtonProps
 }
 
 // IconButton component size types
-type sizeType = 'medium' | 'large' | 'xLarge';
+type sizeType = 'md' | 'lg' | 'xl';
 
 // IconButton component variants
 type variantType = 'text' | 'outlined' | 'contained';

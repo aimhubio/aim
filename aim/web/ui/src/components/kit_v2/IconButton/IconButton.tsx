@@ -16,21 +16,25 @@ const Container = styled('button', {
   jc: 'center',
   fontWeight: '$2',
   cursor: 'pointer',
-  borderRadius: '$1',
+  borderRadius: '$3',
   transition: 'all 0.2s ease-in-out',
   fontSize: '$2',
   variants: {
     size: {
-      medium: {
+      sm: {
         size: '$1',
         fontSize: '$2',
       },
-      large: {
-        size: '$2',
+      md: {
+        size: '$3',
+        fontSize: '$2',
+      },
+      lg: {
+        size: '$5',
         fontSize: '$3',
       },
-      xLarge: {
-        size: '$3',
+      xl: {
+        size: '$7',
         fontSize: '$3',
       },
     },
@@ -44,7 +48,7 @@ const Container = styled('button', {
 
 function IconButton({
   icon,
-  size = 'medium',
+  size = 'md',
   color = 'primary',
   variant = 'contained',
   disabled = false,
@@ -52,8 +56,8 @@ function IconButton({
 }: IIconButtonProps) {
   return (
     <Container
-      data-testid='icon-button'
       {...props}
+      data-testid='icon-button'
       css={{ ...getButtonStyles(color, variant, disabled) }}
       size={size}
       variant={variant}

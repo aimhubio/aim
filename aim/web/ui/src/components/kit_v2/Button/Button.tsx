@@ -67,20 +67,20 @@ const Container = styled('button', {
   fontSize: '$3',
   variants: {
     size: {
-      small: {
+      sm: {
         height: '$sizes$1',
         fontSize: '$fontSizes$2',
         p: '0 $space$7',
       },
-      medium: {
+      md: {
         height: '$sizes$3',
         p: '0 $space$8',
       },
-      large: {
+      lg: {
         height: '$sizes$5',
         p: '0 $space$9',
       },
-      xLarge: {
+      xl: {
         height: '$sizes$7',
         p: '0 $space$11',
       },
@@ -131,16 +131,16 @@ const IconLeft = styled(IconContainer, {
   mr: '$space$2',
   variants: {
     size: {
-      small: {
+      sm: {
         ml: '$space$3',
       },
-      medium: {
+      md: {
         ml: '$space$4',
       },
-      large: {
+      lg: {
         ml: '$space$5',
       },
-      xLarge: {
+      xl: {
         ml: '$space$7',
         size: '$sizes$3',
       },
@@ -152,16 +152,16 @@ const IconRight = styled(IconContainer, {
   ml: '$space$2',
   variants: {
     size: {
-      small: {
+      sm: {
         mr: '$space$3',
       },
-      medium: {
+      md: {
         mr: '$space$4',
       },
-      large: {
+      lg: {
         mr: '$space$5',
       },
-      xLarge: {
+      xl: {
         mr: '$space$7',
         size: '$sizes$3',
       },
@@ -181,7 +181,7 @@ const IconRight = styled(IconContainer, {
  */
 function Button({
   color = 'primary',
-  size = 'small',
+  size = 'md',
   variant = 'contained',
   fullWidth = false,
   disabled,
