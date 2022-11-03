@@ -8,6 +8,7 @@ enum PathEnum {
   Tags = '/tags',
   Bookmarks = '/bookmarks',
   Run_Detail = '/runs/:runHash',
+  Experiment = '/experiments/:experimentId',
   Scatters = '/scatters',
   Scatters_Id = '/scatters/:appId',
   Images_Explore = '/images',
