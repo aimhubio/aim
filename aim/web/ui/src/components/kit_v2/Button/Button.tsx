@@ -7,43 +7,7 @@ import { styled } from 'config/stitches/stitches.config';
 import { getButtonStyles } from '../utils/getButtonStyles';
 
 import { IButtonProps } from './Button.d';
-
-const spacingMap = {
-  compact: {
-    xs: {
-      p: '0 $4',
-    },
-    sm: {
-      p: '0 $4',
-    },
-    md: {
-      p: '0 $5',
-    },
-    lg: {
-      p: '0 $6',
-    },
-    xl: {
-      p: '0 $7',
-    },
-  },
-  default: {
-    xs: {
-      p: '0 $7',
-    },
-    sm: {
-      p: '0 $7',
-    },
-    md: {
-      p: '0 $8',
-    },
-    lg: {
-      p: '0 $9',
-    },
-    xl: {
-      p: '0 $11',
-    },
-  },
-};
+import { ButtonSpacingMap, getIconSpacing } from './buttonConfig';
 
 const Container = styled('button', {
   all: 'unset',
@@ -62,24 +26,19 @@ const Container = styled('button', {
       xs: {
         height: '$1',
         fontSize: '$2',
-        p: '0 $7',
       },
       sm: {
         height: '$sizes$2',
         fontSize: '$2',
-        p: '0 $7',
       },
       md: {
         height: '$3',
-        p: '0 $8',
       },
       lg: {
         height: '$5',
-        p: '0 $9',
       },
       xl: {
         height: '$7',
-        p: '0 $11',
       },
     },
     disabled: {
@@ -182,7 +141,7 @@ function Button({
       css={{
         ...rest.style,
         ...getButtonStyles(color, variant, disabled),
-        p: spacingMap[horizontalSpacing][size].p,
+        p: ButtonSpacingMap[horizontalSpacing][size],
       }}
       size={size}
       disabled={disabled}
@@ -190,11 +149,21 @@ function Button({
       {...rest}
     >
       {leftIcon ? (
-        <LeftIcon size={size} className='startIcon' name={leftIcon} />
+        <LeftIcon
+          css={{ ml: getIconSpacing(horizontalSpacing, size) }}
+          size={size}
+          className='startIcon'
+          name={leftIcon}
+        />
       ) : null}
       {children}
       {rightIcon ? (
-        <RightIcon size={size} className='endIcon' name={rightIcon} />
+        <RightIcon
+          css={{ mr: getIconSpacing(horizontalSpacing, size) }}
+          size={size}
+          className='endIcon'
+          name={rightIcon}
+        />
       ) : null}
     </Container>
   );
