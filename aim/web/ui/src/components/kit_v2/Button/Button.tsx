@@ -4,55 +4,10 @@ import { Icon } from 'components/kit';
 
 import { styled } from 'config/stitches/stitches.config';
 
-import { IButtonProps, ButtonColorType, ButtonVariantType } from './Button.d';
+import { getButtonStyles } from '../utils/getButtonStyles';
 
-// function that returns a object with the styles
-function getStylesFromColor(
-  color: ButtonColorType,
-  variant: ButtonVariantType,
-  disabled: boolean | undefined,
-) {
-  switch (variant) {
-    case 'contained':
-      return {
-        bc: `$${color}${disabled ? 50 : 100}`,
-        color: 'white',
-        '&:hover': {
-          bc: `$${color}110`,
-        },
-        '&:active': {
-          bc: `$${color}120`,
-        },
-      };
-    case 'outlined':
-      return {
-        bc: 'white',
-        color: `$${color}${disabled ? 50 : 100}`,
-        bs: '0px 0px 0px 1px',
-        '&:hover': {
-          backgroundColor: `$${color}10`,
-          color: `$${color}110`,
-        },
-        '&:active': {
-          bc: `$${color}20`,
-          color: `$${color}120`,
-        },
-      };
-    case 'text':
-      return {
-        bc: 'white',
-        color: `$${color}${disabled ? 50 : 100}`,
-        '&:hover': {
-          bc: `$${color}10`,
-          color: `$${color}110`,
-        },
-        '&:active': {
-          bc: `$${color}20`,
-          color: `$${color}120`,
-        },
-      };
-  }
-}
+import { IButtonProps } from './Button.d';
+import { ButtonSpacingMap, getIconSpacing } from './buttonConfig';
 
 const Container = styled('button', {
   all: 'unset',
@@ -68,22 +23,22 @@ const Container = styled('button', {
   fontSize: '$3',
   variants: {
     size: {
-      small: {
-        height: '$sizes$1',
-        fontSize: '$fontSizes$2',
-        p: '0 $space$7',
+      xs: {
+        height: '$1',
+        fontSize: '$2',
       },
-      medium: {
-        height: '$sizes$3',
-        p: '0 $space$8',
+      sm: {
+        height: '$sizes$2',
+        fontSize: '$2',
       },
-      large: {
-        height: '$sizes$5',
-        p: '0 $space$9',
+      md: {
+        height: '$3',
       },
-      xLarge: {
-        height: '$sizes$7',
-        p: '0 $space$11',
+      lg: {
+        height: '$5',
+      },
+      xl: {
+        height: '$7',
       },
     },
     disabled: {
@@ -93,32 +48,12 @@ const Container = styled('button', {
         pointerEvents: 'none',
       },
     },
-    startIcon: {
-      true: {},
-    },
-    endIcon: {
-      true: {},
-    },
     fullWidth: {
       true: {
         width: '100%',
       },
     },
   },
-  compoundVariants: [
-    {
-      startIcon: true,
-      css: {
-        pl: '0',
-      },
-    },
-    {
-      endIcon: true,
-      css: {
-        pr: '0',
-      },
-    },
-  ],
 });
 
 const IconContainer = styled(Icon, {
@@ -126,45 +61,53 @@ const IconContainer = styled(Icon, {
   display: 'flex',
   jc: 'center',
   ai: 'center',
+  lineHeight: '1',
+  fontSize: '$2',
 });
 
-const IconLeft = styled(IconContainer, {
-  mr: '$space$2',
+const LeftIcon = styled(IconContainer, {
+  mr: '$2',
   variants: {
     size: {
-      small: {
-        ml: '$space$3',
+      xs: {
+        ml: 'calc($3 * -1)',
       },
-      medium: {
-        ml: '$space$4',
+      sm: {
+        ml: 'calc($3 * -1)',
       },
-      large: {
-        ml: '$space$5',
+      md: {
+        ml: 'calc($4 * -1)',
       },
-      xLarge: {
-        ml: '$space$7',
-        size: '$sizes$3',
+      lg: {
+        ml: 'calc($5 * -1)',
+      },
+      xl: {
+        ml: 'calc($7 * -1)',
+        fontSize: '$3',
       },
     },
   },
 });
 
-const IconRight = styled(IconContainer, {
-  ml: '$space$2',
+const RightIcon = styled(IconContainer, {
+  ml: '$2',
   variants: {
     size: {
-      small: {
-        mr: '$space$3',
+      xs: {
+        mr: 'calc($3 * -1)',
       },
-      medium: {
-        mr: '$space$4',
+      sm: {
+        mr: 'calc($3 * -1)',
       },
-      large: {
-        mr: '$space$5',
+      md: {
+        mr: 'calc($4 * -1)',
       },
-      xLarge: {
-        mr: '$space$7',
-        size: '$sizes$3',
+      lg: {
+        mr: 'calc($5 * -1)',
+      },
+      xl: {
+        mr: 'calc($7 * -1)',
+        fontSize: '$3',
       },
     },
   },
@@ -176,51 +119,54 @@ const IconRight = styled(IconContainer, {
  * @property {IButtonProps['variant']} variant - variant of the button
  * @property {IButtonProps['fullWidth']} fullWidth - whether the button should take the full width of its container
  * @property {IButtonProps['disabled']} disabled - whether the button should be disabled
- * @property {IButtonProps['startIcon']} startIcon - icon to be displayed on the left side of the button
- * @property {IButtonProps['endIcon']} endIcon - icon to be displayed on the right side of the button
+ * @property {IButtonProps['leftIcon']} leftIcon - icon to be displayed on the left side of the button
+ * @property {IButtonProps['rightIcon']} rightIcon - icon to be displayed on the right side of the button
  * @property {IButtonProps['children']} children - children to be displayed inside the button
  */
 
-const Button = React.forwardRef<
-  React.ElementRef<typeof Container>,
-  IButtonProps
->(
-  (
-    {
-      children,
-      color = 'primary',
-      size = 'medium',
-      variant = 'contained',
-      fullWidth = false,
-      disabled,
-      startIcon,
-      endIcon,
-      ...rest
-    }: IButtonProps,
-    forwardedRef,
-  ) => {
-    return (
-      <Container
-        data-testid='button'
-        css={{ ...rest.style, ...getStylesFromColor(color, variant, disabled) }}
-        size={size}
-        disabled={disabled}
-        startIcon={Boolean(startIcon)}
-        endIcon={Boolean(endIcon)}
-        fullWidth={fullWidth}
-        ref={forwardedRef}
-        {...rest}
-      >
-        {startIcon ? (
-          <IconLeft size={size} className='startIcon' name={startIcon} />
-        ) : null}
-        {children}
-        {endIcon ? (
-          <IconRight size={size} className='endIcon' name={endIcon} />
-        ) : null}
-      </Container>
-    );
-  },
-);
+function Button({
+  color = 'primary',
+  size = 'md',
+  variant = 'contained',
+  fullWidth = false,
+  horizontalSpacing = 'default',
+  disabled,
+  leftIcon,
+  rightIcon,
+  children,
+  ...rest
+}: IButtonProps): React.FunctionComponentElement<React.ReactNode> {
+  return (
+    <Container
+      css={{
+        ...rest.style,
+        ...getButtonStyles(color, variant, disabled),
+        p: ButtonSpacingMap[horizontalSpacing][size],
+      }}
+      size={size}
+      disabled={disabled}
+      fullWidth={fullWidth}
+      {...rest}
+    >
+      {leftIcon ? (
+        <LeftIcon
+          css={{ ml: getIconSpacing(horizontalSpacing, size) }}
+          size={size}
+          className='startIcon'
+          name={leftIcon}
+        />
+      ) : null}
+      {children}
+      {rightIcon ? (
+        <RightIcon
+          css={{ mr: getIconSpacing(horizontalSpacing, size) }}
+          size={size}
+          className='endIcon'
+          name={rightIcon}
+        />
+      ) : null}
+    </Container>
+  );
+}
 
 export default React.memo(Button);

@@ -21,7 +21,7 @@ export function getButtonStyles(
       return {
         bc: 'transparent',
         color: `$${color}${disabled ? 50 : 100}`,
-        bs: '0px 0px 0px 1px',
+        bs: 'inset 0px 0px 0px 1px',
         '&:hover': {
           backgroundColor: `$${color}10`,
           color: `$${color}110`,
