@@ -8,6 +8,43 @@ import { getButtonStyles } from '../utils/getButtonStyles';
 
 import { IButtonProps } from './Button.d';
 
+const spacingMap = {
+  compact: {
+    xs: {
+      p: '0 $4',
+    },
+    sm: {
+      p: '0 $4',
+    },
+    md: {
+      p: '0 $5',
+    },
+    lg: {
+      p: '0 $6',
+    },
+    xl: {
+      p: '0 $7',
+    },
+  },
+  default: {
+    xs: {
+      p: '0 $7',
+    },
+    sm: {
+      p: '0 $7',
+    },
+    md: {
+      p: '0 $8',
+    },
+    lg: {
+      p: '0 $9',
+    },
+    xl: {
+      p: '0 $11',
+    },
+  },
+};
+
 const Container = styled('button', {
   all: 'unset',
   display: 'inline-flex',
@@ -17,27 +54,32 @@ const Container = styled('button', {
   fontWeight: '$2',
   cursor: 'pointer',
   br: '$3',
+  lineHeight: '1',
   transition: 'all 0.2s ease-in-out',
   fontSize: '$3',
   variants: {
     size: {
-      xs: {},
+      xs: {
+        height: '$1',
+        fontSize: '$2',
+        p: '0 $7',
+      },
       sm: {
-        height: '$sizes$1',
-        fontSize: '$fontSizes$2',
-        p: '0 $space$7',
+        height: '$sizes$2',
+        fontSize: '$2',
+        p: '0 $7',
       },
       md: {
-        height: '$sizes$3',
-        p: '0 $space$8',
+        height: '$3',
+        p: '0 $8',
       },
       lg: {
-        height: '$sizes$5',
-        p: '0 $space$9',
+        height: '$5',
+        p: '0 $9',
       },
       xl: {
-        height: '$sizes$7',
-        p: '0 $space$11',
+        height: '$7',
+        p: '0 $11',
       },
     },
     disabled: {
@@ -60,49 +102,53 @@ const IconContainer = styled(Icon, {
   display: 'flex',
   jc: 'center',
   ai: 'center',
+  lineHeight: '1',
+  fontSize: '$2',
 });
 
 const LeftIcon = styled(IconContainer, {
-  mr: '$space$2',
+  mr: '$2',
   variants: {
     size: {
       xs: {
-        ml: '$space$3',
+        ml: 'calc($3 * -1)',
       },
       sm: {
-        ml: '$space$3',
+        ml: 'calc($3 * -1)',
       },
       md: {
-        ml: '$space$4',
+        ml: 'calc($4 * -1)',
       },
       lg: {
-        ml: '$space$5',
+        ml: 'calc($5 * -1)',
       },
       xl: {
-        ml: '$space$7',
+        ml: 'calc($7 * -1)',
+        fontSize: '$3',
       },
     },
   },
 });
 
 const RightIcon = styled(IconContainer, {
-  ml: '$space$2',
+  ml: '$2',
   variants: {
     size: {
       xs: {
-        mr: '$space$3',
+        mr: 'calc($3 * -1)',
       },
       sm: {
-        mr: '$space$3',
+        mr: 'calc($3 * -1)',
       },
       md: {
-        mr: '$space$4',
+        mr: 'calc($4 * -1)',
       },
       lg: {
-        mr: '$space$5',
+        mr: 'calc($5 * -1)',
       },
       xl: {
-        mr: '$space$7',
+        mr: 'calc($7 * -1)',
+        fontSize: '$3',
       },
     },
   },
@@ -118,11 +164,13 @@ const RightIcon = styled(IconContainer, {
  * @property {IButtonProps['rightIcon']} rightIcon - icon to be displayed on the right side of the button
  * @property {IButtonProps['children']} children - children to be displayed inside the button
  */
+
 function Button({
   color = 'primary',
   size = 'sm',
   variant = 'contained',
   fullWidth = false,
+  horizontalSpacing = 'default',
   disabled,
   leftIcon,
   rightIcon,
@@ -131,7 +179,11 @@ function Button({
 }: IButtonProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <Container
-      css={{ ...rest.style, ...getButtonStyles(color, variant, disabled) }}
+      css={{
+        ...rest.style,
+        ...getButtonStyles(color, variant, disabled),
+        p: spacingMap[horizontalSpacing][size].p,
+      }}
       size={size}
       disabled={disabled}
       fullWidth={fullWidth}

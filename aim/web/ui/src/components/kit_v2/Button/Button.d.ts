@@ -43,6 +43,12 @@ export interface IButtonProps
    * @example false
    */
   fullWidth?: boolean;
+  /**
+   * @description The spacing variant of the button
+   * @example 'default'
+   * @default 'default'
+   */
+  horizontalSpacing?: 'default' | 'compact';
 }
 
 // Button component size types
