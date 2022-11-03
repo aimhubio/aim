@@ -30,15 +30,14 @@ export interface IButtonProps
   disabled?: boolean;
   /**
    * @description The start icon of the button
-
    * @example 'add'
    */
-  startIcon?: IconName;
+  leftIcon?: IconName;
   /**
    * @description The end icon of the button
    * @example 'add'
    */
-  endIcon?: IconName;
+  rightIcon?: IconName;
   /**
    * @description The full width state of the button
    * @example false
@@ -47,7 +46,7 @@ export interface IButtonProps
 }
 
 // Button component size types
-export type ButtonSizeType = 'small' | 'medium' | 'large' | 'xLarge';
+export type ButtonSizeType = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
 // Button component variants
 type ButtonVariantType = 'text' | 'outlined' | 'contained';
