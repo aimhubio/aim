@@ -7,6 +7,7 @@
 ## 3.14.4
 
 - Fix the group property name visibility in the images and audio tabs (VkoHov)
+- Change the color contrast of the icons in the manage columns popover (VkoHov)
 
 ## 3.14.3 Oct 29, 2022
 
