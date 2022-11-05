@@ -185,6 +185,7 @@ export const {
       3: '300',
       4: '400',
       max: '999',
+      popover: '10',
     },
   },
   media: {

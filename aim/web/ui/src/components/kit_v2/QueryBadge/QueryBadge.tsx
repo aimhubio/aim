@@ -8,27 +8,17 @@ import IconButton from '../IconButton';
 
 import { IQueryBadgeProps } from './QueryBadge.d';
 
-const ButtonWrapper = styled(Button, {
+const ButtonText = styled('span', {
+  color: '$textPrimary',
   variants: {
-    size: {
-      xs: {
-        p: '0 $space$4',
-      },
-      sm: {
-        p: '0 $space$4',
-      },
-      md: {
-        p: '0 $space$5',
-      },
-      lg: {
-        p: '0 $space$6',
-      },
-      xl: {
-        p: '0 $space$7',
+    disabled: {
+      true: {
+        color: '$textPrimary50',
       },
     },
   },
 });
+
 /**
  * @component QueryBadge
  * @description QueryBadge component
@@ -37,27 +27,40 @@ const ButtonWrapper = styled(Button, {
  * @param {boolean} disabled - disabled state of the QueryBadge
  */
 
-const QueryBadge = React.forwardRef<React.ElementRef<typeof ButtonGroup>, any>(
+const QueryBadge = React.forwardRef<
+  React.ElementRef<typeof ButtonGroup>,
+  IQueryBadgeProps
+>(
   (
     {
-      size,
+      size = 'sm',
       color = 'secondary',
-      disabled,
+      disabled = false,
+      variant = 'outlined',
       children,
-      ...props
+      ...rest
     }: IQueryBadgeProps,
     forwardedRef,
   ): React.FunctionComponentElement<React.ReactNode> => {
     return (
       <ButtonGroup
-        {...props}
-        color={'primary'}
-        size={'xl'}
-        variant='outlined'
+        {...rest}
+        color={color}
+        size={size}
+        variant={variant}
+        disabled={disabled}
         ref={forwardedRef}
       >
-        <Button>run dataset.name {'>'} 0</Button>
-        <IconButton icon='eye-show-outline' />
+        <Button
+          css={color === 'primary' ? { bc: '$primary10' } : {}}
+          horizontalSpacing='compact'
+        >
+          <ButtonText disabled={disabled}>{children}</ButtonText>
+        </Button>
+        <IconButton
+          icon='eye-show-outline'
+          css={color === 'primary' ? { bc: '$primary10' } : {}}
+        />
       </ButtonGroup>
     );
   },

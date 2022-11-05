@@ -1,5 +1,7 @@
 import React from 'react';
 
+import type * as Stitches from '@stitches/react';
+
 import { IconName } from 'components/kit/Icon';
 
 // Button component props
@@ -30,20 +32,30 @@ export interface IButtonProps
   disabled?: boolean;
   /**
    * @description The start icon of the button
-
    * @example 'add'
    */
-  startIcon?: IconName;
+  leftIcon?: IconName;
   /**
    * @description The end icon of the button
    * @example 'add'
    */
-  endIcon?: IconName;
+  rightIcon?: IconName;
   /**
    * @description The full width state of the button
    * @example false
    */
   fullWidth?: boolean;
+  /**
+   * @description The spacing variant of the button
+   * @example 'default'
+   * @default 'default'
+   */
+  horizontalSpacing?: 'default' | 'compact';
+  /**
+   * @description The css prop of the button
+   * @example { backgroundColor: 'red' }
+   */
+  css?: Stitches.CSS;
 }
 
 // Button component size types

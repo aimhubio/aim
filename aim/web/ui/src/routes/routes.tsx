@@ -43,6 +43,16 @@ const ImagesExplore = React.lazy(
 const FiguresExplore = React.lazy(
   () => import(/* webpackChunkName: "figures" */ 'pages/FiguresExplorer'),
 );
+const AudioExplorer = React.lazy(
+  () => import(/* webpackChunkName: "figures" */ 'pages/AudioExplorer'),
+);
+
+const LayoutExperimental = React.lazy(
+  () =>
+    import(
+      /* webpackChunkName: "layout" */ 'pages/LayoutExperimental/LayoutExperimental'
+    ),
+);
 
 export interface IRoute {
   path: PathEnum;
@@ -135,6 +145,15 @@ const routes = {
     isExact: true,
     title: pageTitlesEnum.FIGURES_EXPLORER,
   },
+  AUDIO_EXPLORER: {
+    path: PathEnum.Audio_Explorer,
+    component: AudioExplorer,
+    showInSidebar: true,
+    icon: 'audio',
+    displayName: 'Audio',
+    isExact: true,
+    title: pageTitlesEnum.AUDIOS_EXPLORER,
+  },
   SCATTERS: {
     path: PathEnum.Scatters,
     component: Scatters,
@@ -177,6 +196,14 @@ const routes = {
     displayName: 'Run Detail',
     isExact: false,
     title: pageTitlesEnum.RUN_DETAIL,
+  },
+  LAYOUT_EXPERIMENTAL: {
+    path: '/layout' as PathEnum,
+    component: LayoutExperimental,
+    showInSidebar: true,
+    displayName: 'Layout',
+    isExact: false,
+    title: 'layout',
   },
 };
 

@@ -50,25 +50,36 @@ const Container = styled('button', {
   },
 });
 
-function IconButton({
-  icon,
-  size = 'md',
-  color = 'primary',
-  variant = 'contained',
-  disabled = false,
-  ...props
-}: IIconButtonProps) {
-  return (
-    <Container
-      {...props}
-      data-testid='icon-button'
-      css={{ ...getButtonStyles(color, variant, disabled) }}
-      size={size}
-      variant={variant}
-    >
-      <Icon name={icon} />
-    </Container>
-  );
-}
+const IconButton = React.forwardRef<
+  React.ElementRef<typeof Container>,
+  IIconButtonProps
+>(
+  (
+    {
+      icon,
+      size = 'md',
+      color = 'primary',
+      variant = 'contained',
+      disabled = false,
+      css,
+      ...props
+    }: IIconButtonProps,
+    forwardedRef,
+  ) => {
+    return (
+      <Container
+        {...props}
+        data-testid='icon-button'
+        css={{ ...getButtonStyles(color, variant, disabled), ...css }}
+        size={size}
+        variant={variant}
+        disabled={disabled}
+        ref={forwardedRef}
+      >
+        <Icon name={icon} />
+      </Container>
+    );
+  },
+);
 
 export default React.memo(IconButton);
