@@ -304,11 +304,17 @@ function createEngine<TObject = any>(
       // eslint-disable-next-line no-console
       .catch((err) => console.error(err));
 
+    if (config.persist) {
+      if (!basePath && basePath !== '') {
+        throw new Error('Specify [basePath] argument of engine configuration.');
+      }
+    }
+
     const removeHistoryListener =
       config.persist &&
       browserHistory.listen((update: Update) => {
         localStorage.setItem(
-          'figuresUrl',
+          `${basePath}Url`,
           update.location.pathname + update.location.search,
         );
       });
