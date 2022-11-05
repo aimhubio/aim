@@ -14,7 +14,6 @@ const Container = styled('div', {
   fontWeight: '$2',
   overflow: 'hidden',
   p: '1px',
-  bs: 'inset 0 0 0 1px',
   '& > button': {
     br: '0',
     bs: 'none',
@@ -22,12 +21,19 @@ const Container = styled('div', {
       borderLeft: '1px solid',
     },
     '&:first-of-type': {
-      borderTopLeftRadius: '$3',
-      borderBottomLeftRadius: '$3',
+      borderTopLeftRadius: '$2',
+      borderBottomLeftRadius: '$2',
     },
     '&:last-of-type': {
-      borderTopRightRadius: '$3',
-      borderBottomRightRadius: '$3',
+      borderTopRightRadius: '$2',
+      borderBottomRightRadius: '$2',
+    },
+  },
+  variants: {
+    variant: {
+      outlined: {
+        bs: 'inset 0 0 0 1px',
+      },
     },
   },
 });
@@ -35,21 +41,23 @@ const Container = styled('div', {
 const ButtonGroup = React.forwardRef<
   React.ElementRef<typeof Container>,
   IButtonProps
->(({ children, ...props }: any, forwardedRef) => {
+>(({ color, children, ...rest }: any, forwardedRef) => {
   const childrenWIthProps = React.Children.map(children, (child) => {
     return React.cloneElement(child, {
-      ...props,
+      color,
+      ...rest,
     });
   });
 
   return (
     <Container
-      {...props}
+      {...rest}
       ref={forwardedRef}
+      variant={rest.variant}
       css={{
-        color: `$${props.color}100`,
+        color: `$${color}50`,
         '& > button': {
-          borderColor: `$colors$${props.color}100`,
+          borderColor: `$colors$${color}50 !important`,
         },
       }}
     >

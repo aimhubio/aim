@@ -304,11 +304,17 @@ function createEngine<TObject = any>(
       // eslint-disable-next-line no-console
       .catch((err) => console.error(err));
 
+    if (config.persist) {
+      if (!basePath && basePath !== '') {
+        throw new Error('Specify [basePath] argument of engine configuration.');
+      }
+    }
+
     const removeHistoryListener =
       config.persist &&
       browserHistory.listen((update: Update) => {
         localStorage.setItem(
-          'figuresUrl',
+          `${basePath}Url`,
           update.location.pathname + update.location.search,
         );
       });
@@ -361,10 +367,10 @@ function createEngine<TObject = any>(
     initialize,
   };
 
-  if (__DEV__) {
-    // @ts-ignore
-    window[name] = engine;
-  }
+  // if (__DEV__) {
+  //   // @ts-ignore
+  //   window[name] = engine;
+  // }
 
   return engine;
 }

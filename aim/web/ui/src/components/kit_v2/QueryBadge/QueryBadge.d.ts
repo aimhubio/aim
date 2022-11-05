@@ -1,7 +1,9 @@
+import { IButtonProps } from '../Button';
+
 /**
  * @description QueryBadge component props
  */
-export interface IQueryBadgeProps {
+export interface IQueryBadgeProps extends IButtonProps {
   /**
    * @description QueryBadge component children
    * @default null
@@ -21,7 +23,7 @@ export interface IQueryBadgeProps {
   /**
    * @description QueryBadge component disabled state
    * @default false
-   * @type {boolean}
+   * @type boolean
    */
   disabled?: boolean;
 }

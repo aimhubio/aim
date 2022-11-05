@@ -2,7 +2,7 @@ import React from 'react';
 
 import Icon from 'components/kit/Icon';
 
-import { styled } from 'config/stitches/stitches.config';
+import { ColorPaletteEnum, styled } from 'config/stitches/stitches.config';
 
 import { getButtonStyles } from '../utils/getButtonStyles';
 
@@ -23,15 +23,12 @@ const Container = styled('button', {
     size: {
       xs: {
         size: '$1',
-        fontSize: '$2',
       },
       sm: {
         size: '$2',
-        fontSize: '$2',
       },
       md: {
         size: '$3',
-        fontSize: '$2',
       },
       lg: {
         size: '$5',
@@ -50,25 +47,36 @@ const Container = styled('button', {
   },
 });
 
-function IconButton({
-  icon,
-  size = 'md',
-  color = 'primary',
-  variant = 'contained',
-  disabled = false,
-  ...props
-}: IIconButtonProps) {
-  return (
-    <Container
-      {...props}
-      data-testid='icon-button'
-      css={{ ...getButtonStyles(color, variant, disabled) }}
-      size={size}
-      variant={variant}
-    >
-      <Icon name={icon} />
-    </Container>
-  );
-}
+const IconButton = React.forwardRef<
+  React.ElementRef<typeof Container>,
+  IIconButtonProps
+>(
+  (
+    {
+      icon,
+      size = 'sm',
+      color = ColorPaletteEnum.primary,
+      variant = 'contained',
+      disabled = false,
+      css,
+      ...props
+    }: IIconButtonProps,
+    forwardedRef,
+  ) => {
+    return (
+      <Container
+        {...props}
+        data-testid='icon-button'
+        css={{ ...getButtonStyles(color, variant, disabled), ...css }}
+        size={size}
+        variant={variant}
+        disabled={disabled}
+        ref={forwardedRef}
+      >
+        <Icon name={icon} />
+      </Container>
+    );
+  },
+);
 
 export default React.memo(IconButton);
