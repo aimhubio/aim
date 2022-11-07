@@ -91,6 +91,7 @@ export interface IBoxProps extends IBaseComponentProps {
   data: any;
   items: AimFlatObjectBase[];
   style?: React.CSSProperties;
+  isFullView?: boolean;
 }
 
 export interface IOptionalExplorerConfig {}
