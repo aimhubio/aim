@@ -84,6 +84,11 @@ def build_exception(exception: Exception):
     )
 
 
+class UnauthorizedRequestError(RuntimeError):
+    def __init__(self, handler, *args, **kwargs):
+        self.handler = handler
+
+
 @CustomObject.alias('aim.resource')
 class ResourceObject(CustomObject):
     AIM_NAME = 'aim.resource'

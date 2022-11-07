@@ -964,10 +964,13 @@ function GroupConfig({
                 x2='100%'
                 y2='50%'
                 style={{
-                  strokeDasharray: config.dasharray
-                    .split(' ')
-                    .map((elem) => (elem / 5) * 3)
-                    .join(' '),
+                  strokeDasharray:
+                    config.dasharray === 'none'
+                      ? 'none'
+                      : config.dasharray
+                          .split(' ')
+                          .map((elem) => (elem / 5) * 3)
+                          .join(' '),
                 }}
               />
             </svg>
