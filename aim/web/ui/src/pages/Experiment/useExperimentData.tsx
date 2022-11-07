@@ -9,19 +9,26 @@ function useExperimentData(experimentId: string) {
   const { current: engine } = React.useRef(experimentEngine);
   const experimentStore: IResourceState<IExperimentData> =
     engine.experimentState((state) => state);
+  const experimentsStore: IResourceState<IExperimentData[]> =
+    engine.experimentsState((state) => state);
 
   React.useEffect(() => {
-    if (!experimentStore.data) {
-      engine.fetchExperimentData(experimentId as any);
-    }
     return () => {
-      engine.destroy();
+      engine.destroyExperiment();
+      engine.destroyExperiments();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  React.useEffect(() => {
+    engine.fetchExperimentData(experimentId as any);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [experimentId]);
+
   return {
     experimentStore,
+    experimentsStore,
+    getExperimentsData: engine.fetchExperimentsData,
   };
 }
 

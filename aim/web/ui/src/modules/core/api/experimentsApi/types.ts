@@ -19,4 +19,8 @@ export interface IExperimentData {
    * The attached runs of the experiment
    */
   run_count: number;
+  /**
+   * The date the experiment have been created at in milliseconds
+   */
+  created_at: number;
 }

@@ -1,17 +1,29 @@
 import {
   getExperimentById,
+  getExperiments,
   IExperimentData,
 } from 'modules/core/api/experimentsApi';
 import createResource from 'modules/core/utils/createResource';
 
 function experimentEngine() {
-  const { fetchData, state, destroy } = createResource<IExperimentData>(
-    getExperimentById as any,
-  );
+  const {
+    fetchData: fetchExperimentData,
+    state: experimentState,
+    destroy: destroyExperiment,
+  } = createResource<IExperimentData>(getExperimentById);
+  const {
+    fetchData: fetchExperimentsData,
+    state: experimentsState,
+    destroy: destroyExperiments,
+  } = createResource<IExperimentData[]>(getExperiments);
+
   return {
-    fetchExperimentData: fetchData,
-    experimentState: state,
-    destroy,
+    fetchExperimentData,
+    experimentState,
+    destroyExperiment,
+    fetchExperimentsData,
+    experimentsState,
+    destroyExperiments,
   };
 }
 

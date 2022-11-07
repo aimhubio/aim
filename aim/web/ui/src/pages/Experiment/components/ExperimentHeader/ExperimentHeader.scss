@@ -3,15 +3,16 @@
 .ExperimentHeader {
   &__headerContainer {
     height: 4.375rem;
-    background: #ffffff;
+    background: $white;
     display: flex;
     align-items: center;
     &__appBarBox {
       display: flex;
       padding-top: $space-unit;
       justify-content: space-between;
-      &__runInfoBox {
+      &__navigationContainer {
         max-width: 50%;
+        width: 50%;
       }
       &__actionContainer {
         width: 4.5rem;
@@ -49,7 +50,7 @@
         display: flex;
         i {
           margin-right: $space-xxs;
-          color: #606986;
+          color: $pico-70;
         }
       }
       &__Skeleton {
@@ -60,7 +61,7 @@
         height: 1.5rem;
         top: -$space-xxxxs;
         &.opened {
-          background: #e8f1fc;
+          background: $primary-color-10;
         }
         .MuiButton-label {
           padding-top: $space-xxxxs;
