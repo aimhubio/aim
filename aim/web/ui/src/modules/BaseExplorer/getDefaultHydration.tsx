@@ -116,7 +116,7 @@ const groupings: GroupingConfigs = {
   },
 };
 
-const defaultHydration = {
+export const defaultHydration = {
   ObjectFullView: FullVewPopover,
   BoxWrapper: BoxWrapper,
   Visualizer: Visualizer,
