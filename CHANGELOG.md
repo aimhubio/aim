@@ -1,12 +1,11 @@
 # Changelog
 
-## 3.14.5
-
-- Add notifier config files to aim package (alberttorosyan)
 
 ## 3.14.4
 
 - Fix the group property name visibility in the images and audio tabs (VkoHov)
+- Add notifier config files to aim package (alberttorosyan)
+- Fix audios to numpy conversion (mihran113)
 
 ## 3.14.3 Oct 29, 2022
 
