@@ -10,6 +10,11 @@
 - Add PaddlePaddle integration (tmynn)
 - Add Optuna integration (tmynn)
 
+
+### Fixes
+
+- Handle resources when multiple `Ctrl-C`s are pressed (alberttorosyan)
+
 ## 3.14.3 Oct 29, 2022
 
 - Fix search for empty queries in explorers (KaroMourad)
