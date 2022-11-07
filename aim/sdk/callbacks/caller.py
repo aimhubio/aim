@@ -89,7 +89,8 @@ class Caller(object, metaclass=CallerMeta):
                 if trigger_name in triggers:
                     self.callbacks[trigger_name].append(callback_candidate)
                 else:
-                    logger.warning(f'Object of class \'{self.__class__}\' does not have a trigger method \'{trigger}\'.')
+                    logger.warning(f'Object of class \'{self.__class__}\' '
+                                   f'does not have a trigger method \'{trigger}\'.')
 
 
 trigger = Caller.trigger

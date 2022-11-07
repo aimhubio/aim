@@ -453,6 +453,7 @@ class Run(BaseRun, StructuredRunMixin):
     # logging API
     def log(self, msg: str, *, level: int, **params):
         self.track(LogRecord(msg, level, **params), name='__log_records')
+        self._checkins.check_in(flag_name="new_logs", block=True)
 
     def warning(self, msg, **params):
         self.log(msg, level=logging.WARNING, **params)
@@ -476,7 +477,6 @@ class Run(BaseRun, StructuredRunMixin):
                     :obj:`Sequence` object if exists, `None` otherwise.
                 """
         return self._get_sequence('log_records', '__log_records', Context({}))
-
 
     @property
     def props(self):

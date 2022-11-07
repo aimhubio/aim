@@ -6,12 +6,11 @@ import logging
 from threading import Thread
 from pathlib import Path
 from cachetools.func import ttl_cache
-from typing import Dict, Optional, List, Generic, TypeVar
+from typing import Dict, Optional, Generic, TypeVar
 from abc import abstractmethod
 
 from aim.sdk.repo import Repo
 from aim.sdk.run import Run
-from aim.sdk.logging import LogRecord
 from aim.storage.locking import AutoFileLock
 from aim.ext.notifier import get_config, get_notifier, Notifier, NotificationSendError
 from aim.ext.notifier.utils import get_working_directory
@@ -25,7 +24,7 @@ GRACE_PERIOD = 100  # seconds
 T = TypeVar('T')
 
 
-class EventSet(Generic[T]):
+class RankedSet(Generic[T]):
     def __init__(self):
         self.events: Dict[str, T] = {}
 
@@ -50,15 +49,10 @@ class RunVariable:
 
 
 class Event:
-    def __init__(self, event_idx: int, obj_idx: str):
-        self.idx: int = event_idx
-        self.obj_idx: str = obj_idx
-
-
-class StatusEvent(Event):
     def __init__(self, status_event_encoded: str):
         obj_idx, idx, event_type, epoch_time, next_event_in = status_event_encoded.split('-')
-        super().__init__(event_idx=int(idx), obj_idx=obj_idx)
+        self.idx: int = int(idx)
+        self.obj_idx: str = obj_idx
 
         self.event_type = event_type
         self.next_event_in: int = int(next_event_in)
@@ -66,20 +60,16 @@ class StatusEvent(Event):
         self.detected_epoch_time: float = time.time()
 
 
-class LogEvent(Event):
-    def __init__(self, event_idx: int, obj_idx: str, record: LogRecord):
-        super().__init__(event_idx=event_idx, obj_idx=obj_idx)
-        self.record = record
-
-
-StatusEventSet = EventSet[StatusEvent]
-LogEventSet = EventSet[LogEvent]
+EventSet = RankedSet[Event]
 
 
 class Notification:
-    def __init__(self, event: Optional[Event] = None, message: Optional[str] = None):
-        self.event_idx = event.idx if event else None
-        self.obj_idx = event.obj_idx if event else None
+    def __init__(self, *,
+                 obj_idx: Optional[str] = None,
+                 rank: Optional[int] = None,
+                 message: Optional[str] = None):
+        self.rank = rank
+        self.obj_idx = obj_idx
         self.message = message
 
     @abstractmethod
@@ -113,18 +103,18 @@ class StatusNotification(Notification):
 
     def is_sent(self) -> bool:
         last_event_idx = self.notifications_cache.get(self.obj_idx, -1)
-        if self.event_idx is None or last_event_idx < self.event_idx:
+        if self.rank is None or last_event_idx < self.rank:
             return False
-        elif last_event_idx == self.event_idx:
+        elif last_event_idx == self.rank:
             return True
         else:
-            logger.warning(f'New event id {self.event_idx} for object \'{self.obj_idx}\' '
+            logger.warning(f'New event id {self.rank} for object \'{self.obj_idx}\' '
                            f'is less than last reported event id {last_event_idx}.')
             return True
 
     def update_last_sent(self):
-        if self.event_idx is not None:
-            self.notifications_cache[self.obj_idx] = self.event_idx
+        if self.rank is not None:
+            self.notifications_cache[self.obj_idx] = self.rank
             with self._notifications_cache_path.open(mode='w') as notifications_fh:
                 json.dump(self.notifications_cache, notifications_fh)
 
@@ -141,11 +131,11 @@ class LogNotification(Notification):
 
     def is_sent(self) -> bool:
         run = self._repo.structured_db.find_run(self.obj_idx)
-        return self.event_idx < run.info.last_notification_index
+        return self.rank < run.info.last_notification_index
 
     def update_last_sent(self):
         run = self._repo.structured_db.find_run(self.obj_idx)
-        run.info.last_notification_index = self.event_idx
+        run.info.last_notification_index = self.rank
 
 
 class WorkerThread(Thread):
@@ -256,8 +246,8 @@ class RunStatusWatcher:
 
         self._notifications_cache_path: Path = work_dir / 'last_run_notifications'
         self._notifications_cache_path.touch(exist_ok=True)
-        self._status_events = StatusEventSet()
-        self._log_events = LogEventSet()
+        self._status_events = EventSet()
+        self._log_events = EventSet()
 
         self.notifier = get_notifier(self.repo_path)
         self.watcher_thread = WorkerThread(self.check_for_new_events, daemon=True) if not background else None
@@ -302,51 +292,52 @@ class RunStatusWatcher:
 
     def check_for_new_events(self):
         status_events = self.poll_status_events()
-
         for new_event in status_events.events.values():
             if not self._status_events.add(new_event):
                 event = self._status_events.get(new_event.obj_idx)
                 if event.next_event_in == 0:  # wait for next check-in for infinite time
                     continue
                 epoch_now = time.time()
-                failed = (event.next_event_in + GRACE_PERIOD < epoch_now - event.detected_epoch_time)
-                if failed:
-                    notification = StatusNotification(event)
+                failure = (event.next_event_in + GRACE_PERIOD < epoch_now - event.detected_epoch_time)
+                if failure:
+                    notification = StatusNotification(obj_idx=event.obj_idx, rank=event.obj_idx)
                     self.notifications_queue.add_notification(notification)
             elif new_event.event_type in self.message_templates:
-                message_template = self.message_templates[new_event.event_type]
-                notification = StatusNotification(new_event, message_template)
+                message = self.message_templates[new_event.event_type]
+                notification = StatusNotification(obj_idx=new_event.obj_idx, rank=new_event.idx, message=message)
                 self.notifications_queue.add_notification(notification)
+
+        self.repo.persistent_pool.clear()
+        log_level = self.log_level_threshold
 
         log_events = self.poll_log_record_events()
-        for new_event in log_events:
+        for new_event in log_events.events.values():
             if self._log_events.add(new_event):
-                notification = LogNotification(new_event, new_event.record.message)
-                self.notifications_queue.add_notification(notification)
+                run_hash = new_event.obj_idx
+                run = Run(run_hash, repo=self.repo, read_only=True)
+                run_info = run.props.info
+                log_records_seq = run.get_log_records()
+                if log_records_seq:
+                    last_log_index = log_records_seq.last_step()
+                    last_notified_index = run_info.last_notification_index
+                    if last_log_index > last_notified_index:
+                        data = log_records_seq.data.range(last_notified_index + 1, last_log_index + 1)
+                        steps, log_records = data.view('val').items_list()
+                        log_records = log_records[0]
+                        for step, log_record in zip(steps, log_records):
+                            if log_record.level >= log_level:
+                                notification = LogNotification(obj_idx=run_hash, rank=step, message=log_record.message)
+                                self.notifications_queue.add_notification(notification)
 
-    def poll_status_events(self) -> StatusEventSet:
-        events = StatusEventSet()
-        for check_in_file_path in sorted(self._status_watch_dir.glob('*-*-*-*-*')):
-            events.add(StatusEvent(check_in_file_path.name))
-        return events
+    def poll_status_events(self) -> EventSet:
+        return self._poll(event_types=('finished', 'starting', 'check_in'))
 
-    def poll_log_record_events(self) -> List[LogEvent]:
-        runs_in_progress = self.repo.list_active_runs()
-        self.repo.persistent_pool.clear()
-        events = []
-        log_level = self.log_level_threshold
-        for run_hash in runs_in_progress:
-            run = Run(run_hash, repo=self.repo, read_only=True)
-            run_info = run.props.info
-            log_records_seq = run.get_log_records()
-            if log_records_seq:
-                last_log_index = log_records_seq.last_step()
-                last_notified_index = run_info.last_notification_index
-                if last_log_index > last_notified_index:
-                    data = log_records_seq.data.range(last_notified_index + 1, last_log_index + 1)
-                    steps, log_records = data.view('val').items_list()
-                    log_records = log_records[0]
-                    for step, log_record in zip(steps, log_records):
-                        if log_record.level >= log_level:
-                            events.append(LogEvent(step, run_hash, log_record))
+    def poll_log_record_events(self) -> EventSet:
+        return self._poll(event_types=('new_logs',))
+
+    def _poll(self, event_types) -> EventSet:
+        events = EventSet()
+        for event_type in event_types:
+            for check_in_file_path in sorted(self._status_watch_dir.glob(f'*-*-{event_type}-*-*')):
+                events.add(Event(check_in_file_path.name))
         return events
