@@ -20,6 +20,13 @@ import ExperimentHeader from './components/ExperimentHeader';
 
 import './Experiment.scss';
 
+const ExperimentOverviewTab = React.lazy(
+  () =>
+    import(
+      /* webpackChunkName: "ExperimentOverviewTab" */ './components/ExperimentOverviewTab'
+    ),
+);
+
 const tabs: { [key: string]: string } = {
   overview: 'Overview',
   runs: 'Runs',
@@ -41,8 +48,8 @@ function Experiment(): React.FunctionComponentElement<React.ReactNode> {
   const { data: experimentsData, loading: isExperimentsLoading } =
     experimentsStore;
 
-  const tabContent: { [key: string]: JSX.Element } = {
-    overview: <div>overview</div>,
+  const tabContent: Record<string, JSX.Element> = {
+    overview: <ExperimentOverviewTab />,
     runs: <div>runs</div>,
     notes: <div>notes</div>,
     settings: <div>settings</div>,
