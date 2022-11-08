@@ -6,6 +6,7 @@ const pageTitles = {
   IMAGES_EXPLORER: 'Images Explorer',
   SCATTERS_EXPLORER: 'Scatters Explorer',
   FIGURES_EXPLORER: 'Figures Explorer',
+  AUDIOS_EXPLORER: 'Audios Explorer',
   BOOKMARKS: 'Bookmarks',
   TAGS: 'Tags',
   RUN_DETAIL: '',

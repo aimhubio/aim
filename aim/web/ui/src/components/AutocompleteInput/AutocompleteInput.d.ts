@@ -20,4 +20,5 @@ export interface IAutocompleteInputProps {
     ev?: monaco.editor.IModelContentChangedEvent,
   ) => void;
   error?: ISyntaxErrorDetails;
+  forceRemoveError?: boolean;
 }

@@ -1,7 +1,9 @@
-import { omit } from 'lodash-es';
+import { isEmpty, omit } from 'lodash-es';
 
+import browserHistory from 'modules/core/services/browserHistory';
 import { Order } from 'modules/core/pipeline';
 import { createSliceState } from 'modules/core/utils/store';
+import getUrlSearchParam from 'modules/core/utils/getUrlSearchParam';
 
 import createGroupingsSlice from './state';
 
@@ -86,7 +88,13 @@ export type GroupingConfigs = Record<
   Omit<GroupingConfig<unknown & object, any>, 'name'>
 >;
 
-function createGroupingsEngine(config: GroupingConfigs, store: any) {
+type GroupValues = Record<string, { orders: Order[]; fields: string[] }>;
+
+function createGroupingsEngine(
+  config: GroupingConfigs,
+  store: any,
+  persist?: boolean, // TODO later use StatePersistOption,
+) {
   const groupingSliceConfig: Record<string, any> = {};
 
   Object.keys(config).forEach((name: string) => {
@@ -120,20 +128,56 @@ function createGroupingsEngine(config: GroupingConfigs, store: any) {
     {},
   );
 
+  function update(groupValues: GroupValues) {
+    methods.update(groupValues);
+  }
+
   function resetSlices() {
     slicesResetMethods.forEach((func) => {
       func();
     });
   }
 
+  function initialize() {
+    if (persist) {
+      const stateFromStorage = getUrlSearchParam('groupings') || {};
+
+      // update state
+      if (!isEmpty(stateFromStorage)) {
+        methods.update(stateFromStorage);
+      }
+      const removeGroupingListener =
+        browserHistory.listenSearchParam<GroupValues>(
+          'groupings',
+          (data: GroupValues | null) => {
+            // update state
+            if (!isEmpty(data)) {
+              methods.update(data as GroupValues);
+            } else {
+              methods.reset();
+            }
+          },
+          ['PUSH'],
+        );
+
+      return () => {
+        removeGroupingListener();
+      };
+    }
+
+    return () => {};
+  }
+
   return {
     state: { groupings: state.initialState },
     engine: {
       ...omit(state, ['initialState', 'generateMethods', 'slices']),
-      ...methods,
+      reset: methods.reset,
+      update,
       ...slices,
       resetSlices,
       styleAppliers,
+      initialize,
     },
   };
 }

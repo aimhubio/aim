@@ -1,6 +1,6 @@
 {
   "name": "ui_v2",
-  "version": "3.14.1",
+  "version": "3.14.3",
   "private": true,
   "dependencies": {
     "@aksel/structjs": "^1.0.0",
@@ -8,6 +8,7 @@
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.60",
     "@monaco-editor/react": "4.4.4",
+    "@types/history": "^5.0.0",
     "@types/marked": "^4.0.7",
     "@uiw/react-textarea-code-editor": "^1.4.14",
     "bs58check": "^2.1.2",
@@ -19,6 +20,7 @@
     "formik": "^2.2.9",
     "highcharts": "^9.3.1",
     "highcharts-react-official": "^3.1.0",
+    "history": "^5.3.0",
     "humanize-duration": "^3.27.0",
     "lodash-es": "^4.17.21",
     "marked": "^4.1.1",

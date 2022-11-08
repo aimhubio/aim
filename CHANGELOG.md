@@ -2,8 +2,33 @@
 
 ## Unreleased
 
+
+### Enhancements:
+
 - Implement vertically scalable version of Remote Tracking (mihran113, alberttorosyan)
 - Add the ability to search, filter, and compare audio through Audios Explorer (VkoHov)
+- Add epoch tracking for PyTorch Lightning (tmynn)
+- Add PaddlePaddle integration (tmynn)
+- Add Optuna integration (tmynn)
+
+### Fixes:
+- Fix multiple progress bars handling for terminal logs capturing (mihran113)
+- Handle resources when multiple `Ctrl-C`s are pressed (alberttorosyan)
+
+## 3.14.3 Oct 29, 2022
+
+- Fix search for empty queries in explorers (KaroMourad)
+
+## 3.14.2 Oct 28, 2022
+
+- Add support to sync explorer state through url on Base and Figures Explorers (rubenaprikyan)
+- Add support to highlight syntax error in Figures Explorer (KaroMourad)
+- Fix issue with applying solid stroke styles on stroke badge in table (KaroMourad)
+- Fix active runs indicators overlapping issue in LineChart (KaroMourad)
+- Add support for text style formatting in the logs tab (VkoHov)
+- Fix "`TypeError: check()` keywords must be strings" for `Run.metrics()` method (alberttorosyan)
+- Fix run info API call error when tag color/description is None (alberttorosyan)
+- Fix remote heartbeat resource cleanup (mihran113)
 
 ## 3.14.1 Oct 7, 2022
 
@@ -26,7 +51,6 @@
 - Add MXNet integration (tmynn)
 - Create a Dashboard page to provide a better onboarding experience (arsengit, roubkar, KaroMourad, mihran113)
 - Add support for tracking jax device arrays (mihran113)
-- Add Optuna integration (tmynn)
 
 ### Fixes:
 

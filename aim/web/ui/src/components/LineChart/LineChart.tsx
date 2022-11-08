@@ -159,30 +159,6 @@ const LineChart = React.forwardRef(function LineChart(
       }
     }
 
-    if (!readOnly) {
-      drawHoverAttributes({
-        index,
-        nameKey,
-        data,
-        axesScaleType,
-        highlightMode,
-        syncHoverState,
-        visAreaRef,
-        attributesRef,
-        plotBoxRef,
-        visBoxRef,
-        svgNodeRef,
-        bgRectNodeRef,
-        attributesNodeRef,
-        xAxisLabelNodeRef,
-        yAxisLabelNodeRef,
-        linesNodeRef,
-        highlightedNodeRef,
-        aggregationConfig,
-        alignmentConfig,
-      });
-    }
-
     drawBrush({
       index,
       plotBoxRef,
@@ -201,6 +177,31 @@ const LineChart = React.forwardRef(function LineChart(
       readOnly,
       unableToDrawConditions,
     });
+
+    if (!readOnly) {
+      drawHoverAttributes({
+        index,
+        nameKey,
+        data,
+        processedData,
+        axesScaleType,
+        highlightMode,
+        syncHoverState,
+        visAreaRef,
+        attributesRef,
+        plotBoxRef,
+        visBoxRef,
+        svgNodeRef,
+        bgRectNodeRef,
+        attributesNodeRef,
+        xAxisLabelNodeRef,
+        yAxisLabelNodeRef,
+        linesNodeRef,
+        highlightedNodeRef,
+        aggregationConfig,
+        alignmentConfig,
+      });
+    }
 
     drawUnableToRender({
       renderArr: unableToDrawConditions,

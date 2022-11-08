@@ -6,7 +6,7 @@ import { RunsSearchQueryParams } from 'modules/core/api/runsApi';
 
 import { AimFlatObjectBase } from 'types/core/AimObjects';
 
-import { PipelineStatusEnum, ProgressState } from '../types';
+import { PipelineErrorType, PipelineStatusEnum, ProgressState } from '../types';
 
 export type AdditionalData = {
   modifiers: string[];
@@ -24,6 +24,7 @@ export type CurrentQuery = RunsSearchQueryParams;
 export type QueryableData = {};
 export type FlatList<TObject> = AimFlatObjectBase<TObject>[];
 export type FoundGroups = {};
+export type PipelineErrorState = PipelineErrorType | null;
 
 export interface IPipelineState<TObject> {
   currentPhase: PipelinePhasesEnum;
@@ -35,6 +36,7 @@ export interface IPipelineState<TObject> {
   foundGroups: FoundGroups;
   progress: ProgressState;
   data: FlatList<TObject>;
+  error: PipelineErrorState;
 }
 
 type SelectorCreator<TState, P> = (state: TState) => P;
@@ -48,6 +50,7 @@ type Selectors<TState, TObject> = {
   currentGroupingSelector: SelectorCreator<TState, CurrentGrouping>;
   statusSelector: SelectorCreator<TState, PipelineStatusEnum>;
   progressSelector: SelectorCreator<TState, ProgressState>;
+  errorSelector: SelectorCreator<TState, PipelineErrorState>;
 };
 
 export type PipelineStateBridge<TObject, TStore> = {
@@ -70,6 +73,7 @@ export type PipelineStateBridge<TObject, TStore> = {
   getStatus: () => PipelineStatusEnum;
   setProgress: (progress: ProgressState) => void;
   resetProgress: () => void;
+  setError: (error: PipelineErrorState) => void;
 } & {
   selectors: Selectors<ExtractState<TStore, TObject>, TObject>;
 };
@@ -98,6 +102,7 @@ function getInitialState<TObject>(): IPipelineState<TObject> {
     currentGroupings: {},
     data: [],
     foundGroups: {},
+    error: null,
   };
 
   return initialState;
@@ -118,6 +123,7 @@ function createState<TStore, TObject>(
     currentGroupings: {},
     data: [],
     foundGroups: {},
+    error: null,
   },
 ): PipelineStateBridge<TObject, TStore> {
   const selectors: Selectors<ExtractState<TStore, TObject>, TObject> = {
@@ -144,6 +150,8 @@ function createState<TStore, TObject>(
     ): PipelineStatusEnum => state.pipeline.status,
     progressSelector: (state: ExtractState<TStore, TObject>): ProgressState =>
       state.pipeline.progress,
+    errorSelector: (state: ExtractState<TStore, TObject>): PipelineErrorState =>
+      state.pipeline.error,
   };
 
   const methods: Omit<
@@ -231,6 +239,7 @@ function createState<TStore, TObject>(
             draft_state.pipeline.additionalData = additionalData;
             draft_state.pipeline.foundGroups = foundGroups;
             draft_state.pipeline.data = data as FlatList<Draft<TObject>>;
+            draft_state.pipeline.error = null;
             if (queryableData) {
               draft_state.pipeline.queryableData = queryableData;
             }
@@ -240,6 +249,18 @@ function createState<TStore, TObject>(
         // @ts-ignore
         '@PIPELINE/setResult',
       ),
+    setError: (error: PipelineErrorState) => {
+      store.setState(
+        produce<ExtractState<TStore, TObject>>(
+          (draft_state: Draft<ExtractState<TStore, TObject>>) => {
+            draft_state.pipeline.error = error;
+          },
+        ),
+        false,
+        // @ts-ignore
+        '@PIPELINE/setError',
+      );
+    },
   };
 
   return {
