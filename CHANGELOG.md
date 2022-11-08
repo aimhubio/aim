@@ -10,9 +10,8 @@
 - Add PaddlePaddle integration (tmynn)
 - Add Optuna integration (tmynn)
 
-
-### Fixes
-
+### Fixes:
+- Fix multiple progress bars handling for terminal logs capturing (mihran113)
 - Handle resources when multiple `Ctrl-C`s are pressed (alberttorosyan)
 
 ## 3.14.3 Oct 29, 2022
