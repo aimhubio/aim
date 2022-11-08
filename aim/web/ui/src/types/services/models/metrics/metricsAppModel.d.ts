@@ -110,7 +110,7 @@ export interface ITooltip extends Partial<ITooltipConfig> {
 export interface IMetricsCollection<T> {
   key?: string;
   groupKey?: string;
-  config: Record<string, string> | null;
+  config: Record<string, unknown> | null;
   color: string | null;
   dasharray: string | null;
   chartIndex: number;
@@ -256,19 +256,13 @@ export interface ISmoothing {
   isApplied: boolean;
 }
 
-export interface LegendRowDataType {
-  key: string;
-  config: Record<string, string[]>;
+export interface LegendColumnDataType {
   color?: string;
   dasharray?: string;
   chartIndex?: number;
-}
-
-export interface LegendType {
-  keys: string[];
-  rows: LegendRowDataType[];
+  value: string;
 }
 
 export interface LegendsDataType {
-  [key: string]: LegendType;
+  [key: string]: Record<string, LegendColumnDataType[]>;
 }

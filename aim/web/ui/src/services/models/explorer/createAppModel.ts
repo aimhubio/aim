@@ -731,7 +731,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           const columnsValues: { [key: string]: string[] } = {};
 
           if (metricsCollection.config !== null) {
-            const groupConfigData: { [key: string]: string } = {};
+            const groupConfigData: { [key: string]: unknown } = {};
             for (let key in metricsCollection.config) {
               groupConfigData[getValueByField(groupingSelectOptions, key)] =
                 metricsCollection.config[key];
@@ -3454,7 +3454,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             const groupKey = metricsCollection.key;
             const columnsValues: { [key: string]: string[] } = {};
             if (metricsCollection.config !== null) {
-              const groupConfigData: { [key: string]: string } = {};
+              const groupConfigData: { [key: string]: unknown } = {};
               for (let key in metricsCollection.config) {
                 groupConfigData[getValueByField(groupingSelectOptions, key)] =
                   metricsCollection.config[key];
@@ -5154,7 +5154,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             const columnsValues: { [key: string]: string[] } = {};
 
             if (metricsCollection.config !== null) {
-              const groupConfigData: { [key: string]: string } = {};
+              const groupConfigData: { [key: string]: unknown } = {};
               for (let key in metricsCollection.config) {
                 groupConfigData[getValueByField(groupingSelectOptions, key)] =
                   metricsCollection.config[key];

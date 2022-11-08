@@ -22,13 +22,13 @@ export interface IChartPanelProps {
   chartType: ChartTypeEnum;
   // TODO after line model definition change to HighPlot Line type
   data: ILine[][] | any;
+  legendsData?: LegendsDataType;
   panelResizing?: boolean;
   focusedState: IFocusedState;
   tooltip: ITooltip;
   aggregationConfig?: IAggregationConfig;
   alignmentConfig?: IAlignmentConfig;
   zoom?: Partial<IChartZoom>;
-  legendsData?: LegendsDataType;
   chartPanelOffsetHeight?: number;
   // chartProps: Omit<
   //   ILineChartProps | IHighPlotProps,

@@ -3,12 +3,14 @@ import { GroupNameEnum } from 'config/grouping/GroupingPopovers';
 import {
   IGroupingSelectOption,
   IMetricsCollection,
+  LegendColumnDataType,
   LegendsDataType,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IGroupingConfig } from 'types/services/models/explorer/createAppModel';
 
 import getValueByField from '../getValueByField';
 import { encode } from '../encoder/encoder';
+import { formatValue } from '../formatValue';
 
 const groupingPropKeys: Record<
   GroupNameEnum,
@@ -29,36 +31,42 @@ function getLegendsData(
   const legendsData: LegendsDataType = {};
 
   for (let groupName of groupingNames) {
-    const legendDataByGroup: Record<string, any> = {};
+    const legendRowData: Record<string, any> = {};
     const groupPropKey = groupingPropKeys[groupName];
     const groupedItemPropKeys = groupingConfig[groupName] || [];
 
     if (groupedItemPropKeys.length > 0) {
       for (const item of processedData) {
-        const legend = {
+        const config: Record<string, string> = {};
+        for (const propKey of groupedItemPropKeys) {
+          const key = getValueByField(groupingSelectOptions, propKey);
+          const value = item.config?.[propKey];
+          config[key] = formatValue(value);
+        }
+        const legendRow = {
           [groupPropKey]: item[groupPropKey],
-          config: groupedItemPropKeys.reduce(
-            (acc: Record<string, any>, propKey) => {
-              const key = getValueByField(groupingSelectOptions, propKey);
-              acc[key] = item.config?.[propKey] || 'None';
-              return acc;
-            },
-            {},
-          ),
+          config,
         };
-        const hashed = encode(legend);
-        if (!legendDataByGroup[hashed]) {
-          legend.key = hashed;
-          legendDataByGroup[hashed] = legend;
+        const hashed = encode(legendRow);
+        if (!legendRowData[hashed]) {
+          legendRowData[hashed] = legendRow;
         }
       }
+      const keys = groupedItemPropKeys.map((item) =>
+        getValueByField(groupingSelectOptions, item),
+      );
+      const uniqueRows = Object.values(legendRowData);
+      const groupedByColumns: Record<string, LegendColumnDataType[]> = {};
+      for (let key of keys) {
+        groupedByColumns[key] = uniqueRows.map((row) => ({
+          value: row.config[key],
+          color: row.color,
+          dasharray: row.dasharray,
+          chartIndex: row.chartIndex,
+        }));
+      }
 
-      legendsData[groupName] = {
-        keys: groupedItemPropKeys.map((item) =>
-          getValueByField(groupingSelectOptions, item),
-        ),
-        rows: Object.values(legendDataByGroup),
-      };
+      legendsData[groupName] = groupedByColumns;
     }
   }
   return legendsData;

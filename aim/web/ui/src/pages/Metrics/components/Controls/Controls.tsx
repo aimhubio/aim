@@ -17,6 +17,7 @@ import { Icon } from 'components/kit';
 import ExportPreview from 'components/ExportPreview';
 import ChartGrid from 'components/ChartPanel/ChartGrid';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import ChartLegends from 'components/ChartPanel/ChartLegends';
 
 import { CONTROLS_DEFAULT_CONFIG } from 'config/controls/controlsDefaultConfig';
 
@@ -430,6 +431,7 @@ function Controls(
               openModal={openExportModal}
               explorerPage='metrics'
               onToggleExportPreview={onToggleExportPreview}
+              appendElement={<ChartLegends legendsData={props.legendsData} />}
             >
               <ChartGrid
                 readOnly

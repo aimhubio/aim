@@ -13,6 +13,7 @@ import {
   IChartZoom,
   IGroupingSelectOption,
   ISmoothing,
+  LegendsDataType,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IMetricProps } from 'types/pages/metrics/Metrics';
 
@@ -22,6 +23,7 @@ export interface IControlProps {
   chartProps: any[];
   chartType: ChartTypeEnum;
   data: ILine[][] | any;
+  legendsData?: LegendsDataType;
   selectOptions: IGroupingSelectOption[];
   tooltip?: ITooltip;
   ignoreOutliers: boolean;

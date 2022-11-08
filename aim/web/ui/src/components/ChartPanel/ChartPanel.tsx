@@ -1,8 +1,6 @@
 import React from 'react';
 import _ from 'lodash-es';
 
-import { Grid } from '@material-ui/core';
-
 import { Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
@@ -14,7 +12,7 @@ import {
   ISyncHoverStateArgs,
 } from 'types/utils/d3/drawHoverAttributes';
 
-import { ChartTypeEnum, drawLegends } from 'utils/d3';
+import { ChartTypeEnum } from 'utils/d3';
 
 import ChartPopover from './ChartPopover';
 import ChartGrid from './ChartGrid';
@@ -148,7 +146,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
 
   return (
     <ErrorBoundary>
-      <Grid container className='ChartPanel__container'>
+      <div className='ChartPanel__container'>
         {props.panelResizing ? (
           <div className='ChartPanel__resizing'>
             <Text size={14} color='info'>
@@ -158,8 +156,8 @@ const ChartPanel = React.forwardRef(function ChartPanel(
         ) : (
           <>
             <ErrorBoundary>
-              <Grid item xs className='ChartPanel'>
-                <Grid ref={containerRef} container className='ChartPanel__grid'>
+              <div className='ChartPanel'>
+                <div ref={containerRef} className='ChartPanel__grid'>
                   <ChartGrid
                     data={props.data}
                     chartProps={props.chartProps}
@@ -169,40 +167,42 @@ const ChartPanel = React.forwardRef(function ChartPanel(
                     resizeMode={props.resizeMode}
                     chartPanelOffsetHeight={props.chartPanelOffsetHeight}
                   />
-                </Grid>
-                <ChartLegends data={props.legendsData} />
-                <ErrorBoundary>
-                  <ChartPopover
-                    containerNode={containerRef.current}
-                    activePointRect={activePointRect}
-                    onRunsTagsChange={props.onRunsTagsChange}
-                    open={
-                      props.resizeMode !== ResizeModeEnum.MaxHeight &&
-                      props.data.length > 0 &&
-                      !props.panelResizing &&
-                      !props.zoom?.active &&
-                      (props.tooltip?.display || props.focusedState.active)
-                    }
-                    chartType={props.chartType}
-                    tooltipContent={props?.tooltip?.content || {}}
-                    tooltipAppearance={props?.tooltip?.appearance}
-                    focusedState={props.focusedState}
-                    alignmentConfig={props.alignmentConfig}
-                    reCreatePopover={props.focusedState.active}
-                    selectOptions={props.selectOptions}
-                    onChangeTooltip={props.onChangeTooltip}
-                  />
-                </ErrorBoundary>
-              </Grid>
+                </div>
+                {_.isEmpty(props.legendsData) ? null : (
+                  <ChartLegends legendsData={props.legendsData} />
+                )}
+              </div>
             </ErrorBoundary>
             <ErrorBoundary>
-              <Grid className='ChartPanel__controls ScrollBar__hidden' item>
+              <ChartPopover
+                containerNode={containerRef.current}
+                activePointRect={activePointRect}
+                onRunsTagsChange={props.onRunsTagsChange}
+                open={
+                  props.resizeMode !== ResizeModeEnum.MaxHeight &&
+                  props.data.length > 0 &&
+                  !props.panelResizing &&
+                  !props.zoom?.active &&
+                  (props.tooltip?.display || props.focusedState.active)
+                }
+                chartType={props.chartType}
+                tooltipContent={props?.tooltip?.content || {}}
+                tooltipAppearance={props?.tooltip?.appearance}
+                focusedState={props.focusedState}
+                alignmentConfig={props.alignmentConfig}
+                reCreatePopover={props.focusedState.active}
+                selectOptions={props.selectOptions}
+                onChangeTooltip={props.onChangeTooltip}
+              />
+            </ErrorBoundary>
+            <ErrorBoundary>
+              <div className='ChartPanel__controls ScrollBar__hidden'>
                 {props.controls}
-              </Grid>
+              </div>
             </ErrorBoundary>
           </>
         )}
-      </Grid>
+      </div>
     </ErrorBoundary>
   );
 });

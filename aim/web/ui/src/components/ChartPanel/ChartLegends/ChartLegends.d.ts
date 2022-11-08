@@ -1,5 +1,5 @@
+import { LegendsDataType } from 'types/services/models/metrics/metricsAppModel';
+
 export interface IChartLegendsProps {
-  data?: LegendsDataType;
-  display?: boolean;
-  pin?: boolean;
+  legendsData?: LegendsDataType;
 }

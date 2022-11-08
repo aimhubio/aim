@@ -162,11 +162,11 @@ function Metrics(
                         panelResizing={props.panelResizing}
                         chartType={ChartTypeEnum.LineChart}
                         data={props.lineChartData}
+                        legendsData={props.legendsData}
                         focusedState={props.focusedState}
                         tooltip={props.tooltip}
                         alignmentConfig={props.alignmentConfig}
                         zoom={props.zoom}
-                        legendsData={props.legendsData}
                         chartProps={chartProps}
                         resizeMode={props.resizeMode}
                         onActivePointChange={props.onActivePointChange}
@@ -175,6 +175,7 @@ function Metrics(
                         controls={
                           <Controls
                             data={props.lineChartData}
+                            legendsData={props.legendsData}
                             chartType={ChartTypeEnum.LineChart}
                             chartProps={chartProps}
                             selectOptions={props.groupingSelectOptions}
