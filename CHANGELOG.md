@@ -5,6 +5,7 @@
 
 ### Enhancements:
 
+- Add chart legends to the Metrics Explorer (KaroMourad)
 - Implement vertically scalable version of Remote Tracking (mihran113, alberttorosyan)
 - Add the ability to search, filter, and compare audio through Audios Explorer (VkoHov)
 - Add epoch tracking for PyTorch Lightning (tmynn)
