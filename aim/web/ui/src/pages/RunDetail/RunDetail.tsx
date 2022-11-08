@@ -267,7 +267,7 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
               <div className='RunDetail__runDetailContainer__appBarContainer__appBarBox__runInfoBox'>
                 <ControlPopover
                   anchorOrigin={{
-                    vertical: 'center',
+                    vertical: 'bottom',
                     horizontal: 'left',
                   }}
                   transformOrigin={{

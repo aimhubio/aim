@@ -1,9 +1,12 @@
 import React from 'react';
 import classNames from 'classnames';
+import moment from 'moment';
 import { NavLink, useLocation } from 'react-router-dom';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
-import { Spinner, Text } from 'components/kit';
+import { Icon, Spinner, Text } from 'components/kit';
+
+import { DATE_WITH_SECONDS } from 'config/dates/dates';
 
 import { IExperimentNavigationPopoverProps } from './ExperimentNavigationPopover.d';
 
@@ -42,19 +45,34 @@ function ExperimentNavigationPopover({
                   <NavLink
                     key={experiment.id}
                     to={pathname.replace(experimentId, experiment.id)}
-                    className={classNames(
-                      'ExperimentNavigationPopover__contentContainer__experimentsListContainer__experimentList__experimentContainer',
-                      { selected: experimentId === experiment.id },
-                    )}
+                    className={classNames('experimentBox', {
+                      selected: experimentId === experiment.id,
+                    })}
                   >
-                    <div className='experimentBox'>
+                    <Text
+                      size={16}
+                      tint={experimentId === experiment.id ? 100 : 80}
+                      weight={500}
+                      className='experimentBox__experimentName'
+                    >
+                      {experiment?.name ?? 'default'}
+                    </Text>
+                    <div className='experimentBox__date'>
+                      <Icon
+                        name='calendar'
+                        color={
+                          experimentId === experiment.id ? '#414B6D' : '#606986'
+                        }
+                        fontSize={12}
+                      />
                       <Text
-                        size={16}
-                        tint={experimentId === experiment.id ? 100 : 80}
+                        size={14}
+                        tint={experimentId === experiment.id ? 80 : 70}
                         weight={500}
-                        className='experimentBox__experimentName'
                       >
-                        {experiment?.name ?? 'default'}
+                        {`${moment(experiment.created_at * 1000).format(
+                          DATE_WITH_SECONDS,
+                        )}`}
                       </Text>
                     </div>
                   </NavLink>
