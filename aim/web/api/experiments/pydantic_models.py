@@ -17,6 +17,7 @@ class ExperimentGetOut(BaseModel):
     name: str
     run_count: int
     archived: bool
+    created_at: str
 
 
 ExperimentListOut = List[ExperimentGetOut]
