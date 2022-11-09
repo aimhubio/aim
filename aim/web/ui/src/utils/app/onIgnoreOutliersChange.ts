@@ -13,12 +13,14 @@ import { IAppModelConfig } from 'types/services/models/explorer/createAppModel';
 export default function onIgnoreOutliersChange<M extends State>({
   model,
   updateModelData,
+  appName,
 }: {
   model: IModel<M>;
   updateModelData: (
     configData: IAppModelConfig | any,
     shouldURLUpdate?: boolean,
   ) => void;
+  appName: string;
 }): void {
   const configData = model.getState()?.config;
   if (configData?.chart) {
@@ -27,7 +29,8 @@ export default function onIgnoreOutliersChange<M extends State>({
     model.setState({ config: configData });
   }
   analytics.trackEvent(
-    `${ANALYTICS_EVENT_KEYS.metrics.chart.controls.changeOutliers} to ${
+    // @ts-ignore
+    `${ANALYTICS_EVENT_KEYS[appName].chart.controls.changeOutliers} to ${
       !configData?.chart.ignoreOutliers ? 'Ignore' : 'Display'
     }`,
   );

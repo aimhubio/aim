@@ -129,6 +129,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
         chartTitleData={metricsData?.chartTitleData!}
         legendsData={metricsData?.legendsData!}
         ignoreOutliers={metricsData?.config?.chart?.ignoreOutliers!}
+        legends={metricsData?.config?.chart?.legends!}
         tableData={metricsData?.tableData!}
         sameValueColumns={metricsData?.sameValueColumns!}
         tableColumns={metricsData?.tableColumns!}
@@ -164,6 +165,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
         onChangeTooltip={metricAppModel.onChangeTooltip}
         onRunsTagsChange={metricAppModel.onRunsTagsChange}
         onIgnoreOutliersChange={metricAppModel.onIgnoreOutliersChange}
+        onLegendsChange={metricAppModel.onLegendsChange}
         onZoomChange={metricAppModel.onZoomChange}
         onHighlightModeChange={metricAppModel.onHighlightModeChange}
         onSmoothingChange={metricAppModel.onSmoothingChange}

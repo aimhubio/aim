@@ -20,7 +20,12 @@ import {
   AggregationAreaMethods,
   AggregationLineMethods,
 } from 'utils/aggregateGroupData';
-import { AlignmentOptionsEnum, CurveEnum, ZoomEnum } from 'utils/d3';
+import {
+  AlignmentOptionsEnum,
+  CurveEnum,
+  ZoomEnum,
+  LegendsModeEnum,
+} from 'utils/d3';
 import { IRequestProgress } from 'utils/app/setRequestProgress';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 
@@ -105,6 +110,11 @@ export interface ITooltipConfig {
 
 export interface ITooltip extends Partial<ITooltipConfig> {
   content?: ITooltipContent;
+}
+
+export interface LegendsConfig {
+  display: boolean;
+  mode: LegendsModeEnum;
 }
 
 export interface IMetricsCollection<T> {

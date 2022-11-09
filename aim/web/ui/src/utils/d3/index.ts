@@ -46,6 +46,11 @@ enum ZoomEnum {
   MULTIPLE = 1,
 }
 
+enum LegendsModeEnum {
+  PINNED = 'pinned',
+  UNPINNED = 'unpinned',
+}
+
 enum CurveEnum {
   Linear = 'curveLinear',
   Basis = 'curveBasis',
@@ -101,6 +106,7 @@ export {
   TrendlineTypeEnum,
   HighlightEnum,
   ZoomEnum,
+  LegendsModeEnum,
   clearArea,
   drawArea,
   drawAxes,

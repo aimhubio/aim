@@ -14,6 +14,7 @@ import {
   IGroupingSelectOption,
   ISmoothing,
   LegendsDataType,
+  LegendsConfig,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IMetricProps } from 'types/pages/metrics/Metrics';
 
@@ -26,6 +27,7 @@ export interface IControlProps {
   legendsData?: LegendsDataType;
   selectOptions: IGroupingSelectOption[];
   tooltip?: ITooltip;
+  legends?: LegendsConfig;
   ignoreOutliers: boolean;
   zoom?: IChartZoom;
   highlightMode: HighlightEnum;
@@ -38,10 +40,11 @@ export interface IControlProps {
   selectFormOptions: ISelectOption[];
   onChangeTooltip: (tooltip: Partial<ITooltip>) => void;
   onIgnoreOutliersChange: () => void;
+  onLegendsChange: (legends: Partial<LegendsConfig>) => void;
   onHighlightModeChange: (mode: number) => void;
   onDensityTypeChange: (type: DensityOptions) => void;
-  onSmoothingChange: (props: Partial<ISmoothing>) => void;
-  onAxesScaleTypeChange: (params: IAxesScaleState) => void;
+  onSmoothingChange: (args: Partial<ISmoothing>) => void;
+  onAxesScaleTypeChange: (args: IAxesScaleState) => void;
   onAggregationConfigChange: (
     aggregationConfig: Partial<IAggregationConfig>,
   ) => void;
