@@ -15,6 +15,8 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import { Spinner } from 'components/kit';
 
+import { setDocumentTitle } from 'utils/document/documentTitle';
+
 import useExperimentState from './useExperimentState';
 import ExperimentHeader from './components/ExperimentHeader';
 
@@ -76,6 +78,11 @@ function Experiment(): React.FunctionComponentElement<React.ReactNode> {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
+
+  React.useEffect(() => {
+    setDocumentTitle(experimentData?.name || experimentId, true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [experimentData]);
 
   React.useEffect(() => {
     redirect();
