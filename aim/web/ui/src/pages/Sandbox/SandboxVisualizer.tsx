@@ -14,8 +14,6 @@ import GridCell from './GridCell';
 
 import './SandboxVisualizer.scss';
 
-(window as any).search = search;
-
 function toObject(x: any): any {
   if (x instanceof Map) {
     return Object.fromEntries(
@@ -28,12 +26,16 @@ function toObject(x: any): any {
   }
 }
 
+(window as any).search = search;
+
 export default function SandboxVisualizer() {
   const pyodide = React.useRef<any>();
 
   const editorValue = React.useRef(initialCode);
   const [result, setResult] = React.useState<Record<string, any>>([[]]);
   const [isProcessing, setIsProcessing] = React.useState<boolean | null>(null);
+  const [execCode, setExecCode] = React.useState('');
+  const [state, setState] = React.useState<any>();
 
   (window as any).updateLayout = (grid: any) => {
     setResult(toObject(grid.toJs()));
@@ -89,19 +91,45 @@ export default function SandboxVisualizer() {
       }
 
       await pyodide.current!.loadPackagesFromImports(code);
-      pyodide.current
-        .runPythonAsync(code)
-        .then(() => {
-          setIsProcessing(false);
-        })
-        .catch((ex: unknown) => {
-          console.log(ex);
-          setIsProcessing(false);
-        });
+
+      setExecCode(code);
     } catch (ex) {
       console.log(ex);
     }
   }, [editorValue]);
+
+  const runParsedCode = React.useCallback(() => {
+    pyodide.current
+      .runPythonAsync(execCode)
+      .then(runEffect)
+      .catch((ex: unknown) => {
+        console.log(ex);
+        setIsProcessing(false);
+      });
+  }, [execCode, state]);
+
+  const runEffect = React.useCallback(async () => {
+    let effect = pyodide.current.globals.get('render');
+    const res = await effect(pyodide.current.toPy(state), (val: any) =>
+      setState((s: any) => Object.assign({}, s, toObject(val.toJs()))),
+    );
+    let parsedResult = toObject(res.toJs());
+    setResult(parsedResult);
+
+    setIsProcessing(false);
+  }, [state]);
+
+  React.useEffect(() => {
+    if (execCode) {
+      runParsedCode();
+    }
+  }, [execCode]);
+
+  React.useEffect(() => {
+    if (state) {
+      runEffect();
+    }
+  }, [state]);
 
   return (
     <div className='SandboxVisualizer'>
@@ -145,27 +173,32 @@ export default function SandboxVisualizer() {
             key={`${isProcessing}`}
             className='SandboxVisualizer__main__components__viz'
           >
-            {result.map((row: any[], i: number) => (
-              <div
-                key={i}
-                style={{
-                  position: 'relative',
-                  display: 'flex',
-                  flex: 1,
-                  maxHeight: `${100 / result.length}%`,
-                }}
-              >
-                {row.map((viz: any, i: number) => {
-                  return (
-                    <GridCell
-                      key={i}
-                      viz={viz}
-                      maxWidth={`${100 / row.length}%`}
-                    />
-                  );
-                })}
-              </div>
-            ))}
+            {result.map(
+              (row: any[], i: number) =>
+                row && (
+                  <div
+                    key={i}
+                    style={{
+                      position: 'relative',
+                      display: 'flex',
+                      flex: 1,
+                      maxHeight: `${100 / result.length}%`,
+                    }}
+                  >
+                    {row.map((viz: any, i: number) => {
+                      return (
+                        viz && (
+                          <GridCell
+                            key={i}
+                            viz={viz}
+                            maxWidth={`${100 / row.length}%`}
+                          />
+                        )
+                      );
+                    })}
+                  </div>
+                ),
+            )}
           </div>
           <pre
             id='console'
