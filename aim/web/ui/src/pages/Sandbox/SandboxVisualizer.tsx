@@ -8,6 +8,8 @@ import { Button, Spinner } from 'components/kit';
 
 import { getBasePath } from 'config/config';
 
+import usePyodide from 'services/pyodide/usePyodide';
+
 import { initialCode } from './sandboxCode';
 import { search } from './search';
 import GridCell from './GridCell';
@@ -29,7 +31,7 @@ function toObject(x: any): any {
 (window as any).search = search;
 
 export default function SandboxVisualizer() {
-  const pyodide = React.useRef<any>();
+  const { pyodide } = usePyodide();
 
   const editorValue = React.useRef(initialCode);
   const [result, setResult] = React.useState<Record<string, any>>([[]]);
@@ -42,82 +44,67 @@ export default function SandboxVisualizer() {
   };
 
   React.useEffect(() => {
-    async function main() {
-      pyodide.current = await (window as any).loadPyodide({
-        stdout: (...args: any[]) => {
-          window.requestAnimationFrame(() => {
-            const terminal = document.getElementById('console');
-            if (terminal) {
-              terminal.innerHTML! += `<p>>>> ${args.join(', ')}</p>`;
-              terminal.scrollTop = terminal.scrollHeight;
-            }
-          });
-        },
-      });
-
-      await pyodide.current.loadPackage('pandas');
-
-      pyodide.current.runPython(
-        await (
-          await fetch(`${getBasePath()}/static-files/aim_ui_core.py`)
-        ).text(),
-      );
-
+    if (pyodide !== null) {
       execute();
     }
-    main();
-  }, []);
+  }, [pyodide]);
 
   const execute = React.useCallback(async () => {
-    try {
-      setIsProcessing(true);
-      const code = editorValue.current
-        .replaceAll('from aim', '# from aim')
-        .replaceAll('import aim', '# import aim')
-        .replaceAll('= Metric.query', '= await Metric.query')
-        .replaceAll('= Images.query', '= await Images.query')
-        .replaceAll('= Audios.query', '= await Audios.query')
-        .replaceAll('= Figures.query', '= await Figures.query')
-        .replaceAll('= Texts.query', '= await Texts.query')
-        .replaceAll('= Distributions.query', '= await Distributions.query')
-        .replaceAll('def ', 'async def ')
-        .replaceAll('async async def ', 'async def ');
-      const packagesList = pyodide.current.pyodide_py.find_imports(code).toJs();
+    if (pyodide !== null) {
+      try {
+        setIsProcessing(true);
+        const code = editorValue.current
+          .replaceAll('from aim', '# from aim')
+          .replaceAll('import aim', '# import aim')
+          .replaceAll('= Metric.query', '= await Metric.query')
+          .replaceAll('= Images.query', '= await Images.query')
+          .replaceAll('= Audios.query', '= await Audios.query')
+          .replaceAll('= Figures.query', '= await Figures.query')
+          .replaceAll('= Texts.query', '= await Texts.query')
+          .replaceAll('= Distributions.query', '= await Distributions.query')
+          .replaceAll('def ', 'async def ')
+          .replaceAll('async async def ', 'async def ');
+        const packagesList = pyodide?.pyodide_py.find_imports(code).toJs();
 
-      if (packagesList.includes('plotly')) {
-        await pyodide.current.loadPackage('micropip');
-        const micropip = pyodide.current.pyimport('micropip');
-        await micropip.install('plotly');
+        if (packagesList.includes('plotly')) {
+          await pyodide?.loadPackage('micropip');
+          const micropip = pyodide?.pyimport('micropip');
+          await micropip.install('plotly');
+        }
+
+        await pyodide?.loadPackagesFromImports(code);
+
+        setExecCode(code);
+      } catch (ex) {
+        console.log(ex);
       }
-
-      await pyodide.current!.loadPackagesFromImports(code);
-
-      setExecCode(code);
-    } catch (ex) {
-      console.log(ex);
     }
-  }, [editorValue]);
+  }, [pyodide, editorValue]);
 
   const runParsedCode = React.useCallback(() => {
-    pyodide.current
-      .runPythonAsync(execCode)
-      .then(runEffect)
-      .catch((ex: unknown) => {
-        console.log(ex);
-        setIsProcessing(false);
-      });
-  }, [execCode, state]);
+    if (pyodide !== null) {
+      pyodide
+        ?.runPythonAsync(execCode)
+        .then(runEffect)
+        .catch((ex: unknown) => {
+          console.log(ex);
+          setIsProcessing(false);
+        });
+    }
+  }, [pyodide, execCode, state]);
 
   const runEffect = React.useCallback(async () => {
-    let effect = pyodide.current.globals.get('render');
-    const res = await effect(pyodide.current.toPy(state), (val: any) =>
-      setState((s: any) => Object.assign({}, s, toObject(val.toJs()))),
-    );
-    let parsedResult = toObject(res.toJs());
-    setResult(parsedResult);
+    if (pyodide !== null) {
+      let effect = pyodide?.globals.get('render');
+      const res = await effect(pyodide?.toPy(state), (val: any) =>
+        setState((s: any) => Object.assign({}, s, toObject(val.toJs()))),
+      );
+      let parsedResult = toObject(res.toJs());
+      setResult(parsedResult);
 
-    setIsProcessing(false);
-  }, [state]);
+      setIsProcessing(false);
+    }
+  }, [pyodide, state]);
 
   React.useEffect(() => {
     if (execCode) {

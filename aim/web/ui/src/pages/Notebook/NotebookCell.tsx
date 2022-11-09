@@ -57,16 +57,16 @@ def Grid(grid):
           .replaceAll('def ', 'async def ')
           .replaceAll('async async def ', 'async def '),
       );
-      const packagesList = pyodide.current.pyodide_py.find_imports(code).toJs();
+      const packagesList = pyodide.pyodide_py.find_imports(code).toJs();
 
       if (packagesList.includes('plotly')) {
-        await pyodide.current.loadPackage('micropip');
-        const micropip = pyodide.current.pyimport('micropip');
+        await pyodide.loadPackage('micropip');
+        const micropip = pyodide.pyimport('micropip');
         await micropip.install('plotly');
       }
 
-      await pyodide.current!.loadPackagesFromImports(code);
-      pyodide.current
+      await pyodide.loadPackagesFromImports(code);
+      pyodide
         .runPythonAsync(code)
         .then((val: any) => {
           setReprValue(toObject(val));

@@ -3,9 +3,9 @@ import * as _ from 'lodash-es';
 
 import { Button, Icon, Spinner, Text } from 'components/kit';
 
-import { getBasePath } from 'config/config';
-
 import { search } from 'pages/Sandbox/search';
+
+import usePyodide from 'services/pyodide/usePyodide';
 
 import NotebookCell from './NotebookCell';
 
@@ -14,8 +14,8 @@ import './NotebookVisualizer.scss';
 (window as any).search = search;
 
 export default function SandboxVisualizer() {
-  const pyodide = React.useRef<any>();
-  const [isLoading, setIsLoading] = React.useState<boolean>(true);
+  let { isLoading, pyodide } = usePyodide();
+
   const [cells, setCells] = React.useState([
     {
       code: `from aim.sequences import Metric, Images, Audios, Figures, Texts 
@@ -29,34 +29,9 @@ from aim.ui.viz import LineChart, ImagesList, AudiosList, TextsList, FiguresList
 
   (window as any).updateLayout = () => {};
 
-  React.useEffect(() => {
-    async function main() {
-      pyodide.current = await (window as any).loadPyodide({
-        stdout: (...args: any[]) => {
-          window.requestAnimationFrame(() => {
-            const terminal = document.getElementById('console');
-            if (terminal) {
-              terminal.innerHTML! += `<p>>>> ${args.join(', ')}</p>`;
-              terminal.scrollTop = terminal.scrollHeight;
-            }
-          });
-        },
-      });
-
-      pyodide.current.runPython(
-        await (
-          await fetch(`${getBasePath()}/static-files/aim_ui_core.py`)
-        ).text(),
-      );
-
-      setIsLoading(false);
-    }
-    main();
-  }, []);
-
   return (
     <div className='NotebookVisualizer'>
-      {isLoading ? (
+      {isLoading !== false ? (
         <Spinner />
       ) : (
         cells.map((cell, i) => (
