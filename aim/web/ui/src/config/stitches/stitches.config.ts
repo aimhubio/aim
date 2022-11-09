@@ -1,6 +1,5 @@
 import { createStitches } from '@stitches/react';
-import type * as Stitches from '@stitches/react';
-export type { VariantProps } from '@stitches/react';
+import * as Stitches from '@stitches/react';
 
 export const {
   styled,
@@ -343,6 +342,7 @@ export const {
 });
 
 export type CSS = Stitches.CSS<typeof config>;
+export type VariantProps = Stitches.VariantProps<typeof config>;
 
 export const darkTheme = createTheme('dark-theme', {
   colors: {
