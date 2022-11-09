@@ -168,8 +168,13 @@ const ChartPanel = React.forwardRef(function ChartPanel(
                     chartPanelOffsetHeight={props.chartPanelOffsetHeight}
                   />
                 </div>
-                {_.isEmpty(props.legendsData) ? null : (
-                  <ChartLegends legendsData={props.legendsData} />
+                {!!props.legends?.display && !_.isEmpty(props.legendsData) && (
+                  <ErrorBoundary>
+                    <ChartLegends
+                      data={props.legendsData}
+                      mode={props.legends.mode}
+                    />
+                  </ErrorBoundary>
                 )}
               </div>
             </ErrorBoundary>

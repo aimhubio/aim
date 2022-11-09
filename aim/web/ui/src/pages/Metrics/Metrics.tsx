@@ -165,6 +165,7 @@ function Metrics(
                         legendsData={props.legendsData}
                         focusedState={props.focusedState}
                         tooltip={props.tooltip}
+                        legends={props.legends}
                         alignmentConfig={props.alignmentConfig}
                         zoom={props.zoom}
                         chartProps={chartProps}
@@ -180,6 +181,7 @@ function Metrics(
                             chartProps={chartProps}
                             selectOptions={props.groupingSelectOptions}
                             tooltip={props.tooltip}
+                            legends={props.legends}
                             smoothing={props.smoothing}
                             densityType={props.densityType}
                             ignoreOutliers={props.ignoreOutliers}
@@ -193,6 +195,7 @@ function Metrics(
                             onIgnoreOutliersChange={
                               props.onIgnoreOutliersChange
                             }
+                            onLegendsChange={props.onLegendsChange}
                             onZoomChange={props.onZoomChange}
                             onHighlightModeChange={props.onHighlightModeChange}
                             onAxesScaleTypeChange={props.onAxesScaleTypeChange}

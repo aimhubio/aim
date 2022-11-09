@@ -336,6 +336,32 @@ function Controls(
         </div>
         <div>
           <ErrorBoundary>
+            <Tooltip
+              title={
+                props.legends?.display ? 'Hide legends' : 'Display legends'
+              }
+            >
+              <div
+                className={classNames('Controls__anchor', {
+                  active: props.legends?.display,
+                  outlined: props.legends?.display,
+                })}
+                onClick={() =>
+                  props.onLegendsChange({ display: !props.legends?.display })
+                }
+              >
+                <Icon
+                  className={classNames('Controls__icon', {
+                    active: props.legends?.display,
+                  })}
+                  name='ignore-outliers'
+                />
+              </div>
+            </Tooltip>
+          </ErrorBoundary>
+        </div>
+        <div>
+          <ErrorBoundary>
             <ControlPopover
               title='Select zoom mode'
               anchor={({ onAnchorClick, opened }) => (
@@ -431,7 +457,11 @@ function Controls(
               openModal={openExportModal}
               explorerPage='metrics'
               onToggleExportPreview={onToggleExportPreview}
-              appendElement={<ChartLegends legendsData={props.legendsData} />}
+              appendElement={
+                !!props.legends?.display && !_.isEmpty(props.legendsData) ? (
+                  <ChartLegends data={props.legendsData} />
+                ) : null
+              }
             >
               <ChartGrid
                 readOnly

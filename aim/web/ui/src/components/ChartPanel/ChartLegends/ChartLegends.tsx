@@ -1,29 +1,30 @@
 import * as React from 'react';
 import _ from 'lodash-es';
+import classNames from 'classnames';
 
-import { drawLegends } from 'utils/d3';
+import { drawLegends, LegendsModeEnum } from 'utils/d3';
 
 import { IChartLegendsProps } from '.';
 
 import './ChartLegends.scss';
 
 function ChartLegends(props: IChartLegendsProps) {
-  const { legendsData = {} } = props;
-  const dataRef = React.useRef<typeof legendsData>({});
+  const { data = {}, mode = LegendsModeEnum.PINNED } = props;
+  const dataRef = React.useRef<typeof data>({});
   const containerRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
-    if (containerRef.current && !_.isEqual(dataRef.current, legendsData)) {
-      dataRef.current = legendsData;
+    if (containerRef.current && !_.isEqual(dataRef.current, data)) {
+      dataRef.current = data;
       drawLegends({
-        legendsData,
+        data,
         containerNode: containerRef.current,
       });
     }
-  }, [legendsData]);
+  }, [data]);
 
   return (
-    <div className='ChartLegends'>
+    <div className={classNames('ChartLegends', { [mode]: true })}>
       <div ref={containerRef} className='ChartLegends__container' />
     </div>
   );

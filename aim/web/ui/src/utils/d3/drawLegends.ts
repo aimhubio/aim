@@ -12,7 +12,7 @@ import changeDasharraySize from '../changeDasharraySize';
 import shortenRunPropLabel from '../shortenRunPropLabel';
 
 interface DrawLegendsArgs {
-  legendsData?: LegendsDataType;
+  data?: LegendsDataType;
   containerNode: HTMLDivElement | null;
 }
 interface GroupLegendProp {
@@ -144,20 +144,14 @@ const groupLegendProps: Record<string, GroupLegendProp> = {
   },
 };
 
-function drawLegends({
-  legendsData = {},
-  containerNode,
-}: DrawLegendsArgs): void {
-  if (!containerNode || _.isEmpty(legendsData)) {
+function drawLegends({ data = {}, containerNode }: DrawLegendsArgs): void {
+  if (!containerNode || _.isEmpty(data)) {
     return;
   }
   const { svgWrapper, groupsWrapper } = drawLegendArea(containerNode);
-
   const { margin, groupsGap } = config;
-
   let currentGroupHeight = 0;
-
-  for (const [legendName, legend] of Object.entries(legendsData)) {
+  for (const [legendName, legend] of Object.entries(data)) {
     const groupElement = drawLegend(
       legendName,
       legend,
@@ -169,7 +163,6 @@ function drawLegends({
       currentGroupHeight += groupsGap;
     }
   }
-
   const { width: groupsWrapperWidth = 0, height: groupsWrapperHeight = 0 } =
     groupsWrapper.node()?.getBBox() || {};
 

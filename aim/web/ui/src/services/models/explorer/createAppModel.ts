@@ -56,6 +56,7 @@ import {
   IOnGroupingSelectChangeParams,
   ISmoothing,
   ITooltip,
+  LegendsConfig,
 } from 'types/services/models/metrics/metricsAppModel';
 import {
   IMetricTrace,
@@ -199,6 +200,7 @@ import { getMetricHash } from 'utils/app/getMetricHash';
 import { getMetricLabel } from 'utils/app/getMetricLabel';
 import saveRecentSearches from 'utils/saveRecentSearches';
 import getLegendsData from 'utils/app/getLegendsData';
+import onLegendsChange from 'utils/app/onLegendsChange';
 
 import { AppDataTypeEnum, AppNameEnum } from './index';
 
@@ -326,6 +328,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 display: CONTROLS_DEFAULT_CONFIG.metrics.tooltip.display,
                 selectedFields:
                   CONTROLS_DEFAULT_CONFIG.metrics.tooltip.selectedFields,
+              },
+              legends: {
+                display: CONTROLS_DEFAULT_CONFIG.metrics.legends.display,
+                mode: CONTROLS_DEFAULT_CONFIG.metrics.legends.mode,
               },
               focusedState: {
                 key: null,
@@ -2015,7 +2021,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           onSmoothingChange({ args, model, appName, updateModelData });
         },
         onIgnoreOutliersChange(): void {
-          onIgnoreOutliersChange({ model, updateModelData });
+          onIgnoreOutliersChange({ model, updateModelData, appName });
         },
         onAxesScaleTypeChange(args: IAxesScaleState): void {
           onAxesScaleTypeChange({ args, model, appName, updateModelData });
@@ -2059,6 +2065,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
         },
         onDensityTypeChange(type: DensityOptions): Promise<void> {
           return onDensityTypeChange({ type, model, appName, getMetricsData });
+        },
+        onLegendsChange(legends: Partial<LegendsConfig>): void {
+          onLegendsChange({ legends, model, appName, updateModelData });
         },
       });
     }

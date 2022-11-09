@@ -13,6 +13,7 @@ import {
   IChartZoom,
   IGroupingSelectOption,
   LegendsDataType,
+  LegendsConfig,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IHighPlotProps } from 'types/components/HighPlot/HighPlot';
 
@@ -26,6 +27,7 @@ export interface IChartPanelProps {
   panelResizing?: boolean;
   focusedState: IFocusedState;
   tooltip: ITooltip;
+  legends?: LegendsConfig;
   aggregationConfig?: IAggregationConfig;
   alignmentConfig?: IAlignmentConfig;
   zoom?: Partial<IChartZoom>;
