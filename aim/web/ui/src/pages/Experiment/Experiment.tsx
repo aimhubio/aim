@@ -47,12 +47,14 @@ function Experiment(): React.FunctionComponentElement<React.ReactNode> {
 
   const { data: experimentData, loading: isExperimentLoading } =
     experimentState;
-    
+
   const { data: experimentsData, loading: isExperimentsLoading } =
     experimentsState;
 
   const tabContent: { [key: string]: JSX.Element } = {
-    overview: <div>overview</div>,
+    overview: (
+      <ExperimentOverviewTab experimentName={experimentData?.name ?? ''} />
+    ),
     runs: <div>runs</div>,
     notes: <div>notes</div>,
     settings: <div>settings</div>,

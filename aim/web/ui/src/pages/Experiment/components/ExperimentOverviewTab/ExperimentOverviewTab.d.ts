@@ -1,1 +1,3 @@
-export interface IExperimentOverviewTabProps {}
+export interface IExperimentOverviewTabProps {
+  experimentName: string;
+}

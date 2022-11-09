@@ -1,5 +1,8 @@
 import React from 'react';
 
+import ContributionsFeed from 'pages/Dashboard/components/ContributionsFeed/ContributionsFeed';
+import ProjectContributions from 'pages/Dashboard/components/ProjectContributions/ProjectContributions';
+
 import ExperimentOverviewSidebar from './ExperimentOverviewSidebar';
 import { IExperimentOverviewTabProps } from './ExperimentOverviewTab.d';
 
@@ -27,7 +30,10 @@ function ExperimentOverviewTab(
         className='ExperimentOverviewTab__content'
         ref={overviewSectionContentRef}
         style={{ height: containerHeight }}
-      ></div>
+      >
+        <ProjectContributions />
+        <ContributionsFeed experimentName={props.experimentName} />
+      </div>
       <ExperimentOverviewSidebar
         sidebarRef={sidebarRef}
         overviewSectionRef={overviewSectionRef}

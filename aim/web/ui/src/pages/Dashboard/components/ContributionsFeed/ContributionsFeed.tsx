@@ -8,9 +8,19 @@ import FeedItem from './FeedItem/FeedItem';
 
 import './ContributionsFeed.scss';
 
-function ContributionsFeed(): React.FunctionComponentElement<React.ReactNode> | null {
-  let { data, loadMore, isLoading, totalRunsCount, fetchedCount } =
-    useContributionsFeed();
+function ContributionsFeed({
+  experimentName,
+}: {
+  experimentName?: string;
+}): React.FunctionComponentElement<React.ReactNode> | null {
+  let {
+    data,
+    loadMore,
+    isLoading,
+    totalRunsCount,
+    fetchedCount,
+    archivedRunsCount,
+  } = useContributionsFeed(experimentName);
 
   return totalRunsCount ? (
     <div className='ContributionsFeed'>
@@ -40,7 +50,8 @@ function ContributionsFeed(): React.FunctionComponentElement<React.ReactNode> | 
               })}
             </div>
           ))}
-          {fetchedCount < totalRunsCount! ? (
+
+          {fetchedCount < totalRunsCount - archivedRunsCount! ? (
             <Button
               variant='outlined'
               fullWidth

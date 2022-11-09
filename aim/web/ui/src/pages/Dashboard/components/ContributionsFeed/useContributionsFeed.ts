@@ -15,7 +15,7 @@ import projectContributionsEngine from '../ProjectContributions/ProjectContribut
 
 import contributionsFeedEngine from './ContributionsFeedStore';
 
-function useContributionsFeed() {
+function useContributionsFeed(experimentName?: string) {
   const [data, setData] = React.useState<any>([]);
   const { current: engine } = React.useRef(contributionsFeedEngine);
   const contributionsFeedStore: IResourceState<any[]> =
@@ -31,6 +31,7 @@ function useContributionsFeed() {
       limit: 25,
       exclude_params: true,
       exclude_traces: true,
+      q: experimentName ? `run.experiment == '${experimentName}'` : '',
     });
     return () => {
       engine.destroy();
@@ -108,13 +109,16 @@ function useContributionsFeed() {
         exclude_params: true,
         exclude_traces: true,
         offset: data[data.length - 1].hash,
+        q: experimentName ? `run.experiment == '${experimentName}'` : '',
       });
     }
   }
+
   return {
     isLoading: contributionsFeedStore.loading,
     data: memoizedData,
     totalRunsCount: projectContributionsStore.data?.num_runs,
+    archivedRunsCount: projectContributionsStore.data?.num_archived_runs,
     fetchedCount: data.length,
     loadMore,
   };
