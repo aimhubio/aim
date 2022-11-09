@@ -18,6 +18,7 @@ const ENDPOINTS = {
     GET: '',
     CREATE: '',
     SEARCH: 'search',
+    GET_ACTIVITY: 'activity',
   },
 
   DASHBOARDS: {

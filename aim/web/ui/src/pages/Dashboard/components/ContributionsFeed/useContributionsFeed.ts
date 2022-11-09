@@ -12,6 +12,7 @@ import {
 import { IRun } from 'types/services/models/metrics/runModel';
 
 import projectContributionsEngine from '../ProjectContributions/ProjectContributionsStore';
+import experimentContributionsEngine from '../../../Experiment/components/ExperimentOverviewTab/ExperimentContributions/ExperimentContributionsStore';
 
 import contributionsFeedEngine from './ContributionsFeedStore';
 
@@ -23,8 +24,12 @@ function useContributionsFeed(experimentName?: string) {
   const { current: contributionsEngine } = React.useRef(
     projectContributionsEngine,
   );
-  const projectContributionsStore =
-    contributionsEngine.projectContributionsState((state) => state);
+  const { current: expContributionsEngine } = React.useRef(
+    experimentContributionsEngine,
+  );
+  const projectContributionsStore = experimentName
+    ? expContributionsEngine.experimentContributionsState((state) => state)
+    : contributionsEngine.projectContributionsState((state) => state);
 
   React.useEffect(() => {
     engine.fetchContributionsFeed({

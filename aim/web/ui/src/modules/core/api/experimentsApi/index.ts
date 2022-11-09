@@ -3,7 +3,7 @@ import { getAPIHost } from 'config/config';
 import ENDPOINTS from 'services/api/endpoints';
 import NetworkService from 'services/NetworkService';
 
-import { IExperimentData } from './types';
+import { GetExperimentContributionsResult, IExperimentData } from './types';
 
 const api = new NetworkService(`${getAPIHost()}${ENDPOINTS.EXPERIMENTS.BASE}`);
 
@@ -88,6 +88,18 @@ async function getRunsOfExperiment(
   });
 }
 
+/**
+ * function getProjectContributions
+ * this call is used from DashboardPage page to show project contributions data
+ */
+async function getExperimentContributions(
+  id: string,
+): Promise<GetExperimentContributionsResult> {
+  return (
+    await api.makeAPIGetRequest(`${id}/${ENDPOINTS.EXPERIMENTS.GET_ACTIVITY}`)
+  ).body;
+}
+
 export {
   getExperiments,
   searchExperiment,
@@ -95,5 +107,6 @@ export {
   updateExperimentById,
   createExperiment,
   getRunsOfExperiment,
+  getExperimentContributions,
 };
 export * from './types';

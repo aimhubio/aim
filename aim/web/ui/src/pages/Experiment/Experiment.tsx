@@ -53,7 +53,10 @@ function Experiment(): React.FunctionComponentElement<React.ReactNode> {
 
   const tabContent: { [key: string]: JSX.Element } = {
     overview: (
-      <ExperimentOverviewTab experimentName={experimentData?.name ?? ''} />
+      <ExperimentOverviewTab
+        experimentName={experimentData?.name ?? ''}
+        experimentId={experimentId}
+      />
     ),
     runs: <div>runs</div>,
     notes: <div>notes</div>,
