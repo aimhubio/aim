@@ -111,6 +111,16 @@ class Experiment(StructuredObject, Searchable['Experiment']):
 
     @property
     @abstractmethod
+    def description(self) -> Optional[str]:
+        ...
+
+    @description.setter
+    @abstractmethod
+    def description(self, value: str):
+        ...
+
+    @property
+    @abstractmethod
     def archived(self) -> bool:
         ...
 

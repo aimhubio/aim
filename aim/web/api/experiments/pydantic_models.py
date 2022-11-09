@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List, Optional, Dict
 from uuid import UUID
 
 
@@ -9,12 +9,14 @@ class ExperimentCreateIn(BaseModel):
 
 class ExperimentUpdateIn(BaseModel):
     name: Optional[str] = ''
+    description: Optional[str] = ''
     archived: Optional[bool] = None
 
 
 class ExperimentGetOut(BaseModel):
     id: UUID
     name: str
+    description: Optional[str] = ''
     run_count: int
     archived: bool
     created_at: str
@@ -37,3 +39,10 @@ class ExperimentGetRunsOut(BaseModel):
 
     id: UUID
     runs: List[Run]
+
+
+class ExperimentActivityApiOut(BaseModel):
+    num_runs: int
+    num_archived_runs: int
+    num_active_runs: int
+    activity_map: Dict[str, int] = {"2021-01-01": 54}
