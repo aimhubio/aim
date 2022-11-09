@@ -10,6 +10,12 @@
 - Add PaddlePaddle integration (tmynn)
 - Add Optuna integration (tmynn)
 
+### Fixes:
+
+- Fix multiple progress bars handling for terminal logs capturing (mihran113)
+- Handle resources when multiple `Ctrl-C`s are pressed (alberttorosyan)
+- Remove non unicode symbols from `aim up` command logs (mihran113)
+
 ## 3.14.3 Oct 29, 2022
 
 - Fix search for empty queries in explorers (KaroMourad)

@@ -46,74 +46,6 @@ export type Pipeline = {
   clearCache: () => void;
 };
 
-let phases: {
-  query?: Query;
-  adapter?: Adapter;
-  grouping?: Grouping;
-} = {};
-
-let callbacks: {
-  statusChangeCallback?: (status: string) => void;
-  exceptionCallback?: () => void;
-  requestProgressCallback?: RequestProgressCallback;
-};
-
-function setCallbacks(cbs: any) {
-  callbacks = cbs;
-}
-
-function createAdapterInstance(config: any) {
-  phases.adapter = createAdapter({
-    ...config,
-    statusChangeCallback: callbacks.statusChangeCallback,
-  });
-}
-
-function createQueryInstance(config: any) {
-  phases.query = createQuery(
-    config.sequenceName,
-    config.query.useCache,
-    callbacks.statusChangeCallback,
-    callbacks.requestProgressCallback,
-  );
-}
-
-function createGroupingInstance(config: any = {}) {
-  phases.grouping = createGrouping({
-    ...config,
-    statusChangeCallback: callbacks.statusChangeCallback,
-  });
-}
-
-async function execute(options: PipelineExecutionOptions): Promise<any> {
-  // @TODO make cancelable, use thenable instead of await
-  try {
-    // @ts-ignore
-    const queryResult = await phases.query.execute(options.query.params);
-    // @ts-ignore
-    const adapterResult = await phases.adapter.execute(queryResult);
-    // @ts-ignore
-    const groupingResult = phases.grouping.execute({
-      objectList: adapterResult.objectList,
-      // @ts-ignore
-      grouping: options.group,
-    });
-    callbacks.statusChangeCallback &&
-      callbacks.statusChangeCallback(PipelinePhasesEnum.Waiting);
-    return {
-      data: groupingResult.objectList,
-      foundGroups: groupingResult.foundGroups,
-      appliedGroupsConfig: groupingResult.appliedGroupsConfig,
-      additionalData: adapterResult.additionalData,
-      queryableData: adapterResult.queryable_data,
-    };
-  } catch (e) {
-    callbacks.statusChangeCallback &&
-      callbacks.statusChangeCallback(PipelinePhasesEnum.Waiting);
-    throw new PipelineError(e.message || e, e.detail, e.source).getError();
-  }
-}
-
 /**
  *
  * @param {SequenceTypesEnum} sequenceName
@@ -129,6 +61,74 @@ function createPipeline({
   grouping,
   callbacks,
 }: PipelineOptions): Pipeline {
+  let phases: {
+    query?: Query;
+    adapter?: Adapter;
+    grouping?: Grouping;
+  } = {};
+
+  let _callbacks: {
+    statusChangeCallback?: (status: string) => void;
+    exceptionCallback?: () => void;
+    requestProgressCallback?: RequestProgressCallback;
+  };
+
+  function setCallbacks(cbs: any) {
+    _callbacks = cbs;
+  }
+
+  function createAdapterInstance(config: any) {
+    phases.adapter = createAdapter({
+      ...config,
+      statusChangeCallback: _callbacks.statusChangeCallback,
+    });
+  }
+
+  function createQueryInstance(config: any) {
+    phases.query = createQuery(
+      config.sequenceName,
+      config.query.useCache,
+      _callbacks.statusChangeCallback,
+      _callbacks.requestProgressCallback,
+    );
+  }
+
+  function createGroupingInstance(config: any = {}) {
+    phases.grouping = createGrouping({
+      ...config,
+      statusChangeCallback: _callbacks.statusChangeCallback,
+    });
+  }
+
+  async function execute(options: PipelineExecutionOptions): Promise<any> {
+    // @TODO make cancelable, use thenable instead of await
+    try {
+      // @ts-ignore
+      const queryResult = await phases.query.execute(options.query.params);
+      // @ts-ignore
+      const adapterResult = await phases.adapter.execute(queryResult);
+      // @ts-ignore
+      const groupingResult = phases.grouping.execute({
+        objectList: adapterResult.objectList,
+        // @ts-ignore
+        grouping: options.group,
+      });
+      _callbacks.statusChangeCallback &&
+        _callbacks.statusChangeCallback(PipelinePhasesEnum.Waiting);
+      return {
+        data: groupingResult.objectList,
+        foundGroups: groupingResult.foundGroups,
+        appliedGroupsConfig: groupingResult.appliedGroupsConfig,
+        additionalData: adapterResult.additionalData,
+        queryableData: adapterResult.queryable_data,
+      };
+    } catch (e) {
+      _callbacks.statusChangeCallback &&
+        _callbacks.statusChangeCallback(PipelinePhasesEnum.Waiting);
+      throw new PipelineError(e.message || e, e.detail, e.source).getError();
+    }
+  }
+
   // request progress callback is not included since it is not used in the pipeline
   setCallbacks(callbacks);
   createQueryInstance({ query, sequenceName });

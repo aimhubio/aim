@@ -120,7 +120,7 @@ def up(dev, host, port, workers, uds,
         opt_out_msg = 'Read how to opt-out here: '
         opt_out_url = 'https://aimstack.readthedocs.io/en/latest/community/telemetry.html'
         line_width = max(len(opt_out_msg), len(alert_msg), len(opt_out_url)) + 8
-        click.echo('┌{}┐'.format('-' * (line_width - 2)))
+        click.echo('-' * line_width)
         click.echo('{}{}{}'.format(' ' * ((line_width - len(alert_msg)) // 2),
                                    alert_msg,
                                    ' ' * ((line_width - len(alert_msg)) // 2)))
@@ -130,7 +130,7 @@ def up(dev, host, port, workers, uds,
         click.echo('{}{}{}'.format(' ' * ((line_width - len(opt_out_url)) // 2),
                                    opt_out_url,
                                    ' ' * ((line_width - len(opt_out_url)) // 2)))
-        click.echo('└{}┘'.format('-' * (line_width - 2)))
+        click.echo('-' * line_width)
 
     click.echo(click.style('Running Aim UI on repo `{}`'.format(repo_inst), fg='yellow'))
 
