@@ -35,7 +35,7 @@ async function searchExperiment(query: string): Promise<IExperimentData> {
  * @returns {Promise<IExperimentData>}
  */
 async function getExperimentById(id: string): Promise<IExperimentData> {
-  return (await api.makeAPIGetRequest(`${ENDPOINTS.EXPERIMENTS.GET}/${id}`))
+  return (await api.makeAPIGetRequest(`${ENDPOINTS.EXPERIMENTS.GET}${id}`))
     .body;
 }
 
@@ -51,7 +51,7 @@ async function updateExperimentById(
   id: string,
 ): Promise<{ status: string; id: string }> {
   return (
-    await api.makeAPIPutRequest(`${ENDPOINTS.EXPERIMENTS.GET}/${id}`, {
+    await api.makeAPIPutRequest(`${ENDPOINTS.EXPERIMENTS.GET}${id}`, {
       body: reqBody,
     })
   ).body;
@@ -83,12 +83,9 @@ async function getRunsOfExperiment(
   id: string,
   params: { limit: number; offset?: string } = { limit: 10 },
 ) {
-  return await api.makeAPIGetRequest(
-    `${ENDPOINTS.EXPERIMENTS.GET}/${id}/runs`,
-    {
-      query_params: params,
-    },
-  );
+  return await api.makeAPIGetRequest(`${ENDPOINTS.EXPERIMENTS.GET}${id}/runs`, {
+    query_params: params,
+  });
 }
 
 export {
