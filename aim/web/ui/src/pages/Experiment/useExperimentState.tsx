@@ -5,11 +5,11 @@ import { IExperimentData } from 'modules/core/api/experimentsApi';
 
 import experimentEngine from './ExperimentStore';
 
-function useExperimentData(experimentId: string) {
+function useExperimentState(experimentId: string) {
   const { current: engine } = React.useRef(experimentEngine);
-  const experimentStore: IResourceState<IExperimentData> =
+  const experimentState: IResourceState<IExperimentData> =
     engine.experimentState((state) => state);
-  const experimentsStore: IResourceState<IExperimentData[]> =
+  const experimentsState: IResourceState<IExperimentData[]> =
     engine.experimentsState((state) => state);
 
   React.useEffect(() => {
@@ -26,10 +26,10 @@ function useExperimentData(experimentId: string) {
   }, [experimentId]);
 
   return {
-    experimentStore,
-    experimentsStore,
+    experimentState,
+    experimentsState,
     getExperimentsData: engine.fetchExperimentsData,
   };
 }
 
-export default useExperimentData;
+export default useExperimentState;

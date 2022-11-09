@@ -15,7 +15,7 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import { Spinner } from 'components/kit';
 
-import useExperimentData from './useExperimentData';
+import useExperimentState from './useExperimentState';
 import ExperimentHeader from './components/ExperimentHeader';
 
 import './Experiment.scss';
@@ -31,15 +31,15 @@ function Experiment(): React.FunctionComponentElement<React.ReactNode> {
   const { experimentId } = useParams<{ experimentId: string }>();
   const { url } = useRouteMatch();
   const history = useHistory();
-  const { experimentStore, experimentsStore, getExperimentsData } =
-    useExperimentData(experimentId);
+  const { experimentState, experimentsState, getExperimentsData } =
+    useExperimentState(experimentId);
   const { pathname } = useLocation();
   const [activeTab, setActiveTab] = React.useState(pathname);
 
   const { data: experimentData, loading: isExperimentLoading } =
-    experimentStore;
+    experimentState;
   const { data: experimentsData, loading: isExperimentsLoading } =
-    experimentsStore;
+    experimentsState;
 
   const tabContent: { [key: string]: JSX.Element } = {
     overview: <div>overview</div>,
