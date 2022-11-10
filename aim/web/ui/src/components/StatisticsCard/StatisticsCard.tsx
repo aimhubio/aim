@@ -12,7 +12,6 @@ import './StatisticsCard.scss';
 
 function StatisticsCard({
   label,
-  title = '',
   count,
   icon,
   iconBgColor = '#000000',

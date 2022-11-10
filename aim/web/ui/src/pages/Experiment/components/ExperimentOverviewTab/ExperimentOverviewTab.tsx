@@ -2,9 +2,10 @@ import React from 'react';
 
 import ContributionsFeed from 'pages/Dashboard/components/ContributionsFeed/ContributionsFeed';
 
-import ExperimentContributions from './ExperimentContributions/ExperimentContributions';
+import ExperimentContributions from './ExperimentContributions';
 import ExperimentOverviewSidebar from './ExperimentOverviewSidebar';
 import { IExperimentOverviewTabProps } from './ExperimentOverviewTab.d';
+import ExperimentStatistics from './ExperimentStatistics';
 
 import './ExperimentOverviewTab.scss';
 
@@ -14,7 +15,9 @@ function ExperimentOverviewTab(
   const sidebarRef = React.useRef<HTMLElement | any>(null);
   const overviewSectionRef = React.useRef<HTMLElement | any>(null);
   const overviewSectionContentRef = React.useRef<HTMLElement | any>(null);
-  const [containerHeight, setContainerHeight] = React.useState<number>(0);
+  const [containerHeight, setContainerHeight] = React.useState<number | string>(
+    0,
+  );
 
   function onContainerScroll(e: any) {
     sidebarRef?.current?.scrollTo(0, e.target.scrollTop);
@@ -31,11 +34,14 @@ function ExperimentOverviewTab(
         ref={overviewSectionContentRef}
         style={{ height: containerHeight }}
       >
-        <ExperimentContributions
-          experimentId={props.experimentId}
-          experimentName={props.experimentName}
-        />
-        <ContributionsFeed experimentName={props.experimentName} />
+        <div className='ExperimentOverviewTab__content__section'>
+          <ExperimentStatistics experimentName={props.experimentName} />
+          <ExperimentContributions
+            experimentId={props.experimentId}
+            experimentName={props.experimentName}
+          />
+          <ContributionsFeed experimentName={props.experimentName} />
+        </div>
       </div>
       <ExperimentOverviewSidebar
         sidebarRef={sidebarRef}

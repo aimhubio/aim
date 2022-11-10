@@ -27,7 +27,7 @@ function useContributionsFeed(experimentName?: string) {
   const { current: expContributionsEngine } = React.useRef(
     experimentContributionsEngine,
   );
-  const projectContributionsStore = experimentName
+  const contributionsState = experimentName
     ? expContributionsEngine.experimentContributionsState((state) => state)
     : contributionsEngine.projectContributionsState((state) => state);
 
@@ -122,8 +122,8 @@ function useContributionsFeed(experimentName?: string) {
   return {
     isLoading: contributionsFeedStore.loading,
     data: memoizedData,
-    totalRunsCount: projectContributionsStore.data?.num_runs,
-    archivedRunsCount: projectContributionsStore.data?.num_archived_runs,
+    totalRunsCount: contributionsState.data?.num_runs,
+    archivedRunsCount: contributionsState.data?.num_archived_runs,
     fetchedCount: data.length,
     loadMore,
   };

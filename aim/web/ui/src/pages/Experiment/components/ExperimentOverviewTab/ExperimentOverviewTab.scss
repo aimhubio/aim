@@ -11,5 +11,15 @@
     max-width: calc(
       #{$container-max-width-without-paddings} - #{$run-overview-sidebar-width}
     );
+    height: 100%;
+    &__section {
+      margin: $space-lg 0;
+      background: $white;
+      padding: $space-lg;
+      border: $border-grey;
+      border-radius: $border-radius-lg;
+      display: inline-block;
+      width: 100%;
+    }
   }
 }

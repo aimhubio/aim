@@ -17,6 +17,7 @@
     height: fit-content;
   }
   &__section {
+    margin: 0 $space-unit $space-lg;
     &__descriptionBox {
       padding-top: $space-md;
       &__header {

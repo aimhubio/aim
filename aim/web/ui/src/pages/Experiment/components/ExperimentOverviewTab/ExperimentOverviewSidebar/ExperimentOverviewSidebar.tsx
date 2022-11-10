@@ -17,7 +17,7 @@ function ExperimentOverviewSidebar({
 }: {
   sidebarRef: HTMLElement | any;
   overviewSectionRef: React.RefObject<HTMLDivElement>;
-  setContainerHeight: (height: number) => void;
+  setContainerHeight: (height: number | string) => void;
   overviewSectionContentRef: any;
 }): React.FunctionComponentElement<React.ReactNode> {
   const { url } = useRouteMatch();
@@ -43,7 +43,7 @@ function ExperimentOverviewSidebar({
       overviewSectionContentRef?.current?.offsetHeight >
       sidebarRef?.current?.childNodes[0].offsetHeight
     ) {
-      setContainerHeight(overviewSectionContentRef?.current?.offsetHeight);
+      setContainerHeight('100%');
     } else {
       setContainerHeight(
         sidebarRef?.current?.childNodes[0].offsetHeight + SIDEBAR_TOP_SPACE,
