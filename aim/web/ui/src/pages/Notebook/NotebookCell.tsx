@@ -29,10 +29,12 @@ function NotebookCell(props: any) {
   const editorRef = React.useRef<any>();
 
   const [result, setResult] = React.useState<Record<string, any>>([[]]);
-  const [isProcessing, setIsProcessing] = React.useState<boolean | null>(null);
   const [editorHeight, setEditorHeight] = React.useState(lineHeight);
   const [error, setError] = React.useState<string | null>(null);
   const [reprValue, setReprValue] = React.useState<any>(null);
+  const [isProcessing, setIsProcessing] = React.useState<boolean | null>(null);
+  const [execCode, setExecCode] = React.useState('');
+  const [state, setState] = React.useState<any>();
 
   const execute = React.useCallback(async () => {
     try {
@@ -72,21 +74,58 @@ def Grid(grid):
       }
 
       await pyodide.loadPackagesFromImports(code);
-      pyodide
-        .runPythonAsync(code)
-        .then((val: any) => {
-          setReprValue(toObject(val));
-          setError(null);
-          setIsProcessing(false);
-        })
-        .catch((ex: Error) => {
-          setError(ex.message);
-          setIsProcessing(false);
-        });
+
+      setExecCode(code);
     } catch (ex) {
       console.log(ex);
     }
   }, [editorValue]);
+
+  const runParsedCode = React.useCallback(() => {
+    if (pyodide !== null) {
+      pyodide
+        ?.runPythonAsync(execCode)
+        .then(runEffect)
+        .catch((ex: Error) => {
+          setError(ex.message);
+          setIsProcessing(false);
+        });
+    }
+  }, [pyodide, execCode, state]);
+
+  const runEffect = React.useCallback(
+    async (value = null) => {
+      if (pyodide !== null) {
+        let effect = pyodide?.globals.get('render');
+        if (effect) {
+          const res = await effect(pyodide?.toPy(state), (val: any) =>
+            setState((s: any) => Object.assign({}, s, toObject(val.toJs()))),
+          );
+          let parsedResult = toObject(res.toJs());
+          setResult(parsedResult);
+        }
+
+        if (value) {
+          setReprValue(toObject(value));
+        }
+        setError(null);
+        setIsProcessing(false);
+      }
+    },
+    [pyodide, state],
+  );
+
+  React.useEffect(() => {
+    if (execCode) {
+      runParsedCode();
+    }
+  }, [execCode]);
+
+  React.useEffect(() => {
+    if (state) {
+      runEffect();
+    }
+  }, [state]);
 
   function handleDidMount(editor: monacoEditor.editor.IStandaloneCodeEditor) {
     editorRef.current = editor;
@@ -149,27 +188,31 @@ def Grid(grid):
         <pre className='NotebookCell__repr'>{reprValue}</pre>
       ) : result.flat().length > 0 ? (
         <div className='NotebookCell__grid'>
-          {result.map((row: any[], i: number) => (
-            <div
-              key={i}
-              style={{
-                position: 'relative',
-                display: 'flex',
-                flex: 1,
-                maxHeight: `${100 / result.length}%`,
-              }}
-            >
-              {row.map((viz: any, i: number) => {
-                return (
-                  <GridCell
-                    key={i}
-                    viz={viz}
-                    maxWidth={`${100 / row.length}%`}
-                  />
-                );
-              })}
-            </div>
-          ))}
+          {result.map(
+            (row: any[], i: number) =>
+              row && (
+                <div
+                  key={i}
+                  style={{
+                    position: 'relative',
+                    display: 'flex',
+                    flex: 1,
+                    maxHeight: `${100 / result.length}%`,
+                  }}
+                >
+                  {row.map(
+                    (viz: any, i: number) =>
+                      viz && (
+                        <GridCell
+                          key={i}
+                          viz={viz}
+                          maxWidth={`${100 / row.length}%`}
+                        />
+                      ),
+                  )}
+                </div>
+              ),
+          )}
         </div>
       ) : null}
     </div>
