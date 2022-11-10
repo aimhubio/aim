@@ -2,18 +2,16 @@ import React from 'react';
 
 import { styled } from 'config/stitches/stitches.config';
 
-import { IButtonProps } from '../Button';
+import { IButtonGroupProps } from './ButtonGroup.d';
 
-const Container = styled('div', {
+const Container: any = styled('div', {
   all: 'unset',
   display: 'inline-flex',
   width: 'fit-content',
   ai: 'center',
   jc: 'center',
-  br: '$3',
   fontWeight: '$2',
   overflow: 'hidden',
-  p: '1px',
   '& > button': {
     br: '0',
     bs: 'none',
@@ -21,18 +19,27 @@ const Container = styled('div', {
       borderLeft: '1px solid',
     },
     '&:first-of-type': {
-      borderTopLeftRadius: '$2',
-      borderBottomLeftRadius: '$2',
+      borderTopLeftRadius: '$3',
+      borderBottomLeftRadius: '$3',
     },
     '&:last-of-type': {
-      borderTopRightRadius: '$2',
-      borderBottomRightRadius: '$2',
+      borderTopRightRadius: '$3',
+      borderBottomRightRadius: '$3',
     },
   },
   variants: {
     variant: {
       outlined: {
-        bs: 'inset 0 0 0 1px',
+        '& > button': {
+          bs: 'inset 0 0 0 1px',
+          '&:not(:first-of-type)': {
+            borderLeft: 'none',
+            ml: '-1px',
+          },
+          '&:hover': {
+            zIndex: 1,
+          },
+        },
       },
     },
   },
@@ -40,10 +47,10 @@ const Container = styled('div', {
 
 const ButtonGroup = React.forwardRef<
   React.ElementRef<typeof Container>,
-  IButtonProps
->(({ color, children, ...rest }: any, forwardedRef) => {
+  IButtonGroupProps
+>(({ color, children, ...rest }: IButtonGroupProps, forwardedRef) => {
   const childrenWIthProps = React.Children.map(children, (child) => {
-    return React.cloneElement(child, {
+    return React.cloneElement(child as React.FunctionComponentElement<any>, {
       color,
       ...rest,
     });
@@ -57,7 +64,7 @@ const ButtonGroup = React.forwardRef<
       css={{
         color: `$${color}50`,
         '& > button': {
-          borderColor: `$colors$${color}50 !important`,
+          // borderColor: `$colors$${color}50 !important`,
         },
       }}
     >
