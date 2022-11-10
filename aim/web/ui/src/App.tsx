@@ -18,6 +18,7 @@ import routes from 'routes/routes';
 
 import { inIframe } from 'utils/helper';
 
+import '@tabler/icons/iconfont/tabler-icons.min.css';
 import './App.scss';
 
 const basePath = getBasePath(false);

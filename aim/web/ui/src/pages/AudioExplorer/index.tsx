@@ -29,7 +29,7 @@ const AudioExplorer = renderer(
       },
     },
   },
-  __DEV__,
+  // __DEV__,
 );
 
 export default AudioExplorer;
