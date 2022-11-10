@@ -21,10 +21,10 @@ export default function SandboxVisualizer() {
       code: `from aim.sequences import Metric, Images, Audios, Figures, Texts 
 from aim.ui.layout import Grid, Cell
 from aim.ui.viz import LineChart, ImagesList, AudiosList, TextsList, FiguresList, Table, JSON`,
-      key: `${Date.now()}`,
+      key: '0',
       readOnly: true,
     },
-    { code: '', key: `${Date.now()}`, readOnly: false },
+    { code: '', key: '1', readOnly: false },
   ]);
 
   (window as any).updateLayout = () => {};
@@ -44,7 +44,7 @@ from aim.ui.viz import LineChart, ImagesList, AudiosList, TextsList, FiguresList
                     .slice(0, i + 1)
                     .concat({
                       code: '',
-                      key: `${Date.now()}`,
+                      key: `${c.length}`,
                       readOnly: false,
                     })
                     .concat(c.slice(i + 1)),
