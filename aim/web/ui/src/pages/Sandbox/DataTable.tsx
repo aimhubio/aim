@@ -126,68 +126,66 @@ export default ({ data }) => {
   };
   const columnCount = Object.keys(data[0] ?? {}).length;
   const rowCount = data.length;
-  const App = () => {
-    const gridRef = useRef();
-    const mainGridRef = useRef();
-    const [containerRef, { width, height }] = useMeasure();
-    const [columnWidthMap, setColumnWidthMap] = useState({});
-    const handleResize = (columnIndex, newWidth) => {
-      setColumnWidthMap((prev) => {
-        return {
-          ...prev,
-          [columnIndex]: newWidth,
-        };
-      });
-      gridRef.current.resizeColumns([columnIndex]);
-      mainGridRef.current.resizeColumns([columnIndex]);
-    };
 
-    return (
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          width: '100%',
-          height: '100%',
-        }}
-        ref={containerRef}
-      >
-        <Grid
-          columnCount={columnCount}
-          height={20}
-          rowCount={1}
-          ref={gridRef}
-          width={width}
-          columnWidth={(index) => {
-            if (index in columnWidthMap) return columnWidthMap[index];
-            return 200;
-          }}
-          rowHeight={(index) => 20}
-          showScrollbar={false}
-          itemRenderer={(props) => (
-            <HeaderComponent onResize={handleResize} {...props} />
-          )}
-        />
-        <Grid
-          columnCount={columnCount}
-          rowCount={rowCount}
-          height={height - 20}
-          width={width}
-          ref={mainGridRef}
-          columnWidth={(index) => {
-            if (index in columnWidthMap) return columnWidthMap[index];
-            return 200;
-          }}
-          rowHeight={(index) => 20}
-          onScroll={({ scrollLeft }) => {
-            gridRef.current.scrollTo({ scrollLeft });
-          }}
-          itemRenderer={Cell}
-        />
-      </div>
-    );
+  const gridRef = useRef();
+  const mainGridRef = useRef();
+  const [containerRef, { width, height }] = useMeasure();
+  const [columnWidthMap, setColumnWidthMap] = useState({});
+  const handleResize = (columnIndex, newWidth) => {
+    setColumnWidthMap((prev) => {
+      return {
+        ...prev,
+        [columnIndex]: newWidth,
+      };
+    });
+    gridRef.current.resizeColumns([columnIndex]);
+    mainGridRef.current.resizeColumns([columnIndex]);
   };
-  return <App />;
+
+  return (
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        width: '100%',
+        height: '100%',
+      }}
+      ref={containerRef}
+    >
+      <Grid
+        columnCount={columnCount}
+        height={20}
+        rowCount={1}
+        ref={gridRef}
+        width={width}
+        columnWidth={(index) => {
+          if (index in columnWidthMap) return columnWidthMap[index];
+          return 200;
+        }}
+        rowHeight={(index) => 20}
+        showScrollbar={false}
+        itemRenderer={(props) => (
+          <HeaderComponent onResize={handleResize} {...props} />
+        )}
+      />
+      <Grid
+        columnCount={columnCount}
+        rowCount={rowCount}
+        height={height - 20}
+        width={width}
+        ref={mainGridRef}
+        columnWidth={(index) => {
+          if (index in columnWidthMap) return columnWidthMap[index];
+          return 200;
+        }}
+        rowHeight={(index) => 20}
+        onScroll={({ scrollLeft }) => {
+          gridRef.current.scrollTo({ scrollLeft });
+        }}
+        itemRenderer={Cell}
+      />
+    </div>
+  );
 };
 
 /*eslint-disable */
