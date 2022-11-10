@@ -72,6 +72,12 @@ export default function SandboxVisualizer() {
           await micropip.install('plotly');
         }
 
+        if (packagesList.includes('hrepr')) {
+          await pyodide.loadPackage('micropip');
+          const micropip = pyodide.pyimport('micropip');
+          await micropip.install('hrepr');
+        }
+
         await pyodide?.loadPackagesFromImports(code);
 
         setExecCode(code);
@@ -96,11 +102,13 @@ export default function SandboxVisualizer() {
   const runEffect = React.useCallback(async () => {
     if (pyodide !== null) {
       let effect = pyodide?.globals.get('render');
-      const res = await effect(pyodide?.toPy(state), (val: any) =>
-        setState((s: any) => Object.assign({}, s, toObject(val.toJs()))),
-      );
-      let parsedResult = toObject(res.toJs());
-      setResult(parsedResult);
+      if (effect) {
+        const res = await effect(pyodide?.toPy(state), (val: any) =>
+          setState((s: any) => Object.assign({}, s, toObject(val.toJs()))),
+        );
+        let parsedResult = toObject(res.toJs());
+        setResult(parsedResult);
+      }
 
       setIsProcessing(false);
     }

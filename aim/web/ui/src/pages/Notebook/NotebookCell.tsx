@@ -65,6 +65,12 @@ def Grid(grid):
         await micropip.install('plotly');
       }
 
+      if (packagesList.includes('hrepr')) {
+        await pyodide.loadPackage('micropip');
+        const micropip = pyodide.pyimport('micropip');
+        await micropip.install('hrepr');
+      }
+
       await pyodide.loadPackagesFromImports(code);
       pyodide
         .runPythonAsync(code)
