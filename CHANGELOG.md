@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.14.4
+## 3.14.4 Nov 11, 2022
 
 - Fix dropdowns' selected options losses in time of searching other options in Figures Explorer (rubenaprikyan)
 - Fix the group property name visibility in the images and audio tabs (VkoHov)
