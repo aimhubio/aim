@@ -48,7 +48,7 @@ class Run(Base):
     # relationships
     experiment_id = Column(ForeignKey('experiment.id'), nullable=True)
 
-    experiment = relationship('Experiment', backref=backref('runs', uselist=True))
+    experiment = relationship('Experiment', backref=backref('runs', uselist=True, order_by='Run.created_at.desc()'))
     tags = relationship('Tag', secondary=run_tags, backref=backref('runs', uselist=True))
     notes = relationship('Note', back_populates='run')
 
