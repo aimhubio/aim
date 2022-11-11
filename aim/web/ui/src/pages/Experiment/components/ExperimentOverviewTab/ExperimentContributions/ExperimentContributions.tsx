@@ -9,16 +9,14 @@ import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 import { trackEvent } from 'services/analytics';
 
 import useExperimentContributions from './useExperimentContributions';
+import { IExperimentContributionsProps } from './ExperimentContributions.d';
 
 import './ExperimentContributions.scss';
 
 function ExperimentContributions({
   experimentId,
   experimentName,
-}: {
-  experimentId: string;
-  experimentName: string;
-}): React.FunctionComponentElement<React.ReactNode> {
+}: IExperimentContributionsProps): React.FunctionComponentElement<React.ReactNode> {
   const { experimentContributionsState } =
     useExperimentContributions(experimentId);
 
