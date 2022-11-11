@@ -16,6 +16,10 @@ export interface IExperimentData {
    */
   archived: boolean;
   /**
+   * the description of the experiment
+   */
+  description: string;
+  /**
    * The attached runs of the experiment
    */
   run_count: number;

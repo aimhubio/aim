@@ -14,11 +14,13 @@ function ExperimentOverviewSidebar({
   overviewSectionRef,
   setContainerHeight,
   overviewSectionContentRef,
+  description,
 }: {
   sidebarRef: HTMLElement | any;
   overviewSectionRef: React.RefObject<HTMLDivElement>;
   setContainerHeight: (height: number | string) => void;
   overviewSectionContentRef: any;
+  description: string;
 }): React.FunctionComponentElement<React.ReactNode> {
   const { url } = useRouteMatch();
   const descriptionBoxRef = React.useRef<HTMLElement | any>(null);
@@ -83,10 +85,7 @@ function ExperimentOverviewSidebar({
             )}
             ref={descriptionBoxRef}
           >
-            <Text tint={70}>
-              {'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Etaccusamus architecto error! Dicta eligendi porro placeat. Asperioresincidunt quia ipsam itaque. Molestias facilis expedita voluptatibusvoluptatem excepturi delectus? Quis, magnam.Lorem ipsum dolor sit amet consectetur, adipisicing elit. Etaccusamus architecto error! Dicta eligendi porro placeat. Asperioresincidunt quia ipsam itaque. Molestias facilis expedita voluptatibusvoluptatem excepturi delectus? Quis, magnam.' ||
-                'No description'}
-            </Text>
+            <Text tint={70}>{description || 'No description'}</Text>
           </div>
           {descriptionHeight >= CLOSED_DESCRIPTION_BOX_MAX_HEIGHT && (
             <div

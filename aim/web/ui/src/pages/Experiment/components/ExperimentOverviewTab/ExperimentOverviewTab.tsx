@@ -50,6 +50,7 @@ function ExperimentOverviewTab(
         overviewSectionRef={overviewSectionRef}
         setContainerHeight={setContainerHeight}
         overviewSectionContentRef={overviewSectionContentRef}
+        description={props.description}
       />
     </div>
   );
