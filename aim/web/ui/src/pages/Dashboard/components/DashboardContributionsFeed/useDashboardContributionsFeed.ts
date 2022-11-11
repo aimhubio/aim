@@ -12,11 +12,10 @@ import {
 import { IRun } from 'types/services/models/metrics/runModel';
 
 import projectContributionsEngine from '../ProjectContributions/ProjectContributionsStore';
-import experimentContributionsEngine from '../../../Experiment/components/ExperimentOverviewTab/ExperimentContributions/ExperimentContributionsStore';
 
-import contributionsFeedEngine from './ContributionsFeedStore';
+import contributionsFeedEngine from './DashboardContributionsFeedStore';
 
-function useContributionsFeed(experimentName?: string) {
+function useDashboardContributionsFeed() {
   const [data, setData] = React.useState<any>([]);
   const { current: engine } = React.useRef(contributionsFeedEngine);
   const contributionsFeedStore: IResourceState<any[]> =
@@ -24,19 +23,15 @@ function useContributionsFeed(experimentName?: string) {
   const { current: contributionsEngine } = React.useRef(
     projectContributionsEngine,
   );
-  const { current: expContributionsEngine } = React.useRef(
-    experimentContributionsEngine,
+  const contributionsState = contributionsEngine.projectContributionsState(
+    (state) => state,
   );
-  const contributionsState = experimentName
-    ? expContributionsEngine.experimentContributionsState((state) => state)
-    : contributionsEngine.projectContributionsState((state) => state);
 
   React.useEffect(() => {
     engine.fetchContributionsFeed({
       limit: 25,
       exclude_params: true,
       exclude_traces: true,
-      q: experimentName ? `run.experiment == '${experimentName}'` : '',
     });
     return () => {
       engine.destroy();
@@ -114,7 +109,6 @@ function useContributionsFeed(experimentName?: string) {
         exclude_params: true,
         exclude_traces: true,
         offset: data[data.length - 1].hash,
-        q: experimentName ? `run.experiment == '${experimentName}'` : '',
       });
     }
   }
@@ -129,4 +123,4 @@ function useContributionsFeed(experimentName?: string) {
   };
 }
 
-export default useContributionsFeed;
+export default useDashboardContributionsFeed;

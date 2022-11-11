@@ -49,3 +49,36 @@ export type GetExperimentContributionsResult = {
    */
   activity_map: Record<string, number>;
 };
+
+/**
+ * type ExperimentRunsSearchQueryParams
+ */
+export type ExperimentRunsSearchQueryParams = {
+  /**
+   * the offset of the runs
+   */
+  offset?: number;
+  /**
+   * the limit of the runs per call
+   */
+  limit?: number;
+};
+
+export type ExperimentRun = {
+  run_id: string;
+  name: string;
+  creation_time: number;
+  end_time: number;
+  archived: boolean;
+};
+
+export type ExperimentRunsSearchResult = {
+  /**
+   * the experiment id
+   */
+  id: number;
+  /**
+   * the limit of the runs per call
+   */
+  runs?: ExperimentRun;
+};

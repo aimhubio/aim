@@ -1,11 +1,10 @@
 import React from 'react';
 
-import ContributionsFeed from 'pages/Dashboard/components/ContributionsFeed/ContributionsFeed';
-
 import ExperimentContributions from './ExperimentContributions';
 import ExperimentOverviewSidebar from './ExperimentOverviewSidebar';
 import { IExperimentOverviewTabProps } from './ExperimentOverviewTab.d';
 import ExperimentStatistics from './ExperimentStatistics';
+import ExperimentContributionsFeed from './ExperimentContributionsFeed';
 
 import './ExperimentOverviewTab.scss';
 
@@ -40,7 +39,10 @@ function ExperimentOverviewTab(
             experimentId={props.experimentId}
             experimentName={props.experimentName}
           />
-          <ContributionsFeed experimentName={props.experimentName} />
+          <ExperimentContributionsFeed
+            experimentId={props.experimentId}
+            experimentName={props.experimentName}
+          />
         </div>
       </div>
       <ExperimentOverviewSidebar

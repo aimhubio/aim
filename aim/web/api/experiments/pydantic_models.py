@@ -36,6 +36,7 @@ class ExperimentGetRunsOut(BaseModel):
         name: str
         creation_time: float
         end_time: Optional[float]
+        archived: bool
 
     id: UUID
     runs: List[Run]

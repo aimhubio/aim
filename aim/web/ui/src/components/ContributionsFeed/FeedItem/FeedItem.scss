@@ -15,7 +15,7 @@
   }
   &__content {
     position: relative;
-    padding-left: 38px;
+    padding-left: toRem(38px);
     &::before {
       content: '';
       position: absolute;

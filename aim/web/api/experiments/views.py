@@ -135,7 +135,8 @@ async def get_experiment_runs_api(exp_id: str,
             'run_id': run.hash,
             'name': run.name,
             'creation_time': run.creation_time,
-            'end_time': run.end_time
+            'end_time': run.end_time,
+            'archived': run.archived
         })
 
     project.repo.structured_db.invalidate_cache(cache_name)

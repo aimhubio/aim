@@ -1,9 +1,13 @@
 import { getAPIHost } from 'config/config';
 
 import ENDPOINTS from 'services/api/endpoints';
-import NetworkService from 'services/NetworkService';
+import NetworkService, { RequestInstance } from 'services/NetworkService';
 
-import { GetExperimentContributionsResult, IExperimentData } from './types';
+import {
+  ExperimentRunsSearchQueryParams,
+  GetExperimentContributionsResult,
+  IExperimentData,
+} from './types';
 
 const api = new NetworkService(`${getAPIHost()}${ENDPOINTS.EXPERIMENTS.BASE}`);
 
@@ -100,6 +104,38 @@ async function getExperimentContributions(
   ).body;
 }
 
+function createSearchExperimentRunsRequest(): RequestInstance {
+  const controller = new AbortController();
+  const signal = controller.signal;
+
+  async function call({
+    experimentId,
+    queryParams,
+  }: {
+    experimentId: string;
+    queryParams: ExperimentRunsSearchQueryParams;
+  }): Promise<any> {
+    return (
+      await api.makeAPIGetRequest(
+        `${ENDPOINTS.EXPERIMENTS.GET}${experimentId}/runs`,
+        {
+          query_params: queryParams,
+          signal,
+        },
+      )
+    ).body.runs;
+  }
+
+  function cancel(): void {
+    controller.abort();
+  }
+
+  return {
+    call,
+    cancel,
+  };
+}
+
 export {
   getExperiments,
   searchExperiment,
@@ -108,5 +144,6 @@ export {
   createExperiment,
   getRunsOfExperiment,
   getExperimentContributions,
+  createSearchExperimentRunsRequest,
 };
 export * from './types';
