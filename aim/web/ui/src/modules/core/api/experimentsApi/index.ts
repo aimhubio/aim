@@ -6,6 +6,7 @@ import NetworkService, { RequestInstance } from 'services/NetworkService';
 import {
   ExperimentRunsSearchQueryParams,
   GetExperimentContributionsResult,
+  GetExperimentNoteResult,
   IExperimentData,
 } from './types';
 
@@ -62,8 +63,8 @@ async function updateExperimentById(
 }
 
 /**
- * function getExperimentById
- * this call is used for updating experiment data by id.
+ * function createExperiment
+ * this call is used for create an experiment.
  * @param  reqBody -  query body params
  * @returns {Promise<status: string, id: string>}
  */
@@ -93,14 +94,71 @@ async function getRunsOfExperiment(
 }
 
 /**
- * function getProjectContributions
- * this call is used from DashboardPage page to show project contributions data
+ * function getExperimentContributions
+ * this call is used from Experiment page to show experiment contributions data
  */
 async function getExperimentContributions(
   id: string,
 ): Promise<GetExperimentContributionsResult> {
   return (
     await api.makeAPIGetRequest(`${id}/${ENDPOINTS.EXPERIMENTS.GET_ACTIVITY}`)
+  ).body;
+}
+
+/**
+ * function getExperimentNote
+ * this call is used from Experiment page to show the experiment note
+ */
+async function getExperimentNote(id: string): Promise<GetExperimentNoteResult> {
+  return (
+    await api.makeAPIGetRequest(`${id}/${ENDPOINTS.EXPERIMENTS.GET_NOTE}`)
+  ).body;
+}
+
+/**
+ * function createExperimentNote
+ * this call is used for creating experiment note by experiment id.
+ * @param  experimentId -  experiment id
+ * @param  reqBody -  note body
+ * @returns {Promise<created_at: string, id: string>}
+ */
+async function createExperimentNote(
+  experimentId: string,
+  reqBody: {
+    content: string;
+  },
+): Promise<{ id: string; created_at: string }> {
+  return (
+    await api.makeAPIPostRequest(
+      `${experimentId}/${ENDPOINTS.EXPERIMENTS.CREATE_NOTE}`,
+      {
+        body: reqBody,
+      },
+    )
+  ).body;
+}
+
+/**
+ * function updateExperimentNote
+ * this call is used for updating experiment note by experiment id and note id.
+ * @param  experimentId -  experiment id
+ * @param  reqBody -  note body
+ * @returns {Promise<created_at: string, id: string, updated_at: string>}
+ */
+async function updateExperimentNote(
+  experimentId: string,
+  noteId: string,
+  reqBody: {
+    content: string;
+  },
+): Promise<{ id: string; created_at: string; updated_at: string }> {
+  return (
+    await api.makeAPIPutRequest(
+      `${experimentId}/${ENDPOINTS.EXPERIMENTS.CREATE_NOTE}/${noteId}`,
+      {
+        body: reqBody,
+      },
+    )
   ).body;
 }
 
@@ -144,6 +202,9 @@ export {
   createExperiment,
   getRunsOfExperiment,
   getExperimentContributions,
+  getExperimentNote,
+  updateExperimentNote,
+  createExperimentNote,
   createSearchExperimentRunsRequest,
 };
 export * from './types';

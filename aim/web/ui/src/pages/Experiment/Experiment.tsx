@@ -15,10 +15,15 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import { Spinner } from 'components/kit';
 
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
+
+import * as analytics from 'services/analytics';
+
 import { setDocumentTitle } from 'utils/document/documentTitle';
 
-import useExperimentState from './useExperimentState';
+import ExperimentNotesTab from './components/ExperimentNotesTab';
 import ExperimentHeader from './components/ExperimentHeader';
+import useExperimentState from './useExperimentState';
 
 import './Experiment.scss';
 
@@ -60,7 +65,7 @@ function Experiment(): React.FunctionComponentElement<React.ReactNode> {
       />
     ),
     runs: <div>runs</div>,
-    notes: <div>notes</div>,
+    notes: <ExperimentNotesTab experimentId={experimentId} />,
     settings: <div>settings</div>,
   };
 
@@ -100,6 +105,7 @@ function Experiment(): React.FunctionComponentElement<React.ReactNode> {
 
   React.useEffect(() => {
     redirect();
+    analytics.pageView(ANALYTICS_EVENT_KEYS.experiment.pageView);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
