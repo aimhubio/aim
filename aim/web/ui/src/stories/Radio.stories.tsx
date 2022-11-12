@@ -1,19 +1,29 @@
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 
-import RadioComponent from 'components/kit_v2/Radio/Radio';
+import RadioComponent, { RadioGroup } from 'components/kit_v2/Radio/Radio';
 
 export default {
   title: 'Kit/Inputs',
   component: RadioComponent,
   argTypes: {
-    inputSize: {
-      control: 'select',
+    value: {
+      control: {
+        type: 'select',
+        options: ['1', '2'],
+      },
     },
   },
-} as ComponentMeta<any>;
+} as ComponentMeta<typeof RadioGroup>;
 
-const Template: ComponentStory<any> = (args) => <RadioComponent {...args} />;
+const Template: ComponentStory<typeof RadioGroup> = (args) => (
+  <RadioGroup defaultValue='1'>
+    <div>
+      <RadioComponent value='1' /> <span>First</span>
+    </div>
+    <div>
+      <RadioComponent value='2' /> <span>Second</span>
+    </div>
+  </RadioGroup>
+);
 
-export const Medium = Template.bind({});
-
-Medium.args = {};
+export const Radio = Template.bind({});

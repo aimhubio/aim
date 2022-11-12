@@ -1,14 +1,24 @@
 import React from 'react';
 
-import * as RadioGroup from '@radix-ui/react-radio-group';
+import {
+  Root,
+  Item,
+  Indicator,
+  RadioGroupProps,
+} from '@radix-ui/react-radio-group';
 
 import { styled } from 'config/stitches/stitches.config';
 
-const RadioGroupRoot = styled(RadioGroup.Root, {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: 10,
-});
+import { IRadioProps } from './Radio.d';
+
+const StyledRadioGroup = styled(Root, {});
+
+export const RadioGroup = React.forwardRef<
+  React.ElementRef<typeof StyledRadioGroup>,
+  RadioGroupProps
+>(({ children, ...props }: RadioGroupProps) => (
+  <StyledRadioGroup {...props}>{children}</StyledRadioGroup>
+));
 
 const IndicatorWrapper = styled('span', {
   all: 'unset',
@@ -24,7 +34,7 @@ const IndicatorWrapper = styled('span', {
   '&:hover': { bs: 'inset 0 0 0 1px $colors$primary100' },
 });
 
-const RadioGroupItem = styled(RadioGroup.Item, {
+const RadioItem = styled(Item, {
   all: 'unset',
   backgroundColor: 'white',
   width: 20,
@@ -42,7 +52,7 @@ const RadioGroupItem = styled(RadioGroup.Item, {
   },
 });
 
-const RadioGroupIndicator = styled(RadioGroup.Indicator, {
+const RadioGroupIndicator = styled(Indicator, {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
@@ -60,44 +70,14 @@ const RadioGroupIndicator = styled(RadioGroup.Indicator, {
   },
 });
 
-const Flex = styled('div', { display: 'flex' });
-
-const Label = styled('label', {
-  fontSize: 15,
-  lineHeight: 1,
-  userSelect: 'none',
-  paddingLeft: 15,
-});
-
-const RadioGroupDemo = () => (
-  <form>
-    <RadioGroupRoot defaultValue='default' aria-label='View density'>
-      <Flex css={{ alignItems: 'center' }}>
-        <RadioGroupItem value='default' id='r1'>
-          <IndicatorWrapper>
-            <RadioGroupIndicator />
-          </IndicatorWrapper>
-        </RadioGroupItem>
-        <Label htmlFor='r1'>Default</Label>
-      </Flex>
-      <Flex css={{ alignItems: 'center' }}>
-        <RadioGroupItem value='comfortable' id='r2'>
-          <IndicatorWrapper>
-            <RadioGroupIndicator />
-          </IndicatorWrapper>
-        </RadioGroupItem>
-        <Label htmlFor='r2'>Comfortable</Label>
-      </Flex>
-      <Flex css={{ alignItems: 'center' }}>
-        <RadioGroupItem value='compact' id='r3'>
-          <IndicatorWrapper>
-            <RadioGroupIndicator />
-          </IndicatorWrapper>
-        </RadioGroupItem>
-        <Label htmlFor='r3'>Compact</Label>
-      </Flex>
-    </RadioGroupRoot>
-  </form>
+const Radio = React.forwardRef<React.ElementRef<typeof RadioItem>, IRadioProps>(
+  ({ ...props }: IRadioProps) => (
+    <RadioItem {...props}>
+      <IndicatorWrapper>
+        <RadioGroupIndicator />
+      </IndicatorWrapper>
+    </RadioItem>
+  ),
 );
 
-export default RadioGroupDemo;
+export default Radio;
