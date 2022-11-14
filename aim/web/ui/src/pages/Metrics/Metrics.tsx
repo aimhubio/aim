@@ -44,7 +44,7 @@ function Metrics(
 ): React.FunctionComponentElement<React.ReactNode> {
   const [isProgressBarVisible, setIsProgressBarVisible] =
     React.useState<boolean>(false);
-  const chartProps: any[] = React.useMemo(() => {
+  const chartProps = React.useMemo(() => {
     return (props.lineChartData || []).map((chartData: ILine[], i: number) => ({
       axesScaleType: props.axesScaleType,
       axesScaleRange: props.axesScaleRange,
@@ -173,6 +173,7 @@ function Metrics(
                         onActivePointChange={props.onActivePointChange}
                         onRunsTagsChange={props.onRunsTagsChange}
                         onChangeTooltip={props.onChangeTooltip}
+                        onLegendsChange={props.onLegendsChange}
                         controls={
                           <Controls
                             data={props.lineChartData}

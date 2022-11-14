@@ -1,0 +1,32 @@
+@use 'src/styles/abstracts' as *;
+
+.SplitPane {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  .gutter {
+    background-color: $primary-color-10;
+    background-repeat: no-repeat;
+    background-position: 50%;
+    transition: all 0.15s ease-out;
+    transition-delay: 0.3s;
+    &:hover {
+      background-color: $primary-color-50;
+    }
+  }
+  &.horizontal {
+    flex-direction: row;
+    .gutter.gutter-horizontal {
+      background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAeCAYAAADkftS9AAAAIklEQVQoU2M4c+bMfxAGAgYYmwGrIIiDjrELjpo5aiZeMwF+yNnOs5KSvgAAAABJRU5ErkJggg==');
+      cursor: col-resize;
+    }
+  }
+  &.vertical {
+    flex-direction: column;
+    .gutter.gutter-vertical {
+      background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAFAQMAAABo7865AAAABlBMVEVHcEzMzMzyAv2sAAAAAXRSTlMAQObYZgAAABBJREFUeF5jOAMEEAIEEFwAn3kMwcB6I2AAAAAASUVORK5CYII=');
+      cursor: row-resize;
+    }
+  }
+  .SplitPaneItem {}
+}

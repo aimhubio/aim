@@ -1,8 +1,9 @@
 import React from 'react';
 import _ from 'lodash-es';
+import { marked } from 'marked';
 
-import { Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import SplitPane, { SplitPaneItem } from 'components/SplitPane';
 
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 
@@ -17,6 +18,7 @@ import { ChartTypeEnum } from 'utils/d3';
 import ChartPopover from './ChartPopover';
 import ChartGrid from './ChartGrid';
 import ChartLegends from './ChartLegends';
+import ChartPanelResizingFallback from './ChartPanelResizingFallback';
 
 import './ChartPanel.scss';
 
@@ -33,6 +35,8 @@ const ChartPanel = React.forwardRef(function ChartPanel(
     left: number;
     right: number;
   } | null>(null);
+  const [legendsResizing, setLegendsResizing] = React.useState(false);
+
   const containerRef = React.useRef<HTMLDivElement>(null);
   const activePointRef = React.useRef<IActivePoint | null>(null);
 
@@ -111,6 +115,23 @@ const ChartPanel = React.forwardRef(function ChartPanel(
     }
   }, [activePointRect, setActiveElemPos]);
 
+  const displayLegends = React.useMemo(
+    (): boolean => !!props.legends?.display && !_.isEmpty(props.legendsData),
+    [props.legends?.display, props.legendsData],
+  );
+
+  const onLegendsResizeStart = React.useCallback((): void => {
+    setLegendsResizing(true);
+  }, []);
+
+  const onLegendsResizeEnd = React.useCallback(
+    (sizes: number[]): void => {
+      props.onLegendsChange?.({ width: sizes[1] });
+      setLegendsResizing(false);
+    },
+    [props.onLegendsChange],
+  );
+
   React.useImperativeHandle(ref, () => ({
     setActiveLineAndCircle: (
       lineKey?: string,
@@ -133,7 +154,13 @@ const ChartPanel = React.forwardRef(function ChartPanel(
         chartRef.current?.setFocusedState?.(props.focusedState);
       });
     }
-  }, [chartRefs, props.focusedState, props.panelResizing, props.resizeMode]);
+  }, [
+    chartRefs,
+    props.focusedState,
+    props.panelResizing,
+    props.resizeMode,
+    legendsResizing,
+  ]);
 
   React.useEffect(() => {
     const debouncedScroll = _.debounce(onScroll, 100);
@@ -148,57 +175,70 @@ const ChartPanel = React.forwardRef(function ChartPanel(
     <ErrorBoundary>
       <div className='ChartPanel__container'>
         {props.panelResizing ? (
-          <div className='ChartPanel__resizing'>
-            <Text size={14} color='info'>
-              Release to resize
-            </Text>
-          </div>
+          <ChartPanelResizingFallback />
         ) : (
           <>
             <ErrorBoundary>
               <div className='ChartPanel'>
-                <div ref={containerRef} className='ChartPanel__grid'>
-                  <ChartGrid
-                    data={props.data}
-                    chartProps={props.chartProps}
-                    chartRefs={chartRefs}
-                    chartType={props.chartType}
-                    syncHoverState={syncHoverState}
-                    resizeMode={props.resizeMode}
-                    chartPanelOffsetHeight={props.chartPanelOffsetHeight}
-                  />
-                </div>
-                {!!props.legends?.display && !_.isEmpty(props.legendsData) && (
-                  <ErrorBoundary>
-                    <ChartLegends
-                      data={props.legendsData}
-                      mode={props.legends.mode}
+                <SplitPane
+                  minSize={0}
+                  sizes={
+                    displayLegends
+                      ? [100 - props.legends?.width!, props.legends?.width!]
+                      : [100, 0]
+                  }
+                  gutterSize={displayLegends ? 8 : 0}
+                  resizing={legendsResizing}
+                  onDragStart={onLegendsResizeStart}
+                  onDragEnd={onLegendsResizeEnd}
+                >
+                  <SplitPaneItem
+                    index={0}
+                    ref={containerRef}
+                    className='ChartPanel__grid'
+                    resizingFallback={<ChartPanelResizingFallback />}
+                  >
+                    <ChartGrid
+                      data={props.data}
+                      chartProps={props.chartProps}
+                      chartRefs={chartRefs}
+                      chartType={props.chartType}
+                      syncHoverState={syncHoverState}
+                      resizeMode={props.resizeMode}
+                      chartPanelOffsetHeight={props.chartPanelOffsetHeight}
                     />
-                  </ErrorBoundary>
-                )}
+                    <ErrorBoundary>
+                      <ChartPopover
+                        containerNode={containerRef.current}
+                        activePointRect={activePointRect}
+                        onRunsTagsChange={props.onRunsTagsChange}
+                        open={
+                          props.resizeMode !== ResizeModeEnum.MaxHeight &&
+                          props.data.length > 0 &&
+                          !props.zoom?.active &&
+                          (props.tooltip?.display || props.focusedState.active)
+                        }
+                        chartType={props.chartType}
+                        tooltipContent={props?.tooltip?.content || {}}
+                        tooltipAppearance={props?.tooltip?.appearance}
+                        focusedState={props.focusedState}
+                        alignmentConfig={props.alignmentConfig}
+                        reCreatePopover={props.focusedState.active}
+                        selectOptions={props.selectOptions}
+                        onChangeTooltip={props.onChangeTooltip}
+                      />
+                    </ErrorBoundary>
+                  </SplitPaneItem>
+                  <SplitPaneItem index={1}>
+                    {displayLegends && (
+                      <ChartLegends
+                        data={props.legendsData}
+                        mode={props.legends?.mode}
+                      />
+                    )}
+                  </SplitPaneItem>
+                </SplitPane>
               </div>
-            </ErrorBoundary>
-            <ErrorBoundary>
-              <ChartPopover
-                containerNode={containerRef.current}
-                activePointRect={activePointRect}
-                onRunsTagsChange={props.onRunsTagsChange}
-                open={
-                  props.resizeMode !== ResizeModeEnum.MaxHeight &&
-                  props.data.length > 0 &&
-                  !props.panelResizing &&
-                  !props.zoom?.active &&
-                  (props.tooltip?.display || props.focusedState.active)
-                }
-                chartType={props.chartType}
-                tooltipContent={props?.tooltip?.content || {}}
-                tooltipAppearance={props?.tooltip?.appearance}
-                focusedState={props.focusedState}
-                alignmentConfig={props.alignmentConfig}
-                reCreatePopover={props.focusedState.active}
-                selectOptions={props.selectOptions}
-                onChangeTooltip={props.onChangeTooltip}
-              />
             </ErrorBoundary>
             <ErrorBoundary>
               <div className='ChartPanel__controls ScrollBar__hidden'>

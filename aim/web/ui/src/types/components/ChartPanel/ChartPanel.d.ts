@@ -16,6 +16,7 @@ import {
   LegendsConfig,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IHighPlotProps } from 'types/components/HighPlot/HighPlot';
+import { ITagInfo } from 'types/pages/tags/Tags';
 
 import { ChartTypeEnum } from 'utils/d3';
 
@@ -46,6 +47,7 @@ export interface IChartPanelProps {
     focusedStateActive?: boolean,
   ) => void;
   onChangeTooltip: (tooltip: ITooltip) => void;
+  onLegendsChange?: (legends: Partial<LegendsConfig>) => void;
   resizeMode?: ResizeModeEnum;
   selectOptions: IGroupingSelectOption[];
 }

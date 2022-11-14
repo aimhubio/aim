@@ -332,6 +332,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               legends: {
                 display: CONTROLS_DEFAULT_CONFIG.metrics.legends.display,
                 mode: CONTROLS_DEFAULT_CONFIG.metrics.legends.mode,
+                width: CONTROLS_DEFAULT_CONFIG.metrics.legends.width,
               },
               focusedState: {
                 key: null,
