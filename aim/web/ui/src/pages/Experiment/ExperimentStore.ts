@@ -6,6 +6,8 @@ import {
 } from 'modules/core/api/experimentsApi';
 import createResource from 'modules/core/utils/createResource';
 
+import { notificationContainerStore } from 'components/NotificationContainer';
+
 function experimentEngine() {
   const {
     fetchData: fetchExperimentData,
@@ -28,6 +30,11 @@ function experimentEngine() {
         ...prev,
         data: { ...prev.data, name, description },
       }));
+      notificationContainerStore.onNotificationAdd({
+        id: Date.now(),
+        messages: ['Changes successfully saved'],
+        severity: 'success',
+      });
     });
   }
 

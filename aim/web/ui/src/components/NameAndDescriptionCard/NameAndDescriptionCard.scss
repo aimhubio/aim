@@ -98,4 +98,9 @@
       }
     }
   }
+  &__saveBtn {
+    &.Mui-disabled {
+      color: $white !important;
+    }
+  }
 }

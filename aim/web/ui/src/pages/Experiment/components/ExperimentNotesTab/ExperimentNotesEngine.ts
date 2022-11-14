@@ -6,7 +6,7 @@ import {
 } from 'modules/core/api/experimentsApi';
 import createResource from 'modules/core/utils/createResource';
 
-import notificationEngine from 'components/NotificationContainer/NotificationContainerStore';
+import { notificationContainerStore } from 'components/NotificationContainer';
 
 function createExperimentNotesEngine() {
   const { fetchData, state, destroy } = createResource<GetExperimentNoteResult>(
@@ -17,7 +17,7 @@ function createExperimentNotesEngine() {
     fetchExperimentNote: (experimentId: string) => fetchData(experimentId),
     createExperimentNote: (experimentId: string, content: string) =>
       createExperimentNote(experimentId, { content }).then(() =>
-        notificationEngine.onNotificationAdd({
+        notificationContainerStore.onNotificationAdd({
           id: Date.now(),
           messages: ['Note successfully created'],
           severity: 'success',
@@ -33,7 +33,7 @@ function createExperimentNotesEngine() {
           ...prev,
           data: [{ ...prev.data[0], updated_at: res.updated_at }],
         }));
-        notificationEngine.onNotificationAdd({
+        notificationContainerStore.onNotificationAdd({
           id: Date.now(),
           messages: ['Note successfully updated'],
           severity: 'success',

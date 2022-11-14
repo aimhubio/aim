@@ -57,6 +57,7 @@ function NameAndDescriptionCard({
             }
             variant='contained'
             color='primary'
+            className='NameAndDescriptionCard__saveBtn'
           >
             Save
           </Button>
