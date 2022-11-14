@@ -19,6 +19,8 @@ import { setDocumentTitle } from 'utils/document/documentTitle';
 
 import useExperimentState from './useExperimentState';
 import ExperimentHeader from './components/ExperimentHeader';
+import { experimentContributionsFeedEngine } from './components/ExperimentOverviewTab/ExperimentContributionsFeed';
+import { experimentContributionsEngine } from './components/ExperimentOverviewTab/ExperimentContributions';
 
 import './Experiment.scss';
 
@@ -42,6 +44,7 @@ function Experiment(): React.FunctionComponentElement<React.ReactNode> {
   const history = useHistory();
   const { experimentState, experimentsState, getExperimentsData } =
     useExperimentState(experimentId);
+
   const { pathname } = useLocation();
   const [activeTab, setActiveTab] = React.useState(pathname);
 
@@ -99,7 +102,18 @@ function Experiment(): React.FunctionComponentElement<React.ReactNode> {
   }, [experimentData]);
 
   React.useEffect(() => {
+    experimentContributionsFeedEngine.destroy();
+    experimentContributionsEngine.destroy();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [experimentId]);
+
+  React.useEffect(() => {
     redirect();
+
+    return () => {
+      experimentContributionsFeedEngine.destroy();
+      experimentContributionsEngine.destroy();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
