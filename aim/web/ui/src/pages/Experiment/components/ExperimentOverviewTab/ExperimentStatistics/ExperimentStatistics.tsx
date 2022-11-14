@@ -10,9 +10,11 @@ import { encode } from 'utils/encoder/encoder';
 
 import experimentContributionsEngine from '../ExperimentContributions/ExperimentContributionsStore';
 
+import { IExperimentStatisticsProps } from './ExperimentStatistics.d';
+
 import './ExperimentStatistics.scss';
 
-function ExperimentStatistics({ experimentName }: { experimentName: string }) {
+function ExperimentStatistics({ experimentName }: IExperimentStatisticsProps) {
   const [hoveredState, setHoveredState] = React.useState({
     source: '',
     id: '',
