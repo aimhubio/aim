@@ -29,7 +29,7 @@ const FiguresExplorer = renderer(
       },
     },
   },
-  // __DEV__,
+  __DEV__,
 );
 
 export default FiguresExplorer;
