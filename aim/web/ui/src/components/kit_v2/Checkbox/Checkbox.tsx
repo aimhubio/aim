@@ -23,73 +23,77 @@ const StyledIndicator = styled(CheckboxPrimitive.Indicator, {
   height: '100%',
   width: '100%',
   color: 'white',
+  transition: 'all 0.2s ease-out',
+});
+
+const IndicatorWrapper = styled('span', {
+  width: '10px',
+  height: '10px',
+  display: 'flex',
+  ai: 'center',
+  jc: 'center',
+  bs: 'inset 0 0 0 1px $colors$secondary100',
+  br: '$2',
+  transition: 'all 0.2s ease-out',
 });
 
 const StyledCheckbox = styled(CheckboxPrimitive.Root, {
-  display: 'flex',
-  all: 'unset',
-  size: '10px',
+  size: '20px',
+  border: 'unset',
   bc: 'white',
   borderRadius: '$2',
+  display: 'flex',
   ai: 'center',
   jc: 'center',
   lineHeight: 1,
-  bs: 'inset 0 0 0 1px $colors$secondary100',
-  transition: 'all 0.2s ease-out',
-  '&:disabled': {
-    bs: 'inset 0 0 0 1px $colors$secondary50 !important',
-  },
-});
-
-const CheckboxContainer = styled('div', {
-  width: '$1',
-  height: '$1',
-  display: 'flex',
-  ai: 'center',
-  jc: 'center',
   cursor: 'pointer',
-  variants: {
-    disabled: {
-      true: {
-        pointerEvents: 'none',
-      },
+  transition: 'all 0.2s ease-out',
+  '&:hover': {
+    [`& ${IndicatorWrapper}`]: {
+      bs: 'inset 0 0 0 1px $colors$primary100',
     },
   },
-  '&:hover': {
-    [`& ${StyledCheckbox}`]: {
-      bs: 'inset 0 0 0 1px $colors$primary100',
+  '&:disabled': {
+    pointerEvents: 'none',
+    [`& ${IndicatorWrapper}`]: {
+      bs: 'inset 0 0 0 1px $colors$secondary50 !important',
     },
   },
   '&[data-state=checked]': {
     '&:hover': {
-      [`& ${StyledCheckbox}`]: {
+      [`& ${IndicatorWrapper}`]: {
         bc: '$primary110',
       },
     },
-    [`& ${StyledCheckbox}`]: {
+    '&:disabled': {
+      [`& ${IndicatorWrapper}`]: {
+        bc: '$secondary50',
+      },
+    },
+    [`& ${IndicatorWrapper}`]: {
       bc: '$primary100',
       bs: 'inset 0 0 0 1px transparent',
-      '&[data-disabled]': {
-        bc: '$secondary50',
+      '&:disabled': {
+        bc: '$secondary50 !important',
       },
     },
   },
   '&[data-state=indeterminate]': {
     '&:hover': {
-      [`& ${StyledCheckbox}`]: {
+      [`& ${IndicatorWrapper}`]: {
         bs: 'inset 0 0 0 1px $colors$primary110',
       },
       [`& ${IndeterminateIcon}`]: {
         bc: '$primary110',
       },
     },
-    [`& ${StyledCheckbox}`]: {
-      bs: 'inset 0 0 0 1px $colors$primary100',
-      '&[data-disabled]': {
-        [`& ${IndeterminateIcon}`]: {
-          bc: '$secondary50',
-        },
+    '&:disabled': {
+      [`& ${IndeterminateIcon}`]: {
+        bc: '$secondary50',
       },
+    },
+    [`& ${IndicatorWrapper}`]: {
+      bs: 'inset 0 0 0 1px $colors$primary100',
     },
   },
 });
@@ -105,7 +109,6 @@ export const CheckBox = React.forwardRef<
     const [isChecked, setIsChecked] = React.useState<ICheckboxProps['checked']>(
       checked || defaultChecked,
     );
-    const checkboxRef = React.useRef<any>(forwardedRef);
 
     // control checkbox state from outside
     React.useEffect(() => {
@@ -131,32 +134,20 @@ export const CheckBox = React.forwardRef<
     );
 
     return (
-      <CheckboxContainer
-        onClick={() => {
-          checkboxRef?.current?.click();
-        }}
-        data-state={
-          isChecked === 'indeterminate'
-            ? 'indeterminate'
-            : isChecked
-            ? 'checked'
-            : 'unchecked'
-        }
+      <StyledCheckbox
+        {...props}
+        checked={isChecked}
+        onCheckedChange={handleChange}
         disabled={disabled}
+        ref={forwardedRef}
       >
-        <StyledCheckbox
-          {...props}
-          checked={isChecked}
-          onCheckedChange={handleChange}
-          disabled={disabled}
-          ref={checkboxRef}
-        >
+        <IndicatorWrapper>
           <StyledIndicator>
             {isChecked === 'indeterminate' ? <IndeterminateIcon /> : null}
             {isChecked === true ? <Icon fontSize={6} name='check' /> : null}
           </StyledIndicator>
-        </StyledCheckbox>
-      </CheckboxContainer>
+        </IndicatorWrapper>
+      </StyledCheckbox>
     );
   },
 );

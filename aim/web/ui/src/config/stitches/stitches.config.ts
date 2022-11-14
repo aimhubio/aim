@@ -315,6 +315,11 @@ export const {
     }),
 
     size: (value: Stitches.PropertyValue<'width'>) => ({
+      width: value,
+      height: value,
+    }),
+
+    minSize: (value: Stitches.PropertyValue<'minWidth'>) => ({
       minWidth: value,
       minHeight: value,
     }),
