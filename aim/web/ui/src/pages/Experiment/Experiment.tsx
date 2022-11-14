@@ -21,11 +21,11 @@ import * as analytics from 'services/analytics';
 
 import { setDocumentTitle } from 'utils/document/documentTitle';
 
-import ExperimentNotesTab from './components/ExperimentNotesTab';
 import ExperimentHeader from './components/ExperimentHeader';
 import useExperimentState from './useExperimentState';
 import { experimentContributionsFeedEngine } from './components/ExperimentOverviewTab/ExperimentContributionsFeed';
 import { experimentContributionsEngine } from './components/ExperimentOverviewTab/ExperimentContributions';
+import { experimentNotesEngine } from './components/ExperimentNotesTab';
 
 import './Experiment.scss';
 
@@ -33,6 +33,13 @@ const ExperimentOverviewTab = React.lazy(
   () =>
     import(
       /* webpackChunkName: "ExperimentOverviewTab" */ './components/ExperimentOverviewTab'
+    ),
+);
+
+const ExperimentNotesTab = React.lazy(
+  () =>
+    import(
+      /* webpackChunkName: "ExperimentOverviewTab" */ './components/ExperimentNotesTab'
     ),
 );
 
@@ -109,6 +116,7 @@ function Experiment(): React.FunctionComponentElement<React.ReactNode> {
   React.useEffect(() => {
     experimentContributionsFeedEngine.destroy();
     experimentContributionsEngine.destroy();
+    experimentNotesEngine.destroy();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [experimentId]);
 
@@ -119,6 +127,7 @@ function Experiment(): React.FunctionComponentElement<React.ReactNode> {
     return () => {
       experimentContributionsFeedEngine.destroy();
       experimentContributionsEngine.destroy();
+      experimentNotesEngine.destroy();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

@@ -11,6 +11,8 @@ import RouteLeavingGuard from 'components/RouteLeavingGuard';
 import { RichEditorThemeColors } from 'config/colors/colors';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
+import NoteTooltip from 'pages/RunDetail/RunDetailNotesTab/NoteTooltip';
+
 import * as analytics from 'services/analytics';
 
 import { IExperimentNotesTabProps } from './ExperimentNotesTab.d';
@@ -65,8 +67,6 @@ function ExperimentNotesTab(
 
   React.useEffect(() => {
     analytics.pageView(ANALYTICS_EVENT_KEYS.experiment.tabs.notes.tabView);
-
-    return () => {};
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -114,6 +114,7 @@ function ExperimentNotesTab(
                 variant='contained'
                 size='small'
                 onClick={onNoteSave}
+                className='ExperimentNotesTab__Editor__actionPanel__saveBtn'
               >
                 Save
               </Button>
@@ -127,12 +128,16 @@ function ExperimentNotesTab(
           placeholder='Leave your Note'
           theme={theme || editorRef.current?.theme()}
           disableExtensions={['table', 'image', 'container_notice']}
-          //   tooltip={({ children }) => {
-          //     return <NoteTooltip>{children}</NoteTooltip>;
-          //   }}
+          tooltip={({ children }) => {
+            return <NoteTooltip>{children}</NoteTooltip>;
+          }}
           onChange={onNoteChange}
         />
-        {isLoading && <Spinner />}
+        {isLoading && (
+          <div className='ExperimentNotesTab__spinnerWrapper'>
+            <Spinner />
+          </div>
+        )}
       </div>
     </section>
   );
