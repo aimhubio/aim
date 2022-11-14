@@ -8,6 +8,7 @@
     display: inline-flex;
     height: 100%;
     position: absolute;
+    transition: all 0.18s ease-out;
     &:first-child {
       border-top-left-radius: $border-radius-sm;
       border-bottom-left-radius: $border-radius-sm;
@@ -17,10 +18,10 @@
       border-bottom-right-radius: $border-radius-sm;
     }
     &.highlighted {
-      transition: all 0.18s ease-out;
       z-index: 1;
       height: calc(100% + 2px);
       margin-top: -1px;
+      box-shadow: 0 0 0 2px white;
     }
   }
 }

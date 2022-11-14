@@ -142,7 +142,7 @@ class NetworkService {
             reject({ message: e.message, res: { body, headers } });
           }
 
-          if (response.status > 400) {
+          if (response.status >= 400) {
             return reject(body);
           }
 

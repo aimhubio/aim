@@ -40,8 +40,9 @@ function ExperimentsCard(): React.FunctionComponentElement<React.ReactNode> | nu
         searchableKeys={['name', 'run_count']}
         rowHeight={24}
         illustrationConfig={{
-          size: 'large',
+          size: 'small',
           title: 'No Results',
+          showImage: false,
         }}
         toolbarItems={[
           <CompareSelectedRunsPopover

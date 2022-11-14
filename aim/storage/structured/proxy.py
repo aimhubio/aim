@@ -22,8 +22,11 @@ class StructuredRunProxy:
             'hash_': hash_,
             'read_only': read_only,
         }
-        args = pack_args(encode_tree(kwargs))
-        handler = self._rpc_client.get_resource_handler('StructuredRun', args=args)
+
+        self.init_args = pack_args(encode_tree(kwargs))
+        self.resource_type = 'StructuredRun'
+        handler = self._rpc_client.get_resource_handler(self, self.resource_type, args=self.init_args)
+
         self._hash = hash_
 
         self._resources = RunProxyAutoClean(self)

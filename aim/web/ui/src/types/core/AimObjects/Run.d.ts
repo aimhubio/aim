@@ -16,12 +16,12 @@ export interface Experiment {
 
 export interface RunProps {
   hash: string;
-  name: ?string;
-  description: ?string;
-  experiment: ?Experiment;
-  tags: ?Array<Tag>;
+  name: string | null;
+  description: string | null;
+  experiment: Experiment | null;
+  tags: Array<Tag> | null;
   creation_time: number;
-  end_time: ?number;
+  end_time: number | null;
 }
 
 export interface RunInfo {

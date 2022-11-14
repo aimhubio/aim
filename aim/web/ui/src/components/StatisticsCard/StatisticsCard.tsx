@@ -1,8 +1,6 @@
 import * as React from 'react';
-import classNames from 'classnames';
 import { useHistory } from 'react-router-dom';
-
-import { Tooltip } from '@material-ui/core';
+import classNames from 'classnames';
 
 import { Icon, Text } from 'components/kit';
 
@@ -14,69 +12,83 @@ import './StatisticsCard.scss';
 
 function StatisticsCard({
   label,
-  title,
+  title = '',
   count,
   icon,
-  iconBgColor = '#fff',
+  iconBgColor = '#000000',
   cardBgColor = hexToRgbA(iconBgColor, 0.1),
   onMouseOver,
   onMouseLeave,
   navLink,
   highlighted,
-  disabled = false,
+  outlined = false,
+  isLoading = false,
 }: IStatisticsCardProps) {
   const history = useHistory();
   const onSafeMouseOver = React.useCallback(
     (id: string) => {
-      if (!disabled && typeof onMouseOver === 'function') {
-        onMouseOver(id);
+      if (typeof onMouseOver === 'function') {
+        onMouseOver(id, 'card');
       }
     },
     [onMouseOver],
   );
+  const styles = {
+    card: {
+      borderColor: outlined ? iconBgColor : 'transparent',
+      backgroundColor: highlighted ? iconBgColor : cardBgColor,
+    },
+    iconWrapper: {
+      backgroundColor: highlighted ? '#fff' : iconBgColor,
+    },
+    iconColor: highlighted ? iconBgColor : '#fff',
+    label: highlighted ? { color: '#fff' } : {},
+    count: highlighted ? { color: '#fff' } : {},
+  };
   return (
-    <Tooltip title={title || ''}>
-      <div
-        onClick={() => !disabled && navLink && history.push(navLink)}
-        onMouseLeave={onMouseLeave}
-        onMouseOver={() => onSafeMouseOver(label)}
-        className={classNames('StatisticsCard', {
-          highlighted: navLink && highlighted,
-        })}
-        style={{
-          backgroundColor: navLink && highlighted ? iconBgColor : cardBgColor,
-        }}
-      >
-        {icon && (
-          <div
-            className='StatisticsCard__iconWrapper'
-            style={{
-              backgroundColor: navLink && highlighted ? '#fff' : iconBgColor,
-            }}
-          >
-            <Icon
-              className='StatisticsCard__iconWrapper__icon'
-              name={icon}
-              color={navLink && highlighted ? iconBgColor : '#fff'}
-            />
-          </div>
-        )}
-        <div className='StatisticsCard__info'>
-          <Text className='StatisticsCard__info__label' size={10} weight={600}>
-            {label}
-          </Text>
-          <Tooltip title={`${count}`}>
-            <Text
-              className='StatisticsCard__info__count'
-              size={16}
-              weight={600}
-            >
-              {count}
-            </Text>
-          </Tooltip>
+    <div
+      onClick={() => navLink && history.push(navLink)}
+      onMouseLeave={onMouseLeave}
+      onMouseOver={() => onSafeMouseOver(label)}
+      className={classNames('StatisticsCard', { highlighted })}
+      style={styles.card}
+    >
+      {!navLink && (
+        <Text
+          component='p'
+          className='StatisticsCard__soonBadge'
+          weight={600}
+          size={8}
+        >
+          Explorer coming soon
+        </Text>
+      )}
+
+      {icon && (
+        <div className='StatisticsCard__iconWrapper' style={styles.iconWrapper}>
+          <Icon name={icon} color={styles.iconColor} />
         </div>
+      )}
+      <div className='StatisticsCard__info'>
+        <Text
+          className='StatisticsCard__info__label'
+          size={10}
+          weight={600}
+          style={styles.label}
+        >
+          {label}
+        </Text>
+
+        <Text
+          className='StatisticsCard__info__count'
+          size={16}
+          weight={600}
+          style={styles.count}
+        >
+          <span>{isLoading ? '--' : count}</span>
+        </Text>
       </div>
-    </Tooltip>
+    </div>
   );
 }
 

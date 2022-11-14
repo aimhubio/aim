@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Spinner, Text } from 'components/kit';
+import { Button, Spinner, Text } from 'components/kit';
 import ReleaseNoteItem from 'components/ReleaseNoteItem/ReleaseNoteItem';
 
 import { AIM_VERSION } from 'config/config';
@@ -14,6 +14,7 @@ import './ReleaseNotes.scss';
 function ReleaseNotes(): React.FunctionComponentElement<React.ReactNode> {
   const {
     changelogData,
+    LatestReleaseData,
     currentReleaseData,
     isLoading,
     releaseNoteRef,
@@ -31,12 +32,14 @@ function ReleaseNotes(): React.FunctionComponentElement<React.ReactNode> {
           <div className='ReleaseNotes__latest'>
             <div className='ReleaseNotes__latest__title'>
               <Text component='h4' tint={100} weight={700} size={14}>
-                Aim {changelogData?.[0]?.tagName}
+                Aim {LatestReleaseData?.tagName}
               </Text>
-              <span>New</span>
+              {`v${AIM_VERSION}` === LatestReleaseData?.tagName ? null : (
+                <span>Latest</span>
+              )}
             </div>
             <div className='ReleaseNotes__latest__content'>
-              {changelogData[0]?.info?.map((title: string, index: number) => (
+              {LatestReleaseData?.info?.map((title: string, index: number) => (
                 <div
                   className='ReleaseNotes__latest__content__item'
                   key={index}
@@ -44,9 +47,14 @@ function ReleaseNotes(): React.FunctionComponentElement<React.ReactNode> {
                   <Text size={12}>{title.replace(/-/g, ' ')}</Text>
                 </div>
               ))}
+              <a href={LatestReleaseData?.url} target='_blank' rel='noreferrer'>
+                <Button fullWidth variant='outlined' size='xSmall'>
+                  Release notes
+                </Button>
+              </a>
             </div>
           </div>
-          {`v${AIM_VERSION}` === changelogData[0]?.tagName ? null : (
+          {`v${AIM_VERSION}` === LatestReleaseData?.tagName ? null : (
             <div className='ReleaseNotes__changelog'>
               <Text
                 className='ReleaseNotes__changelog__title'
@@ -66,25 +74,27 @@ function ReleaseNotes(): React.FunctionComponentElement<React.ReactNode> {
                     <ReleaseNoteItem
                       key={item.tagName}
                       tagName={item.tagName}
-                      info={item.info[0]}
+                      info={item.info}
                       href={item.url}
                     />
                   );
                 })}
               </div>
-              <div
-                className={`ReleaseNotes__changelog__currentRelease ${
-                  scrollShadow
-                    ? 'ReleaseNotes__changelog__currentRelease__scroll'
-                    : ''
-                }`}
-              >
-                <ReleaseNoteItem
-                  tagName={`${currentReleaseData!.tagName} [current]`}
-                  info={currentReleaseData!.info[0]}
-                  href={currentReleaseData!.url}
-                />
-              </div>
+              {currentReleaseData ? (
+                <div
+                  className={`ReleaseNotes__changelog__currentRelease ${
+                    scrollShadow
+                      ? 'ReleaseNotes__changelog__currentRelease__scroll'
+                      : ''
+                  }`}
+                >
+                  <ReleaseNoteItem
+                    tagName={`${currentReleaseData!.tagName} [current]`}
+                    info={currentReleaseData!.info}
+                    href={currentReleaseData!.url}
+                  />
+                </div>
+              ) : null}
             </div>
           )}
           <GuideLinks />

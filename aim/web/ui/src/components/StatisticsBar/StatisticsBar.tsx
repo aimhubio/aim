@@ -1,6 +1,8 @@
 import * as React from 'react';
 import classNames from 'classnames';
 
+import { Tooltip } from '@material-ui/core';
+
 import { IBarStyle, IStatisticsBarProps } from '.';
 
 import './StatisticsBar.scss';
@@ -15,7 +17,7 @@ function StatisticsBar({
   const onSafeMouseOver = React.useCallback(
     (id: string) => {
       if (typeof onMouseOver === 'function') {
-        onMouseOver(id);
+        onMouseOver(id, 'bar');
       }
     },
     [onMouseOver],
@@ -37,18 +39,19 @@ function StatisticsBar({
   }, [data]);
   return (
     <div className='StatisticsBar' style={{ width, height }}>
-      {Object.values(data).map((item, i) => (
-        <span
-          key={`${item.label}-${item.color}`}
-          title={`${item.label}`}
-          className={classNames('StatisticsBar__item', {
-            highlighted: item.percent && item.highlighted,
-          })}
-          style={{ ...barStyles[i], left: barStyles[i].left + '%' }}
-          onMouseLeave={onMouseLeave}
-          onMouseOver={() => onSafeMouseOver(item.label || '')}
-        />
-      ))}
+      {Object.values(data).map(
+        ({ percent, color, label = '', highlighted }, i) =>
+          percent ? (
+            <Tooltip key={`${label}-${color}`} title={label}>
+              <div
+                className={classNames('StatisticsBar__item', { highlighted })}
+                style={{ ...barStyles[i], left: barStyles[i].left + '%' }}
+                onMouseLeave={onMouseLeave}
+                onMouseOver={() => onSafeMouseOver(label)}
+              />
+            </Tooltip>
+          ) : null,
+      )}
     </div>
   );
 }

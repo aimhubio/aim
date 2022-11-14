@@ -1080,6 +1080,7 @@ const Table = React.forwardRef(function Table(
           size={illustrationConfig?.size || 'xLarge'}
           content={illustrationConfig?.content || ''}
           title={illustrationConfig?.title || ''}
+          showImage={illustrationConfig?.showImage}
         />
       )}
     </ErrorBoundary>

@@ -4,6 +4,50 @@
 
 ### Enhancements:
 
+- Implement vertically scalable version of Remote Tracking (mihran113, alberttorosyan)
+- Add epoch tracking for PyTorch Lightning (tmynn)
+- Add PaddlePaddle integration (tmynn)
+- Add Optuna integration (tmynn)
+- Use `packaging` to parse version strings(jangop)
+
+### Fixes:
+
+- Fix multiple progress bars handling for terminal logs capturing (mihran113)
+- Handle resources when multiple `Ctrl-C`s are pressed (alberttorosyan)
+- Remove non unicode symbols from `aim up` command logs (mihran113)
+
+## 3.14.4 Nov 11, 2022
+
+- Fix dropdowns' selected options losses in time of searching other options in Figures Explorer (rubenaprikyan)
+- Fix the group property name visibility in the images and audio tabs (VkoHov)
+- Change the color contrast of the icons in the manage columns popover (VkoHov)
+- Add notifier config files to aim package (alberttorosyan)
+- Fix audios to numpy conversion (mihran113)
+
+## 3.14.3 Oct 29, 2022
+
+- Fix search for empty queries in explorers (KaroMourad)
+
+## 3.14.2 Oct 28, 2022
+
+- Add support to sync explorer state through url on Base and Figures Explorers (rubenaprikyan)
+- Add support to highlight syntax error in Figures Explorer (KaroMourad)
+- Fix issue with applying solid stroke styles on stroke badge in table (KaroMourad)
+- Fix active runs indicators overlapping issue in LineChart (KaroMourad)
+- Add support for text style formatting in the logs tab (VkoHov)
+- Fix "`TypeError: check()` keywords must be strings" for `Run.metrics()` method (alberttorosyan)
+- Fix run info API call error when tag color/description is None (alberttorosyan)
+- Fix remote heartbeat resource cleanup (mihran113)
+
+## 3.14.1 Oct 7, 2022
+
+- Fix the current release duplication highlighting issue on the Dashboard page (arsengit)
+
+## 3.14.0 Oct 6, 2022
+
+### Enhancements:
+
+- Move `aim reindex` command under `aim storage` group (mihran113)
 - Add the ability to attach/remove tags on the Run Page (roubkar)
 - Support dictionary as an argument of `Run.track` (alberttorosyan)
 - Display the tags of the run in the tables of the explorers (VkoHov)
@@ -11,8 +55,11 @@
 - Replace the spinner loader with a lighter one (VkoHov)
 - Add fast.ai integration (tmynn)
 - Add command for dangling params cleanup (mihran113)
+- Add top and bottom appearance modes to the chart popover (VkoHov)
 - Deprecate Python 3.6 (alberttorosyan)
 - Add MXNet integration (tmynn)
+- Create a Dashboard page to provide a better onboarding experience (arsengit, roubkar, KaroMourad, mihran113)
+- Add support for tracking jax device arrays (mihran113)
 
 ### Fixes:
 
@@ -21,6 +68,7 @@
 - Change unit-tests data isolation mechanism (alberttorosyan)
 - Adjust the visibility of the run color in tables (VkoHov)
 - Fix response headers for remote tracking server (mihran113)
+- Fix `TypeError`s in single run page (mihran113)
 
 ## 3.13.4 Sep 25, 2022
 

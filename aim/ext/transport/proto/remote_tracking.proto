@@ -6,12 +6,11 @@ message ExceptionResponse {
     string args = 3;
 }
 
-message HealthCheckRequest {
+message ClientResourceCleanupRequest {
     string client_uri = 1;
-    string check_type = 2;
 }
 
-message HealthCheckResponse {
+message ClientResourceCleanupResponse {
     enum Status {
         OK = 0;
         ERROR = 1;
@@ -20,22 +19,11 @@ message HealthCheckResponse {
     ExceptionResponse exception = 2;
 }
 
-message VersionRequest {}
-
-message VersionResponse {
-    string version = 1;
-    enum Status {
-        OK = 0;
-        ERROR = 1;
-    }
-    Status status = 2;
-    ExceptionResponse exception = 3;
-}
-
 message ResourceRequest {
     string resource_type = 1;
-    string client_uri = 2;
-    bytes args = 3;
+    string handler = 2;
+    string client_uri = 3;
+    bytes args = 4;
 }
 
 message ResourceResponse {
@@ -110,8 +98,7 @@ message WriteInstructionsResponse {
 }
 
 service RemoteTrackingService {
-    rpc health_check(HealthCheckRequest) returns (HealthCheckResponse) {}
-    rpc get_version(VersionRequest) returns (VersionResponse) {}
+    rpc cleanup_client_resources(ClientResourceCleanupRequest) returns (ClientResourceCleanupResponse) {}
     rpc get_resource(ResourceRequest) returns (ResourceResponse) {}
     rpc release_resource(ReleaseResourceRequest) returns (ReleaseResourceResponse) {}
     rpc run_instruction(stream InstructionRequest) returns (stream InstructionResponse) {}

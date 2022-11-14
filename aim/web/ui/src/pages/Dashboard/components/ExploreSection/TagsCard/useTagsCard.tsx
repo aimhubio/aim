@@ -32,7 +32,8 @@ function useTagsCard() {
         ({ name, archived, run_count, color }: ITagData) => {
           return {
             key: name,
-            name: { label: name, color },
+            name,
+            color,
             archived,
             run_count,
             id: name,
@@ -88,7 +89,7 @@ function useTagsCard() {
           />
         ),
         width: '20px',
-        cellRenderer: ({ cellData }: any) => {
+        cellRenderer: ({ cellData }: any, index: number) => {
           return (
             <Checkbox
               color='primary'
@@ -116,8 +117,8 @@ function useTagsCard() {
         ),
         width: 'calc(100% - 50px)',
         style: { paddingLeft: 10, paddingRight: 12 },
-        cellRenderer: ({ cellData: { label, color } }: any) => (
-          <Badge label={label} color={color} size='xSmall' />
+        cellRenderer: ({ cellData, rowData: { color } }: any) => (
+          <Badge label={cellData} color={color} size='xSmall' />
         ),
       },
       {

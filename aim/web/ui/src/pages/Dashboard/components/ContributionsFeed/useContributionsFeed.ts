@@ -89,6 +89,7 @@ function useContributionsFeed() {
           hash,
           active: props.active,
           creation_time: props.creation_time,
+          experiment: props.experiment?.name,
         };
         if (feedData[month]?.[day]?.length) {
           feedData[month][day].push(contribution);

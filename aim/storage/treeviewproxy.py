@@ -38,8 +38,9 @@ class ProxyTree(TreeView):
             'index': index,
             'timeout': timeout,
         }
-        args = pack_args(encode_tree(kwargs))
-        handler = self._rpc_client.get_resource_handler('TreeView', args=args)
+        self.init_args = pack_args(encode_tree(kwargs))
+        self.resource_type = 'TreeView'
+        handler = self._rpc_client.get_resource_handler(self, self.resource_type, args=self.init_args)
 
         self._resources = ProxyTreeAutoClean(self)
         self._resources.rpc_client = client

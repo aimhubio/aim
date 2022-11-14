@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { IIllustrationConfig } from 'types/components/Table/Table';
+
 export interface IDataListProps {
   tableRef: React.RefObject<any>;
   tableData: any;

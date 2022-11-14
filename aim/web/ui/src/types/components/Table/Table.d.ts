@@ -105,4 +105,5 @@ export interface IIllustrationConfig {
   type?: IIllustrationBlockProps['type'];
   title?: IIllustrationBlockProps['title'];
   content?: IIllustrationBlockProps['content'];
+  showImage?: IIllustrationBlockProps['showImage'];
 }

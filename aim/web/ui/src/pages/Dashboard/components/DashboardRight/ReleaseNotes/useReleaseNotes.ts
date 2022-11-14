@@ -1,4 +1,6 @@
 import React from 'react';
+import _ from 'lodash-es';
+import { marked } from 'marked';
 
 import { IReleaseNote } from 'modules/core/api/releaseNotesApi/types';
 import { IResourceState } from 'modules/core/utils/createResource';
@@ -8,7 +10,7 @@ import { AIM_VERSION } from 'config/config';
 
 import createReleaseNotesEngine from './ReleasesStore';
 
-const CHANGELOG_CONTENT_HEIGHT = 290;
+const CHANGELOG_CONTENT_MAX_HEIGHT = 296;
 function useReleaseNotes() {
   const [loading, setLoading] = React.useState<boolean>(true);
   const [mounted, setMounted] = React.useState<boolean>(false);
@@ -50,7 +52,9 @@ function useReleaseNotes() {
       setMounted(true);
     }
     if (mounted && releaseNoteRef.current) {
-      if (releaseNoteRef?.current?.scrollHeight > CHANGELOG_CONTENT_HEIGHT) {
+      if (
+        releaseNoteRef?.current?.scrollHeight > CHANGELOG_CONTENT_MAX_HEIGHT
+      ) {
         setScrollShadow(true);
       }
       releaseNoteRef?.current?.addEventListener(
@@ -61,52 +65,58 @@ function useReleaseNotes() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading, mounted]);
 
-  function onChangelogContentScroll() {
+  const onChangelogContentScroll = _.throttle(() => {
     const hasScrollShadow: boolean =
-      releaseNoteRef!.current!.scrollTop + CHANGELOG_CONTENT_HEIGHT <
+      releaseNoteRef!.current!.scrollTop + CHANGELOG_CONTENT_MAX_HEIGHT <=
       releaseNoteRef!.current!.scrollHeight;
-    if (hasScrollShadow !== scrollShadow) {
-      setScrollShadow(!!hasScrollShadow);
-    }
-  }
-
+    setScrollShadow(hasScrollShadow);
+  }, 150);
   async function fetchCurrentRelease(): Promise<void> {
     try {
       const data = await fetchReleaseByTagName(`v${AIM_VERSION}`);
       setCurrentRelease(data);
       setLoading(false);
     } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error(e);
+      setLoading(false);
     }
   }
 
-  function modifyReleaseNote(releaseBody: string): RegExpMatchArray | null {
-    const exp = /(?:^|\n)(?:d.|[*+-]) [^]*?(?=\n(?:d.|[*+-])|$)/g;
-    let str = releaseBody.replace(/(\r\n|\n|\r)/g, '\n').replace(/\*/g, '-');
-    return str.match(exp);
+  function getLatestReleaseInfo(releaseBody: string): RegExpMatchArray | null {
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = marked.parse(releaseBody);
+    const listElements: string[] = [];
+    wrapper.querySelectorAll('li').forEach((li, index) => {
+      if (index < 4) {
+        listElements.push(
+          li.innerText.replace(
+            /(\sby\s\@[A-z\d](?:[A-z\d]|-(?=[A-z\d])){0,38}\s\w+\shttps\:\/\/github\.com\/((\w+\/?){4}))/g,
+            '',
+          ),
+        );
+      } else {
+        return;
+      }
+    });
+    return listElements;
+  }
+
+  // function to modify release notes name
+  function modifyReleaseName(releaseTitle: string): string {
+    return releaseTitle.replace(/(^\🚀\s*v\d+\.\d+\.\d+\s*\-\s*)/, '');
   }
 
   const changelogData: { tagName: string; info: any; url: string }[] =
     React.useMemo(() => {
       const data: { tagName: string; info: any; url: string }[] = [];
       releaseNotesStore?.data?.some((release: IReleaseNote) => {
-        const info = modifyReleaseNote(release.body);
         if (release.tag_name === `v${AIM_VERSION}`) {
-          data.push({
-            tagName: release.tag_name,
-            info: modifyReleaseNote(release.body),
-            url: release.html_url,
-          });
           return true;
         }
-        if (info) {
-          data.push({
-            tagName: release.tag_name,
-            info: modifyReleaseNote(release.body),
-            url: release.html_url,
-          });
-        }
+        data.push({
+          tagName: release.tag_name,
+          info: modifyReleaseName(release.name),
+          url: release.html_url,
+        });
       });
       return data;
     }, [releaseNotesStore.data]);
@@ -117,15 +127,29 @@ function useReleaseNotes() {
     if (currentRelease) {
       return {
         tagName: currentRelease?.tag_name,
-        info: modifyReleaseNote(currentRelease?.body),
+        info: modifyReleaseName(currentRelease?.name),
         url: currentRelease.html_url,
       };
     }
   }, [currentRelease]);
 
+  const LatestReleaseData:
+    | { tagName: string; info: any; url: string }
+    | undefined = React.useMemo(() => {
+    const latest = releaseNotesStore?.data?.[0];
+    if (latest) {
+      return {
+        tagName: latest?.tag_name,
+        info: getLatestReleaseInfo(latest.body),
+        url: latest.html_url,
+      };
+    }
+  }, [releaseNotesStore.data]);
+
   return {
     changelogData,
     currentReleaseData,
+    LatestReleaseData,
     isLoading: loading,
     releaseNoteRef,
     scrollShadow,

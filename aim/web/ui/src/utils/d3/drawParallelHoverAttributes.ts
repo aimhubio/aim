@@ -316,8 +316,8 @@ const drawParallelHoverAttributes = ({
       .attr('id', (d: IParallelNearestCircle) => `Circle-${d.key}`)
       .attr('data-key', (d: IParallelNearestCircle) => d.key)
       .attr('clip-path', `url(#${nameKey}-circles-rect-clip-${index})`)
-      .attr('cx', (d: IParallelNearestCircle) => d.x.toFixed(0))
-      .attr('cy', (d: IParallelNearestCircle) => d.y.toFixed(0))
+      .attr('cx', (d: IParallelNearestCircle) => d.x.toFixed(2))
+      .attr('cy', (d: IParallelNearestCircle) => d.y.toFixed(2))
       .attr('r', CircleEnum.Radius)
       .attr('stroke', (d: IParallelNearestCircle) =>
         isVisibleColorIndicator

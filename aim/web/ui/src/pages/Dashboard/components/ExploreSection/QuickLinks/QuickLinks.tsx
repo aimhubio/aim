@@ -76,7 +76,7 @@ function QuickLinks(): React.FunctionComponentElement<React.ReactNode> {
         tint={100}
         weight={700}
       >
-        Quick navigation
+        Quick Navigation
       </Text>
       <div className='QuickLinks__list'>
         {linkItems.map(({ label, path }) => (

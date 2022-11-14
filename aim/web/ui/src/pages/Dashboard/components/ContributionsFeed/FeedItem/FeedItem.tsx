@@ -3,9 +3,13 @@ import React from 'react';
 import { Icon, Text } from 'components/kit';
 import RunNameColumn from 'components/Table/RunNameColumn';
 
+import { IFeedItemProps } from './FeedItem.d';
+
 import './FeedItem.scss';
 
-function FeedItem(props: any): React.FunctionComponentElement<React.ReactNode> {
+function FeedItem(
+  props: IFeedItemProps,
+): React.FunctionComponentElement<React.ReactNode> {
   return (
     <div className='FeedItem'>
       <div className='FeedItem__title'>
@@ -15,18 +19,16 @@ function FeedItem(props: any): React.FunctionComponentElement<React.ReactNode> {
         </Text>
       </div>
       <div className='FeedItem__content'>
-        {props.data.map((item: any) => (
+        {props.data.map((item) => (
           <div className='FeedItem__content__item' key={item.name}>
             <Text size={12} tint={100}>
-              Started the run:
+              Started a run:
             </Text>
-            <Text size={12} tint={100} component='p'>
-              <RunNameColumn
-                run={item.name}
-                active={item.active}
-                runHash={item.hash}
-              />
-            </Text>
+            <RunNameColumn
+              run={`${item.experiment} / ${item.name}`}
+              active={item.active}
+              runHash={item.hash}
+            />
             <Text tint={50} size={10}>
               {item.date}
             </Text>

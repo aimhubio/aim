@@ -44,7 +44,11 @@ function ExploreSection(): React.FunctionComponentElement<React.ReactNode> {
           <Spinner />
         </div>
       )}
-      <div className={loading ? 'ExploreSection__loading' : ''}>
+      <div
+        className={
+          loading ? 'ExploreSection__loading' : 'ExploreSection__content'
+        }
+      >
         <ExperimentsCard />
         <TagsCard />
         <DashboardBookmarks />

@@ -270,7 +270,7 @@ It takes two steps to integrate Aim into your training script.
 Step 1: Explicitly import the `AimCallback` for tracking training metadata.
 
 ```python
-from aim.sdk.adapters.fastai import AimCallback
+from aim.fastai import AimCallback
 ```
 
 Step 2: Pass the callback to `cbs` list upon initiating your training.
@@ -284,6 +284,77 @@ learn = cnn_learner(dls, resnet18, pretrained=True,
 
 See `AimCallback` source [here](https://github.com/aimhubio/aim/blob/main/aim/sdk/adapters/fastai.py).  
 Check out a simple regression task example [here](https://github.com/aimhubio/aim/blob/main/examples/fastai_track.py).
+
+
+### Integration with MXNet
+
+To track MXNet experiments use Aim callback designed for [MXNet](https://mxnet.apache.org/) fit method.
+It takes two steps to integrate Aim into your training script.
+
+Step 1: Import the `AimLoggingHandler` for tracking training metadata.
+
+```python
+from aim.mxnet import AimLoggingHandler
+```
+
+Step 2: Pass a callback instance to `event_handlers` list upon initiating your training.
+
+```python
+aim_log_handler = AimLoggingHandler(repo='.', experiment_name='mxnet_example',
+                                    log_interval=1, metrics=[train_acc, train_loss, val_acc])
+
+est.fit(train_data=train_data_loader, val_data=val_data_loader,
+        epochs=num_epochs, event_handlers=[aim_log_handler])
+```
+
+See `AimCallback` source [here](https://github.com/aimhubio/aim/blob/main/aim/sdk/adapters/mxnet.py).  
+Check out a simple regression task example [here](https://github.com/aimhubio/aim/blob/main/examples/mxnet_track.py).
+
+
+### Integration with Optuna
+
+Aim provides a callback designed to automatically track [optuna](https://optuna.org/) trainings.
+The `as_multirun` is a boolean argument. If `as_multirun` is set True then the callback will create a run for each trial. Otherwise it will track all of the results in a single run.
+One can also use the decorator function `track_in_aim` to log inside the objective function.
+
+Step 1: Explicitly import the `AimCallback` for tracking training metadata.
+
+```python
+from aim.optuna import AimCallback
+```
+
+Step 2: Pass the callback to `cbs` list upon initiating your training.
+
+```python
+aim_callback = AimCallback(experiment_name="optuna_single_run")
+study.optimize(objective, n_trials=10, callbacks=[aim_callback])
+```
+
+See `AimCallback` source [here](https://github.com/aimhubio/aim/blob/main/aim/sdk/adapters/optuna.py).  
+Check out a simple objective optimization example [here](https://github.com/aimhubio/aim/blob/main/examples/optuna_track.py).
+
+### Integration with PaddlePaddle
+
+Aim provides a built in callback to easily track [PaddlePaddle](https://www.paddlepaddle.org.cn/en) trainings.
+It takes two steps to integrate Aim into your training script.
+
+Step 1: Explicitly import the `AimCallback` for tracking training metadata.
+
+```python
+from aim.paddle import AimCallback
+```
+
+Step 2: Pass the callback to `callbacks` list upon initiating your training.
+
+```python
+callback = AimCallback(repo='.', experiment='paddle_test')
+model.fit(train_dataset, eval_dataset, batch_size=64, callbacks=callback)
+```
+
+See `AimCallback` source [here](https://github.com/aimhubio/aim/blob/main/aim/sdk/adapters/paddle.py).  
+Check out a simple objective optimization example [here](https://github.com/aimhubio/aim/blob/main/examples/paddle_track.py).
+
+
 
 ### What's next?
 

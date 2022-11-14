@@ -7,9 +7,10 @@ export interface IStatisticsCardProps {
   icon?: IconName;
   iconBgColor?: string;
   cardBgColor?: string;
-  onMouseOver?: (id: string) => void;
+  onMouseOver?: (id: string, source: string) => void;
   onMouseLeave?: () => void;
   navLink?: string;
   highlighted?: boolean;
-  disabled?: boolean;
+  outlined?: boolean;
+  isLoading?: boolean;
 }

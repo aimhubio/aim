@@ -218,6 +218,7 @@ const Params = ({
                       resizeMode={resizeMode}
                       selectOptions={groupingSelectOptions}
                       onRunsTagsChange={onRunsTagsChange}
+                      onChangeTooltip={onChangeTooltip}
                       controls={
                         <Controls
                           curveInterpolation={curveInterpolation}

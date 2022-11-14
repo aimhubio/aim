@@ -16,10 +16,13 @@ function useProjectStatistics() {
     contributionsEngine.projectContributionsState((state) => state);
 
   React.useEffect(() => {
-    projectStatsEngine.fetchProjectParams();
+    if (!projectParamsStore.data) {
+      projectStatsEngine.fetchProjectParams();
+    }
     return () => {
       projectStatsEngine.destroy();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectStatsEngine]);
 
   return { projectParamsStore, projectContributionsStore };
