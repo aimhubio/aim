@@ -7,7 +7,6 @@ function useExperimentNotes(experimentId: string) {
 
   const experimentNoteState = engine.experimentNoteState((state) => state);
   React.useEffect(() => {
-    console.log(experimentNoteState?.data);
     if (!experimentNoteState?.data?.[0]) {
       engine.fetchExperimentNote(experimentId);
     }
