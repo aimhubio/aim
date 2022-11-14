@@ -33,6 +33,18 @@
       .RunNameColumn {
         margin: 0 $space-xs;
         font-size: $text-sm;
+        max-width: 85%;
+        &__runName {
+          max-width: calc(100% - 0.5rem);
+          display: flex;
+          a {
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            display: inline-block;
+          }
+        }
       }
     }
   }
