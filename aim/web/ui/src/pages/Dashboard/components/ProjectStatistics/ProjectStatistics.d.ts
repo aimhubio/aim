@@ -1,4 +1,5 @@
 import { IconName } from 'components/kit/Icon';
+import ITextProps from 'components/kit/Text/Text.d';
 
 export interface IProjectStatistic {
   label: string;
@@ -6,5 +7,5 @@ export interface IProjectStatistic {
   iconBgColor?: string;
   icon?: IconName;
   navLink?: string;
-  title?: string;
+  badge?: { value: string; color?: ITextProps['color'] };
 }
