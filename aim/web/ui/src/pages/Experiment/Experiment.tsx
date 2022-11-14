@@ -13,6 +13,9 @@ import { Paper, Tab, Tabs } from '@material-ui/core';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
+import NotificationContainer, {
+  useNotificationContainer,
+} from 'components/NotificationContainer';
 import { Spinner } from 'components/kit';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
@@ -56,6 +59,8 @@ function Experiment(): React.FunctionComponentElement<React.ReactNode> {
   const history = useHistory();
   const { experimentState, experimentsState, getExperimentsData } =
     useExperimentState(experimentId);
+  const { notificationState, onNotificationDelete } =
+    useNotificationContainer();
 
   const { pathname } = useLocation();
   const [activeTab, setActiveTab] = React.useState(pathname);
@@ -203,6 +208,10 @@ function Experiment(): React.FunctionComponentElement<React.ReactNode> {
           </Switch>
         </BusyLoaderWrapper>
       </section>
+      <NotificationContainer
+        handleClose={onNotificationDelete}
+        data={notificationState!}
+      />
     </ErrorBoundary>
   );
 }
