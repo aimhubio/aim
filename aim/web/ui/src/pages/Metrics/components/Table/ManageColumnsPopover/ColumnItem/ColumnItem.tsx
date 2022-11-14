@@ -103,6 +103,7 @@ function ColumnItem({
                 onClick={isNonHidable ? _.noop : onClick}
                 className={classNames('ColumnItem__toggle', {
                   disabled: isNonHidable,
+                  isHidden: isHidden,
                 })}
               >
                 <Icon
