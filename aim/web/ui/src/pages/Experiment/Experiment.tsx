@@ -19,8 +19,17 @@ import { setDocumentTitle } from 'utils/document/documentTitle';
 
 import useExperimentState from './useExperimentState';
 import ExperimentHeader from './components/ExperimentHeader';
+import { experimentContributionsFeedEngine } from './components/ExperimentOverviewTab/ExperimentContributionsFeed';
+import { experimentContributionsEngine } from './components/ExperimentOverviewTab/ExperimentContributions';
 
 import './Experiment.scss';
+
+const ExperimentOverviewTab = React.lazy(
+  () =>
+    import(
+      /* webpackChunkName: "ExperimentOverviewTab" */ './components/ExperimentOverviewTab'
+    ),
+);
 
 const tabs: { [key: string]: string } = {
   overview: 'Overview',
@@ -35,16 +44,24 @@ function Experiment(): React.FunctionComponentElement<React.ReactNode> {
   const history = useHistory();
   const { experimentState, experimentsState, getExperimentsData } =
     useExperimentState(experimentId);
+
   const { pathname } = useLocation();
   const [activeTab, setActiveTab] = React.useState(pathname);
 
   const { data: experimentData, loading: isExperimentLoading } =
     experimentState;
+
   const { data: experimentsData, loading: isExperimentsLoading } =
     experimentsState;
 
   const tabContent: { [key: string]: JSX.Element } = {
-    overview: <div>overview</div>,
+    overview: (
+      <ExperimentOverviewTab
+        experimentName={experimentData?.name ?? ''}
+        experimentId={experimentId}
+        description={experimentData?.description ?? ''}
+      />
+    ),
     runs: <div>runs</div>,
     notes: <div>notes</div>,
     settings: <div>settings</div>,
@@ -85,7 +102,18 @@ function Experiment(): React.FunctionComponentElement<React.ReactNode> {
   }, [experimentData]);
 
   React.useEffect(() => {
+    experimentContributionsFeedEngine.destroy();
+    experimentContributionsEngine.destroy();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [experimentId]);
+
+  React.useEffect(() => {
     redirect();
+
+    return () => {
+      experimentContributionsFeedEngine.destroy();
+      experimentContributionsEngine.destroy();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

@@ -1,9 +1,13 @@
 import { getAPIHost } from 'config/config';
 
 import ENDPOINTS from 'services/api/endpoints';
-import NetworkService from 'services/NetworkService';
+import NetworkService, { RequestInstance } from 'services/NetworkService';
 
-import { IExperimentData } from './types';
+import {
+  ExperimentRunsSearchQueryParams,
+  GetExperimentContributionsResult,
+  IExperimentData,
+} from './types';
 
 const api = new NetworkService(`${getAPIHost()}${ENDPOINTS.EXPERIMENTS.BASE}`);
 
@@ -88,6 +92,50 @@ async function getRunsOfExperiment(
   });
 }
 
+/**
+ * function getProjectContributions
+ * this call is used from DashboardPage page to show project contributions data
+ */
+async function getExperimentContributions(
+  id: string,
+): Promise<GetExperimentContributionsResult> {
+  return (
+    await api.makeAPIGetRequest(`${id}/${ENDPOINTS.EXPERIMENTS.GET_ACTIVITY}`)
+  ).body;
+}
+
+function createSearchExperimentRunsRequest(): RequestInstance {
+  const controller = new AbortController();
+  const signal = controller.signal;
+
+  async function call({
+    experimentId,
+    queryParams,
+  }: {
+    experimentId: string;
+    queryParams: ExperimentRunsSearchQueryParams;
+  }): Promise<any> {
+    return (
+      await api.makeAPIGetRequest(
+        `${ENDPOINTS.EXPERIMENTS.GET}${experimentId}/runs`,
+        {
+          query_params: queryParams,
+          signal,
+        },
+      )
+    ).body.runs;
+  }
+
+  function cancel(): void {
+    controller.abort();
+  }
+
+  return {
+    call,
+    cancel,
+  };
+}
+
 export {
   getExperiments,
   searchExperiment,
@@ -95,5 +143,7 @@ export {
   updateExperimentById,
   createExperiment,
   getRunsOfExperiment,
+  getExperimentContributions,
+  createSearchExperimentRunsRequest,
 };
 export * from './types';

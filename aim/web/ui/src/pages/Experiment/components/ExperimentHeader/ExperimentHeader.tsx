@@ -35,7 +35,7 @@ function ExperimentHeader({
           <div className='ExperimentHeader__headerContainer__appBarBox__navigationContainer'>
             <ControlPopover
               anchorOrigin={{
-                vertical: 'center',
+                vertical: 'bottom',
                 horizontal: 'left',
               }}
               transformOrigin={{
@@ -105,7 +105,7 @@ function ExperimentHeader({
                   <Icon name='calendar' fontSize={12} />
                   <Text size={11} tint={70} weight={400}>
                     {`${moment(
-                      (experimentData?.created_at || 123456) * 1000,
+                      (experimentData?.creation_time || 0) * 1000,
                     ).format(DATE_WITH_SECONDS)}`}
                   </Text>
                 </>

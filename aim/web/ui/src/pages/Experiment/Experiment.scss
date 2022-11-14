@@ -2,6 +2,7 @@
 
 .Experiment {
   height: 100%;
+  background: $cuddle-10;
   &__tabsContainer {
     background: $white;
     box-shadow: 0 toRem(4px) toRem(6px) rgba(144, 175, 218, 0.2),
