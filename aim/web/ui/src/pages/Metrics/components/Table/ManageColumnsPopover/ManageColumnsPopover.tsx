@@ -459,7 +459,7 @@ function ManageColumnsPopover({
                   size='xSmall'
                   onClick={() => onColumnsVisibilityChange([])}
                 >
-                  <Icon name='eye-show-outline' />
+                  <Icon name='eye-show-outline' color='#1473e6' />
                   <Text size={12} tint={100}>
                     show all
                   </Text>
