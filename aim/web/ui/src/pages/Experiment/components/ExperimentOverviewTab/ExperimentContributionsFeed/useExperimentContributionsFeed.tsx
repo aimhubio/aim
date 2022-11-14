@@ -1,5 +1,6 @@
 import React from 'react';
 import moment from 'moment';
+import _ from 'lodash-es';
 
 import { IResourceState } from 'modules/core/utils/createResource';
 import { ExperimentRun } from 'modules/core/api/experimentsApi';
@@ -30,12 +31,11 @@ function useExperimentContributionsFeed(
     contributionsEngine.experimentContributionsState((state) => state);
 
   React.useEffect(() => {
-    engine.fetchExperimentContributionsFeed(experimentId, {
-      limit: 25,
-    });
-    return () => {
-      engine.destroy();
-    };
+    if (_.isEmpty(contributionsFeedStore.data)) {
+      engine.fetchExperimentContributionsFeed(experimentId, {
+        limit: 25,
+      });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

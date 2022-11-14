@@ -70,7 +70,7 @@ function ExperimentNavigationPopover({
                         tint={experimentId === experiment.id ? 80 : 70}
                         weight={500}
                       >
-                        {`${moment(experiment.created_at * 1000).format(
+                        {`${moment(experiment.creation_time * 1000).format(
                           DATE_WITH_SECONDS,
                         )}`}
                       </Text>

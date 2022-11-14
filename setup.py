@@ -75,6 +75,7 @@ REQUIRED = [
     # fastapi to support python3.6
     'async-exit-stack>=1.0.0; python_version<"3.7"',
     'async-generator>=1.0; python_version<"3.7"',
+    'packaging>=15.0',
 ]
 
 if platform.machine() != 'arm64':

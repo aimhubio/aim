@@ -24,6 +24,8 @@ import { setDocumentTitle } from 'utils/document/documentTitle';
 import ExperimentNotesTab from './components/ExperimentNotesTab';
 import ExperimentHeader from './components/ExperimentHeader';
 import useExperimentState from './useExperimentState';
+import { experimentContributionsFeedEngine } from './components/ExperimentOverviewTab/ExperimentContributionsFeed';
+import { experimentContributionsEngine } from './components/ExperimentOverviewTab/ExperimentContributions';
 
 import './Experiment.scss';
 
@@ -47,6 +49,7 @@ function Experiment(): React.FunctionComponentElement<React.ReactNode> {
   const history = useHistory();
   const { experimentState, experimentsState, getExperimentsData } =
     useExperimentState(experimentId);
+
   const { pathname } = useLocation();
   const [activeTab, setActiveTab] = React.useState(pathname);
 
@@ -104,8 +107,19 @@ function Experiment(): React.FunctionComponentElement<React.ReactNode> {
   }, [experimentData]);
 
   React.useEffect(() => {
+    experimentContributionsFeedEngine.destroy();
+    experimentContributionsEngine.destroy();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [experimentId]);
+
+  React.useEffect(() => {
     redirect();
     analytics.pageView(ANALYTICS_EVENT_KEYS.experiment.pageView);
+
+    return () => {
+      experimentContributionsFeedEngine.destroy();
+      experimentContributionsEngine.destroy();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
