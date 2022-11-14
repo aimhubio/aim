@@ -28,9 +28,10 @@ async def get_experiments_list_api(factory=Depends(object_factory)):
     return [
         {'id': exp.uuid,
          'name': exp.name,
+         'description': exp.description,
          'run_count': len(exp.runs),
          'archived': exp.archived,
-         'created_at': exp.created_at.isoformat(timespec="seconds")
+         'creation_time': exp.creation_time
          } for exp in factory.experiments()]
 
 
@@ -70,7 +71,7 @@ async def get_experiment_api(exp_id: str, factory=Depends(object_factory)):
         'description': exp.description,
         'archived': exp.archived,
         'run_count': len(exp.runs),
-        'created_at': exp.created_at.isoformat(timespec="seconds")
+        'creation_time': exp.creation_time
     }
     return response
 

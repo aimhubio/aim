@@ -19,7 +19,7 @@ class ExperimentGetOut(BaseModel):
     description: Optional[str] = ''
     run_count: int
     archived: bool
-    created_at: str
+    creation_time: Optional[float]
 
 
 ExperimentListOut = List[ExperimentGetOut]
