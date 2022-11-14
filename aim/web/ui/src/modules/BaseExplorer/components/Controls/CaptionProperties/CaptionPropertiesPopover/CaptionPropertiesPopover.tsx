@@ -1,4 +1,5 @@
 import React from 'react';
+import { merge } from 'lodash-es';
 
 import { Checkbox, Divider, TextField } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
@@ -36,9 +37,11 @@ function CaptionPropertiesPopover(
 
   const handleSelect = React.useCallback(
     (values: SelectOption[]): void => {
+      const newFields = values.map((item: SelectOption) => item.value);
+
       updateCaptionProperties({
         ...captionProperties,
-        selectedFields: values.map((item: SelectOption) => item.value),
+        selectedFields: newFields,
       });
     },
     [captionProperties, updateCaptionProperties],
@@ -46,15 +49,22 @@ function CaptionPropertiesPopover(
 
   const onSelectedFieldsChange = React.useCallback(
     (e: any, values: SelectOption[]): void => {
-      if (e?.code !== 'Backspace') {
-        handleSelect(values);
-      } else {
-        if (searchValue.length === 0) {
-          handleSelect(values);
-        }
+      // skip Backspace if there is an input value to do not delete badge (the last selected field)
+      if (e?.code === 'Backspace' && searchValue.length) {
+        return;
       }
+
+      handleSelect(values);
     },
     [handleSelect, searchValue.length],
+  );
+
+  const onSearchInputChange = React.useCallback(
+    (e) => {
+      e.stopPropagation();
+      setSearchValue(e.target.value);
+    },
+    [setSearchValue],
   );
 
   const onDisplayBoxCaptionChange = React.useCallback(
@@ -67,25 +77,28 @@ function CaptionPropertiesPopover(
     [captionProperties, updateCaptionProperties],
   );
 
-  const options = React.useMemo(() => {
+  const allOptions: SelectOption[] = React.useMemo(() => {
     const modifiers = availableModifiers?.modifiers ?? [];
-    const optionsData: SelectOption[] = modifiers.map((modifier: string) => {
+    return modifiers.map((modifier: string) => {
       return {
         label: modifier,
         value: modifier,
         group: modifier.slice(0, modifier.indexOf('.')),
       };
     });
-    return (
-      optionsData?.filter(
-        (option: SelectOption) => option.label.indexOf(searchValue) !== -1,
-      ) ?? []
-    );
-  }, [availableModifiers?.modifiers, searchValue]);
+  }, [availableModifiers?.modifiers]);
+
+  const options = React.useMemo(() => {
+    return searchValue
+      ? allOptions?.filter(
+          (option: SelectOption) => option.label.indexOf(searchValue) !== -1,
+        )
+      : allOptions;
+  }, [allOptions, searchValue]);
 
   const values: SelectOption[] = React.useMemo(() => {
     let data: { value: string; group: string; label: string }[] = [];
-    options.forEach((option: SelectOption) => {
+    allOptions.forEach((option: SelectOption) => {
       if (captionProperties.selectedFields.indexOf(option.value) !== -1) {
         data.push(option);
       }
@@ -97,7 +110,7 @@ function CaptionPropertiesPopover(
         captionProperties.selectedFields.indexOf(a.value) -
         captionProperties.selectedFields.indexOf(b.value),
     );
-  }, [options, captionProperties.selectedFields]);
+  }, [allOptions, captionProperties.selectedFields]);
 
   return (
     <ErrorBoundary>
@@ -130,9 +143,7 @@ function CaptionPropertiesPopover(
                 inputProps={{
                   ...params.inputProps,
                   value: searchValue,
-                  onChange: (e: any) => {
-                    setSearchValue(e.target.value);
-                  },
+                  onChange: onSearchInputChange,
                 }}
                 className='TextField__OutLined__Small'
                 variant='outlined'
