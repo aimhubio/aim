@@ -157,4 +157,5 @@ export type IconName =
   | 'arrow-down-contained'
   | 'audio'
   | 'distributions'
-  | 'dashboard';
+  | 'dashboard'
+  | 'chart-legends';
