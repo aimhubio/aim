@@ -4,6 +4,8 @@ import { NavLink, useRouteMatch } from 'react-router-dom';
 
 import { Text, Button, Icon } from 'components/kit';
 
+import { IExperimentOverviewSidebarProps } from './ExperimentOverviewSidebar.d';
+
 import './ExperimentOverviewSidebar.scss';
 
 const CLOSED_DESCRIPTION_BOX_MAX_HEIGHT = 72;
@@ -15,13 +17,7 @@ function ExperimentOverviewSidebar({
   setContainerHeight,
   overviewSectionContentRef,
   description,
-}: {
-  sidebarRef: HTMLElement | any;
-  overviewSectionRef: React.RefObject<HTMLDivElement>;
-  setContainerHeight: (height: number | string) => void;
-  overviewSectionContentRef: any;
-  description: string;
-}): React.FunctionComponentElement<React.ReactNode> {
+}: IExperimentOverviewSidebarProps): React.FunctionComponentElement<React.ReactNode> {
   const { url } = useRouteMatch();
   const descriptionBoxRef = React.useRef<HTMLElement | any>(null);
   const [seeMoreDescription, setSeeMoreDescription] =

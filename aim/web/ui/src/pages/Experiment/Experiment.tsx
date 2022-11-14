@@ -13,6 +13,9 @@ import { Paper, Tab, Tabs } from '@material-ui/core';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
+import NotificationContainer, {
+  useNotificationContainer,
+} from 'components/NotificationContainer';
 import { Spinner } from 'components/kit';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
@@ -23,6 +26,9 @@ import { setDocumentTitle } from 'utils/document/documentTitle';
 
 import ExperimentHeader from './components/ExperimentHeader';
 import useExperimentState from './useExperimentState';
+import { experimentContributionsFeedEngine } from './components/ExperimentOverviewTab/ExperimentContributionsFeed';
+import { experimentContributionsEngine } from './components/ExperimentOverviewTab/ExperimentContributions';
+import { experimentNotesEngine } from './components/ExperimentNotesTab';
 
 import './Experiment.scss';
 
@@ -58,14 +64,16 @@ function Experiment(): React.FunctionComponentElement<React.ReactNode> {
   const { experimentId } = useParams<{ experimentId: string }>();
   const { url } = useRouteMatch();
   const history = useHistory();
+  const { pathname } = useLocation();
+  const [activeTab, setActiveTab] = React.useState(pathname);
   const {
     experimentState,
     experimentsState,
     getExperimentsData,
     updateExperiment,
   } = useExperimentState(experimentId);
-  const { pathname } = useLocation();
-  const [activeTab, setActiveTab] = React.useState(pathname);
+  const { notificationState, onNotificationDelete } =
+    useNotificationContainer();
 
   const { data: experimentData, loading: isExperimentLoading } =
     experimentState;
@@ -127,8 +135,21 @@ function Experiment(): React.FunctionComponentElement<React.ReactNode> {
   }, [experimentData]);
 
   React.useEffect(() => {
+    experimentContributionsFeedEngine.destroy();
+    experimentContributionsEngine.destroy();
+    experimentNotesEngine.destroy();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [experimentId]);
+
+  React.useEffect(() => {
     redirect();
     analytics.pageView(ANALYTICS_EVENT_KEYS.experiment.pageView);
+
+    return () => {
+      experimentContributionsFeedEngine.destroy();
+      experimentContributionsEngine.destroy();
+      experimentNotesEngine.destroy();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -203,6 +224,10 @@ function Experiment(): React.FunctionComponentElement<React.ReactNode> {
           </Switch>
         </BusyLoaderWrapper>
       </section>
+      <NotificationContainer
+        handleClose={onNotificationDelete}
+        data={notificationState!}
+      />
     </ErrorBoundary>
   );
 }

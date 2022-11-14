@@ -23,3 +23,11 @@
     }
   }
 }
+
+@media screen and (max-width: 1240px) {
+  .ExperimentOverviewTab {
+    &__content {
+      max-width: calc(100% - #{$run-overview-sidebar-width});
+    }
+  }
+}

@@ -5,11 +5,11 @@ import experimentNotesEngine from './ExperimentNotesEngine';
 function useExperimentNotes(experimentId: string) {
   const { current: engine } = React.useRef(experimentNotesEngine);
 
-  const experimentContributionsState = engine.experimentNoteState(
-    (state) => state,
-  );
+  const experimentNoteState = engine.experimentNoteState((state) => state);
   React.useEffect(() => {
-    engine.fetchExperimentNote(experimentId);
+    if (!experimentNoteState?.data?.[0]) {
+      engine.fetchExperimentNote(experimentId);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [experimentId]);
 
@@ -20,14 +20,14 @@ function useExperimentNotes(experimentId: string) {
   function onNoteUpdate(note: { content: string }) {
     engine.updateExperimentNote(
       experimentId,
-      `${experimentContributionsState?.data?.[0]?.id}`,
+      `${experimentNoteState?.data?.[0]?.id}`,
       note.content,
     );
   }
 
   return {
-    noteData: experimentContributionsState?.data?.[0],
-    isLoading: experimentContributionsState.loading,
+    noteData: experimentNoteState?.data?.[0],
+    isLoading: experimentNoteState.loading,
     onNoteCreate,
     onNoteUpdate,
   };

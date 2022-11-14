@@ -26,7 +26,7 @@ export interface IExperimentData {
   /**
    * The date the experiment have been created at in milliseconds
    */
-  created_at: number;
+  creation_time: number;
 }
 
 /**

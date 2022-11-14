@@ -126,6 +126,7 @@ function RunDetailNotesTab({
                 variant='contained'
                 size='small'
                 onClick={onNoteSave}
+                className='RunDetailNotesTab__Editor__actionPanel__saveBtn'
               >
                 Save
               </Button>
@@ -144,7 +145,11 @@ function RunDetailNotesTab({
           }}
           onChange={onNoteChange}
         />
-        {isLoading && <Spinner />}
+        {isLoading && (
+          <div className='RunDetailNotesTab__spinnerWrapper'>
+            <Spinner />
+          </div>
+        )}
       </div>
       {notifyData!.length > 0 && (
         <NotificationContainer

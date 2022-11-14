@@ -8,6 +8,7 @@
 - Add epoch tracking for PyTorch Lightning (tmynn)
 - Add PaddlePaddle integration (tmynn)
 - Add Optuna integration (tmynn)
+- Use `packaging` to parse version strings(jangop)
 
 ### Fixes:
 
