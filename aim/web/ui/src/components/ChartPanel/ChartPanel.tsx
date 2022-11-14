@@ -1,6 +1,5 @@
 import React from 'react';
 import _ from 'lodash-es';
-import { marked } from 'marked';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import SplitPane, { SplitPaneItem } from 'components/SplitPane';
@@ -187,13 +186,12 @@ const ChartPanel = React.forwardRef(function ChartPanel(
                       ? [100 - props.legends?.width!, props.legends?.width!]
                       : [100, 0]
                   }
-                  gutterSize={displayLegends ? 8 : 0}
+                  gutterSize={displayLegends ? 6 : 0}
                   resizing={legendsResizing}
                   onDragStart={onLegendsResizeStart}
                   onDragEnd={onLegendsResizeEnd}
                 >
                   <SplitPaneItem
-                    index={0}
                     ref={containerRef}
                     className='ChartPanel__grid'
                     resizingFallback={<ChartPanelResizingFallback />}
@@ -229,7 +227,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
                       />
                     </ErrorBoundary>
                   </SplitPaneItem>
-                  <SplitPaneItem index={1}>
+                  <SplitPaneItem>
                     {displayLegends && (
                       <ChartLegends
                         data={props.legendsData}

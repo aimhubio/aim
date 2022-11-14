@@ -55,6 +55,7 @@ function SplitPane(props: SplitPaneProps) {
       <SplitPaneContext.Provider value={{ resizing: resizingPane }}>
         <Split
           {...rest}
+          direction={direction}
           className={classNames('SplitPane', {
             [direction]: true,
             [className]: !!className,

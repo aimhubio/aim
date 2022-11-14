@@ -7,6 +7,8 @@ import { ResizeModeEnum } from 'config/enums/tableEnums';
 
 import { IResizePanelProps } from 'types/components/ResizePanel/ResizePanel';
 
+import ResizePanelDots from './ResizePanelDots';
+
 import './ResizePanel.scss';
 
 function ResizePanel({
@@ -34,12 +36,7 @@ function ResizePanel({
             onTableResizeModeChange={onTableResizeModeChange}
           />
         ) : (
-          <div className='ResizePanel__dots'>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
+          <ResizePanelDots direction='horizontal' />
         )}
       </div>
     </ErrorBoundary>
