@@ -270,6 +270,7 @@ class ModelMappedExperiment(IExperiment, metaclass=ModelMappedClassMeta):
         Property('uuid', with_setter=False),
         Property('archived', 'is_archived'),
         Property('created_at', with_setter=False),
+        Property('creation_time', 'created_at', get_modifier=timestamp_or_none, with_setter=False),
         Property('updated_at', with_setter=False),
         Property('notes', autogenerate=False)
     ]
