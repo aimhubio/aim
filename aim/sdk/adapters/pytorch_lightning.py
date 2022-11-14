@@ -2,13 +2,12 @@ import os
 from typing import Any, Dict, Optional, Union
 from argparse import Namespace
 
+import packaging.version
+
 try:
     import pytorch_lightning as pl
 
-    def versiontuple(v):
-        return tuple(map(int, (v.split("."))))
-
-    if versiontuple(pl.__version__) < (1, 7):
+    if packaging.version.parse(pl.__version__) < packaging.version.parse("1.7"):
         from pytorch_lightning.loggers.base import (
             LightningLoggerBase as Logger,
             rank_zero_experiment,
