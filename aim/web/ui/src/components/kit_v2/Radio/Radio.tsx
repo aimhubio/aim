@@ -9,16 +9,9 @@ import {
 
 import { styled } from 'config/stitches/stitches.config';
 
-import { IRadioProps } from './Radio.d';
+import { IRadioItemProps } from './Radio.d';
 
 const StyledRadioGroup = styled(Root, {});
-
-export const RadioGroup = React.forwardRef<
-  React.ElementRef<typeof StyledRadioGroup>,
-  RadioGroupProps
->(({ children, ...props }: RadioGroupProps) => (
-  <StyledRadioGroup {...props}>{children}</StyledRadioGroup>
-));
 
 const IndicatorWrapper = styled('span', {
   all: 'unset',
@@ -27,35 +20,15 @@ const IndicatorWrapper = styled('span', {
   width: 12,
   height: 12,
   br: '$round',
-  borderRadius: '100%',
   transition: 'all 0.2s ease-out',
-  boxShadow: 'inset 0 0 0 1px $colors$secondary100',
+  bs: 'inset 0 0 0 1px $colors$secondary100',
   cursor: 'pointer',
-  '&:hover': { bs: 'inset 0 0 0 1px $colors$primary100' },
-});
-
-const RadioItem = styled(Item, {
-  all: 'unset',
-  backgroundColor: 'white',
-  width: 20,
-  height: 20,
-  borderRadius: '100%',
-  transition: 'all 0.2s ease-out',
-  display: 'flex',
-  ai: 'center',
-  jc: 'center',
-  cursor: 'pointer',
-  '&[data-state="checked"]': {
-    [`& ${IndicatorWrapper}`]: {
-      bs: 'inset 0 0 0 1px $colors$primary100',
-    },
-  },
 });
 
 const RadioGroupIndicator = styled(Indicator, {
   display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
+  ai: 'center',
+  jc: 'center',
   width: '100%',
   height: '100%',
   position: 'relative',
@@ -70,13 +43,68 @@ const RadioGroupIndicator = styled(Indicator, {
   },
 });
 
-const Radio = React.forwardRef<React.ElementRef<typeof RadioItem>, IRadioProps>(
-  ({ ...props }: IRadioProps) => (
-    <RadioItem {...props}>
-      <IndicatorWrapper>
-        <RadioGroupIndicator />
-      </IndicatorWrapper>
-    </RadioItem>
+const RadioItem = styled(Item, {
+  all: 'unset',
+  bc: 'white',
+  size: '$1',
+  br: '$round',
+  transition: 'all 0.2s ease-out',
+  display: 'flex',
+  ai: 'center',
+  jc: 'center',
+  cursor: 'pointer',
+  '&:hover': {
+    [`& ${IndicatorWrapper}`]: {
+      bs: 'inset 0 0 0 1px $colors$primary100',
+    },
+  },
+  '&[data-state="checked"]': {
+    [`& ${IndicatorWrapper}`]: {
+      bs: 'inset 0 0 0 1px $colors$primary100',
+    },
+  },
+});
+
+const Flex = styled('div', {
+  display: 'flex',
+  '&[data-disabled]': {
+    pointerEvents: 'none',
+    [`& ${IndicatorWrapper}`]: {
+      bs: 'inset 0 0 0 1px $colors$secondary50 !important',
+    },
+    [`& ${RadioGroupIndicator}`]: {
+      '&::after': {
+        bc: '$secondary50',
+      },
+    },
+  },
+});
+
+const RadioLabel = styled('label', {
+  cursor: 'pointer',
+});
+
+export const RadioGroup = React.forwardRef<
+  React.ElementRef<typeof StyledRadioGroup>,
+  RadioGroupProps
+>(({ children, ...props }: RadioGroupProps) => (
+  <StyledRadioGroup {...props}>{children}</StyledRadioGroup>
+));
+
+const Radio = React.forwardRef<React.ElementRef<typeof Flex>, IRadioItemProps>(
+  ({ ...props }: IRadioItemProps, forwardedRef) => (
+    <Flex ref={forwardedRef} data-disabled={props.disabled}>
+      <RadioItem {...props} id={props.id || props.value}>
+        <IndicatorWrapper>
+          <RadioGroupIndicator />
+        </IndicatorWrapper>
+      </RadioItem>
+      {props.children ? (
+        <RadioLabel htmlFor={props.id || props.value}>
+          {props.children}
+        </RadioLabel>
+      ) : null}
+    </Flex>
   ),
 );
 
