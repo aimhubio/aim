@@ -2,7 +2,6 @@
 
 ## Unreleased
 
-
 ### Enhancements:
 
 - Add chart legends to the Metrics Explorer (KaroMourad)
@@ -11,10 +10,21 @@
 - Add epoch tracking for PyTorch Lightning (tmynn)
 - Add PaddlePaddle integration (tmynn)
 - Add Optuna integration (tmynn)
+- Use `packaging` to parse version strings(jangop)
 
 ### Fixes:
+
 - Fix multiple progress bars handling for terminal logs capturing (mihran113)
 - Handle resources when multiple `Ctrl-C`s are pressed (alberttorosyan)
+- Remove non unicode symbols from `aim up` command logs (mihran113)
+
+## 3.14.4 Nov 11, 2022
+
+- Fix dropdowns' selected options losses in time of searching other options in Figures Explorer (rubenaprikyan)
+- Fix the group property name visibility in the images and audio tabs (VkoHov)
+- Change the color contrast of the icons in the manage columns popover (VkoHov)
+- Add notifier config files to aim package (alberttorosyan)
+- Fix audios to numpy conversion (mihran113)
 
 ## 3.14.3 Oct 29, 2022
 
