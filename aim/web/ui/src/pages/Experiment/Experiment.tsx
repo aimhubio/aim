@@ -21,7 +21,6 @@ import * as analytics from 'services/analytics';
 
 import { setDocumentTitle } from 'utils/document/documentTitle';
 
-import ExperimentNotesTab from './components/ExperimentNotesTab';
 import ExperimentHeader from './components/ExperimentHeader';
 import useExperimentState from './useExperimentState';
 
@@ -31,6 +30,20 @@ const ExperimentOverviewTab = React.lazy(
   () =>
     import(
       /* webpackChunkName: "ExperimentOverviewTab" */ './components/ExperimentOverviewTab'
+    ),
+);
+
+const ExperimentNotesTab = React.lazy(
+  () =>
+    import(
+      /* webpackChunkName: "ExperimentOverviewTab" */ './components/ExperimentNotesTab'
+    ),
+);
+
+const ExperimentSettingsTab = React.lazy(
+  () =>
+    import(
+      /* webpackChunkName: "ExperimentOverviewTab" */ './components/ExperimentSettingsTab'
     ),
 );
 
@@ -66,7 +79,14 @@ function Experiment(): React.FunctionComponentElement<React.ReactNode> {
     ),
     runs: <div>runs</div>,
     notes: <ExperimentNotesTab experimentId={experimentId} />,
-    settings: <div>settings</div>,
+    settings: (
+      <ExperimentSettingsTab
+        experimentId={experimentId}
+        experimentName={experimentData?.name ?? ''}
+        experimentDescription={experimentData?.description ?? ''}
+        isExperimentArchived={experimentData?.archived ?? ''}
+      />
+    ),
   };
 
   function handleTabChange(event: React.ChangeEvent<{}>, newValue: string) {
