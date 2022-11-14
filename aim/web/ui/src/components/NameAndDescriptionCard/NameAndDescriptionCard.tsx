@@ -13,6 +13,7 @@ import { INameAndDescriptionCardProps } from './NameAndDescriptionCard.d';
 import './NameAndDescriptionCard.scss';
 
 function NameAndDescriptionCard({
+  title = 'Run Properties',
   defaultName,
   defaultDescription,
   onSave,
@@ -45,7 +46,7 @@ function NameAndDescriptionCard({
       <div className='NameAndDescriptionCard'>
         <div className='NameAndDescriptionCard__header'>
           <Text component='h4' weight={600} size={14} tint={100}>
-            Run Properties
+            {title}
           </Text>
           <Button
             onClick={saveHandler}

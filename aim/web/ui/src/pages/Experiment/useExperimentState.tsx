@@ -29,6 +29,7 @@ function useExperimentState(experimentId: string) {
     experimentState,
     experimentsState,
     getExperimentsData: engine.fetchExperimentsData,
+    updateExperiment: engine.updateExperiment,
   };
 }
 

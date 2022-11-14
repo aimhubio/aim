@@ -58,8 +58,12 @@ function Experiment(): React.FunctionComponentElement<React.ReactNode> {
   const { experimentId } = useParams<{ experimentId: string }>();
   const { url } = useRouteMatch();
   const history = useHistory();
-  const { experimentState, experimentsState, getExperimentsData } =
-    useExperimentState(experimentId);
+  const {
+    experimentState,
+    experimentsState,
+    getExperimentsData,
+    updateExperiment,
+  } = useExperimentState(experimentId);
   const { pathname } = useLocation();
   const [activeTab, setActiveTab] = React.useState(pathname);
 
@@ -81,10 +85,9 @@ function Experiment(): React.FunctionComponentElement<React.ReactNode> {
     notes: <ExperimentNotesTab experimentId={experimentId} />,
     settings: (
       <ExperimentSettingsTab
-        experimentId={experimentId}
         experimentName={experimentData?.name ?? ''}
         experimentDescription={experimentData?.description ?? ''}
-        isExperimentArchived={experimentData?.archived ?? ''}
+        updateExperiment={updateExperiment}
       />
     ),
   };

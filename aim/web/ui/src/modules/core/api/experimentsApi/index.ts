@@ -52,7 +52,7 @@ async function getExperimentById(id: string): Promise<IExperimentData> {
  * @returns {Promise<status: string, id: string>}
  */
 async function updateExperimentById(
-  reqBody: { name?: string; archived?: boolean },
+  reqBody: { name?: string; description?: string; archived?: boolean },
   id: string,
 ): Promise<{ status: string; id: string }> {
   return (
