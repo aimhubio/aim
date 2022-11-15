@@ -6,9 +6,9 @@ import {
 } from 'modules/core/api/experimentsApi';
 import createResource from 'modules/core/utils/createResource';
 
-import * as analytics from 'services/analytics';
-
 import { notificationContainerStore } from 'components/NotificationContainer';
+
+import * as analytics from 'services/analytics';
 
 function experimentEngine() {
   const {
