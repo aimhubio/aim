@@ -27,26 +27,28 @@ function experimentEngine() {
     updateExperimentById(
       { name, description, archived: experimentData?.archived },
       experimentData?.id || '',
-    ).then((res) => {
-      experimentState.setState((prev: any) => ({
-        ...prev,
-        data: { ...prev.data, name, description },
-      }));
-      if (res.id) {
+    )
+      .then((res) => {
+        experimentState.setState((prev: any) => ({
+          ...prev,
+          data: { ...prev.data, name, description },
+        }));
         notificationContainerStore.onNotificationAdd({
           id: Date.now(),
           messages: ['Changes successfully saved'],
           severity: 'success',
         });
-      } else {
+        analytics.trackEvent(
+          '[Experiment] Edit Experiment name and description',
+        );
+      })
+      .catch((err) => {
         notificationContainerStore.onNotificationAdd({
           id: Date.now(),
-          messages: ['Something went wrong'],
-          severity: 'success',
+          messages: [err.message || 'Something went wrong'],
+          severity: 'error',
         });
-      }
-      analytics.trackEvent('[Experiment] Edit Experiment name and description');
-    });
+      });
   }
 
   return {

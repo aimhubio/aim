@@ -1,5 +1,4 @@
 import React from 'react';
-import { merge } from 'lodash-es';
 
 import { Checkbox, Divider, TextField } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';

@@ -33,7 +33,9 @@
       .RunNameColumn {
         margin: 0 $space-xs;
         font-size: $text-sm;
-        max-width: 85%;
+
+        max-width: calc(100% - 10rem);
+
         &__runName {
           max-width: calc(100% - 0.5rem);
           display: flex;

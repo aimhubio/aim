@@ -14,11 +14,11 @@ function useExperimentNotes(experimentId: string) {
   }, [experimentId]);
 
   function onNoteCreate(note: { content: string }) {
-    engine.createExperimentNote(experimentId, note.content);
+    return engine.createExperimentNote(experimentId, note.content);
   }
 
   function onNoteUpdate(note: { content: string }) {
-    engine.updateExperimentNote(
+    return engine.updateExperimentNote(
       experimentId,
       `${experimentNoteState?.data?.[0]?.id}`,
       note.content,

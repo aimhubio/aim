@@ -16,29 +16,45 @@ function createExperimentNotesEngine() {
   return {
     fetchExperimentNote: (experimentId: string) => fetchData(experimentId),
     createExperimentNote: (experimentId: string, content: string) =>
-      createExperimentNote(experimentId, { content }).then(() =>
-        notificationContainerStore.onNotificationAdd({
-          id: Date.now(),
-          messages: ['Note successfully created'],
-          severity: 'success',
-        }),
-      ),
+      createExperimentNote(experimentId, { content })
+        .then(() =>
+          notificationContainerStore.onNotificationAdd({
+            id: Date.now(),
+            messages: ['Note successfully created'],
+            severity: 'success',
+          }),
+        )
+        .catch((err) =>
+          notificationContainerStore.onNotificationAdd({
+            id: Date.now(),
+            messages: [err.message || 'Something went wrong'],
+            severity: 'error',
+          }),
+        ),
     updateExperimentNote: (
       experimentId: string,
       noteId: string,
       content: string,
     ) => {
-      updateExperimentNote(experimentId, noteId, { content }).then((res) => {
-        state.setState((prev: any) => ({
-          ...prev,
-          data: [{ ...prev.data[0], updated_at: res.updated_at }],
-        }));
-        notificationContainerStore.onNotificationAdd({
-          id: Date.now(),
-          messages: ['Note successfully updated'],
-          severity: 'success',
+      return updateExperimentNote(experimentId, noteId, { content })
+        .then((res) => {
+          state.setState((prev: any) => ({
+            ...prev,
+            data: [{ ...prev.data[0], updated_at: res.updated_at }],
+          }));
+          notificationContainerStore.onNotificationAdd({
+            id: Date.now(),
+            messages: ['Note successfully updated'],
+            severity: 'success',
+          });
+        })
+        .catch((err) => {
+          notificationContainerStore.onNotificationAdd({
+            id: Date.now(),
+            messages: [err.message || 'Something went wrong'],
+            severity: 'error',
+          });
         });
-      });
     },
     experimentNoteState: state,
     destroy,

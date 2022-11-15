@@ -6,7 +6,7 @@ import { RequestOptions } from 'services/NetworkService';
 import { IRun } from 'types/services/models/metrics/runModel';
 
 function createExperimentContributionsFeedEngine() {
-  let { call, cancel } = createSearchExperimentRunsRequest();
+  let { call } = createSearchExperimentRunsRequest();
 
   const { fetchData, state, destroy } = createResource<IRun<unknown>[]>(
     async (experimentId: string, queryParams: RequestOptions['query_params']) =>
