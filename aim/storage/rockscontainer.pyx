@@ -8,7 +8,7 @@ from typing import Iterator, Optional, Tuple
 
 from aim.ext.cleanup import AutoClean
 from aim.ext.exception_resistant import exception_resistant
-from aim.storage.locking import AutoFileLock
+from aim.storage.locking import SoftFileLock, NoopLock
 from aim.storage.types import BLOB
 from aim.storage.container import Container, ContainerKey, ContainerValue, ContainerItemsIterator
 from aim.storage.prefixview import PrefixView
@@ -107,6 +107,10 @@ class RocksContainer(Container):
     # The following properties are linked to self._resources to
     # ensure that the resources are closed when the container gone.
 
+    def get_lock_cls(self):
+        """Default locking is no-op. Container locking to be handled externally."""
+        return NoopLock
+
     @property
     def _db(self):
         return self._resources._db
@@ -133,7 +137,8 @@ class RocksContainer(Container):
             lock_path = prepare_lock_path(self.path)
             self._lock_path = lock_path
             timeout = self._extra_opts.get('timeout', 10)
-            self._lock = AutoFileLock(self._lock_path, timeout)
+            lock_cls = self.get_lock_cls()
+            self._lock = lock_cls(self._lock_path, timeout)
             self._lock.acquire()
         else:
             self.optimize_for_read()
@@ -165,9 +170,6 @@ class RocksContainer(Container):
 
         for k, v in self.items():
             index[k] = v
-
-        self._db.flush()
-        self._db.flush_wal()
 
         self._progress_path.unlink()
         self._progress_path = None
@@ -560,7 +562,7 @@ def optimize_db_for_read(path: Path, options: dict, run_compactions: bool = Fals
     if non_empty_wal():
         lock_path = prepare_lock_path(path)
 
-        with AutoFileLock(lock_path, timeout=0):
+        with SoftFileLock(lock_path, timeout=0):
             wdb = aimrocks.DB(str(path), aimrocks.Options(**options), read_only=False)
             wdb.flush()
             wdb.flush_wal()
@@ -612,3 +614,9 @@ class RocksContainerItemsIterator(ContainerItemsIterator):
             return key, self.container._get_blob(key)
 
         return key, value
+
+
+class LockableRocksContainer(RocksContainer):
+    def get_lock_cls(self):
+        """Use Unix file-locks or Soft file-locks depending on the FS type."""
+        return SoftFileLock
