@@ -8,6 +8,7 @@ import {
   GetExperimentContributionsResult,
   GetExperimentNoteResult,
   IExperimentData,
+  UpdateExperimentByIdReqBodyType,
 } from './types';
 
 const api = new NetworkService(`${getAPIHost()}${ENDPOINTS.EXPERIMENTS.BASE}`);
@@ -52,7 +53,7 @@ async function getExperimentById(id: string): Promise<IExperimentData> {
  * @returns {Promise<status: string, id: string>}
  */
 async function updateExperimentById(
-  reqBody: { name?: string; description?: string; archived?: boolean },
+  reqBody: UpdateExperimentByIdReqBodyType,
   id: string,
 ): Promise<{ status: string; id: string }> {
   return (

@@ -28,9 +28,8 @@ function experimentEngine() {
       { name, description, archived: experimentData?.archived },
       experimentData?.id || '',
     )
-      .then((res) => {
+      .then(() => {
         experimentState.setState((prev: any) => ({
-          ...prev,
           data: { ...prev.data, name, description },
         }));
         notificationContainerStore.onNotificationAdd({
