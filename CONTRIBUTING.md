@@ -85,7 +85,7 @@ as a check on GitHub Actions when new PR opened.
 New unit-tests must be added along with the code changes. In order to setup the testing environment
 ```shell
 cd tests
-pip install requirements.txt
+pip install -r requirements.txt
 ```
 
 Aim python code unit-tests are located at `tests/` directory. Unit-tests are written in Python's `unittest` package style.

@@ -2,7 +2,7 @@ import pytest
 import numpy as np
 from parameterized import parameterized
 
-from tests.base import PrefilledDataApiTestBase
+from tests.base import PrefilledDataApiTestBase, ApiTestBase
 from tests.utils import decode_encoded_tree_stream
 
 from aim.storage.treeutils import decode_tree
@@ -205,3 +205,39 @@ class TestRunApi(PrefilledDataApiTestBase):
             if run.name == name or run.get('name') == name:
                 return run
         return None
+
+
+class TestRunInfoApi(ApiTestBase):
+    @pytest.mark.gh_2267
+    def test_run_info_api_with_tags(self):
+        """covers https://github.com/aimhubio/aim/issues/2267"""
+        run = Run(system_tracking_interval=None)
+        run.add_tag('Best Run')
+        run.close()
+
+        client = self.client
+        response = client.get(f'/api/runs/{run.hash}/info/')
+        self.assertEqual(200, response.status_code)
+
+        data = response.json()
+        run_props = data['props']
+
+        self.assertEqual(1, len(run_props['tags']))
+        self.assertEqual('Best Run', run_props['tags'][0]['name'])
+        self.assertIsNone(run_props['tags'][0]['color'])
+        self.assertIsNone(run_props['tags'][0]['description'])
+        tag_id = run_props['tags'][0]['id']
+
+        # Edit tag
+        tag = self.repo.structured_db.find_tag(tag_id)
+        tag.description = 'Long description for tag'
+
+        response = client.get(f'/api/runs/{run.hash}/info/')
+        self.assertEqual(200, response.status_code)
+
+        data = response.json()
+        run_props = data['props']
+
+        self.assertEqual(1, len(run_props['tags']))
+        self.assertEqual('Long description for tag', run_props['tags'][0]['description'])
+

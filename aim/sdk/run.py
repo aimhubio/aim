@@ -88,6 +88,10 @@ class RunAutoClean(AutoClean['Run']):
             logger.debug('Stopping resource tracker')
             self._system_resource_tracker.stop()
 
+    def empty_rpc_queue(self):
+        if self.repo.is_remote_repo:
+            self.repo._client.get_queue(self.hash).wait_for_finish()
+
     def finalize_rpc_queue(self):
         if self.repo.is_remote_repo:
             self.repo._client.get_queue(self.hash).stop()
@@ -101,6 +105,7 @@ class RunAutoClean(AutoClean['Run']):
             logger.debug(f'Run {self.hash} is read-only, skipping cleanup')
             return
         self.finalize_system_tracker()
+        self.empty_rpc_queue()
         self.finalize_run()
         self.finalize_rpc_queue()
         if self._heartbeat is not None:
@@ -499,7 +504,9 @@ class Run(BaseRun, StructuredRunMixin):
             >>> for metric in run.metrics():
             >>>     metric.values.sparse_numpy()
         """
-        return SingleRunSequenceCollection(self)
+        from aim.sdk.sequences.metric import Metric
+        self.repo._prepare_runs_cache()
+        return SingleRunSequenceCollection(self, seq_cls=Metric)
 
     def __eq__(self, other: 'Run') -> bool:
         return self.hash == other.hash and self.repo == other.repo

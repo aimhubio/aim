@@ -2,13 +2,12 @@ import os
 from typing import Any, Dict, Optional, Union
 from argparse import Namespace
 
+import packaging.version
+
 try:
     import pytorch_lightning as pl
 
-    def versiontuple(v):
-        return tuple(map(int, (v.split("."))))
-
-    if versiontuple(pl.__version__) < (1, 7):
+    if packaging.version.parse(pl.__version__) < packaging.version.parse("1.7"):
         from pytorch_lightning.loggers.base import (
             LightningLoggerBase as Logger,
             rank_zero_experiment,
@@ -111,7 +110,14 @@ class AimLogger(Logger):
         assert rank_zero_only.rank == 0, \
             'experiment tried to log from global_rank != 0'
 
-        for k, v in metrics.items():
+        metric_items: Dict[str: Any] = {k: v for k, v in metrics.items()}
+
+        if 'epoch' in metric_items:
+            epoch: int = metric_items.pop('epoch')
+        else:
+            epoch = None
+
+        for k, v in metric_items.items():
             name = k
             context = {}
             if self._train_metric_prefix \
@@ -126,7 +132,7 @@ class AimLogger(Logger):
                     and name.startswith(self._val_metric_prefix):
                 name = name[len(self._val_metric_prefix):]
                 context['subset'] = 'val'
-            self.experiment.track(v, name=name, step=step, context=context)
+            self.experiment.track(v, name=name, step=step, epoch=epoch, context=context)
 
     @rank_zero_only
     def finalize(self, status: str = '') -> None:
