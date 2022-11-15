@@ -21,7 +21,7 @@ function useExperimentContributionsFeed(
 ) {
   const [data, setData] = React.useState<any>([]);
   const { current: engine } = React.useRef(experimentContributionsFeedEngine);
-  const contributionsFeedStore: IResourceState<any[]> =
+  const contributionsFeedStore: IResourceState<ExperimentRun[]> =
     engine.experimentContributionsFeedState((state) => state);
 
   const { current: contributionsEngine } = React.useRef(
