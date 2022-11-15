@@ -23,10 +23,11 @@ from aim.sdk.sequence import Sequence
 from aim.sdk.types import QueryReportMode
 from aim.sdk.data_version import DATA_VERSION
 from aim.sdk.remote_repo_proxy import RemoteRepoProxy
+from aim.sdk.lock_manager import LockManager
 
-from aim.storage.locking import AutoFileLock
+from aim.storage.locking import SoftFileLock
 from aim.storage.container import Container
-from aim.storage.rockscontainer import RocksContainer
+from aim.storage.rockscontainer import RocksContainer, LockableRocksContainer
 from aim.storage.union import RocksUnionContainer
 from aim.storage.treeviewproxy import ProxyTree
 
@@ -118,6 +119,7 @@ class Repo:
 
         if init:
             os.makedirs(self.path, exist_ok=True)
+            os.makedirs(os.path.join(self.path, 'locks'))
         if not self.is_remote_repo and not os.path.exists(self.path):
             if self._mount_root:
                 unmount_remote_repo(self.root_path, self._mount_root)
@@ -132,13 +134,13 @@ class Repo:
         self.structured_db = None
 
         if not self.is_remote_repo:
-            self._lock_path = os.path.join(self.path, '.repo_lock')
-            self._lock = AutoFileLock(self._lock_path, timeout=10)
+            self._sdb_lock_path = os.path.join(self.path, 'locks', 'structured_db_lock')
+            self._sdb_lock = SoftFileLock(self._sdb_lock_path, timeout=10)
 
             status = self.check_repo_status(self.root_path)
             self.structured_db = DB.from_path(self.path)
             if init or status == RepoStatus.PATCH_REQUIRED:
-                with self._lock:
+                with self._sdb_lock:
                     self.structured_db.run_upgrades()
                     with open(os.path.join(self.path, 'VERSION'), 'w') as version_fh:
                         version_fh.write('.'.join(map(str, DATA_VERSION)) + '\n')
@@ -327,7 +329,7 @@ class Repo:
         container = self.container_pool.get(container_config)
         if container is None:
             path = os.path.join(self.path, name)
-            container = RocksContainer(path, read_only=False, timeout=timeout)
+            container = LockableRocksContainer(path, read_only=False, timeout=timeout)
             self.container_pool[container_config] = container
 
         return container
@@ -389,7 +391,7 @@ class Repo:
                 if read_only:
                     raise RepoIntegrityError(f'Missing props for Run {hash_}')
                 else:
-                    with self._lock:
+                    with self._sdb_lock:
                         _props = self.structured_db.create_run(hash_)
             if self.run_props_cache_hint:
                 self.structured_db.caches[self.run_props_cache_hint][hash_] = _props
@@ -797,11 +799,10 @@ class Repo:
         self.run_props_cache_hint = cache_name
 
     def _delete_run(self, run_hash):
-        # try to acquire a lock on a run container to check if it is still in progress or not
-        # in progress runs can't be deleted
-        lock_path = os.path.join(self.path, 'meta', 'locks', run_hash)
-        lock = AutoFileLock(lock_path, timeout=0)
-        lock.acquire()
+        # check run lock info. in progress runs can't be deleted
+        lock_manager = LockManager(self.path)
+        if lock_manager.get_run_lock_info(run_hash).locked:
+            raise RuntimeError(f'Cannot delete Run \'{run_hash}\'. Run is locked.')
 
         with self.structured_db:  # rollback db entity delete if subsequent actions fail.
             # remove database entry
@@ -826,11 +827,11 @@ class Repo:
                     shutil.rmtree(seqs_path, ignore_errors=True)
 
     def _copy_run(self, run_hash, dest_repo):
-        # try to acquire a lock on a run container to check if it is still in progress or not
-        # in progress runs can't be copied
-        lock_path = os.path.join(self.path, 'meta', 'locks', run_hash)
-        lock = AutoFileLock(lock_path, timeout=0)
-        lock.acquire()
+        # check run lock info. in progress runs can't be copied
+        lock_manager = LockManager(self.path)
+        if lock_manager.get_run_lock_info(run_hash).locked:
+            raise RuntimeError(f'Cannot copy Run \'{run_hash}\'. Run is locked.')
+
         with dest_repo.structured_db:  # rollback destination db entity if subsequent actions fail.
             # copy run structured data
             source_structured_run = self.structured_db.find_run(run_hash)
