@@ -7,7 +7,7 @@ import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import * as analytics from 'services/analytics';
 
-import { IExperimentSettingsTabProps } from './ExperimentSettingsTab.d';
+import { IExperimentSettingsTabProps } from '.';
 
 import './ExperimentSettingsTab.scss';
 
