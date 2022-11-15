@@ -1,5 +1,6 @@
 import click
 from aim import Run
+import pandas as pd
 
 
 def parse_wandb_logs(repo_inst, entity, project, run_id):
@@ -42,7 +43,7 @@ def parse_wandb_logs(repo_inst, entity, project, run_id):
             for tag in run.tags:
                 aim_run.add_tag(tag)
 
-            records = run.history()
+            records = pd.DataFrame(list(run.scan_history())
             keys = [key for key in run.history().keys()
                     if not key.startswith('_')]
 
