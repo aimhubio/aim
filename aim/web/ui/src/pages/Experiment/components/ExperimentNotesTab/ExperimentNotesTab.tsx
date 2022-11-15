@@ -46,11 +46,11 @@ function ExperimentNotesTab(
     if (noteData?.id) {
       onNoteUpdate({
         content: editorRef.current.value(),
-      });
+      }).catch(() => setSaveDisabled(false));
     } else {
       onNoteCreate({
         content: editorRef.current.value(),
-      });
+      }).catch(() => setSaveDisabled(false));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [noteData?.id, props.experimentId]);

@@ -39,6 +39,7 @@ function useReleaseNotes() {
       releaseNotesEngine.fetchReleases();
     }
     return () => {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       releaseNoteRef?.current?.removeEventListener(
         'scroll',
         onChangelogContentScroll,
@@ -89,6 +90,7 @@ function useReleaseNotes() {
       if (index < 4) {
         listElements.push(
           li.innerText.replace(
+            // eslint-disable-next-line no-useless-escape
             /(\sby\s\@[A-z\d](?:[A-z\d]|-(?=[A-z\d])){0,38}\s\w+\shttps\:\/\/github\.com\/((\w+\/?){4}))/g,
             '',
           ),
@@ -102,6 +104,7 @@ function useReleaseNotes() {
 
   // function to modify release notes name
   function modifyReleaseName(releaseTitle: string): string {
+    // eslint-disable-next-line no-useless-escape
     return releaseTitle.replace(/(^\🚀\s*v\d+\.\d+\.\d+\s*\-\s*)/, '');
   }
 
@@ -117,6 +120,7 @@ function useReleaseNotes() {
           info: modifyReleaseName(release.name),
           url: release.html_url,
         });
+        return false;
       });
       return data;
     }, [releaseNotesStore.data]);
