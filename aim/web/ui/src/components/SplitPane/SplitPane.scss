@@ -21,6 +21,9 @@
       background-size: 0.3em auto;
       cursor: col-resize;
     }
+    .SplitPaneItem {
+      overflow-x: auto;
+    }
   }
   &.vertical {
     flex-direction: column;
@@ -29,6 +32,8 @@
       background-size: auto 0.3em;
       cursor: row-resize;
     }
+    .SplitPaneItem {
+      overflow-y: auto;
+    }
   }
-  .SplitPaneItem {}
 }

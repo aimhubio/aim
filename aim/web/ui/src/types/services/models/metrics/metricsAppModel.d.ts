@@ -115,7 +115,6 @@ export interface ITooltip extends Partial<ITooltipConfig> {
 export interface LegendsConfig {
   display: boolean;
   mode: LegendsModeEnum;
-  width: number; // percent
 }
 
 export interface IMetricsCollection<T> {

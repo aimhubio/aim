@@ -14,6 +14,8 @@ import {
 
 import { ChartTypeEnum } from 'utils/d3';
 
+import { IFocusedState } from '../../types/services/models/metrics/metricsAppModel';
+
 import ChartPopover from './ChartPopover';
 import ChartGrid from './ChartGrid';
 import ChartLegends from './ChartLegends';
@@ -36,21 +38,21 @@ const ChartPanel = React.forwardRef(function ChartPanel(
   } | null>(null);
   const [legendsResizing, setLegendsResizing] = React.useState(false);
 
-  const containerRef = React.useRef<HTMLDivElement>(null);
+  const gridRef = React.useRef<HTMLDivElement>(null);
   const activePointRef = React.useRef<IActivePoint | null>(null);
 
   const setActiveElemPos = React.useCallback(() => {
     if (
       activePointRef.current &&
-      containerRef.current &&
+      gridRef.current &&
       activePointRef.current?.pointRect !== null
     ) {
       const { pointRect } = activePointRef.current;
 
       setActivePointRect({
         ...pointRect,
-        top: pointRect.top - containerRef.current.scrollTop,
-        left: pointRect.left - containerRef.current.scrollLeft,
+        top: pointRect.top - gridRef.current.scrollTop,
+        left: pointRect.left - gridRef.current.scrollLeft,
       });
     } else {
       setActivePointRect(null);
@@ -123,13 +125,9 @@ const ChartPanel = React.forwardRef(function ChartPanel(
     setLegendsResizing(true);
   }, []);
 
-  const onLegendsResizeEnd = React.useCallback(
-    (sizes: number[]): void => {
-      props.onLegendsChange?.({ width: sizes[1] });
-      setLegendsResizing(false);
-    },
-    [props.onLegendsChange],
-  );
+  const onLegendsResizeEnd = React.useCallback((): void => {
+    setLegendsResizing(false);
+  }, []);
 
   React.useImperativeHandle(ref, () => ({
     setActiveLineAndCircle: (
@@ -163,10 +161,10 @@ const ChartPanel = React.forwardRef(function ChartPanel(
 
   React.useEffect(() => {
     const debouncedScroll = _.debounce(onScroll, 100);
-    const containerNode = containerRef.current;
-    containerNode?.addEventListener('scroll', debouncedScroll);
+    const gridNode = gridRef.current;
+    gridNode?.addEventListener('scroll', debouncedScroll);
     return () => {
-      containerNode?.removeEventListener('scroll', debouncedScroll);
+      gridNode?.removeEventListener('scroll', debouncedScroll);
     };
   }, [onScroll]);
 
@@ -180,19 +178,18 @@ const ChartPanel = React.forwardRef(function ChartPanel(
             <ErrorBoundary>
               <div className='ChartPanel'>
                 <SplitPane
-                  minSize={0}
-                  sizes={
-                    displayLegends
-                      ? [100 - props.legends?.width!, props.legends?.width!]
-                      : [100, 0]
-                  }
+                  id={props.chartType}
+                  minSize={[600, 0]}
+                  expandToMin={true}
+                  sizes={displayLegends ? [85, 15] : [100, 0]}
+                  snapOffset={80}
                   gutterSize={displayLegends ? 6 : 0}
-                  resizing={legendsResizing}
-                  onDragStart={onLegendsResizeStart}
+                  useLocalStorage={displayLegends}
                   onDragEnd={onLegendsResizeEnd}
+                  onDragStart={onLegendsResizeStart}
                 >
                   <SplitPaneItem
-                    ref={containerRef}
+                    ref={gridRef}
                     className='ChartPanel__grid'
                     resizingFallback={<ChartPanelResizingFallback />}
                   >
@@ -207,7 +204,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
                     />
                     <ErrorBoundary>
                       <ChartPopover
-                        containerNode={containerRef.current}
+                        containerNode={gridRef.current}
                         activePointRect={activePointRect}
                         onRunsTagsChange={props.onRunsTagsChange}
                         open={

@@ -64,7 +64,6 @@ export const CONTROLS_DEFAULT_CONFIG = {
     legends: {
       display: true,
       mode: LegendsModeEnum.PINNED,
-      width: 15, // percent
     },
   },
   params: {

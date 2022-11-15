@@ -343,12 +343,17 @@ function Controls(
             >
               <div
                 className={classNames('Controls__anchor', {
-                  active: props.legends?.display,
-                  outlined: props.legends?.display,
+                  active:
+                    props.legends?.display && !_.isEmpty(props.legendsData),
+                  outlined:
+                    props.legends?.display && !_.isEmpty(props.legendsData),
+                  disabled: _.isEmpty(props.legendsData),
                 })}
-                onClick={() =>
-                  props.onLegendsChange({ display: !props.legends?.display })
-                }
+                onClick={() => {
+                  if (!_.isEmpty(props.legendsData)) {
+                    props.onLegendsChange({ display: !props.legends?.display });
+                  }
+                }}
               >
                 <Icon
                   className={classNames('Controls__icon', {

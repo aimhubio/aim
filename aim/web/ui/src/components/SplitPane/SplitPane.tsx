@@ -10,51 +10,67 @@ import './SplitPane.scss';
 
 function SplitPane(props: SplitPaneProps) {
   const {
+    id = '',
+    sizes,
     children,
     resizing,
     direction = 'horizontal',
     className = '',
     onDragStart,
     onDragEnd,
+    useLocalStorage = false,
     ...rest
   } = props;
-  const isControlled = React.useMemo(
-    () => typeof resizing === 'boolean',
-    [resizing],
-  );
   const [resizingPane, setResizingPane] = React.useState(false);
 
   const onResizeStart = React.useCallback(
-    (sizes: number[]) => {
+    (startSizes: number[]) => {
       setResizingPane(true);
       if (typeof onDragStart === 'function') {
-        onDragStart(sizes);
+        onDragStart(startSizes);
       }
     },
     [onDragStart],
   );
 
   const onResizeEnd = React.useCallback(
-    (sizes: number[]) => {
+    (endSizes: number[]) => {
       setResizingPane(false);
       if (typeof onDragEnd === 'function') {
-        onDragEnd(sizes);
+        onDragEnd(endSizes);
+      }
+      if (useLocalStorage) {
+        localStorage.setItem(`${id}-panesSizes`, JSON.stringify(endSizes));
       }
     },
-    [onDragEnd],
+    [onDragEnd, id, useLocalStorage],
+  );
+
+  const getSizes = React.useCallback(
+    (useLocalStorage: boolean, id: string, sizes?: number[]) => {
+      if (useLocalStorage) {
+        const savedSizes = localStorage.getItem(`${id}-panesSizes`);
+        if (savedSizes) {
+          return JSON.parse(savedSizes);
+        }
+      }
+      return sizes;
+    },
+    [],
   );
 
   React.useEffect(() => {
-    if (isControlled) {
-      setResizingPane(!!resizing);
+    if (typeof resizing === 'boolean') {
+      setResizingPane(resizing);
     }
-  }, [resizing, isControlled]);
+  }, [resizing]);
 
   return (
     <ErrorBoundary>
       <SplitPaneContext.Provider value={{ resizing: resizingPane }}>
         <Split
           {...rest}
+          sizes={getSizes(useLocalStorage, id, sizes)}
           direction={direction}
           className={classNames('SplitPane', {
             [direction]: true,
