@@ -110,9 +110,9 @@ logger = logging.getLogger(__name__)
 cache = LRUCache(maxsize=3)
 
 
-GRACE_PERIOD = 100  # seconds
-MAX_SUSPEND_TIME = 30  # 5 seconds
-PLAN_ADVANCE_TIME = 10  # 5 seconds
+GRACE_PERIOD = 10  # seconds
+MAX_SUSPEND_TIME = 30  # 30 seconds
+PLAN_ADVANCE_TIME = 10  # 10 seconds
 
 
 @dataclass(frozen=True)
@@ -607,3 +607,36 @@ class RunStatusReporter:
         if default_instance is None:
             return
         default_instance._report_successful_finish(block=block)
+
+
+REPORT_INTERVAL = 5  # 5 seconds
+
+
+class ScheduledStatusReporter(object):
+    def __init__(self,
+                 status_reporter: RunStatusReporter,
+                 flag: str = 'progress',
+                 interval: int = REPORT_INTERVAL
+                 ):
+        self.status_reporter = status_reporter
+        self.flag = flag
+        self.report_interval = interval
+        self.throttle = 30
+        self.thread = threading.Thread(target=self._run, daemon=True)
+        self.stop_signal = threading.Event()
+        self.thread.start()
+
+    def _run(self):
+        self.status_reporter.check_in(expect_next_in=self.throttle, flag_name=self.flag, block=True)
+
+        while True:
+            if self.stop_signal.wait(timeout=self.report_interval):
+                # report last heartbeat
+                self.status_reporter.check_in(expect_next_in=1, flag_name=self.flag, block=True)
+                break
+            else:
+                self.status_reporter.check_in(expect_next_in=self.throttle, flag_name=self.flag)
+
+    def stop(self):
+        self.stop_signal.set()
+        self.thread.join()
