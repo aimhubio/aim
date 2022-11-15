@@ -6,6 +6,8 @@ import {
 } from 'modules/core/api/experimentsApi';
 import createResource from 'modules/core/utils/createResource';
 
+import * as analytics from 'services/analytics';
+
 import { notificationContainerStore } from 'components/NotificationContainer';
 
 function experimentEngine() {
@@ -25,16 +27,25 @@ function experimentEngine() {
     updateExperimentById(
       { name, description, archived: experimentData?.archived },
       experimentData?.id || '',
-    ).then(() => {
+    ).then((res) => {
       experimentState.setState((prev: any) => ({
         ...prev,
         data: { ...prev.data, name, description },
       }));
-      notificationContainerStore.onNotificationAdd({
-        id: Date.now(),
-        messages: ['Changes successfully saved'],
-        severity: 'success',
-      });
+      if (res.id) {
+        notificationContainerStore.onNotificationAdd({
+          id: Date.now(),
+          messages: ['Changes successfully saved'],
+          severity: 'success',
+        });
+      } else {
+        notificationContainerStore.onNotificationAdd({
+          id: Date.now(),
+          messages: ['Something went wrong'],
+          severity: 'success',
+        });
+      }
+      analytics.trackEvent('[Experiment] Edit Experiment name and description');
     });
   }
 
