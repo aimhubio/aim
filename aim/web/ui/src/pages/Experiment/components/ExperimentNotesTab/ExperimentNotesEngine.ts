@@ -16,13 +16,21 @@ function createExperimentNotesEngine() {
   return {
     fetchExperimentNote: (experimentId: string) => fetchData(experimentId),
     createExperimentNote: (experimentId: string, content: string) =>
-      createExperimentNote(experimentId, { content }).then(() =>
-        notificationEngine.onNotificationAdd({
-          id: Date.now(),
-          messages: ['Note successfully created'],
-          severity: 'success',
-        }),
-      ),
+      createExperimentNote(experimentId, { content }).then((res) => {
+        if (res.id) {
+          notificationEngine.onNotificationAdd({
+            id: Date.now(),
+            messages: ['Note successfully created'],
+            severity: 'success',
+          });
+        } else {
+          notificationEngine.onNotificationAdd({
+            id: Date.now(),
+            messages: ['Something went wrong'],
+            severity: 'error',
+          });
+        }
+      }),
     updateExperimentNote: (
       experimentId: string,
       noteId: string,
@@ -33,11 +41,19 @@ function createExperimentNotesEngine() {
           ...prev,
           data: [{ ...prev.data[0], updated_at: res.updated_at }],
         }));
-        notificationEngine.onNotificationAdd({
-          id: Date.now(),
-          messages: ['Note successfully updated'],
-          severity: 'success',
-        });
+        if (res.id) {
+          notificationEngine.onNotificationAdd({
+            id: Date.now(),
+            messages: ['Note successfully updated'],
+            severity: 'success',
+          });
+        } else {
+          notificationEngine.onNotificationAdd({
+            id: Date.now(),
+            messages: ['Something went wrong'],
+            severity: 'error',
+          });
+        }
       });
     },
     experimentNoteState: state,
