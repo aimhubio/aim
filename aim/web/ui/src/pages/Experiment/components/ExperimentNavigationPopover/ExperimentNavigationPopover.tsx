@@ -8,7 +8,7 @@ import { Icon, Spinner, Text } from 'components/kit';
 
 import { DATE_WITH_SECONDS } from 'config/dates/dates';
 
-import { IExperimentNavigationPopoverProps } from './ExperimentNavigationPopover.d';
+import { IExperimentNavigationPopoverProps } from '.';
 
 import './ExperimentNavigationPopover.scss';
 

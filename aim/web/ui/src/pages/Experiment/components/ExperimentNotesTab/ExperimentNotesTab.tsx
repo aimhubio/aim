@@ -15,8 +15,9 @@ import NoteTooltip from 'pages/RunDetail/RunDetailNotesTab/NoteTooltip';
 
 import * as analytics from 'services/analytics';
 
-import { IExperimentNotesTabProps } from './ExperimentNotesTab.d';
 import useExperimentNotes from './useExperimentNotes';
+
+import { IExperimentNotesTabProps } from '.';
 
 import './ExperimentNotesTab.scss';
 

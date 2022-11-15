@@ -3,7 +3,8 @@ import React from 'react';
 import ContributionsFeed from 'components/ContributionsFeed';
 
 import useExperimentContributionsFeed from './useExperimentContributionsFeed';
-import { IExperimentContributionsFeedProps } from './ExperimentContributionsFeed.d';
+
+import { IExperimentContributionsFeedProps } from '.';
 
 function ExperimentContributionsFeed({
   experimentId,

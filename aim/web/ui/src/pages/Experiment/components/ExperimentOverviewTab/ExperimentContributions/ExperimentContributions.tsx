@@ -9,7 +9,8 @@ import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 import { trackEvent } from 'services/analytics';
 
 import useExperimentContributions from './useExperimentContributions';
-import { IExperimentContributionsProps } from './ExperimentContributions.d';
+
+import { IExperimentContributionsProps } from '.';
 
 import './ExperimentContributions.scss';
 
