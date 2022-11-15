@@ -17,13 +17,17 @@ function createExperimentNotesEngine() {
     fetchExperimentNote: (experimentId: string) => fetchData(experimentId),
     createExperimentNote: (experimentId: string, content: string) =>
       createExperimentNote(experimentId, { content })
-        .then(() =>
+        .then((res) => {
+          state.setState((prev: any) => ({
+            ...prev,
+            data: [{ content, ...res }],
+          }));
           notificationContainerStore.onNotificationAdd({
             id: Date.now(),
             messages: ['Note successfully created'],
             severity: 'success',
-          }),
-        )
+          });
+        })
         .catch((err) =>
           notificationContainerStore.onNotificationAdd({
             id: Date.now(),

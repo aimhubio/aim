@@ -8,7 +8,7 @@ import { Button, TextField } from '@material-ui/core';
 import { Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
-import { INameAndDescriptionCardProps } from './NameAndDescriptionCard.d';
+import { INameAndDescriptionCardProps } from '.';
 
 import './NameAndDescriptionCard.scss';
 
