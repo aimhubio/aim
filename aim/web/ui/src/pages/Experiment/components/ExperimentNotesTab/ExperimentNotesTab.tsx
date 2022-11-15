@@ -1,47 +1,34 @@
 import React from 'react';
-import classNames from 'classnames';
-import Editor from 'rich-markdown-editor';
 import moment from 'moment';
-import { useModel } from 'hooks';
+import Editor from 'rich-markdown-editor';
+import classNames from 'classnames';
 
 import { Tooltip } from '@material-ui/core';
 
-import { Button, Icon, Text } from 'components/kit';
-import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
-import Spinner from 'components/kit/Spinner';
+import { Button, Icon, Spinner, Text } from 'components/kit';
 import RouteLeavingGuard from 'components/RouteLeavingGuard';
 
-import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 import { RichEditorThemeColors } from 'config/colors/colors';
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
+
+import NoteTooltip from 'pages/RunDetail/RunDetailNotesTab/NoteTooltip';
 
 import * as analytics from 'services/analytics';
-import notesModel from 'services/models/notes/notesModel';
 
-import { INoteReqBody } from 'types/services/models/notes/notes';
+import { IExperimentNotesTabProps } from './ExperimentNotesTab.d';
+import useExperimentNotes from './useExperimentNotes';
 
-import NoteTooltip from './NoteTooltip';
-import { IRunDetailNotesTabProps } from './types';
+import './ExperimentNotesTab.scss';
 
-import './RunDetailNotesTab.scss';
-
-function RunDetailNotesTab({
-  runHash,
-}: IRunDetailNotesTabProps): React.FunctionComponentElement<React.ReactNode> {
-  const { isLoading, noteData, notifyData } = useModel(notesModel)!;
+function ExperimentNotesTab(
+  props: IExperimentNotesTabProps,
+): React.FunctionComponentElement<React.ReactNode> {
+  const { isLoading, noteData, onNoteCreate, onNoteUpdate } =
+    useExperimentNotes(props.experimentId)!;
   const [value, setValue] = React.useState<string>('');
   const [saveDisabled, setSaveDisabled] = React.useState<boolean>(true);
   const [theme, setTheme] = React.useState<null | {}>(null);
   const editorRef = React.useRef<Editor | any>(null);
-
-  React.useEffect(() => {
-    notesModel.initialize(runHash);
-    analytics.pageView(ANALYTICS_EVENT_KEYS.runDetails.tabs.notes.tabView);
-
-    return () => {
-      notesModel.destroy();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   React.useEffect(() => {
     if (editorRef.current) {
@@ -57,20 +44,16 @@ function RunDetailNotesTab({
   const onNoteSave = React.useCallback((): void => {
     setSaveDisabled(true);
     if (noteData?.id) {
-      onNoteUpdate();
-    } else {
-      notesModel.onNoteCreate(runHash, {
+      onNoteUpdate({
         content: editorRef.current.value(),
-      } as INoteReqBody);
+      }).catch(() => setSaveDisabled(false));
+    } else {
+      onNoteCreate({
+        content: editorRef.current.value(),
+      }).catch(() => setSaveDisabled(false));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [noteData?.id, runHash]);
-
-  const onNoteUpdate = React.useCallback((): void => {
-    notesModel.onNoteUpdate(runHash, {
-      content: editorRef.current.value(),
-    } as INoteReqBody);
-  }, [runHash]);
+  }, [noteData?.id, props.experimentId]);
 
   const onNoteChange = React.useCallback(
     (currentVal: () => string): void => {
@@ -82,19 +65,24 @@ function RunDetailNotesTab({
     [saveDisabled, value],
   );
 
+  React.useEffect(() => {
+    analytics.pageView(ANALYTICS_EVENT_KEYS.experiment.tabs.notes.tabView);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
-    <section className='RunDetailNotesTab'>
+    <section className='ExperimentNotesTab'>
       <RouteLeavingGuard when={!saveDisabled} />
       <div
-        className={classNames('RunDetailNotesTab__Editor', {
+        className={classNames('ExperimentNotesTab__Editor', {
           isLoading,
         })}
       >
-        <div className='RunDetailNotesTab__Editor__actionPanel'>
-          <div className='RunDetailNotesTab__Editor__actionPanel__info'>
+        <div className='ExperimentNotesTab__Editor__actionPanel'>
+          <div className='ExperimentNotesTab__Editor__actionPanel__info'>
             {noteData?.created_at && (
               <Tooltip title='Created at'>
-                <div className='RunDetailNotesTab__Editor__actionPanel__info-field'>
+                <div className='ExperimentNotesTab__Editor__actionPanel__info-field'>
                   <Icon name='calendar' />
                   <Text tint={70}>
                     {`${moment
@@ -107,7 +95,7 @@ function RunDetailNotesTab({
             )}
             {noteData?.updated_at && (
               <Tooltip title='Updated at'>
-                <div className='RunDetailNotesTab__Editor__actionPanel__info-field'>
+                <div className='ExperimentNotesTab__Editor__actionPanel__info-field'>
                   <Icon name='time' />
                   <Text tint={70}>
                     {`${moment
@@ -126,7 +114,7 @@ function RunDetailNotesTab({
                 variant='contained'
                 size='small'
                 onClick={onNoteSave}
-                className='RunDetailNotesTab__Editor__actionPanel__saveBtn'
+                className='ExperimentNotesTab__Editor__actionPanel__saveBtn'
               >
                 Save
               </Button>
@@ -135,7 +123,7 @@ function RunDetailNotesTab({
         </div>
         <Editor
           ref={editorRef}
-          className='RunDetailNotesTab__Editor__container'
+          className='ExperimentNotesTab__Editor__container'
           value={value}
           placeholder='Leave your Note'
           theme={theme || editorRef.current?.theme()}
@@ -146,21 +134,12 @@ function RunDetailNotesTab({
           onChange={onNoteChange}
         />
         {isLoading && (
-          <div className='RunDetailNotesTab__spinnerWrapper'>
+          <div className='ExperimentNotesTab__spinnerWrapper'>
             <Spinner />
           </div>
         )}
       </div>
-      {notifyData!.length > 0 && (
-        <NotificationContainer
-          handleClose={notesModel.onNoteNotificationDelete}
-          data={notifyData!}
-        />
-      )}
     </section>
   );
 }
-
-RunDetailNotesTab.displayName = 'RunDetailNotesTab';
-
-export default React.memo(RunDetailNotesTab);
+export default React.memo(ExperimentNotesTab);

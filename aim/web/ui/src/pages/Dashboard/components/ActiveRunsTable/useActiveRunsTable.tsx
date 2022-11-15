@@ -238,6 +238,7 @@ function useActiveRunsTable() {
           .join(', ')}]`,
       );
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [selectedRows, tableData],
   );
 

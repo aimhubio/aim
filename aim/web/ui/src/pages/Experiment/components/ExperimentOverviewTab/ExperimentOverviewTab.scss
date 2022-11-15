@@ -8,7 +8,9 @@
   padding: 0 $space-unit;
   &__content {
     flex: 1 100%;
-    max-width: calc(100% - #{$run-overview-sidebar-width});
+    max-width: calc(
+      #{$container-max-width-without-paddings} - #{$run-overview-sidebar-width}
+    );
     height: 100%;
     &__section {
       margin: $space-lg 0;
@@ -18,6 +20,14 @@
       border-radius: $border-radius-lg;
       display: inline-block;
       width: 100%;
+    }
+  }
+}
+
+@media screen and (max-width: 1500px) {
+  .ExperimentOverviewTab {
+    &__content {
+      max-width: calc(100% - #{$run-overview-sidebar-width});
     }
   }
 }

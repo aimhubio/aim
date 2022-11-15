@@ -54,6 +54,8 @@ export type GetExperimentContributionsResult = {
   activity_map: Record<string, number>;
 };
 
+export type GetExperimentNoteResult = ExperimentNote[];
+
 /**
  * type ExperimentRunsSearchQueryParams
  */
@@ -85,4 +87,23 @@ export type ExperimentRunsSearchResult = {
    * the limit of the runs per call
    */
   runs?: ExperimentRun;
+};
+
+export type ExperimentNote = {
+  /**
+   * the experiment note id
+   */
+  id: number;
+  /**
+   * the experiment note content
+   */
+  content: string;
+  /**
+   * the experiment note created at
+   */
+  created_at: string;
+  /**
+   * the experiment note updated at
+   */
+  updated_at: string;
 };

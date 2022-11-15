@@ -13,14 +13,22 @@ import { Paper, Tab, Tabs } from '@material-ui/core';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
+import NotificationContainer, {
+  useNotificationContainer,
+} from 'components/NotificationContainer';
 import { Spinner } from 'components/kit';
+
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
+
+import * as analytics from 'services/analytics';
 
 import { setDocumentTitle } from 'utils/document/documentTitle';
 
-import useExperimentState from './useExperimentState';
 import ExperimentHeader from './components/ExperimentHeader';
+import useExperimentState from './useExperimentState';
 import { experimentContributionsFeedEngine } from './components/ExperimentOverviewTab/ExperimentContributionsFeed';
 import { experimentContributionsEngine } from './components/ExperimentOverviewTab/ExperimentContributions';
+import { experimentNotesEngine } from './components/ExperimentNotesTab';
 
 import './Experiment.scss';
 
@@ -28,6 +36,13 @@ const ExperimentOverviewTab = React.lazy(
   () =>
     import(
       /* webpackChunkName: "ExperimentOverviewTab" */ './components/ExperimentOverviewTab'
+    ),
+);
+
+const ExperimentNotesTab = React.lazy(
+  () =>
+    import(
+      /* webpackChunkName: "ExperimentOverviewTab" */ './components/ExperimentNotesTab'
     ),
 );
 
@@ -44,6 +59,8 @@ function Experiment(): React.FunctionComponentElement<React.ReactNode> {
   const history = useHistory();
   const { experimentState, experimentsState, getExperimentsData } =
     useExperimentState(experimentId);
+  const { notificationState, onNotificationDelete } =
+    useNotificationContainer();
 
   const { pathname } = useLocation();
   const [activeTab, setActiveTab] = React.useState(pathname);
@@ -63,7 +80,7 @@ function Experiment(): React.FunctionComponentElement<React.ReactNode> {
       />
     ),
     runs: <div>runs</div>,
-    notes: <div>notes</div>,
+    notes: <ExperimentNotesTab experimentId={experimentId} />,
     settings: <div>settings</div>,
   };
 
@@ -104,15 +121,18 @@ function Experiment(): React.FunctionComponentElement<React.ReactNode> {
   React.useEffect(() => {
     experimentContributionsFeedEngine.destroy();
     experimentContributionsEngine.destroy();
+    experimentNotesEngine.destroy();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [experimentId]);
 
   React.useEffect(() => {
     redirect();
+    analytics.pageView(ANALYTICS_EVENT_KEYS.experiment.pageView);
 
     return () => {
       experimentContributionsFeedEngine.destroy();
       experimentContributionsEngine.destroy();
+      experimentNotesEngine.destroy();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -188,6 +208,10 @@ function Experiment(): React.FunctionComponentElement<React.ReactNode> {
           </Switch>
         </BusyLoaderWrapper>
       </section>
+      <NotificationContainer
+        handleClose={onNotificationDelete}
+        data={notificationState!}
+      />
     </ErrorBoundary>
   );
 }
