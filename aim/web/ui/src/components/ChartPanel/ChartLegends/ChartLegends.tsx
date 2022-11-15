@@ -2,6 +2,8 @@ import * as React from 'react';
 import _ from 'lodash-es';
 import classNames from 'classnames';
 
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+
 import { drawLegends, LegendsModeEnum } from 'utils/d3';
 
 import { IChartLegendsProps } from '.';
@@ -24,9 +26,11 @@ function ChartLegends(props: IChartLegendsProps) {
   }, [data]);
 
   return (
-    <div className={classNames('ChartLegends', { [mode]: true })}>
-      <div ref={containerRef} className='ChartLegends__container' />
-    </div>
+    <ErrorBoundary>
+      <div className={classNames('ChartLegends', { [mode]: true })}>
+        <div ref={containerRef} className='ChartLegends__container' />
+      </div>
+    </ErrorBoundary>
   );
 }
 

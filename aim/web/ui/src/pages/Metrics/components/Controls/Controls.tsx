@@ -354,7 +354,7 @@ function Controls(
                   className={classNames('Controls__icon', {
                     active: props.legends?.display,
                   })}
-                  name='ignore-outliers'
+                  name='chart-legends'
                 />
               </div>
             </Tooltip>

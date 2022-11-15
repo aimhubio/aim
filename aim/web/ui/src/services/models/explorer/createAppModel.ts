@@ -157,7 +157,7 @@ import getClosestValue from 'utils/getClosestValue';
 import getObjectPaths from 'utils/getObjectPaths';
 import getSmoothenedData from 'utils/getSmoothenedData';
 import JsonToCSV from 'utils/JsonToCSV';
-import { getItem, setItem } from 'utils/storage';
+import { setItem } from 'utils/storage';
 import { encode } from 'utils/encoder/encoder';
 import onBookmarkCreate from 'utils/app/onBookmarkCreate';
 import onBookmarkUpdate from 'utils/app/onBookmarkUpdate';
@@ -332,6 +332,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               legends: {
                 display: CONTROLS_DEFAULT_CONFIG.metrics.legends.display,
                 mode: CONTROLS_DEFAULT_CONFIG.metrics.legends.mode,
+                width: CONTROLS_DEFAULT_CONFIG.metrics.legends.width,
               },
               focusedState: {
                 key: null,

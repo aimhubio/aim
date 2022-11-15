@@ -1,9 +1,10 @@
 @use 'src/styles/abstracts' as *;
 
 .ChartLegends {
-  box-shadow: 0 0 0 1px #e8e8e8;
   padding: $space-xs;
   background-color: white;
+  height: 100%;
+  width: 100%;
   &.pinned {
     position: relative;
   }
@@ -11,6 +12,7 @@
     position: absolute;
     right: 0;
     opacity: 0.8;
+    box-shadow: 0 0 0 1px #e8e8e8;
     &:hover {
      opacity: 1
     }
@@ -18,7 +20,6 @@
   &__container {
     height: 100%;
     width: 100%;
-    max-width: 300px;
     overflow: auto;
   }
 }
