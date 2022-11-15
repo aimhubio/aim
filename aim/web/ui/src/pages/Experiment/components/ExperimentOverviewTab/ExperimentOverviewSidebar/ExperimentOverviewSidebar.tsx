@@ -4,7 +4,7 @@ import { NavLink, useRouteMatch } from 'react-router-dom';
 
 import { Text, Button, Icon } from 'components/kit';
 
-import { IExperimentOverviewSidebarProps } from './ExperimentOverviewSidebar.d';
+import { IExperimentOverviewSidebarProps } from '.';
 
 import './ExperimentOverviewSidebar.scss';
 

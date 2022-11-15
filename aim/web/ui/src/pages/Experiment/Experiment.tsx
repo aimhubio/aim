@@ -46,6 +46,13 @@ const ExperimentNotesTab = React.lazy(
     ),
 );
 
+const ExperimentSettingsTab = React.lazy(
+  () =>
+    import(
+      /* webpackChunkName: "ExperimentOverviewTab" */ './components/ExperimentSettingsTab'
+    ),
+);
+
 const tabs: { [key: string]: string } = {
   overview: 'Overview',
   runs: 'Runs',
@@ -57,13 +64,16 @@ function Experiment(): React.FunctionComponentElement<React.ReactNode> {
   const { experimentId } = useParams<{ experimentId: string }>();
   const { url } = useRouteMatch();
   const history = useHistory();
-  const { experimentState, experimentsState, getExperimentsData } =
-    useExperimentState(experimentId);
-  const { notificationState, onNotificationDelete } =
-    useNotificationContainer();
-
   const { pathname } = useLocation();
   const [activeTab, setActiveTab] = React.useState(pathname);
+  const {
+    experimentState,
+    experimentsState,
+    getExperimentsData,
+    updateExperiment,
+  } = useExperimentState(experimentId);
+  const { notificationState, onNotificationDelete } =
+    useNotificationContainer();
 
   const { data: experimentData, loading: isExperimentLoading } =
     experimentState;
@@ -81,7 +91,13 @@ function Experiment(): React.FunctionComponentElement<React.ReactNode> {
     ),
     runs: <div>runs</div>,
     notes: <ExperimentNotesTab experimentId={experimentId} />,
-    settings: <div>settings</div>,
+    settings: (
+      <ExperimentSettingsTab
+        experimentName={experimentData?.name ?? ''}
+        experimentDescription={experimentData?.description ?? ''}
+        updateExperiment={updateExperiment}
+      />
+    ),
   };
 
   function handleTabChange(event: React.ChangeEvent<{}>, newValue: string) {

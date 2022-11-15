@@ -6,9 +6,10 @@ import * as analytics from 'services/analytics';
 
 import ExperimentContributions from './ExperimentContributions';
 import ExperimentOverviewSidebar from './ExperimentOverviewSidebar';
-import { IExperimentOverviewTabProps } from './ExperimentOverviewTab.d';
 import ExperimentStatistics from './ExperimentStatistics';
 import ExperimentContributionsFeed from './ExperimentContributionsFeed';
+
+import { IExperimentOverviewTabProps } from '.';
 
 import './ExperimentOverviewTab.scss';
 

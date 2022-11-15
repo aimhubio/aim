@@ -107,3 +107,18 @@ export type ExperimentNote = {
    */
   updated_at: string;
 };
+
+export type UpdateExperimentByIdReqBodyType = {
+  /**
+   * the experiment name
+   */
+  name?: string;
+  /**
+   * the experiment description
+   */
+  description?: string;
+  /**
+   * is the experiment archived
+   */
+  archived?: boolean;
+};

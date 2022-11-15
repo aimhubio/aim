@@ -14,7 +14,7 @@ import { DATE_WITH_SECONDS } from 'config/dates/dates';
 
 import ExperimentNavigationPopover from '../ExperimentNavigationPopover';
 
-import { IExperimentHeaderProps } from './ExperimentHeader.d';
+import { IExperimentHeaderProps } from '.';
 
 import './ExperimentHeader.scss';
 

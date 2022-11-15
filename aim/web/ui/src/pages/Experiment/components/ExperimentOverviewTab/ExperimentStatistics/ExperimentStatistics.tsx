@@ -10,7 +10,7 @@ import { encode } from 'utils/encoder/encoder';
 
 import experimentContributionsEngine from '../ExperimentContributions/ExperimentContributionsStore';
 
-import { IExperimentStatisticsProps } from './ExperimentStatistics.d';
+import { IExperimentStatisticsProps } from '.';
 
 import './ExperimentStatistics.scss';
 

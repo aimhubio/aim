@@ -8,6 +8,7 @@ import { Tooltip } from '@material-ui/core';
 import { Button, Icon, Spinner, Text } from 'components/kit';
 import RouteLeavingGuard from 'components/RouteLeavingGuard';
 
+import { YEAR_MONTH_DAY_DATE_FORMAT } from 'config/dates/dates';
 import { RichEditorThemeColors } from 'config/colors/colors';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
@@ -15,8 +16,9 @@ import NoteTooltip from 'pages/RunDetail/RunDetailNotesTab/NoteTooltip';
 
 import * as analytics from 'services/analytics';
 
-import { IExperimentNotesTabProps } from './ExperimentNotesTab.d';
 import useExperimentNotes from './useExperimentNotes';
+
+import { IExperimentNotesTabProps } from '.';
 
 import './ExperimentNotesTab.scss';
 
@@ -88,7 +90,7 @@ function ExperimentNotesTab(
                     {`${moment
                       .utc(noteData?.created_at)
                       .local()
-                      .format('YYYY-MM-DD HH:mm A')}`}
+                      .format(YEAR_MONTH_DAY_DATE_FORMAT)}`}
                   </Text>
                 </div>
               </Tooltip>
@@ -101,7 +103,7 @@ function ExperimentNotesTab(
                     {`${moment
                       .utc(noteData?.updated_at)
                       .local()
-                      .format('YYYY-MM-DD HH:mm A')}`}
+                      .format(YEAR_MONTH_DAY_DATE_FORMAT)}`}
                   </Text>
                 </div>
               </Tooltip>
