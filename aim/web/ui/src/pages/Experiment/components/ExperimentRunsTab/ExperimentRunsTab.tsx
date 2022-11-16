@@ -2,19 +2,22 @@ import React, { memo } from 'react';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
-import { IExperimentRunsTabProps, useExperimentRuns } from '.';
+import ExperimentRunsTable from './ExperimentRunsTable';
+
+import { IExperimentRunsTabProps } from '.';
 
 import './ExperimentRunsTab.scss';
 
 function ExperimentRunsTab({
-  experimentId,
   experimentName,
 }: IExperimentRunsTabProps): React.FunctionComponentElement<React.ReactNode> {
-  const props = useExperimentRuns(experimentId, experimentName);
-  console.log(props);
   return (
     <ErrorBoundary>
-      <div className='ExperimentRunsTab'></div>
+      <div className='ExperimentRunsTab'>
+        <div className='ExperimentRunsTab__content'>
+          <ExperimentRunsTable experimentName={experimentName} />
+        </div>
+      </div>
     </ErrorBoundary>
   );
 }

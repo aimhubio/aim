@@ -29,6 +29,7 @@ import useExperimentState from './useExperimentState';
 import { experimentContributionsFeedEngine } from './components/ExperimentOverviewTab/ExperimentContributionsFeed';
 import { experimentContributionsEngine } from './components/ExperimentOverviewTab/ExperimentContributions';
 import { experimentNotesEngine } from './components/ExperimentNotesTab';
+import { experimentRunsEngine } from './components/ExperimentRunsTab';
 
 import './Experiment.scss';
 
@@ -96,12 +97,7 @@ function Experiment(): React.FunctionComponentElement<React.ReactNode> {
         description={experimentData?.description ?? ''}
       />
     ),
-    runs: (
-      <ExperimentRunsTab
-        experimentName={experimentData?.name ?? ''}
-        experimentId={experimentId}
-      />
-    ),
+    runs: <ExperimentRunsTab experimentName={experimentData?.name ?? ''} />,
     notes: <ExperimentNotesTab experimentId={experimentId} />,
     settings: (
       <ExperimentSettingsTab
@@ -150,6 +146,7 @@ function Experiment(): React.FunctionComponentElement<React.ReactNode> {
     experimentContributionsFeedEngine.destroy();
     experimentContributionsEngine.destroy();
     experimentNotesEngine.destroy();
+    experimentRunsEngine.destroy();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [experimentId]);
 
@@ -161,6 +158,7 @@ function Experiment(): React.FunctionComponentElement<React.ReactNode> {
       experimentContributionsFeedEngine.destroy();
       experimentContributionsEngine.destroy();
       experimentNotesEngine.destroy();
+      experimentRunsEngine.destroy();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

@@ -759,7 +759,7 @@ const Table = React.forwardRef(function Table(
   return (
     <ErrorBoundary>
       {!isEmpty(rowData) ? (
-        <div style={{ height: '100%' }} className={className}>
+        <div style={{ height: '100%', width: '100%' }} className={className}>
           {!hideHeaderActions && isEmpty(selectedRows) ? (
             <div className='Table__header'>
               {showResizeContainerActionBar && (
