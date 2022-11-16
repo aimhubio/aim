@@ -10,6 +10,7 @@ from aim.sdk.repo import Repo
 from aim.sdk.lock_manager import LockManager
 from aim.sdk.index_manager import RepoIndexManager
 
+
 @click.group()
 @click.option('--repo', required=False,
               default=os.getcwd(),
@@ -159,7 +160,7 @@ def close_runs(ctx, force, hashes):
     if force:
         click.secho(f'This command will forcefully close {len(hashes)} Runs from Aim Repo \'{repo_path}\'. '
                     f'Please make sure Runs are not active. Data corruption may occure otherwise.')
-        if not click.confirm(f'Do you want to proceed?'):
+        if not click.confirm('Do you want to proceed?'):
             return
 
     lock_manager = LockManager(repo.path)

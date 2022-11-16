@@ -1,6 +1,5 @@
 import logging
 
-import os
 import datetime
 import json
 import pytz
@@ -18,7 +17,6 @@ from aim.sdk.utils import (
 )
 
 from aim.sdk.types import AimObject
-from aim.sdk.configs import AIM_RUN_INDEXING_TIMEOUT
 
 from aim.storage.treeview import TreeView
 from aim.storage.context import Context

@@ -103,8 +103,8 @@ class RepoIndexManager:
                 if last_heartbeat.idx > last_recorded_heartbeat.idx:
                     self.run_heartbeat_cache[run_hash] = last_heartbeat
                 else:
-                    epoch_now = time.time()
-                    if last_recorded_heartbeat.next_event_in + GRACE_PERIOD < epoch_now - last_recorded_heartbeat.detected_epoch_time:
+                    time_passed = time.time() - last_recorded_heartbeat.detected_epoch_time
+                    if last_recorded_heartbeat.next_event_in + GRACE_PERIOD < time_passed:
                         return True
 
     def run_needs_indexing(self, run_hash: str) -> bool:
