@@ -71,9 +71,9 @@ class RepoIndexManager:
                     logger.warning(f'Failed to index Run \'{run_hash}\'. Error: {e}.')
                     pass
 
-                # sleep for 2 seconds to release index db lock in between and allow
+                # sleep for small interval to release index db lock in between and allow
                 # other running jobs to properly finalize and index Run.
-                sleep_interval = 2
+                sleep_interval = .1
                 time.sleep(sleep_interval)
             if not self._indexing_in_progress:
                 idle_cycles += 1
