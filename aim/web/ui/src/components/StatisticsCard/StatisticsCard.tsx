@@ -56,10 +56,10 @@ function StatisticsCard({
       {badge?.value && (
         <Text
           component='p'
-          color={badge?.color}
           className='StatisticsCard__badge'
           weight={600}
           size={8}
+          style={badge.style}
         >
           {badge.value}
         </Text>

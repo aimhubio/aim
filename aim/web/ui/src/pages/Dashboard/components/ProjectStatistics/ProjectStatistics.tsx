@@ -53,8 +53,8 @@ const statisticsInitialMap: Record<string, IProjectStatistic> = {
     iconBgColor: '#FCB500',
     navLink: routes.AUDIO_EXPLORER.path,
     badge: {
-      value: 'New*',
-      color: 'success',
+      value: 'New',
+      style: { backgroundColor: '#2bc784', color: '#fff' },
     },
   },
   [SequenceTypesEnum.Texts]: {
@@ -65,7 +65,6 @@ const statisticsInitialMap: Record<string, IProjectStatistic> = {
     navLink: '',
     badge: {
       value: 'Explorer coming soon',
-      color: 'primary',
     },
   },
   [SequenceTypesEnum.Distributions]: {
@@ -76,7 +75,6 @@ const statisticsInitialMap: Record<string, IProjectStatistic> = {
     navLink: '',
     badge: {
       value: 'Explorer coming soon',
-      color: 'primary',
     },
   },
 };
