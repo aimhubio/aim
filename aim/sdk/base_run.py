@@ -6,8 +6,9 @@ from aim.storage.hashing import hash_auto
 from aim.storage.treeview import TreeView
 from aim.sdk.utils import generate_run_hash
 from aim.sdk.repo_utils import get_repo
-# from aim.sdk.errors import MissingRunError
+from aim.sdk.errors import MissingRunError
 from aim.sdk.tracker import STEP_HASH_FUNCTIONS
+from aim.sdk.lock_manager import LockManager
 
 if TYPE_CHECKING:
     from aim.sdk.repo import Repo
@@ -24,8 +25,10 @@ class BaseRun:
 
     def __init__(self, run_hash: Optional[str] = None,
                  repo: Optional[Union[str, 'Repo']] = None,
-                 read_only: bool = False):
+                 read_only: bool = False,
+                 force: bool = False):
         self._hash = None
+        self._lock = None
 
         self.read_only = read_only
         self.repo = get_repo(repo)
@@ -38,12 +41,11 @@ class BaseRun:
             elif self.repo.run_exists(run_hash):
                 self.hash = run_hash
             else:
-                from aim.utils.deprecation import deprecation_warning
-                deprecation_warning(remove_version='3.15', msg='Setting custom `Run.hash` value is deprecated! '
-                                                               'Consider setting `Run.name` instead.')
-                self.hash = run_hash
-                # TODO [deprecation] Uncomment the line below
-                # raise MissingRunError(f'Cannot find Run {run_hash} in aim Repo {self.repo.path}.')
+                raise MissingRunError(f'Cannot find Run {run_hash} in aim Repo {self.repo.path}.')
+            if not self.repo.is_remote_repo and not self.read_only:
+                lock_manager = LockManager(self.repo.path)
+                self._lock = lock_manager.get_run_lock(self.hash)
+                lock_manager.lock(self.hash, self._lock, force=force)
 
         self.meta_tree: TreeView = self.repo.request_tree(
             'meta', self.hash, read_only=read_only, from_union=True
