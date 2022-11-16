@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Button startIcon="search">Click</Button> Renders Correctly 1`] = `
+<DocumentFragment>
+  <button
+    class="c-gRTNGy c-gRTNGy-bLojnD-size-md c-gRTNGy-icYPjSU-css"
+    data-testid="button"
+  >
+    <i
+      class="Icon__container icon-search c-csDoOH c-jkHsGW c-jkHsGW-hATQsk-size-md c-csDoOH-ihATQsk-css startIcon"
+    />
+    Click
+  </button>
+</DocumentFragment>
+`;

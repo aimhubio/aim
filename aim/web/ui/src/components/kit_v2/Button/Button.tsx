@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Icon } from 'components/kit';
+import Icon from 'components/kit/Icon';
 
 import { styled } from 'config/stitches/stitches.config';
 
@@ -146,6 +146,7 @@ function Button({
       size={size}
       disabled={disabled}
       fullWidth={fullWidth}
+      data-testid='button'
       {...rest}
     >
       {leftIcon ? (

@@ -3,7 +3,7 @@
 exports[`<IconButton icon="search" /> Renders Correctly 1`] = `
 <DocumentFragment>
   <button
-    class="c-ggCntP c-ggCntP-fnBbHv-size-medium c-ggCntP-ihtltCK-css"
+    class="c-sFyLx c-sFyLx-fnBbHv-size-medium c-sFyLx-ihtltCK-css"
     data-testid="icon-button"
   >
     <i

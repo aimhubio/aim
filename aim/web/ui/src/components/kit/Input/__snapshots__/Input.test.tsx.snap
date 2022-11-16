@@ -9,7 +9,7 @@ exports[`<InputWrapper /> - Renders Correctly 1`] = `
       class="InputWrapper_topLabelCnt"
     >
       <span
-        class=" Text Text__size_10 Text__weight_400 Text__color_primary_70"
+        class="Text Text__size_10 Text__weight_400 Text__color_primary_70"
       >
         test label:
       </span>
