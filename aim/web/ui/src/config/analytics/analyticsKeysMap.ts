@@ -269,6 +269,9 @@ export const ANALYTICS_EVENT_KEYS = {
         tabView: '[Experiment] [Settings] Tab view',
       },
     },
+    table: {
+      compareSelectedRuns: '[Experiment] [Runs] Compare selected runs',
+    },
   },
   runDetails: {
     pageView: '[RunDetail] Page view',

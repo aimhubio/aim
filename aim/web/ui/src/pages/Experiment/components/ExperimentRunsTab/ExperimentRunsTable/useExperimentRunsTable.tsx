@@ -260,7 +260,7 @@ function useExperimentRunsTable(experimentName: string, experimentId: string) {
       setComparisonQuery(
         `run.hash in [${Object.keys(selected)
           .map((key) => `"${JSON.parse(decode(key)).hash}"`)
-          .join(', ')}]`,
+          .join(', ')}] and run.experiment == "${experimentName}"`,
       );
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
