@@ -97,7 +97,12 @@ function Experiment(): React.FunctionComponentElement<React.ReactNode> {
         description={experimentData?.description ?? ''}
       />
     ),
-    runs: <ExperimentRunsTab experimentName={experimentData?.name ?? ''} />,
+    runs: (
+      <ExperimentRunsTab
+        experimentName={experimentData?.name ?? ''}
+        experimentId={experimentId}
+      />
+    ),
     notes: <ExperimentNotesTab experimentId={experimentId} />,
     settings: (
       <ExperimentSettingsTab
@@ -143,23 +148,8 @@ function Experiment(): React.FunctionComponentElement<React.ReactNode> {
   }, [experimentData]);
 
   React.useEffect(() => {
-    experimentContributionsFeedEngine.destroy();
-    experimentContributionsEngine.destroy();
-    experimentNotesEngine.destroy();
-    experimentRunsEngine.destroy();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [experimentId]);
-
-  React.useEffect(() => {
     redirect();
     analytics.pageView(ANALYTICS_EVENT_KEYS.experiment.pageView);
-
-    return () => {
-      experimentContributionsFeedEngine.destroy();
-      experimentContributionsEngine.destroy();
-      experimentNotesEngine.destroy();
-      experimentRunsEngine.destroy();
-    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

@@ -21,7 +21,7 @@ import { decode, encode } from 'utils/encoder/encoder';
 
 import experimentRunsEngine from '../ExperimentRunsStore';
 
-function useExperimentRunsTable(experimentName: string) {
+function useExperimentRunsTable(experimentName: string, experimentId: string) {
   const tableRef = React.useRef<any>(null);
   const [data, setData] = React.useState<any>([]);
   const [isInfiniteLoading, setIsInfiniteLoading] =
@@ -42,8 +42,16 @@ function useExperimentRunsTable(experimentName: string) {
         q: `run.experiment == '${experimentName}'`,
       });
     }
+    return () => engine.destroy();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  React.useEffect(() => {
+    if (experimentRunsState.data) {
+      engine.destroy();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [experimentId]);
 
   React.useEffect(() => {
     if (experimentRunsState.data?.length) {

@@ -36,6 +36,7 @@ function useExperimentContributionsFeed(
         limit: 25,
       });
     }
+    return () => engine.destroy();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -46,6 +47,13 @@ function useExperimentContributionsFeed(
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [contributionsFeedStore.data]);
+
+  React.useEffect(() => {
+    if (contributionsFeedStore.data) {
+      engine.destroy();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [experimentId]);
 
   const memoizedData = React.useMemo(() => {
     // get existing month list from the contributionsFeedStore data

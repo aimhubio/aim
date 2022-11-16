@@ -10,12 +10,16 @@ import './ExperimentRunsTab.scss';
 
 function ExperimentRunsTab({
   experimentName,
+  experimentId,
 }: IExperimentRunsTabProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <ErrorBoundary>
       <div className='ExperimentRunsTab'>
         <div className='ExperimentRunsTab__content'>
-          <ExperimentRunsTable experimentName={experimentName} />
+          <ExperimentRunsTable
+            experimentName={experimentName}
+            experimentId={experimentId}
+          />
         </div>
       </div>
     </ErrorBoundary>

@@ -10,8 +10,15 @@ function useExperimentNotes(experimentId: string) {
     if (!experimentNoteState?.data?.[0]) {
       engine.fetchExperimentNote(experimentId);
     }
+    if (experimentNoteState?.data) {
+      engine.destroy();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [experimentId]);
+
+  React.useEffect(() => {
+    return () => engine.destroy();
+  }, []);
 
   function onNoteCreate(note: { content: string }) {
     return engine.createExperimentNote(experimentId, note.content);

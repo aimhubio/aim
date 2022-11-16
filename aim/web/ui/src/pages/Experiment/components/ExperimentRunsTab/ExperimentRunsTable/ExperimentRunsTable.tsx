@@ -14,7 +14,10 @@ import { IExperimentRunsTableProps, useExperimentRunsTable } from '.';
 
 import './ExperimentRunsTable.scss';
 
-function ExperimentRunsTable({ experimentName }: IExperimentRunsTableProps) {
+function ExperimentRunsTable({
+  experimentName,
+  experimentId,
+}: IExperimentRunsTableProps) {
   const {
     tableRef,
     tableColumns,
@@ -25,7 +28,7 @@ function ExperimentRunsTable({ experimentName }: IExperimentRunsTableProps) {
     onRowSelect,
     loadMore,
     isInfiniteLoading,
-  } = useExperimentRunsTable(experimentName);
+  } = useExperimentRunsTable(experimentName, experimentId);
 
   return (
     <div className='ExperimentRunsTable'>
@@ -37,7 +40,7 @@ function ExperimentRunsTable({ experimentName }: IExperimentRunsTableProps) {
           weight={700}
           tint={100}
         >
-          Experiment Runs {tableData.length > 0 ? `(${tableData.length})` : ''}
+          Experiment Runs
         </Text>
         {tableData.length > 0 && (
           <div className='ExperimentRunsTable__header__comparisonPopover'>
