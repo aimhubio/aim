@@ -50,9 +50,7 @@ def parse_wandb_logs(repo_inst, entity, project, run_id):
             for record in records:
                 step = record["_step"]
                 for key in keys:
-                    if key not in record:
-                        continue
-                    value = record[key]
+                    value = record.get(key, "NaN")
                     if value != "NaN":
                         try:
                             tag, name = key.rsplit("/", 1)
