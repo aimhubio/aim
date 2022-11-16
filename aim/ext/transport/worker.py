@@ -86,8 +86,6 @@ class RemoteWorker:
         else:
             _remote_worker_channel = grpc.insecure_channel(self.address)
 
-        print("request sent!")
-
         _remote_worker_stub = remote_tracking_pb2_grpc.RemoteTrackingServiceStub(_remote_worker_channel)
         request = rpc_messages.ClientResourceCleanupRequest(client_uri=client_uri)
         _remote_worker_stub.cleanup_client_resources(request)
