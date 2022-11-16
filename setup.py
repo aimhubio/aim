@@ -77,6 +77,7 @@ REQUIRED = [
     'async-generator>=1.0; python_version<"3.7"',
     'packaging>=15.0',
     'python-dateutil',
+    'requests',
 ]
 
 if platform.machine() != 'arm64':
