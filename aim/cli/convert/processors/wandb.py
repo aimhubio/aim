@@ -60,6 +60,8 @@ def parse_wandb_logs(repo_inst, entity, project, run_id):
                                 context = {"tag": tag, "subset": "train"}
                             elif "val" in tag:
                                 context = {"tag": tag, "subset": "val"}
+                            elif "test" in tag:
+                                context = {"tag": tag, "subset": "test"}
                             else:
                                 context = {"tag": tag}
                         except ValueError:
