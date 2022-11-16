@@ -26,6 +26,7 @@ class RemoteTrackingServicer(tracking_pb2_grpc.RemoteTrackingServiceServicer):
         self.registry = resource_registry
 
     def cleanup_client_resources(self, request: tracking_rpc.ClientResourceCleanupRequest, _context):
+        print("request received")
         dead_client_uri = request.client_uri
 
         resource_handlers = list(self.resource_pool.keys())
@@ -137,7 +138,6 @@ class RemoteTrackingServicer(tracking_pb2_grpc.RemoteTrackingServiceServicer):
             for request in request_iterator:
                 raw_message.append(request.message)
                 client_uri = request.client_uri
-
             write_instructions = decode_tree(utils.unpack_bytes(raw_message))
             for instruction in write_instructions:
                 resource_handler, method_name, args = instruction

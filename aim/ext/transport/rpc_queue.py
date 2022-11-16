@@ -15,6 +15,7 @@ class RpcQueueWithRetry(object):
 
         self.retry_count = retry_count or 1
         self.retry_interval = retry_interval
+        self._warned_connection = False
 
         self.max_memory_usage = max_queue_memory
         self.current_memory_usage = 0
@@ -73,7 +74,7 @@ class RpcQueueWithRetry(object):
                 task_f(*args)
                 return True
             except grpc.RpcError as e:
-                if e.code() != grpc.StatusCode.UNAVAILABLE:
+                if e.code() not in (grpc.StatusCode.UNAVAILABLE, grpc.StatusCode.UNKNOWN):
                     raise e
 
                 try:
@@ -82,7 +83,9 @@ class RpcQueueWithRetry(object):
                     pass
 
                 retry += 1
-                logger.warning(f'Remote Server is unavailable, please check network connection: {e}, attempt: {retry}')
+                if not self._warned_connection:
+                    logger.warning(f'Remote Server is unavailable, please check network connection: {e}.')
+                    self._warned_connection = True
                 time.sleep(self.retry_interval)
             except UnauthorizedRequestError as e:
                 try:
