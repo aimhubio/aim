@@ -26,7 +26,7 @@ class BaseRun:
     def __init__(self, run_hash: Optional[str] = None,
                  repo: Optional[Union[str, 'Repo']] = None,
                  read_only: bool = False,
-                 force: bool = False):
+                 force_resume: bool = False):
         self._hash = None
         self._lock = None
 
@@ -45,7 +45,7 @@ class BaseRun:
             if not self.repo.is_remote_repo and not self.read_only:
                 lock_manager = LockManager(self.repo.path)
                 self._lock = lock_manager.get_run_lock(self.hash)
-                lock_manager.lock(self.hash, self._lock, force=force)
+                lock_manager.lock(self.hash, self._lock, force=force_resume)
 
         self.meta_tree: TreeView = self.repo.request_tree(
             'meta', self.hash, read_only=read_only, from_union=True

@@ -286,10 +286,10 @@ class Run(BaseRun, StructuredRunMixin):
                  system_tracking_interval: Optional[Union[int, float]] = DEFAULT_SYSTEM_TRACKING_INT,
                  log_system_params: Optional[bool] = False,
                  capture_terminal_logs: Optional[bool] = True,
-                 force: bool = False,
+                 force_resume: bool = False,
                  ):
         self._resources: Optional[RunAutoClean] = None
-        super().__init__(run_hash, repo=repo, read_only=read_only, force=force)
+        super().__init__(run_hash, repo=repo, read_only=read_only, force_resume=force_resume)
 
         self.meta_attrs_tree: TreeView = self.meta_tree.subtree('attrs')
         self.meta_run_attrs_tree: TreeView = self.meta_run_tree.subtree('attrs')
