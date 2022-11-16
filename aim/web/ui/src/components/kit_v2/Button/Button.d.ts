@@ -9,19 +9,19 @@ export interface IButtonProps
    * @description The color of the button
    * @example 'primary'
    */
-  color?: colorType;
+  color?: ButtonColorType;
   /**
    * @description The size of the button
    * @example 'medium'
    * @default 'medium'
    */
-  size?: sizeType;
+  size?: ButtonSizeType;
   /**
    * @description The variant of the button
    * @example 'contained'
    * @default 'contained'
    */
-  variant?: variantType;
+  variant?: ButtonVariantType;
   /**
    * @description The disabled state of the button
    * @example false
@@ -30,27 +30,37 @@ export interface IButtonProps
   disabled?: boolean;
   /**
    * @description The start icon of the button
-
    * @example 'add'
    */
-  startIcon?: IconName;
+  leftIcon?: IconName;
   /**
    * @description The end icon of the button
    * @example 'add'
    */
-  endIcon?: IconName;
+  rightIcon?: IconName;
   /**
    * @description The full width state of the button
    * @example false
    */
   fullWidth?: boolean;
+  /**
+   * @description The spacing variant of the button
+   * @example 'default'
+   * @default 'default'
+   */
+  horizontalSpacing?: 'default' | 'compact';
 }
 
 // Button component size types
-type sizeType = 'small' | 'medium' | 'large' | 'xLarge';
+export type ButtonSizeType = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
 // Button component variants
-type variantType = 'text' | 'outlined' | 'contained';
+type ButtonVariantType = 'text' | 'outlined' | 'contained';
 
 // Button component color types
-type colorType = 'primary' | 'secondary' | 'success' | 'error' | 'warning';
+type ButtonColorType =
+  | 'primary'
+  | 'secondary'
+  | 'success'
+  | 'error'
+  | 'warning';

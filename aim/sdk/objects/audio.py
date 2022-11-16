@@ -90,7 +90,7 @@ class Audio(CustomObject):
 
         Returns: numpy array
         """
-        assert self.storage['format'] == self.__audio_format_map[self.WAV]
+        assert self.storage['format'] == self.WAV
 
         return wavfile.read(self.get())
 

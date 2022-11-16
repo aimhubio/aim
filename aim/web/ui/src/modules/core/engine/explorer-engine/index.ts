@@ -1,9 +1,13 @@
 import createReact, { StoreApi, UseBoundStore } from 'zustand';
+import type { Update } from 'history';
 
 import createVanilla from 'zustand/vanilla';
-import { devtools } from 'zustand/middleware';
+import { devtools, subscribeWithSelector } from 'zustand/middleware';
 import { PipelineOptions } from 'modules/core/pipeline';
 import { ExplorerEngineConfiguration } from 'modules/BaseExplorer/types';
+import getUrlSearchParam from 'modules/core/utils/getUrlSearchParam';
+import browserHistory from 'modules/core/services/browserHistory';
+import getQueryParamsFromState from 'modules/core/utils/getQueryParamsFromState';
 
 import { AimFlatObjectBase } from 'types/core/AimObjects';
 import { SequenceTypesEnum } from 'types/core/enums';
@@ -14,12 +18,18 @@ import { PipelineStatusEnum } from '../types';
 import createVisualizationsEngine from '../visualizations';
 import createExplorerAdditionalEngine from '../explorer';
 import createCustomStatesEngine, { CustomStatesEngine } from '../custom-states';
+import createEventSystemEngine, { IEventSystemEngine } from '../event-system';
+import createBlobURISystemEngine, {
+  IBlobURISystemEngine,
+} from '../blob-uri-system';
 
 type State = {
   pipeline?: any;
   instructions?: any;
   explorer?: any;
   visualizations?: any;
+  events?: IEventSystemEngine['state'];
+  blobURI?: any;
 };
 
 export type EngineNew<
@@ -30,10 +40,11 @@ export type EngineNew<
   // sub engines
   pipeline: IPipelineEngine<TObject, TStore>['engine'];
   instructions: IInstructionsEngine<TStore, SequenceName>['engine'];
+  events: IEventSystemEngine['engine'];
   visualizations: any;
 
   // methods
-  initialize: () => Promise<boolean>;
+  initialize: () => () => void;
   finalize: () => void;
 
   // store helpers
@@ -71,6 +82,7 @@ function getPipelineEngine(
     query: {
       useCache,
     },
+    persist: config.persist,
   };
 
   const pipeline = createPipelineEngine<object, AimFlatObjectBase<any>>(
@@ -105,11 +117,16 @@ function getExplorerAdditionalEngines(
   set: any,
   get: any,
   // state: State, // mutable
+  persist?: boolean, //StatePersistOption,
 ) {
-  return createExplorerAdditionalEngine<State>(config, {
-    setState: set,
-    getState: get,
-  });
+  return createExplorerAdditionalEngine<State>(
+    config,
+    {
+      setState: set,
+      getState: get,
+    },
+    persist,
+  );
 }
 
 function getVisualizationsEngine(
@@ -131,8 +148,27 @@ function getVisualizationsEngine(
   return visualizations.engine;
 }
 
+function getEventSystemEngine(
+  state: State, // mutable
+  set: any,
+  get: any,
+) {
+  const events = createEventSystemEngine({ setState: set, getState: get });
+
+  state['events'] = events.state;
+
+  return events.engine;
+}
+
+function getBlobURIEngine(config: ExplorerEngineConfiguration) {
+  const blobURI = createBlobURISystemEngine(config.sequenceName);
+
+  return blobURI.engine;
+}
+
 function createEngine<TObject = any>(
   config: ExplorerEngineConfiguration,
+  basePath: string,
   name: string = 'ExplorerEngine',
   devtool: boolean = false,
 ): EngineNew<object, AimFlatObjectBase<TObject>, typeof config.sequenceName> {
@@ -145,12 +181,12 @@ function createEngine<TObject = any>(
   let visualizations: any;
 
   let customStatesEngine: CustomStatesEngine;
+  let events: IEventSystemEngine['engine'];
+  let blobURI: IBlobURISystemEngine['engine'];
   let query: any;
   let groupings: any;
-
+  let initialState = {};
   function buildEngine(set: any, get: any) {
-    let state = {};
-
     /**
      * Custom states
      */
@@ -162,8 +198,8 @@ function createEngine<TObject = any>(
       config.states,
     );
 
-    state = {
-      ...state,
+    initialState = {
+      ...initialState,
       ...customStates.state.initialState,
     };
     customStatesEngine = customStates.engine;
@@ -171,9 +207,14 @@ function createEngine<TObject = any>(
     /**
      * Explorer Additional, includes query and groupings
      */
-    const explorer = getExplorerAdditionalEngines(config, set, get);
-    state = {
-      ...state,
+    const explorer = getExplorerAdditionalEngines(
+      config,
+      set,
+      get,
+      config.persist,
+    );
+    initialState = {
+      ...initialState,
       ...explorer.initialState,
     };
 
@@ -183,19 +224,24 @@ function createEngine<TObject = any>(
     /**
      * Instructions
      */
-    instructions = getInstructionsEngine(config, set, get, state);
+    instructions = getInstructionsEngine(config, set, get, initialState);
 
     /**
      * Pipeline
      */
-    pipeline = getPipelineEngine(config, set, get, state);
+    pipeline = getPipelineEngine(config, set, get, initialState);
 
     /*
      * Visualizations
      */
-    visualizations = getVisualizationsEngine(config, set, get, state);
+    visualizations = getVisualizationsEngine(config, set, get, initialState);
 
     /** Additional **/
+
+    /*
+     * Event System
+     */
+    events = getEventSystemEngine(initialState, set, get);
 
     /**
      * @TODO add notification engine here
@@ -203,23 +249,27 @@ function createEngine<TObject = any>(
     /**
      * @TODO add blobs_uri engine here
      */
-    /**
-     * @TODO add events service engine here
+    /*
+     * Blob URI System
      */
-    return state;
+    blobURI = getBlobURIEngine(config);
+
+    return initialState;
   }
 
   // @ts-ignore
   const store = createVanilla<StoreApi<object>>(
     // @ts-ignore
-    devtool
-      ? // @ts-ignore
-        devtools(buildEngine, {
-          name,
-          anonymousActionType: 'UNKNOWN_ACTION',
-          serialize: { options: true },
-        })
-      : buildEngine,
+    subscribeWithSelector(
+      devtool
+        ? // @ts-ignore
+          devtools(buildEngine, {
+            name,
+            anonymousActionType: 'UNKNOWN_ACTION',
+            serialize: { options: true },
+          })
+        : buildEngine,
+    ),
   );
 
   // @ts-ignore
@@ -227,21 +277,57 @@ function createEngine<TObject = any>(
   /*
    * An initializer to use for url sync and bookmarks data get
    */
-  function initialize(): Promise<boolean> {
+  function initialize(): () => void {
+    const finalizeQuery = query.initialize();
+    const finalizeGrouping = groupings.initialize();
+    const finalizePipeline = pipeline.initialize();
+    const finalizeVisualizations = visualizations.initialize(name);
+
     // subscribe to history
-    return new Promise((resolve, reject) => {
-      instructions
-        .getInstructions()
-        .then((isEmpty) => {
-          if (isEmpty) {
-            pipeline.changeCurrentPhaseOrStatus(
-              PipelineStatusEnum.Insufficient_Resources,
+    instructions
+      .getInstructions()
+      .then((isEmpty) => {
+        if (isEmpty) {
+          pipeline.changeCurrentPhaseOrStatus(
+            PipelineStatusEnum.Insufficient_Resources,
+          );
+        } else if (config.persist) {
+          const stateFromStorage = getUrlSearchParam('query') || {};
+          if (stateFromStorage.form && stateFromStorage.ranges) {
+            pipeline.search(
+              getQueryParamsFromState(stateFromStorage, config.sequenceName),
+              true,
             );
           }
-        })
-        // eslint-disable-next-line no-console
-        .catch((err) => console.error(err));
-    });
+        }
+      })
+      // eslint-disable-next-line no-console
+      .catch((err) => console.error(err));
+
+    if (config.persist) {
+      if (!basePath && basePath !== '') {
+        throw new Error('Specify [basePath] argument of engine configuration.');
+      }
+    }
+
+    const removeHistoryListener =
+      config.persist &&
+      browserHistory.listen((update: Update) => {
+        localStorage.setItem(
+          `${basePath}Url`,
+          update.location.pathname + update.location.search,
+        );
+      });
+
+    return () => {
+      finalizeQuery();
+      finalizeGrouping();
+      finalizePipeline();
+      finalizeVisualizations();
+      removeHistoryListener && removeHistoryListener();
+
+      finalize();
+    };
   }
   /**
    * Clean ups
@@ -252,7 +338,8 @@ function createEngine<TObject = any>(
   function finalize() {
     // @ts-ignore
     useReactStore.destroy(); // or engine.release/commit
-    pipeline.destroy(); // or pipeline release/commit
+    useReactStore.setState(initialState);
+    // pipeline.destroy(); // or pipeline release/commit
   }
 
   // @ts-ignore
@@ -272,15 +359,18 @@ function createEngine<TObject = any>(
     groupings,
     // @ts-ignore
     pipeline,
-
+    // @ts-ignore
+    events,
+    // @ts-ignore
+    blobURI,
     finalize,
     initialize,
   };
 
-  if (__DEV__) {
-    // @ts-ignore
-    window[name] = engine;
-  }
+  // if (__DEV__) {
+  //   // @ts-ignore
+  //   window[name] = engine;
+  // }
 
   return engine;
 }

@@ -4,6 +4,7 @@ import { IChartTitle } from 'types/services/models/metrics/metricsAppModel';
 import { ITrendlineOptions } from 'types/services/models/scatter/scatterAppModel';
 import { ISyncHoverStateArgs } from 'types/utils/d3/drawHoverAttributes';
 import { IDimensionType } from 'types/utils/d3/drawParallelAxes';
+import { IRun } from 'types/services/models/metrics/runModel';
 
 export interface IPoint {
   key: string;
@@ -14,6 +15,7 @@ export interface IPoint {
   color: string;
   groupKey: string;
   chartIndex?: number;
+  run?: IRun;
 }
 
 export interface IScatterPlotProps {

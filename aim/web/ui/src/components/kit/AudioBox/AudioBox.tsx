@@ -1,8 +1,10 @@
 import React from 'react';
-import moment from 'moment';
 import AudioPlayer from 'material-ui-audio-player';
 
-import { Button, Icon, Slider, Spinner, Text } from 'components/kit';
+import AudioBoxVolume from 'modules/BaseExplorer/components/AudioBox/AudioBoxVolume';
+import AudioBoxProgress from 'modules/BaseExplorer/components/AudioBox/AudioBoxProgress';
+
+import { Button, Icon, Spinner, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { BATCH_COLLECT_DELAY } from 'config/mediaConfigs/mediaConfigs';
@@ -11,156 +13,9 @@ import blobsURIModel from 'services/models/media/blobsURIModel';
 
 import contextToString from 'utils/contextToString';
 
-import {
-  IAudioBoxProps,
-  IAudiBoxProgressProps,
-  IAudioBoxVolumeProps,
-} from './AudioBox.d';
+import { IAudioBoxProps } from './AudioBox.d';
 
 import './AudioBox.scss';
-
-function AudiBoxProgress({ audio, isPlaying, src }: IAudiBoxProgressProps) {
-  const [trackProgress, setTrackProgress] = React.useState(0);
-  const intervalRef = React.useRef<any>({});
-
-  React.useEffect(() => {
-    return () => {
-      clearInterval(intervalRef.current);
-    };
-  }, []);
-
-  React.useEffect(() => {
-    if (isPlaying && audio) {
-      startTimer();
-    } else {
-      clearInterval(intervalRef.current);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isPlaying, src]);
-
-  function startTimer(): void {
-    clearInterval(intervalRef.current);
-    intervalRef.current = setInterval(() => {
-      setTrackProgress(Math.round(audio.currentTime));
-    }, 300);
-  }
-
-  function onProgressChange(e: any, value: number | number[]): void {
-    if (audio) {
-      clearInterval(intervalRef.current);
-      setTrackProgress(value as number);
-    }
-  }
-
-  function onTimerChange(): void {
-    if (audio) {
-      clearInterval(intervalRef.current);
-      audio.currentTime = trackProgress;
-      if (isPlaying) {
-        startTimer();
-      }
-    }
-  }
-
-  function formatDuration(): string {
-    return moment
-      .utc(Math.round(audio.duration || 0) * 1000)
-      .format(defineTimeFormat(audio.duration || 0));
-  }
-
-  function defineTimeFormat(duration: number): string {
-    return duration > 3600 ? 'HH:mm:ss' : 'mm:ss';
-  }
-
-  function formatProgress(): string {
-    return moment
-      .utc(Math.round(trackProgress) * 1000)
-      .format(defineTimeFormat(audio.duration || 0));
-  }
-
-  return (
-    <ErrorBoundary>
-      <Slider
-        containerClassName='AudioBox__controllers__progressSlider'
-        onChangeCommitted={onTimerChange}
-        onChange={onProgressChange}
-        value={trackProgress}
-        step={1}
-        max={Math.round(audio?.duration)}
-        min={0}
-      />
-      <div
-        className={`AudioBox__controllers__timer ${
-          audio?.duration > 3600 ? 'AudioBox__controllers__timer-long' : ''
-        }`}
-      >
-        <Text weight={400} size={8}>
-          {(audio && formatProgress()) || '00:00'}
-        </Text>
-        <Text weight={400} size={8}>
-          / {(audio && formatDuration()) || '00:00'}
-        </Text>
-      </div>
-    </ErrorBoundary>
-  );
-}
-
-function AudioBoxVolume({ audio }: IAudioBoxVolumeProps) {
-  const [volume, setVolume] = React.useState<number>(0.99);
-
-  function onVolumeChange(e: any, value: number | number[]): void {
-    if (audio) {
-      audio.volume = value as number;
-      setVolume(value as number);
-    }
-  }
-
-  React.useEffect(() => {
-    if (audio) {
-      audio.volume = volume;
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [volume]);
-
-  function onVolumeToggle(): void {
-    if (audio) {
-      if (audio.volume === 0) {
-        setVolume(0.99);
-      } else {
-        setVolume(0);
-      }
-    }
-  }
-
-  return (
-    <ErrorBoundary>
-      <div
-        className={`AudioBox__controllers__volume ${
-          audio ? '' : 'AudioBox__controllers__volume-disabled'
-        }`}
-      >
-        <Button
-          onClick={onVolumeToggle}
-          withOnlyIcon
-          size='small'
-          className='AudioBox__controllers__volume--button'
-        >
-          <Icon name={volume === 0 ? 'voice-off' : 'voice-on'} />
-        </Button>
-        <div className='AudioBox__controllers__volume__Slider'>
-          <Slider
-            onChange={onVolumeChange}
-            value={volume}
-            step={0.01}
-            defaultValue={1}
-            max={0.99}
-            min={0}
-          />
-        </div>
-      </div>
-    </ErrorBoundary>
-  );
-}
 
 function AudioBox({
   data,
@@ -343,7 +198,7 @@ function AudioBox({
               )}
             </div>
           )}
-          <AudiBoxProgress audio={audio} isPlaying={isPlaying} src={src} />
+          <AudioBoxProgress audio={audio} isPlaying={isPlaying} src={src} />
           <AudioBoxVolume audio={audio} />
           <Button withOnlyIcon size='small' onClick={onDownload}>
             {processing ? (
