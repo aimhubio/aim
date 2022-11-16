@@ -135,7 +135,7 @@ class Repo:
 
         if not self.is_remote_repo:
             self._sdb_lock_path = os.path.join(self.path, 'locks', 'structured_db_lock')
-            self._sdb_lock = SoftFileLock(self._sdb_lock_path, timeout=10)
+            self._sdb_lock = SoftFileLock(self._sdb_lock_path, timeout=30)
 
             status = self.check_repo_status(self.root_path)
             self.structured_db = DB.from_path(self.path)
