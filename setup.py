@@ -76,6 +76,7 @@ REQUIRED = [
     'async-exit-stack>=1.0.0; python_version<"3.7"',
     'async-generator>=1.0; python_version<"3.7"',
     'packaging>=15.0',
+    'python-dateutil',
 ]
 
 if platform.machine() != 'arm64':
