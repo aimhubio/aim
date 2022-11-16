@@ -37,14 +37,13 @@
       text-transform: capitalize;
     }
   }
-  &__soonBadge {
+  &__badge {
     position: absolute;
     top: -$space-xs;
     right: -$space-xxs;
     text-align: center;
     white-space: nowrap;
     padding: $space-xxxxxs $space-xxxs;
-    color: $pico;
     border-radius: $border-radius-xss;
     background-color: white;
     box-shadow: 0 1px 2px 0 #00000029;

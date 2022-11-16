@@ -1,3 +1,5 @@
+import * as React from 'react';
+
 import { IconName } from 'components/kit/Icon';
 
 export interface IProjectStatistic {
@@ -6,5 +8,5 @@ export interface IProjectStatistic {
   iconBgColor?: string;
   icon?: IconName;
   navLink?: string;
-  title?: string;
+  badge?: { value: string; style?: React.CSSProperties };
 }
