@@ -1,6 +1,5 @@
 import click
 from aim import Run
-import pandas as pd
 
 
 def parse_wandb_logs(repo_inst, entity, project, run_id):
@@ -43,15 +42,17 @@ def parse_wandb_logs(repo_inst, entity, project, run_id):
             for tag in run.tags:
                 aim_run.add_tag(tag)
 
-            records = pd.DataFrame(list(run.scan_history())
+            records = run.scan_history()
             keys = [key for key in run.history().keys()
                     if not key.startswith('_')]
 
             # Collect metrics
-            for step in list(records["_step"]):
-                record = records.loc[records["_step"] == step]
+            for record in records:
+                step = record["_step"]
                 for key in keys:
-                    value = record[key].values[0]
+                    if key not in record:
+                        continue
+                    value = record[key]
                     if value != "NaN":
                         try:
                             tag, name = key.rsplit("/", 1)
