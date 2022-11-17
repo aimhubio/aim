@@ -7,7 +7,9 @@
     margin-bottom: $space-sm;
     padding: 0 $space-sm;
   }
-  .experimentName {
-    font-size: $text-sm;
+  .ExperimentNameBox {
+    &__experimentName {
+      font-size: $text-sm;
+    }
   }
 }

@@ -1,15 +1,12 @@
 import React from 'react';
-import { Link as RouteLink } from 'react-router-dom';
 import _ from 'lodash-es';
 
-import { Link } from '@material-ui/core';
 import { IExperimentData } from 'modules/core/api/experimentsApi';
 import { IResourceState } from 'modules/core/utils/createResource';
 import { Checkbox } from '@material-ui/core';
 
 import { Icon, Text } from 'components/kit';
-
-import { PathEnum } from 'config/enums/routesEnum';
+import ExperimentNameBox from 'components/ExperimentNameBox';
 
 import createExperimentEngine from './ExperimentsStore';
 
@@ -126,13 +123,10 @@ function useExperimentsCard() {
         width: 'calc(100% - 50px)',
         style: { paddingLeft: 10, paddingRight: 12 },
         cellRenderer: ({ cellData, rowData }: any) => (
-          <Link
-            to={PathEnum.Experiment.replace(':experimentId', rowData.id)}
-            component={RouteLink}
-            className='experimentName'
-          >
-            {cellData}
-          </Link>
+          <ExperimentNameBox
+            experimentName={cellData || ''}
+            experimentId={rowData.id || ''}
+          />
         ),
       },
       {

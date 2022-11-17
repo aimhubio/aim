@@ -8,6 +8,8 @@ import { PathEnum } from 'config/enums/routesEnum';
 
 import { IExperimentNameBoxProps } from '.';
 
+import './ExperimentNameBox.scss';
+
 const ExperimentNameBox = ({
   experimentId,
   experimentName,
@@ -16,7 +18,7 @@ const ExperimentNameBox = ({
   return (
     <div className={classNames('ExperimentNameBox', { isHidden: hidden })}>
       <Tooltip title={experimentName}>
-        <div className='ExperimentNameBox__runName'>
+        <div className='ExperimentNameBox__experimentName'>
           <Link
             to={PathEnum.Experiment.replace(':experimentId', experimentId)}
             component={RouteLink}
