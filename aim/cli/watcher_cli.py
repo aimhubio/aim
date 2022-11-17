@@ -1,3 +1,5 @@
+import logging
+
 import click
 import uuid
 
@@ -109,6 +111,39 @@ def list_config(ctx):
     click.echo("{:<40} {:<10} {:<10}".format('NOTIFIER ID', 'TYPE', 'STATUS'))
     for notifier in cfg.notifiers.values():
         click.echo("{:<40} {:<10} {:<10}".format(notifier['id'], notifier['type'], notifier['status']))
+
+
+@click.command(name='get-log-level')
+@click.pass_context
+def get_log_level(ctx):
+    """Get Log Notifications level."""
+    cfg = ctx.obj['config']
+    if not cfg.exists():
+        repo = ctx.obj['repo']
+        click.echo(f'Cannot find notifier configuration for Repo \'{repo.path}\'.')
+        return
+
+    click.echo(f'Log level: {logging.getLevelName(cfg.log_level)}')
+
+
+def get_level_names():
+    available_levels = (logging.CRITICAL, logging.ERROR, logging.WARNING, logging.INFO, logging.DEBUG)
+    return tuple(map(logging.getLevelName, available_levels))
+
+
+@click.command(name='set-log-level')
+@click.argument('level', required=True, type=click.Choice(get_level_names()))
+@click.pass_context
+def set_log_level(ctx, level):
+    """Set Log Notifications level to <level>."""
+    cfg = ctx.obj['config']
+    if not cfg.exists():
+        repo = ctx.obj['repo']
+        click.echo(f'Cannot find notifier configuration for Repo \'{repo.path}\'.')
+        return
+
+    cfg.log_level = getattr(logging, level)
+    cfg.save()
 
 
 @click.group(name='add', invoke_without_command=True)
@@ -251,3 +286,5 @@ config_notifiers.add_command(remove_config)
 config_notifiers.add_command(disable_config)
 config_notifiers.add_command(enable_config)
 config_notifiers.add_command(dump_config)
+config_notifiers.add_command(get_log_level)
+config_notifiers.add_command(set_log_level)

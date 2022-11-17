@@ -6,6 +6,8 @@ import pytz
 import sys
 
 from collections import defaultdict
+from functools import partialmethod
+from inspect import currentframe, getframeinfo
 
 from aim.sdk.base_run import BaseRun
 from aim.sdk.sequence import Sequence
@@ -17,6 +19,7 @@ from aim.sdk.utils import (
 )
 
 from aim.sdk.types import AimObject
+from aim.sdk.logging import LogRecord, LogRecords
 
 from aim.storage.treeview import TreeView
 from aim.storage.context import Context
@@ -451,6 +454,28 @@ class Run(BaseRun, StructuredRunMixin):
         """
 
         self._tracker(value, name, step, epoch, context=context)
+
+    # logging API
+    def log(self, level: int, msg: str, **params):
+        frame_info = getframeinfo(currentframe().f_back)
+        logger_info = (frame_info.filename, frame_info.lineno)
+        self.track(LogRecord(msg, level, logger_info=logger_info, **params), name='__log_records')
+        block = (level > logging.WARNING)
+        self._checkins.check_in(flag_name="new_logs", block=block)
+
+    critical = partialmethod(log, logging.CRITICAL)
+    error = partialmethod(log, logging.ERROR)
+    warning = partialmethod(log, logging.WARNING)
+    info = partialmethod(log, logging.INFO)
+    debug = partialmethod(log, logging.DEBUG)
+
+    def get_log_records(self) -> Optional[LogRecords]:
+        """Retrieve duplicated terminal logs for a run
+
+                Returns:
+                    :obj:`Sequence` object if exists, `None` otherwise.
+                """
+        return self._get_sequence('log_records', '__log_records', Context({}))
 
     @property
     def props(self):
