@@ -123,12 +123,12 @@ class Client:
             remote_version = self.get_version()
         except grpc.RpcError as e:
             if e.code() == grpc.StatusCode.UNIMPLEMENTED:
-                remote_version = '<3.14.0'
+                remote_version = '<3.15.0'
             else:
                 raise
 
         # server doesn't yet have the `get_version()` method implemented
-        if remote_version == '<3.14.0':
+        if remote_version == '<3.15.0':
             RuntimeError(error_message_template.format(remote_version, client_version))
 
         # compare versions
