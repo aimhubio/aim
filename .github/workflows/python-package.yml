@@ -96,8 +96,12 @@ jobs:
           python -m pip install -r requirements.txt
 
       - name: Build bdist wheels
-        run: |
-          docker run --mount type=bind,source=$PWD,target=/opt/aim quay.io/pypa/${{ matrix.manylinux-version }} bash /opt/aim/docker/build-wheels.sh
+        uses: nick-fields/retry@v2
+        with:
+          max_attempts: 3
+          retry_wait_seconds: 60
+          command: docker run --mount type=bind,source=$PWD,target=/opt/aim quay.io/pypa/${{ matrix.manylinux-version }} bash /opt/aim/docker/build-wheels.sh
+
 
       - name: Publish wheels
         env:
