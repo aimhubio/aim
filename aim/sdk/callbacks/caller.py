@@ -59,7 +59,6 @@ class Caller(object, metaclass=CallerMeta):
         def wrapped(self, *args, **kwargs):
             logger.debug(f'Calling trigger method \'{method.__qualname__}\'.')
 
-            res = method(self, *args, **kwargs)
             callbacks = self.callbacks.get(method.__name__, ())
             for callback in callbacks:
                 try:
@@ -68,7 +67,6 @@ class Caller(object, metaclass=CallerMeta):
                     # Handle ALL exceptions. Do not throw error if one of the callbacks failed.
                     logger.warning(f'Failed to run callback \'{callback.__name__}\'.')
                     logger.warning(f'Reason: {e}')
-            return res
 
         return wrapped
 
