@@ -276,7 +276,7 @@ class Client:
 
         response = self.remote.run_write_instructions(message_stream_generator())
         if response.status == rpc_messages.WriteInstructionsResponse.Status.ERROR:
-            raise_exception(response.header.exception)
+            raise_exception(response.exception)
 
     def start_instructions_batch(self):
         self._thread_local.atomic_instructions = []
