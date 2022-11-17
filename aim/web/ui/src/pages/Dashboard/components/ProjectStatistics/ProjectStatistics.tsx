@@ -51,7 +51,11 @@ const statisticsInitialMap: Record<string, IProjectStatistic> = {
     icon: 'audio',
     count: 0,
     iconBgColor: '#FCB500',
-    navLink: '',
+    navLink: routes.AUDIO_EXPLORER.path,
+    badge: {
+      value: 'New',
+      style: { backgroundColor: '#2bc784', color: '#fff' },
+    },
   },
   [SequenceTypesEnum.Texts]: {
     label: 'Texts',
@@ -59,6 +63,9 @@ const statisticsInitialMap: Record<string, IProjectStatistic> = {
     count: 0,
     iconBgColor: '#E149A0',
     navLink: '',
+    badge: {
+      value: 'Explorer coming soon',
+    },
   },
   [SequenceTypesEnum.Distributions]: {
     label: 'Distributions',
@@ -66,6 +73,9 @@ const statisticsInitialMap: Record<string, IProjectStatistic> = {
     count: 0,
     iconBgColor: '#0394B4',
     navLink: '',
+    badge: {
+      value: 'Explorer coming soon',
+    },
   },
 };
 
@@ -201,9 +211,10 @@ function ProjectStatistics() {
       </Text>
       <div className='ProjectStatistics__cards'>
         {Object.values(statisticsMap).map(
-          ({ label, icon, count, iconBgColor, navLink }) => (
+          ({ label, icon, count, iconBgColor, navLink, badge }) => (
             <StatisticsCard
               key={label}
+              badge={badge}
               label={label}
               icon={icon}
               count={count}
