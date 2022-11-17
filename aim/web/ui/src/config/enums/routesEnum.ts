@@ -13,6 +13,7 @@ enum PathEnum {
   Images_Explore = '/images',
   Images_Explore_Id = '/images/:appId',
   Figures_Explorer = '/figures',
+  Audio_Explorer = '/audios',
   New_Figures_Explorer = '/new-fig',
 }
 

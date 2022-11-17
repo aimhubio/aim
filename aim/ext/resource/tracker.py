@@ -200,6 +200,9 @@ class ResourceTracker(object):
         ansi_csi_re = re.compile(b"\001?\033\\[((?:\\d|;)*)([a-zA-Z])\002?")
 
         def _handle_csi(line):
+            def _remove_csi(line):
+                return re.sub(ansi_csi_re, b'', line)
+
             for match in ansi_csi_re.finditer(line):
                 arg, command = match.groups()
                 arg = int(arg.decode()) if arg else 1
@@ -208,15 +211,19 @@ class ResourceTracker(object):
                 if command == b'B':  # cursor down
                     self._line_counter += arg
 
+            return _remove_csi(line)
+
+        line = None
         for line in lines:
+            # handle cursor up and down symbols
+            line = _handle_csi(line)
             # handle each line for carriage returns
-            log_line = LogLine(line.rsplit(b'\r')[-1].decode())
-            # _handle_csi(line)
-            self._tracker()(log_line, name='logs', step=self._line_counter)
+            line = line.rsplit(b'\r')[-1]
+            self._tracker()(LogLine(line.decode()), name='logs', step=self._line_counter)
             self._line_counter += 1
 
         self._line_counter -= 1
 
         # if there was no b'\n' at the end of the data keep the last line in buffer for further writing
-        if lines[-1] != b'':
-            self._io_buffer.write(lines[-1])
+        if line != b'':
+            self._io_buffer.write(line)
