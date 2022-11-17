@@ -8,6 +8,7 @@ from pathlib import Path
 from cachetools.func import ttl_cache
 from typing import Dict, Optional, Generic, TypeVar
 from abc import abstractmethod
+from collections import OrderedDict
 
 from aim.sdk.repo import Repo
 from aim.sdk.run import Run
@@ -22,6 +23,17 @@ logger = logging.getLogger(__name__)
 GRACE_PERIOD = 100  # seconds
 
 T = TypeVar('T')
+
+
+class RepetitionCounter:
+    def __init__(self, obj):
+        self.obj = obj
+        self.step = 0
+        self.count = 0
+
+    def update(self, step):
+        self.count += 1
+        self.step = max(step, self.step)
 
 
 class RankedSet(Generic[T]):
@@ -308,7 +320,6 @@ class RunStatusWatcher:
                 self.notifications_queue.add_notification(notification)
 
         self.repo.persistent_pool.clear()
-        log_level = self.log_level_threshold
 
         log_events = self.poll_log_record_events()
         for new_event in log_events.events.values():
@@ -322,12 +333,14 @@ class RunStatusWatcher:
                     last_notified_index = run_info.last_notification_index
                     if last_log_index > last_notified_index:
                         data = log_records_seq.data.range(last_notified_index + 1, last_log_index + 1)
-                        steps, log_records = data.view('val').items_list()
-                        log_records = log_records[0]
-                        for step, log_record in zip(steps, log_records):
-                            if log_record.level >= log_level:
-                                notification = LogNotification(obj_idx=run_hash, rank=step, message=log_record.message)
-                                self.notifications_queue.add_notification(notification)
+                        for rec_hash, counter in self._processed_log_records(data).items():
+                            assert counter.count > 0
+                            if counter.count == 1:
+                                message = counter.obj.message
+                            else:
+                                message = f'{counter.obj.message} ({counter.count - 1} more messages logged)'
+                            notification = LogNotification(obj_idx=run_hash, rank=counter.step, message=message)
+                            self.notifications_queue.add_notification(notification)
 
     def poll_status_events(self) -> EventSet:
         return self._poll(event_types=('finished', 'starting', 'check_in'))
@@ -341,3 +354,15 @@ class RunStatusWatcher:
             for check_in_file_path in sorted(self._status_watch_dir.glob(f'*-*-{event_type}-*-*')):
                 events.add(Event(check_in_file_path.name))
         return events
+
+    def _processed_log_records(self, log_records_data) -> Dict:
+        log_level = self.log_level_threshold
+
+        steps, log_records = log_records_data.view('val').items_list()
+        log_records = log_records[0]
+
+        log_info_map = OrderedDict()
+        for step, log_record in zip(steps, log_records):
+            if log_record.level >= log_level:
+                log_info_map.setdefault(hash(log_record), RepetitionCounter(log_record)).update(step)
+        return log_info_map
