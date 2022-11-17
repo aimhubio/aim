@@ -1,0 +1,9 @@
+.ExperimentNameBox {
+  display: flex;
+  align-items: center;
+  &.isHidden {
+    .MuiTypography-root {
+      color: $primary-color-50;
+    }
+  }
+}
