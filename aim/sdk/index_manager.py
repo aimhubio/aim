@@ -11,7 +11,7 @@ from typing import Iterable
 
 
 from aim.sdk.repo import Repo
-from aim.sdk.run_status_watcher import StatusEvent, GRACE_PERIOD
+from aim.sdk.run_status_watcher import Event, GRACE_PERIOD
 
 logger = logging.getLogger(__name__)
 
@@ -95,7 +95,7 @@ class RepoIndexManager:
     def _is_run_stalled(self, run_hash: str) -> bool:
         heartbeat_files = list(sorted(self.heartbeat_dir.glob(f'{run_hash}-*-progress-*-*'), reverse=True))
         if heartbeat_files:
-            last_heartbeat = StatusEvent(heartbeat_files[0].name)
+            last_heartbeat = Event(heartbeat_files[0].name)
             last_recorded_heartbeat = self.run_heartbeat_cache.get(run_hash)
             if last_recorded_heartbeat is None:
                 self.run_heartbeat_cache[run_hash] = last_heartbeat
