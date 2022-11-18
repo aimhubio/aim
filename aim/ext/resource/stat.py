@@ -7,7 +7,7 @@ from aim.ext.resource.utils import round10e5
 try:
     # Import python wrapper for the NVIDIA Management Library
     # Initialize it or pass if NVIDIA ML is not initialized
-    from py3nvml import py3nvml as nvml
+    import aim.ext.pynvml as nvml
     nvml.nvmlInit()
 except Exception:
     pass
