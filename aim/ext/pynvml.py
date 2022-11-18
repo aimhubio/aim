@@ -1,3 +1,4 @@
+# flake8: noqa
 #####
 #
 # Based on nvidia-ml-py version 11.515.48
