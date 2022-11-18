@@ -18,6 +18,7 @@ function useExperimentNotes(experimentId: string) {
 
   React.useEffect(() => {
     return () => engine.destroy();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function onNoteCreate(note: { content: string }) {

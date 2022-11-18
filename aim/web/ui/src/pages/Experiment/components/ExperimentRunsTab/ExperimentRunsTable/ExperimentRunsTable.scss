@@ -8,7 +8,13 @@
     align-items: center;
     justify-content: space-between;
     height: toRem(28px);
-
+    &__titleBox {
+      display: flex;
+      align-items: center;
+      &__title {
+        margin-right: $space-xxxs;
+      }
+    }
     .CompareSelectedRunsPopover__trigger {
       margin-right: 0 !important;
     }

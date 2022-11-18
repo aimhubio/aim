@@ -1,6 +1,8 @@
 import _ from 'lodash-es';
 import classNames from 'classnames';
 
+import { Skeleton } from '@material-ui/lab';
+
 import { Spinner, Text } from 'components/kit';
 import Table from 'components/Table/Table';
 
@@ -28,20 +30,37 @@ function ExperimentRunsTable({
     onRowSelect,
     loadMore,
     isInfiniteLoading,
+    totalRunsCount,
   } = useExperimentRunsTable(experimentName, experimentId);
 
   return (
     <div className='ExperimentRunsTable'>
       <div className='ExperimentRunsTable__header'>
-        <Text
-          className='ExperimentRunsTable__header__title'
-          component='h3'
-          size={14}
-          weight={700}
-          tint={100}
-        >
-          Experiment Runs
-        </Text>
+        <div className='ExperimentRunsTable__header__titleBox'>
+          <Text
+            className='ExperimentRunsTable__header__titleBox__title'
+            component='h3'
+            size={14}
+            weight={700}
+            tint={100}
+          >
+            {_.isEmpty(selectedRows)
+              ? 'Experiment Runs'
+              : `Selected Runs (${Object.values(selectedRows).length})`}
+          </Text>
+          {_.isEmpty(selectedRows) ? (
+            !_.isEmpty(tableData) ? (
+              <Text component='h3' size={14} weight={700} tint={100}>
+                {` (${tableData.length}/${totalRunsCount})`}
+              </Text>
+            ) : (
+              <Skeleton variant='rect' height={17} width={50} />
+            )
+          ) : (
+            <></>
+          )}
+        </div>
+
         {tableData.length > 0 && (
           <div className='ExperimentRunsTable__header__comparisonPopover'>
             <CompareSelectedRunsPopover
