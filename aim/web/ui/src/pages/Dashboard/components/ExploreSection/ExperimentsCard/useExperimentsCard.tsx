@@ -1,11 +1,15 @@
 import React from 'react';
+import { Link as RouteLink } from 'react-router-dom';
 import _ from 'lodash-es';
 
+import { Link } from '@material-ui/core';
 import { IExperimentData } from 'modules/core/api/experimentsApi';
 import { IResourceState } from 'modules/core/utils/createResource';
 import { Checkbox } from '@material-ui/core';
 
 import { Icon, Text } from 'components/kit';
+
+import { PathEnum } from 'config/enums/routesEnum';
 
 import createExperimentEngine from './ExperimentsStore';
 
@@ -34,13 +38,13 @@ function useExperimentsCard() {
   }[] = React.useMemo(() => {
     if (experimentsStore.data) {
       return experimentsStore.data.map(
-        ({ name, archived, run_count }: any, index: number) => {
+        ({ name, archived, run_count, id }: IExperimentData, index: number) => {
           return {
             key: index,
-            name: name,
+            name,
             archived,
             run_count,
-            id: name,
+            id,
           };
         },
       );
@@ -121,10 +125,14 @@ function useExperimentsCard() {
         ),
         width: 'calc(100% - 50px)',
         style: { paddingLeft: 10, paddingRight: 12 },
-        cellRenderer: ({ cellData }: any) => (
-          <Text component='p' size={12} title={cellData} tint={100}>
+        cellRenderer: ({ cellData, rowData }: any) => (
+          <Link
+            to={PathEnum.Experiment.replace(':experimentId', rowData.id)}
+            component={RouteLink}
+            className='experimentName'
+          >
             {cellData}
-          </Text>
+          </Link>
         ),
       },
       {

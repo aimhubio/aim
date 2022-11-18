@@ -10,7 +10,7 @@ function ExperimentContributionsFeed({
   experimentId,
   experimentName,
 }: IExperimentContributionsFeedProps): React.FunctionComponentElement<React.ReactNode> | null {
-  let props = useExperimentContributionsFeed(experimentId, experimentName);
+  const props = useExperimentContributionsFeed(experimentId, experimentName);
   return <ContributionsFeed {...props} />;
 }
 

@@ -26,9 +26,6 @@ import { setDocumentTitle } from 'utils/document/documentTitle';
 
 import ExperimentHeader from './components/ExperimentHeader';
 import useExperimentState from './useExperimentState';
-import { experimentContributionsFeedEngine } from './components/ExperimentOverviewTab/ExperimentContributionsFeed';
-import { experimentContributionsEngine } from './components/ExperimentOverviewTab/ExperimentContributions';
-import { experimentNotesEngine } from './components/ExperimentNotesTab';
 
 import './Experiment.scss';
 
@@ -36,6 +33,13 @@ const ExperimentOverviewTab = React.lazy(
   () =>
     import(
       /* webpackChunkName: "ExperimentOverviewTab" */ './components/ExperimentOverviewTab'
+    ),
+);
+
+const ExperimentRunsTab = React.lazy(
+  () =>
+    import(
+      /* webpackChunkName: "ExperimentOverviewTab" */ './components/ExperimentRunsTab'
     ),
 );
 
@@ -89,7 +93,12 @@ function Experiment(): React.FunctionComponentElement<React.ReactNode> {
         description={experimentData?.description ?? ''}
       />
     ),
-    runs: <div>runs</div>,
+    runs: (
+      <ExperimentRunsTab
+        experimentName={experimentData?.name ?? ''}
+        experimentId={experimentId}
+      />
+    ),
     notes: <ExperimentNotesTab experimentId={experimentId} />,
     settings: (
       <ExperimentSettingsTab
@@ -135,21 +144,8 @@ function Experiment(): React.FunctionComponentElement<React.ReactNode> {
   }, [experimentData]);
 
   React.useEffect(() => {
-    experimentContributionsFeedEngine.destroy();
-    experimentContributionsEngine.destroy();
-    experimentNotesEngine.destroy();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [experimentId]);
-
-  React.useEffect(() => {
     redirect();
     analytics.pageView(ANALYTICS_EVENT_KEYS.experiment.pageView);
-
-    return () => {
-      experimentContributionsFeedEngine.destroy();
-      experimentContributionsEngine.destroy();
-      experimentNotesEngine.destroy();
-    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
