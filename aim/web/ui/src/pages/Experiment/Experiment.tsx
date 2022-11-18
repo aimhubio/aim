@@ -26,10 +26,6 @@ import { setDocumentTitle } from 'utils/document/documentTitle';
 
 import ExperimentHeader from './components/ExperimentHeader';
 import useExperimentState from './useExperimentState';
-import { experimentContributionsFeedEngine } from './components/ExperimentOverviewTab/ExperimentContributionsFeed';
-import { experimentContributionsEngine } from './components/ExperimentOverviewTab/ExperimentContributions';
-import { experimentNotesEngine } from './components/ExperimentNotesTab';
-import { experimentRunsEngine } from './components/ExperimentRunsTab';
 
 import './Experiment.scss';
 
