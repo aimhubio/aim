@@ -14,8 +14,6 @@ import {
 
 import { ChartTypeEnum } from 'utils/d3';
 
-import { IFocusedState } from '../../types/services/models/metrics/metricsAppModel';
-
 import ChartPopover from './ChartPopover';
 import ChartGrid from './ChartGrid';
 import ChartLegends from './ChartLegends';
@@ -179,6 +177,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
               <div className='ChartPanel'>
                 <SplitPane
                   id={props.chartType}
+                  direction='horizontal'
                   minSize={[600, 0]}
                   expandToMin={true}
                   sizes={displayLegends ? [85, 15] : [100, 0]}
@@ -224,13 +223,11 @@ const ChartPanel = React.forwardRef(function ChartPanel(
                       />
                     </ErrorBoundary>
                   </SplitPaneItem>
-                  <SplitPaneItem>
-                    {displayLegends && (
-                      <ChartLegends
-                        data={props.legendsData}
-                        mode={props.legends?.mode}
-                      />
-                    )}
+                  <SplitPaneItem hide={!displayLegends}>
+                    <ChartLegends
+                      data={props.legendsData}
+                      mode={props.legends?.mode}
+                    />
                   </SplitPaneItem>
                 </SplitPane>
               </div>

@@ -7,7 +7,12 @@ const SplitPaneItem = React.forwardRef(function SplitPaneItem(
   props: SplitPaneItemProps,
   ref?: React.LegacyRef<HTMLDivElement>,
 ) {
-  const { children, className = '', resizingFallback = null } = props;
+  const {
+    children,
+    className = '',
+    resizingFallback = null,
+    hide = false,
+  } = props;
   const { resizing } = React.useContext(SplitPaneContext);
 
   const childrenElement = React.useMemo(() => {
@@ -18,9 +23,14 @@ const SplitPaneItem = React.forwardRef(function SplitPaneItem(
       ref={ref}
       className={classNames('SplitPaneItem', {
         [className]: !!className,
+        hide,
       })}
     >
-      {resizing && resizingFallback ? resizingFallback : childrenElement}
+      {hide
+        ? null
+        : resizing && resizingFallback
+        ? resizingFallback
+        : childrenElement}
     </div>
   );
 });

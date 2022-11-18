@@ -5,11 +5,8 @@
   width: 100%;
   height: 100%;
   .gutter {
-    background-color: $primary-color-10;
-    background-repeat: no-repeat;
-    background-position: 50%;
-    transition: all 0.15s ease-out;
-    transition-delay: 0.3s;
+    transition: background-color 0.15s ease-out;
+    background-color: transparent;
     &:hover {
       background-color: $primary-color-50;
     }
@@ -17,9 +14,8 @@
   &.horizontal {
     flex-direction: row;
     .gutter.gutter-horizontal {
-      background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAeCAYAAADkftS9AAAAIklEQVQoU2M4c+bMfxAGAgYYmwGrIIiDjrELjpo5aiZeMwF+yNnOs5KSvgAAAABJRU5ErkJggg==');
-      background-size: 0.3em auto;
       cursor: col-resize;
+      box-shadow: inset 2px 0 1px 0 $primary-color-20;
     }
     .SplitPaneItem {
       overflow-x: auto;
@@ -28,12 +24,14 @@
   &.vertical {
     flex-direction: column;
     .gutter.gutter-vertical {
-      background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAFAQMAAABo7865AAAABlBMVEVHcEzMzMzyAv2sAAAAAXRSTlMAQObYZgAAABBJREFUeF5jOAMEEAIEEFwAn3kMwcB6I2AAAAAASUVORK5CYII=');
-      background-size: auto 0.3em;
       cursor: row-resize;
+      box-shadow: inset 0 2px 1px 0 $primary-color-20;
     }
     .SplitPaneItem {
       overflow-y: auto;
     }
+  }
+  &.hide {
+    visibility: hidden;
   }
 }
