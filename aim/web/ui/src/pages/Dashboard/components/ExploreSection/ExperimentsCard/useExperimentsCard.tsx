@@ -38,7 +38,7 @@ function useExperimentsCard() {
   }[] = React.useMemo(() => {
     if (experimentsStore.data) {
       return experimentsStore.data.map(
-        ({ name, archived, run_count, id }: any, index: number) => {
+        ({ name, archived, run_count, id }: IExperimentData, index: number) => {
           return {
             key: index,
             name,
