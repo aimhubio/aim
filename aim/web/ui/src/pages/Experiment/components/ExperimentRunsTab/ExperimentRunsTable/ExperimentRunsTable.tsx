@@ -28,6 +28,7 @@ function ExperimentRunsTable({
     onRowSelect,
     loadMore,
     isInfiniteLoading,
+    totalRunsCount,
   } = useExperimentRunsTable(experimentName, experimentId);
 
   return (
@@ -40,7 +41,9 @@ function ExperimentRunsTable({
           weight={700}
           tint={100}
         >
-          Experiment Runs
+          {_.isEmpty(selectedRows)
+            ? `Experiment Runs (${tableData.length}/${totalRunsCount})`
+            : `Selected Runs (${Object.values(selectedRows).length})`}
         </Text>
         {tableData.length > 0 && (
           <div className='ExperimentRunsTable__header__comparisonPopover'>

@@ -20,13 +20,20 @@ import { processDurationTime } from 'utils/processDurationTime';
 import { decode, encode } from 'utils/encoder/encoder';
 
 import experimentRunsEngine from '../ExperimentRunsStore';
+import { experimentContributionsEngine } from '../../ExperimentOverviewTab/ExperimentContributions';
 
 function useExperimentRunsTable(experimentName: string, experimentId: string) {
   const tableRef = React.useRef<any>(null);
+  const dataRef = React.useRef<any>(null);
   const [data, setData] = React.useState<any>([]);
   const [isInfiniteLoading, setIsInfiniteLoading] =
     React.useState<boolean>(false);
   const { current: engine } = React.useRef(experimentRunsEngine);
+  const { current: expContributionsEngine } = React.useRef(
+    experimentContributionsEngine,
+  );
+  const contributionsState =
+    expContributionsEngine.experimentContributionsState((state) => state);
   const experimentRunsState: IResourceState<IRun<unknown>[]> =
     engine.experimentRunsState((state) => state);
   const [selectedRows, setSelectedRows] = React.useState<
@@ -42,13 +49,22 @@ function useExperimentRunsTable(experimentName: string, experimentId: string) {
         q: `run.experiment == '${experimentName}'`,
       });
     }
-    return () => engine.destroy();
+    if (_.isEmpty(contributionsState.data)) {
+      expContributionsEngine.fetchExperimentContributions(experimentId);
+    }
+    return () => {
+      engine.destroy();
+      expContributionsEngine.destroy();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   React.useEffect(() => {
     if (experimentRunsState.data) {
       engine.destroy();
+    }
+    if (contributionsState.data) {
+      expContributionsEngine.destroy();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [experimentId]);
@@ -57,6 +73,7 @@ function useExperimentRunsTable(experimentName: string, experimentId: string) {
     if (experimentRunsState.data?.length) {
       let newData = [...data, ...experimentRunsState.data];
       setData(newData);
+      dataRef.current = newData;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [experimentRunsState.data]);
@@ -136,7 +153,6 @@ function useExperimentRunsTable(experimentName: string, experimentId: string) {
           key,
           selectKey: key,
           index,
-          experiment: props.experiment?.name,
           run: {
             content: (
               <RunNameColumn
@@ -164,7 +180,7 @@ function useExperimentRunsTable(experimentName: string, experimentId: string) {
                 ? '--'
                 : col.isSystem
                 ? formatValue(value)
-                : `step: ${step} / value: ${formatValue(value)}`,
+                : `step: ${step ?? '-'} / value: ${formatValue(value)}`,
           };
         });
         return row;
@@ -176,12 +192,6 @@ function useExperimentRunsTable(experimentName: string, experimentId: string) {
   // memoized table columns
   const tableColumns = React.useMemo(() => {
     const columns = [
-      {
-        key: 'experiment',
-        content: <span>Experiment</span>,
-        topHeader: 'Run',
-        pin: 'left',
-      },
       {
         key: 'run',
         content: <span>Name</span>,
@@ -209,8 +219,7 @@ function useExperimentRunsTable(experimentName: string, experimentId: string) {
         .fetchExperimentRuns({
           limit: 50,
           exclude_params: true,
-          offset:
-            experimentRunsState.data[experimentRunsState.data.length - 1].hash,
+          offset: dataRef.current[dataRef.current.length - 1]?.hash,
           q: `run.experiment == '${experimentName}'`,
         })
         .finally(() => setIsInfiniteLoading(false));
@@ -285,6 +294,9 @@ function useExperimentRunsTable(experimentName: string, experimentId: string) {
     comparisonQuery,
     onRowSelect,
     loadMore,
+    totalRunsCount:
+      (contributionsState?.data?.num_runs ?? 0) -
+      (contributionsState?.data?.num_archived_runs ?? 0),
   };
 }
 
