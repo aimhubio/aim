@@ -335,10 +335,11 @@ const Table = React.forwardRef(function Table(
         }
 
         if (
-          tableContainerRef.current.scrollTop > top ||
-          tableContainerRef.current.scrollTop +
-            tableContainerRef.current.offsetHeight <
-            top
+          tableContainerRef.current &&
+          (tableContainerRef.current.scrollTop > top ||
+            tableContainerRef.current.scrollTop +
+              tableContainerRef.current.offsetHeight <
+              top)
         ) {
           setTimeout(() => {
             window.requestAnimationFrame(() => {
