@@ -21,7 +21,6 @@ const statisticsInitialMap: Record<string, IProjectStatistic> = {
     icon: 'metrics',
     iconBgColor: '#7A4CE0',
     navLink: routes.METRICS.path,
-    title: 'Metrics Explorer',
   },
   systemMetrics: {
     label: 'Sys. metrics',
@@ -32,7 +31,6 @@ const statisticsInitialMap: Record<string, IProjectStatistic> = {
       advancedQuery: "metric.name.startswith('__system__') == True",
       advancedMode: true,
     })}`,
-    title: 'Metrics Explorer',
   },
   [SequenceTypesEnum.Figures]: {
     label: 'Figures',
@@ -40,7 +38,6 @@ const statisticsInitialMap: Record<string, IProjectStatistic> = {
     count: 0,
     iconBgColor: '#18AB6D',
     navLink: routes.FIGURES_EXPLORER.path,
-    title: 'Figures Explorer',
   },
   [SequenceTypesEnum.Images]: {
     label: 'Images',
@@ -48,15 +45,17 @@ const statisticsInitialMap: Record<string, IProjectStatistic> = {
     count: 0,
     iconBgColor: '#F17922',
     navLink: routes.IMAGE_EXPLORE.path,
-    title: 'Images Explorer',
   },
   [SequenceTypesEnum.Audios]: {
     label: 'Audios',
     icon: 'audio',
     count: 0,
     iconBgColor: '#FCB500',
-    navLink: '',
-    title: 'Explorer coming soon',
+    navLink: routes.AUDIO_EXPLORER.path,
+    badge: {
+      value: 'New',
+      style: { backgroundColor: '#2bc784', color: '#fff' },
+    },
   },
   [SequenceTypesEnum.Texts]: {
     label: 'Texts',
@@ -64,7 +63,9 @@ const statisticsInitialMap: Record<string, IProjectStatistic> = {
     count: 0,
     iconBgColor: '#E149A0',
     navLink: '',
-    title: 'Explorer coming soon',
+    badge: {
+      value: 'Explorer coming soon',
+    },
   },
   [SequenceTypesEnum.Distributions]: {
     label: 'Distributions',
@@ -72,7 +73,9 @@ const statisticsInitialMap: Record<string, IProjectStatistic> = {
     count: 0,
     iconBgColor: '#0394B4',
     navLink: '',
-    title: 'Explorer coming soon',
+    badge: {
+      value: 'Explorer coming soon',
+    },
   },
 };
 
@@ -208,10 +211,10 @@ function ProjectStatistics() {
       </Text>
       <div className='ProjectStatistics__cards'>
         {Object.values(statisticsMap).map(
-          ({ label, title, icon, count, iconBgColor, navLink }) => (
+          ({ label, icon, count, iconBgColor, navLink, badge }) => (
             <StatisticsCard
               key={label}
-              title={title}
+              badge={badge}
               label={label}
               icon={icon}
               count={count}
