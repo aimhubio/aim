@@ -20,7 +20,10 @@ const ExperimentNameBox = ({
       <Tooltip title={experimentName}>
         <div className='ExperimentNameBox__experimentName'>
           <Link
-            to={PathEnum.Experiment.replace(':experimentId', experimentId)}
+            to={
+              PathEnum.Experiment.replace(':experimentId', experimentId) +
+              '/overview'
+            }
             component={RouteLink}
           >
             {experimentName}

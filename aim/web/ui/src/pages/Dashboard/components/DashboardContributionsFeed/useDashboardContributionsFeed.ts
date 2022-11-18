@@ -91,6 +91,7 @@ function useDashboardContributionsFeed() {
           active: props.active,
           creation_time: props.creation_time,
           experiment: props.experiment?.name,
+          experimentId: props.experiment?.id,
         };
         if (feedData[month]?.[day]?.length) {
           feedData[month][day].push(contribution);

@@ -99,6 +99,7 @@ function useExperimentContributionsFeed(
             hash: run.run_id,
             creation_time: run.creation_time,
             experiment: experimentName,
+            experimentId: experimentId,
           };
           if (feedData[month]?.[day]?.length) {
             feedData[month][day].push(contribution);
@@ -109,7 +110,7 @@ function useExperimentContributionsFeed(
       });
     }
     return feedData;
-  }, [data, experimentName]);
+  }, [data, experimentName, experimentId]);
 
   function loadMore(): void {
     if (contributionsFeedStore.data && !contributionsFeedStore.loading) {
