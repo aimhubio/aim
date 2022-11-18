@@ -60,6 +60,7 @@ class Caller(object, metaclass=CallerMeta):
             logger.debug(f'Calling trigger method \'{method.__qualname__}\'.')
 
             callbacks = self.callbacks.get(method.__name__, ())
+            method(self, *args, **kwargs)
             for callback in callbacks:
                 try:
                     callback(self, *args, **kwargs)
