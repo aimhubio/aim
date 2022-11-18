@@ -1,19 +1,23 @@
-import { Tree } from 'antd';
+import React from 'react';
 import ReactSelect from 'react-select';
 
 import type { DataNode } from 'antd/es/tree';
 
-import 'antd/dist/antd.css';
+import Icon from 'components/kit/Icon';
+
+import Checkbox from '../Checkbox';
+
+import TreeList from './TreeList/TreeList';
+
+import 'antd/es/tree/style/index.css';
 
 const dig = (path = '0', level = 3) => {
   const list = [];
-  for (let i = 0; i < 10; i += 1) {
+  for (let i = 0; i < 3; i += 1) {
     const key = `${path}-${i}`;
     const treeNode: DataNode = {
       title: key,
       key,
-      //   icon: <Icon name='check' />,
-      //   switcherIcon: <Icon name='check' />,
     };
 
     if (level > 0) {
@@ -28,31 +32,42 @@ const dig = (path = '0', level = 3) => {
 const treeData = dig();
 
 function Select(): React.FunctionComponentElement<React.ReactNode> {
-  const Menu = () => (
-    <Tree
-      // icon={<Icon name='search' />}
-      treeData={treeData}
-      height={233}
-      defaultExpandAll
-      // checkable
-    />
+  const [searchValue, setSearchValue] = React.useState<string | null>('');
+  const [checkedKeys, setCheckedKeys] = React.useState<
+    { key: string; value: boolean | 'indeterminate' }[]
+  >([]);
+
+  console.log(
+    '🚀 ~ file: Select.tsx ~ line 34 ~ Select ~ searchValue',
+    searchValue,
   );
+  function onCheckChange(check: any, key: string) {
+    if (check === true) {
+      setCheckedKeys([...checkedKeys, { key, value: true }]);
+    } else {
+      setCheckedKeys(checkedKeys.filter((item) => item.key !== key));
+    }
+  }
   return (
     <>
       <ReactSelect
+        menuIsOpen={true}
+        value={searchValue}
+        onInputChange={(value) => setSearchValue(value)}
+        closeMenuOnSelect={false}
         components={{
-          MenuList: Menu,
+          MenuList: () => (
+            <TreeList
+              searchValue={searchValue}
+              data={treeData}
+              height={400}
+              checkedKeys={checkedKeys}
+              onCheckChange={onCheckChange}
+            />
+          ),
         }}
       />
-      <div style={{ width: 200, height: 300 }}>
-        <Tree
-          // icon={<Icon name='search' />}
-          treeData={treeData}
-          height={233}
-          defaultExpandAll
-          checkable
-        />
-      </div>
+      {/* <TreeList searchValue={'0-0'} data={treeData} height={400} /> */}
     </>
   );
 }

@@ -99,6 +99,7 @@ export const {
       pale50: '#E5FFF5',
       pale70: '#CCFFEB',
       pale80: '#A3FFDC',
+      mark: '#fffac1',
     },
     fonts: {
       inter: 'Inter, sans-serif',

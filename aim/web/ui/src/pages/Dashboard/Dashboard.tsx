@@ -16,13 +16,6 @@ import AimIntegrations from './components/AimIntegrations';
 
 import './Dashboard.scss';
 
-const Select = React.lazy(
-  () =>
-    import(
-      /* webpackChunkName: "Select_Dropdown" */ 'components/kit_v2/Select/Select'
-    ),
-);
-
 function Dashboard(): React.FunctionComponentElement<React.ReactNode> {
   const { projectContributionsStore } = useProjectContributions();
 
@@ -33,9 +26,6 @@ function Dashboard(): React.FunctionComponentElement<React.ReactNode> {
   return (
     <ErrorBoundary>
       <section className='Dashboard'>
-        <React.Suspense fallback='loading'>
-          <Select />
-        </React.Suspense>
         <ExploreSection />
         <div
           className={classnames('Dashboard__middle', {

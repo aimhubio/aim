@@ -5,6 +5,7 @@ import { Paper, Tab, Tabs } from '@material-ui/core';
 import TabPanel from 'components/TabPanel/TabPanel';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import Select from 'components/kit_v2/Select/Select';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
@@ -46,7 +47,10 @@ function Tags({
 
   return (
     <ErrorBoundary>
-      <section className='Tags container'>
+      <div style={{ margin: 100 }}>
+        <Select />
+      </div>
+      {/* <section className='Tags container'>
         <Paper className='Tags__tabsContainer'>
           <Tabs
             value={value}
@@ -90,7 +94,7 @@ function Tags({
             data={notifyData}
           />
         )}
-      </section>
+      </section> */}
     </ErrorBoundary>
   );
 }
