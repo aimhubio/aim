@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { LazyExoticComponent } from 'react';
 import {
   Route,
   Switch,
@@ -85,28 +85,39 @@ function Experiment(): React.FunctionComponentElement<React.ReactNode> {
   const { data: experimentsData, loading: isExperimentsLoading } =
     experimentsState;
 
-  const tabContent: { [key: string]: JSX.Element } = {
-    overview: (
-      <ExperimentOverviewTab
-        experimentName={experimentData?.name ?? ''}
-        experimentId={experimentId}
-        description={experimentData?.description ?? ''}
-      />
-    ),
-    runs: (
-      <ExperimentRunsTab
-        experimentName={experimentData?.name ?? ''}
-        experimentId={experimentId}
-      />
-    ),
-    notes: <ExperimentNotesTab experimentId={experimentId} />,
-    settings: (
-      <ExperimentSettingsTab
-        experimentName={experimentData?.name ?? ''}
-        experimentDescription={experimentData?.description ?? ''}
-        updateExperiment={updateExperiment}
-      />
-    ),
+  const tabContent: Record<
+    string,
+    { props: any; Component: LazyExoticComponent<any> }
+  > = {
+    overview: {
+      props: {
+        experimentName: experimentData?.name ?? '',
+        experimentId,
+        description: experimentData?.description ?? '',
+      },
+      Component: ExperimentOverviewTab,
+    },
+    runs: {
+      props: {
+        experimentName: experimentData?.name ?? '',
+        experimentId,
+      },
+      Component: ExperimentRunsTab,
+    },
+    notes: {
+      props: {
+        experimentId,
+      },
+      Component: ExperimentNotesTab,
+    },
+    settings: {
+      props: {
+        experimentName: experimentData?.name ?? '',
+        updateExperiment,
+        description: experimentData?.description ?? '',
+      },
+      Component: ExperimentSettingsTab,
+    },
   };
 
   function handleTabChange(event: React.ChangeEvent<{}>, newValue: string) {
@@ -184,24 +195,13 @@ function Experiment(): React.FunctionComponentElement<React.ReactNode> {
           height='calc(100vh - 112px)'
         >
           <Switch>
-            {Object.keys(tabs).map((tabKey: string) => (
-              <Route path={`${url}/${tabKey}`} key={tabKey}>
-                <ErrorBoundary>
-                  {tabKey === 'overview' ? (
-                    <div className='Experiment__tabPanelBox overviewPanel'>
-                      <React.Suspense
-                        fallback={
-                          <div className='Experiment__tabPanelBox__suspenseLoaderContainer'>
-                            <Spinner />
-                          </div>
-                        }
-                      >
-                        {tabContent[tabKey]}
-                      </React.Suspense>
-                    </div>
-                  ) : (
-                    <div className='Experiment__tabPanelBox'>
-                      <div className='Experiment__tabPanel container'>
+            {Object.keys(tabs).map((tabKey: string) => {
+              const { Component, props } = tabContent[tabKey];
+              return (
+                <Route path={`${url}/${tabKey}`} key={tabKey}>
+                  <ErrorBoundary>
+                    {tabKey === 'overview' ? (
+                      <div className='Experiment__tabPanelBox overviewPanel'>
                         <React.Suspense
                           fallback={
                             <div className='Experiment__tabPanelBox__suspenseLoaderContainer'>
@@ -209,14 +209,28 @@ function Experiment(): React.FunctionComponentElement<React.ReactNode> {
                             </div>
                           }
                         >
-                          {tabContent[tabKey]}
+                          <Component {...props} />
                         </React.Suspense>
                       </div>
-                    </div>
-                  )}
-                </ErrorBoundary>
-              </Route>
-            ))}
+                    ) : (
+                      <div className='Experiment__tabPanelBox'>
+                        <div className='Experiment__tabPanel container'>
+                          <React.Suspense
+                            fallback={
+                              <div className='Experiment__tabPanelBox__suspenseLoaderContainer'>
+                                <Spinner />
+                              </div>
+                            }
+                          >
+                            <Component {...props} />
+                          </React.Suspense>
+                        </div>
+                      </div>
+                    )}
+                  </ErrorBoundary>
+                </Route>
+              );
+            })}
           </Switch>
         </BusyLoaderWrapper>
       </section>

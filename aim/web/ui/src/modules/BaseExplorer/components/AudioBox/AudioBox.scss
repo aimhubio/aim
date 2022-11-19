@@ -22,7 +22,6 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      position: relative;
       transition: background-color 0.18s ease-out;
       &:hover {
         background-color: rgba(28, 40, 82, 0.04);
@@ -124,7 +123,6 @@
         }
       }
     }
-
     &__progressSlider {
       margin: 0 $space-xxxs 0 $space-xxs;
       height: toRem(40px);
@@ -151,7 +149,6 @@
         transition: all 0.18s ease-out;
         bottom: -1rem;
         left: 0;
-        width: auto;
         position: absolute;
         width: toRem(56px);
         box-shadow: 0 0.125rem 0.25rem rgba(28, 40, 82, 0.15);
