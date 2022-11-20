@@ -137,7 +137,7 @@ function BoxWrapper(props: IBoxWrapperProps<AimFlatObjectBase<any>>) {
             <div className='BoxWrapper__fullViewContent__box'>
               {BoxContent && (
                 <BoxContent
-                  key={currentItem.key + 'fullView'}
+                  key={'fullView-' + currentItem.key}
                   data={currentItem}
                   items={items}
                   engine={engine}

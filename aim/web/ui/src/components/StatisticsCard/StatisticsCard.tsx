@@ -12,7 +12,7 @@ import './StatisticsCard.scss';
 
 function StatisticsCard({
   label,
-  title = '',
+  badge = { value: '' },
   count,
   icon,
   iconBgColor = '#000000',
@@ -53,17 +53,17 @@ function StatisticsCard({
       className={classNames('StatisticsCard', { highlighted })}
       style={styles.card}
     >
-      {!navLink && (
+      {badge?.value && (
         <Text
           component='p'
-          className='StatisticsCard__soonBadge'
+          className='StatisticsCard__badge'
           weight={600}
           size={8}
+          style={badge.style}
         >
-          Explorer coming soon
+          {badge.value}
         </Text>
       )}
-
       {icon && (
         <div className='StatisticsCard__iconWrapper' style={styles.iconWrapper}>
           <Icon name={icon} color={styles.iconColor} />
@@ -78,7 +78,6 @@ function StatisticsCard({
         >
           {label}
         </Text>
-
         <Text
           className='StatisticsCard__info__count'
           size={16}
