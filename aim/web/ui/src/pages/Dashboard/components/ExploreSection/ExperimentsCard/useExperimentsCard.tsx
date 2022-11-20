@@ -1,16 +1,12 @@
 import React from 'react';
-import { Link as RouteLink } from 'react-router-dom';
 import _ from 'lodash-es';
 
-import { Link } from '@material-ui/core';
 import { IExperimentData } from 'modules/core/api/experimentsApi';
 import { IResourceState } from 'modules/core/utils/createResource';
 import { Checkbox } from '@material-ui/core';
 
 import { Icon, Text } from 'components/kit';
 import ExperimentNameBox from 'components/ExperimentNameBox';
-
-import { PathEnum } from 'config/enums/routesEnum';
 
 import createExperimentEngine from './ExperimentsStore';
 
@@ -98,20 +94,20 @@ function useExperimentsCard() {
           />
         ),
         width: '20px',
-        cellRenderer: ({ cellData }: any) => {
+        cellRenderer: ({ rowData }: any) => {
           return (
             <Checkbox
               color='primary'
               size='small'
               icon={<span className='defaultSelectIcon'></span>}
               className='selectCheckbox'
-              checked={selectedRows.includes(cellData)}
+              checked={selectedRows.includes(rowData.name)}
               checkedIcon={
                 <span className='selectedSelectIcon'>
                   <Icon name='check' fontSize={8} />
                 </span>
               }
-              onClick={() => onRowSelect(cellData)}
+              onClick={() => onRowSelect(rowData.name)}
             />
           );
         },
