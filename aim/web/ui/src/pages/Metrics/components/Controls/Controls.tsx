@@ -464,7 +464,7 @@ function Controls(
               onToggleExportPreview={onToggleExportPreview}
               appendElement={
                 !!props.legends?.display && !_.isEmpty(props.legendsData) ? (
-                  <ChartLegends data={props.legendsData} />
+                  <ChartLegends data={props.legendsData} readOnly />
                 ) : null
               }
             >

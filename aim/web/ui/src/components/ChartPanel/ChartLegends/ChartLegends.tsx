@@ -11,7 +11,7 @@ import { IChartLegendsProps } from '.';
 import './ChartLegends.scss';
 
 function ChartLegends(props: IChartLegendsProps) {
-  const { data = {}, mode = LegendsModeEnum.PINNED } = props;
+  const { data = {}, mode = LegendsModeEnum.PINNED, readOnly = false } = props;
   const dataRef = React.useRef<typeof data>({});
   const containerRef = React.useRef<HTMLDivElement>(null);
 
@@ -21,9 +21,10 @@ function ChartLegends(props: IChartLegendsProps) {
       drawLegends({
         data,
         containerNode: containerRef.current,
+        readOnly,
       });
     }
-  }, [data]);
+  }, [data, readOnly]);
 
   return (
     <ErrorBoundary>

@@ -14,6 +14,7 @@ import shortenRunPropLabel from '../shortenRunPropLabel';
 interface DrawLegendsArgs {
   data?: LegendsDataType;
   containerNode: HTMLDivElement | null;
+  readOnly?: boolean;
 }
 interface GroupLegendProp {
   value: string;
@@ -144,11 +145,18 @@ const groupLegendProps: Record<string, GroupLegendProp> = {
   },
 };
 
-function drawLegends({ data = {}, containerNode }: DrawLegendsArgs): void {
+function drawLegends({
+  data = {},
+  containerNode,
+  readOnly,
+}: DrawLegendsArgs): void {
   if (!containerNode || _.isEmpty(data)) {
     return;
   }
-  const { svgWrapper, groupsWrapper } = drawLegendArea(containerNode);
+  const { svgWrapper, bgRect, groupsWrapper } = drawLegendArea(
+    containerNode,
+    readOnly,
+  );
   const { margin, groupsGap } = config;
   let currentGroupHeight = 0;
   for (const [legendName, legend] of Object.entries(data)) {
@@ -166,12 +174,17 @@ function drawLegends({ data = {}, containerNode }: DrawLegendsArgs): void {
   const { width: groupsWrapperWidth = 0, height: groupsWrapperHeight = 0 } =
     groupsWrapper.node()?.getBBox() || {};
 
-  svgWrapper
-    .attr('height', margin.top + margin.bottom + groupsWrapperHeight)
-    .attr('width', margin.left + margin.right + groupsWrapperWidth);
+  const svgWidth = margin.left + margin.right + groupsWrapperWidth;
+  const svgHeight = margin.top + margin.bottom + groupsWrapperHeight;
+
+  bgRect.attr('height', svgHeight).attr('width', svgWidth);
+  svgWrapper.attr('height', svgHeight).attr('width', svgWidth);
 }
 
-function drawLegendArea(containerNode: HTMLDivElement | null) {
+function drawLegendArea(
+  containerNode: HTMLDivElement | null,
+  readOnly: boolean = false,
+) {
   const container = d3.select(containerNode);
   container.select('*')?.remove();
 
@@ -184,13 +197,32 @@ function drawLegendArea(containerNode: HTMLDivElement | null) {
     .style('fill', 'transparent')
     .raise();
 
+  const bgRect = svgWrapper
+    .append('rect')
+    .attr('x', 0)
+    .attr('y', 0)
+    .attr('class', 'Legends-bgRect')
+    .style('fill', 'transparent');
+
+  if (readOnly) {
+    svgWrapper
+      .append('line')
+      .attr('class', 'Legends-separator')
+      .attr('x1', 0)
+      .attr('y1', 0)
+      .attr('x2', 0)
+      .attr('y2', '100%')
+      .style('stroke-width', 1)
+      .style('stroke', '#bdcee8');
+  }
+
   const groupsWrapper = svgWrapper
     .append('g')
     .attr('class', 'Legend-groups-wrapper')
     .attr('transform', `translate(${margin.left}, ${margin.top})`)
-    .attr('fill', defaultColor);
+    .style('fill', defaultColor);
 
-  return { svgWrapper, groupsWrapper };
+  return { svgWrapper, groupsWrapper, bgRect };
 }
 
 function drawLegend(

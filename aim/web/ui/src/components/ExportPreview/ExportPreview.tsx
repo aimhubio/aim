@@ -107,26 +107,24 @@ function ExportPreview({
     ) => {
       const svgLegendNode = chartLegends?.querySelector('svg.Legends');
       if (chartLegends && svgLegendNode) {
-        const clearedSvgElement = svgLegendNode.cloneNode(
-          true,
-        ) as SVGSVGElement;
         const { scrollWidth: legendsWidth, scrollHeight: legendsHeight } =
           svgLegendNode;
+        const clonedSVGNode = svgLegendNode.cloneNode(true) as SVGSVGElement;
+        clonedSVGNode.setAttribute('x', gridWidth + 'px');
+        clonedSVGNode.setAttribute('y', '0px');
 
-        clearedSvgElement.setAttribute('x', gridWidth + 'px');
-        clearedSvgElement.setAttribute('y', '0px');
-        let width = gridWidth + legendsWidth;
-        let height = legendsHeight > gridHeight ? legendsHeight : gridHeight;
+        const width = gridWidth + legendsWidth;
+        const height = legendsHeight > gridHeight ? legendsHeight : gridHeight;
 
         wrapper.setAttribute('width', width + 'px');
         wrapper.setAttribute('height', height + 'px');
         wrapper.setAttribute('viewBox', `0 0 ${width} ${height}`);
 
         if (format !== FORMAT_ENUM.PNG) {
-          clearedSvgElement.style.backgroundColor = 'white';
-          clearedSvgElement.style.fill = 'white';
+          clonedSVGNode.style.backgroundColor = 'white';
+          clonedSVGNode.style.fill = 'white';
         }
-        wrapper.appendChild(clearedSvgElement);
+        wrapper.appendChild(clonedSVGNode);
         return { width, height };
       }
       return { width: gridWidth, height: gridHeight };

@@ -7,15 +7,16 @@
   .gutter {
     transition: background-color 0.15s ease-out;
     background-color: transparent;
-    &:hover {
-      background-color: $primary-color-50;
-    }
   }
   &.horizontal {
     flex-direction: row;
-    .gutter.gutter-horizontal {
+    .gutter-horizontal {
       cursor: col-resize;
-      box-shadow: inset 2px 0 1px 0 $primary-color-20;
+      box-shadow: inset 2px 0 0 0 $primary-color-20;
+      &:hover {
+        background-color: $primary-color-50;
+        box-shadow: unset;
+      }
     }
     .SplitPaneItem {
       overflow-x: auto;
@@ -23,9 +24,13 @@
   }
   &.vertical {
     flex-direction: column;
-    .gutter.gutter-vertical {
+    .gutter-vertical {
       cursor: row-resize;
       box-shadow: inset 0 2px 1px 0 $primary-color-20;
+      &:hover {
+        background-color: $primary-color-50;
+        box-shadow: unset;
+      }
     }
     .SplitPaneItem {
       overflow-y: auto;
