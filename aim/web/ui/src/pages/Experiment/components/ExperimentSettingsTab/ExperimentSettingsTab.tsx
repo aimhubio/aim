@@ -13,7 +13,7 @@ import './ExperimentSettingsTab.scss';
 
 function ExperimentSettingsTab({
   experimentName,
-  experimentDescription,
+  description,
   updateExperiment,
 }: IExperimentSettingsTabProps): React.FunctionComponentElement<React.ReactNode> {
   React.useEffect(() => {
@@ -31,7 +31,7 @@ function ExperimentSettingsTab({
           <NameAndDescriptionCard
             title='Experiment Properties'
             defaultName={experimentName ?? ''}
-            defaultDescription={experimentDescription ?? ''}
+            defaultDescription={description ?? ''}
             onSave={onSave}
           />
         </div>

@@ -1,5 +1,5 @@
 export interface IExperimentSettingsTabProps {
   experimentName: string;
-  experimentDescription: string;
+  description: string;
   updateExperiment: (name: string, description: string) => void;
 }
