@@ -801,6 +801,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               color: metricsCollection.color ?? metric.color,
               dasharray: metricsCollection.dasharray ?? metric.dasharray,
               experiment: metric.run.props?.experiment?.name ?? 'default',
+              experimentId: metric.run.props?.experiment?.id ?? '',
               run: metric.run.props?.name ?? '-',
               description: metric.run.props?.description ?? '-',
               date: moment(metric.run.props.creation_time * 1000).format(
@@ -2720,6 +2721,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               color: metricsCollection.color ?? metric.color,
               dasharray: metricsCollection.dasharray ?? metric.dasharray,
               experiment: metric.run.props.experiment?.name ?? 'default',
+              experimentId: metric.run.props.experiment?.id ?? '',
               run: metric.run.props.name,
               description: metric.run.props?.description ?? '-',
               date: moment(metric.run.props.creation_time * 1000).format(
@@ -3499,6 +3501,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 color: metricsCollection.color ?? metric.color,
                 dasharray: metricsCollection.dasharray ?? metric.dasharray,
                 experiment: metric.run.props.experiment.name ?? 'default',
+                experimentId: metric.run.props.experiment.id ?? '',
                 run: metric.run.props?.name ?? '-',
                 description: metric.run.props?.description ?? '-',
                 date: moment(metric.run.props.creation_time * 1000).format(
@@ -5202,6 +5205,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 color: metricsCollection.color ?? metric.color,
                 dasharray: metricsCollection.dasharray ?? metric.dasharray,
                 experiment: metric.run.props.experiment?.name ?? 'default',
+                experimentId: metric.run.props.experiment?.id ?? '',
                 run: metric.run.props?.name ?? '-',
                 description: metric.run.props?.description ?? '-',
                 date: moment(metric.run.props.creation_time * 1000).format(

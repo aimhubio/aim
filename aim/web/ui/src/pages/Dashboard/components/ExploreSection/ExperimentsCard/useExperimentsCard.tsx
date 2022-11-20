@@ -1,21 +1,22 @@
 import React from 'react';
-import { Link as RouteLink } from 'react-router-dom';
 import _ from 'lodash-es';
 
-import { Link } from '@material-ui/core';
 import { IExperimentData } from 'modules/core/api/experimentsApi';
 import { IResourceState } from 'modules/core/utils/createResource';
 import { Checkbox } from '@material-ui/core';
 
 import { Icon, Text } from 'components/kit';
-
-import { PathEnum } from 'config/enums/routesEnum';
+import ExperimentNameBox from 'components/ExperimentNameBox';
 
 import createExperimentEngine from './ExperimentsStore';
 
+import { ExperimentsCardRowDataType } from '.';
+
 function useExperimentsCard() {
   const tableRef = React.useRef<any>(null);
-  const [selectedRows, setSelectedRows] = React.useState<string[]>([]);
+  const [selectedRows, setSelectedRows] = React.useState<
+    Record<string, ExperimentsCardRowDataType>
+  >({});
   const { current: experimentsEngine } = React.useRef(createExperimentEngine);
   const experimentsStore: IResourceState<IExperimentData[]> =
     experimentsEngine.experimentsState((state) => state);
@@ -29,13 +30,7 @@ function useExperimentsCard() {
   }, []);
 
   // memoized table data
-  const tableData: {
-    key: number;
-    name: string;
-    archived: boolean;
-    run_count: number;
-    id: string;
-  }[] = React.useMemo(() => {
+  const tableData: ExperimentsCardRowDataType[] = React.useMemo(() => {
     if (experimentsStore.data) {
       return experimentsStore.data.map(
         ({ name, archived, run_count, id }: IExperimentData, index: number) => {
@@ -54,16 +49,26 @@ function useExperimentsCard() {
 
   // on row selection
   const onRowSelect = React.useCallback(
-    (rowKey?: string) => {
+    (rowKey?: string, rowData?: ExperimentsCardRowDataType) => {
       if (rowKey) {
-        const newSelectedRows = selectedRows.includes(rowKey)
-          ? selectedRows.filter((row: string) => row !== rowKey)
-          : [...selectedRows, rowKey];
+        const newSelectedRows = selectedRows[rowKey]
+          ? _.omit(selectedRows, rowKey)
+          : { ...selectedRows, [rowKey]: rowData };
         setSelectedRows(newSelectedRows);
-      } else if (selectedRows.length) {
-        setSelectedRows([]);
+      } else if (!_.isEmpty(selectedRows)) {
+        setSelectedRows({});
       } else {
-        setSelectedRows(tableData.map(({ name }: any) => name));
+        const newSelectedRows = tableData.reduce(
+          (
+            acc: Record<string, ExperimentsCardRowDataType>,
+            rowData: ExperimentsCardRowDataType,
+          ) => {
+            acc[rowData.id] = rowData;
+            return acc;
+          },
+          {},
+        );
+        setSelectedRows(newSelectedRows);
       }
     },
     [selectedRows, tableData],
@@ -93,24 +98,30 @@ function useExperimentsCard() {
               )
             }
             onClick={() => onRowSelect()}
-            checked={!!selectedRows.length}
+            checked={!_.isEmpty(selectedRows)}
           />
         ),
         width: '20px',
-        cellRenderer: ({ cellData }: any) => {
+        cellRenderer: ({
+          cellData,
+          rowData,
+        }: {
+          cellData: string;
+          rowData: ExperimentsCardRowDataType;
+        }) => {
           return (
             <Checkbox
               color='primary'
               size='small'
               icon={<span className='defaultSelectIcon'></span>}
               className='selectCheckbox'
-              checked={selectedRows.includes(cellData)}
+              checked={!!selectedRows[cellData]}
               checkedIcon={
                 <span className='selectedSelectIcon'>
                   <Icon name='check' fontSize={8} />
                 </span>
               }
-              onClick={() => onRowSelect(cellData)}
+              onClick={() => onRowSelect(cellData, rowData)}
             />
           );
         },
@@ -125,14 +136,17 @@ function useExperimentsCard() {
         ),
         width: 'calc(100% - 50px)',
         style: { paddingLeft: 10, paddingRight: 12 },
-        cellRenderer: ({ cellData, rowData }: any) => (
-          <Link
-            to={PathEnum.Experiment.replace(':experimentId', rowData.id)}
-            component={RouteLink}
-            className='experimentName'
-          >
-            {cellData}
-          </Link>
+        cellRenderer: ({
+          cellData,
+          rowData,
+        }: {
+          cellData: string;
+          rowData: ExperimentsCardRowDataType;
+        }) => (
+          <ExperimentNameBox
+            experimentName={cellData || ''}
+            experimentId={rowData.id || ''}
+          />
         ),
       },
       {
@@ -147,13 +161,13 @@ function useExperimentsCard() {
         width: '46px',
         textAlign: 'right',
         style: { textAlign: 'right' },
-        cellRenderer: ({ cellData }: any) => (
+        cellRenderer: ({ cellData }: { cellData: number }) => (
           <Text
             style={{ textAlign: 'right', width: '100%', paddingRight: 12 }}
             component='p'
             size={12}
             tint={100}
-            title={cellData}
+            title={`${cellData}`}
           >
             {cellData}
           </Text>
@@ -174,8 +188,8 @@ function useExperimentsCard() {
   }, [tableData, tableColumns]);
 
   const experimentsQuery = React.useMemo(() => {
-    return `run.experiment in [${_.uniq(selectedRows)
-      .map((val: string) => `"${val}"`)
+    return `run.experiment in [${Object.values(selectedRows)
+      .map(({ name }: ExperimentsCardRowDataType) => `"${name}"`)
       .join(',')}]`;
   }, [selectedRows]);
 
