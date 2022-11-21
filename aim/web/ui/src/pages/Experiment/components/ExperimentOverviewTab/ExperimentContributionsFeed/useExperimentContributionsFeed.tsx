@@ -48,13 +48,6 @@ function useExperimentContributionsFeed(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [contributionsFeedStore.data]);
 
-  React.useEffect(() => {
-    if (contributionsFeedStore.data) {
-      engine.destroy();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [experimentId]);
-
   const memoizedData = React.useMemo(() => {
     // get existing month list from the contributionsFeedStore data
     const feedData: { [key: string]: any } = {};
