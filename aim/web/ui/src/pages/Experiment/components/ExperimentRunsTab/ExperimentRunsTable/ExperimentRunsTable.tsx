@@ -49,19 +49,18 @@ function ExperimentRunsTable({
               : `Selected Runs (${Object.values(selectedRows).length})`}
           </Text>
           {_.isEmpty(selectedRows) ? (
-            !_.isEmpty(tableData) ? (
-              <Text component='h3' size={14} weight={700} tint={100}>
-                {` (${tableData.length}/${totalRunsCount})`}
-              </Text>
-            ) : (
+            loading ? (
               <Skeleton variant='rect' height={17} width={50} />
+            ) : (
+              <Text component='h3' size={14} weight={700} tint={100}>
+                {!_.isEmpty(tableData)
+                  ? ` (${tableData?.length}/${totalRunsCount})`
+                  : '(0)'}
+              </Text>
             )
-          ) : (
-            <></>
-          )}
+          ) : null}
         </div>
-
-        {tableData.length > 0 && (
+        {tableData?.length > 0 ? (
           <div className='ExperimentRunsTable__header__comparisonPopover'>
             <CompareSelectedRunsPopover
               appName={'experiment' as AppNameEnum} // @TODO: change to Experiment
@@ -69,7 +68,7 @@ function ExperimentRunsTable({
               disabled={Object.keys(selectedRows).length === 0}
             />
           </div>
-        )}
+        ) : null}
       </div>
       <div
         className={classNames('ExperimentRunsTable__table', {
