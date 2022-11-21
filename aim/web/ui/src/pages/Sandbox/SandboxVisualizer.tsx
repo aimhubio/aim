@@ -34,6 +34,7 @@ export default function SandboxVisualizer() {
   const [execCode, setExecCode] = React.useState('');
   const [state, setState] = React.useState<any>();
   const effect = React.useRef<any>();
+  const [executionCount, setExecutionConut] = React.useState<number>(0);
 
   (window as any).updateLayout = (grid: any) => {
     setResult(toObject(grid.toJs()));
@@ -76,6 +77,7 @@ export default function SandboxVisualizer() {
 
         await pyodide?.loadPackagesFromImports(code);
 
+        setExecutionConut((eC) => eC + 1);
         setExecCode(code);
       } catch (ex) {
         console.log(ex);
@@ -114,7 +116,7 @@ export default function SandboxVisualizer() {
     if (execCode) {
       runParsedCode();
     }
-  }, [execCode]);
+  }, [execCode, executionCount]);
 
   React.useEffect(() => {
     if (state) {
