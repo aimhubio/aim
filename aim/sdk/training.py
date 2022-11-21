@@ -9,8 +9,8 @@ class TrainingFlow(Caller):
     """High-level Run object, resembling the execution flow of the typical training script."""
     def __init__(self, run: Run, callbacks=None):
         super().__init__(callbacks=callbacks)
-        self.init()
         self.run = run
+        self.init()
 
     def _extra_kwargs(self) -> Dict[str, Any]:
         kwargs = super()._extra_kwargs()
