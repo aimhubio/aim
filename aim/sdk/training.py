@@ -26,7 +26,7 @@ class TrainingFlow(Caller):
         """Guaranteed to be called before any other event."""
 
     @event
-    def train_started(
+    def training_started(
         self, *,
         hparams: Dict[str, Any],
         run: Run,
@@ -53,7 +53,7 @@ class TrainingFlow(Caller):
         ...
 
     @event
-    def train_successfully_finished(
+    def training_successfully_finished(
         self, *,
         run: Run,
         **kwargs
