@@ -6,12 +6,9 @@ import Editor from '@monaco-editor/react';
 
 import { Button, Spinner } from 'components/kit';
 
-import { getBasePath } from 'config/config';
-
 import usePyodide from 'services/pyodide/usePyodide';
 
 import { initialCode } from './sandboxCode';
-import { search } from './search';
 import GridCell from './GridCell';
 
 import './SandboxVisualizer.scss';
@@ -28,16 +25,15 @@ function toObject(x: any): any {
   }
 }
 
-(window as any).search = search;
-
 export default function SandboxVisualizer() {
-  const { pyodide } = usePyodide();
+  const { pyodide, namespace } = usePyodide();
 
   const editorValue = React.useRef(initialCode);
   const [result, setResult] = React.useState<Record<string, any>>([[]]);
   const [isProcessing, setIsProcessing] = React.useState<boolean | null>(null);
   const [execCode, setExecCode] = React.useState('');
   const [state, setState] = React.useState<any>();
+  const effect = React.useRef<any>();
 
   (window as any).updateLayout = (grid: any) => {
     setResult(toObject(grid.toJs()));
@@ -90,7 +86,7 @@ export default function SandboxVisualizer() {
   const runParsedCode = React.useCallback(() => {
     if (pyodide !== null) {
       pyodide
-        ?.runPythonAsync(execCode)
+        ?.runPythonAsync(execCode, { globals: namespace })
         .then(runEffect)
         .catch((ex: unknown) => {
           console.log(ex);
@@ -101,9 +97,9 @@ export default function SandboxVisualizer() {
 
   const runEffect = React.useCallback(async () => {
     if (pyodide !== null) {
-      let effect = pyodide?.globals.get('render');
-      if (effect) {
-        const res = await effect(pyodide?.toPy(state), (val: any) =>
+      effect.current = namespace.get('render');
+      if (effect.current) {
+        const res = await effect.current(pyodide?.toPy(state), (val: any) =>
           setState((s: any) => Object.assign({}, s, toObject(val.toJs()))),
         );
         let parsedResult = toObject(res.toJs());
