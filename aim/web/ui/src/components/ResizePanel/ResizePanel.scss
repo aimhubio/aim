@@ -5,11 +5,12 @@
   justify-content: center;
   display: flex;
   align-items: center;
-  height: 6px;
-  transition: background-color 0.15s ease-out;
+  height: toRem(4px);
+  transition: all 0.15s ease-out 0.2s;
   background-color: transparent;
   box-shadow: inset 0 2px 0 0 $primary-color-20;
   &:hover,
+  &:active,
   &.resizing {
     background-color: $primary-color-50;
     box-shadow: unset;

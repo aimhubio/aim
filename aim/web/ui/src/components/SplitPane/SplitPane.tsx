@@ -15,7 +15,7 @@ function SplitPane(props: SplitPaneProps) {
     children,
     resizing,
     direction = 'horizontal',
-    gutterSize = 6,
+    gutterSize = 4,
     className = '',
     onDragStart,
     onDragEnd,
