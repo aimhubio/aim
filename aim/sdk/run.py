@@ -456,25 +456,24 @@ class Run(BaseRun, StructuredRunMixin):
         self._tracker(value, name, step, epoch, context=context)
 
     # logging API
-    def log(self, level: int, msg: str, **params):
+    def _log_message(self, level: int, msg: str, **params):
         frame_info = getframeinfo(currentframe().f_back)
         logger_info = (frame_info.filename, frame_info.lineno)
         self.track(LogRecord(msg, level, logger_info=logger_info, **params), name='__log_records')
         block = (level > logging.WARNING)
         self._checkins.check_in(flag_name="new_logs", block=block)
 
-    critical = partialmethod(log, logging.CRITICAL)
-    error = partialmethod(log, logging.ERROR)
-    warning = partialmethod(log, logging.WARNING)
-    info = partialmethod(log, logging.INFO)
-    debug = partialmethod(log, logging.DEBUG)
+    log_error = partialmethod(_log_message, logging.ERROR)
+    log_warning = partialmethod(_log_message, logging.WARNING)
+    log_info = partialmethod(_log_message, logging.INFO)
+    log_debug = partialmethod(_log_message, logging.DEBUG)
 
     def get_log_records(self) -> Optional[LogRecords]:
         """Retrieve duplicated terminal logs for a run
 
-                Returns:
-                    :obj:`Sequence` object if exists, `None` otherwise.
-                """
+        Returns:
+            :obj:`Sequence` object if exists, `None` otherwise.
+        """
         return self._get_sequence('log_records', '__log_records', Context({}))
 
     @property
