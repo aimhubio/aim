@@ -1,94 +1,45 @@
-import string
-import random
 import logging
-import functools
+import inspect
+import traceback
 from collections import defaultdict
+from typing import Callable, List, Optional, Dict, Any
 
+from aim.sdk.callbacks.helpers import handles_events, get_handler_event_names
 logger = logging.getLogger(__name__)
 
 
-class CallerMeta(type):
-    """MetaClass to keep track of object methods marked as callback triggers."""
-
-    # Random string to be used as an attribute name suffix.
-    # This will allow to avoid potential collisions with user-defined attributes.
-    seed = ''.join(random.choice(string.ascii_lowercase) for _ in range(16))
-
-    is_trigger_flag = f'is_trigger_fn_{seed}'
-    trigger_methods_fn = f'triggers_{seed}'
-
-    def __new__(mcls, name, bases, namespace, **kwargs):
-        cls_triggers = set()
-        for base in bases:
-            if hasattr(base, CallerMeta.trigger_methods_fn):
-                base_triggers = getattr(base, CallerMeta.trigger_methods_fn)()
-                cls_triggers.update(base_triggers)
-
-        for trigger_candidate_name, trigger_candidate in namespace.items():
-            if getattr(trigger_candidate, CallerMeta.is_trigger_flag, False) is True:
-                cls_triggers.add(trigger_candidate_name)
-            elif trigger_candidate_name in cls_triggers:
-                logger.warning(f'Method \'{trigger_candidate_name}\' was marked as callback trigger '
-                               f'in base classes of \'{name}\'. '
-                               f'Have you forgot to add \'@trigger\' to \'{trigger_candidate_name}\'?')
-                cls_triggers.remove(trigger_candidate_name)
-
-        def get_triggers_fn(cls):
-            return cls._triggers
-
-        namespace['_triggers'] = cls_triggers
-        namespace[CallerMeta.trigger_methods_fn] = classmethod(get_triggers_fn)
-
-        type_ = type.__new__(mcls, name, bases, namespace, **kwargs)
-        return type_
+CallbackHandler = Any
 
 
-class Caller(object, metaclass=CallerMeta):
-    """Base class for callback trigger classes.
+class Caller:
+    def __init__(self, callbacks: Optional[List['CallbackHandler']] = None):
+        self._handlers: Dict[str, List[Callable]] = defaultdict(list)
 
-    Provides @trigger decorator, used to mark methods to bind callbacks to.
-    """
-    _callbacks = None
+        if callbacks is None:
+            callbacks = []
+        for ch in callbacks:
+            self.register(ch)
 
-    @staticmethod
-    def trigger(method):
-        logger.debug(f'Registering trigger for method \'{method.__qualname__}\'.')
-        setattr(method, CallerMeta.is_trigger_flag, True)
+    def register(self, callback_handler: 'CallbackHandler'):
+        for _, callback in inspect.getmembers(callback_handler, handles_events):
+            self._bind_events_for(callback)
 
-        @functools.wraps(method)
-        def wrapped(self, *args, **kwargs):
-            logger.debug(f'Calling trigger method \'{method.__qualname__}\'.')
+    def _bind_events_for(self, callback: Callable):
+        for e_name in get_handler_event_names(callback):
+            self._handlers[e_name].append(callback)
 
-            callbacks = self.callbacks.get(method.__name__, ())
-            for callback in callbacks:
-                try:
-                    callback(self, *args, **kwargs)
-                except Exception as e:  # noqa
-                    # Handle ALL exceptions. Do not throw error if one of the callbacks failed.
-                    logger.warning(f'Failed to run callback \'{callback.__name__}\'.')
-                    logger.warning(f'Reason: {e}')
+    def _extra_kwargs(self) -> Dict[str, Any]:
+        return {'_caller_': self}
 
-        return wrapped
+    def trigger(self, event_name: str, **kwargs):
+        all_kwargs = self.extra_kwargs()
+        all_kwargs.update(kwargs)
 
-    @property
-    def callbacks(self):
-        if self._callbacks is None:
-            self._callbacks = defaultdict(list)
-        return self._callbacks
-
-    def register(self, callbacks):
-        triggers = getattr(self, CallerMeta.trigger_methods_fn)()
-        attr_names = dir(callbacks)
-
-        for attr in attr_names:
-            callback_candidate = getattr(callbacks, attr)
-            if hasattr(callback_candidate, 'callback_triggered_by'):
-                trigger_name = callback_candidate.callback_triggered_by
-                if trigger_name in triggers:
-                    self.callbacks[trigger_name].append(callback_candidate)
-                else:
-                    logger.warning(f'Object of class \'{self.__class__}\' '
-                                   f'does not have a trigger method \'{trigger}\'.')
-
-
-trigger = Caller.trigger
+        handlers = self._handlers.get(event_name, [])
+        for handler in handlers:
+            try:
+                handler(**all_kwargs)
+            except Exception:  # noqa
+                # TODO catch errors on handler invocation (nice-to-have)
+                logger.warning(f'Failed to run callback \'{handler.__name__}\'.')
+                logger.warning(traceback.format_exc())
