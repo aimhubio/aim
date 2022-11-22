@@ -7,7 +7,7 @@ import { CHART_TYPES_CONFIG } from 'components/ChartPanel/config';
 
 import { GRID_SIZE, CHART_GRID_PATTERN } from 'config/charts';
 
-import { IChartGridProps } from './ChartGrid.d';
+import { IChartGridProps } from '.';
 
 import './ChartGrid.scss';
 

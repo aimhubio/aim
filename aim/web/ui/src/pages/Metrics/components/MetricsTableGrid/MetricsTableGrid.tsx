@@ -37,7 +37,7 @@ import getColumnOptions from 'utils/getColumnOptions';
 function getMetricsTableColumns(
   paramColumns: string[] = [],
   groupingSelectOptions: IGroupingSelectOption[],
-  groupFields: { [key: string]: string } | null,
+  groupFields: { [key: string]: unknown } | null,
   order: { left: string[]; middle: string[]; right: string[] },
   hiddenColumns: string[],
   aggregationMethods?: {

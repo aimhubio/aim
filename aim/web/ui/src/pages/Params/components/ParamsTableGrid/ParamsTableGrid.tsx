@@ -34,7 +34,7 @@ function getParamsTableColumns(
   sortOptions: IGroupingSelectOption[],
   metricsColumns: any,
   paramColumns: string[] = [],
-  groupFields: { [key: string]: string } | null,
+  groupFields: { [key: string]: unknown } | null,
   order: { left: string[]; middle: string[]; right: string[] },
   hiddenColumns: string[],
   sortFields?: any[],
