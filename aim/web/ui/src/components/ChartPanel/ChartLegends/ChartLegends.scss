@@ -12,7 +12,7 @@
     position: absolute;
     right: 0;
     opacity: 0.8;
-    box-shadow: 0 0 0 1px #e8e8e8;
+    box-shadow: 0 0 0 1px $grey-lighter;
     &:hover {
      opacity: 1
     }
