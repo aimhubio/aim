@@ -1,3 +1,4 @@
+import time
 from abc import abstractmethod
 
 import atexit
@@ -18,13 +19,17 @@ class RobustExec(threading.Thread):
     Users very often Ctrl-C to stop the program multiple times which leaves
     program no chance to clean up.
     """
+    def __init__(self, *args, stop_signal, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.stop_signal = stop_signal
+
     def join(self):
         while True:
             try:
                 # Pressing Ctrl-C will raise KeyboardInterrupt and stop only
-                # the `Thread.join()` call. The target function of `RobustExec`
-                # will continue to run.
-                return super().join()
+                # the `Event.wait()` call. The target function of `RobustExec`
+                # will continue to run, until stop_signal is set.
+                return self.stop_signal.wait()
             except KeyboardInterrupt:
                 logger.warning('Received Ctrl-C. Closing gracefully.')
 
@@ -35,6 +40,8 @@ class AutoClean(Generic[T]):
     _finalizers: Dict[
         T, Tuple[int, weakref.finalize]
     ] = weakref.WeakKeyDictionary()
+
+    stop_signal = threading.Event()
 
     def __init__(self, instance: T) -> None:
         """
@@ -78,6 +85,7 @@ class AutoClean(Generic[T]):
         for key, (priority, finalizer) in reversed(finalizers):
             logger.debug(f'Cleaning up...  with priority={priority} instance {key}')
             finalizer()
+        AutoClean.stop_signal.set()
 
     @staticmethod
     def cleanup():
@@ -88,7 +96,7 @@ class AutoClean(Generic[T]):
         data consistency.
         """
         logger.debug('Cleaning up...  Blocking KeyboardInterrupts')
-        example = RobustExec(target=AutoClean._cleanup)
+        example = RobustExec(stop_signal=AutoClean.stop_signal, target=AutoClean._cleanup)
         example.start()
         example.join()
         logger.debug('Cleaning up...  Done')

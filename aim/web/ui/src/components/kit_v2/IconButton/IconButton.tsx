@@ -2,7 +2,7 @@ import React from 'react';
 
 import Icon from 'components/kit/Icon';
 
-import { styled } from 'config/stitches/stitches.config';
+import { ColorPaletteEnum, styled } from 'config/stitches/stitches.config';
 
 import { getButtonStyles } from '../utils/getButtonStyles';
 
@@ -21,25 +21,22 @@ const Container = styled('button', {
   fontSize: '$2',
   variants: {
     size: {
-      small: {
-        size: '$sizes$1',
-        fontSize: '$fontSizes$2',
+      xs: {
+        size: '$1',
       },
-      medium: {
-        size: '$sizes$3',
+      sm: {
+        size: '$2',
       },
-      large: {
-        size: '$sizes$5',
+      md: {
+        size: '$3',
       },
-      xLarge: {
-        size: '$sizes$7',
+      lg: {
+        size: '$5',
+        fontSize: '$3',
       },
-    },
-    disabled: {
-      true: {
-        userSelect: 'none',
-        cursor: 'not-allowed',
-        pointerEvents: 'none',
+      xl: {
+        size: '$7',
+        fontSize: '$3',
       },
     },
     variant: {
@@ -57,10 +54,11 @@ const IconButton = React.forwardRef<
   (
     {
       icon,
-      size = 'medium',
-      color = 'primary',
+      size = 'sm',
+      color = ColorPaletteEnum.primary,
       variant = 'contained',
       disabled = false,
+      css,
       ...props
     }: IIconButtonProps,
     forwardedRef,
@@ -69,7 +67,7 @@ const IconButton = React.forwardRef<
       <Container
         {...props}
         data-testid='icon-button'
-        css={{ ...getButtonStyles(color, variant, disabled) }}
+        css={{ ...getButtonStyles(color, variant, disabled), ...css }}
         size={size}
         variant={variant}
         disabled={disabled}

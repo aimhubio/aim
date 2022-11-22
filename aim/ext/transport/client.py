@@ -25,7 +25,7 @@ from aim.storage.treeutils import encode_tree, decode_tree
 
 
 DEFAULT_RETRY_INTERVAL = 0.1  # 100 ms
-DEFAULT_RETRY_COUNT = 5
+DEFAULT_RETRY_COUNT = 2
 
 logger = logging.getLogger(__name__)
 
@@ -40,12 +40,25 @@ class Client:
 
     def __init__(self, remote_path: str):
         # temporary workaround for M1 build
-        import grpc
 
         self._id = str(uuid.uuid4())
         self._remote_path = remote_path
 
         self._resource_pool = weakref.WeakValueDictionary()
+
+        self._remote_router_channel = None
+        self._remote_router_stub = None
+        self._remote_channel = None
+        self._remote_stub = None
+        self._remote_worker_address = None
+        self._create_remote_channels()
+
+        self._heartbeat_sender = RPCHeartbeatSender(self)
+        self._heartbeat_sender.start()
+        self._thread_local.atomic_instructions = None
+
+    def _create_remote_channels(self):
+        import grpc
 
         ssl_certfile = os.getenv(AIM_CLIENT_SSL_CERTIFICATES_FILE)
         msg_max_size = int(os.getenv(AIM_RT_MAX_MESSAGE_SIZE, AIM_RT_DEFAULT_MAX_MESSAGE_SIZE))
@@ -58,9 +71,9 @@ class Client:
         if ssl_certfile:
             with open(ssl_certfile, 'rb') as f:
                 root_certificates = grpc.ssl_channel_credentials(f.read())
-            self._remote_router_channel = grpc.secure_channel(remote_path, root_certificates, options=options)
+            self._remote_router_channel = grpc.secure_channel(self.remote_path, root_certificates, options=options)
         else:
-            self._remote_router_channel = grpc.insecure_channel(remote_path, options=options)
+            self._remote_router_channel = grpc.insecure_channel(self.remote_path, options=options)
         self._remote_router_stub = remote_router_pb2_grpc.RemoteRouterServiceStub(self._remote_router_channel)
 
         # check client/server version compatibility
@@ -69,19 +82,20 @@ class Client:
         # get the available worker address
         self._remote_worker_address = self._get_worker_address()
 
-        # open a channel with worker for further communication
-        if ssl_certfile:
-            self._remote_channel = grpc.secure_channel(self._remote_worker_address,
-                                                       root_certificates,
-                                                       options=options)
+        # if we got the same address as the router, there's no need to open new channels
+        if self._remote_worker_address == self.remote_path:
+            self._remote_channel = self._remote_router_channel
+
         else:
-            self._remote_channel = grpc.insecure_channel(self._remote_worker_address, options=options)
+            # open a channel with worker for further communication
+            if ssl_certfile:
+                self._remote_channel = grpc.secure_channel(self._remote_worker_address,
+                                                           root_certificates,
+                                                           options=options)
+            else:
+                self._remote_channel = grpc.insecure_channel(self._remote_worker_address, options=options)
 
         self._remote_stub = remote_tracking_pb2_grpc.RemoteTrackingServiceStub(self._remote_channel)
-
-        self._heartbeat_sender = RPCHeartbeatSender(self)
-        self._heartbeat_sender.start()
-        self._thread_local.atomic_instructions = None
 
     def reinitialize_resource(self, handler):
         # write some request to get a resource on server side with an already given handler
@@ -109,12 +123,12 @@ class Client:
             remote_version = self.get_version()
         except grpc.RpcError as e:
             if e.code() == grpc.StatusCode.UNIMPLEMENTED:
-                remote_version = '<3.14.0'
+                remote_version = '<3.15.0'
             else:
                 raise
 
         # server doesn't yet have the `get_version()` method implemented
-        if remote_version == '<3.14.0':
+        if remote_version == '<3.15.0':
             RuntimeError(error_message_template.format(remote_version, client_version))
 
         # compare versions
@@ -262,7 +276,7 @@ class Client:
 
         response = self.remote.run_write_instructions(message_stream_generator())
         if response.status == rpc_messages.WriteInstructionsResponse.Status.ERROR:
-            raise_exception(response.header.exception)
+            raise_exception(response.exception)
 
     def start_instructions_batch(self):
         self._thread_local.atomic_instructions = []
