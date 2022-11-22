@@ -34,7 +34,7 @@ const statisticsInitialMap: Record<string, IProjectStatistic> = {
   },
   [SequenceTypesEnum.Figures]: {
     label: 'Figures',
-    icon: 'figures-explorer',
+    icon: 'figures',
     count: 0,
     iconBgColor: '#18AB6D',
     navLink: routes.FIGURES_EXPLORER.path,
@@ -48,7 +48,7 @@ const statisticsInitialMap: Record<string, IProjectStatistic> = {
   },
   [SequenceTypesEnum.Audios]: {
     label: 'Audios',
-    icon: 'audio',
+    icon: 'audios',
     count: 0,
     iconBgColor: '#FCB500',
     navLink: routes.AUDIO_EXPLORER.path,

@@ -21,6 +21,7 @@ import {
 } from 'config/table/tableConfigs';
 
 import getColorFromRange from 'utils/d3/getColorFromRange';
+import changeDasharraySize from 'utils/changeDasharraySize';
 
 import ControlPopover from '../ControlPopover/ControlPopover';
 
@@ -964,13 +965,7 @@ function GroupConfig({
                 x2='100%'
                 y2='50%'
                 style={{
-                  strokeDasharray:
-                    config.dasharray === 'none'
-                      ? 'none'
-                      : config.dasharray
-                          .split(' ')
-                          .map((elem) => (elem / 5) * 3)
-                          .join(' '),
+                  strokeDasharray: changeDasharraySize(config.dasharray, 3 / 5),
                 }}
               />
             </svg>

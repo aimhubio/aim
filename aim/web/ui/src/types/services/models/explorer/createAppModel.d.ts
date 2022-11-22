@@ -17,6 +17,7 @@ import {
   SortField,
   ITooltipConfig,
   ISmoothing,
+  LegendsConfig,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IParamsAppModelState } from 'types/services/models/params/paramsAppModel';
 import { IRunsAppModelState } from 'types/services/models/runs/runsAppModel';
@@ -26,7 +27,6 @@ import {
 } from 'types/services/models/scatter/scatterAppModel';
 
 import { ChartTypeEnum, CurveEnum, HighlightEnum } from 'utils/d3';
-import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 
 import { IImagesExploreAppModelState } from '../imagesExplore/imagesExploreAppModel';
 
@@ -165,6 +165,7 @@ export interface ILineChartConfig {
   alignmentConfig: IAlignmentConfig;
   focusedState: IFocusedState;
   tooltip: ITooltipConfig;
+  legends: LegendsConfig;
 }
 
 export interface IScatterPlotConfig {

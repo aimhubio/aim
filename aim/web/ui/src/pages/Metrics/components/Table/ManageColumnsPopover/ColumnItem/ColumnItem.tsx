@@ -12,11 +12,11 @@ import { TABLE_DEFAULT_CONFIG } from 'config/table/tableConfigs';
 
 import { AppNameEnum } from 'services/models/explorer';
 
+import shortenRunPropLabel from 'utils/shortenRunPropLabel';
+
 import { IColumnItemProps } from './ColumnItem.d';
 
 import './ColumnItem.scss';
-
-const CharSize = 6;
 
 function ColumnItem({
   searchKey,
@@ -52,25 +52,19 @@ function ColumnItem({
   }, []);
 
   const itemDetails = React.useMemo(() => {
-    let maxChars: number = 0;
     let disableTooltip = true;
-    if (nameRef.current) {
-      maxChars = nameRef.current.clientWidth / CharSize;
-    }
-    let splitVal = label.split('.');
+    let formattedValue = label;
 
-    if (splitVal.length > 2) {
-      let isFits = maxChars >= label.length;
-      return {
-        formattedValue: isFits
-          ? label
-          : `${splitVal[0]}.~.${splitVal[splitVal.length - 1]}`,
-        value: label,
-        disableTooltip: isFits,
-      };
+    if (nameRef.current) {
+      const { shortenValue, isFits } = shortenRunPropLabel(
+        label,
+        nameRef.current.clientWidth,
+      );
+      disableTooltip = isFits;
+      formattedValue = shortenValue;
     }
     return {
-      formattedValue: label,
+      formattedValue,
       value: label,
       disableTooltip,
     };
