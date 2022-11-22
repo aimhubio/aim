@@ -53,7 +53,7 @@ def parse_wandb_logs(repo_inst, entity, project, run_id):
                     with open(Path(tmpdirname) / console_log_filename) as f:
                         [aim_run.track(LogLine(line), name='logs', step=i) for i, line in enumerate(f.readlines())]
             except Exception:
-                click.echo(f"Failed to track console output log.")
+                click.echo("Failed to track console output log.")
 
             # TODO: Collect media files, possibly?
 
