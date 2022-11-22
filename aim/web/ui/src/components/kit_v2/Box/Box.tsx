@@ -7,12 +7,27 @@ import { styled } from 'config/stitches/stitches.config';
 import { IBoxProps } from './Box.d';
 const StyledBox: any = styled(Slot, {});
 
+/**
+ * Polymorphic Box component
+ * @param {IBoxProps} props
+ * @param {keyof HTMLElementTagNameMap} as - HTML element or React component
+ * @param {object} css - css object
+ * @param {React.ReactNode} children - React children
+ * @param {Partial<React.AllHTMLAttributes<HTMLElement>>} rest - HTML attributes
+ * @returns {React.FunctionComponentElement<React.ReactNode>}
+ * @see https://www.radix-ui.com/docs/primitives/utilities/slot
+ * @see https://stitches.dev/docs/overriding-styles#the-css-prop
+ */
+
 const Box = React.forwardRef<typeof StyledBox, IBoxProps>(
-  ({ as = 'div', css, mt, children, ...rest }: IBoxProps, forwardedRef) => {
-    const Comp: any = as;
+  (
+    { as = 'div', css, children, ...rest }: IBoxProps,
+    forwardedRef,
+  ): React.FunctionComponentElement<React.ReactNode> => {
+    const Component: any = as;
     return (
-      <StyledBox {...rest} css={{ ...css, mt }} ref={forwardedRef}>
-        <Comp>{children}</Comp>
+      <StyledBox {...rest} css={css} ref={forwardedRef}>
+        <Component>{children}</Component>
       </StyledBox>
     );
   },
