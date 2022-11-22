@@ -500,7 +500,7 @@ Following image formats are available export: `SVG`, `JPEG`, `PNG`.
 
 #### Overview
 
-Figures explorer allows easily query and compare tracked plotly figures and identify patterns, trends, outliers, and anomalies between your figures.
+Figures explorer allows to easily query and compare tracked plotly figures and identify patterns, trends, outliers, and anomalies between tracked figures.
 
 <img alt="Figures explore overview" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/figures-explorer/figures-explorer.png">
 
@@ -511,7 +511,7 @@ Features:
 - [Visualization](#visualization)
   - [Figure Box](#figure-box)
   - [Figure Box full view](#figure-full-view)
-  - [Use controls to configure visualizer](#visualization-controls)
+  - [Configure visualizer](#visualization-controls)
 
 #### Query figures
 
