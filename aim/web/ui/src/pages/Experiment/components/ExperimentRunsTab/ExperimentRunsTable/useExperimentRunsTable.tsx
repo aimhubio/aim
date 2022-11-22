@@ -49,15 +49,19 @@ function useExperimentRunsTable(experimentName: string, experimentId: string) {
         q: `run.experiment == '${experimentName}'`,
       });
     }
-    if (_.isEmpty(contributionsState.data)) {
-      expContributionsEngine.fetchExperimentContributions(experimentId);
-    }
     return () => {
       engine.destroy();
       expContributionsEngine.destroy();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  React.useEffect(() => {
+    if (_.isEmpty(contributionsState.data)) {
+      expContributionsEngine.fetchExperimentContributions(experimentId);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [contributionsState.data]);
 
   React.useEffect(() => {
     if (experimentRunsState.data) {

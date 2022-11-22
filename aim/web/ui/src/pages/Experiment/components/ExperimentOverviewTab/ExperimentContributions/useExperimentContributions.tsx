@@ -14,16 +14,15 @@ function useExperimentContributions(experimentId: string) {
     if (!experimentContributionsState.data) {
       engine.fetchExperimentContributions(experimentId);
     }
-    return () => engine.destroy();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [experimentContributionsState.data]);
 
   React.useEffect(() => {
-    if (experimentContributionsState.data) {
+    return () => {
       engine.destroy();
-    }
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [experimentId]);
+  }, []);
 
   return {
     experimentContributionsState,
