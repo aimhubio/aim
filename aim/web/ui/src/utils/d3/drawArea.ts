@@ -64,6 +64,7 @@ function drawArea(args: IDrawAreaArgs): void {
 
   svgNodeRef.current = visArea
     .append('svg')
+    .attr('class', 'Visualization')
     .attr('id', `${nameKey}-svg-area-${index}`)
     .attr('width', `${width}px`)
     .attr('height', `${height}px`)
@@ -117,26 +118,29 @@ function drawArea(args: IDrawAreaArgs): void {
     )
     .join(', ');
 
-  const titleStyle = {
+  const title = {
     x: margin.left / 6,
     fontSize: 11,
     fontFamily: 'Inter, sans-serif',
     fontWeight: 400,
+    chartIndex: {
+      fontFamily: 'Inconsolata, monospace',
+    },
   };
   const textEllipsis = toTextEllipsis({
     text: titleText,
-    width: titleStyle.x + offsetWidth,
-    fontSize: `${titleStyle.fontSize}px`,
-    fontFamily: titleStyle.fontFamily,
-    fontWeight: titleStyle.fontWeight,
+    width: title.x + offsetWidth,
+    fontSize: `${title.fontSize}px`,
+    fontFamily: title.fontFamily,
+    fontWeight: title.fontWeight,
   });
   if (titleText) {
     const titleGroup = svgNodeRef.current
       .append('g')
-      .attr('transform', `translate(${titleStyle.x}, 3)`)
-      .attr('font-size', `${titleStyle.fontSize}px`)
-      .attr('font-weight', titleStyle.fontWeight)
-      .attr('font-family', titleStyle.fontFamily);
+      .attr('transform', `translate(${title.x}, 3)`)
+      .attr('font-size', `${title.fontSize}px`)
+      .attr('font-weight', title.fontWeight)
+      .attr('font-family', title.fontFamily);
 
     titleGroup
       .append('text')
@@ -146,11 +150,12 @@ function drawArea(args: IDrawAreaArgs): void {
       .style('outline', '1px solid #dee6f3')
       .style('border-radius', '1px')
       .style('white-space', 'pre')
-      .text(`  ${index + 1}  `);
+      .text(` ${index + 1} `)
+      .style('font-family', title.chartIndex.fontFamily);
 
     titleGroup
       .append('text')
-      .attr('x', titleStyle.x + 39)
+      .attr('x', title.x + 39)
       .attr('y', 12)
       .attr('fill', '#484f56')
       .text(textEllipsis)

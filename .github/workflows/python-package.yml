@@ -117,6 +117,7 @@ jobs:
         run: docker login -u $DOCKER_HUB_USERNAME -p $DOCKER_HUB_PASSWORD
 
       - name: Build & Push aim image
+        if: matrix.manylinux-version == 'manylinux_2_24_x86_64'
         working-directory: ./docker
         env:
           AIM_VERSION: ${{ steps.capture-version.outputs.AIM_VERSION }}

@@ -36,12 +36,7 @@ function createExplorer(
     const { components, visualizations } = configuration;
 
     const visualizationsHydration = Object.keys(visualizations).reduce(
-      (
-        acc: {
-          [key: string]: VisualizationConfig;
-        },
-        name: string,
-      ) => {
+      (acc: Record<string, VisualizationConfig>, name: string) => {
         const viz = visualizations[name];
         acc[name] = {
           ...viz,

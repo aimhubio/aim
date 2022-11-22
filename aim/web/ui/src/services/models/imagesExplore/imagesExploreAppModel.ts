@@ -1182,7 +1182,7 @@ function onActivePointChange(
 
   const tooltipContent = configData.images?.focusedState?.key
     ? getTooltipContent({
-        groupingItems: [GroupNameEnum.ROW],
+        groupingNames: [GroupNameEnum.ROW],
         groupingSelectOptions,
         data,
         configData,
@@ -1228,7 +1228,7 @@ function onChangeTooltip(tooltipObj: Partial<ITooltip>): void {
 
     const tooltipContent = configData.images?.focusedState?.key
       ? getTooltipContent({
-          groupingItems: [GroupNameEnum.ROW],
+          groupingNames: [GroupNameEnum.ROW],
           groupingSelectOptions,
           data,
           configData,
@@ -1288,7 +1288,7 @@ function getDataAsTableRows(
     const columnsValues: { [key: string]: string[] } = {};
 
     if (metricsCollection.config !== null) {
-      const groupConfigData: { [key: string]: string } = {};
+      const groupConfigData: { [key: string]: unknown } = {};
       for (let key in metricsCollection.config) {
         groupConfigData[getValueByField(groupingSelectOptions, key)] =
           metricsCollection.config[key];
