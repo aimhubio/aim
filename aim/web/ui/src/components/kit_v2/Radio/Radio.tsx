@@ -20,7 +20,7 @@ const IndicatorWrapper = styled('span', {
   width: 12,
   height: 12,
   br: '$round',
-  transition: 'all 0.2s ease-out',
+  transition: '$main',
   bs: 'inset 0 0 0 1px $colors$secondary100',
   cursor: 'pointer',
 });
@@ -32,7 +32,7 @@ const RadioGroupIndicator = styled(Indicator, {
   width: '100%',
   height: '100%',
   position: 'relative',
-  transition: 'all 0.2s ease-out',
+  transition: '$main',
   '&::after': {
     content: '""',
     display: 'block',
@@ -48,7 +48,7 @@ const RadioItem = styled(Item, {
   bc: 'white',
   size: '$1',
   br: '$round',
-  transition: 'all 0.2s ease-out',
+  transition: '$main',
   display: 'flex',
   ai: 'center',
   jc: 'center',

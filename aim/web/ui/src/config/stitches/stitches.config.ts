@@ -186,6 +186,9 @@ export const {
       4: '400',
       max: '999',
     },
+    transitions: {
+      main: '0.2s ease-out',
+    },
   },
   media: {
     bp1: '(min-width: 520px)',
