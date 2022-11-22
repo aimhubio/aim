@@ -26,7 +26,7 @@ class TrainingFlow(Caller):
         """Guaranteed to be called before any other event."""
 
     @event
-    def training_start(
+    def training_started(
         self, *,
         hparams: Dict[str, Any],
         run: Run,
@@ -35,25 +35,25 @@ class TrainingFlow(Caller):
         """Is called just after Run object and hyperparameters are ready."""
 
     @event
-    def train_metrics_available(
+    def training_metrics_collected(
         self, *,
         metrics: Dict[str, Any], step: int, epoch: int = None,
         run: Run,
         **kwargs
     ):
-        ...
+        """Is called after the training metrics are calculated and ready to be logged."""
 
     @event
-    def validation_metric_available(
+    def validation_metrics_collected(
         self, *,
         metrics: Dict[str, Any], step: int, epoch: int = None,
         run: Run,
         **kwargs
     ):
-        ...
+        """Is called after the validation metrics are calculated and ready to be logged."""
 
     @event
-    def training_successful_finish(
+    def training_successfully_finished(
         self, *,
         run: Run,
         **kwargs
