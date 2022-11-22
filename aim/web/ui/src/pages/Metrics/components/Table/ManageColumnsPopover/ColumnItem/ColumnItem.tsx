@@ -10,8 +10,6 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { TABLE_DEFAULT_CONFIG } from 'config/table/tableConfigs';
 
-import { AppNameEnum } from 'services/models/explorer';
-
 import { IColumnItemProps } from './ColumnItem.d';
 
 import './ColumnItem.scss';
@@ -78,7 +76,7 @@ function ColumnItem({
   }, [data, popoverWidth, nameRef.current, mounted]);
 
   const isNonHidable: boolean =
-    TABLE_DEFAULT_CONFIG[appName as AppNameEnum]?.nonHidableColumns.has(data);
+    TABLE_DEFAULT_CONFIG[appName]?.nonHidableColumns.has(data);
 
   return (
     <ErrorBoundary>
