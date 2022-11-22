@@ -1,5 +1,4 @@
 import * as React from 'react';
-import * as _ from 'lodash-es';
 
 function TextList(props: any) {
   const data = props.data.map((text: any) => ({

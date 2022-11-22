@@ -1,5 +1,4 @@
 import * as React from 'react';
-import * as _ from 'lodash-es';
 
 import AudioBox from 'components/kit/AudioBox';
 

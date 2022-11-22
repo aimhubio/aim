@@ -1,5 +1,4 @@
 import * as React from 'react';
-import * as _ from 'lodash-es';
 import classnames from 'classnames';
 
 import Editor from '@monaco-editor/react';
@@ -40,12 +39,6 @@ export default function SandboxVisualizer() {
     setResult(toObject(grid.toJs()));
   };
 
-  React.useEffect(() => {
-    if (pyodide !== null) {
-      execute();
-    }
-  }, [pyodide]);
-
   const execute = React.useCallback(async () => {
     if (pyodide !== null) {
       try {
@@ -80,22 +73,17 @@ export default function SandboxVisualizer() {
         setExecutionConut((eC) => eC + 1);
         setExecCode(code);
       } catch (ex) {
+        // eslint-disable-next-line no-console
         console.log(ex);
       }
     }
   }, [pyodide, editorValue]);
 
-  const runParsedCode = React.useCallback(() => {
+  React.useEffect(() => {
     if (pyodide !== null) {
-      pyodide
-        ?.runPythonAsync(execCode, { globals: namespace })
-        .then(runEffect)
-        .catch((ex: unknown) => {
-          console.log(ex);
-          setIsProcessing(false);
-        });
+      execute();
     }
-  }, [pyodide, execCode, state]);
+  }, [pyodide, execute]);
 
   const runEffect = React.useCallback(async () => {
     if (pyodide !== null) {
@@ -110,19 +98,32 @@ export default function SandboxVisualizer() {
 
       setIsProcessing(false);
     }
-  }, [pyodide, state]);
+  }, [pyodide, state, namespace]);
+
+  const runParsedCode = React.useCallback(() => {
+    if (pyodide !== null) {
+      pyodide
+        ?.runPythonAsync(execCode, { globals: namespace })
+        .then(runEffect)
+        .catch((ex: unknown) => {
+          // eslint-disable-next-line no-console
+          console.log(ex);
+          setIsProcessing(false);
+        });
+    }
+  }, [pyodide, execCode, namespace, runEffect]);
 
   React.useEffect(() => {
     if (execCode) {
       runParsedCode();
     }
-  }, [execCode, executionCount]);
+  }, [execCode, executionCount, runParsedCode]);
 
   React.useEffect(() => {
     if (state) {
       runEffect();
     }
-  }, [state]);
+  }, [state, runEffect]);
 
   return (
     <div className='SandboxVisualizer'>
