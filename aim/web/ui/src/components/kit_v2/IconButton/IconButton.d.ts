@@ -1,5 +1,8 @@
-import { IconName } from '../../kit/Icon';
+import * as Stitches from '@stitches/react';
 
+import { ColorPaletteEnum } from 'config/stitches/stitches.config';
+
+import { IconName } from '../../kit/Icon';
 export interface IIconButtonProps
   extends Partial<React.HTMLAttributes<HTMLButtonElement>> {
   /**
@@ -11,11 +14,11 @@ export interface IIconButtonProps
    * @description The color of the icon button
    * @example 'primary'
    */
-  color?: colorType;
+  color?: ColorPaletteEnum;
   /**
    * @description The size of the icon button
-   * @example 'medium'
-   * @default 'medium'
+   * @example 'md'
+   * @default 'md'
    */
   size?: sizeType;
   /**
@@ -30,13 +33,16 @@ export interface IIconButtonProps
    * @default false
    */
   disabled?: boolean;
+  /**
+   * @description The css prop of the icon button
+   * @example { backgroundColor: 'red' }
+   * @default {}
+   */
+  css?: Stitches.CSS;
 }
 
 // IconButton component size types
-type sizeType = 'medium' | 'large' | 'xLarge';
+type sizeType = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
 // IconButton component variants
 type variantType = 'text' | 'outlined' | 'contained';
-
-// IconButton component color types
-type colorType = 'primary' | 'secondary' | 'success' | 'error' | 'warning';
