@@ -2,6 +2,7 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 
 import { MenuItem, Tooltip } from '@material-ui/core';
+import getUpdatedUrl from 'modules/core/utils/getUpdatedUrl';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
@@ -16,7 +17,7 @@ import * as analytics from 'services/analytics';
 
 import { encode } from 'utils/encoder/encoder';
 
-import { ICompareSelectedRunsPopoverProps } from './CompareSelectedRunsPopover.d';
+import { ICompareSelectedRunsPopoverProps } from '.';
 
 import './CompareSelectedRunsPopover.scss';
 
@@ -36,22 +37,47 @@ function CompareSelectedRunsPopover({
       e.stopPropagation();
       e.preventDefault();
       if (value) {
-        const search = encode({
-          query,
-          advancedMode: true,
-          advancedQuery: query,
-        });
+        let url = '';
+
+        const baseExplorers: string[] = [
+          AppNameEnum.FIGURES,
+          AppNameEnum.AUDIOS,
+        ];
+
+        if (baseExplorers.indexOf(value) !== -1) {
+          url = getUpdatedUrl(
+            'query',
+            encode({
+              form: {
+                simpleInput: '',
+                advancedInput: query,
+                advancedModeOn: true,
+                isInitial: true,
+              },
+              ranges: {
+                isApplyButtonDisabled: true,
+              },
+            }),
+            `/${value}`,
+          );
+        } else {
+          const searchQuery = encode({
+            query,
+            advancedMode: true,
+            advancedQuery: query,
+          });
+          url = `/${value}?select=${searchQuery}`;
+        }
 
         analytics.trackEvent(
-          ANALYTICS_EVENT_KEYS[appName].table.compareSelectedRuns,
+          ANALYTICS_EVENT_KEYS[appName]?.table?.compareSelectedRuns,
         );
-        const path = `/${value}?select=${search}`;
         if (newTab) {
-          window.open(path, '_blank');
+          window.open(url, '_blank');
           window.focus();
           return;
         }
-        history.push(path);
+        history.push(url);
       }
     },
     [appName, history, query],

@@ -205,15 +205,7 @@ function drawLegendArea(
     .style('fill', 'transparent');
 
   if (readOnly) {
-    svgWrapper
-      .append('line')
-      .attr('class', 'Legends-separator')
-      .attr('x1', 0)
-      .attr('y1', 0)
-      .attr('x2', 0)
-      .attr('y2', '100%')
-      .style('stroke-width', 1)
-      .style('stroke', '#bdcee8');
+    bgRect.style('stroke-width', 1).style('stroke', '#bdcee8');
   }
 
   const groupsWrapper = svgWrapper

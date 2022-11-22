@@ -338,4 +338,6 @@ export const ANALYTICS_EVENT_KEYS = {
     slack: '[SideBar] Click on slack community link',
     docs: '[Sidebar] Click on docs link',
   },
+  figures: {} as any,
+  audios: {} as any,
 };

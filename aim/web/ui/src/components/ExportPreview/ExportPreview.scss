@@ -34,7 +34,7 @@
     height: 62vh;
     overflow: auto;
     margin: toRem(1px);
-    border-radius: $border-radius-lg;
+    border-radius: $border-radius-sm;
     box-shadow: 0 0 0 toRem(1px) $cuddle;
     display: flex;
     &__grid {
