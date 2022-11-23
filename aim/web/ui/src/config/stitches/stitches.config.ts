@@ -227,6 +227,9 @@ export const {
       max: '999',
       popover: '10',
     },
+    transitions: {
+      main: '0.2s ease-out',
+    },
   },
   media: {
     bp1: '(min-width: 520px)',

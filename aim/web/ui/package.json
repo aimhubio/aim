@@ -11,6 +11,7 @@
     "@radix-ui/primitive": "^1.0.0",
     "@radix-ui/react-checkbox": "^1.0.1",
     "@radix-ui/react-popover": "^1.0.2",
+    "@radix-ui/react-radio-group": "^1.1.0",
     "@radix-ui/react-switch": "^1.0.1",
     "@radix-ui/react-slot": "^1.0.1",
     "@stitches/react": "^1.2.8",
