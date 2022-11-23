@@ -20,8 +20,8 @@ class Caller:
         for ch in callbacks:
             self.register(ch)
 
-    def register(self, callback_handler: 'CallbackHandler'):
-        for _, callback in inspect.getmembers(callback_handler, handles_events):
+    def register(self, callbacks: 'CallbackHandler'):
+        for _, callback in inspect.getmembers(callbacks, handles_events):
             self._bind_events_for(callback)
 
     def _bind_events_for(self, callback: Callable):
