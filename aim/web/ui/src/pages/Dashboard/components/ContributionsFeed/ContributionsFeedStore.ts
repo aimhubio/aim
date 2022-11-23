@@ -8,7 +8,7 @@ import { IRun } from 'types/services/models/metrics/runModel';
 import { parseStream } from 'utils/encoder/streamEncoding';
 
 function createContributionsFeedEngine() {
-  let { call, cancel } = createSearchRunRequest();
+  let { call } = createSearchRunRequest();
 
   const { fetchData, state, destroy } = createResource<IRun<unknown>[]>(
     async (queryParams: RequestOptions['query_params']) =>

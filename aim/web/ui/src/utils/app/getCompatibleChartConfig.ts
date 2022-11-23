@@ -1,8 +1,9 @@
+import { CONTROLS_DEFAULT_CONFIG } from 'config/controls/controlsDefaultConfig';
+
 import { IChart } from 'types/services/models/explorer/createAppModel';
 
-import { AlignmentOptionsEnum } from '../d3';
-import { CONTROLS_DEFAULT_CONFIG } from '../../config/controls/controlsDefaultConfig';
-import { SmoothingAlgorithmEnum } from '../smoothingData';
+import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
+import { AlignmentOptionsEnum } from 'utils/d3';
 
 const CompatibleAlignmentOptions = [...Object.values(AlignmentOptionsEnum)];
 

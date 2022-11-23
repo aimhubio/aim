@@ -56,6 +56,7 @@ import {
   IOnGroupingSelectChangeParams,
   ISmoothing,
   ITooltip,
+  LegendsConfig,
 } from 'types/services/models/metrics/metricsAppModel';
 import {
   IMetricTrace,
@@ -156,7 +157,7 @@ import getClosestValue from 'utils/getClosestValue';
 import getObjectPaths from 'utils/getObjectPaths';
 import getSmoothenedData from 'utils/getSmoothenedData';
 import JsonToCSV from 'utils/JsonToCSV';
-import { setItem } from 'utils/storage';
+import { getItem, setItem } from 'utils/storage';
 import { encode } from 'utils/encoder/encoder';
 import onBookmarkCreate from 'utils/app/onBookmarkCreate';
 import onBookmarkUpdate from 'utils/app/onBookmarkUpdate';
@@ -198,6 +199,8 @@ import { getMetricsInitialRowData } from 'utils/app/getMetricsInitialRowData';
 import { getMetricHash } from 'utils/app/getMetricHash';
 import { getMetricLabel } from 'utils/app/getMetricLabel';
 import saveRecentSearches from 'utils/saveRecentSearches';
+import getLegendsData from 'utils/app/getLegendsData';
+import onLegendsChange from 'utils/app/onLegendsChange';
 
 import { AppDataTypeEnum, AppNameEnum } from './index';
 
@@ -325,6 +328,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 display: CONTROLS_DEFAULT_CONFIG.metrics.tooltip.display,
                 selectedFields:
                   CONTROLS_DEFAULT_CONFIG.metrics.tooltip.selectedFields,
+              },
+              legends: {
+                display: CONTROLS_DEFAULT_CONFIG.metrics.legends.display,
+                mode: CONTROLS_DEFAULT_CONFIG.metrics.legends.mode,
               },
               focusedState: {
                 key: null,
@@ -730,7 +737,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           const columnsValues: { [key: string]: string[] } = {};
 
           if (metricsCollection.config !== null) {
-            const groupConfigData: { [key: string]: string } = {};
+            const groupConfigData: { [key: string]: unknown } = {};
             for (let key in metricsCollection.config) {
               groupConfigData[getValueByField(groupingSelectOptions, key)] =
                 metricsCollection.config[key];
@@ -1163,6 +1170,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
         },
       ];
 
+      const legendsData = getLegendsData(
+        data,
+        groupingSelectOptions,
+        configData?.grouping,
+        [GroupNameEnum.COLOR, GroupNameEnum.STROKE, GroupNameEnum.CHART],
+      );
+
       const tableData = getDataAsTableRows(
         data,
         configData?.chart?.focusedState.xValue ?? null,
@@ -1208,6 +1222,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           processedData: data,
           model: model as IModel<IMetricAppModelState>,
         }),
+        legendsData,
         tableData: tableData.rows,
         tableColumns,
         sameValueColumns: tableData.sameValueColumns,
@@ -1252,6 +1267,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
           value: 'lastValue',
         },
       ];
+
+      const legendsData = getLegendsData(
+        data,
+        groupingSelectOptions,
+        configData?.grouping,
+        [GroupNameEnum.COLOR, GroupNameEnum.STROKE, GroupNameEnum.CHART],
+      );
 
       const tableData = getDataAsTableRows(
         data,
@@ -1303,6 +1325,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           processedData: data,
           model: model as IModel<IMetricAppModelState>,
         }),
+        legendsData,
         tableData: tableData.rows,
         tableColumns: tableColumns,
         sameValueColumns: tableData.sameValueColumns,
@@ -1667,7 +1690,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           const tooltipData = {
             ...configData?.chart?.tooltip,
             content: getTooltipContent({
-              groupingItems: [
+              groupingNames: [
                 GroupNameEnum.COLOR,
                 GroupNameEnum.STROKE,
                 GroupNameEnum.CHART,
@@ -1998,7 +2021,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           onSmoothingChange({ args, model, appName, updateModelData });
         },
         onIgnoreOutliersChange(): void {
-          onIgnoreOutliersChange({ model, updateModelData });
+          onIgnoreOutliersChange({ model, updateModelData, appName });
         },
         onAxesScaleTypeChange(args: IAxesScaleState): void {
           onAxesScaleTypeChange({ args, model, appName, updateModelData });
@@ -2028,7 +2051,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         onChangeTooltip(tooltip: Partial<ITooltip>): void {
           onChangeTooltip({
             tooltip,
-            groupingItems: [
+            groupingNames: [
               GroupNameEnum.COLOR,
               GroupNameEnum.STROKE,
               GroupNameEnum.CHART,
@@ -2042,6 +2065,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
         },
         onDensityTypeChange(type: DensityOptions): Promise<void> {
           return onDensityTypeChange({ type, model, appName, getMetricsData });
+        },
+        onLegendsChange(legends: Partial<LegendsConfig>): void {
+          onLegendsChange({ legends, model, appName, updateModelData });
         },
       });
     }
@@ -3437,7 +3463,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             const groupKey = metricsCollection.key;
             const columnsValues: { [key: string]: string[] } = {};
             if (metricsCollection.config !== null) {
-              const groupConfigData: { [key: string]: string } = {};
+              const groupConfigData: { [key: string]: unknown } = {};
               for (let key in metricsCollection.config) {
                 groupConfigData[getValueByField(groupingSelectOptions, key)] =
                   metricsCollection.config[key];
@@ -4185,7 +4211,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const tooltipData = {
           ...configData?.chart?.tooltip,
           content: getTooltipContent({
-            groupingItems: [
+            groupingNames: [
               GroupNameEnum.COLOR,
               GroupNameEnum.STROKE,
               GroupNameEnum.CHART,
@@ -4686,7 +4712,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           onChangeTooltip(tooltip: Partial<ITooltip>): void {
             onChangeTooltip({
               tooltip,
-              groupingItems: [
+              groupingNames: [
                 GroupNameEnum.COLOR,
                 GroupNameEnum.STROKE,
                 GroupNameEnum.CHART,
@@ -5137,7 +5163,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             const columnsValues: { [key: string]: string[] } = {};
 
             if (metricsCollection.config !== null) {
-              const groupConfigData: { [key: string]: string } = {};
+              const groupConfigData: { [key: string]: unknown } = {};
               for (let key in metricsCollection.config) {
                 groupConfigData[getValueByField(groupingSelectOptions, key)] =
                   metricsCollection.config[key];
@@ -5892,7 +5918,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const tooltipData = {
           ...configData?.chart?.tooltip,
           content: getTooltipContent({
-            groupingItems: [GroupNameEnum.COLOR, GroupNameEnum.CHART],
+            groupingNames: [GroupNameEnum.COLOR, GroupNameEnum.CHART],
             groupingSelectOptions,
             data,
             configData,
@@ -6184,7 +6210,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           onChangeTooltip(tooltip: Partial<ITooltip>): void {
             onChangeTooltip({
               tooltip,
-              groupingItems: [GroupNameEnum.COLOR, GroupNameEnum.CHART],
+              groupingNames: [GroupNameEnum.COLOR, GroupNameEnum.CHART],
               model,
               appName,
             });
