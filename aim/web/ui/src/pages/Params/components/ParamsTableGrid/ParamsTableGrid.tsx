@@ -1,4 +1,5 @@
 import _ from 'lodash-es';
+import * as React from 'react';
 
 import { Tooltip } from '@material-ui/core';
 
@@ -476,14 +477,15 @@ function paramsTableRowRenderer(
         ),
       },
       tags: {
-        component: TagsColumn,
-        props: {
-          runHash: rowData.hash,
-          tags: rowData.tags,
-          onRunsTagsChange,
-          headerRenderer: () => <></>,
-          addTagButtonSize: 'xxSmall',
-        },
+        content: (
+          <TagsColumn
+            runHash={rowData.hash}
+            tags={rowData.tags}
+            onRunsTagsChange={onRunsTagsChange}
+            headerRenderer={() => <></>}
+            addTagButtonSize='xxSmall'
+          />
+        ),
       },
       actions: {
         content: (
