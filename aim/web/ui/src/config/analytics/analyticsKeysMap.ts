@@ -50,6 +50,11 @@ export const ANALYTICS_EVENT_KEYS = {
           appearance:
             '[MetricsExplorer][Chart][Controls] Change tooltip appearance mode to',
         },
+        legends: {
+          display:
+            '[MetricsExplorer][Chart][Controls] Change legends visibility', // to visible/hidden
+          mode: '[MetricsExplorer][Chart][Controls] Change legends mode', // to pinned/unpinned
+        },
         exportChart: '[MetricsExplorer][Chart][Controls] Export Chart as Image',
       },
     },
@@ -333,4 +338,6 @@ export const ANALYTICS_EVENT_KEYS = {
     slack: '[SideBar] Click on slack community link',
     docs: '[Sidebar] Click on docs link',
   },
+  figures: {} as any,
+  audios: {} as any,
 };

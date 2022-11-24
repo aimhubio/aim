@@ -1,5 +1,4 @@
 import click
-import collections
 import os
 from tqdm import tqdm
 
@@ -125,6 +124,8 @@ def restore_runs(ctx, hashes):
 def prune(ctx):
     """Remove dangling/orphan params/sequences with no referring runs."""
 
+    from collections.abc import MutableMapping
+
     def flatten(d, parent_path=None):
         if parent_path and not isinstance(parent_path, tuple):
             parent_path = (parent_path, )
@@ -136,7 +137,7 @@ def prune(ctx):
 
             new_path = parent_path + (k,) if parent_path else (k, )
             all_paths.add(new_path)
-            if isinstance(v, collections.MutableMapping):
+            if isinstance(v, MutableMapping):
                 all_paths.update(flatten(v, new_path))
 
         return all_paths
