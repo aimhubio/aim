@@ -145,10 +145,9 @@ def upload_runs(ctx, bucket):
 
 
 @runs.command(name='close')
-@click.option('-f', '--force', is_flag=True)
 @click.argument('hashes', nargs=-1, type=str)
 @click.pass_context
-def close_runs(ctx, force, hashes):
+def close_runs(ctx, hashes):
     """Close failed/stalled Runs."""
     repo_path = ctx.obj['repo']
     repo = Repo.from_path(repo_path)
@@ -157,17 +156,16 @@ def close_runs(ctx, force, hashes):
         click.echo('Please specify at least one Run to close.')
         exit(1)
 
-    if force:
-        click.secho(f'This command will forcefully close {len(hashes)} Runs from Aim Repo \'{repo_path}\'. '
-                    f'Please make sure Runs are not active. Data corruption may occure otherwise.')
-        if not click.confirm('Do you want to proceed?'):
-            return
+    click.secho(f'This command will forcefully close {len(hashes)} Runs from Aim Repo \'{repo_path}\'. '
+                f'Please make sure Runs are not active. Data corruption may occur otherwise.')
+    if not click.confirm('Do you want to proceed?'):
+        return
 
     lock_manager = LockManager(repo.path)
     index_manager = RepoIndexManager.get_index_manager(repo)
 
     def close_run(run_hash):
-        if lock_manager.release_locks(run_hash, force=force):
+        if lock_manager.release_locks(run_hash, force=True):
             # Run rocksdb optimizations if container locks are removed
             meta_db_path = os.path.join(repo_path, 'meta', 'chunks', run_hash)
             seqs_db_path = os.path.join(repo_path, 'seqs', 'chunks', run_hash)

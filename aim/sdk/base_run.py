@@ -25,7 +25,7 @@ class BaseRun:
     def __init__(self, run_hash: Optional[str] = None,
                  repo: Optional[Union[str, 'Repo']] = None,
                  read_only: bool = False,
-                 force: bool = False):
+                 force_resume: bool = False):
         self._hash = None
         self._lock = None
 
@@ -42,7 +42,7 @@ class BaseRun:
             else:
                 raise MissingRunError(f'Cannot find Run {run_hash} in aim Repo {self.repo.path}.')
             self._lock = self.repo.request_run_lock(self.hash)
-            self._lock.lock(force=force)
+            self._lock.lock(force=force_resume)
 
         self.meta_tree: TreeView = self.repo.request_tree(
             'meta', self.hash, read_only=read_only, from_union=True
