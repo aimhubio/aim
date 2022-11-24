@@ -312,7 +312,7 @@ class RunStatusWatcher:
                 epoch_now = time.time()
                 failure = (event.next_event_in + GRACE_PERIOD < epoch_now - event.detected_epoch_time)
                 if failure:
-                    notification = StatusNotification(obj_idx=event.obj_idx, rank=event.obj_idx)
+                    notification = StatusNotification(obj_idx=event.obj_idx, rank=event.idx)
                     self.notifications_queue.add_notification(notification)
             elif new_event.event_type in self.message_templates:
                 message = self.message_templates[new_event.event_type]

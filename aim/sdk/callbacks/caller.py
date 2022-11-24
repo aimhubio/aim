@@ -20,8 +20,8 @@ class Caller:
         for ch in callbacks:
             self.register(ch)
 
-    def register(self, callback_handler: 'CallbackHandler'):
-        for _, callback in inspect.getmembers(callback_handler, handles_events):
+    def register(self, callbacks: 'CallbackHandler'):
+        for _, callback in inspect.getmembers(callbacks, handles_events):
             self._bind_events_for(callback)
 
     def _bind_events_for(self, callback: Callable):
@@ -32,7 +32,7 @@ class Caller:
         return {'_caller_': self}
 
     def trigger(self, event_name: str, **kwargs):
-        all_kwargs = self.extra_kwargs()
+        all_kwargs = self._extra_kwargs()
         all_kwargs.update(kwargs)
 
         handlers = self._handlers.get(event_name, [])

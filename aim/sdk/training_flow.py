@@ -9,8 +9,8 @@ class TrainingFlow(Caller):
     """High-level Run object, resembling the execution flow of the typical training script."""
     def __init__(self, run: Run, callbacks=None):
         super().__init__(callbacks=callbacks)
-        self.init()
         self.run = run
+        self.init()
 
     def _extra_kwargs(self) -> Dict[str, Any]:
         kwargs = super()._extra_kwargs()
@@ -26,7 +26,7 @@ class TrainingFlow(Caller):
         """Guaranteed to be called before any other event."""
 
     @event
-    def train_started(
+    def training_started(
         self, *,
         hparams: Dict[str, Any],
         run: Run,
@@ -35,25 +35,25 @@ class TrainingFlow(Caller):
         """Is called just after Run object and hyperparameters are ready."""
 
     @event
-    def train_metrics_available(
+    def training_metrics_collected(
         self, *,
         metrics: Dict[str, Any], step: int, epoch: int = None,
         run: Run,
         **kwargs
     ):
-        ...
+        """Is called after the training metrics are calculated and ready to be logged."""
 
     @event
-    def validation_metric_available(
+    def validation_metrics_collected(
         self, *,
         metrics: Dict[str, Any], step: int, epoch: int = None,
         run: Run,
         **kwargs
     ):
-        ...
+        """Is called after the validation metrics are calculated and ready to be logged."""
 
     @event
-    def train_successfully_finished(
+    def training_successfully_finished(
         self, *,
         run: Run,
         **kwargs
