@@ -12,6 +12,7 @@
 - Add Optuna integration (tmynn)
 - Use `packaging` to parse version strings (jangop)
 - Implement the experiment page for the overall experiment info view (VkoHov)
+- Implement robust locking and indexing mechanism for Aim Runs (alberttorosyan)
 
 ### Fixes:
 
