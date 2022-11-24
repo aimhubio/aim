@@ -266,10 +266,13 @@ class ModelMappedExperiment(IExperiment, metaclass=ModelMappedClassMeta):
     __model__ = ExperimentModel
     __mapped_properties__ = [
         Property('name'),
+        Property('description'),
         Property('uuid', with_setter=False),
         Property('archived', 'is_archived'),
         Property('created_at', with_setter=False),
+        Property('creation_time', 'created_at', get_modifier=timestamp_or_none, with_setter=False),
         Property('updated_at', with_setter=False),
+        Property('notes', autogenerate=False)
     ]
 
     def __init__(self, model_inst: ExperimentModel, session):
@@ -339,6 +342,76 @@ class ModelMappedExperiment(IExperiment, metaclass=ModelMappedClassMeta):
             joinedload(ExperimentModel.runs),
         ]).filter(ExperimentModel.name.like(term))
         return ModelMappedExperimentCollection(session, query=q)
+
+    @property
+    def notes(self) -> List[dict]:
+        session = self._session
+
+        qs = session.query(NoteModel).filter(
+            NoteModel.experiment_id == self._model.id,
+        ).order_by(NoteModel.updated_at.desc())
+
+        return [{
+            "id": note.id,
+            "content": note.content,
+            "created_at": note.created_at,
+            "updated_at": note.updated_at
+        } for note in qs]
+
+    def find_note(self, _id: int):
+        session = self._session
+
+        qs = session.query(NoteModel).filter(
+            NoteModel.experiment_id == self._model.id,
+            NoteModel.id == _id
+        )
+        return qs.first()
+
+    def add_note(self, content: str):
+        session = self._session
+
+        note = NoteModel(content)
+        session.add(note)
+        self._model.notes.append(note)
+
+        audit_log = NoteAuditLogModel(action="Created", before=None, after=content)
+        session.add(audit_log)
+        note.audit_logs.append(audit_log)
+
+        session.add(self._model)
+        session.flush()
+
+        return note
+
+    def update_note(self, _id: int, content):
+        session = self._session
+
+        note = self.find_note(_id=_id)
+
+        before = note.content
+        note.content = content
+
+        audit_log = NoteAuditLogModel(action="Updated", before=before, after=content)
+        session.add(audit_log)
+        note.audit_logs.append(audit_log)
+
+        session.add(note)
+        session.flush()
+
+        return note
+
+    def remove_note(self, _id: int):
+        session = self._session
+
+        audit_log = NoteAuditLogModel(action="Deleted", before=None, after=None)
+        audit_log.note_id = _id
+        session.add(audit_log)
+
+        session.query(NoteModel).filter(
+            NoteModel.experiment_id == self._model.id,
+            NoteModel.id == _id,
+        ).delete()
+        session.flush()
 
 
 class ModelMappedTag(ITag, metaclass=ModelMappedClassMeta):
