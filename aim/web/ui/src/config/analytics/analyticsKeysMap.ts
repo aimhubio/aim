@@ -255,6 +255,29 @@ export const ANALYTICS_EVENT_KEYS = {
         '[ImagesExplorer][ImagesPanel][ImageBox] Open full size mode',
     },
   },
+  experiment: {
+    pageView: '[Experiment] Page view',
+    tabs: {
+      overview: {
+        tabView: '[Experiment] [Overview] Tab view',
+      },
+      runs: {
+        tabView: '[Experiment] [Runs] Tab view',
+      },
+      notes: {
+        tabView: '[Experiment] [Notes] Tab view',
+        clickSaveButton: '[Experiment] [Notes] Click save button',
+        clickUpdateButton: '[Experiment] [Notes] Click update button',
+        clickDeleteButton: '[Experiment] [Notes] Click delete button',
+      },
+      settings: {
+        tabView: '[Experiment] [Settings] Tab view',
+      },
+    },
+    table: {
+      compareSelectedRuns: '[Experiment] [Runs] Compare selected runs',
+    },
+  },
   runDetails: {
     pageView: '[RunDetail] Page view',
     tabs: {

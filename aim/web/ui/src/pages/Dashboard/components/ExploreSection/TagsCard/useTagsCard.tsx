@@ -55,7 +55,7 @@ function useTagsCard() {
       } else if (selectedRows.length) {
         setSelectedRows([]);
       } else {
-        setSelectedRows(tableData.map(({ name }: any) => name.label));
+        setSelectedRows(tableData.map(({ name }: any) => name));
       }
     },
     [selectedRows, tableData],
@@ -89,7 +89,7 @@ function useTagsCard() {
           />
         ),
         width: '20px',
-        cellRenderer: ({ cellData }: any, index: number) => {
+        cellRenderer: ({ cellData }: any) => {
           return (
             <Checkbox
               color='primary'

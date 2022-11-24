@@ -48,7 +48,7 @@ class Run(Base):
     # relationships
     experiment_id = Column(ForeignKey('experiment.id'), nullable=True)
 
-    experiment = relationship('Experiment', backref=backref('runs', uselist=True))
+    experiment = relationship('Experiment', backref=backref('runs', uselist=True, order_by='Run.created_at.desc()'))
     tags = relationship('Tag', secondary=run_tags, backref=backref('runs', uselist=True))
     notes = relationship('Note', back_populates='run')
 
@@ -63,8 +63,13 @@ class Experiment(Base):
     id = Column(Integer, autoincrement=True, primary_key=True)
     uuid = Column(Text, index=True, unique=True, default=get_uuid)
     name = Column(Text, nullable=False, unique=True)
-    is_archived = Column(Boolean, default=False)
+    description = Column(Text, nullable=True)
 
+    # relationships
+
+    notes = relationship('Note', back_populates='experiment')
+
+    is_archived = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
 
@@ -100,11 +105,13 @@ class Note(Base):
     id = Column(Integer, autoincrement=True, primary_key=True)
     content = Column(Text, nullable=False, default='')
     run_id = Column(Integer, ForeignKey('run.id'))
+    experiment_id = Column(Integer, ForeignKey('experiment.id'))
 
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
 
     run = relationship('Run', back_populates='notes')
+    experiment = relationship('Experiment', back_populates='notes')
     audit_logs = relationship('NoteAuditLog', back_populates='note')
 
     def __init__(self, content):

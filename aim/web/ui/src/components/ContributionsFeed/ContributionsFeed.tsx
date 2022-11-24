@@ -3,16 +3,20 @@ import _ from 'lodash-es';
 
 import { Button, Spinner, Text } from 'components/kit';
 
-import useContributionsFeed from './useContributionsFeed';
-import FeedItem from './FeedItem/FeedItem';
+import FeedItem from './FeedItem';
+import { IContributionsFeedProps } from './ContributionsFeed.d';
 
 import './ContributionsFeed.scss';
 
-function ContributionsFeed(): React.FunctionComponentElement<React.ReactNode> | null {
-  let { data, loadMore, isLoading, totalRunsCount, fetchedCount } =
-    useContributionsFeed();
-
-  return totalRunsCount ? (
+function ContributionsFeed({
+  data,
+  loadMore,
+  isLoading,
+  totalRunsCount = 0,
+  fetchedCount = 0,
+  archivedRunsCount = 0,
+}: IContributionsFeedProps): React.FunctionComponentElement<React.ReactNode> | null {
+  return totalRunsCount && totalRunsCount !== archivedRunsCount ? (
     <div className='ContributionsFeed'>
       <Text size={14} component='h3' tint={100} weight={700}>
         Activity
@@ -40,7 +44,8 @@ function ContributionsFeed(): React.FunctionComponentElement<React.ReactNode> | 
               })}
             </div>
           ))}
-          {fetchedCount < totalRunsCount! ? (
+
+          {fetchedCount < totalRunsCount - archivedRunsCount! ? (
             <Button
               variant='outlined'
               fullWidth

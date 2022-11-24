@@ -7,7 +7,7 @@ import { IRun } from 'types/services/models/metrics/runModel';
 
 import { parseStream } from 'utils/encoder/streamEncoding';
 
-function createContributionsFeedEngine() {
+function createDashboardContributionsFeedEngine() {
   let { call } = createSearchRunRequest();
 
   const { fetchData, state, destroy } = createResource<IRun<unknown>[]>(
@@ -22,4 +22,4 @@ function createContributionsFeedEngine() {
   };
 }
 
-export default createContributionsFeedEngine();
+export default createDashboardContributionsFeedEngine();

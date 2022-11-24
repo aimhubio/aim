@@ -40,4 +40,10 @@ export type ContributionType = {
    * @example 'My first experiment'
    */
   experiment: string;
+  /**
+   * The run experiment id of the contribution
+   * @type {string}
+   * @example '4a4298dd-d144-40d6-9a3c-d5db7a20ee82'
+   */
+  experimentId: string;
 };
