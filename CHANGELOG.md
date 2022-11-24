@@ -15,11 +15,11 @@
 
 ### Fixes:
 
-- Support non-Latin chars for encoding in Aim UI (roubkar)
 - Fix multiple progress bars handling for terminal logs capturing (mihran113)
 - Handle resources when multiple `Ctrl-C`s are pressed (alberttorosyan)
 - Remove non unicode symbols from `aim up` command logs (mihran113)
 - Fix "Show Table Diff" for list type elements in runs, params and scatters explorers (kumarshreshtha)
+- Support non-Latin chars for encoding in Aim UI (roubkar)
 
 ## 3.14.4 Nov 11, 2022
 
