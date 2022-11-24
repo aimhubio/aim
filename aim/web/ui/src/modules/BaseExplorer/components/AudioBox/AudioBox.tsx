@@ -10,6 +10,7 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import { BATCH_COLLECT_DELAY } from 'config/mediaConfigs/mediaConfigs';
 
 import contextToString from 'utils/contextToString';
+import { downloadLink } from 'utils/helper';
 
 import AudioBoxProgress from './AudioBoxProgress';
 import AudioBoxVolume from './AudioBoxVolume';
@@ -36,6 +37,8 @@ function AudioBox(
     blobURI.getBlobData(blob_uri),
   );
   const [muted, setMuted] = React.useState<boolean>(true);
+
+  const readyToPlay = React.useRef<boolean>(false);
 
   React.useEffect(() => {
     let timeoutID: number;
@@ -75,28 +78,11 @@ function AudioBox(
   }, [processing]);
 
   React.useEffect(() => {
-    const unsubscribe = events.on(
-      'onAudioPlay',
-      (payload: { blob_uri: string; isFullView: boolean }) => {
-        if (
-          payload.blob_uri !== blob_uri ||
-          payload.isFullView !== isFullView
-        ) {
-          setIsPlaying(false);
-        }
-      },
-    );
-    return () => {
-      unsubscribe();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  React.useEffect(() => {
     if (blobData) {
       const audioRef = new Audio();
       audioRef.autoplay = true;
       audioRef.muted = true;
+      audioRef.preload = 'metadata';
       audioRef.src = `data:audio/${format};base64,${blobData}`;
       setSrc(`data:audio/${format};base64,${blobData}`);
       setAudio(audioRef);
@@ -131,11 +117,29 @@ function AudioBox(
   }, [audio]);
 
   React.useEffect(() => {
-    if (!muted) {
+    if (audio && !muted) {
       audio.muted = false;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [muted]);
+
+  React.useEffect(() => {
+    const unsubscribe = events.on(
+      'onAudioPlay',
+      (payload: { blob_uri: string; isFullView: boolean }) => {
+        if (
+          payload.blob_uri !== blob_uri ||
+          payload.isFullView !== isFullView
+        ) {
+          setIsPlaying(false);
+        }
+      },
+    );
+    return () => {
+      unsubscribe();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function handleReadyToPlay(): void {
     setProcessing(false);
@@ -145,8 +149,9 @@ function AudioBox(
     setIsPlaying(false);
   }
 
-  function onPLayChange(): void {
+  function onPlayChange(): void {
     if (audio) {
+      readyToPlay.current = true;
       events.fire('onAudioPlay', { blob_uri, isFullView });
       setIsPlaying(!isPlaying);
     } else {
@@ -155,6 +160,7 @@ function AudioBox(
         .getBlobsData([blob_uri])
         .call()
         .then(() => {
+          readyToPlay.current = true;
           events.fire('onAudioPlay', { blob_uri, isFullView });
           setIsPlaying(!isPlaying);
         });
@@ -166,28 +172,18 @@ function AudioBox(
       handleDownload();
     } else {
       setProcessing(true);
-      blobURI
-        .getBlobsData([blob_uri])
-        .call()
-        .then(() => {
-          handleDownload();
-        });
+      blobURI.getBlobsData([blob_uri]).call().then(handleDownload);
     }
   }
 
   function handleDownload(): void {
-    const element: HTMLAnchorElement = document.createElement('a');
     const { step } = record;
     const { context, name: audio_name } = audios;
-    const contextName: string =
+    const contextName =
       contextToString(context) === '' ? '' : `_${contextToString(context)}`;
-    const name: string = `${audio_name}${contextName}_${caption}_${step}_${index}`;
+    const name = `${audio_name}${contextName}_${caption}_${step}_${index}`;
 
-    element.setAttribute('href', `data:audio/${format};base64,${blobData}`);
-    element.setAttribute('download', name);
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
+    downloadLink(`data:audio/${format};base64,${blobData}`, name);
   }
 
   return (
@@ -197,7 +193,7 @@ function AudioBox(
           <div className='AudioBox__controllers__player'>
             {audio ? (
               <Button
-                onClick={onPLayChange}
+                onClick={onPlayChange}
                 color='secondary'
                 withOnlyIcon
                 size='xSmall'
@@ -210,7 +206,7 @@ function AudioBox(
                   displaySlider={false}
                   volume={false}
                   displayCloseButton={false}
-                  onPlayed={onPLayChange}
+                  onPlayed={onPlayChange}
                   width='24px'
                   src={src}
                 />
@@ -227,7 +223,12 @@ function AudioBox(
               </>
             )}
           </div>
-          <AudioBoxProgress audio={audio} isPlaying={isPlaying} src={src} />
+          <AudioBoxProgress
+            audio={audio}
+            isPlaying={isPlaying}
+            src={src}
+            disabled={!readyToPlay.current}
+          />
           <AudioBoxVolume audio={audio} />
           <div className='AudioBox__controllers__download'>
             <Button withOnlyIcon size='xSmall' onClick={onDownload}>

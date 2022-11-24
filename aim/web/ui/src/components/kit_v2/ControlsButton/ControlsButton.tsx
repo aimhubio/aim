@@ -2,7 +2,7 @@ import React from 'react';
 
 import Icon, { IconName } from 'components/kit/Icon';
 
-import { styled } from 'config/stitches/stitches.config';
+import { ColorPaletteEnum, styled } from 'config/stitches/stitches.config';
 
 import IconButton from '../IconButton';
 
@@ -223,6 +223,7 @@ const ControlsButton = React.forwardRef<
         />
         {rightIcon?.name ? (
           <RightIcon
+            size='sm'
             onClick={(e: React.SyntheticEvent) => {
               e.preventDefault();
               rightIcon?.onClick();
@@ -230,7 +231,7 @@ const ControlsButton = React.forwardRef<
             disabled={disabled}
             icon={rightIcon?.name}
             variant='text'
-            color='secondary'
+            color={ColorPaletteEnum.secondary}
           />
         ) : null}
       </Trigger>

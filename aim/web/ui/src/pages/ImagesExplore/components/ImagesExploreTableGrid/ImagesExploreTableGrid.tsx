@@ -30,7 +30,7 @@ import getColumnOptions from 'utils/getColumnOptions';
 function getImagesExploreTableColumns(
   paramColumns: string[] = [],
   groupingSelectOptions: IGroupingSelectOption[],
-  groupFields: { [key: string]: string } | null,
+  groupFields: { [key: string]: unknown } | null,
   order: { left: string[]; middle: string[]; right: string[] },
   hiddenColumns: string[],
   sortFields?: any[],
