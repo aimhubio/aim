@@ -50,6 +50,11 @@ export const ANALYTICS_EVENT_KEYS = {
           appearance:
             '[MetricsExplorer][Chart][Controls] Change tooltip appearance mode to',
         },
+        legends: {
+          display:
+            '[MetricsExplorer][Chart][Controls] Change legends visibility', // to visible/hidden
+          mode: '[MetricsExplorer][Chart][Controls] Change legends mode', // to pinned/unpinned
+        },
         exportChart: '[MetricsExplorer][Chart][Controls] Export Chart as Image',
       },
     },
@@ -250,6 +255,29 @@ export const ANALYTICS_EVENT_KEYS = {
         '[ImagesExplorer][ImagesPanel][ImageBox] Open full size mode',
     },
   },
+  experiment: {
+    pageView: '[Experiment] Page view',
+    tabs: {
+      overview: {
+        tabView: '[Experiment] [Overview] Tab view',
+      },
+      runs: {
+        tabView: '[Experiment] [Runs] Tab view',
+      },
+      notes: {
+        tabView: '[Experiment] [Notes] Tab view',
+        clickSaveButton: '[Experiment] [Notes] Click save button',
+        clickUpdateButton: '[Experiment] [Notes] Click update button',
+        clickDeleteButton: '[Experiment] [Notes] Click delete button',
+      },
+      settings: {
+        tabView: '[Experiment] [Settings] Tab view',
+      },
+    },
+    table: {
+      compareSelectedRuns: '[Experiment] [Runs] Compare selected runs',
+    },
+  },
   runDetails: {
     pageView: '[RunDetail] Page view',
     tabs: {
@@ -333,4 +361,6 @@ export const ANALYTICS_EVENT_KEYS = {
     slack: '[SideBar] Click on slack community link',
     docs: '[Sidebar] Click on docs link',
   },
+  figures: {} as any,
+  audios: {} as any,
 };

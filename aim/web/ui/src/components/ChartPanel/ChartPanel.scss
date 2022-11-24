@@ -2,24 +2,24 @@
 
 .ChartPanel__container {
   height: 100%;
+  width: 100%;
+  display: flex;
   .ChartPanel {
     overflow: hidden;
     height: 100%;
     border-right: $border-separator;
-    &__resizing {
-      display: flex;
-      width: 100%;
-      height: 100%;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background-color: $primary-color-5;
-      user-select: none;
-    }
+    position: relative;
+    display: flex;
+    flex-grow: 1;
+    max-width: 100%;
+    flex-basis: 0;
     &__grid {
+      display: flex;
       height: 100%;
       overflow: auto;
       margin: 0;
+      width: 100%;
+      flex-wrap: wrap;
     }
     &__controls {
       width: 3.75rem;

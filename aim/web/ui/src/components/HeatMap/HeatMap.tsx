@@ -25,6 +25,7 @@ function HeatMap({
   cellSpacing = 4,
   scaleRange = 4,
   onCellClick,
+  additionalQuery = '',
 }: any) {
   const oneDay = 24 * 60 * 60 * 1000;
   const weekDays = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
@@ -154,7 +155,7 @@ function HeatMap({
             DATE_QUERY_FORMAT,
           )}) <= run.created_at < datetime(${moment(startDate)
             .add(1, 'day')
-            .format(DATE_QUERY_FORMAT)})`,
+            .format(DATE_QUERY_FORMAT)}) ${additionalQuery}`,
         });
         analytics.trackEvent(ANALYTICS_EVENT_KEYS.dashboard.activityCellClick);
         history.push(`/runs?select=${search}`);

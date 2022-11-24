@@ -28,6 +28,8 @@ import {
   IGroupingSelectOption,
   IChartZoom,
   ISmoothing,
+  LegendsDataType,
+  LegendsConfig,
 } from 'types/services/models/metrics/metricsAppModel';
 import { ITableColumn } from 'types/components/TableColumns/TableColumns';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
@@ -57,10 +59,12 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   lineChartData: ILine[][];
   panelResizing: boolean;
   chartTitleData: IChartTitleData;
+  legendsData: LegendsDataType;
   tableData: IMetricTableRowData[];
   aggregatedData: IAggregatedData[];
   tableColumns: ITableColumn[];
   ignoreOutliers: boolean;
+  legends: LegendsConfig;
   zoom: IChartZoom;
   densityType: DensityOptions;
   axesScaleType: IAxesScaleState;
@@ -96,6 +100,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   onRunsTagsChange: (runHash: string, tags: ITagInfo[]) => void;
   onChangeTooltip: (tooltip: Partial<ITooltip>) => void;
   onIgnoreOutliersChange: () => void;
+  onLegendsChange: (legends: Partial<LegendsConfig>) => void;
   onZoomChange: (zoom: Partial<IChartZoom>) => void;
   onActivePointChange?: (
     activePoint: IActivePoint,
