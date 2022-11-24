@@ -2795,7 +2795,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
               const value = getValue(metric.run.params, paramKey, '-');
               rowValues[paramKey] = formatValue(value);
               if (columnsValues.hasOwnProperty(paramKey)) {
-                if (!columnsValues[paramKey].includes(value)) {
+                if (
+                  _.findIndex(columnsValues[paramKey], (paramValue) =>
+                    _.isEqual(value, paramValue),
+                  ) === -1
+                ) {
                   columnsValues[paramKey].push(value);
                 }
               } else {
@@ -3580,7 +3584,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 const value = getValue(metric.run.params, paramKey, '-');
                 rowValues[paramKey] = formatValue(value);
                 if (columnsValues.hasOwnProperty(paramKey)) {
-                  if (!columnsValues[paramKey].includes(value)) {
+                  if (
+                    _.findIndex(columnsValues[paramKey], (paramValue) =>
+                      _.isEqual(value, paramValue),
+                    ) === -1
+                  ) {
                     columnsValues[paramKey].push(value);
                   }
                 } else {
@@ -5283,7 +5291,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 const value = getValue(metric.run.params, paramKey, '-');
                 rowValues[paramKey] = formatValue(value);
                 if (columnsValues.hasOwnProperty(paramKey)) {
-                  if (!columnsValues[paramKey].includes(value)) {
+                  if (
+                    _.findIndex(columnsValues[paramKey], (paramValue) =>
+                      _.isEqual(value, paramValue),
+                    ) === -1
+                  ) {
                     columnsValues[paramKey].push(value);
                   }
                 } else {
