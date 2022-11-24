@@ -224,7 +224,8 @@ def disable_config(ctx, notifier_id):
 @add_config.command(name='workplace')
 @click.option('--group-id', prompt=True, required=True, type=int)
 @click.option('--access-token', prompt=True, required=True, type=str)
-@click.option('--message', prompt=MESSAGE_PROMPT, required=False, type=str, default=DEFAULT_MESSAGE_TEMPLATE, show_default=True)
+@click.option('--message', prompt=MESSAGE_PROMPT, required=False, type=str,
+              default=DEFAULT_MESSAGE_TEMPLATE, show_default=True)
 @click.pass_context
 def workplace_config(ctx, group_id, access_token, message):
     cfg = ctx.obj['config']
@@ -245,7 +246,8 @@ def workplace_config(ctx, group_id, access_token, message):
 
 @add_config.command(name='slack')
 @click.option('--webhook-url', prompt=True, required=True, type=str)
-@click.option('--message', prompt=MESSAGE_PROMPT, required=False, type=str, default=DEFAULT_MESSAGE_TEMPLATE, show_default=True)
+@click.option('--message', prompt=MESSAGE_PROMPT, required=False, type=str,
+              default=DEFAULT_MESSAGE_TEMPLATE, show_default=True)
 @click.pass_context
 def slack_config(ctx, webhook_url, message):
     cfg = ctx.obj['config']
@@ -264,7 +266,8 @@ def slack_config(ctx, webhook_url, message):
 
 
 @add_config.command(name='logger')
-@click.option('--message', prompt=MESSAGE_PROMPT, required=False, type=str, default=DEFAULT_MESSAGE_TEMPLATE, show_default=True)
+@click.option('--message', prompt=MESSAGE_PROMPT, required=False, type=str,
+              default=DEFAULT_MESSAGE_TEMPLATE, show_default=True)
 @click.pass_context
 def logger_config(ctx, message):
     cfg = ctx.obj['config']
