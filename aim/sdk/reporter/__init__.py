@@ -545,7 +545,7 @@ class RunStatusReporter:
         idx = self.counter + 1
         self.counter = idx
 
-        logger.warning(f"incrementing {flag_name} idx -> {idx}")
+        logger.info(f"incrementing {flag_name} idx -> {idx}")
 
         check_in = CheckIn(
             idx=idx,
@@ -565,7 +565,7 @@ class RunStatusReporter:
             # Schedule to flush ASAP
             timed_task = TimedTask(when=0, flag_name=flag_name)
             self._schedule(timed_task)
-            logger.warning(f"scheduled {timed_task} ASAP because no physical check-in was found")
+            logger.info(f"scheduled {timed_task} ASAP because no physical check-in was found")
         else:
             if was_scheduled.when > check_in.expiry_date:
                 # Schedule to flush ASAP
@@ -578,7 +578,7 @@ class RunStatusReporter:
                 # flag to `True` and inserting the new item with the same
                 # `flag_name`. The writer thread will just ignore such items.
                 was_scheduled.overwritten = True
-                logger.warning(f"scheduled {timed_task} because it newer is stricter than {was_scheduled}")
+                logger.info(f"scheduled {timed_task} because it newer is stricter than {was_scheduled}")
 
         return check_in
 
@@ -635,9 +635,9 @@ class RunStatusReporter:
             # next appropriate flush time. It is either the remaining time from
             # the previous flush, or the moment new check-in is registered.
             with self.refresh_condition:
-                logger.warning(f"no interesting things to do, sleeping for {remaining}")
-                logger.warning("until woken up")
-                logger.warning(f'unfinished tasks: {self.queue.unfinished_tasks}')
+                logger.info(f"no interesting things to do, sleeping for {remaining}")
+                logger.info("until woken up")
+                logger.info(f'unfinished tasks: {self.queue.unfinished_tasks}')
                 self.refresh_condition.wait(timeout=remaining)
 
             timed_task: Optional[TimedTask]
@@ -649,21 +649,21 @@ class RunStatusReporter:
                 assert isinstance(timed_task, TimedTask)
 
                 if timed_task.overwritten:
-                    logger.warning('detected overwritten task... done')
+                    logger.info('detected overwritten task... done')
                     self.queue.task_done()
                     continue
 
                 remaining = timed_task.when - time.monotonic() - PLAN_ADVANCE_TIME
                 # remaining = max(remaining, MIN_SUSPEND_TIME)
                 remaining = min(remaining, MAX_SUSPEND_TIME)
-                logger.warning(f'time remaining: {remaining}')
+                logger.info(f'time remaining: {remaining}')
 
                 if remaining > 0:
                     # TODO Should we push a little late?
                     self._schedule(timed_task)
-                    logger.warning(f'too soon, {remaining} remaining')
-                    logger.error(f'putting back for the future: {timed_task}')
-                    logger.warning(f'now: {time.monotonic()}... scheduled for: {timed_task.when}')
+                    logger.info(f'too soon, {remaining} remaining')
+                    logger.info(f'putting back for the future: {timed_task}')
+                    logger.info(f'now: {time.monotonic()}... scheduled for: {timed_task.when}')
                     self.queue.task_done()
                     # Mark the task to signal about the clean state.
                     timed_task = None
@@ -679,7 +679,7 @@ class RunStatusReporter:
                 if self.stop_signal.is_set():
                     return
             else:
-                logger.warning(f'only {remaining} remaining... flushing one task')
+                logger.info(f'only {remaining} remaining... flushing one task')
                 self._touch_flag(timed_task.flag_name)
                 self.queue.task_done()
                 # Let's immediately proceed to the next iteration to check if
@@ -704,7 +704,7 @@ class RunStatusReporter:
             flag_names = [flag_name] if flag_name is not None else self.timed_tasks
             with self.flush_condition:
                 for flag_name in flag_names:
-                    logger.warning(f"flushing {flag_name}")
+                    logger.info(f"flushing {flag_name}")
                     # We add a new task with the highest priority to flush the
                     # last check-in. This task will be processed by the writer
                     # thread immediately.
@@ -719,9 +719,9 @@ class RunStatusReporter:
                 # If `block` is set, we wait until the writer thread finishes
                 # flushing the last check-in.
                 if block:
-                    logger.error("blocking until the writer finishes")
+                    logger.info("blocking until the writer finishes...")
                     self.flush_condition.wait()
-                    logger.error("done")
+                    logger.info("done")
 
     def _check_in(
         self,
