@@ -7,7 +7,7 @@ from concurrent import futures
 from aim.ext.cleanup import AutoClean
 
 from aim.ext.transport.config import AIM_RT_MAX_MESSAGE_SIZE, AIM_RT_DEFAULT_MAX_MESSAGE_SIZE
-from aim.ext.transport.handlers import get_tree, get_structured_run, get_repo
+from aim.ext.transport.handlers import get_tree, get_structured_run, get_repo, get_lock
 from aim.ext.transport.heartbeat import RPCHeartbeatWatcher
 from aim.ext.transport.worker import RemoteWorker, LocalWorker
 from aim.ext.transport.health import HealthServicer, health_pb2_grpc
@@ -94,6 +94,7 @@ def run_router(host, port, workers=1, ssl_keyfile=None, ssl_certfile=None):
         registry.register('TreeView', get_tree)
         registry.register('StructuredRun', get_structured_run)
         registry.register('Repo', get_repo)
+        registry.register('Lock', get_lock)
         tracking_pb2_grpc.add_RemoteTrackingServiceServicer_to_server(RemoteTrackingServicer(registry), server.server)
 
     server.start(host, port, ssl_keyfile, ssl_certfile)
@@ -114,6 +115,7 @@ def run_worker(host, port, ssl_keyfile=None, ssl_certfile=None):
     registry.register('TreeView', get_tree)
     registry.register('StructuredRun', get_structured_run)
     registry.register('Repo', get_repo)
+    registry.register('Lock', get_lock)
 
     # start tracking RPC server
     server = RPCServer()

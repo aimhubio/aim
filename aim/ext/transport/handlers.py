@@ -51,3 +51,14 @@ def get_repo(args: bytes):
     else:
         repo = Repo.default_repo()
     return repo
+
+
+def get_lock(args: bytes):
+    repo_path = os.environ.get(AIM_SERVER_MOUNTED_REPO_PATH)
+    if repo_path:
+        repo = Repo.from_path(repo_path)
+    else:
+        repo = Repo.default_repo()
+    kwargs = decode_tree(unpack_args(args))
+    run_hash = kwargs['run_hash']
+    return repo.request_run_lock(run_hash)

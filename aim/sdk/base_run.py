@@ -42,10 +42,8 @@ class BaseRun:
                 self.hash = run_hash
             else:
                 raise MissingRunError(f'Cannot find Run {run_hash} in aim Repo {self.repo.path}.')
-            if not self.repo.is_remote_repo and not self.read_only:
-                lock_manager = LockManager(self.repo.path)
-                self._lock = lock_manager.get_run_lock(self.hash)
-                lock_manager.lock(self.hash, self._lock, force=force)
+            self._lock = self.repo.request_run_lock(self.hash)
+            self._lock.lock(force=force)
 
         self.meta_tree: TreeView = self.repo.request_tree(
             'meta', self.hash, read_only=read_only, from_union=True

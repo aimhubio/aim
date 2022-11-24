@@ -4,6 +4,7 @@ import psutil
 import os
 import time
 import logging
+import weakref
 
 from typing import Union
 from enum import Enum
@@ -13,6 +14,7 @@ from dateutil.relativedelta import relativedelta
 from filelock import UnixFileLock, SoftFileLock, Timeout
 
 from aim.sdk.errors import RunLockingError
+from aim.storage.locking import RunLock
 
 logger = logging.getLogger(__name__)
 
@@ -46,6 +48,19 @@ class LockInfo:
                 return f'~{getattr(delta, attr)} {attr}'
             elif getattr(delta, attr) == 1:
                 return f'~{getattr(delta, attr)} {attr[:-1]}'
+
+
+class SFRunLock(RunLock):
+    def __init__(self, lock_manager: 'LockManager', run_hash: str, path: Path, timeout: int):
+        self.run_hash = run_hash
+        self._lock_manager = weakref.ref(lock_manager)
+        self._sf_lock = SoftFileLock(path, timeout=timeout)
+
+    def lock(self, force: bool = False):
+        self._lock_manager().lock(self.run_hash, self._sf_lock, force=force)
+
+    def release(self, force: bool = False) -> None:
+        self._sf_lock.release(force=force)
 
 
 class LockManager(object):
@@ -97,9 +112,9 @@ class LockManager(object):
 
         return LockInfo(run_hash=run_hash, locked=locked, created_at=created_at, version=lock_version, type=lock_type)
 
-    def get_run_lock(self, run_hash: str, timeout: int = 10) -> SoftFileLock:
+    def get_run_lock(self, run_hash: str, timeout: int = 10) -> RunLock:
         lock_path = self.locks_path / self.softlock_fname(run_hash)
-        return SoftFileLock(lock_path, timeout=timeout)
+        return SFRunLock(self, run_hash, lock_path, timeout=timeout)
 
     def lock(self, run_hash: str, run_lock: SoftFileLock, force: bool = False):
         lock_path = Path(run_lock.lock_file)

@@ -23,13 +23,14 @@ from aim.sdk.sequence import Sequence
 from aim.sdk.types import QueryReportMode
 from aim.sdk.data_version import DATA_VERSION
 from aim.sdk.remote_repo_proxy import RemoteRepoProxy
-from aim.sdk.lock_manager import LockManager
+from aim.sdk.lock_manager import LockManager, RunLock
 
 from aim.storage.locking import SoftFileLock
 from aim.storage.container import Container
 from aim.storage.rockscontainer import RocksContainer, LockableRocksContainer
 from aim.storage.union import RocksUnionContainer
 from aim.storage.treeviewproxy import ProxyTree
+from aim.storage.lock_proxy import ProxyLock
 
 from aim.storage.structured.db import DB
 from aim.storage.structured.proxy import StructuredRunProxy
@@ -107,6 +108,7 @@ class Repo:
         self.read_only = read_only
         self._mount_root = None
         self._client: Client = None
+        self._lock_manager: LockManager = None
         if path.startswith('ssh://'):
             self._mount_root, self.root_path = mount_remote_repo(path)
         elif self.is_remote_path(path):
@@ -134,6 +136,7 @@ class Repo:
         self.structured_db = None
 
         if not self.is_remote_repo:
+            self._lock_manager = LockManager(self.path)
             self._sdb_lock_path = os.path.join(self.path, 'locks', 'structured_db_lock')
             self._sdb_lock = SoftFileLock(self._sdb_lock_path, timeout=2*60)  # timeout after 2 minutes
 
@@ -360,6 +363,12 @@ class Repo:
                 self.structured_db.caches[self.run_props_cache_hint][hash_] = _props
 
         return _props
+
+    def request_run_lock(self, hash_: str, timeout: int = 10) -> 'RunLock':
+        if self.is_remote_repo:
+            return ProxyLock(self._client, hash_)
+        assert self._lock_manager
+        return self._lock_manager.get_run_lock(hash_, timeout=timeout)
 
     def iter_runs(self) -> Iterator['Run']:
         """Iterate over Repo runs.
@@ -763,8 +772,7 @@ class Repo:
 
     def _delete_run(self, run_hash):
         # check run lock info. in progress runs can't be deleted
-        lock_manager = LockManager(self.path)
-        if lock_manager.get_run_lock_info(run_hash).locked:
+        if self._lock_manager.get_run_lock_info(run_hash).locked:
             raise RuntimeError(f'Cannot delete Run \'{run_hash}\'. Run is locked.')
 
         with self.structured_db:  # rollback db entity delete if subsequent actions fail.
@@ -791,8 +799,7 @@ class Repo:
 
     def _copy_run(self, run_hash, dest_repo):
         # check run lock info. in progress runs can't be copied
-        lock_manager = LockManager(self.path)
-        if lock_manager.get_run_lock_info(run_hash).locked:
+        if self._lock_manager.get_run_lock_info(run_hash).locked:
             raise RuntimeError(f'Cannot copy Run \'{run_hash}\'. Run is locked.')
 
         with dest_repo.structured_db:  # rollback destination db entity if subsequent actions fail.

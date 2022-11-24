@@ -161,3 +161,12 @@ class NoopLock:
 
     def release(self, *args, **kwargs):
         pass
+
+
+class RunLock:
+    """Interface for locking/releaseing Run locks."""
+    def lock(self, force: bool = False) -> None:
+        raise NotImplementedError
+
+    def release(self, force: bool = False) -> None:
+        raise NotImplementedError
