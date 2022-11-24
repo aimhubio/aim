@@ -12,6 +12,7 @@
 - Add Optuna integration (tmynn)
 - Use `packaging` to parse version strings (jangop)
 - Implement the experiment page for the overall experiment info view (VkoHov)
+- Implement dynamic flushing mechanism for `CheckIn`s based on the flag (mahnerak)
 
 ### Fixes:
 
@@ -20,6 +21,7 @@
 - Remove non unicode symbols from `aim up` command logs (mihran113)
 - Fix "Show Table Diff" for list type elements in runs, params and scatters explorers (kumarshreshtha)
 - Support non-Latin chars for encoding in Aim UI (roubkar)
+- Make new `CheckIn`s always override the expiry date, consistent to what is documented (mahnerak)
 
 ## 3.14.4 Nov 11, 2022
 

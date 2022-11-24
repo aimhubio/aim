@@ -87,15 +87,22 @@ the checkpoint callback). In such cases, the `.report_progress()` method can be 
 indirectly by calling `RunStatusReporter.report_progress()` which will infer the run instance.
 
 This is only possible if there is a single run instance in the process.
+
+
+# TODO [mahnerak] Add Revision on:
+  - [x] Multi-flag support, independent and global flushes
+  - [x] Choosing stricter `expect_next_in` values
+  - [ ] Legacy support for `progress` check-ins.
 """
 
 import math
-import threading
 import time
+import queue
+import threading
 from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import ClassVar, Dict, Tuple, Set, Union, TYPE_CHECKING
+from typing import ClassVar, Dict, Optional, Tuple, Set, Union, TYPE_CHECKING
 
 from cachetools import LRUCache
 
@@ -109,10 +116,13 @@ logger = logging.getLogger(__name__)
 
 cache = LRUCache(maxsize=3)
 
-
-GRACE_PERIOD = 100  # seconds
-MAX_SUSPEND_TIME = 30  # 5 seconds
-PLAN_ADVANCE_TIME = 10  # 5 seconds
+# expressed in seconds:
+IMMEDIATELY = 0
+MIN_SUSPEND_TIME = 0.1
+PLAN_ADVANCE_TIME = 10
+MAX_SUSPEND_TIME = 30
+GRACE_PERIOD = 100
+INFINITE_TIME = 1_000_000_000
 
 
 @dataclass(frozen=True)
@@ -185,7 +195,9 @@ class CheckIn:
         """
         Return the time when the check-in is expected to expire.
         """
-        return self.first_seen + self.expect_next_in
+        # if the check-in is not expected to expire, we treat it as infinite
+        expect_next_in = self.expect_next_in or INFINITE_TIME
+        return self.first_seen + expect_next_in
 
     @classmethod
     def parse(cls, path: Union[Path, str]) -> Tuple[str, "CheckIn"]:
@@ -239,23 +251,6 @@ class CheckIn:
         logger.info(f"parsed check-in: {check_in}")
 
         return check_in
-
-    def increment(
-        self,
-        *,
-        expect_next_in: int = 0,
-        flag_name: str = "check-in",
-    ) -> "CheckIn":
-        """
-        Create a new check-in and auto-increment the index based on the current one.
-        """
-        new = CheckIn(
-            idx=self.idx + 1,
-            expect_next_in=max(expect_next_in, self.expect_next_in),
-            flag_name=flag_name,
-        )
-        logger.info(f"incrementing check-in: {self} -> {new}")
-        return new
 
     def time_calibrated(self):
         """
@@ -394,6 +389,18 @@ class CheckIn:
         return self.expiry_date - now
 
 
+@dataclass(order=True)
+class TimedTask:
+    """
+    A task for the `TimedQueue` that is scheduled to be executed at a given time.
+    Only the `time` field is used for comparison. The `overwritten` field is
+    to mock deletion of the task from the priority queue.
+    """
+    when: float = field(compare=True)
+    flag_name: str = field(compare=False)
+    overwritten: bool = field(default=False, compare=False)
+
+
 class RunStatusReporter:
     """
     A handler for check-ins for a given run.
@@ -417,6 +424,9 @@ class RunStatusReporter:
         self.repo_dir = Path(run.repo.path)
         self.dir = self.repo_dir / "check_ins"
         logger.info(f"polling for check-ins in {self.dir}")
+
+        # Detect if the run was resumed. If so, we need to find the last
+        # check-in index and continue counting from there.
         leftover = CheckIn.poll(
             directory=self.dir,
             run_hash=self.run_hash,
@@ -425,28 +435,160 @@ class RunStatusReporter:
             logger.info(f"leftover check-in: {leftover}")
         else:
             logger.info("no leftover check-in found. starting from zero")
-        self.last_check_in = leftover.increment(flag_name="starting")
-        self.physical_check_in = self.last_check_in.touch(
-            directory=self.dir,
-            run_hash=self.run_hash,
-        )
-        logger.info(f"starting from: {self.physical_check_in}")
 
-        self.instances.add(self)
-
-        self.thread = threading.Thread(target=self.writer, daemon=True)
+        self.refresh_condition = threading.Condition()
         self.flush_condition = threading.Condition()
         self.stop_signal = threading.Event()
-        logger.info(f"starting writer thread for {self}")
-        self.thread.start()
 
-        # we need to patch certain methods to make them
+        # A single lock is used to syncronize all the check-ins API calls.
+        # (calls are non-blocking so no need to worry about the performance)
+        self.reporter_lock = threading.RLock()
+        self.counter = leftover.idx
+
+        # A shared queue for all flags and check-ins is used to avoid having a
+        # separate thread for each flag. The queue is sorted by the time when
+        # the check-in is expected to be expired.
+        #
+        # The `last_check_ins` is used to store the last check-in for each flag
+        # while `physical_check_ins` is used to store the check-ins that are
+        # already written to the filesystem. These are designed to be eventually
+        # consistent.
+        #
+        # The Priority Queue implementation does not allow to update the priority
+        # of the existing items, so we need to remove the item and re-insert it
+        # with the new priority. This is done by setting `overwritten` flag to
+        # `True` and inserting the new item with the same `flag_name`.
+        # The `timed_tasks` is used to find the older items to set `overwritten`
+        self.queue = queue.PriorityQueue()
+        self.last_check_ins: Dict[str, CheckIn] = dict()
+        self.physical_check_ins: Dict[str, CheckIn] = dict()
+        self.timed_tasks: Dict[str, TimedTask] = dict()
+
+        # We always set the first check-in `starting`.
+        logger.info(f"starting from: {self.last_check_ins}")
+        self._increment(flag_name="starting")
+        # Initialize the background thread and flush all the initial flags
+        logger.info(f"starting writer thread for {self}")
+        self.thread = threading.Thread(target=self._writer, daemon=True)
+        self.thread.start()
+        self.flush(block=True)
+
+        # The code below is a workaround to make it accessible from the class
+        # interface. This can be especially useful for reporting progress from
+        # anywhere in the code.
+        self.instances.add(self)
+        # We need to patch certain methods to make them
         # available both as instance and class methods.
         self.check_in = self._check_in
         self.report_successful_finish = self._report_successful_finish
 
+    def _touch_flag(
+        self,
+        flag_name: str,
+    ):
+        """
+        Touches the check-in file on the filesystem. This is blocking call.
+        This will also queue the check-in for the next flush if necessary.
+        """
+        check_in = self.last_check_ins[flag_name]
+
+        if flag_name in self.physical_check_ins and self.physical_check_ins[flag_name].idx == check_in.idx:
+            logger.info(f"Skipping touching `{flag_name}` as it is already up to date")
+            self.timed_tasks.pop(flag_name, None)
+            logger.info(f'{flag_name} is not scheduled anymore. It will be invoked as soon as next one appears')
+            return
+
+        # Now let's touch the file on the filesystem
+        new_check_in = check_in.touch(
+            directory=self.dir,
+            run_hash=self.run_hash,
+        )
+
+        self.physical_check_ins[flag_name] = new_check_in
+
+        # We will take the target (recommended) flush time much shorter.
+        expiry_date = min(
+            new_check_in.expiry_date,
+            time.monotonic() + MAX_SUSPEND_TIME
+        )
+        # Now we reschedule the check-in for the next flush.
+        new_timed_task = TimedTask(
+            when=expiry_date,
+            flag_name=flag_name,
+        )
+        self._schedule(new_timed_task)
+        return new_check_in
+
+    def _schedule(
+        self,
+        timed_task: TimedTask,
+    ):
+        """
+        Schedules the check-in for the next flush.
+        """
+        self.timed_tasks[timed_task.flag_name] = timed_task
+        self.queue.put(timed_task)
+        with self.refresh_condition:
+            self.refresh_condition.notify()
+
+    def _increment(
+        self,
+        *,
+        expect_next_in: int = 0,
+        flag_name: str,
+    ) -> CheckIn:
+        """
+        Increments the check-in counter and returns the new check-in for the
+        provided flag name. The indices are shared across all the flags.
+        This is an (almost) non-blocking call.
+        """
+        idx = self.counter + 1
+        self.counter = idx
+
+        logger.info(f"incrementing {flag_name} idx -> {idx}")
+
+        check_in = CheckIn(
+            idx=idx,
+            expect_next_in=expect_next_in,
+            flag_name=flag_name
+        )
+
+        self.last_check_ins[flag_name] = check_in
+        # * If there was no such check-in with the same flag name, we will
+        #   schedule it to flush immediately.
+        # * We want to make sure that more strict `expect_next_in`s are respected
+        #   so we need to reschedule the check-in for the next flush.
+        #   If we find much sooner expiry date, we will take it immediately.
+        # * Notice that `Immediately` does not mean that the call is blocking.
+        was_scheduled = self.timed_tasks.get(flag_name)
+        if was_scheduled is None:
+            # Schedule to flush ASAP
+            timed_task = TimedTask(when=0, flag_name=flag_name)
+            self._schedule(timed_task)
+            logger.info(f"scheduled {timed_task} ASAP because no physical check-in was found")
+        else:
+            if was_scheduled.when > check_in.expiry_date:
+                # Schedule to flush ASAP
+                timed_task = TimedTask(when=0, flag_name=flag_name)
+                self._schedule(timed_task)
+                # We need to remove the old task from the queue but the queue
+                # implementation does not allow to update the priority of the
+                # existing items, so we need to remove the item and re-insert it
+                # with the new priority. This is done by setting `overwritten`
+                # flag to `True` and inserting the new item with the same
+                # `flag_name`. The writer thread will just ignore such items.
+                was_scheduled.overwritten = True
+                logger.info(f"scheduled {timed_task} because it newer is stricter than {was_scheduled}")
+
+        return check_in
+
     @classmethod
     def default(cls) -> "RunStatusReporter":
+        """
+        Returns the default instance of the RunStatusReporter to make it possible
+        to access the instance methods from the class interface. This is useful
+        for reporting progress from anywhere in the code.
+        """
         try:
             default_instance, = cls.instances
         except ValueError:
@@ -460,18 +602,24 @@ class RunStatusReporter:
         return default_instance
 
     def close(self):
+        """
+        Stops the background thread, flushes all the pending check-ins and
+        cleans up the resources.
+        """
         self.instances.remove(self)
         self.stop()
 
     def stop(self):
         """
-        Flush the last check-in and stop the thread.
+        Disables any new check-ins to be scheduled, flushes all the pending
+        check-ins and stops the background thread.
         """
-        self.stop_signal.set()
-        self.flush(block=False)
-        self.thread.join()
+        with self.reporter_lock:
+            self.stop_signal.set()
+            self.flush(block=True)
+            self.thread.join()
 
-    def writer(self):
+    def _writer(self):
         """
         The writer thread that periodically flushes the last check-in.
         This background thread also takes care of cleaning up expired check-ins
@@ -480,59 +628,107 @@ class RunStatusReporter:
         on-demand. This is useful when reporting certain events that are preferable
         to be reported as soon as possible, e.g. success status of the Run.
         """
+
+        remaining = 0
         while True:
-            time_left = self.physical_check_in.time_left()
-            if time_left + GRACE_PERIOD < 0:
-                logger.info(f"Missing check-in. Grace period expired { - GRACE_PERIOD - time_left:.2f} seconds ago. "
-                            f"Notifications should be sent soon by the monitoring server.")
-            elif time_left < 0:
-                logger.info(f"Missing check-in. Late: {-time_left:.2f} seconds. "
-                            f"Remaining grace period: {GRACE_PERIOD + time_left:.2f} seconds")
-            elif time_left < PLAN_ADVANCE_TIME:
-                logger.info(f"Missing check-in. Time left: {time_left}:.2f")
-            plan = max(time_left - PLAN_ADVANCE_TIME, 1.0)
-            suspend_time = min(plan, MAX_SUSPEND_TIME)
+            # First we need to decide how much time we need to wait to reach the
+            # next appropriate flush time. It is either the remaining time from
+            # the previous flush, or the moment new check-in is registered.
+            with self.refresh_condition:
+                logger.info(f"no interesting things to do, sleeping for {remaining}")
+                logger.info("until woken up")
+                logger.info(f'unfinished tasks: {self.queue.unfinished_tasks}')
+                self.refresh_condition.wait(timeout=remaining)
 
-            with self.flush_condition:
-                self.flush_condition.wait(timeout=suspend_time)
+            timed_task: Optional[TimedTask]
+            try:
+                timed_task = self.queue.get(timeout=0)
+            except queue.Empty:
+                timed_task = None
+            else:
+                assert isinstance(timed_task, TimedTask)
 
-            # If the stop signal is set, then no new check-ins will be written,
-            # So we can safely exit the thread after finishing what we have now.
-            is_last_check = self.stop_signal.is_set()
+                if timed_task.overwritten:
+                    logger.info('detected overwritten task... done')
+                    self.queue.task_done()
+                    continue
 
-            check_in = self.last_check_in
-            if check_in != self.physical_check_in:
-                logger.info(f"detected newest check-in: {check_in}")
-                self.physical_check_in = check_in.touch(
-                    directory=self.dir, run_hash=self.run_hash
-                )
-                logger.info(f"changing to -> {self.physical_check_in}")
+                remaining = timed_task.when - time.monotonic() - PLAN_ADVANCE_TIME
+                # remaining = max(remaining, MIN_SUSPEND_TIME)
+                remaining = min(remaining, MAX_SUSPEND_TIME)
+                logger.info(f'time remaining: {remaining}')
 
-            if is_last_check:
-                logger.info("writer thread stopping as requested")
-                return
+                if remaining > 0:
+                    # TODO Should we push a little late?
+                    self._schedule(timed_task)
+                    logger.info(f'too soon, {remaining} remaining')
+                    logger.info(f'putting back for the future: {timed_task}')
+                    logger.info(f'now: {time.monotonic()}... scheduled for: {timed_task.when}')
+                    self.queue.task_done()
+                    # Mark the task to signal about the clean state.
+                    timed_task = None
+
+            # If during the last iteration we could not find a new check-in
+            # to flush, we define it as clean state. In the case of if the stop
+            # signal is set, we can safely exit the thread as there will be no
+            # more check-ins to process in the future.
+            if timed_task is None:
+                remaining = MAX_SUSPEND_TIME
+                with self.flush_condition:
+                    self.flush_condition.notify()
+                if self.stop_signal.is_set():
+                    return
+            else:
+                logger.info(f'only {remaining} remaining... flushing one task')
+                self._touch_flag(timed_task.flag_name)
+                self.queue.task_done()
+                # Let's immediately proceed to the next iteration to check if
+                # there are any new check-ins to flush.
+                remaining = IMMEDIATELY
 
     def flush(
         self,
+        flag_name: Optional[str] = None,
         block: bool = True,
     ) -> None:
         """
         Flush the last check-in.
+        If `flag_name` is specified, only the check-ins for the given flag
+        will be flushed.
+        Otherwise, all the check-ins will be flushed. In this case, the order
+        of (active) check-ins (per flag name) will be preserved.
         """
         logger.info(f"notifying {self}")
-        with self.flush_condition:
-            self.flush_condition.notify_all()
-        if block:
-            logger.info("blocking until the writer finishes")
-            while not self.last_check_in == self.physical_check_in:
-                time.sleep(0.2)  # TODO use notify
-                pass
+
+        with self.reporter_lock:
+            flag_names = [flag_name] if flag_name is not None else self.timed_tasks
+            with self.flush_condition:
+                for flag_name in flag_names:
+                    logger.info(f"flushing {flag_name}")
+                    # We add a new task with the highest priority to flush the
+                    # last check-in. This task will be processed by the writer
+                    # thread immediately.
+                    self._schedule(TimedTask(when=0, flag_name=flag_name))
+
+                # As there may be no flag names at all, the queue may be
+                # untouched. In this case, we need to notify the writer thread
+                # explicitly.
+                with self.refresh_condition:
+                    self.refresh_condition.notify()
+
+                # If `block` is set, we wait until the writer thread finishes
+                # flushing the last check-in.
+                if block:
+                    logger.info("blocking until the writer finishes...")
+                    self.flush_condition.wait()
+                    logger.info("done")
 
     def _check_in(
         self,
         *,
         expect_next_in: int = 0,
         flag_name: str = "check_in",
+        flush: bool = False,
         block: bool = False,
     ) -> None:
         """
@@ -540,19 +736,24 @@ class RunStatusReporter:
 
         If `block` is True, then this will block until the check-in is flushed.
         """
+        if block:
+            flush = True
+
         if self.stop_signal.is_set():
             raise RuntimeError("check-in is not allowed after stopping the writer thread")
 
-        self.last_check_in = self.last_check_in.increment(
-            expect_next_in=expect_next_in,
-            flag_name=flag_name,
-        )
-        if block:
-            self.flush(block=True)
+        with self.reporter_lock:
+            self._increment(
+                expect_next_in=expect_next_in,
+                flag_name=flag_name,
+            )
+            if flush:
+                self.flush(block=block)
 
     def _report_successful_finish(
         self,
         *,
+        flush: bool = True,
         block: bool = True,
     ) -> None:
         """
@@ -560,7 +761,7 @@ class RunStatusReporter:
 
         By default this will block until the check-in is flushed.
         """
-        return self._check_in(block=block, flag_name="finished")
+        return self._check_in(flush=flush, block=block, flag_name="finished")
 
     # The instance method `report_progress` and `report_successful_finish` is patched into
     # the instance in `__post_init__`
@@ -570,6 +771,7 @@ class RunStatusReporter:
         cls,
         *,
         expect_next_in: int = 0,
+        flush: bool = False,
         block: bool = False,
     ) -> None:
         """
@@ -585,12 +787,13 @@ class RunStatusReporter:
         default_instance = cls.default()
         if default_instance is None:
             return
-        default_instance._check_in(expect_next_in=expect_next_in, block=block)
+        default_instance._check_in(expect_next_in=expect_next_in, flush=flush, block=block)
 
     @classmethod
     def report_successful_finish(
         cls,
         *,
+        flush: bool = True,
         block: bool = True,
     ) -> None:
         """
@@ -606,4 +809,4 @@ class RunStatusReporter:
         default_instance = cls.default()
         if default_instance is None:
             return
-        default_instance._report_successful_finish(block=block)
+        default_instance._report_successful_finish(flush=flush, block=block)
