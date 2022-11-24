@@ -29,7 +29,7 @@ const StyledContent = styled(PopoverPrimitive.Content, {
   borderRadius: 4,
   padding: 20,
   width: 260,
-  zIndex: 10,
+  zIndex: '$popover',
   backgroundColor: 'white',
   boxShadow:
     'hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px',
@@ -53,17 +53,13 @@ const StyledContent = styled(PopoverPrimitive.Content, {
 function Content({ children, ...props }: any) {
   return (
     <PopoverPrimitive.Portal>
-      <StyledContent {...props} style={{ zIndex: 10 }}>
-        {children}
-      </StyledContent>
+      <StyledContent {...props}>{children}</StyledContent>
     </PopoverPrimitive.Portal>
   );
 }
 
 // Primitives
-const PopoverContainer = styled(PopoverPrimitive.Root, {
-  zIndex: 10,
-});
+const PopoverContainer = PopoverPrimitive.Root;
 const PopoverTrigger = PopoverPrimitive.Trigger;
 const PopoverContent = Content;
 
@@ -71,9 +67,7 @@ function Popover({
   trigger,
   content,
   defaultOpen,
-  placement,
-  placementOffset = 5,
-  placementAlign,
+  popperProps,
 }: IPopoverProps) {
   const [open, setOpen] = React.useState(false);
 
@@ -91,13 +85,7 @@ function Popover({
       <PopoverTrigger asChild>
         {typeof trigger === 'function' ? trigger({ open }) : trigger}
       </PopoverTrigger>
-      <PopoverContent
-        sideOffset={placementOffset}
-        side={placement}
-        align={placementAlign}
-      >
-        {content}
-      </PopoverContent>
+      <PopoverContent {...popperProps}>{content}</PopoverContent>
     </PopoverContainer>
   );
 }

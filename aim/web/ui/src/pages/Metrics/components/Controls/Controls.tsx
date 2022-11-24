@@ -17,6 +17,7 @@ import { Icon } from 'components/kit';
 import ExportPreview from 'components/ExportPreview';
 import ChartGrid from 'components/ChartPanel/ChartGrid';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import ChartLegends from 'components/ChartPanel/ChartLegends';
 
 import { CONTROLS_DEFAULT_CONFIG } from 'config/controls/controlsDefaultConfig';
 
@@ -335,6 +336,37 @@ function Controls(
         </div>
         <div>
           <ErrorBoundary>
+            <Tooltip
+              title={
+                props.legends?.display ? 'Hide legends' : 'Display legends'
+              }
+            >
+              <div
+                className={classNames('Controls__anchor', {
+                  active:
+                    props.legends?.display && !_.isEmpty(props.legendsData),
+                  outlined:
+                    props.legends?.display && !_.isEmpty(props.legendsData),
+                  disabled: _.isEmpty(props.legendsData),
+                })}
+                onClick={() => {
+                  if (!_.isEmpty(props.legendsData)) {
+                    props.onLegendsChange({ display: !props.legends?.display });
+                  }
+                }}
+              >
+                <Icon
+                  className={classNames('Controls__icon', {
+                    active: props.legends?.display,
+                  })}
+                  name='chart-legends'
+                />
+              </div>
+            </Tooltip>
+          </ErrorBoundary>
+        </div>
+        <div>
+          <ErrorBoundary>
             <ControlPopover
               title='Select zoom mode'
               anchor={({ onAnchorClick, opened }) => (
@@ -430,6 +462,11 @@ function Controls(
               openModal={openExportModal}
               explorerPage='metrics'
               onToggleExportPreview={onToggleExportPreview}
+              appendElement={
+                !!props.legends?.display && !_.isEmpty(props.legendsData) ? (
+                  <ChartLegends data={props.legendsData} readOnly />
+                ) : null
+              }
             >
               <ChartGrid
                 readOnly

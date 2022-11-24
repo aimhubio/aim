@@ -29,9 +29,7 @@ function AttachedTagsList({
   const [attachedTags, setAttachedTags] = React.useState<ITagInfo[]>(
     tags ?? initialTags ?? [],
   );
-  const [selectTagsPopoverKey, setSelectTagPopoverKey] = React.useState(
-    `${Date.now()}`,
-  );
+  const [, setSelectTagPopoverKey] = React.useState(`${Date.now()}`);
   const getRunInfoRef = React.useRef<any>(null);
 
   const getRunInfo = React.useCallback((runHash: string): void => {
@@ -102,7 +100,7 @@ function AttachedTagsList({
         <Icon name='edit' />
       </Button>
     );
-  }, [attachedTags, addTagButtonSize]);
+  }, [addTagButtonSize]);
 
   return (
     <ErrorBoundary>

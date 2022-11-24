@@ -61,9 +61,7 @@ function getPipelineEngine(
   const useCache = config.enablePipelineCache;
 
   const defaultGroupings = Object.keys(config.groupings || {}).reduce(
-    // @ts-ignore
-    (acc: object, key: string) => {
-      // @ts-ignore
+    (acc: Record<string, unknown>, key: string) => {
       acc[key] = config.groupings?.[key].defaultApplications;
       return acc;
     },

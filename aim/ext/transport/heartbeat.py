@@ -36,7 +36,7 @@ class RPCHeartbeatSender(object):
         self._heartbeat_responses = Counter(success=0, fail=0)
 
         # Start thread to collect stats and logs at intervals
-        self._th_collector = Thread(target=self._send_heartbeat, daemon=True)
+        self._th_collector = Thread(target=self._target_f, daemon=True)
         self._shutdown = False
         self._started = False
 
@@ -55,10 +55,24 @@ class RPCHeartbeatSender(object):
         self._th_collector.join()
 
     def _send_heartbeat(self):
+        if self._remote_client():
+            try:
+                response = self._remote_client().client_heartbeat()
+                if response.status == rpc_messages.HeartbeatResponse.Status.OK:
+                    self._heartbeat_responses['success'] += 1
+                else:
+                    self._heartbeat_responses['fail'] += 1
+            except Exception:
+                # at the moment we don't care about failures for heartbeats
+                self._heartbeat_responses['fail'] += 1
+
+    def _target_f(self):
         heartbeat_interval_counter = 0
         stability_check_interval_counter = 0
+        # send initial heartbeat
+        self._send_heartbeat()
+
         while True:
-            # Get system statistics
             if self._shutdown:
                 break
 
@@ -67,17 +81,7 @@ class RPCHeartbeatSender(object):
             stability_check_interval_counter += 1
 
             if heartbeat_interval_counter > self._heartbeat_send_interval:
-                if self._remote_client():
-                    try:
-                        response = self._remote_client().client_heartbeat()
-                        if response.status == rpc_messages.HeartbeatResponse.Status.OK:
-                            self._heartbeat_responses['success'] += 1
-                        else:
-                            self._heartbeat_responses['fail'] += 1
-                    except Exception:
-                        # at the moment we don't care about failures for heartbeats
-                        self._heartbeat_responses['fail'] += 1
-
+                self._send_heartbeat()
                 heartbeat_interval_counter = 0
 
             if stability_check_interval_counter > self._network_stability_check_interval:

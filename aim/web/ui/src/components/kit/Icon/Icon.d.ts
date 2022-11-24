@@ -147,7 +147,7 @@ export type IconName =
   | 'box-settings'
   | 'full-screen'
   | 'new-tab'
-  | 'figures-explorer'
+  | 'figures'
   | 'group-column'
   | 'image-group'
   | 'partially-selected'
@@ -155,6 +155,7 @@ export type IconName =
   | 'arrow-up-contained'
   | 'arrow-right-contained'
   | 'arrow-down-contained'
-  | 'audio'
+  | 'audios'
   | 'distributions'
-  | 'dashboard';
+  | 'dashboard'
+  | 'chart-legends';
