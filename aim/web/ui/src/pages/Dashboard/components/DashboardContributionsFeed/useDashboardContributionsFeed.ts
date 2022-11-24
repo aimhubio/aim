@@ -13,9 +13,9 @@ import { IRun } from 'types/services/models/metrics/runModel';
 
 import projectContributionsEngine from '../ProjectContributions/ProjectContributionsStore';
 
-import contributionsFeedEngine from './ContributionsFeedStore';
+import contributionsFeedEngine from './DashboardContributionsFeedStore';
 
-function useContributionsFeed() {
+function useDashboardContributionsFeed() {
   const [data, setData] = React.useState<any>([]);
   const { current: engine } = React.useRef(contributionsFeedEngine);
   const contributionsFeedStore: IResourceState<any[]> =
@@ -23,8 +23,9 @@ function useContributionsFeed() {
   const { current: contributionsEngine } = React.useRef(
     projectContributionsEngine,
   );
-  const projectContributionsStore =
-    contributionsEngine.projectContributionsState((state) => state);
+  const contributionsState = contributionsEngine.projectContributionsState(
+    (state) => state,
+  );
 
   React.useEffect(() => {
     engine.fetchContributionsFeed({
@@ -90,6 +91,7 @@ function useContributionsFeed() {
           active: props.active,
           creation_time: props.creation_time,
           experiment: props.experiment?.name,
+          experimentId: props.experiment?.id,
         };
         if (feedData[month]?.[day]?.length) {
           feedData[month][day].push(contribution);
@@ -111,13 +113,15 @@ function useContributionsFeed() {
       });
     }
   }
+
   return {
     isLoading: contributionsFeedStore.loading,
     data: memoizedData,
-    totalRunsCount: projectContributionsStore.data?.num_runs,
+    totalRunsCount: contributionsState.data?.num_runs,
+    archivedRunsCount: contributionsState.data?.num_archived_runs,
     fetchedCount: data.length,
     loadMore,
   };
 }
 
-export default useContributionsFeed;
+export default useDashboardContributionsFeed;

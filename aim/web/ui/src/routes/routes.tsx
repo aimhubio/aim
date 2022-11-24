@@ -9,6 +9,9 @@ const Runs = React.lazy(
 const RunDetail = React.lazy(
   () => import(/* webpackChunkName: "run" */ 'pages/RunDetail/RunDetail'),
 );
+const Experiment = React.lazy(
+  () => import(/* webpackChunkName: "run" */ 'pages/Experiment/Experiment'),
+);
 const Metrics = React.lazy(
   () =>
     import(/* webpackChunkName: "metrics" */ 'pages/Metrics/MetricsContainer'),
@@ -189,6 +192,14 @@ const routes = {
     displayName: 'Run Detail',
     isExact: false,
     title: pageTitlesEnum.RUN_DETAIL,
+  },
+  Experiment: {
+    path: PathEnum.Experiment,
+    component: Experiment,
+    showInSidebar: false,
+    displayName: 'Experiment',
+    isExact: false,
+    title: pageTitlesEnum.EXPERIMENT,
   },
 };
 

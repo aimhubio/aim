@@ -6,6 +6,7 @@ import { IResourceState } from 'modules/core/utils/createResource';
 
 import RunNameColumn from 'components/Table/RunNameColumn';
 import { Badge } from 'components/kit';
+import ExperimentNameBox from 'components/ExperimentNameBox';
 
 import { TABLE_DATE_FORMAT } from 'config/dates/dates';
 
@@ -115,7 +116,14 @@ function useActiveRunsTable() {
             key,
             selectKey: key,
             index,
-            experiment: props.experiment?.name,
+            experiment: {
+              content: (
+                <ExperimentNameBox
+                  experimentName={props.experiment?.name || ''}
+                  experimentId={props.experiment?.id || ''}
+                />
+              ),
+            },
             run: {
               content: (
                 <RunNameColumn
@@ -238,6 +246,7 @@ function useActiveRunsTable() {
           .join(', ')}]`,
       );
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [selectedRows, tableData],
   );
 
