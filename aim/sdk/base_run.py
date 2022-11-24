@@ -8,7 +8,6 @@ from aim.sdk.utils import generate_run_hash
 from aim.sdk.repo_utils import get_repo
 from aim.sdk.errors import MissingRunError
 from aim.sdk.tracker import STEP_HASH_FUNCTIONS
-from aim.sdk.lock_manager import LockManager
 
 if TYPE_CHECKING:
     from aim.sdk.repo import Repo
