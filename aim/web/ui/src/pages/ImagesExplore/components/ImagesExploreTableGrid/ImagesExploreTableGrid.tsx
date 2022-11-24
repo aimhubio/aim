@@ -10,6 +10,7 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import GroupedColumnHeader from 'components/Table/GroupedColumnHeader';
 import RunNameColumn from 'components/Table/RunNameColumn';
 import AttachedTagsList from 'components/AttachedTagsList/AttachedTagsList';
+import ExperimentNameBox from 'components/ExperimentNameBox';
 
 import COLORS from 'config/colors/colors';
 import { TABLE_DATE_FORMAT } from 'config/dates/dates';
@@ -30,7 +31,7 @@ import getColumnOptions from 'utils/getColumnOptions';
 function getImagesExploreTableColumns(
   paramColumns: string[] = [],
   groupingSelectOptions: IGroupingSelectOption[],
-  groupFields: { [key: string]: string } | null,
+  groupFields: { [key: string]: unknown } | null,
   order: { left: string[]; middle: string[]; right: string[] },
   hiddenColumns: string[],
   sortFields?: any[],
@@ -403,7 +404,14 @@ function imagesExploreTableRowRenderer(
     return _.merge({}, rowData, row);
   } else {
     const row = {
-      experiment: rowData?.experiment ?? 'default',
+      experiment: {
+        content: (
+          <ExperimentNameBox
+            experimentName={rowData.experiment}
+            experimentId={rowData.experimentId}
+          />
+        ),
+      },
       run: {
         content: (
           <RunNameColumn

@@ -17,14 +17,14 @@ import { getValue } from './helper';
 import getGroupConfig from './app/getGroupConfig';
 
 function getTooltipContent({
-  groupingItems = [],
+  groupingNames = [],
   groupingSelectOptions = [],
   data = [],
   configData,
   activePointKey = null,
   selectedFields = [],
 }: {
-  groupingItems: GroupNameEnum[];
+  groupingNames: GroupNameEnum[];
   groupingSelectOptions: IGroupingSelectOption[];
   data: IMetricsCollection<IParam | IMetric | any>[];
   configData: IAppModelConfig;
@@ -37,7 +37,7 @@ function getTooltipContent({
     const groupConfig = getGroupConfig({
       collection,
       groupingSelectOptions,
-      groupingItems,
+      groupingNames,
       configData,
     });
 

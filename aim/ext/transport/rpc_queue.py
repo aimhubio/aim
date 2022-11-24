@@ -15,6 +15,7 @@ class RpcQueueWithRetry(object):
 
         self.retry_count = retry_count or 1
         self.retry_interval = retry_interval
+        self._needs_reconnect = False
 
         self.max_memory_usage = max_queue_memory
         self.current_memory_usage = 0
@@ -65,35 +66,32 @@ class RpcQueueWithRetry(object):
         # temporary workaround for M1 build
         import grpc
 
-        from aim.ext.transport.message_utils import UnauthorizedRequestError
-
         retry = 0
         while retry < self.retry_count:
+            if self._needs_reconnect:
+                try:
+                    self._client().reconnect()
+                    self._needs_reconnect = False
+                except Exception:
+                    retry += 1
+                    time.sleep(self.retry_interval)
+                    continue
+
             try:
                 task_f(*args)
                 return True
             except grpc.RpcError as e:
                 if e.code() != grpc.StatusCode.UNAVAILABLE:
                     raise e
-
-                try:
-                    self._client().reconnect()
-                except Exception:
-                    pass
+                self._needs_reconnect = True
 
                 retry += 1
-                logger.warning(f'Remote Server is unavailable, please check network connection: {e}, attempt: {retry}')
                 time.sleep(self.retry_interval)
-            except UnauthorizedRequestError as e:
-                try:
-                    self._client().reinitialize_resource(e.handler)
-                except Exception:
-                    pass
-                retry += 1
-                time.sleep(self.retry_interval)
+                logger.warning(f'Remote Server is unavailable, please check network connection: {e}.')
+
         return False
 
-    def _put_front(self, task_f, *args):
+    def _put_front(self, task_f, args):
         with self._queue.not_full:
             self._queue.queue.appendleft((task_f, args))
             self._queue.not_empty.notify()

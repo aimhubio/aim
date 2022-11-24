@@ -12,8 +12,9 @@ import { BATCH_COLLECT_DELAY } from 'config/mediaConfigs/mediaConfigs';
 import blobsURIModel from 'services/models/media/blobsURIModel';
 
 import contextToString from 'utils/contextToString';
+import { downloadLink } from 'utils/helper';
 
-import { IAudioBoxProps } from './AudioBox.d';
+import { IAudioBoxProps } from '.';
 
 import './AudioBox.scss';
 
@@ -31,6 +32,8 @@ function AudioBox({
     blobsURIModel.getState()[blob_uri] ?? null,
   );
   let [muted, setMuted] = React.useState<boolean>(true);
+
+  const readyToPlay = React.useRef<boolean>(false);
 
   React.useEffect(() => {
     let timeoutID: number;
@@ -108,7 +111,7 @@ function AudioBox({
   }, [audio]);
 
   React.useEffect(() => {
-    if (!muted) {
+    if (audio && !muted) {
       audio.muted = false;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -122,15 +125,17 @@ function AudioBox({
     setIsPlaying(false);
   }
 
-  function onPLayChange(): void {
+  function onPlayChange(): void {
     if (audio) {
+      readyToPlay.current = true;
       setIsPlaying(!isPlaying);
     } else {
       setProcessing(true);
       additionalProperties
         .getAudiosBlobsData([blob_uri])
         .call()
-        .then((a: any) => {
+        .then(() => {
+          readyToPlay.current = true;
           setIsPlaying(!isPlaying);
         });
     }
@@ -144,23 +149,17 @@ function AudioBox({
       additionalProperties
         .getAudiosBlobsData([blob_uri])
         .call()
-        .then((a: any) => {
-          handleDownload();
-        });
+        .then(handleDownload);
     }
   }
 
   function handleDownload(): void {
-    const element: HTMLAnchorElement = document.createElement('a');
     const { index, format, context, step, caption, audio_name } = data;
-    const contextName: string =
+    const contextName =
       contextToString(context) === '' ? '' : `_${contextToString(context)}`;
-    const name: string = `${audio_name}${contextName}_${caption}_${step}_${index}`;
-    element.setAttribute('href', `data:audio/${format};base64,${blobData}`);
-    element.setAttribute('download', name);
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
+    const name = `${audio_name}${contextName}_${caption}_${step}_${index}`;
+
+    downloadLink(`data:audio/${format};base64,${blobData}`, name);
   }
 
   return (
@@ -169,7 +168,7 @@ function AudioBox({
         <div className='AudioBox__controllers'>
           {audio ? (
             <Button
-              onClick={onPLayChange}
+              onClick={onPlayChange}
               color='secondary'
               withOnlyIcon
               size='small'
@@ -177,12 +176,12 @@ function AudioBox({
               <Icon name={isPlaying ? 'pause' : 'play'} />
             </Button>
           ) : (
-            <div className='AudioBox__controllers__Player'>
+            <div className='AudioBox__controllers__player'>
               <AudioPlayer
                 displaySlider={false}
                 volume={false}
                 displayCloseButton={false}
-                onPlayed={onPLayChange}
+                onPlayed={onPlayChange}
                 width='24px'
                 src={src}
               />
@@ -198,7 +197,12 @@ function AudioBox({
               )}
             </div>
           )}
-          <AudioBoxProgress audio={audio} isPlaying={isPlaying} src={src} />
+          <AudioBoxProgress
+            audio={audio}
+            isPlaying={isPlaying}
+            src={src}
+            disabled={!readyToPlay.current}
+          />
           <AudioBoxVolume audio={audio} />
           <Button withOnlyIcon size='small' onClick={onDownload}>
             {processing ? (

@@ -1,9 +1,11 @@
+import * as React from 'react';
+
 import { IconName } from 'components/kit/Icon';
 
 export interface IStatisticsCardProps {
   label: string;
   count: number;
-  title?: string;
+  badge?: { value: string; style?: React.CSSProperties };
   icon?: IconName;
   iconBgColor?: string;
   cardBgColor?: string;
