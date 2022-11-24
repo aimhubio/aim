@@ -417,11 +417,12 @@ class RunStatusReporter:
 
     def __init__(
         self,
-        run: 'Run',
+        run_hash: str,
+        repo_path: str,
     ) -> None:
-        logger.info(f"creating RunStatusReporter for {run}")
-        self.run_hash = run.hash
-        self.repo_dir = Path(run.repo.path)
+        logger.info(f"creating RunStatusReporter for {run_hash}")
+        self.run_hash = run_hash
+        self.repo_dir = Path(repo_path)
         self.dir = self.repo_dir / "check_ins"
         logger.info(f"polling for check-ins in {self.dir}")
 

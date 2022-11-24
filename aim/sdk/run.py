@@ -11,6 +11,7 @@ from aim.sdk.base_run import BaseRun
 from aim.sdk.sequence import Sequence
 from aim.sdk.tracker import RunTracker
 from aim.sdk.reporter import RunStatusReporter, ScheduledStatusReporter
+from aim.sdk.run_heartbeat_reporter import RemoteRunHeartbeatReporter
 from aim.sdk.sequence_collection import SingleRunSequenceCollection
 from aim.sdk.utils import (
     backup_run,
@@ -105,13 +106,13 @@ class RunAutoClean(AutoClean['Run']):
         self.finalize_system_tracker()
         self.empty_rpc_queue()
         self.finalize_run()
-        self.finalize_rpc_queue()
         if self._heartbeat is not None:
             self._heartbeat.stop()
         if self._checkins is not None:
             self._checkins.close()
         if self._lock:
             self._lock.release()
+        self.finalize_rpc_queue()
 
 
 # TODO: [AT] generate automatically based on ModelMappedRun
@@ -289,7 +290,7 @@ class Run(BaseRun, StructuredRunMixin):
                  force_resume: bool = False,
                  ):
         self._resources: Optional[RunAutoClean] = None
-        super().__init__(run_hash, repo=repo, read_only=read_only, force=force_resume)
+        super().__init__(run_hash, repo=repo, read_only=read_only, force_resume=force_resume)
 
         self.meta_attrs_tree: TreeView = self.meta_tree.subtree('attrs')
         self.meta_run_attrs_tree: TreeView = self.meta_run_tree.subtree('attrs')
@@ -325,8 +326,11 @@ class Run(BaseRun, StructuredRunMixin):
 
         if not read_only:
             if not self.repo.is_remote_repo:
-                self._checkins = RunStatusReporter(self)
+                self._checkins = RunStatusReporter(self.hash, self.repo.path)
                 self._heartbeat = ScheduledStatusReporter(self._checkins)
+            else:
+                self._heartbeat = RemoteRunHeartbeatReporter(self.repo._client, self.hash)
+
             if log_system_params:
                 system_params = {
                     'packages': get_installed_packages(),
