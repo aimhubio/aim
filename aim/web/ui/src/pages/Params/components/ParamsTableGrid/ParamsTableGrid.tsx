@@ -9,6 +9,7 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import RunNameColumn from 'components/Table/RunNameColumn';
 import GroupedColumnHeader from 'components/Table/GroupedColumnHeader';
 import AttachedTagsList from 'components/AttachedTagsList/AttachedTagsList';
+import ExperimentNameBox from 'components/ExperimentNameBox';
 
 import COLORS from 'config/colors/colors';
 import { TABLE_DEFAULT_CONFIG } from 'config/table/tableConfigs';
@@ -34,7 +35,7 @@ function getParamsTableColumns(
   sortOptions: IGroupingSelectOption[],
   metricsColumns: any,
   paramColumns: string[] = [],
-  groupFields: { [key: string]: string } | null,
+  groupFields: { [key: string]: unknown } | null,
   order: { left: string[]; middle: string[]; right: string[] },
   hiddenColumns: string[],
   sortFields?: any[],
@@ -456,7 +457,14 @@ function paramsTableRowRenderer(
     return _.merge({}, rowData, row);
   } else {
     const row = {
-      experiment: rowData.experiment,
+      experiment: {
+        content: (
+          <ExperimentNameBox
+            experimentName={rowData.experiment}
+            experimentId={rowData.experimentId}
+          />
+        ),
+      },
       run: {
         content: (
           <RunNameColumn

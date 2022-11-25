@@ -12,7 +12,7 @@ import createPipeline, {
   PipelinePhasesEnum,
 } from 'modules/core/pipeline';
 import getUrlSearchParam from 'modules/core/utils/getUrlSearchParam';
-import updateUrlSearchParam from 'modules/core/utils/updateUrlSearchParam';
+import getUpdatedUrl from 'modules/core/utils/getUpdatedUrl';
 import browserHistory from 'modules/core/services/browserHistory';
 import getQueryParamsFromState from 'modules/core/utils/getQueryParamsFromState';
 
@@ -132,7 +132,7 @@ function createPipelineEngine<TStore, TObject>(
       const queryState = store.getState().query;
 
       if (!queryState.ranges.isInitial) {
-        const url = updateUrlSearchParam(
+        const url = getUpdatedUrl(
           'query',
           encode({
             ...queryState,
@@ -176,7 +176,7 @@ function createPipelineEngine<TStore, TObject>(
         );
 
         if (!isInternal && pipelineOptions.persist) {
-          const url = updateUrlSearchParam(
+          const url = getUpdatedUrl(
             'query',
             encode({
               ...store.getState().query,
@@ -234,10 +234,7 @@ function createPipelineEngine<TStore, TObject>(
     const equal = isEqual(config, defaultGroupings);
 
     if (!isInternal && pipelineOptions.persist) {
-      const url = updateUrlSearchParam(
-        'groupings',
-        equal ? null : encode(config),
-      );
+      const url = getUpdatedUrl('groupings', equal ? null : encode(config));
 
       if (url !== `${window.location.pathname}${window.location.search}`) {
         browserHistory.push(url, null);

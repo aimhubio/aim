@@ -51,6 +51,7 @@ export function storageDataToFlatList(
       hash: item.hash,
       active: !item.props.end_time, // @TODO change to active
       experiment: item.props.experiment?.name,
+      experimentId: item.props.experiment?.id,
       ...item.params,
     };
 

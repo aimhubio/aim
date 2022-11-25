@@ -43,6 +43,7 @@
     "react-scripts": "4.0.3",
     "react-select": "^5.1.0",
     "react-use": "^17.4.0",
+    "react-split": "^2.0.14",
     "react-virtualized-auto-sizer": "^1.0.5",
     "react-window": "^1.8.6",
     "rich-markdown-editor": "^11.21.3",

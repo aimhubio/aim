@@ -17,6 +17,7 @@ import {
   TrendlineTypeEnum,
   HighlightEnum,
   ZoomEnum,
+  LegendsModeEnum,
 } from 'utils/d3';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 
@@ -59,6 +60,10 @@ export const CONTROLS_DEFAULT_CONFIG = {
     zoom: {
       active: false,
       mode: ZoomEnum.MULTIPLE,
+    },
+    legends: {
+      display: true,
+      mode: LegendsModeEnum.PINNED,
     },
   },
   params: {
