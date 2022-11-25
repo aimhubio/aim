@@ -64,7 +64,7 @@ def create_app():
 
     # The indexing thread has to run in the same process as the uvicorn app itself.
     # This allows sharing state of indexing using memory instead of process synchronization methods.
-    index_mng = RepoIndexManager.get_index_manager(Project().repo.path)
+    index_mng = RepoIndexManager.get_index_manager(Project().repo)
     index_mng.start_indexing_thread()
 
     api_app = FastAPI()

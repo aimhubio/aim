@@ -417,11 +417,12 @@ class RunStatusReporter:
 
     def __init__(
         self,
-        run: 'Run',
+        run_hash: str,
+        repo_path: str,
     ) -> None:
-        logger.info(f"creating RunStatusReporter for {run}")
-        self.run_hash = run.hash
-        self.repo_dir = Path(run.repo.path)
+        logger.info(f"creating RunStatusReporter for {run_hash}")
+        self.run_hash = run_hash
+        self.repo_dir = Path(repo_path)
         self.dir = self.repo_dir / "check_ins"
         logger.info(f"polling for check-ins in {self.dir}")
 
@@ -810,3 +811,36 @@ class RunStatusReporter:
         if default_instance is None:
             return
         default_instance._report_successful_finish(flush=flush, block=block)
+
+
+REPORT_INTERVAL = 5  # 5 seconds
+
+
+class ScheduledStatusReporter(object):
+    def __init__(self,
+                 status_reporter: RunStatusReporter,
+                 flag: str = 'progress',
+                 interval: int = REPORT_INTERVAL
+                 ):
+        self.status_reporter = status_reporter
+        self.flag = flag
+        self.report_interval = interval
+        self.throttle = 30
+        self.thread = threading.Thread(target=self._run, daemon=True)
+        self.stop_signal = threading.Event()
+        self.thread.start()
+
+    def _run(self):
+        self.status_reporter.check_in(expect_next_in=self.throttle, flag_name=self.flag, block=True)
+
+        while True:
+            if self.stop_signal.wait(timeout=self.report_interval):
+                # report last heartbeat
+                self.status_reporter.check_in(expect_next_in=1, flag_name=self.flag, block=True)
+                break
+            else:
+                self.status_reporter.check_in(expect_next_in=self.throttle, flag_name=self.flag)
+
+    def stop(self):
+        self.stop_signal.set()
+        self.thread.join()
