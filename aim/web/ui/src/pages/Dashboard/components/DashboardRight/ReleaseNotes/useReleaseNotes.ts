@@ -24,6 +24,8 @@ function useReleaseNotes() {
   const releaseNoteRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
+    const releaseNoteNode = releaseNoteRef.current;
+
     if (releaseNotesStore.data?.length) {
       // detect current release in fetched release notes
       const release: IReleaseNote | undefined = releaseNotesStore.data?.find(
@@ -39,11 +41,7 @@ function useReleaseNotes() {
       releaseNotesEngine.fetchReleases();
     }
     return () => {
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      releaseNoteRef?.current?.removeEventListener(
-        'scroll',
-        onChangelogContentScroll,
-      );
+      releaseNoteNode?.removeEventListener('scroll', onChangelogContentScroll);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [releaseNotesStore.data]);

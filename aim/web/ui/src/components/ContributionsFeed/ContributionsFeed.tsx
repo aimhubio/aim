@@ -4,7 +4,8 @@ import _ from 'lodash-es';
 import { Button, Spinner, Text } from 'components/kit';
 
 import FeedItem from './FeedItem';
-import { IContributionsFeedProps } from './ContributionsFeed.d';
+
+import { IContributionsFeedProps } from '.';
 
 import './ContributionsFeed.scss';
 

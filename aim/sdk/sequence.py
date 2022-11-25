@@ -339,12 +339,6 @@ class Sequence(Generic[T]):
     def preload(self):
         self.series_tree.preload()
 
-
-class MediaSequenceBase(Sequence):
-    """Helper class for media sequence types."""
-
-    collections_allowed = True
-
     def first_step(self):
         """Get sequence tracked first step.
 
@@ -358,6 +352,12 @@ class MediaSequenceBase(Sequence):
         Required to implement ranged and sliced data fetching.
         """
         return self._meta_tree['last_step']
+
+
+class MediaSequenceBase(Sequence):
+    """Helper class for media sequence types."""
+
+    collections_allowed = True
 
     def record_length(self):
         """Get tracked records longest list length or `None` if Text objects are tracked.
