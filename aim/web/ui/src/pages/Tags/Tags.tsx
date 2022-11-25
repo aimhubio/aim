@@ -5,7 +5,7 @@ import { Paper, Tab, Tabs } from '@material-ui/core';
 import TabPanel from 'components/TabPanel/TabPanel';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
-import Select from 'components/kit_v2/Select/Select';
+import Select from 'components/kit_v2/TreeSelect/TreeSelect';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 

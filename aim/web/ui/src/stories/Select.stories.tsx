@@ -1,6 +1,6 @@
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 
-import SelectComponent from 'components/kit_v2/Select/Select';
+import SelectComponent from 'components/kit_v2/TreeSelect/TreeSelect';
 
 import { config } from 'config/stitches/stitches.config';
 

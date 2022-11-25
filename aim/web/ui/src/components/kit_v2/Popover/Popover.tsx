@@ -69,7 +69,7 @@ function Popover({
   defaultOpen,
   popperProps,
 }: IPopoverProps) {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(defaultOpen);
 
   const handleOpenChange = React.useCallback((val: boolean) => {
     setOpen(val);
@@ -81,6 +81,7 @@ function Popover({
         typeof trigger === 'function' ? handleOpenChange : undefined
       }
       defaultOpen={defaultOpen}
+      open={open}
     >
       <PopoverTrigger asChild>
         {typeof trigger === 'function' ? trigger({ open }) : trigger}
