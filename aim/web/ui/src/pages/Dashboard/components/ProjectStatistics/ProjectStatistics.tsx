@@ -51,7 +51,7 @@ const statisticsInitialMap: Record<string, IProjectStatistic> = {
     icon: 'audios',
     count: 0,
     iconBgColor: '#FCB500',
-    navLink: routes.AUDIO_EXPLORER.path,
+    navLink: routes.AUDIOS_EXPLORER.path,
     badge: {
       value: 'New',
       style: { backgroundColor: '#2bc784', color: '#fff' },
