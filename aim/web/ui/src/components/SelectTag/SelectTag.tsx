@@ -219,7 +219,7 @@ function SelectTag({
           </div>
         ) : (
           <div className='SelectTag__noTags'>
-            <Text size={16} weight={500}>
+            <Text size={14} weight={500}>
               No Tags Found
             </Text>
           </div>

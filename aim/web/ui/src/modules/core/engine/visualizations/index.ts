@@ -9,7 +9,7 @@ import {
   IVisualizationProps,
 } from 'modules/BaseExplorer/types';
 import { createSliceState } from 'modules/core/utils/store';
-import updateUrlSearchParam from 'modules/core/utils/updateUrlSearchParam';
+import getUpdatedUrl from 'modules/core/utils/getUpdatedUrl';
 import browserHistory from 'modules/core/services/browserHistory';
 import getUrlSearchParam from 'modules/core/utils/getUrlSearchParam';
 
@@ -154,7 +154,7 @@ function createVisualizationEngine<TStore>(
               controlsState.properties[key].methods.update = (d: any) => {
                 originalMethods.update(d);
 
-                const url = updateUrlSearchParam(persistenceKey, encode(d));
+                const url = getUpdatedUrl(persistenceKey, encode(d));
 
                 if (
                   url !== `${window.location.pathname}${window.location.search}`
@@ -167,7 +167,7 @@ function createVisualizationEngine<TStore>(
               controlsState.properties[key].methods.reset = () => {
                 originalMethods.reset();
 
-                const url = updateUrlSearchParam(persistenceKey, null);
+                const url = getUpdatedUrl(persistenceKey, null);
 
                 if (
                   url !== `${window.location.pathname}${window.location.search}`

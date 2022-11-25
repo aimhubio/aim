@@ -7,7 +7,7 @@ import { Spinner, Text } from 'components/kit';
 import ProjectContributions from './components/ProjectContributions/ProjectContributions';
 import ExploreSection from './components/ExploreSection/ExploreSection';
 import DashboardRight from './components/DashboardRight/DashboardRight';
-import ContributionsFeed from './components/ContributionsFeed/ContributionsFeed';
+import DashboardContributionsFeed from './components/DashboardContributionsFeed';
 import ProjectStatistics from './components/ProjectStatistics';
 import useProjectContributions from './components/ProjectContributions/useProjectContributions';
 import ActiveRunsTable from './components/ActiveRunsTable/ActiveRunsTable';
@@ -49,7 +49,7 @@ function Dashboard(): React.FunctionComponentElement<React.ReactNode> {
               <ProjectStatistics />
               {activeRunsCount ? <ActiveRunsTable /> : null}
               <ProjectContributions />
-              <ContributionsFeed />
+              <DashboardContributionsFeed />
             </>
           )}
           {!isLoading && !totalRunsCount && <AimIntegrations />}

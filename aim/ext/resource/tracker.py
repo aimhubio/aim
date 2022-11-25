@@ -197,7 +197,7 @@ class ResourceTracker(object):
         # handle the buffered data and store
 
         lines = data.split(b'\n')
-        ansi_csi_re = re.compile(b"\001?\033\\[((?:\\d|;)*)([a-zA-Z])\002?")
+        ansi_csi_re = re.compile(b"\001?\033\\[((?:\\d|;)*)([a-dA-D])\002?")
 
         def _handle_csi(line):
             def _remove_csi(line):

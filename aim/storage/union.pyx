@@ -183,7 +183,7 @@ class DB(object):
             index_db = self._get_db(index_prefix, index_path, self._dbs)
         except Exception:
             index_db = None
-            logger.warning('No index was detected')
+            logger.info('No index was detected')
 
         # If index exists -- only load those in progress
         selector = 'progress' if index_db is not None else 'chunks'

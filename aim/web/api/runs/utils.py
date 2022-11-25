@@ -284,15 +284,16 @@ async def run_active_result_streamer(repo: 'Repo', report_progress: Optional[boo
             await asyncio.sleep(ASYNC_SLEEP_INTERVAL)
 
             run = Run(run_hash, repo=repo, read_only=True)
-            run_dict = {
-                run.hash: {
-                    'props': get_run_props(run),
-                    'traces': run.collect_sequence_info(sequence_types='metric')
+            if run.active:
+                run_dict = {
+                    run.hash: {
+                        'props': get_run_props(run),
+                        'traces': run.collect_sequence_info(sequence_types='metric')
+                    }
                 }
-            }
 
-            encoded_tree = encode_tree(run_dict)
-            yield collect_streamable_data(encoded_tree)
+                encoded_tree = encode_tree(run_dict)
+                yield collect_streamable_data(encoded_tree)
 
             if report_progress:
                 yield collect_streamable_data(encode_tree(

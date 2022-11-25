@@ -4,3 +4,7 @@ class RepoIntegrityError(RuntimeError):
 
 class MissingRunError(RuntimeError):
     pass
+
+
+class RunLockingError(RuntimeError):
+    pass

@@ -41,14 +41,19 @@ function ChartPopover(props: IChartPopover): JSX.Element {
         setPopoverPos(null);
       } else if (popoverNode && containerNode) {
         // Popover viewport need to be overflowed by chart container
-        const pos = getPositionBasedOnOverflow(
-          activePointRect,
-          popoverNode.getBoundingClientRect(),
-          containerNode.getBoundingClientRect(),
-          isPopoverPinned,
-          tooltipAppearance,
-        );
-        setPopoverPos(pos);
+        const popoverRect = popoverNode.getBoundingClientRect();
+        const containerRect = containerNode.getBoundingClientRect();
+
+        if (containerRect.width && containerRect.height) {
+          const pos = getPositionBasedOnOverflow(
+            activePointRect,
+            popoverRect,
+            containerRect,
+            isPopoverPinned,
+            tooltipAppearance,
+          );
+          setPopoverPos(pos);
+        }
       }
     },
     [containerNode, popoverNode, isPopoverPinned, tooltipAppearance],

@@ -4,17 +4,26 @@
 
 ### Enhancements:
 
+- Implement Aim callbacks system and extended notifications (alberttorosyan)
+- Add chart legends to the Metrics Explorer (KaroMourad)
 - Implement vertically scalable version of Remote Tracking (mihran113, alberttorosyan)
+- Add the ability to search, filter, and compare audio through Audios Explorer (VkoHov)
 - Add epoch tracking for PyTorch Lightning (tmynn)
 - Add PaddlePaddle integration (tmynn)
 - Add Optuna integration (tmynn)
-- Use `packaging` to parse version strings(jangop)
+- Use `packaging` to parse version strings (jangop)
+- Implement the experiment page for the overall experiment info view (VkoHov)
+- Implement dynamic flushing mechanism for `CheckIn`s based on the flag (mahnerak)
+- Implement robust locking and indexing mechanism for Aim Runs (alberttorosyan)
 
 ### Fixes:
 
 - Fix multiple progress bars handling for terminal logs capturing (mihran113)
 - Handle resources when multiple `Ctrl-C`s are pressed (alberttorosyan)
 - Remove non unicode symbols from `aim up` command logs (mihran113)
+- Fix "Show Table Diff" for list type elements in runs, params and scatters explorers (kumarshreshtha)
+- Support non-Latin chars for encoding in Aim UI (roubkar)
+- Make new `CheckIn`s always override the expiry date, consistent to what is documented (mahnerak)
 
 ## 3.14.4 Nov 11, 2022
 
