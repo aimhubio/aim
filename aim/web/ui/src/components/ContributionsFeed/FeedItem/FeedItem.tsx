@@ -4,13 +4,12 @@ import { Link as RouteLink } from 'react-router-dom';
 import { Link, Tooltip } from '@material-ui/core';
 
 import { Icon, Text } from 'components/kit';
-import RunNameColumn from 'components/Table/RunNameColumn';
 import StatusLabel from 'components/StatusLabel';
 import ExperimentNameBox from 'components/ExperimentNameBox';
 
 import { PathEnum } from 'config/enums/routesEnum';
 
-import { IFeedItemProps } from './FeedItem.d';
+import { IFeedItemProps } from '.';
 
 import './FeedItem.scss';
 

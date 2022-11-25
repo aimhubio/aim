@@ -72,7 +72,6 @@ export interface ITableProps {
   deleteRuns?: (ids: string[]) => void;
   onRowsVisibilityChange?: (keys: string[]) => void;
   onToggleColumnsColorScales?: (colKey: string) => void;
-  className?: string;
   appName?: AppNameEnum;
   focusedState?: any;
   illustrationConfig?: IIllustrationConfig;

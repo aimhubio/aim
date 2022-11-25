@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { merge } from 'lodash-es';
 
 import { Badge } from 'components/kit';
@@ -227,14 +228,15 @@ function runsTableRowRenderer(
         ),
       },
       tags: {
-        component: TagsColumn,
-        props: {
-          runHash: rowData.hash,
-          tags: rowData.tags,
-          onRunsTagsChange,
-          headerRenderer: () => <></>,
-          addTagButtonSize: 'xxSmall',
-        },
+        content: (
+          <TagsColumn
+            runHash={rowData.hash}
+            tags={rowData.tags}
+            onRunsTagsChange={onRunsTagsChange}
+            headerRenderer={() => <></>}
+            addTagButtonSize='xxSmall'
+          />
+        ),
       },
       actions: {
         content: null,
