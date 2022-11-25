@@ -401,7 +401,7 @@ class TestRunInfoApi(ApiTestBase):
         response = client.get(f'api/runs/{self.run1_hash}/info', params=qparams)
         self.assertEqual(200, response.status_code)
         response_data = response.json()
-        self.assertEqual(7, len(response_data['traces']))
+        self.assertEqual(8, len(response_data['traces']))
         self.assertIn('images', response_data['traces'])
         self.assertIn('audios', response_data['traces'])
         self.assertIn('metric', response_data['traces'])
