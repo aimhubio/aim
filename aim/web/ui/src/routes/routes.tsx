@@ -47,7 +47,7 @@ const FiguresExplore = React.lazy(
   () => import(/* webpackChunkName: "figures" */ 'pages/FiguresExplorer'),
 );
 const AudiosExplorer = React.lazy(
-  () => import(/* webpackChunkName: "figures" */ 'pages/AudiosExplorer'),
+  () => import(/* webpackChunkName: "audios" */ 'pages/AudiosExplorer'),
 );
 
 export interface IRoute {

@@ -44,9 +44,7 @@ function ExperimentContributions({
             onCellClick={() => {
               trackEvent(ANALYTICS_EVENT_KEYS.dashboard.activityCellClick);
             }}
-            additionalQuery={` and run.experiment == ${formatValue(
-              experimentName,
-            )}`}
+            additionalQuery={` and run.experiment == "${experimentName}"`}
             data={Object.keys(
               experimentContributionsState.data?.activity_map ?? {},
             ).map((k) => [
