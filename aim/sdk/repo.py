@@ -114,6 +114,7 @@ class Repo:
         elif self.is_remote_path(path):
             remote_path = path.replace('aim://', '')
             self._client = Client(remote_path)
+            self._remote_repo_proxy = RemoteRepoProxy(self._client)
             self.root_path = remote_path
         else:
             self.root_path = path
@@ -400,8 +401,7 @@ class Repo:
     @ttl_cache(ttl=0.5)
     def _all_run_hashes(self) -> Set[str]:
         if self.is_remote_repo:
-            remote_repo = RemoteRepoProxy(self._client)
-            return set(remote_repo.list_all_runs())
+            return set(self._remote_repo_proxy.list_all_runs())
         else:
             chunks_dir = os.path.join(self.path, 'meta', 'chunks')
             if os.path.exists(chunks_dir):
@@ -414,8 +414,7 @@ class Repo:
 
     def _active_run_hashes(self) -> Set[str]:
         if self.is_remote_repo:
-            remote_repo = RemoteRepoProxy(self._client)
-            return set(remote_repo.list_active_runs())
+            return set(self._remote_repo_proxy.list_active_runs())
         else:
             chunks_dir = os.path.join(self.path, 'meta', 'progress')
             if os.path.exists(chunks_dir):
