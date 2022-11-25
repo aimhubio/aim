@@ -7,9 +7,9 @@ import { getAudiosDefaultConfig } from './config';
 
 const defaultConfig = getAudiosDefaultConfig();
 
-const AudioExplorer = renderer(
+const AudiosExplorer = renderer(
   {
-    name: 'Audio Explorer',
+    name: 'Audios Explorer',
     sequenceName: SequenceTypesEnum.Audios,
     basePath: 'audios',
     persist: true,
@@ -32,4 +32,4 @@ const AudioExplorer = renderer(
   __DEV__,
 );
 
-export default AudioExplorer;
+export default AudiosExplorer;
