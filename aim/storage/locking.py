@@ -149,3 +149,24 @@ def AutoFileLock(
         # locks by `SoftFileLock` causing a deadlock.
         # To prevent this, we add a suffix to the lock file name.
         return SoftFileLock(f'{lock_file}.softlock', timeout)
+
+
+class NoopLock:
+    """No-op lock implementation using duck-typing"""
+    def __init__(self, *args, **kwargs):
+        pass
+
+    def acquire(self, *args, **kwargs):
+        pass
+
+    def release(self, *args, **kwargs):
+        pass
+
+
+class RunLock:
+    """Interface for locking/releaseing Run locks."""
+    def lock(self, force: bool = False) -> None:
+        raise NotImplementedError
+
+    def release(self, force: bool = False) -> None:
+        raise NotImplementedError
