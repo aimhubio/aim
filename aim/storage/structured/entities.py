@@ -214,7 +214,7 @@ class Note(StructuredObject, Searchable['Note']):
         ...
 
 
-class RunInfo(StructuredObject):
+class RunInfo(StructuredObject, Generic[T]):
     @property
     @abstractmethod
     def last_notification_index(self) -> int:
