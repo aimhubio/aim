@@ -121,7 +121,7 @@ class Repo:
 
         if init:
             os.makedirs(self.path, exist_ok=True)
-            os.makedirs(os.path.join(self.path, 'locks'))
+            os.makedirs(os.path.join(self.path, 'locks'), exist_ok=True)
         if not self.is_remote_repo and not os.path.exists(self.path):
             if self._mount_root:
                 unmount_remote_repo(self.root_path, self._mount_root)

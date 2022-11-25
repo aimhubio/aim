@@ -136,3 +136,14 @@ class NoteAuditLog(Base):
         self.action = action
         self.before_edit = before
         self.after_edit = after
+
+
+class RunInfo(Base):
+    __tablename__ = 'run_info'
+
+    id = Column(Integer, autoincrement=True, primary_key=True)
+    run_id = Column(Integer, ForeignKey('run.id'))
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
+    last_notification_index = Column(Integer, default=-1)
+    run = relationship('Run', uselist=False, backref=backref("info", uselist=False))
