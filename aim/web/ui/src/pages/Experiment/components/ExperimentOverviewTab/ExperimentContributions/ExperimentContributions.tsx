@@ -8,6 +8,8 @@ import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import { trackEvent } from 'services/analytics';
 
+import { formatValue } from 'utils/formatValue';
+
 import useExperimentContributions from './useExperimentContributions';
 
 import { IExperimentContributionsProps } from '.';
@@ -42,7 +44,9 @@ function ExperimentContributions({
             onCellClick={() => {
               trackEvent(ANALYTICS_EVENT_KEYS.dashboard.activityCellClick);
             }}
-            additionalQuery={` and run.experiment == ${experimentName}`}
+            additionalQuery={` and run.experiment == ${formatValue(
+              experimentName,
+            )}`}
             data={Object.keys(
               experimentContributionsState.data?.activity_map ?? {},
             ).map((k) => [

@@ -37,11 +37,9 @@ function ContributionsFeed({
               >
                 {key.split('_').join(' ')}
               </Text>
-              {Object.keys(data[key]).map((item: string) => {
-                return (
-                  <FeedItem key={item} date={item} data={data[key][item]} />
-                );
-              })}
+              {Object.keys(data[key]).map((item: string) => (
+                <FeedItem key={item} date={item} data={data[key][item]} />
+              ))}
             </div>
           ))}
 
