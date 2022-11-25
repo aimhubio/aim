@@ -1,6 +1,5 @@
 import logging
 
-import os
 import datetime
 import json
 import pytz
@@ -13,25 +12,27 @@ from inspect import currentframe, getframeinfo
 from aim.sdk.base_run import BaseRun
 from aim.sdk.sequence import Sequence
 from aim.sdk.tracker import RunTracker
-from aim.sdk.reporter import RunStatusReporter
+from aim.sdk.reporter import RunStatusReporter, ScheduledStatusReporter
+from aim.sdk.run_heartbeat_reporter import RemoteRunHeartbeatReporter
 from aim.sdk.sequence_collection import SingleRunSequenceCollection
 from aim.sdk.utils import (
     backup_run,
 )
-from aim.ext.utils import (
-    get_environment_variables,
-    get_installed_packages,
-    get_git_info,
-)
+
 from aim.sdk.types import AimObject
-from aim.sdk.configs import AIM_RUN_INDEXING_TIMEOUT
 from aim.sdk.logging import LogRecord, LogRecords
+
 from aim.storage.treeview import TreeView
 from aim.storage.context import Context
 from aim.storage import treeutils
 
 from aim.ext.resource import ResourceTracker, DEFAULT_SYSTEM_TRACKING_INT
 from aim.ext.cleanup import AutoClean
+from aim.ext.utils import (
+    get_environment_variables,
+    get_installed_packages,
+    get_git_info,
+)
 
 from typing import Any, Dict, Iterator, Optional, Tuple, Union
 from typing import TYPE_CHECKING
@@ -72,19 +73,14 @@ class RunAutoClean(AutoClean['Run']):
         # this reference is needed for system resource tracker finalization
         self._tracker = instance._tracker
         self._checkins = instance._checkins
+        self._heartbeat = instance._heartbeat
+        self._lock = instance._lock
 
     def finalize_run(self):
         """
         Finalize the run by indexing all the data.
         """
         self.meta_run_tree['end_time'] = datetime.datetime.now(pytz.utc).timestamp()
-        try:
-            timeout = os.getenv(AIM_RUN_INDEXING_TIMEOUT, 2 * 60)
-            index = self.repo._get_index_tree('meta', timeout=timeout).view(())
-            logger.debug(f'Indexing Run {self.hash}...')
-            self.meta_run_tree.finalize(index=index)
-        except TimeoutError:
-            logger.warning(f'Cannot index Run {self.hash}. Index is locked.')
 
     def finalize_system_tracker(self):
         """
@@ -113,9 +109,13 @@ class RunAutoClean(AutoClean['Run']):
         self.finalize_system_tracker()
         self.empty_rpc_queue()
         self.finalize_run()
-        self.finalize_rpc_queue()
+        if self._heartbeat is not None:
+            self._heartbeat.stop()
         if self._checkins is not None:
             self._checkins.close()
+        if self._lock:
+            self._lock.release()
+        self.finalize_rpc_queue()
 
 
 # TODO: [AT] generate automatically based on ModelMappedRun
@@ -289,9 +289,11 @@ class Run(BaseRun, StructuredRunMixin):
                  experiment: Optional[str] = None,
                  system_tracking_interval: Optional[Union[int, float]] = DEFAULT_SYSTEM_TRACKING_INT,
                  log_system_params: Optional[bool] = False,
-                 capture_terminal_logs: Optional[bool] = True):
+                 capture_terminal_logs: Optional[bool] = True,
+                 force_resume: bool = False,
+                 ):
         self._resources: Optional[RunAutoClean] = None
-        super().__init__(run_hash, repo=repo, read_only=read_only)
+        super().__init__(run_hash, repo=repo, read_only=read_only, force_resume=force_resume)
 
         self.meta_attrs_tree: TreeView = self.meta_tree.subtree('attrs')
         self.meta_run_attrs_tree: TreeView = self.meta_run_tree.subtree('attrs')
@@ -323,10 +325,15 @@ class Run(BaseRun, StructuredRunMixin):
 
         self._props = None
         self._checkins = None
+        self._heartbeat = None
 
         if not read_only:
             if not self.repo.is_remote_repo:
-                self._checkins = RunStatusReporter(self)
+                self._checkins = RunStatusReporter(self.hash, self.repo.path)
+                self._heartbeat = ScheduledStatusReporter(self._checkins)
+            else:
+                self._heartbeat = RemoteRunHeartbeatReporter(self.repo._client, self.hash)
+
             if log_system_params:
                 system_params = {
                     'packages': get_installed_packages(),
