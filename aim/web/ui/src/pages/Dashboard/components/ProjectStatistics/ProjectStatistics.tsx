@@ -54,7 +54,7 @@ const statisticsInitialMap: Record<string, IProjectStatistic> = {
     navLink: routes.AUDIOS_EXPLORER.path,
     badge: {
       value: 'New',
-      style: { backgroundColor: '#2bc784', color: '#fff' },
+      style: { backgroundColor: '#1473e6', color: '#fff' },
     },
   },
   [SequenceTypesEnum.Texts]: {
