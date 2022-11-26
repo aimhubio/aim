@@ -25,8 +25,7 @@ Below are the components described in more detail.
 
 ### Configuring notifiers
 
-In order to configure how notifications about training runs should be received Aim provides
-a [CLI tool](../refs/cli.html#aim-status-watcher-cli) to interactively choose and setup the notifiers.
+Use `aim-watcher` [CLI](../refs/cli.html#aim-status-watcher-cli) to interactively choose and setup the notifiers.
 Currently, following types of notifiers are supported:
 
 - [Slack](#configuring-notifier-for-slack): to receive notifications as a message on a slack channel.

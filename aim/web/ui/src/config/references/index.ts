@@ -124,11 +124,11 @@ const DASHBOARD_PAGE_GUIDES: { name: string; url: string }[] = [
     url: `https://aimstack.readthedocs.io/en/${version}/using/training_monitoring.html`,
   },
   {
-    name: 'Logging messages during training process',
+    name: 'Log messages during training process',
     url: `https://aimstack.readthedocs.io/en/${version}/using/logging.html`,
   },
   {
-    name: 'Set up notification service',
+    name: 'Set up the notification service',
     url: `https://aimstack.readthedocs.io/en/${version}/using/notifications.html`,
   },
   {
