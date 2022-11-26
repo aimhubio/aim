@@ -89,6 +89,7 @@ def get_lock(args: bytes):
         repo = Repo.default_repo()
     kwargs = decode_tree(unpack_args(args))
     run_hash = kwargs['run_hash']
+    # TODO Do we need to import SFRunLock here?
     from aim.sdk.lock_manager import SFRunLock
     return ResourceRef(repo.request_run_lock(run_hash), SFRunLock.release)
 
