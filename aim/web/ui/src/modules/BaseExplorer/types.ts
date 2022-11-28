@@ -10,7 +10,6 @@ import { AimFlatObjectBase } from 'types/core/AimObjects';
 
 import { VisualizationsConfig } from '../core/engine/visualizations';
 import { EngineNew } from '../core/engine/explorer-engine';
-import { StatePersistOption } from '../core/engine/types';
 
 export interface IEngineStates {
   [key: string]: {

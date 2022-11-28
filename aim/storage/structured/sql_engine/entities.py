@@ -9,12 +9,14 @@ from aim.storage.structured.entities import (
     Experiment as IExperiment,
     Tag as ITag,
     Note as INote,
+    RunInfo as IRunInfo,
     RunCollection,
     TagCollection,
     NoteCollection
 )
 from aim.storage.structured.sql_engine.models import (
     Run as RunModel,
+    RunInfo as RunInfoModel,
     Experiment as ExperimentModel,
     Tag as TagModel,
     Note as NoteModel,
@@ -47,6 +49,7 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
         Property('experiment', autogenerate=False),
         Property('tags', autogenerate=False),
         Property('notes', autogenerate=False),
+        Property('info', autogenerate=False),
     ]
 
     def __init__(self, model: RunModel, session):
@@ -134,6 +137,21 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
     @property
     def experiment(self) -> Union[str, SafeNone]:
         return self.experiment_obj.name if self.experiment_obj else SafeNone()
+
+    @property
+    def info(self) -> Optional[IRunInfo]:
+        if self._model:
+            if self._model.info:
+                return ModelMappedRunInfo(self._model.info, self._session)
+            else:
+                info = RunInfoModel()
+
+                self._model.info = info
+                self._session.add(info)
+                self._session.add(self._model)
+                self._session.flush()
+
+                return ModelMappedRunInfo(self._model.info, self._session)
 
     @experiment.setter
     def experiment(self, value: str):
@@ -564,6 +582,23 @@ class ModelMappedNote(INote, metaclass=ModelMappedClassMeta):
             session.delete(model_obj)
             return True
         return False
+
+
+class ModelMappedRunInfo(IRunInfo, metaclass=ModelMappedClassMeta):
+    __model__ = RunInfoModel
+    __mapped_properties__ = [
+        Property('created_at', with_setter=False),
+        Property('updated_at', with_setter=False),
+        Property('last_notification_index'),
+    ]
+
+    def __init__(self, model_inst: RunInfoModel, session):
+        self._model = model_inst
+        self._id = model_inst.id
+        self._session = session
+
+    def __repr__(self) -> str:
+        return f'<ModelMappedRunInfo id={self._id}>'
 
 
 ModelMappedRunCollection = ModelMappedCollection[ModelMappedRun]

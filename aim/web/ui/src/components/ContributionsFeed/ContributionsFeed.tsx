@@ -4,7 +4,8 @@ import _ from 'lodash-es';
 import { Button, Spinner, Text } from 'components/kit';
 
 import FeedItem from './FeedItem';
-import { IContributionsFeedProps } from './ContributionsFeed.d';
+
+import { IContributionsFeedProps } from '.';
 
 import './ContributionsFeed.scss';
 
@@ -37,11 +38,9 @@ function ContributionsFeed({
               >
                 {key.split('_').join(' ')}
               </Text>
-              {Object.keys(data[key]).map((item: string) => {
-                return (
-                  <FeedItem key={item} date={item} data={data[key][item]} />
-                );
-              })}
+              {Object.keys(data[key]).map((item: string) => (
+                <FeedItem key={item} date={item} data={data[key][item]} />
+              ))}
             </div>
           ))}
 

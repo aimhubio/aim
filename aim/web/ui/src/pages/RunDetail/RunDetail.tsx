@@ -73,7 +73,7 @@ const RunLogsTab = React.lazy(
   () => import(/* webpackChunkName: "RunLogsTab" */ './RunLogsTab'),
 );
 
-const tabs: { [key: string]: string } = {
+const tabs: Record<string, string> = {
   overview: 'Overview',
   run_parameters: 'Run Params',
   notes: 'Notes',
@@ -89,26 +89,21 @@ const tabs: { [key: string]: string } = {
 };
 
 function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
-  let runsOfExperimentRequestRef: any = null;
+  const { runHash } = useParams<{ runHash: string }>();
+  const history = useHistory();
+  const { url } = useRouteMatch();
+  const { pathname } = useLocation();
   const runData = useModel(runDetailAppModel);
 
+  let runsOfExperimentRequestRef: any = null;
   const containerRef = React.useRef<HTMLDivElement | any>(null);
   const [dateNow, setDateNow] = React.useState(Date.now());
   const [isRunSelectDropdownOpen, setIsRunSelectDropdownOpen] =
     React.useState(false);
-  const { runHash } = useParams<{ runHash: string }>();
-  const { url } = useRouteMatch();
-  const location = useLocation();
-  const [activeTab, setActiveTab] = React.useState(location.pathname);
-  const history = useHistory();
-
-  React.useEffect(() => {
-    redirect();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const [activeTab, setActiveTab] = React.useState(pathname);
 
   function redirect(): void {
-    const splitPathname: string[] = location.pathname.split('/');
+    const splitPathname: string[] = pathname.split('/');
     const path: string = `${url}/overview`;
     if (splitPathname.length > 4) {
       history.replace(path);
@@ -125,7 +120,7 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
     setActiveTab(path);
   }
 
-  const tabContent: { [key: string]: JSX.Element } = {
+  const tabContent: Record<string, JSX.Element> = {
     overview: <RunOverviewTab runHash={runHash} runData={runData} />,
     run_parameters: (
       <RunDetailParamsTab
@@ -228,6 +223,18 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
     setIsRunSelectDropdownOpen(!isRunSelectDropdownOpen);
   }
 
+  function getCurrentTabValue(pathname: string, url: string) {
+    const values = Object.keys(tabs).map((tabKey) => `${url}/${tabKey}`);
+    return values.indexOf(pathname) === -1 ? false : pathname;
+  }
+
+  React.useEffect(() => {
+    if (pathname !== activeTab) {
+      setActiveTab(pathname);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
+
   React.useEffect(() => {
     setDateNow(Date.now());
     runDetailAppModel.initialize();
@@ -248,14 +255,9 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
   }, [runHash]);
 
   React.useEffect(() => {
-    if (location.pathname !== activeTab) {
-      setActiveTab(location.pathname);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.pathname]);
-
-  React.useEffect(() => {
+    redirect();
     analytics.pageView(ANALYTICS_EVENT_KEYS.runDetails.pageView);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -396,7 +398,7 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
           <Paper className='RunDetail__runDetailContainer__tabsContainer'>
             <Tabs
               className='RunDetail__runDetailContainer__Tabs container'
-              value={location.pathname}
+              value={getCurrentTabValue(pathname, url)}
               onChange={handleTabChange}
               indicatorColor='primary'
               textColor='primary'
