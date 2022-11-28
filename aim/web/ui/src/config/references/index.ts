@@ -120,6 +120,22 @@ const DASHBOARD_PAGE_GUIDES: { name: string; url: string }[] = [
     url: `https://aimstack.readthedocs.io/en/${version}/using/remote_tracking.html`,
   },
   {
+    name: 'Notify on failed/stuck runs',
+    url: `https://aimstack.readthedocs.io/en/${version}/using/training_monitoring.html`,
+  },
+  {
+    name: 'Log messages during training process',
+    url: `https://aimstack.readthedocs.io/en/${version}/using/logging.html`,
+  },
+  {
+    name: 'Set up the notification service',
+    url: `https://aimstack.readthedocs.io/en/${version}/using/notifications.html`,
+  },
+  {
+    name: 'Define custom callbacks',
+    url: `https://aimstack.readthedocs.io/en/${version}/using/callbacks.html`,
+  },
+  {
     name: 'Host Aim on Kubernetes (K8S)',
     url: `https://aimstack.readthedocs.io/en/${version}/using/k8s_deployment.html`,
   },

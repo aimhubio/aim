@@ -92,6 +92,11 @@ class Run(StructuredObject, Searchable['Run']):
     def remove_tag(self, tag_name: str) -> bool:
         ...
 
+    @property
+    @abstractmethod
+    def info(self) -> 'RunInfo':
+        ...
+
 
 class Experiment(StructuredObject, Searchable['Experiment']):
     @property
@@ -206,6 +211,18 @@ class Note(StructuredObject, Searchable['Note']):
     @property
     @abstractmethod
     def run(self) -> int:
+        ...
+
+
+class RunInfo(StructuredObject, Generic[T]):
+    @property
+    @abstractmethod
+    def last_notification_index(self) -> int:
+        ...
+
+    @last_notification_index.setter
+    @abstractmethod
+    def last_notification_index(self, value: int):
         ...
 
 

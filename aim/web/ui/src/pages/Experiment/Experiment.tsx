@@ -57,7 +57,7 @@ const ExperimentSettingsTab = React.lazy(
     ),
 );
 
-const tabs: { [key: string]: string } = {
+const tabs: Record<string, string> = {
   overview: 'Overview',
   runs: 'Runs',
   notes: 'Notes',
@@ -66,8 +66,8 @@ const tabs: { [key: string]: string } = {
 
 function Experiment(): React.FunctionComponentElement<React.ReactNode> {
   const { experimentId } = useParams<{ experimentId: string }>();
-  const { url } = useRouteMatch();
   const history = useHistory();
+  const { url } = useRouteMatch();
   const { pathname } = useLocation();
   const [activeTab, setActiveTab] = React.useState(pathname);
   const {
@@ -87,7 +87,7 @@ function Experiment(): React.FunctionComponentElement<React.ReactNode> {
 
   const tabContent: Record<
     string,
-    { props: any; Component: LazyExoticComponent<any> }
+    { props: Record<string, unknown>; Component: LazyExoticComponent<any> }
   > = {
     overview: {
       props: {
@@ -142,6 +142,11 @@ function Experiment(): React.FunctionComponentElement<React.ReactNode> {
     setActiveTab(path);
   }
 
+  function getCurrentTabValue(pathname: string, url: string) {
+    const values = Object.keys(tabs).map((tabKey) => `${url}/${tabKey}`);
+    return values.indexOf(pathname) === -1 ? false : pathname;
+  }
+
   React.useEffect(() => {
     if (pathname !== activeTab) {
       setActiveTab(pathname);
@@ -174,7 +179,7 @@ function Experiment(): React.FunctionComponentElement<React.ReactNode> {
         <Paper className='Experiment__tabsContainer'>
           <Tabs
             className='Experiment__tabsContainer__tabs container'
-            value={pathname}
+            value={getCurrentTabValue(pathname, url)}
             onChange={handleTabChange}
             indicatorColor='primary'
             textColor='primary'
