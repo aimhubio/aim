@@ -54,7 +54,7 @@
   "scripts": {
     "start": "react-app-rewired --max_old_space_size=4096 start",
     "build": "react-app-rewired --max_old_space_size=4096 build && gzipper c -i js,css,html ./build && node tasks/index-html-template-generator.js",
-    "test": "react-app-rewired test ",
+    "test": "react-scripts test ",
     "test:coverage": "react-app-rewired test --collectCoverage",
     "test:watch": "react-app-rewired test --watchAll",
     "eject": "react-scripts eject",
@@ -82,6 +82,12 @@
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged"
+    }
+  },
+  "jest": {
+    "moduleNameMapper": {
+      "^lodash-es$": "lodash",
+      "^d3$": "<rootDir>/node_modules/d3/dist/d3.min.js"
     }
   },
   "lint-staged": {
