@@ -14,6 +14,7 @@ import { AdvancedQueryForm } from './components/QueryForm';
 import Controls from './components/Controls';
 import Grouping, { GroupingItem } from './components/Grouping';
 import { IBaseComponentProps } from './types';
+import getBaseExplorerStaticContent from './utils/getBaseExplorerStaticContent';
 
 const controls: ControlsConfigs = {
   boxProperties: {
@@ -141,6 +142,7 @@ export const defaultHydration = {
       initialState: {},
     },
   },
+  getStaticContent: getBaseExplorerStaticContent,
 };
 
 /**

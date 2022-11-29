@@ -4,12 +4,12 @@ import { GroupType } from 'modules/core/pipeline';
 import { GroupingConfigs } from 'modules/core/engine/explorer/groupings';
 import { ControlsConfigs } from 'modules/core/engine/visualizations/controls';
 import { CustomStates } from 'modules/core/utils/store';
+import { VisualizationsConfig } from 'modules/core/engine/visualizations';
+import { EngineNew } from 'modules/core/engine/explorer-engine';
+import { PipelineStatusEnum } from 'modules/core/engine/types';
 
 import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
 import { AimFlatObjectBase } from 'types/core/AimObjects';
-
-import { VisualizationsConfig } from '../core/engine/visualizations';
-import { EngineNew } from '../core/engine/explorer-engine';
 
 export interface IEngineStates {
   [key: string]: {
@@ -75,6 +75,10 @@ export interface IControlsProps extends IBaseComponentProps {
 export interface IVisualizationsProps extends IBaseComponentProps {
   components: IUIComponents;
   visualizers: VisualizationsConfig;
+  getStaticContent?: (
+    type: StaticContentType,
+    defaultContent?: React.ReactNode,
+  ) => React.ReactNode;
 }
 
 export interface IVisualizationProps extends IBaseComponentProps {
@@ -148,7 +152,11 @@ export declare interface ExplorerEngineConfiguration {
   visualizations: ExplorerVisualizationsConfiguration;
 
   /**
-   * Custom States
+   * Explorer level additional custom states
+   * @optional
+   * This property is useful to create custom states for the explorer, and it will be accessible directly from engine
+   * The usage of the state defined on state slice documentation
+   * @default value is {}
    */
   states?: CustomStates;
 }
@@ -209,13 +217,10 @@ export declare interface ExplorerConfiguration
   components?: ExplorerUIComponents;
 
   /**
-   * Explorer level additional custom states
-   * @optional
-   * This property is useful to create custom states for the explorer, and it will be accessible directly from engine
-   * The usage of the state defined on state slice documentation
-   * @default value is {}
+   * Explorer level static content
+   * @param type
    */
-  readonly states?: CustomStates;
+  getStaticContent?: (type: string) => React.ReactNode;
 }
 
 export declare interface ExplorerProps<
@@ -235,3 +240,5 @@ export declare interface ExplorerProps<
    */
   children?: React.ReactChildren;
 }
+
+export type StaticContentType = string | PipelineStatusEnum;

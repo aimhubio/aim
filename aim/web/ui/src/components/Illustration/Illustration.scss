@@ -1,0 +1,86 @@
+@use '../../styles/abstracts/index' as *;
+
+.Illustration {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  flex-direction: column;
+  &__hidden {
+    display: none;
+  }
+  &__container {
+    height: fit-content;
+    overflow: hidden;
+    padding-bottom: 6 * $space-unit;
+    &__content {
+      text-align: center;
+      .qlAnchor {
+        color: $primary-color;
+        text-decoration: none;
+        margin: 0 $space-xxxs;
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+    &__img {
+      & > img {
+        margin: 0 auto;
+        display: block;
+      }
+    }
+
+    &__small {
+      &__content {
+        font-weight: $font-500;
+        font-size: $text-md;
+      }
+      &__img {
+        padding: $space-xs;
+        & > img {
+          width: 3rem;
+        }
+      }
+    }
+    &__medium {
+      &__content {
+        font-weight: $font-500;
+        font-size: $text-md;
+      }
+      &__img {
+        padding: $space-sm;
+        & > img {
+          width: 7.5rem;
+        }
+      }
+    }
+    &__large {
+      &__content {
+        font-weight: $font-500;
+        font-size: $text-lg;
+      }
+      &__img {
+        padding: $space-sm;
+        & > img {
+          width: 14.5rem;
+        }
+      }
+    }
+    &__xLarge {
+      &__content {
+        font-weight: $font-500;
+        font-size: $text-xl;
+        margin-bottom: $space-unit;
+      }
+      &__img {
+        padding: $space-unit;
+        & > img {
+          width: 19.5rem;
+        }
+      }
+    }
+  }
+}
