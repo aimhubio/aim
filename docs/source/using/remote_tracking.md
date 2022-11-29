@@ -12,6 +12,17 @@ In this guide we will show you how to setup Aim remote tracking server and how t
 Remote tracking server assumes multi-host environments used to run multiple training experiments.
 The machine running the server have to accept incoming TCP traffic on a dedicated port (default is 53800).
 
+### Scaling
+
+Aim remote tracking server can be set up to use multiple workers to scale the bandwidth of receiving connections.
+But it comes with some caveats. When providing `--workers=n` argument to `aim server` command, `aim` uses `n + 1` sequential 
+ports starting from port number specified. So, all  `p, ..., p + n` ports  must be exposed. 
+No changes are needed on client side.
+
+_Note:_
+
+When number of workers is not specified (by default: 1) only one port is used.
+
 ### Server-side setup
 
 1. Make sure aim `3.4.0` or upper installed:
