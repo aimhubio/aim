@@ -16,9 +16,10 @@ class RemoteRepoProxy:
     def __init__(self, client: 'Client'):
         self._rpc_client = client
 
-        args = pack_args(encode_tree(()))
+        self.init_args = pack_args(encode_tree(()))
+        self.resource_type = 'Repo'
 
-        handler = self._rpc_client.get_resource_handler('Repo', args=args)
+        handler = self._rpc_client.get_resource_handler(self, self.resource_type, args=self.init_args)
 
         self._resources = RemoteRepoAutoClean(self)
         self._resources.rpc_client = client
@@ -27,3 +28,6 @@ class RemoteRepoProxy:
 
     def list_all_runs(self):
         return self._rpc_client.run_instruction(-1, self._handler, 'list_all_runs', [])
+
+    def list_active_runs(self):
+        return self._rpc_client.run_instruction(-1, self._handler, 'list_active_runs', [])

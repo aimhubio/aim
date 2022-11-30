@@ -1,6 +1,5 @@
 import React from 'react';
 
-import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { IPoint } from 'components/ScatterPlot';
 
 import { ILine, IAttributesRef } from 'types/components/LineChart/LineChart';
@@ -9,14 +8,18 @@ import {
   IAlignmentConfig,
 } from 'types/services/models/metrics/metricsAppModel';
 
-import { ScaleEnum } from 'utils/d3';
+import { ScaleEnum, HighlightEnum } from 'utils/d3';
 
 import { IAxisScale } from './getAxisScale';
+import { IProcessedData } from './processLineChartData';
+
+export type HoverAttrData = ILine | IPoint;
 
 export interface IDrawHoverAttributesArgs {
   index: number;
   nameKey: string;
-  data: ILine[] | IPoint[];
+  data: HoverAttrData[];
+  processedData?: IProcessedData[];
   axesScaleType: { xAxis: ScaleEnum; yAxis: ScaleEnum };
   visAreaRef: React.MutableRefObject<>;
   attributesNodeRef: React.MutableRefObject<>;
@@ -62,6 +65,7 @@ export interface INearestCircle {
   y: number;
   key: string;
   color: string;
+  inProgress?: boolean;
 }
 
 export interface IActivePoint {
@@ -71,6 +75,7 @@ export interface IActivePoint {
   xPos: number;
   yPos: number;
   chartIndex: number;
+  inProgress?: boolean;
   pointRect: {
     top: number;
     bottom: number;

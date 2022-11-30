@@ -20,6 +20,8 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { IGroupingSelectOption } from 'types/services/models/metrics/metricsAppModel';
 
+import { SelectOption } from '../../Controls/CaptionProperties';
+
 import { IGroupingPopoverProps } from './GroupingPopover.d';
 
 import './GroupingPopover.scss';
@@ -37,67 +39,79 @@ function GroupingPopover({
   );
   const currentValues = engine.useStore(engine.groupings.currentValuesSelector);
 
-  function onChange(
-    e: React.ChangeEvent<HTMLInputElement> | any,
-    values: IGroupingSelectOption[],
-  ): void {
-    if (e?.code !== 'Backspace') {
-      handleSelect(values);
-    } else {
-      if (searchValue.length === 0) {
-        handleSelect(values);
+  const handleSelect = React.useCallback(
+    (values: IGroupingSelectOption[], order?: Order[]) => {
+      const { fields, orders } = values.reduce(
+        (acc: any, item: IGroupingSelectOption, index: number) => {
+          acc.fields.push(item.value);
+          acc.orders.push(
+            order?.[index] ??
+              currentValues[groupName].orders[index] ??
+              Order.ASC,
+          );
+          return acc;
+        },
+        {
+          fields: [],
+          orders: [],
+        },
+      );
+      engine.groupings.update({
+        ...currentValues,
+        [groupName]: { fields, orders },
+      });
+
+      engine.pipeline.group({
+        ...currentValues,
+        [groupName]: { fields, orders },
+      });
+    },
+    [engine.groupings, engine.pipeline, currentValues, groupName],
+  );
+
+  const onChange = React.useCallback(
+    (e: any, values: IGroupingSelectOption[]): void => {
+      // skip Backspace if there is an input value to do not delete badge (the last selected field)
+      if (e?.code === 'Backspace' && searchValue.length) {
+        return;
       }
-    }
-  }
 
-  function handleSelect(values: IGroupingSelectOption[], order?: Order[]) {
-    const { fields, orders } = values.reduce(
-      (acc: any, item: IGroupingSelectOption, index: number) => {
-        acc.fields.push(item.value);
-        acc.orders.push(
-          order?.[index] ?? currentValues[groupName].orders[index] ?? Order.ASC,
-        );
-        return acc;
-      },
-      {
-        fields: [],
-        orders: [],
-      },
-    );
-    engine.groupings.update({
-      ...currentValues,
-      [groupName]: { fields, orders },
-    });
+      handleSelect(values);
+    },
+    [handleSelect, searchValue.length],
+  );
 
-    engine.pipeline.group({
-      ...currentValues,
-      [groupName]: { fields, orders },
+  const onSearchInputChange = React.useCallback(
+    (e) => {
+      e.stopPropagation();
+      setSearchValue(e.target.value);
+    },
+    [setSearchValue],
+  );
+
+  const allOptions: IGroupingSelectOption[] = React.useMemo(() => {
+    const modifiers = availableModifiers?.modifiers ?? [];
+    return modifiers.map((modifier: string) => {
+      return {
+        label: modifier,
+        value: modifier,
+        group: modifier.slice(0, modifier.indexOf('.')),
+      };
     });
-  }
+  }, [availableModifiers?.modifiers]);
 
   const options = React.useMemo(() => {
-    const modifiers = availableModifiers?.modifiers ?? [];
-    const optionsData: IGroupingSelectOption[] = modifiers.map(
-      (modifier: string) => {
-        return {
-          label: modifier,
-          value: modifier,
-          group: modifier.slice(0, modifier.indexOf('.')),
-        };
-      },
-    );
-    return (
-      optionsData?.filter(
-        (option: IGroupingSelectOption) =>
-          option.label.indexOf(searchValue) !== -1,
-      ) ?? []
-    );
-  }, [availableModifiers?.modifiers, searchValue]);
+    return searchValue
+      ? allOptions?.filter(
+          (option: SelectOption) => option.label.indexOf(searchValue) !== -1,
+        )
+      : allOptions;
+  }, [allOptions, searchValue]);
 
   const values: { value: IGroupingSelectOption; order: Order }[] =
     React.useMemo(() => {
       let data: { value: IGroupingSelectOption; order: Order }[] = [];
-      options.forEach((option: IGroupingSelectOption) => {
+      allOptions.forEach((option: IGroupingSelectOption) => {
         const index = currentValues[groupName].fields.indexOf(option.value);
         if (index > -1) {
           data.push({
@@ -115,7 +129,7 @@ function GroupingPopover({
               currentValues[groupName].fields.indexOf(b.value.value),
           )
         : data;
-    }, [groupName, currentValues, options]);
+    }, [allOptions, currentValues, groupName]);
 
   return (
     <ErrorBoundary>
@@ -149,9 +163,7 @@ function GroupingPopover({
                   inputProps={{
                     ...params.inputProps,
                     value: searchValue,
-                    onChange: (e: any) => {
-                      setSearchValue(e.target?.value);
-                    },
+                    onChange: onSearchInputChange,
                   }}
                   className='TextField__OutLined__Small'
                   variant='outlined'

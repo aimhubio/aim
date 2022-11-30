@@ -15,12 +15,12 @@ import updateURL from './updateURL';
 
 export default function onChangeTooltip<M extends State>({
   tooltip,
-  groupingItems,
+  groupingNames,
   model,
   appName,
 }: {
   tooltip: Partial<ITooltip>;
-  groupingItems: GroupNameEnum[];
+  groupingNames: GroupNameEnum[];
   model: IModel<M>;
   appName: string;
 }): void {
@@ -51,7 +51,7 @@ export default function onChangeTooltip<M extends State>({
     const tooltipData = {
       ...configData?.chart?.tooltip,
       content: getTooltipContent({
-        groupingItems,
+        groupingNames,
         groupingSelectOptions,
         data: data as IMetricsCollection<any>[],
         configData,
@@ -61,9 +61,22 @@ export default function onChangeTooltip<M extends State>({
     };
     model.setState({ config: configData, tooltip: tooltipData });
     updateURL({ configData, appName });
+    if (tooltip.appearance) {
+      analytics.trackEvent(
+        // @ts-ignore
+        `${ANALYTICS_EVENT_KEYS[appName].chart.controls.tooltip.appearance} ${tooltip.appearance}`,
+      );
+    } else if (tooltip.selectedFields) {
+      analytics.trackEvent(
+        // @ts-ignore
+        ANALYTICS_EVENT_KEYS[appName].chart.controls.tooltip
+          .changeTooltipDisplay,
+      );
+    } else if (tooltip.hasOwnProperty('display')) {
+      analytics.trackEvent(
+        // @ts-ignore
+        ANALYTICS_EVENT_KEYS[appName].chart.controls.tooltip.display,
+      );
+    }
   }
-  analytics.trackEvent(
-    // @ts-ignore
-    ANALYTICS_EVENT_KEYS[appName].chart.controls.tooltip.changeTooltipContent,
-  );
 }

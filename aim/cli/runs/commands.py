@@ -1,8 +1,14 @@
 import click
 import os
+import tqdm
 
-from aim.cli.runs.utils import list_repo_runs, match_runs, make_zip_archive, upload_repo_runs
+from multiprocessing.pool import ThreadPool
+from psutil import cpu_count
+
+from aim.cli.runs.utils import list_repo_runs, match_runs, make_zip_archive, upload_repo_runs, optimize_container
 from aim.sdk.repo import Repo
+from aim.sdk.lock_manager import LockManager
+from aim.sdk.index_manager import RepoIndexManager
 
 
 @click.group()
@@ -136,3 +142,42 @@ def upload_runs(ctx, bucket):
         click.echo(f'Successfully uploaded runs in {uploaded_zip_file_name}.')
     else:
         click.echo(f'The storage backup failed because of the following error: {uploaded_zip_file_name}.')
+
+
+@runs.command(name='close')
+@click.argument('hashes', nargs=-1, type=str)
+@click.pass_context
+def close_runs(ctx, hashes):
+    """Close failed/stalled Runs."""
+    repo_path = ctx.obj['repo']
+    repo = Repo.from_path(repo_path)
+
+    if len(hashes) == 0:
+        click.echo('Please specify at least one Run to close.')
+        exit(1)
+
+    click.secho(f'This command will forcefully close {len(hashes)} Runs from Aim Repo \'{repo_path}\'. '
+                f'Please make sure Runs are not active. Data corruption may occur otherwise.')
+    if not click.confirm('Do you want to proceed?'):
+        return
+
+    lock_manager = LockManager(repo.path)
+    index_manager = RepoIndexManager.get_index_manager(repo)
+
+    def close_run(run_hash):
+        if lock_manager.release_locks(run_hash, force=True):
+            # Run rocksdb optimizations if container locks are removed
+            meta_db_path = os.path.join(repo_path, 'meta', 'chunks', run_hash)
+            seqs_db_path = os.path.join(repo_path, 'seqs', 'chunks', run_hash)
+            optimize_container(meta_db_path, extra_options={'compaction': True})
+            optimize_container(seqs_db_path, extra_options={})
+        if index_manager.run_needs_indexing(run_hash):
+            index_manager.index(run_hash)
+
+    pool = ThreadPool(cpu_count(logical=False))
+
+    for _ in tqdm.tqdm(
+            pool.imap_unordered(close_run, hashes),
+            desc='Closing runs',
+            total=len(hashes)):
+        pass

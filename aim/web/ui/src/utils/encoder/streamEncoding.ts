@@ -460,7 +460,10 @@ export async function* decodePathsVals(
  */
 export async function parseStream<T extends Array>(
   stream: ReadableStream,
-  progressCallback?: (progress: IRunProgress) => void,
+  options?: {
+    progressCallback?: (progress: IRunProgress) => void | null;
+    callback?: (item: any) => void;
+  },
 ): Promise<T> {
   let buffer_pairs = decodeBufferPairs(stream);
   let decodedPairs = decodePathsVals(buffer_pairs);
@@ -473,17 +476,20 @@ export async function parseStream<T extends Array>(
       const object: T = { ...(val as any), hash: keys[0] };
       if (object.hash.startsWith('progress')) {
         // maybe typeof progressCallback === 'function'
-        if (progressCallback) {
-          progressCallback(object as IRunProgress);
+        if (options?.progressCallback) {
+          options.progressCallback(object as IRunProgress);
           const { 0: checked, 1: trackedRuns } = object;
 
-          progressCallback({
+          options.progressCallback({
             matched: data.length,
             checked,
             trackedRuns,
           });
         }
       } else {
+        if (options?.callback) {
+          options.callback({ value: val, hash: keys[0] });
+        }
         data.push(object);
       }
     }

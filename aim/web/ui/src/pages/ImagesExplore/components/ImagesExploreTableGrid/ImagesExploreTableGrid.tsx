@@ -1,5 +1,6 @@
 import moment from 'moment';
 import _ from 'lodash-es';
+import * as React from 'react';
 
 import { Tooltip } from '@material-ui/core';
 
@@ -10,6 +11,7 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import GroupedColumnHeader from 'components/Table/GroupedColumnHeader';
 import RunNameColumn from 'components/Table/RunNameColumn';
 import AttachedTagsList from 'components/AttachedTagsList/AttachedTagsList';
+import ExperimentNameBox from 'components/ExperimentNameBox';
 
 import COLORS from 'config/colors/colors';
 import { TABLE_DATE_FORMAT } from 'config/dates/dates';
@@ -30,7 +32,7 @@ import getColumnOptions from 'utils/getColumnOptions';
 function getImagesExploreTableColumns(
   paramColumns: string[] = [],
   groupingSelectOptions: IGroupingSelectOption[],
-  groupFields: { [key: string]: string } | null,
+  groupFields: { [key: string]: unknown } | null,
   order: { left: string[]; middle: string[]; right: string[] },
   hiddenColumns: string[],
   sortFields?: any[],
@@ -308,7 +310,7 @@ const TagsColumn = (props: {
   headerRenderer: () => React.ReactNode;
   addTagButtonSize: 'xxSmall' | 'xSmall';
 }) => {
-  return <AttachedTagsList {...props} hasAttachedTagsPopup />;
+  return <AttachedTagsList {...props} inlineAttachedTagsList />;
 };
 
 function imagesExploreTableRowRenderer(
@@ -403,7 +405,14 @@ function imagesExploreTableRowRenderer(
     return _.merge({}, rowData, row);
   } else {
     const row = {
-      experiment: rowData?.experiment ?? 'default',
+      experiment: {
+        content: (
+          <ExperimentNameBox
+            experimentName={rowData.experiment}
+            experimentId={rowData.experimentId}
+          />
+        ),
+      },
       run: {
         content: (
           <RunNameColumn
@@ -431,14 +440,15 @@ function imagesExploreTableRowRenderer(
       step: rowData.step,
       epoch: rowData.epoch,
       tags: {
-        component: TagsColumn,
-        props: {
-          runHash: rowData.hash,
-          tags: rowData.tags,
-          onRunsTagsChange,
-          headerRenderer: () => <></>,
-          addTagButtonSize: 'xxSmall',
-        },
+        content: (
+          <TagsColumn
+            runHash={rowData.hash}
+            tags={rowData.tags}
+            onRunsTagsChange={onRunsTagsChange}
+            headerRenderer={() => <></>}
+            addTagButtonSize='xxSmall'
+          />
+        ),
       },
       time:
         rowData.time === null

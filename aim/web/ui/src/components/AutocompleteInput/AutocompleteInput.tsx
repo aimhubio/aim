@@ -25,6 +25,7 @@ function AutocompleteInput({
   refObject,
   error,
   disabled = false,
+  forceRemoveError = false,
   //callback functions
   onEnter,
   onChange,
@@ -71,8 +72,12 @@ function AutocompleteInput({
 
   React.useEffect(() => {
     setMarkers();
+    if (forceRemoveError && !error) {
+      setErrorMessage('');
+      deleteMarkers();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [error, monaco]);
+  }, [error, monaco, forceRemoveError]);
 
   React.useEffect(() => {
     if (focused) {

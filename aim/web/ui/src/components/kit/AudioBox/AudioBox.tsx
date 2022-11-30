@@ -1,8 +1,10 @@
 import React from 'react';
-import moment from 'moment';
 import AudioPlayer from 'material-ui-audio-player';
 
-import { Button, Icon, Slider, Spinner, Text } from 'components/kit';
+import AudioBoxVolume from 'modules/BaseExplorer/components/AudioBox/AudioBoxVolume';
+import AudioBoxProgress from 'modules/BaseExplorer/components/AudioBox/AudioBoxProgress';
+
+import { Button, Icon, Spinner, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { BATCH_COLLECT_DELAY } from 'config/mediaConfigs/mediaConfigs';
@@ -10,157 +12,11 @@ import { BATCH_COLLECT_DELAY } from 'config/mediaConfigs/mediaConfigs';
 import blobsURIModel from 'services/models/media/blobsURIModel';
 
 import contextToString from 'utils/contextToString';
+import { downloadLink } from 'utils/helper';
 
-import {
-  IAudioBoxProps,
-  IAudiBoxProgressProps,
-  IAudioBoxVolumeProps,
-} from './AudioBox.d';
+import { IAudioBoxProps } from '.';
 
 import './AudioBox.scss';
-
-function AudiBoxProgress({ audio, isPlaying, src }: IAudiBoxProgressProps) {
-  const [trackProgress, setTrackProgress] = React.useState(0);
-  const intervalRef = React.useRef<any>({});
-
-  React.useEffect(() => {
-    return () => {
-      clearInterval(intervalRef.current);
-    };
-  }, []);
-
-  React.useEffect(() => {
-    if (isPlaying && audio) {
-      startTimer();
-    } else {
-      clearInterval(intervalRef.current);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isPlaying, src]);
-
-  function startTimer(): void {
-    clearInterval(intervalRef.current);
-    intervalRef.current = setInterval(() => {
-      setTrackProgress(Math.round(audio.currentTime));
-    }, 300);
-  }
-
-  function onProgressChange(e: any, value: number | number[]): void {
-    if (audio) {
-      clearInterval(intervalRef.current);
-      setTrackProgress(value as number);
-    }
-  }
-
-  function onTimerChange(): void {
-    if (audio) {
-      clearInterval(intervalRef.current);
-      audio.currentTime = trackProgress;
-      if (isPlaying) {
-        startTimer();
-      }
-    }
-  }
-
-  function formatDuration(): string {
-    return moment
-      .utc(Math.round(audio.duration || 0) * 1000)
-      .format(defineTimeFormat(audio.duration || 0));
-  }
-
-  function defineTimeFormat(duration: number): string {
-    return duration > 3600 ? 'HH:mm:ss' : 'mm:ss';
-  }
-
-  function formatProgress(): string {
-    return moment
-      .utc(Math.round(trackProgress) * 1000)
-      .format(defineTimeFormat(audio.duration || 0));
-  }
-
-  return (
-    <ErrorBoundary>
-      <Slider
-        containerClassName='AudioBox__controllers__progressSlider'
-        onChangeCommitted={onTimerChange}
-        onChange={onProgressChange}
-        value={trackProgress}
-        step={1}
-        max={Math.round(audio?.duration)}
-        min={0}
-      />
-      <div
-        className={`AudioBox__controllers__timer ${
-          audio?.duration > 3600 ? 'AudioBox__controllers__timer-long' : ''
-        }`}
-      >
-        <Text weight={400} size={8}>
-          {(audio && formatProgress()) || '00:00'}
-        </Text>
-        <Text weight={400} size={8}>
-          / {(audio && formatDuration()) || '00:00'}
-        </Text>
-      </div>
-    </ErrorBoundary>
-  );
-}
-
-function AudioBoxVolume({ audio }: IAudioBoxVolumeProps) {
-  const [volume, setVolume] = React.useState<number>(0.99);
-
-  function onVolumeChange(e: any, value: number | number[]): void {
-    if (audio) {
-      audio.volume = value as number;
-      setVolume(value as number);
-    }
-  }
-
-  React.useEffect(() => {
-    if (audio) {
-      audio.volume = volume;
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [volume]);
-
-  function onVolumeToggle(): void {
-    if (audio) {
-      if (audio.volume === 0) {
-        setVolume(0.99);
-      } else {
-        setVolume(0);
-      }
-    }
-  }
-
-  return (
-    <ErrorBoundary>
-      <div
-        className={`AudioBox__controllers__volume ${
-          audio ? '' : 'AudioBox__controllers__volume-disabled'
-        }`}
-      >
-        <Button
-          onClick={onVolumeToggle}
-          withOnlyIcon
-          size='small'
-          className='AudioBox__controllers__volume--button'
-        >
-          <Icon name={volume === 0 ? 'voice-off' : 'voice-on'} />
-        </Button>
-        <div className='AudioBox__controllers__volume__Slider'>
-          <Slider
-            onChange={onVolumeChange}
-            value={volume}
-            step={0.01}
-            defaultValue={1}
-            max={0.99}
-            min={0}
-          />
-        </div>
-      </div>
-    </ErrorBoundary>
-  );
-}
 
 function AudioBox({
   data,
@@ -176,6 +32,8 @@ function AudioBox({
     blobsURIModel.getState()[blob_uri] ?? null,
   );
   let [muted, setMuted] = React.useState<boolean>(true);
+
+  const readyToPlay = React.useRef<boolean>(false);
 
   React.useEffect(() => {
     let timeoutID: number;
@@ -253,7 +111,7 @@ function AudioBox({
   }, [audio]);
 
   React.useEffect(() => {
-    if (!muted) {
+    if (audio && !muted) {
       audio.muted = false;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -267,15 +125,17 @@ function AudioBox({
     setIsPlaying(false);
   }
 
-  function onPLayChange(): void {
+  function onPlayChange(): void {
     if (audio) {
+      readyToPlay.current = true;
       setIsPlaying(!isPlaying);
     } else {
       setProcessing(true);
       additionalProperties
         .getAudiosBlobsData([blob_uri])
         .call()
-        .then((a: any) => {
+        .then(() => {
+          readyToPlay.current = true;
           setIsPlaying(!isPlaying);
         });
     }
@@ -289,23 +149,17 @@ function AudioBox({
       additionalProperties
         .getAudiosBlobsData([blob_uri])
         .call()
-        .then((a: any) => {
-          handleDownload();
-        });
+        .then(handleDownload);
     }
   }
 
   function handleDownload(): void {
-    const element: HTMLAnchorElement = document.createElement('a');
     const { index, format, context, step, caption, audio_name } = data;
-    const contextName: string =
+    const contextName =
       contextToString(context) === '' ? '' : `_${contextToString(context)}`;
-    const name: string = `${audio_name}${contextName}_${caption}_${step}_${index}`;
-    element.setAttribute('href', `data:audio/${format};base64,${blobData}`);
-    element.setAttribute('download', name);
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
+    const name = `${audio_name}${contextName}_${caption}_${step}_${index}`;
+
+    downloadLink(`data:audio/${format};base64,${blobData}`, name);
   }
 
   return (
@@ -314,7 +168,7 @@ function AudioBox({
         <div className='AudioBox__controllers'>
           {audio ? (
             <Button
-              onClick={onPLayChange}
+              onClick={onPlayChange}
               color='secondary'
               withOnlyIcon
               size='small'
@@ -322,12 +176,12 @@ function AudioBox({
               <Icon name={isPlaying ? 'pause' : 'play'} />
             </Button>
           ) : (
-            <div className='AudioBox__controllers__Player'>
+            <div className='AudioBox__controllers__player'>
               <AudioPlayer
                 displaySlider={false}
                 volume={false}
                 displayCloseButton={false}
-                onPlayed={onPLayChange}
+                onPlayed={onPlayChange}
                 width='24px'
                 src={src}
               />
@@ -343,7 +197,12 @@ function AudioBox({
               )}
             </div>
           )}
-          <AudiBoxProgress audio={audio} isPlaying={isPlaying} src={src} />
+          <AudioBoxProgress
+            audio={audio}
+            isPlaying={isPlaying}
+            src={src}
+            disabled={!readyToPlay.current}
+          />
           <AudioBoxVolume audio={audio} />
           <Button withOnlyIcon size='small' onClick={onDownload}>
             {processing ? (

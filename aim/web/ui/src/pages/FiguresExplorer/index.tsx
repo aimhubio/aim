@@ -9,10 +9,12 @@ const defaultConfig = getDefaultHydration();
 
 const FiguresExplorer = renderer(
   {
-    documentationLink:
-      'https://aimstack.readthedocs.io/en/latest/ui/pages/explorers.html#figures-explorer',
-    sequenceName: SequenceTypesEnum.Figures,
     name: 'Figures Explorer',
+      documentationLink:
+          'https://aimstack.readthedocs.io/en/latest/ui/pages/explorers.html#figures-explorer', sequenceName: SequenceTypesEnum.Figures,
+    sequenceName: SequenceTypesEnum.Figures,
+    basePath: 'figures',
+    persist: true,
     adapter: {
       objectDepth: AimObjectDepths.Step,
     },
@@ -23,6 +25,7 @@ const FiguresExplorer = renderer(
         controls: defaultConfig.controls,
         box: {
           component: Figures,
+          hasDepthSlider: defaultConfig.box.hasDepthSlider,
           initialState: defaultConfig.box.initialState,
         },
       },

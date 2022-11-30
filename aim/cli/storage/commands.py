@@ -1,14 +1,14 @@
 import click
-import collections
 import os
 from tqdm import tqdm
 
 from aim.cli.runs.utils import list_repo_runs, match_runs
 from aim.cli.upgrade.utils import convert_2to3
 
-from aim.sdk.maintenance_run import MaintenanceRun
+from aim.sdk.maintenance_run import MaintenanceRun as Run
 from aim.sdk.utils import backup_run, restore_run_backup, clean_repo_path
 from aim.sdk.repo import Repo
+from aim.sdk.index_manager import RepoIndexManager
 
 
 @click.group()
@@ -63,12 +63,14 @@ def to_3_11(ctx, hashes):
     if not confirmed:
         return
 
+    index_manager = RepoIndexManager.get_index_manager(repo)
     for run_hash in tqdm(matched_hashes):
         try:
-            run = MaintenanceRun(run_hash, repo=repo)
+            run = Run(run_hash, repo=repo)
             if run.check_metrics_version():
                 backup_run(run)
                 run.update_metrics()
+                index_manager.index(run_hash)
             else:
                 click.echo(f'Run {run.hash} is already up to date. Skipping')
         except Exception:
@@ -87,7 +89,7 @@ def to_3_11(ctx, hashes):
 @click.argument('hashes', nargs=-1, type=str)
 @click.pass_context
 def restore_runs(ctx, hashes):
-    """Rollback Runs data for given run hashes to the previous ."""
+    """Rollback Runs data for given run hashes to the previous metric format. """
     if len(hashes) == 0:
         click.echo('Please specify at least one Run to delete.')
         exit(1)
@@ -101,10 +103,11 @@ def restore_runs(ctx, hashes):
         return
 
     remaining_runs = []
+    index_manager = RepoIndexManager.get_index_manager(repo)
     for run_hash in tqdm(matched_hashes):
         try:
             restore_run_backup(repo, run_hash)
-            MaintenanceRun(run_hash, repo=repo)  # force indexing to set index metadata
+            index_manager.index(run_hash)
         except Exception as e:
             click.echo(f'Error while trying to restore run \'{run_hash}\'. {str(e)}.', err=True)
             remaining_runs.append(run_hash)
@@ -121,6 +124,8 @@ def restore_runs(ctx, hashes):
 def prune(ctx):
     """Remove dangling/orphan params/sequences with no referring runs."""
 
+    from collections.abc import MutableMapping
+
     def flatten(d, parent_path=None):
         if parent_path and not isinstance(parent_path, tuple):
             parent_path = (parent_path, )
@@ -132,7 +137,7 @@ def prune(ctx):
 
             new_path = parent_path + (k,) if parent_path else (k, )
             all_paths.add(new_path)
-            if isinstance(v, collections.MutableMapping):
+            if isinstance(v, MutableMapping):
                 all_paths.update(flatten(v, new_path))
 
         return all_paths
@@ -180,3 +185,15 @@ def prune(ctx):
     # start deleting with the deepest paths first to bypass the cases when parent path is deleted before the child
     for path in sorted(repo_paths, key=len, reverse=True):
         del index_tree[path]
+
+
+@storage.command('reindex')
+@click.option('--finalize-only', required=False, is_flag=True, default=False)
+@click.pass_context
+def reindex(ctx, finalize_only):
+    """ Process runs left in 'in progress' state. """
+    from aim.utils.deprecation import deprecation_warning
+
+    deprecation_warning(remove_version='3.16', msg='`aim storage reindex` is deprecated! '
+                                                   'Use `aim runs close` command instead.')
+    return

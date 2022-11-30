@@ -51,8 +51,8 @@ class PropsView(BaseModel):
     class Tag(BaseModel):
         id: UUID
         name: str
-        color: str
-        description: str
+        color: Optional[str] = None
+        description: Optional[str] = None
 
     class Experiment(BaseModel):
         id: UUID
@@ -84,12 +84,17 @@ RunMetricSearchApiOut = Dict[str, MetricSearchRunView]
 
 
 class RunSearchRunView(BaseModel):
-    params: dict
-    traces: List[TraceOverview]
+    params: Optional[dict]
+    traces: Optional[List[TraceOverview]]
     props: PropsView
 
 
 RunSearchApiOut = Dict[str, RunSearchRunView]
+
+
+class RunActiveOut(BaseModel):
+    traces: Dict[str, List[TraceOverview]]
+    props: PropsView
 
 
 # request models

@@ -76,7 +76,10 @@ class NetworkService {
     if (Array.isArray(arg)) {
       return [this.uri, ...arg].join('/');
     }
-    return `${this.uri}/${arg}`;
+    if (arg) {
+      return `${this.uri}/${arg}`;
+    }
+    return `${this.uri}`;
   };
 
   private createQueryParams = (queryParams: Record<string, unknown>) => {
@@ -139,7 +142,7 @@ class NetworkService {
             reject({ message: e.message, res: { body, headers } });
           }
 
-          if (response.status > 400) {
+          if (response.status >= 400) {
             return reject(body);
           }
 
@@ -170,10 +173,7 @@ class NetworkService {
 
       const fetchOptions: RequestInit = {
         method: options.method,
-        headers: options.headers || {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
+        headers: options.headers || this.getRequestHeaders(),
       };
 
       if (options.headers) {
@@ -212,6 +212,18 @@ class NetworkService {
     }
     this.interceptors.push(interceptor);
   }
+
+  private getTimezoneOffset = (): string => {
+    return `${new Date().getTimezoneOffset()}`;
+  };
+
+  public getRequestHeaders = () => {
+    return {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      'X-Timezone-Offset': this.getTimezoneOffset(),
+    };
+  };
 }
 
 export * from './types';

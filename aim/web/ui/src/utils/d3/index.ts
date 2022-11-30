@@ -15,6 +15,7 @@ import getCoordinates from './getCoordinates';
 import drawPoints from './drawPoints';
 import drawScatterTrendline from './drawScatterTrendline';
 import drawUnableToRender from './drawUnableToRender';
+import drawLegends from './drawLegends';
 
 const gradientStartColor = '#2980B9';
 const gradientEndColor = '#E74C3C';
@@ -28,8 +29,26 @@ enum AlignmentOptionsEnum {
 }
 
 enum CircleEnum {
-  Radius = 2.6,
-  ActiveRadius = 5,
+  Radius = 2,
+  ActiveRadius = 4.6,
+  InProgress = 1.6,
+}
+
+enum HighlightEnum {
+  Off = 0,
+  Run = 1,
+  Metric = 2,
+  Custom = 3,
+}
+
+enum ZoomEnum {
+  SINGLE = 0,
+  MULTIPLE = 1,
+}
+
+enum LegendsModeEnum {
+  PINNED = 'pinned',
+  UNPINNED = 'unpinned',
 }
 
 enum CurveEnum {
@@ -85,6 +104,9 @@ export {
   AlignmentOptionsEnum,
   PointSymbolEnum,
   TrendlineTypeEnum,
+  HighlightEnum,
+  ZoomEnum,
+  LegendsModeEnum,
   clearArea,
   drawArea,
   drawAxes,
@@ -102,6 +124,7 @@ export {
   drawPoints,
   drawScatterTrendline,
   drawUnableToRender,
+  drawLegends,
   gradientStartColor,
   gradientEndColor,
   MIN_LOG_VALUE,

@@ -53,5 +53,85 @@ function createSearchRunsRequest(
   };
 }
 
-export { searchRuns, createSearchRunsRequest };
+function createSearchRunRequest(): RequestInstance {
+  const controller = new AbortController();
+  const signal = controller.signal;
+
+  async function call(
+    queryParams: RunsSearchQueryParams,
+  ): Promise<RunsSearchResult> {
+    return (
+      await api.makeAPIGetRequest(`${ENDPOINTS.RUNS.SEARCH}/run`, {
+        query_params: queryParams,
+        signal,
+      })
+    ).body;
+  }
+
+  function cancel(): void {
+    controller.abort();
+  }
+
+  return {
+    call,
+    cancel,
+  };
+}
+
+function createBlobsRequest(
+  sequenceType: `${SequenceTypesEnum}`,
+): RequestInstance {
+  const controller = new AbortController();
+  const signal = controller.signal;
+
+  async function call(uris: string[]): Promise<RunsSearchResult> {
+    return (
+      await api.makeAPIPostRequest(`${sequenceType}/get-batch`, {
+        body: uris,
+        signal,
+      })
+    ).body;
+  }
+
+  function cancel(): void {
+    controller.abort();
+  }
+
+  return {
+    call,
+    cancel,
+  };
+}
+
+function createActiveRunsRequest(): RequestInstance {
+  const controller = new AbortController();
+  const signal = controller.signal;
+
+  async function call(
+    queryParams: RunsSearchQueryParams,
+  ): Promise<RunsSearchResult> {
+    return (
+      await api.makeAPIGetRequest(`${ENDPOINTS.RUNS.ACTIVE}`, {
+        signal,
+      })
+    ).body;
+  }
+
+  function cancel(): void {
+    controller.abort();
+  }
+
+  return {
+    call,
+    cancel,
+  };
+}
+
+export {
+  searchRuns,
+  createSearchRunsRequest,
+  createActiveRunsRequest,
+  createSearchRunRequest,
+  createBlobsRequest,
+};
 export * from './types';

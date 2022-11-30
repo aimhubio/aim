@@ -1,5 +1,6 @@
-import { IButtonProps } from 'components/kit';
 import React from 'react';
+
+import { IButtonProps } from 'components/kit';
 
 export interface ICopyToClipBoardProps {
   contentRef?: React.RefObject<any>;

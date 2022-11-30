@@ -13,20 +13,20 @@ import getValueByField from '../getValueByField';
 export default function getGroupConfig<D>({
   collection,
   groupingSelectOptions,
-  groupingItems = [],
+  groupingNames = [],
   configData,
 }: {
   collection: IMetricsCollection<D>;
   groupingSelectOptions: IGroupingSelectOption[];
-  groupingItems: GroupNameEnum[];
+  groupingNames: GroupNameEnum[];
   configData: IAppModelConfig;
 }) {
-  let groupConfig: { [key: string]: {} } = {};
+  let groupConfig: Record<string, {}> = {};
 
-  for (let groupItemKey of groupingItems) {
-    const groupItem: string[] = configData?.grouping?.[groupItemKey] || [];
+  for (let groupName of groupingNames) {
+    const groupItem: string[] = configData?.grouping?.[groupName] || [];
     if (groupItem.length) {
-      groupConfig[groupItemKey] = groupItem.reduce((acc, paramKey) => {
+      groupConfig[groupName] = groupItem.reduce((acc, paramKey) => {
         Object.assign(acc, {
           [getValueByField(groupingSelectOptions || [], paramKey)]: getValue(
             collection.config,

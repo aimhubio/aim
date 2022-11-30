@@ -1,8 +1,6 @@
 import React from 'react';
 import { RouteChildrenProps } from 'react-router-dom';
 
-import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
-
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { DensityOptions } from 'config/enums/densityEnum';
@@ -30,6 +28,8 @@ import {
   IGroupingSelectOption,
   IChartZoom,
   ISmoothing,
+  LegendsDataType,
+  LegendsConfig,
 } from 'types/services/models/metrics/metricsAppModel';
 import { ITableColumn } from 'types/components/TableColumns/TableColumns';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
@@ -45,6 +45,7 @@ import { IAxesScaleRange } from 'types/components/AxesPropsPopover/AxesPropsPopo
 import { IColumnsOrder } from 'types/services/models/explorer/createAppModel';
 import { ITagInfo } from 'types/tags/Tags';
 
+import { HighlightEnum } from 'utils/d3';
 import { IRequestProgress } from 'utils/app/setRequestProgress';
 
 export interface IMetricProps extends Partial<RouteChildrenProps> {
@@ -58,10 +59,12 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   lineChartData: ILine[][];
   panelResizing: boolean;
   chartTitleData: IChartTitleData;
+  legendsData: LegendsDataType;
   tableData: IMetricTableRowData[];
   aggregatedData: IAggregatedData[];
   tableColumns: ITableColumn[];
   ignoreOutliers: boolean;
+  legends: LegendsConfig;
   zoom: IChartZoom;
   densityType: DensityOptions;
   axesScaleType: IAxesScaleState;
@@ -97,6 +100,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   onRunsTagsChange: (runHash: string, tags: ITagInfo[]) => void;
   onChangeTooltip: (tooltip: Partial<ITooltip>) => void;
   onIgnoreOutliersChange: () => void;
+  onLegendsChange: (legends: Partial<LegendsConfig>) => void;
   onZoomChange: (zoom: Partial<IChartZoom>) => void;
   onActivePointChange?: (
     activePoint: IActivePoint,

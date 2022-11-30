@@ -47,6 +47,20 @@ function BoxFullViewPopover({
           ),
         },
         {
+          icon: 'link',
+          value: (
+            <Link
+              to={PathEnum.Experiment.replace(
+                ':experimentId',
+                runData.experimentId,
+              )}
+              component={RouteLink}
+            >
+              {runData.experiment}
+            </Link>
+          ),
+        },
+        {
           icon: 'calendar',
           value: `${moment(runData.creation_time * 1000).format(
             DATE_WITH_SECONDS,

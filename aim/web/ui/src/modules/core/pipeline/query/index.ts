@@ -18,6 +18,7 @@ import { parseStream } from 'utils/encoder/streamEncoding';
 import { PipelinePhasesEnum, StatusChangeCallback } from '../types';
 
 import { Query, RequestProgressCallback } from './types';
+import { DecodingError, FetchingError } from './QueryError';
 
 type QueryInternalConfig = {
   cache?: InlineCache;
@@ -26,81 +27,6 @@ type QueryInternalConfig = {
   statusChangeCallback?: StatusChangeCallback;
   requestProgressCallback?: RequestProgressCallback;
 };
-
-const config: QueryInternalConfig = {};
-
-async function executeBaseQuery(
-  query: RunsSearchQueryParams,
-  ignoreCache: boolean = false,
-): Promise<RunSearchRunView[]> {
-  if (config.cache && !ignoreCache) {
-    const cachedResult = config.cache.get(query);
-    if (cachedResult) {
-      return cachedResult;
-    }
-  }
-  cancel();
-
-  if (config.statusChangeCallback) {
-    config.statusChangeCallback(PipelinePhasesEnum.Fetching); // make invariant with type mapping
-  }
-
-  try {
-    const data: ReadableStream = (await config.currentQueryRequest?.call(
-      query,
-    )) as ReadableStream; // @TODO write better code to avoid null check
-
-    if (config.statusChangeCallback) {
-      config.statusChangeCallback(PipelinePhasesEnum.Decoding);
-    }
-
-    const progressCallback: RequestProgressCallback | undefined =
-      query.report_progress ? config.requestProgressCallback : undefined;
-
-    const result = parseStream<Array<RunSearchRunView>>(data, progressCallback);
-    if (config.cache) {
-      config.cache.set(query, result);
-    }
-
-    return result;
-  } catch (e) {
-    // if (__DEV__) {
-    // eslint-disable-next-line no-console
-    console.error("Can't query runs ---> ", e);
-    throw e;
-    // }
-    // return [];
-  }
-}
-
-function setCurrentSequenceType(sequenceType: SequenceTypesEnum): void {
-  config.currentSequenceType = sequenceType;
-}
-
-function setStatusChangeCallback(callback?: (status: string) => void) {
-  config.statusChangeCallback = callback;
-}
-
-function createQueryRequest(): void {
-  config.currentQueryRequest = createSearchRunsRequest(
-    config?.currentSequenceType || SequenceTypesEnum.Images, // @TODO write better typing to avoid using default values
-  );
-}
-
-function setRequestProgressCallback(callback?: RequestProgressCallback): void {
-  config.requestProgressCallback = callback;
-}
-
-/**
- * function cancel
- * This function is useful to abort api request
- */
-function cancel(): void {
-  if (config.currentQueryRequest) {
-    config.currentQueryRequest.cancel();
-    createQueryRequest();
-  }
-}
 
 /**
  *
@@ -112,9 +38,83 @@ function cancel(): void {
 function createQuery(
   sequenceType: SequenceTypesEnum,
   useCache: boolean = false,
-  statusChangeCallback?: (status: string) => void,
+  statusChangeCallback?: StatusChangeCallback,
   requestProgressCallback?: RequestProgressCallback,
 ): Query {
+  const config: QueryInternalConfig = {};
+
+  async function executeBaseQuery(
+    query: RunsSearchQueryParams,
+    ignoreCache: boolean = false,
+  ): Promise<RunSearchRunView[]> {
+    if (config.cache && !ignoreCache) {
+      const cachedResult = config.cache.get(query);
+      if (cachedResult) {
+        return cachedResult;
+      }
+    }
+    cancel();
+
+    if (config.statusChangeCallback) {
+      config.statusChangeCallback(PipelinePhasesEnum.Fetching); // make invariant with type mapping
+    }
+    let data: ReadableStream;
+    try {
+      data = (await config.currentQueryRequest?.call(query)) as ReadableStream; // @TODO write better code to avoid null check
+    } catch (e) {
+      throw new FetchingError(e.message || e, e.detail).getError();
+    }
+
+    if (config.statusChangeCallback) {
+      config.statusChangeCallback(PipelinePhasesEnum.Decoding);
+    }
+
+    const progressCallback: RequestProgressCallback | undefined =
+      query.report_progress ? config.requestProgressCallback : undefined;
+    try {
+      const result = parseStream<Array<RunSearchRunView>>(data, {
+        progressCallback,
+      });
+      if (config.cache) {
+        config.cache.set(query, result);
+      }
+      return result;
+    } catch (e) {
+      throw new DecodingError(e.message || e, e.detail).getError();
+    }
+  }
+
+  function setCurrentSequenceType(sequenceType: SequenceTypesEnum): void {
+    config.currentSequenceType = sequenceType;
+  }
+
+  function setStatusChangeCallback(callback?: StatusChangeCallback) {
+    config.statusChangeCallback = callback;
+  }
+
+  function createQueryRequest(): void {
+    config.currentQueryRequest = createSearchRunsRequest(
+      config?.currentSequenceType || SequenceTypesEnum.Images, // @TODO write better typing to avoid using default values
+    );
+  }
+
+  function setRequestProgressCallback(
+    callback?: RequestProgressCallback,
+  ): void {
+    config.requestProgressCallback = callback;
+  }
+
+  /**
+   * function cancel
+   * This function is useful to abort api request
+   */
+  function cancel(): void {
+    if (config.currentQueryRequest) {
+      config.currentQueryRequest.cancel();
+    }
+    createQueryRequest();
+  }
+
   setCurrentSequenceType(sequenceType);
   setStatusChangeCallback(statusChangeCallback);
   setStatusChangeCallback(statusChangeCallback);

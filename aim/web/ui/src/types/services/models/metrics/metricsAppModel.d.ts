@@ -1,5 +1,3 @@
-import { ZoomEnum } from 'components/ZoomInPopover/ZoomInPopover';
-
 import { GroupNameEnum } from 'config/grouping/GroupingPopovers';
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 
@@ -22,7 +20,12 @@ import {
   AggregationAreaMethods,
   AggregationLineMethods,
 } from 'utils/aggregateGroupData';
-import { AlignmentOptionsEnum, CurveEnum } from 'utils/d3';
+import {
+  AlignmentOptionsEnum,
+  CurveEnum,
+  ZoomEnum,
+  LegendsModeEnum,
+} from 'utils/d3';
 import { IRequestProgress } from 'utils/app/setRequestProgress';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 
@@ -43,6 +46,7 @@ export interface IMetricAppModelState {
   lineChartData: ILine[][];
   chartTitleData: IChartTitleData;
   aggregatedData: IAggregatedData[];
+  legendsData: LegendsDataType;
   tooltip: ITooltip;
   tableData: any[];
   tableColumns: ITableColumn[];
@@ -92,7 +96,14 @@ export interface ITooltipContent {
   run?: IRun;
 }
 
+export enum TooltipAppearance {
+  Top = 'top',
+  Auto = 'auto',
+  Bottom = 'bottom',
+}
+
 export interface ITooltipConfig {
+  appearance: TooltipAppearance;
   display: boolean;
   selectedFields: string[];
 }
@@ -101,10 +112,15 @@ export interface ITooltip extends Partial<ITooltipConfig> {
   content?: ITooltipContent;
 }
 
+export interface LegendsConfig {
+  display: boolean;
+  mode: LegendsModeEnum;
+}
+
 export interface IMetricsCollection<T> {
   key?: string;
   groupKey?: string;
-  config: { [key: string]: string } | null;
+  config: Record<string, unknown> | null;
   color: string | null;
   dasharray: string | null;
   chartIndex: number;
@@ -184,12 +200,6 @@ export interface IMetricTableRowData {
   [key: string]: any;
 }
 
-export interface IGetDataAsLinesProps {
-  smoothingFactor?: number;
-  smoothingAlgorithm?: string;
-  collection?: IMetric[][];
-}
-
 export interface IOnGroupingSelectChangeParams {
   groupName: GroupNameEnum;
   list: string[];
@@ -254,4 +264,15 @@ export interface ISmoothing {
   factor: number;
   curveInterpolation: CurveEnum;
   isApplied: boolean;
+}
+
+export interface LegendColumnDataType {
+  color?: string;
+  dasharray?: string;
+  chartIndex?: number;
+  value: string;
+}
+
+export interface LegendsDataType {
+  [key: string]: Record<string, LegendColumnDataType[]>;
 }

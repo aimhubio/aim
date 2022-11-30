@@ -17,6 +17,7 @@ import { Icon } from 'components/kit';
 import ExportPreview from 'components/ExportPreview';
 import ChartGrid from 'components/ChartPanel/ChartGrid';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import ChartLegends from 'components/ChartPanel/ChartLegends';
 
 import { CONTROLS_DEFAULT_CONFIG } from 'config/controls/controlsDefaultConfig';
 
@@ -63,8 +64,8 @@ function Controls(
 
   const tooltipChanged: boolean = React.useMemo(() => {
     return (
-      props.tooltip?.display !==
-        CONTROLS_DEFAULT_CONFIG.metrics.tooltip.display ||
+      props.tooltip?.appearance !==
+        CONTROLS_DEFAULT_CONFIG.metrics.tooltip.appearance ||
       props.tooltip.selectedFields?.length !==
         CONTROLS_DEFAULT_CONFIG.metrics.tooltip.selectedFields.length
     );
@@ -325,11 +326,43 @@ function Controls(
                 <TooltipContentPopover
                   selectOptions={props.selectOptions}
                   selectedFields={props.tooltip?.selectedFields}
-                  displayTooltip={props.tooltip?.display}
+                  tooltipAppearance={props.tooltip?.appearance}
+                  isTooltipDisplayed={props.tooltip?.display}
                   onChangeTooltip={props.onChangeTooltip}
                 />
               }
             />
+          </ErrorBoundary>
+        </div>
+        <div>
+          <ErrorBoundary>
+            <Tooltip
+              title={
+                props.legends?.display ? 'Hide legends' : 'Display legends'
+              }
+            >
+              <div
+                className={classNames('Controls__anchor', {
+                  active:
+                    props.legends?.display && !_.isEmpty(props.legendsData),
+                  outlined:
+                    props.legends?.display && !_.isEmpty(props.legendsData),
+                  disabled: _.isEmpty(props.legendsData),
+                })}
+                onClick={() => {
+                  if (!_.isEmpty(props.legendsData)) {
+                    props.onLegendsChange({ display: !props.legends?.display });
+                  }
+                }}
+              >
+                <Icon
+                  className={classNames('Controls__icon', {
+                    active: props.legends?.display,
+                  })}
+                  name='chart-legends'
+                />
+              </div>
+            </Tooltip>
           </ErrorBoundary>
         </div>
         <div>
@@ -429,6 +462,11 @@ function Controls(
               openModal={openExportModal}
               explorerPage='metrics'
               onToggleExportPreview={onToggleExportPreview}
+              appendElement={
+                !!props.legends?.display && !_.isEmpty(props.legendsData) ? (
+                  <ChartLegends data={props.legendsData} readOnly />
+                ) : null
+              }
             >
               <ChartGrid
                 readOnly

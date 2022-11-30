@@ -353,6 +353,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                         onActivePointChange={
                           imagesExploreAppModel.onActivePointChange
                         }
+                        onChangeTooltip={imagesExploreAppModel?.onChangeTooltip}
                         controls={
                           <Controls
                             selectOptions={

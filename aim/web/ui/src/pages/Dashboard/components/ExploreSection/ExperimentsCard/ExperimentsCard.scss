@@ -1,0 +1,15 @@
+@use 'src/styles/abstracts' as *;
+
+.ExperimentsCard {
+  border-top: $border-dark-lighter;
+  padding: $space-unit $space-sm;
+  &__title {
+    margin-bottom: $space-sm;
+    padding: 0 $space-sm;
+  }
+  .ExperimentNameBox {
+    &__experimentName {
+      font-size: $text-sm;
+    }
+  }
+}

@@ -43,6 +43,10 @@
     align-items: center;
     cursor: pointer;
     justify-content: center;
+    color: $primary-color;
+    &.isHidden {
+      color: $pico-80;
+    }
     &.disabled {
       pointer-events: none;
       color: $pico-20;
