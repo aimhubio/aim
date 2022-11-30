@@ -1,0 +1,54 @@
+name: Change Docker image tag
+
+permissions:
+  id-token: write
+  contents: write
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+
+jobs:
+ edit-image-tag:
+    name: Change the image tag in values.yaml
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Clone environments repo
+        uses: actions/checkout@v3  
+        with: 
+          repository: 'aimhubio/aim'
+          ref: chore/add-ci-stage-workflow
+
+      - name: Capture aim version
+        id: capture-version
+        run: echo AIM_VERSION="$(cat ./aim/VERSION)" >> $GITHUB_OUTPUT
+
+    #  - name: Setup tmate session
+    #    uses: mxschmitt/action-tmate@v3
+    #    with:
+    #      limit-access-to-actor: true
+    #    env:
+    #      TOKEN: ${{ secrets.AIM_ENVS_REPO_ACCESS_TOKEN }}
+
+      - name: Clone environments repo
+        uses: actions/checkout@v3  
+        with:
+          repository: 'aimhubio/aim-environments'
+          ref: main
+          path: aim-environments
+          token: ${{ secrets.AIM_ENVS_REPO_ACCESS_TOKEN }}
+
+      - name: Edit Image tag for the Aim development environment 
+        run: |-
+          yq e -i '.aimhub.image.tag = "${{ steps.capture-version.outputs.AIM_VERSION }}"' ./aim-environments/development/values.yaml;
+      
+      - name: Push 
+        run: |-
+          cd aim-environments
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add .
+          git commit -m "Change the image tag for the Aim Development environment"
+          git push origin main 

@@ -9,10 +9,16 @@ on:
         required: true
       DOCKER_HUB_PASSWORD:
         required: true
+      AIM_ENVS_REPO_ACCESS_TOKEN:
+        required: true
     inputs:
       branch:
         required: true
         type: string
+    outputs:
+      AIM_VERSION:
+        description: "Capture Aim Version"
+        value: ${{ jobs.linux-dist.outputs.aim_version }}
   workflow_dispatch:
 
 jobs:
@@ -59,70 +65,67 @@ jobs:
           python -m twine upload -u __token__ -p "${PYPI_PASSWORD}" dist/*
 
   linux-dist:
-    if: ${{ github.event_name == 'schedule' || github.actor == 'gorarakelyan' || github.actor == 'alberttorosyan' || github.actor == 'roubkar' }}
+    if: ${{ github.event_name == 'schedule' || github.actor == 'gorarakelyan' || github.actor == 'alberttorosyan' || github.actor == 'roubkar' || github.actor == 'kmartirosyan' }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
         manylinux-version: ['manylinux2014_x86_64', 'manylinux_2_24_x86_64']
     name: Linux wheels build (using Docker) ${{ matrix.manylinux-version }}
-    needs: aim-ui-dist
+    # needs: aim-ui-dist
     steps:
-      - name: Install Docker & pull images
-        run: |
-          apt update && apt install -y docker.io
-          sudo systemctl enable --now docker
-          docker pull quay.io/pypa/${{ matrix.manylinux-version }}
+      # - name: Install Docker & pull images
+      #   run: |
+      #     apt update && apt install -y docker.io
+      #     sudo systemctl enable --now docker
+      #     docker pull quay.io/pypa/${{ matrix.manylinux-version }}
 
       - name: Checkout sources
         uses: actions/checkout@v2
         with:
           ref: ${{ inputs.branch || github.ref }}
 
-      - name: Capture aim version
-        id: capture-version
-        run: |
-          AIM_VERSION=$(< ./aim/VERSION)
-          echo "::set-output name=AIM_VERSION::$AIM_VERSION"
+      # - name: Capture aim version
+      #   id: capture-version
+      #   run: echo AIM_VERSION="$(cat ./aim/VERSION)" >> $GITHUB_OUTPUT
 
-      - name: Setup python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.9
-          architecture: x64
+      # - name: Setup python
+      #   uses: actions/setup-python@v2
+      #   with:
+      #     python-version: 3.9
+      #     architecture: x64
 
-      - name: Install dev dependencies
-        run: |
-          python -m pip install -r requirements.dev.txt
-          python -m pip install -r requirements.txt
+      # - name: Install dev dependencies
+      #   run: |
+      #     python -m pip install -r requirements.dev.txt
+      #     python -m pip install -r requirements.txt
 
-      - name: Build bdist wheels
-        uses: nick-fields/retry@v2
-        with:
-          max_attempts: 3
-          timeout_minutes: 30
-          retry_wait_seconds: 60
-          command: docker run --mount type=bind,source=$PWD,target=/opt/aim quay.io/pypa/${{ matrix.manylinux-version }} bash /opt/aim/docker/build-wheels.sh
+      # - name: Build bdist wheels
+      #   uses: nick-fields/retry@v2
+      #   with:
+      #     max_attempts: 3
+      #     timeout_minutes: 30
+      #     retry_wait_seconds: 60
+      #     command: docker run --mount type=bind,source=$PWD,target=/opt/aim quay.io/pypa/${{ matrix.manylinux-version }} bash /opt/aim/docker/build-wheels.sh
 
+      # - name: Publish wheels
+      #   env:
+      #     PYPI_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+      #   run: |
+      #     python -m twine upload -u __token__ -p "${PYPI_PASSWORD}" multilinux_dist/*
 
-      - name: Publish wheels
-        env:
-          PYPI_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-        run: |
-          python -m twine upload -u __token__ -p "${PYPI_PASSWORD}" multilinux_dist/*
+      # - name: Docker login
+      #   env:
+      #     DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+      #     DOCKER_HUB_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
+      #   run: docker login -u $DOCKER_HUB_USERNAME -p $DOCKER_HUB_PASSWORD
 
-      - name: Docker login
-        env:
-          DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
-          DOCKER_HUB_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
-        run: docker login -u $DOCKER_HUB_USERNAME -p $DOCKER_HUB_PASSWORD
-
-      - name: Build & Push aim image
-        if: matrix.manylinux-version == 'manylinux_2_24_x86_64'
-        working-directory: ./docker
-        env:
-          AIM_VERSION: ${{ steps.capture-version.outputs.AIM_VERSION }}
-          UPDATE_TAG: ${{ inputs.branch || 'latest' }}
-        run: . create-docker-image.sh
+      # - name: Build & Push aim image
+      #   if: matrix.manylinux-version == 'manylinux_2_24_x86_64'
+      #   working-directory: ./docker
+      #   env:
+      #     AIM_VERSION: ${{ steps.capture-version.outputs.AIM_VERSION }}
+      #     UPDATE_TAG: ${{ inputs.branch || 'latest' }}
+      #   run: . create-docker-image.sh
 
   macos-dist:
     if: ${{ github.event_name == 'schedule' || github.actor == 'gorarakelyan' || github.actor == 'alberttorosyan' || github.actor == 'roubkar' }}
@@ -167,3 +170,9 @@ jobs:
           PYPI_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
         run: |
           $PYTHON -m twine upload -u __token__ -p "${PYPI_PASSWORD}" dist/*.whl
+
+  change-aim-image-tag:
+    needs: linux-dist
+    if: github.repository == 'aimhubio/aim'
+    uses: aimhubio/aim/.github/workflows/change-docker-image-tag.yml@chore/add-ci-stage-workflow
+    secrets: inherit
