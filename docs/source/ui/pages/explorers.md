@@ -506,8 +506,8 @@ Figures explorer allows to easily query and compare tracked plotly figures and i
 
 Features:
 
-- [Easily query your figures](#query-figures)
-- [Group figures by tracked parameters, step and index](#group-figures)
+- [Query figures](#query-figures)
+- [Group figures by tracked parameters](#group-figures)
 - [Visualization](#visualization)
   - [Figure Box](#figure-box)
   - [Figure Box full view](#figure-full-view)
@@ -515,11 +515,11 @@ Features:
 
 #### Query figures
 
-Use select form to easily query your figures. There are two option to query figures using dropdown, by using [Aim QL](../../using/search.html) language and advance mode for [Aim QL](../../using/search.html).
+There are two option to query figures using dropdown, by using [Aim QL](../../using/search.html) language and advance mode for [Aim QL](../../using/search.html).
 
 <img alt="Figures explore search" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/figures-explorer/figures-search-bar.png">
 
-###### How to use select form?
+###### Querying figures using dropdown
 
 - Click on Figures button
 - Select options you want to use in query
@@ -527,11 +527,7 @@ Use select form to easily query your figures. There are two option to query figu
 
 <img alt="Figures explore select form" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/figures-explorer/figures-select.png">
 
-###### How to reset select form value?
-
-<img alt="Figures explore reset select form" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/figures-explorer/figures-reset.png">
-
-###### How to use advanced query mode?
+###### Querying in advanced mode
 
 - Click on pencil icon in right side of select form to show input
 - Type advance [Aim QL](../../using/search.html) query
@@ -539,13 +535,22 @@ Use select form to easily query your figures. There are two option to query figu
 
 <img alt="Figures explore advanced search" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/figures-explorer/figures-advanced-search.png">
 
-###### How to query with step range and density?
+##### Reset query and selections
 
-Use ranges panel placed in the bottom of Figures explorer to easily query your figures with step ranges and density.
+It's possible to reset the query and selections by clicking on the reset icon button.
+
+<img alt="Figures explore reset select form" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/figures-explorer/figures-reset.png">
+
+###### Querying with training steps range and density
+
+At the bottom of explorer located a range panel which allows to easily query tracked figures with step ranges and density.
+
+- Select preferred step ranges and density
+- Click on the apply button
 
 <img alt="Figures explore range slider" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/figures-explorer/figures-range-selector.png">
 
-### Group figures
+### Grouping figures
 
 Easily group data by columns and rows with selected parameters. If objects shares the same group, they share the same position on visualization canvas as well.
 
@@ -559,36 +564,36 @@ There are two different ways to group figures.
 
 ##### Group by Columns
 
-Grouping figures by columns will divide visualization into segments vertically. Each segment includes group of figure boxes sharing the same field value
-To group by columns click on `Rows` dropdown from `Group by` section and select fields you want to group by with.
+Grouping figures by columns will divide visualization into segments vertically. Each segment includes group of figure boxes sharing the same value of grouping property.
+To group by columns click on `Columns` dropdown from `Group by` section and select fields you want to group by with.
 
 <img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/figures-explorer/column-grouping-popover.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="groupby_stroke" />
 
 ##### Group by Rows
 
-Grouping figures by rows will divide visualization into segments horizontally. Each segment includes group of figure boxes sharing the same field value
+Grouping figures by rows will divide visualization into segments horizontally. Each segment includes group of figure boxes sharing the same value of group property.
 To group by rows click on `Rows` dropdown from `Group by` section and select fields you want to group by with.
 
 #### Ordering groups
 
-You can order groups as well by simply clicking on ‘Asc’ or ‘Desc’ buttons placed with each selected parameter.
+It may also be possible to order groups by simply clicking on ‘Asc’ or ‘Desc’ buttons placed with each selected parameter.
 
 <img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/figures-explorer/groups-ordering.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="groupby_stroke" />
 
 ### Visualization
 
-As a visualization area considered 2d canvas of boxes(cubes) and shows group names and values.
+As a visualization area considered 2d canvas of boxes with group names and values.
 
 <img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/figures-explorer/figures-visualizer.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="groupby_stroke" />
 
 ### Figure Box
 
-Figure box represents a visualization of tracked figure. The location of the box determines the [grouping](#group-figures).
-The location of the box shows its group segment position.
+Figure box represents a visualization of tracked figure. The location of the box determined by [grouping](#group-figures).
+and represents its group segment position.
 
 <img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/figures-explorer/single-box-view.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="groupby_stroke" />
 
-You can easily [configure with and height of figure box](#control-box-size).
+It's possible to easily [configure with and height of figure box](#control-box-size).
 
 Figure box consists of three sections
 
@@ -597,16 +602,16 @@ Figure box consists of three sections
 - Box Caption
 
 #### Slider to switch between objects in the same group
-Use slider to switch between figures shares the same group. If there is single figure in the group, the slider will not be visible.
+The slider is designed to switch between figures sharing the same group. If there is a single figure in the group, the slider is not visible.
 
 <img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/figures-explorer/box-slider.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="box-slider" />
 
 #### Box Caption
-This section is used to show more information about figure (run, context, step, index, etx.).
+This section is designed to show more information about figure (run, context, step, index, etx.).
 
 <img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/figures-explorer/box-caption.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="box-caption" />
 
-You can easily [configure Box Caption](#control-box-caption).
+It's possible to easily [configure Box Caption](#control-box-caption).
 
 #### Figure Box full view
 Figure Box full view allows to see the entire information about plotly figure, it's run, group, etx.
@@ -615,13 +620,13 @@ Click on full view icon placed in the top right corner of each box to see the ob
 
 <img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/figures-explorer/full-view-icon.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="figure_full_view-icon" />
 
-The result will look like below
+The result looks like below
 
 <img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/figures-explorer/box-full-view.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="figure-full-view" />
 
 ### Visualization Controls
 
-To configure visualizer use controls section placed at the right-bottom of query form.
+It's possible to configure the visualizer by using controls section placed at the right-bottom of query form.
 
 <img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/figures-explorer/controls-location.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="controls-section" />
 
@@ -646,6 +651,4 @@ Configure box caption by clicking on `Box Caption` dropdown from controls bar an
 To change the visibility of caption on box, use `Hide` or `Show` button on `Box Caption` popover
 
 <img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/figures-explorer/box-caption-visibility.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="box-caption-visibility" />
-
-You can reset to default values by clicking on reset button.
 
