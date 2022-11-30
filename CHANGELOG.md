@@ -1,5 +1,9 @@
 # Changelog
 
+## Fixes
+
+- Add support for Figures blob lazy loading (mihran113, rubenaprikyan)
+
 ## 3.15.0 Nov 26, 2022
 
 ### Enhancements:
