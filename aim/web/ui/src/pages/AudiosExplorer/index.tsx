@@ -28,6 +28,7 @@ const AudiosExplorer = renderer(
         },
       },
     },
+    getStaticContent: defaultConfig.getStaticContent,
   },
   __DEV__,
 );
