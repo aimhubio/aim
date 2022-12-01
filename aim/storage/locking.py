@@ -6,7 +6,7 @@ from filelock import BaseFileLock, SoftFileLock, UnixFileLock, has_fcntl
 from cachetools.func import ttl_cache
 from psutil import disk_partitions
 
-from typing import Optional, Union, Dict, Set, Tuple
+from typing import Optional, Union, Dict, Set, Tuple, Any
 
 logger = logging.getLogger(__name__)
 
@@ -149,6 +149,24 @@ def AutoFileLock(
         # locks by `SoftFileLock` causing a deadlock.
         # To prevent this, we add a suffix to the lock file name.
         return SoftFileLock(f'{lock_file}.softlock', timeout)
+
+
+class DualLock:
+    """ Custom lock that uses both UnixLock and SoftFileLock"""
+    def __init__(self, lock_path: Union[str, os.PathLike], timeout: float = -1):
+        self._lock_path = str(lock_path)
+        self._lock = UnixFileLock(self._lock_path, timeout)
+
+        self._soft_lock_path = f'{self._lock_path}.softlock'
+        self._soft_lock = SoftFileLock(self._soft_lock_path, timeout)
+
+    def acquire(self):
+        self._lock.acquire()
+        self._soft_lock.acquire()
+
+    def release(self):
+        self._soft_lock.release()
+        self._lock.release()
 
 
 class NoopLock:
