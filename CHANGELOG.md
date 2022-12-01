@@ -4,7 +4,7 @@
 ## 3.15.1
 
 - Fix issue with index container lock for older repos (mihran113)
-- Fix issue with rendering incorrect empty-illustration info in Audios explorer (KaroMourad)
+- Fix issue with rendering incorrect empty-illustration content in Audios explorer (KaroMourad)
 
 ## 3.15.0 Nov 26, 2022
 
