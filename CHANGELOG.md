@@ -1,7 +1,6 @@
 # Changelog
 
-
-## 3.15.1
+## 3.15.1 Dec 1, 2022
 
 - Fix issue with index container lock for older repos (mihran113)
 - Fix issue with rendering incorrect empty-illustration content in Audios explorer (KaroMourad)
