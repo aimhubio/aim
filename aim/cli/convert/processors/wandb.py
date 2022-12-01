@@ -1,7 +1,10 @@
 from pathlib import Path
+import re
 from tempfile import TemporaryDirectory
 
 import click
+from tqdm import tqdm
+
 from aim import Run
 from aim.ext.resource.log import LogLine
 
@@ -29,7 +32,7 @@ def parse_wandb_logs(repo_inst, entity, project, run_id):
             return
         runs = (run,)
 
-    for run in runs:
+    for run in tqdm(runs, desc="Converting wandb logs"):
         if not run.config.items():
             continue
         aim_run = Run(
@@ -64,11 +67,11 @@ def parse_wandb_logs(repo_inst, entity, project, run_id):
 
         keys = [key for key in run.history(stream='default').keys()
                 if not key.startswith('_')]
-        # TODO: Collect system logs by run.history(stream='system')
 
         # Collect metrics
         for record in run.scan_history():
-            step = record["_step"]
+            step = record.get("_step")
+            epoch = record.get("epoch")
             for key in keys:
                 value = record.get(key)
                 if value is None:
@@ -86,6 +89,20 @@ def parse_wandb_logs(repo_inst, entity, project, run_id):
                 except ValueError:
                     name, context = key, {}
                 try:
-                    aim_run.track(value, name=name, step=step, context=context)
+                    aim_run.track(value, name=name, step=step, epoch=epoch, context=context)
                 except ValueError:
                     click.echo(f"Type '{type(value).__name__}':artifacts are not supported yet.", err=True)
+
+        # Collect system logs
+        # NOTE: In 'system' logs, collecting sampled history cannot be avoided. (default 'samples' == 500)
+        # TODO: Any possible ways to inject system logs as legit aim system logs?
+        name_set = set()
+        system_record_context = {"tag": "system"}
+        for record in run.history(stream='system', pandas=False, samples=1e3):
+            for key in record:
+                if key.startswith('_'):  # Including '_runtime', '_timestamp', '_wandb'
+                    continue
+                name = re.sub('^system\.', '', key)
+                value = record.get(key)
+                aim_run.track(value, name=name, context=system_record_context)
+                name_set.add(name)
