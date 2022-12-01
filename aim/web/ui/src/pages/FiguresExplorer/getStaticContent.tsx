@@ -1,19 +1,17 @@
 import * as React from 'react';
 
-import getBaseExplorerStaticContent from 'modules/BaseExplorer/utils/getBaseExplorerStaticContent';
+import getBaseExplorerStaticContent, {
+  STATIC_CONTENT_TYPES,
+} from 'modules/BaseExplorer/utils/getBaseExplorerStaticContent';
 import { StaticContentType } from 'modules/BaseExplorer/types';
-
-import { ILLUSTRATION_TYPES } from 'components/Illustration';
 
 import { DOCUMENTATIONS } from 'config/references';
 
 function getFiguresExplorerStaticContent(
-  type?: StaticContentType,
+  type: StaticContentType,
 ): React.ReactNode {
-  return getBaseExplorerStaticContent(
-    type,
-    getFiguresExplorerIllustrationContent,
-  );
+  const illustrationContent = getFiguresExplorerIllustrationContent(type);
+  return getBaseExplorerStaticContent(type, illustrationContent);
 }
 
 function getFiguresExplorerIllustrationContent(
@@ -42,11 +40,11 @@ function getFiguresExplorerIllustrationContent(
   const Empty_Bookmarks = "You don't have any saved bookmark";
 
   const CONTENT = {
-    [ILLUSTRATION_TYPES.Never_Executed]: Never_Executed,
-    [ILLUSTRATION_TYPES.Failed]: Failed,
-    [ILLUSTRATION_TYPES.Insufficient_Resources]: Insufficient_Resources,
-    [ILLUSTRATION_TYPES.Empty]: Empty,
-    [ILLUSTRATION_TYPES.Empty_Bookmarks]: Empty_Bookmarks,
+    [STATIC_CONTENT_TYPES.Never_Executed]: Never_Executed,
+    [STATIC_CONTENT_TYPES.Failed]: Failed,
+    [STATIC_CONTENT_TYPES.Insufficient_Resources]: Insufficient_Resources,
+    [STATIC_CONTENT_TYPES.Empty]: Empty,
+    [STATIC_CONTENT_TYPES.Empty_Bookmarks]: Empty_Bookmarks,
   };
   return CONTENT[type] || null;
 }
