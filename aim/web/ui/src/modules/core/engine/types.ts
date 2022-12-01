@@ -82,7 +82,7 @@ export enum PipelineStatusEnum {
   /*
    * Never queried
    */
-  NeverExecuted = 'Never Executed',
+  Never_Executed = 'Never Executed',
   /*
    * Executing
    */

@@ -3,6 +3,8 @@ import { getDefaultHydration } from 'modules/BaseExplorer';
 import { GroupType, Order } from 'modules/core/pipeline';
 import { defaultHydration } from 'modules/BaseExplorer/getDefaultHydration';
 
+import getAudiosExplorerStaticContent from './getStaticContent';
+
 export const getAudiosDefaultConfig = (): typeof defaultHydration => {
   const defaultConfig = getDefaultHydration();
 
@@ -39,5 +41,6 @@ export const getAudiosDefaultConfig = (): typeof defaultHydration => {
         gap: 0,
       },
     },
+    getStaticContent: getAudiosExplorerStaticContent,
   };
 };
