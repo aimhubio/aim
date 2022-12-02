@@ -7,6 +7,7 @@ from tqdm import tqdm
 
 from aim import Run
 from aim.ext.resource.log import LogLine
+from aim.ext.resource.configs import AIM_RESOURCE_METRIC_PREFIX
 
 
 def parse_wandb_logs(repo_inst, entity, project, run_id):
@@ -14,7 +15,7 @@ def parse_wandb_logs(repo_inst, entity, project, run_id):
         import wandb
     except ImportError:
         click.echo(
-            'Could not process wandb logs - failed to import "wandb" module.', err=True
+            "Could not process wandb logs - failed to import 'wandb' module.", err=True
         )
         return
 
@@ -28,7 +29,7 @@ def parse_wandb_logs(repo_inst, entity, project, run_id):
             # get the run by run_id
             run = client.run(f"{entity}/{project}/{run_id}")
         except Exception:
-            click.echo(f'Could not find run "{entity}/{project}/{run_id}"', err=True)
+            click.echo(f"Could not find run '{entity}/{project}/{run_id}'", err=True)
             return
         runs = (run,)
 
@@ -56,7 +57,7 @@ def parse_wandb_logs(repo_inst, entity, project, run_id):
                     with open(Path(tmpdirname) / console_log_filename) as f:
                         [aim_run.track(LogLine(line), name='logs', step=i) for i, line in enumerate(f.readlines())]
             except Exception:
-                click.echo("Failed to track console output log.")
+                click.echo("Failed to track console output log.", err=True)
 
             # TODO: Collect media files, possibly?
 
@@ -70,8 +71,9 @@ def parse_wandb_logs(repo_inst, entity, project, run_id):
 
         # Collect metrics
         for record in run.scan_history():
-            step = record.get("_step")
-            epoch = record.get("epoch")
+            step = record.get('_step')
+            epoch = record.get('epoch')
+            timestamp = record.get('_timestamp')
             for key in keys:
                 value = record.get(key)
                 if value is None:
@@ -79,30 +81,55 @@ def parse_wandb_logs(repo_inst, entity, project, run_id):
                 try:
                     tag, name = key.rsplit("/", 1)
                     if "train" in tag:
-                        context = {"tag": tag, "subset": "train"}
+                        context = {'tag': tag, 'subset': 'train'}
                     elif "val" in tag:
-                        context = {"tag": tag, "subset": "val"}
+                        context = {'tag': tag, 'subset': 'val'}
                     elif "test" in tag:
-                        context = {"tag": tag, "subset": "test"}
+                        context = {'tag': tag, 'subset': 'test'}
                     else:
-                        context = {"tag": tag}
+                        context = {'tag': tag}
                 except ValueError:
                     name, context = key, {}
                 try:
-                    aim_run.track(value, name=name, step=step, epoch=epoch, context=context)
+                    if timestamp:
+                        aim_run._tracker._track(value, track_time=timestamp, name=name,
+                                                step=step, epoch=epoch, context=context)
+                    else:
+                        aim_run.track(value, name=name, step=step, epoch=epoch, context=context)
                 except ValueError:
-                    click.echo(f"Type '{type(value).__name__}':artifacts are not supported yet.", err=True)
+                    click.echo(f"Type '{type(value).__name__}': artifacts are not supported yet.", err=True)
 
         # Collect system logs
         # NOTE: In 'system' logs, collecting sampled history cannot be avoided. (default 'samples' == 500)
-        # TODO: Any possible ways to inject system logs as legit aim system logs?
-        name_set = set()
-        system_record_context = {"tag": "system"}
+        # TODO: cpu / gpu utils are tracked normally as system logs. But not others.
+        gpu_idx_pattern = re.compile('^[0-9]+\.')
         for record in run.history(stream='system', pandas=False, samples=1e3):
+            timestamp = record.get('_timestamp')
             for key in record:
                 if key.startswith('_'):  # Including '_runtime', '_timestamp', '_wandb'
                     continue
-                name = re.sub('^system\.', '', key)
                 value = record.get(key)
-                aim_run.track(value, name=name, context=system_record_context)
-                name_set.add(name)
+                name = re.sub('^system\.', '', key)
+
+                # Move GPU idx to context
+                if name.startswith('gpu'):
+                    name = re.sub('^gpu\.', '', name)
+                    gpu_idx_str_candids = gpu_idx_pattern.findall(name)
+                    if gpu_idx_str_candids:
+                        gpu_idx_str = gpu_idx_str_candids[0]
+                        name = name[len(gpu_idx_str):]
+                        gpu_idx = int(gpu_idx_str.rstrip('.'))
+                        context = {'gpu': gpu_idx, 'tag': 'system'}
+                    else:
+                        context = {'gpu': 'no_idx', 'tag': 'system'}
+                else:
+                    context = {'tag': 'system'}
+
+                try:
+                    if timestamp:
+                        aim_run._tracker._track(value, track_time=timestamp,
+                                                name=f'{AIM_RESOURCE_METRIC_PREFIX}{name}', context=context)
+                    else:
+                        aim_run.track(value, name=f'{AIM_RESOURCE_METRIC_PREFIX}{name}', context=context)
+                except ValueError:
+                    click.echo(f"Type '{type(value).__name__}': artifacts are not supported yet.", err=True)
