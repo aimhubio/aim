@@ -34,6 +34,7 @@ function Explorer({ configuration, engineInstance }: ExplorerProps) {
           configuration.forceRenderVisualizations ?? false
         }
         displayProgress={configuration.displayProgress ?? true}
+        getStaticContent={configuration.getStaticContent}
         visualizers={configuration.visualizations}
         engine={engineInstance}
         components={{

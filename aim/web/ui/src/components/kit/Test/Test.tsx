@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Text } from 'components/kit';
+import Text from 'components/kit/Text';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { ITestProps } from './types.d';
