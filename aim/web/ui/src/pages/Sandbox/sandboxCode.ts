@@ -2,7 +2,7 @@ export const initialCode = `from aim.sequences import Metric
 from aim.ui.layout import Cell
 from aim.ui.viz import LineChart, Table, JSON
 
-metrics = Metric.query()
+metrics = Metric.query('metric.name == "accuracy"')
 
 def render(state, set_state):
     line_chart = LineChart(metrics, x='steps', y='values',

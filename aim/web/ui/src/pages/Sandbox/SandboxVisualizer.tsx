@@ -25,7 +25,7 @@ function toObject(x: any): any {
 }
 
 export default function SandboxVisualizer() {
-  const { pyodide, namespace } = usePyodide();
+  const { pyodide, namespace, reload: reloadPyodide } = usePyodide();
 
   const editorValue = React.useRef(initialCode);
   const [result, setResult] = React.useState<Record<string, any>>([[]]);
@@ -54,19 +54,14 @@ export default function SandboxVisualizer() {
           .replaceAll('= Distributions.query', '= await Distributions.query')
           .replaceAll('def ', 'async def ')
           .replaceAll('async async def ', 'async def ');
-        const packagesList = pyodide?.pyodide_py.find_imports(code).toJs();
 
-        if (packagesList.includes('plotly')) {
+        const packagesList = pyodide?.pyodide_py.code.find_imports(code).toJs();
+
+        packagesList.forEach(async (lib: string) => {
           await pyodide?.loadPackage('micropip');
           const micropip = pyodide?.pyimport('micropip');
-          await micropip.install('plotly');
-        }
-
-        if (packagesList.includes('hrepr')) {
-          await pyodide.loadPackage('micropip');
-          const micropip = pyodide.pyimport('micropip');
-          await micropip.install('hrepr');
-        }
+          await micropip.install(lib);
+        });
 
         await pyodide?.loadPackagesFromImports(code);
 
@@ -87,13 +82,18 @@ export default function SandboxVisualizer() {
 
   const runEffect = React.useCallback(async () => {
     if (pyodide !== null) {
-      effect.current = namespace.get('render');
-      if (effect.current) {
-        const res = await effect.current(pyodide?.toPy(state), (val: any) =>
-          setState((s: any) => Object.assign({}, s, toObject(val.toJs()))),
-        );
-        let parsedResult = toObject(res.toJs());
-        setResult(parsedResult);
+      try {
+        effect.current = namespace.get('render');
+        if (effect.current) {
+          const res = await effect.current(pyodide?.toPy(state), (val: any) =>
+            setState((s: any) => Object.assign({}, s, toObject(val.toJs()))),
+          );
+          let parsedResult = toObject(res.toJs());
+          setResult(parsedResult);
+        }
+      } catch (ex: unknown) {
+        // eslint-disable-next-line no-console
+        console.log(ex);
       }
 
       setIsProcessing(false);
@@ -102,14 +102,20 @@ export default function SandboxVisualizer() {
 
   const runParsedCode = React.useCallback(() => {
     if (pyodide !== null) {
-      pyodide
-        ?.runPythonAsync(execCode, { globals: namespace })
-        .then(runEffect)
-        .catch((ex: unknown) => {
-          // eslint-disable-next-line no-console
-          console.log(ex);
-          setIsProcessing(false);
-        });
+      try {
+        pyodide
+          ?.runPythonAsync(execCode, { globals: namespace })
+          .then(runEffect)
+          .catch((ex: unknown) => {
+            // eslint-disable-next-line no-console
+            console.log(ex);
+            setIsProcessing(false);
+          });
+      } catch (ex: unknown) {
+        // eslint-disable-next-line no-console
+        console.log(ex);
+        setIsProcessing(false);
+      }
     }
   }, [pyodide, execCode, namespace, runEffect]);
 

@@ -13,7 +13,7 @@ let pyodideStore: any = {
 (window as any).search = search;
 (window as any).updateLayout = noop;
 
-export async function loadPyodideInstance(cb?: Function) {
+export async function loadPyodideInstance(cb?: Function, reload = false) {
   pyodideStore.current = await (window as any).loadPyodide({
     stdout: (...args: any[]) => {
       window.requestAnimationFrame(() => {
@@ -24,11 +24,15 @@ export async function loadPyodideInstance(cb?: Function) {
         }
       });
     },
+    stderr: (...args: any[]) => {
+      console.log('err', args);
+    },
   });
 
   let namespace = pyodideStore.current.toPy({});
 
   pyodideStore.namespace = namespace;
+  // (window as any).pyo = pyodideStore.current;
 
   await pyodideStore.current.loadPackage('pandas');
 

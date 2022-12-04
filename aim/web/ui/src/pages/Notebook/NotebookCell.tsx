@@ -61,17 +61,11 @@ def Grid(grid):
       );
       const packagesList = pyodide.pyodide_py.find_imports(code).toJs();
 
-      if (packagesList.includes('plotly')) {
-        await pyodide.loadPackage('micropip');
-        const micropip = pyodide.pyimport('micropip');
-        await micropip.install('plotly');
-      }
-
-      if (packagesList.includes('hrepr')) {
-        await pyodide.loadPackage('micropip');
-        const micropip = pyodide.pyimport('micropip');
-        await micropip.install('hrepr');
-      }
+      packagesList.forEach(async (lib: string) => {
+        await pyodide?.loadPackage('micropip');
+        const micropip = pyodide?.pyimport('micropip');
+        await micropip.install(lib);
+      });
 
       await pyodide.loadPackagesFromImports(code);
 
