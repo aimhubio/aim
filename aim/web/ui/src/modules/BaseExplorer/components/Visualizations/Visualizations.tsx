@@ -51,7 +51,7 @@ function Visualizations(props: IVisualizationsProps) {
   );
 
   const Content = React.useMemo(() => {
-    if (typeof getStaticContent === 'function') {
+    if (!forceRenderVisualizations && typeof getStaticContent === 'function') {
       return getStaticContent(status) || Visualizations;
     }
     return Visualizations;
