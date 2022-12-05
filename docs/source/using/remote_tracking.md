@@ -16,12 +16,13 @@ The machine running the server have to accept incoming TCP traffic on a dedicate
 
 Aim remote tracking server can be set up to use multiple workers to scale the bandwidth of receiving connections.
 But it comes with some caveats. When providing `--workers=n` argument to `aim server` command, `aim` uses `n + 1` sequential 
-ports starting from port number specified. So, all  `p, ..., p + n` ports  must be exposed. 
+ports starting from port number specified. Thus, all `p, ..., p + n` ports are required to be exposed to the client.
 No changes are needed on client side.
 
 _Note:_
 
-When number of workers is not specified (by default: 1) only one port is used.
+The default number of workers is 1. No additional ports are required to be opened in this case.
+
 
 ### Server-side setup
 
