@@ -3,11 +3,11 @@ import React from 'react';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import Icon from 'components/kit/Icon';
 
-import { ColorPaletteEnum, styled } from 'config/stitches/stitches.config';
+import { styled } from 'config/stitches/stitches.config';
 
 import { IBadgeProps } from './Badge.d';
 
-const getColors = (color: string, disabled: boolean) => {
+const getColors: any = (color?: string, disabled?: boolean) => {
   if (color) {
     return {
       bc: `$${color}${disabled ? 50 : 70}`,
@@ -119,7 +119,8 @@ const Badge = React.forwardRef<
     {
       label,
       size = 'md',
-      color = ColorPaletteEnum.pink,
+      css,
+      color,
       monospace = false,
       disabled = false,
       onDelete,
@@ -132,7 +133,7 @@ const Badge = React.forwardRef<
         <BadgeContainer
           {...rest}
           size={size}
-          css={getColors(color, disabled)}
+          css={{ ...css, ...getColors(color, disabled) }}
           role='button'
           font={monospace ? 'mono' : 'default'}
           rightIcon={!!onDelete}

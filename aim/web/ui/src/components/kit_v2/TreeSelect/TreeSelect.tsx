@@ -1,34 +1,22 @@
 import React from 'react';
-// import ReactSelect, { components } from 'react-select';
-import { Tree, TreeSelect } from 'antd';
+import { TreeSelect } from 'antd';
 
-import type { DataNode } from 'antd/es/tree';
+import { Slot } from '@radix-ui/react-slot';
 
 import { styled } from 'config/stitches/stitches.config';
 
 import Box from '../Box';
+import Badge from '../Badge';
+
+import { ITreeSelectProps } from './TreeSelect.d';
 
 import 'antd/es/tree-select/style/index.css';
 import 'antd/es/select/style/index.css';
+import './TreeSelect.css';
 
 const { SHOW_PARENT } = TreeSelect;
 
-const getParentKey = (key: React.Key, tree: DataNode[]): React.Key => {
-  let parentKey: React.Key;
-  for (let i = 0; i < tree.length; i++) {
-    const node = tree[i];
-    if (node.children) {
-      if (node.children.some((item) => item.key === key)) {
-        parentKey = node.key;
-      } else if (getParentKey(key, node.children)) {
-        parentKey = getParentKey(key, node.children);
-      }
-    }
-  }
-  return parentKey!;
-};
-
-const initialData = [
+const initialData: any = [
   {
     value: 'parent 1',
     title: 'parent 1',
@@ -37,7 +25,6 @@ const initialData = [
       {
         value: 'parent 1-0',
         title: 'parent 1-0',
-
         children: [
           {
             value: 'my leaf',
@@ -68,7 +55,73 @@ const initialData = [
       },
     ],
   },
+  {
+    value: 'parent 2',
+    title: 'parent 2',
+    key: 'parent 2',
+  },
 ];
+
+const TreeSelectWrapper = styled(Slot, {
+  '&.ant-select': {
+    fontSize: '$3',
+    color: '$textPrimary',
+  },
+  '& .ant-select-selector': {
+    p: '0 !important',
+    br: '$3 !important',
+  },
+  '&.ant-select:not(.ant-select-customize-input) .ant-select-selector': {
+    border: 'none',
+    bs: '0px 0px 0px 1px $colors$secondary50',
+    '&:hover': {
+      bs: '0px 0px 0px 1px $colors$secondary100',
+    },
+  },
+  '&.ant-select-focused:not(.ant-select-disabled).ant-select:not(.ant-select-customize-input) .ant-select-selector':
+    {
+      bs: '0px 0px 0px 1px $colors$primary100',
+      border: 'none',
+    },
+  '.ant-select-selection-placeholder': {
+    left: '$8 !important',
+  },
+  '.ant-select-selection-overflow': {
+    m: '$3 0',
+    gap: '$4 0',
+  },
+  variants: {
+    size: {
+      sm: {
+        '.ant-select-selector': {
+          pl: '$6 !important',
+          pr: '$16 !important',
+          height: '$sizes$3',
+        },
+      },
+      md: {
+        '.ant-select-selector': {
+          pl: '$7 !important',
+          pr: '$17 !important',
+          minHeight: '$sizes$5 !important',
+          '.ant-select-selection-placeholder': {
+            left: '$9 !important',
+          },
+        },
+      },
+      lg: {
+        '.ant-select-selector': {
+          pl: '$8 !important',
+          pr: '$18 !important',
+          height: '$sizes$7 !important',
+          '.ant-select-selection-placeholder': {
+            left: '$10 !important',
+          },
+        },
+      },
+    },
+  },
+});
 
 const DropdownWrapper = styled('div', {
   '.ant-tree, .ant-select-tree': {
@@ -150,12 +203,28 @@ const DropdownWrapper = styled('div', {
     border: 'unset',
     bs: 'inset 0 0 0 1px $colors$secondary100',
   },
+  '.ant-select-empty': {
+    textAlign: 'center',
+  },
 });
 
-function Select(props: any): React.FunctionComponentElement<React.ReactNode> {
-  const [value, setValue] = React.useState<string | undefined>();
-  const [searchValue, setSearchValue] = React.useState<string>('parent');
-  const onChange = (newValue: string) => {
+function Select({
+  size = 'md',
+  virtual = true,
+  multiple = true,
+  showArrow = true,
+  allowClear = true,
+  showSearch = true,
+  treeCheckable = true,
+  notFoundContent = 'No Data',
+  showCheckedStrategy = SHOW_PARENT,
+  disabled,
+  ...props
+}: ITreeSelectProps): React.FunctionComponentElement<React.ReactNode> {
+  const [value, setValue] = React.useState(['parent 1-0', 'your leaf']);
+  const [searchValue, setSearchValue] = React.useState<string>('');
+  const onChange = (newValue: any, e: any, a: any) => {
+    console.log('onChange ', newValue, e, a);
     setValue(newValue);
   };
 
@@ -195,33 +264,47 @@ function Select(props: any): React.FunctionComponentElement<React.ReactNode> {
     setSearchValue(val);
   }
 
+  function filterTreeNode(inputValue: string, treeNode: any) {
+    return treeNode.value.indexOf(inputValue) > -1;
+  }
+
   return (
-    <TreeSelect
-      virtual
-      showSearch
-      allowClear
-      multiple
-      showArrow
-      autoClearSearchValue={false}
-      treeCheckable
-      filterTreeNode={(inputValue, treeNode: any) => {
-        console.log(inputValue, treeNode);
-        // return false;
-        return treeNode.value.indexOf(inputValue) > -1;
-      }}
-      notFoundContent={null}
-      style={{ width: '100%' }} // treeDefaultExpandAll
-      treeData={treeData}
-      value={value}
-      searchValue={searchValue}
-      placeholder='Please select'
-      showCheckedStrategy={SHOW_PARENT}
-      dropdownRender={(menu) => <DropdownWrapper>{menu}</DropdownWrapper>}
-      // open={true}
-      onSearch={onSearchChange}
-      onChange={onChange}
-    />
+    <TreeSelectWrapper size={size}>
+      <TreeSelect
+        {...props}
+        virtual
+        multiple={multiple}
+        showArrow={showArrow}
+        allowClear={allowClear}
+        showSearch={showSearch}
+        size='small'
+        treeCheckable={treeCheckable}
+        value={value as any}
+        treeData={treeData}
+        notFoundContent={notFoundContent}
+        searchValue={searchValue}
+        placeholder={props.placeholder || 'please select'}
+        filterTreeNode={filterTreeNode}
+        style={{ width: '100%' }}
+        showCheckedStrategy={showCheckedStrategy}
+        maxTagPlaceholder={(o) => `${o.length} items`}
+        maxTagCount={2}
+        tagRender={({ value, onClose }) => {
+          return (
+            <Badge
+              size='xs'
+              css={{ mr: '$4' }}
+              label={value}
+              onDelete={() => onClose()}
+            />
+          );
+        }}
+        dropdownRender={(menu) => <DropdownWrapper>{menu}</DropdownWrapper>}
+        onSearch={onSearchChange}
+        onChange={onChange}
+      />
+    </TreeSelectWrapper>
   );
 }
 
-export default Select;
+export default React.memo(Select);

@@ -1,3 +1,48 @@
-.TreeSelect__popup .ant-tree-treenode-selected {
-  background-color: #f5f5f5;
+.ant-slide-up-enter,
+.ant-slide-up-appear,
+.ant-slide-up-leave {
+  animation-duration: 0.2s;
+  animation-fill-mode: both;
+  animation-play-state: paused;
+}
+
+.ant-slide-up-enter.ant-slide-up-enter-active,
+.ant-slide-up-appear.ant-slide-up-appear-active {
+  animation-name: antSlideUpIn;
+  animation-play-state: running;
+}
+.ant-slide-up-leave.ant-slide-up-leave-active {
+  animation-name: antSlideUpOut;
+  animation-play-state: running;
+  pointer-events: none;
+}
+.ant-slide-up-enter,
+.ant-slide-up-appear {
+  opacity: 0;
+  animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@keyframes antSlideUpIn {
+  0% {
+    transform: scaleY(0.8);
+    transform-origin: 0% 0%;
+    opacity: 0;
+  }
+  100% {
+    transform: scaleY(1);
+    transform-origin: 0% 0%;
+    opacity: 1;
+  }
+}
+@keyframes antSlideUpOut {
+  0% {
+    transform: scaleY(1);
+    transform-origin: 0% 0%;
+    opacity: 1;
+  }
+  100% {
+    transform: scaleY(0.8);
+    transform-origin: 0% 0%;
+    opacity: 0;
+  }
 }

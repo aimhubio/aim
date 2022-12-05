@@ -1,11 +1,12 @@
 import React, { memo, useEffect, useState } from 'react';
+import { Select } from 'antd';
 
 import { Paper, Tab, Tabs } from '@material-ui/core';
 
 import TabPanel from 'components/TabPanel/TabPanel';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
-import Select from 'components/kit_v2/TreeSelect/TreeSelect';
+import TreeSelect from 'components/kit_v2/TreeSelect/TreeSelect';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
@@ -48,7 +49,7 @@ function Tags({
   return (
     <ErrorBoundary>
       <div style={{ margin: 100 }}>
-        <Select />
+        <TreeSelect />
       </div>
       {/* <section className='Tags container'>
         <Paper className='Tags__tabsContainer'>
