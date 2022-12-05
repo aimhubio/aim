@@ -126,3 +126,17 @@ export enum PersistenceTypesEnum {
 export type StatePersistOption =
   | `${PersistenceTypesEnum}`
   | PersistenceFunction;
+
+export interface INotificationItem {
+  id: string;
+  messages: string[];
+  title?: string;
+  style?: {};
+  iconName?: string;
+  duration?: number;
+}
+export interface INotificationsState {
+  data: INotificationItem[];
+}
+
+export type ExtractState<T, S> = S & T;

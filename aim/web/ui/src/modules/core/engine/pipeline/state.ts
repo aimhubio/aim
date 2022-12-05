@@ -110,21 +110,7 @@ function getInitialState<TObject>(): IPipelineState<TObject> {
 
 function createState<TStore, TObject>(
   store: StoreApi<ExtractState<TStore, TObject>>,
-  initialState: IPipelineState<TObject> = {
-    status: PipelineStatusEnum.Never_Executed,
-    currentPhase: PipelinePhasesEnum.Waiting,
-    progress: initialProgressState,
-    additionalData: {
-      modifiers: [],
-      params: [],
-    },
-    queryableData: {},
-    currentQuery: {},
-    currentGroupings: {},
-    data: [],
-    foundGroups: {},
-    error: null,
-  },
+  initialState: IPipelineState<TObject> = getInitialState<TObject>(),
 ): PipelineStateBridge<TObject, TStore> {
   const selectors: Selectors<ExtractState<TStore, TObject>, TObject> = {
     additionalDataSelector: (

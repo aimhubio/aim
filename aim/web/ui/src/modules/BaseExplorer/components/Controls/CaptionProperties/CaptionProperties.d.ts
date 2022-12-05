@@ -1,5 +1,7 @@
 import { IBaseComponentProps } from 'modules/BaseExplorer/types';
-export interface ICaptionPropertiesProps extends IBaseComponentProps {}
+export interface ICaptionPropertiesProps extends IBaseComponentProps {
+  visualizationName: string;
+}
 
 export interface ICaptionProperties {
   displayBoxCaption: boolean;
