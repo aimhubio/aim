@@ -26,6 +26,7 @@ export type RequestOptions = {
   headers?: Record<string, unknown>;
   body?: string | Record<string, any> | File | ReadableStream<any>;
   signal?: AbortSignal;
+  priority?: 'high' | 'low' | 'auto';
 };
 
 export interface RequestInit {

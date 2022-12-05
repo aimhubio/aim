@@ -89,6 +89,7 @@ function createBlobsRequest(
       await api.makeAPIPostRequest(`${sequenceType}/get-batch`, {
         body: uris,
         signal,
+        priority: 'high',
       })
     ).body;
   }

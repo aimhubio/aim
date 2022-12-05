@@ -7,7 +7,6 @@ import { throttle } from 'components/Table/utils';
 import { SequenceTypesEnum } from 'types/core/enums';
 
 import { parseStream } from 'utils/encoder/streamEncoding';
-import arrayBufferToBase64 from 'utils/arrayBufferToBase64';
 
 type Callback = (blobData: string) => void;
 
@@ -22,14 +21,14 @@ export interface IBlobURISystemEngine {
   };
 }
 
-const BATCH_SEND_DELAY = 1000;
+const BATCH_SEND_DELAY = 500;
 
 function createBlobURISystemEngine(
   sequenceType: SequenceTypesEnum,
 ): IBlobURISystemEngine {
   const blobsData: Record<string, string> = {};
   const blobsSubscriptions: Record<string, Callback[]> = {};
-  let blobUriQueue: string[] = [];
+  const blobUriQueue: Set<string> = new Set();
   let timeoutID: number | null = null;
 
   const request = createBlobsRequest(sequenceType);
@@ -89,9 +88,8 @@ function createBlobURISystemEngine(
    * @param {string} blobUri
    */
   function addUriToQueue(blobUri: string) {
-    blobUriQueue.push(blobUri);
     if (!blobsData[blobUri]) {
-      blobUriQueue.push(blobUri);
+      blobUriQueue.add(blobUri);
       getBatch();
     }
   }
@@ -105,10 +103,10 @@ function createBlobURISystemEngine(
     }
     timeoutID = window.setTimeout(() => {
       if (!_.isEmpty(blobUriQueue)) {
-        getBlobsData(blobUriQueue)
+        getBlobsData(Array.from(blobUriQueue))
           .call()
           .then(() => {
-            blobUriQueue = [];
+            blobUriQueue.clear();
           });
       }
     }, BATCH_SEND_DELAY);
@@ -125,10 +123,12 @@ function createBlobURISystemEngine(
         return request
           .call(blobUris)
           .then(async (stream) => {
-            parseStream(stream, {
-              callback: (object: { hash: string; value: ArrayBuffer }) => {
-                const blobData: string = arrayBufferToBase64(object.value);
-                fire(object.hash, blobData);
+            await parseStream(stream, {
+              callback: (object: {
+                hash: string;
+                value: ArrayBuffer | string;
+              }) => {
+                fire(object.hash, object.value as string);
               },
             });
             return Promise.resolve();

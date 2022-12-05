@@ -1,20 +1,74 @@
 import * as React from 'react';
 import Plot from 'react-plotly.js';
 
-function Figures(props: any) {
+import { Skeleton } from '@material-ui/lab';
+
+import { IBoxProps } from '../../types';
+import { BATCH_COLLECT_DELAY } from '../../../../config/mediaConfigs/mediaConfigs';
+
+function Figures(props: IBoxProps) {
   let [data, setData] = React.useState<any>(null);
   let [scale, setScale] = React.useState<number | null | undefined>(
     !!props.style ? undefined : null,
   );
   let containerRef = React.useRef<HTMLDivElement | null>(null);
 
-  React.useEffect(() => {
-    let rAFRef = window.requestAnimationFrame(() => {
-      setData(JSON.parse(props.data.data.data));
-    });
+  const [blobData, setBlobData] = React.useState<string>(
+    props.engine.blobURI.getBlobData(props.data.data.blob_uri),
+  );
 
-    return () => window.cancelAnimationFrame(rAFRef);
-  }, [props.data.data.data]);
+  React.useEffect(() => {
+    let rAFRef: number | null = null;
+
+    if (blobData) {
+      window.requestAnimationFrame(() => {
+        setData(JSON.parse(blobData));
+      });
+    }
+
+    return () => {
+      if (rAFRef) {
+        window.cancelAnimationFrame(rAFRef);
+      }
+    };
+  }, [blobData]);
+
+  React.useEffect(() => {
+    let timeoutID: number;
+    let unsubscribe: () => void;
+    if (blobData === null) {
+      if (props.engine.blobURI.getBlobData(props.data.data.blob_uri)) {
+        setBlobData(props.engine.blobURI.getBlobData(props.data.data.blob_uri));
+      } else {
+        unsubscribe = props.engine.blobURI.on(
+          props.data.data.blob_uri,
+          (bd: string) => {
+            setBlobData(bd);
+            unsubscribe();
+          },
+        );
+        timeoutID = window.setTimeout(() => {
+          if (props.engine.blobURI.getBlobData(props.data.data.blob_uri)) {
+            setBlobData(
+              props.engine.blobURI.getBlobData(props.data.data.blob_uri),
+            );
+            unsubscribe();
+          } else {
+            props.engine.blobURI.addUriToQueue(props.data.data.blob_uri);
+          }
+        }, BATCH_COLLECT_DELAY);
+      }
+    }
+    return () => {
+      if (timeoutID) {
+        clearTimeout(timeoutID);
+      }
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [blobData]);
 
   React.useEffect(() => {
     if (data && containerRef.current && props.style) {
@@ -38,26 +92,31 @@ function Figures(props: any) {
     }
   }, [data, props.style]);
 
-  return (
-    data && (
-      <div
-        style={{
-          display: 'inline-block',
-          visibility: scale === undefined ? 'hidden' : 'visible',
-          transform:
-            scale === undefined || scale === null ? '' : `scale(${scale})`,
-        }}
-        ref={containerRef}
-      >
-        <Plot
-          data={data.data}
-          layout={data.layout}
-          frames={data.frames}
-          useResizeHandler={true}
-        />
-      </div>
-    )
+  return data ? (
+    <div
+      style={{
+        display: 'inline-block',
+        visibility: scale === undefined ? 'hidden' : 'visible',
+        transform:
+          scale === undefined || scale === null ? '' : `scale(${scale})`,
+      }}
+      ref={containerRef}
+    >
+      <Plot
+        onInitialized={(figure) => console.log(figure, data)}
+        data={data.data}
+        layout={data.layout}
+        frames={data.frames}
+        useResizeHandler={true}
+      />
+    </div>
+  ) : (
+    <Skeleton
+      variant='rect'
+      height={containerRef.current?.offsetHeight! + 20 || props.style?.height}
+      width={containerRef.current?.offsetWidth! + 20 || props.style?.width}
+    />
   );
 }
 
-export default React.memo(Figures);
+export default React.memo<IBoxProps>(Figures);

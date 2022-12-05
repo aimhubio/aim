@@ -12,6 +12,8 @@ import { BATCH_COLLECT_DELAY } from 'config/mediaConfigs/mediaConfigs';
 import contextToString from 'utils/contextToString';
 import { downloadLink } from 'utils/helper';
 
+import arrayBufferToBase64 from '../../../../utils/arrayBufferToBase64';
+
 import AudioBoxProgress from './AudioBoxProgress';
 import AudioBoxVolume from './AudioBoxVolume';
 
@@ -79,12 +81,13 @@ function AudioBox(
 
   React.useEffect(() => {
     if (blobData) {
+      const base64 = arrayBufferToBase64(blobData as unknown as ArrayBuffer);
       const audioRef = new Audio();
       audioRef.autoplay = true;
       audioRef.muted = true;
       audioRef.preload = 'metadata';
-      audioRef.src = `data:audio/${format};base64,${blobData}`;
-      setSrc(`data:audio/${format};base64,${blobData}`);
+      audioRef.src = `data:audio/${format};base64,${base64}`;
+      setSrc(`data:audio/${format};base64,${base64}`);
       setAudio(audioRef);
       setMuted(false);
     }
