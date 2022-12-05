@@ -14,9 +14,7 @@ def parse_wandb_logs(repo_inst, entity, project, run_id):
     try:
         import wandb
     except ImportError:
-        click.echo(
-            "Could not process wandb logs - failed to import 'wandb' module.", err=True
-        )
+        click.echo("Could not process wandb logs - failed to import 'wandb' module.", err=True)
         return
 
     client = wandb.Api()
@@ -101,29 +99,20 @@ def parse_wandb_logs(repo_inst, entity, project, run_id):
 
         # Collect system logs
         # NOTE: In 'system' logs, collecting sampled history cannot be avoided. (default 'samples' == 500)
-        # TODO: cpu / gpu utils are tracked normally as system logs. But not others.
-        gpu_idx_pattern = re.compile('^[0-9]+\.')
+        # TODO: async history fetching for better performance
         for record in run.history(stream='system', pandas=False, samples=1e3):
             timestamp = record.get('_timestamp')
             for key in record:
                 if key.startswith('_'):  # Including '_runtime', '_timestamp', '_wandb'
                     continue
-                value = record.get(key)
-                name = re.sub('^system\.', '', key)
 
-                # Move GPU idx to context
-                if name.startswith('gpu'):
-                    name = re.sub('^gpu\.', '', name)
-                    gpu_idx_str_candids = gpu_idx_pattern.findall(name)
-                    if gpu_idx_str_candids:
-                        gpu_idx_str = gpu_idx_str_candids[0]
-                        name = name[len(gpu_idx_str):]
-                        gpu_idx = int(gpu_idx_str.rstrip('.'))
-                        context = {'gpu': gpu_idx, 'tag': 'system'}
-                    else:
-                        context = {'gpu': 'no_idx', 'tag': 'system'}
-                else:
-                    context = {'tag': 'system'}
+                value = record.get(key)
+                if value is None:
+                    continue
+
+                name, context = _normalize_system_metric_key(key)
+                if name is None:
+                    continue
 
                 try:
                     if timestamp:
@@ -133,3 +122,61 @@ def parse_wandb_logs(repo_inst, entity, project, run_id):
                         aim_run.track(value, name=f'{AIM_RESOURCE_METRIC_PREFIX}{name}', context=context)
                 except ValueError:
                     click.echo(f"Type '{type(value).__name__}': artifacts are not supported yet.", err=True)
+
+
+def _normalize_system_metric_key(key):
+    # Remap names for being categorized as `System` in aim ui: `aim/web/ui/src/config/systemMetrics/systemMetrics.ts``
+    # {value is None} means not supported yet
+    SYSTEM_METRICS_NAME_MAP = {
+        '': {
+            'cpu': 'cpu',
+            'disk': 'disk_percent',
+            'memory': 'memory_percent',
+            'network.recv': None,
+            'network.sent': None,
+        },
+        'gpu': {
+            'gpu': 'gpu',
+            'memory': 'gpu_memory_percent',
+            'memoryAllocated': None,
+            'powerPercent': None,
+            'powerWatts': 'gpu_power_watts',
+            'temp': 'gpu_temp',
+        },
+        'proc': {
+            'cpu.threads': None,
+            'memory.availableMB': None,
+            'memory.percent': 'p_memory_percent',
+            'momory.rssMB': None,
+        }
+    }
+
+    name = re.sub('^system\.', '', key)
+    gpu_idx_pattern = re.compile('^[0-9]+\.')
+
+    # Triage & Remap name for aim ui
+    if name.startswith('gpu'):
+        name = re.sub('^gpu\.', '', name)
+
+        # Cut & pase gpu idx from name to context
+        gpu_idx_match = gpu_idx_pattern.search(name)
+        if gpu_idx_match:
+            gpu_idx_str = gpu_idx_match.group()
+            name = name[len(gpu_idx_str):]
+            gpu_idx = int(gpu_idx_str.rstrip('.'))
+            context = {'gpu': gpu_idx, 'tag': 'system', 'subset': 'gpu'}
+        else:
+            context = {'gpu': 'no_idx', 'tag': 'system', 'subset': 'gpu'}
+
+        normalized_name = SYSTEM_METRICS_NAME_MAP['gpu'].get(name)
+
+    elif name.startswith('proc'):
+        name = re.sub('^proc\.', '', name)
+        normalized_name = SYSTEM_METRICS_NAME_MAP['proc'].get(name)
+        context = {'tag': 'system', 'subset': 'proc'}
+
+    else:
+        normalized_name = SYSTEM_METRICS_NAME_MAP[''].get(name)
+        context = {'tag': 'system'}
+
+    return normalized_name, context
