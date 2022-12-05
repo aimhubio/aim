@@ -4,42 +4,28 @@ import { ExtractState, INotificationItem, INotificationsState } from '../types';
 
 import createState, { getInitialState } from './state';
 
-interface INotificationMethodNotifyArgs {
+type NotifyMethod = (args: {
   title?: string;
   messages?: string[] | string;
   style?: {};
   iconName?: string;
   duration?: number;
-}
+}) => void;
+type WarningMethod = (messages: string[] | string, duration: number) => void;
+type SuccessMethod = (messages: string[] | string, duration: number) => void;
+type ErrorMethod = (messages: string[] | string, duration: number) => void;
+type InfoMethod = (messages: string[] | string, duration: number) => void;
 
 export interface INotificationsEngine<TStore = object> {
   state: INotificationsSlice;
   engine: {
     addNotification: (notificationItem: INotificationItem) => void;
     removeNotification: (id: string) => void;
-    notify: ({
-      title,
-      messages,
-      style,
-      iconName,
-      duration,
-    }: INotificationMethodNotifyArgs) => void;
-    warning: (
-      messages?: INotificationItem['messages'],
-      duration?: INotificationItem['duration'],
-    ) => void;
-    success: (
-      messages?: INotificationItem['messages'],
-      duration?: INotificationItem['duration'],
-    ) => void;
-    error: (
-      messages?: INotificationItem['messages'],
-      duration?: INotificationItem['duration'],
-    ) => void;
-    info: (
-      messages?: INotificationItem['messages'],
-      duration?: INotificationItem['duration'],
-    ) => void;
+    notify: NotifyMethod;
+    warning: WarningMethod;
+    success: SuccessMethod;
+    error: ErrorMethod;
+    info: InfoMethod;
     notificationsSelector: (
       state: ExtractedNotificationsState<TStore>,
     ) => INotificationsState['data'];
@@ -73,7 +59,7 @@ function createNotificationsEngine<TStore>(store: any) {
   const addTemporaryNotification = (
     notificationItem: INotificationItem,
     duration: number = NOTIFICATION_DURATION,
-  ): void => {
+  ) => {
     if (notificationItem.id) {
       state.addNotification(notificationItem);
 
@@ -86,15 +72,15 @@ function createNotificationsEngine<TStore>(store: any) {
   /**
    * 'notify' function is for generating custom notifications or rest of notification methods (warning, error, success, info)
    *
-   * @param notificationItem - notification item
+   * @param args {object} - notification item
    */
-  const notify = ({
+  const notify: NotifyMethod = ({
     title = 'Notification',
     messages = 'Notification message',
     style = {},
     iconName = '',
     duration = NOTIFICATION_DURATION,
-  }: INotificationMethodNotifyArgs): void => {
+  }) => {
     addTemporaryNotification(
       {
         id: Date.now().toString(),
@@ -113,10 +99,10 @@ function createNotificationsEngine<TStore>(store: any) {
    * @param messages {string[] | string} - notification messages array or single message
    * @param duration {number} - duration of the notification
    */
-  const warning = (
-    messages: string[] | string = 'Warning message',
-    duration: number = NOTIFICATION_DURATION,
-  ): void => {
+  const warning: WarningMethod = (
+    messages = 'Warning message',
+    duration = NOTIFICATION_DURATION,
+  ) => {
     notify({
       title: 'Warning',
       style: { borderColor: '#ff9800' },
@@ -132,10 +118,10 @@ function createNotificationsEngine<TStore>(store: any) {
    * @param messages {string[] | string} - notification messages array or single message
    * @param duration {number} - duration of the notification
    */
-  const success = (
-    messages: string[] | string = 'Success message',
-    duration: number = NOTIFICATION_DURATION,
-  ): void => {
+  const success: SuccessMethod = (
+    messages = 'Success message',
+    duration = NOTIFICATION_DURATION,
+  ) => {
     notify({
       title: 'Success',
       style: { borderColor: '#4caf50' },
@@ -151,10 +137,10 @@ function createNotificationsEngine<TStore>(store: any) {
    * @param messages {string[] | string} - notification messages array or single message
    * @param duration {number} - duration of the notification
    */
-  const error = (
-    messages: string[] | string = 'Error message',
-    duration: number = NOTIFICATION_DURATION,
-  ): void => {
+  const error: ErrorMethod = (
+    messages = 'Error message',
+    duration = NOTIFICATION_DURATION,
+  ) => {
     notify({
       title: 'Error',
       style: { borderColor: '#f44336' },
@@ -170,10 +156,10 @@ function createNotificationsEngine<TStore>(store: any) {
    * @param messages {string[] | string} - notification messages array or single message
    * @param duration {number} - duration of the notification
    */
-  const info = (
-    messages: string[] | string = 'Info message',
-    duration: number = NOTIFICATION_DURATION,
-  ): void => {
+  const info: InfoMethod = (
+    messages = 'Info message',
+    duration = NOTIFICATION_DURATION,
+  ) => {
     notify({
       title: 'Info',
       style: { borderColor: '#2196f3' },

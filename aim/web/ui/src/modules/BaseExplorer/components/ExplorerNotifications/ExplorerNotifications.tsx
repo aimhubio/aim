@@ -30,7 +30,7 @@ function ExplorerNotifications(props: IExplorerNotificationProps) {
             open={true}
             transitionDuration={{ enter: 100 }}
             TransitionComponent={Fade}
-            anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
+            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
           >
             <div>
               {notifications.map(
