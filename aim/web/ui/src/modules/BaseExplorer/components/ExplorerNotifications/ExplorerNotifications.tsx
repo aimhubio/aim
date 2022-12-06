@@ -17,7 +17,7 @@ function ExplorerNotifications(props: IExplorerNotificationProps) {
   const {
     engine: {
       useStore,
-      notifications: { notificationsSelector, removeNotification },
+      notifications: { notificationsSelector, remove },
     },
   } = props;
   const notifications: INotificationItem[] = useStore(notificationsSelector);
@@ -44,7 +44,7 @@ function ExplorerNotifications(props: IExplorerNotificationProps) {
                   <Alert
                     key={id}
                     className='ExplorerNotifications__item'
-                    onClose={() => removeNotification(id)}
+                    onClose={() => remove(id)}
                     variant='outlined'
                     icon={getNotificationIcon(iconName)}
                     style={{ height: 'auto', ...style }}

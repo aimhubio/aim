@@ -1,5 +1,3 @@
-import _ from 'lodash-es';
-
 import { ExtractState, INotificationItem, INotificationsState } from '../types';
 
 import createState, { getInitialState } from './state';
@@ -15,20 +13,22 @@ type WarningMethod = (messages: string[] | string, duration: number) => void;
 type SuccessMethod = (messages: string[] | string, duration: number) => void;
 type ErrorMethod = (messages: string[] | string, duration: number) => void;
 type InfoMethod = (messages: string[] | string, duration: number) => void;
+type RemoveMethod = (id: string) => void;
+
+type NotificationsSelector<TStore> = (
+  state: ExtractedNotificationsState<TStore>,
+) => INotificationsState['data'];
 
 export interface INotificationsEngine<TStore = object> {
   state: INotificationsSlice;
   engine: {
-    addNotification: (notificationItem: INotificationItem) => void;
-    removeNotification: (id: string) => void;
+    remove: RemoveMethod;
     notify: NotifyMethod;
     warning: WarningMethod;
     success: SuccessMethod;
     error: ErrorMethod;
     info: InfoMethod;
-    notificationsSelector: (
-      state: ExtractedNotificationsState<TStore>,
-    ) => INotificationsState['data'];
+    notificationsSelector: NotificationsSelector<TStore>;
   };
 }
 
@@ -70,7 +70,18 @@ function createNotificationsEngine<TStore>(store: any) {
   };
 
   /**
-   * 'notify' function is for generating custom notifications or rest of notification methods (warning, error, success, info)
+   * 'remove' function is for force removing the notification
+   * @param id {string} - notification id
+   */
+
+  const remove: RemoveMethod = (id = '') => {
+    if (id) {
+      state.removeNotification(id);
+    }
+  };
+
+  /**
+   * 'notify' function is for generating custom notifications or the rest of notification methods (warning, error, success, info)
    *
    * @param args {object} - notification item
    */
@@ -105,7 +116,7 @@ function createNotificationsEngine<TStore>(store: any) {
   ) => {
     notify({
       title: 'Warning',
-      style: { borderColor: '#ff9800' },
+      style: { borderColor: '#ffcc00' },
       iconName: 'warning',
       messages,
       duration,
@@ -124,7 +135,7 @@ function createNotificationsEngine<TStore>(store: any) {
   ) => {
     notify({
       title: 'Success',
-      style: { borderColor: '#4caf50' },
+      style: { borderColor: '#2bc784' },
       iconName: 'success',
       messages,
       duration,
@@ -143,7 +154,7 @@ function createNotificationsEngine<TStore>(store: any) {
   ) => {
     notify({
       title: 'Error',
-      style: { borderColor: '#f44336' },
+      style: { borderColor: '#e64e48' },
       iconName: 'error',
       messages,
       duration,
@@ -174,8 +185,8 @@ function createNotificationsEngine<TStore>(store: any) {
       notifications: state.initialState,
     },
     engine: {
-      ..._.omit(state, ['selectors']),
       ...state.selectors,
+      remove,
       notify,
       warning,
       success,

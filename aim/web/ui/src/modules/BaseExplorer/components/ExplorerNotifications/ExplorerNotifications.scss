@@ -28,18 +28,18 @@
     }
   }
   &__item {
+    color: $pico;
     margin-top: $space-xs;
     &__content {
       &__title {
         font-weight: $font-600;
         font-size: $text-md;
         text-transform: capitalize;
-        color: $pico;
+        margin-bottom: $space-xs;
       }
       &__message {
         font-weight: $font-400;
         font-size: $text-md;
-        color: $pico;
       }
     }
   }

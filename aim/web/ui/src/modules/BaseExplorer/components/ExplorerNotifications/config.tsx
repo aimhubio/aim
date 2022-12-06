@@ -11,5 +11,5 @@ const NotificationIcons: Record<string, React.ReactNode> = {
 };
 
 export const getNotificationIcon = (iconName: string) => {
-  return NotificationIcons[iconName];
+  return NotificationIcons[iconName] || false;
 };
