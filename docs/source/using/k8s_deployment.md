@@ -37,7 +37,8 @@ ENTRYPOINT ["/bin/sh", "-c"]
 # We run aim listening on 0.0.0.0 to expose all ports. Also, we run 
 # using `--dev` to print verbose logs. Port 43800 is the default port of 
 # `aim up` but explicit is better than implicit.
-CMD ["echo \"N\" | aim init --repo /aim && aim up --host 0.0.0.0 --port 43800 --workers 2 --repo /aim"]
+# When using more than one worker for scalability, make sure to include the additional ports.
+CMD ["echo \"N\" | aim init --repo /aim && aim up --host 0.0.0.0 --port 43800 --workers 1 --repo /aim"]
 ```
 
 Assuming you store the above in your current directory, the container can be built
