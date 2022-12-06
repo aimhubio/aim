@@ -152,7 +152,7 @@ class Client:
         request = router_messages.ConnectRequest(
             client_uri=self.uri
         )
-        response = self._remote_router_stub.connect(request)
+        response = self._remote_router_stub.connect(request, metadata=[('x-client', self.uri)])
         if response.status == router_messages.ConnectResponse.Status.ERROR:
             raise_exception(response.exception)
         try:
@@ -167,14 +167,14 @@ class Client:
         request = router_messages.HeartbeatRequest(
             client_uri=self.uri,
         )
-        response = self._remote_router_stub.client_heartbeat(request)
+        response = self._remote_router_stub.client_heartbeat(request, metadata=[('x-client', self.uri)])
         return response
 
     def reconnect(self):
         request = router_messages.ReconnectRequest(
             client_uri=self.uri
         )
-        response = self._remote_router_stub.reconnect(request)
+        response = self._remote_router_stub.reconnect(request, metadata=[('x-client', self.uri)])
         if response.status == router_messages.ReconnectResponse.Status.ERROR:
             raise_exception(response.exception)
 
@@ -186,14 +186,14 @@ class Client:
         request = router_messages.DisconnectRequest(
             client_uri=self.uri
         )
-        response = self._remote_router_stub.disconnect(request)
+        response = self._remote_router_stub.disconnect(request, metadata=[('x-client', self.uri)])
 
         if response.status == router_messages.DisconnectResponse.Status.ERROR:
             raise_exception(response.exception)
 
     def get_version(self,):
         request = router_messages.VersionRequest()
-        response = self._remote_router_stub.get_version(request)
+        response = self._remote_router_stub.get_version(request, metadata=[('x-client', self.uri)])
 
         if response.status == router_messages.VersionResponse.Status.ERROR:
             raise_exception(response.exception)
@@ -206,7 +206,7 @@ class Client:
             client_uri=self.uri,
             args=args
         )
-        response = self.remote.get_resource(request)
+        response = self.remote.get_resource(request, metadata=[('x-client', self.uri)])
         if response.status == rpc_messages.ResourceResponse.Status.ERROR:
             raise_exception(response.exception)
 
@@ -219,7 +219,7 @@ class Client:
             handler=resource_handler,
             client_uri=self.uri
         )
-        response = self.remote.release_resource(request)
+        response = self.remote.release_resource(request, metadata=[('x-client', self.uri)])
         if response.status == rpc_messages.ReleaseResourceResponse.Status.ERROR:
             raise_exception(response.exception)
 
@@ -261,7 +261,7 @@ class Client:
 
         if queue_id != -1:
             self.get_queue(queue_id).wait_for_finish()
-        resp = self.remote.run_instruction(message_stream_generator())
+        resp = self.remote.run_instruction(message_stream_generator(), metadata=[('x-client', self.uri)])
         status_msg = next(resp)
 
         assert status_msg.WhichOneof('instruction') == 'header'
@@ -280,7 +280,7 @@ class Client:
                     message=chunk
                 )
 
-        response = self.remote.run_write_instructions(message_stream_generator())
+        response = self.remote.run_write_instructions(message_stream_generator(), metadata=[('x-client', self.uri)])
         if response.status == rpc_messages.WriteInstructionsResponse.Status.ERROR:
             raise_exception(response.exception)
 
