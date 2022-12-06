@@ -151,14 +151,14 @@ def _normalize_system_metric_key(key):
         }
     }
 
-    name = re.sub('^system\.', '', key)
-    gpu_idx_pattern = re.compile('^[0-9]+\.')
+    name = re.sub(r'^system\.', '', key)
+    gpu_idx_pattern = re.compile(r'^[0-9]+\.')
 
     # Triage & Remap name for aim ui
     if name.startswith('gpu'):
-        name = re.sub('^gpu\.', '', name)
+        name = re.sub(r'^gpu\.', '', name)
 
-        # Cut & pase gpu idx from name to context
+        # Cut & paste gpu idx from name to context
         gpu_idx_match = gpu_idx_pattern.search(name)
         if gpu_idx_match:
             gpu_idx_str = gpu_idx_match.group()
@@ -171,7 +171,7 @@ def _normalize_system_metric_key(key):
         normalized_name = SYSTEM_METRICS_NAME_MAP['gpu'].get(name)
 
     elif name.startswith('proc'):
-        name = re.sub('^proc\.', '', name)
+        name = re.sub(r'^proc\.', '', name)
         normalized_name = SYSTEM_METRICS_NAME_MAP['proc'].get(name)
         context = {'tag': 'system', 'subset': 'proc'}
 
