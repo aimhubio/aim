@@ -23,12 +23,14 @@ from aim.sdk.sequence import Sequence
 from aim.sdk.types import QueryReportMode
 from aim.sdk.data_version import DATA_VERSION
 from aim.sdk.remote_repo_proxy import RemoteRepoProxy
+from aim.sdk.lock_manager import LockManager, RunLock
 
-from aim.storage.locking import AutoFileLock
+from aim.storage.locking import SoftFileLock
 from aim.storage.container import Container
-from aim.storage.rockscontainer import RocksContainer
+from aim.storage.rockscontainer import RocksContainer, LockableRocksContainer
 from aim.storage.union import RocksUnionContainer
 from aim.storage.treeviewproxy import ProxyTree
+from aim.storage.lock_proxy import ProxyLock
 
 from aim.storage.structured.db import DB
 from aim.storage.structured.proxy import StructuredRunProxy
@@ -106,11 +108,13 @@ class Repo:
         self.read_only = read_only
         self._mount_root = None
         self._client: Client = None
+        self._lock_manager: LockManager = None
         if path.startswith('ssh://'):
             self._mount_root, self.root_path = mount_remote_repo(path)
         elif self.is_remote_path(path):
             remote_path = path.replace('aim://', '')
             self._client = Client(remote_path)
+            self._remote_repo_proxy = RemoteRepoProxy(self._client)
             self.root_path = remote_path
         else:
             self.root_path = path
@@ -118,6 +122,7 @@ class Repo:
 
         if init:
             os.makedirs(self.path, exist_ok=True)
+            os.makedirs(os.path.join(self.path, 'locks'), exist_ok=True)
         if not self.is_remote_repo and not os.path.exists(self.path):
             if self._mount_root:
                 unmount_remote_repo(self.root_path, self._mount_root)
@@ -132,13 +137,14 @@ class Repo:
         self.structured_db = None
 
         if not self.is_remote_repo:
-            self._lock_path = os.path.join(self.path, '.repo_lock')
-            self._lock = AutoFileLock(self._lock_path, timeout=10)
+            self._lock_manager = LockManager(self.path)
+            self._sdb_lock_path = os.path.join(self.path, 'locks', 'structured_db_lock')
+            self._sdb_lock = SoftFileLock(self._sdb_lock_path, timeout=5 * 60)  # timeout after 5 minutes
 
-            with self.lock():
-                status = self.check_repo_status(self.root_path)
-                self.structured_db = DB.from_path(self.path)
-                if init or status == RepoStatus.PATCH_REQUIRED:
+            status = self.check_repo_status(self.root_path)
+            self.structured_db = DB.from_path(self.path)
+            if init or status == RepoStatus.PATCH_REQUIRED:
+                with self._sdb_lock:
                     self.structured_db.run_upgrades()
                     with open(os.path.join(self.path, 'VERSION'), 'w') as version_fh:
                         version_fh.write('.'.join(map(str, DATA_VERSION)) + '\n')
@@ -157,16 +163,6 @@ class Repo:
 
     def __eq__(self, o: 'Repo') -> bool:
         return self.path == o.path
-
-    @contextmanager
-    def lock(self):
-        assert not self.is_remote_repo
-
-        self._lock.acquire()
-        try:
-            yield self._lock
-        finally:
-            self._lock.release()
 
     @classmethod
     def default_repo_path(cls) -> str:
@@ -300,7 +296,7 @@ class Repo:
         container = self.container_pool.get(container_config)
         if container is None:
             path = os.path.join(self.path, name)
-            container = RocksContainer(path, read_only=False, timeout=timeout)
+            container = LockableRocksContainer(path, read_only=False, timeout=timeout)
             self.container_pool[container_config] = container
 
         return container
@@ -354,20 +350,26 @@ class Repo:
         assert self.structured_db
         _props = None
 
-        with self.lock():
-            if self.run_props_cache_hint:
-                _props = self.structured_db.caches[self.run_props_cache_hint][hash_]
+        if self.run_props_cache_hint:
+            _props = self.structured_db.caches[self.run_props_cache_hint][hash_]
+        if not _props:
+            _props = self.structured_db.find_run(hash_)
             if not _props:
-                _props = self.structured_db.find_run(hash_)
-                if not _props:
-                    if read_only:
-                        raise RepoIntegrityError(f'Missing props for Run {hash_}')
-                    else:
+                if read_only:
+                    raise RepoIntegrityError(f'Missing props for Run {hash_}')
+                else:
+                    with self._sdb_lock:
                         _props = self.structured_db.create_run(hash_)
-                if self.run_props_cache_hint:
-                    self.structured_db.caches[self.run_props_cache_hint][hash_] = _props
+            if self.run_props_cache_hint:
+                self.structured_db.caches[self.run_props_cache_hint][hash_] = _props
 
         return _props
+
+    def request_run_lock(self, hash_: str, timeout: int = 10) -> 'RunLock':
+        if self.is_remote_repo:
+            return ProxyLock(self._client, hash_)
+        assert self._lock_manager
+        return self._lock_manager.get_run_lock(hash_, timeout=timeout)
 
     def iter_runs(self) -> Iterator['Run']:
         """Iterate over Repo runs.
@@ -399,8 +401,7 @@ class Repo:
     @ttl_cache(ttl=0.5)
     def _all_run_hashes(self) -> Set[str]:
         if self.is_remote_repo:
-            remote_repo = RemoteRepoProxy(self._client)
-            return set(remote_repo.list_all_runs())
+            return set(self._remote_repo_proxy.list_all_runs())
         else:
             chunks_dir = os.path.join(self.path, 'meta', 'chunks')
             if os.path.exists(chunks_dir):
@@ -413,8 +414,7 @@ class Repo:
 
     def _active_run_hashes(self) -> Set[str]:
         if self.is_remote_repo:
-            remote_repo = RemoteRepoProxy(self._client)
-            return set(remote_repo.list_active_runs())
+            return set(self._remote_repo_proxy.list_active_runs())
         else:
             chunks_dir = os.path.join(self.path, 'meta', 'progress')
             if os.path.exists(chunks_dir):
@@ -770,11 +770,9 @@ class Repo:
         self.run_props_cache_hint = cache_name
 
     def _delete_run(self, run_hash):
-        # try to acquire a lock on a run container to check if it is still in progress or not
-        # in progress runs can't be deleted
-        lock_path = os.path.join(self.path, 'meta', 'locks', run_hash)
-        lock = AutoFileLock(lock_path, timeout=0)
-        lock.acquire()
+        # check run lock info. in progress runs can't be deleted
+        if self._lock_manager.get_run_lock_info(run_hash).locked:
+            raise RuntimeError(f'Cannot delete Run \'{run_hash}\'. Run is locked.')
 
         with self.structured_db:  # rollback db entity delete if subsequent actions fail.
             # remove database entry
@@ -799,11 +797,10 @@ class Repo:
                     shutil.rmtree(seqs_path, ignore_errors=True)
 
     def _copy_run(self, run_hash, dest_repo):
-        # try to acquire a lock on a run container to check if it is still in progress or not
-        # in progress runs can't be copied
-        lock_path = os.path.join(self.path, 'meta', 'locks', run_hash)
-        lock = AutoFileLock(lock_path, timeout=0)
-        lock.acquire()
+        # check run lock info. in progress runs can't be copied
+        if self._lock_manager.get_run_lock_info(run_hash).locked:
+            raise RuntimeError(f'Cannot copy Run \'{run_hash}\'. Run is locked.')
+
         with dest_repo.structured_db:  # rollback destination db entity if subsequent actions fail.
             # copy run structured data
             source_structured_run = self.structured_db.find_run(run_hash)

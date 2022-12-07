@@ -4,6 +4,7 @@ exports[`<Icon icon={<IconDeviceCctvOff />} /> Renders Correctly 1`] = `
 <DocumentFragment>
   <div
     class="c-inGMmN"
+    data-testid="icon"
   >
     <i
       class="c-dOCGJv c-dOCGJv-kupcZn-size-lg"

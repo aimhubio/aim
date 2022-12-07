@@ -16,7 +16,7 @@ describe('<Icon icon={<IconDeviceCctvOff />} />', () => {
       <Icon icon={<IconDeviceCctvOff />} size='sm' />,
     );
     const icon = getByTestId('icon');
-    expect(icon).toHaveStyle('width: 12px; height: 12px;');
+    expect(icon).toHaveStyle('width: 12px, height: 12px');
   });
 
   // test css prop
@@ -25,6 +25,6 @@ describe('<Icon icon={<IconDeviceCctvOff />} />', () => {
       <Icon icon={<IconDeviceCctvOff />} css={{ color: 'red' }} />,
     );
     const icon = getByTestId('icon');
-    expect(icon).toHaveStyle('color: red;');
+    expect(icon).toHaveStyle("color: 'red'");
   });
 });

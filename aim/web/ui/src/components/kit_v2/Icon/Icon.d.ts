@@ -3,7 +3,8 @@ import * as React from 'react';
 import { CSS } from 'config/stitches/stitches.config';
 
 // The interface for the Icon component
-export interface IIconProps {
+export interface IIconProps
+  extends Partial<React.HTMLAttributes<HTMLDivElement>> {
   /**
    * @description The css property is used to extend the styles of the component.
    * @example
@@ -36,4 +37,13 @@ export interface IIconProps {
    * @see https://tablericons.com/
    */
   icon: React.ReactNode | React.Element;
+  /**
+   * @description The color of the Icon.
+   * @example
+   * ```tsx
+   * <Icon color="red" />
+   * ```
+   * @default undefined
+   */
+  color?: CSS['color'];
 }

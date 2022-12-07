@@ -335,10 +335,11 @@ const Table = React.forwardRef(function Table(
         }
 
         if (
-          tableContainerRef.current.scrollTop > top ||
-          tableContainerRef.current.scrollTop +
-            tableContainerRef.current.offsetHeight <
-            top
+          tableContainerRef.current &&
+          (tableContainerRef.current.scrollTop > top ||
+            tableContainerRef.current.scrollTop +
+              tableContainerRef.current.offsetHeight <
+              top)
         ) {
           setTimeout(() => {
             window.requestAnimationFrame(() => {
@@ -759,7 +760,7 @@ const Table = React.forwardRef(function Table(
   return (
     <ErrorBoundary>
       {!isEmpty(rowData) ? (
-        <div style={{ height: '100%' }} className={className}>
+        <div style={{ height: '100%', width: '100%' }} className={className}>
           {!hideHeaderActions && isEmpty(selectedRows) ? (
             <div className='Table__header'>
               {showResizeContainerActionBar && (

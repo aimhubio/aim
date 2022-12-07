@@ -5,6 +5,8 @@ import Figures from 'modules/BaseExplorer/components/Figures/Figures';
 
 import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
 
+import getFiguresExplorerStaticContent from './getStaticContent';
+
 const defaultConfig = getDefaultHydration();
 
 const FiguresExplorer = renderer(
@@ -28,6 +30,7 @@ const FiguresExplorer = renderer(
         },
       },
     },
+    getStaticContent: getFiguresExplorerStaticContent,
   },
   __DEV__,
 );
