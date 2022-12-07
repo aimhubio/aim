@@ -9,6 +9,9 @@ const Runs = React.lazy(
 const RunDetail = React.lazy(
   () => import(/* webpackChunkName: "run" */ 'pages/RunDetail/RunDetail'),
 );
+const Experiment = React.lazy(
+  () => import(/* webpackChunkName: "run" */ 'pages/Experiment/Experiment'),
+);
 const Metrics = React.lazy(
   () =>
     import(/* webpackChunkName: "metrics" */ 'pages/Metrics/MetricsContainer'),
@@ -43,8 +46,8 @@ const ImagesExplore = React.lazy(
 const FiguresExplore = React.lazy(
   () => import(/* webpackChunkName: "figures" */ 'pages/FiguresExplorer'),
 );
-const AudioExplorer = React.lazy(
-  () => import(/* webpackChunkName: "figures" */ 'pages/AudioExplorer'),
+const AudiosExplorer = React.lazy(
+  () => import(/* webpackChunkName: "audios" */ 'pages/AudiosExplorer'),
 );
 
 export interface IRoute {
@@ -138,12 +141,12 @@ const routes = {
     isExact: true,
     title: pageTitlesEnum.FIGURES_EXPLORER,
   },
-  AUDIO_EXPLORER: {
-    path: PathEnum.Audio_Explorer,
-    component: AudioExplorer,
+  AUDIOS_EXPLORER: {
+    path: PathEnum.Audios_Explorer,
+    component: AudiosExplorer,
     showInSidebar: true,
     icon: 'audios',
-    displayName: 'Audio',
+    displayName: 'Audios',
     isExact: true,
     title: pageTitlesEnum.AUDIOS_EXPLORER,
   },
@@ -189,6 +192,14 @@ const routes = {
     displayName: 'Run Detail',
     isExact: false,
     title: pageTitlesEnum.RUN_DETAIL,
+  },
+  Experiment: {
+    path: PathEnum.Experiment,
+    component: Experiment,
+    showInSidebar: false,
+    displayName: 'Experiment',
+    isExact: false,
+    title: pageTitlesEnum.EXPERIMENT,
   },
 };
 
