@@ -89,48 +89,56 @@ const RightIcon = styled(IconContainer, {
  * @property {IButtonProps['children']} children - children to be displayed inside the button
  */
 
-function Button({
-  color = ColorPaletteEnum.primary,
-  size = 'md',
-  variant = 'contained',
-  fullWidth = false,
-  horizontalSpacing = 'default',
-  disabled,
-  leftIcon,
-  rightIcon,
-  css,
-  children,
-  ...rest
-}: IButtonProps): React.FunctionComponentElement<React.ReactNode> {
-  return (
-    <Container
-      {...rest}
-      css={{
-        ...getButtonStyles(color, variant, disabled),
-        p: ButtonSpacingMap[horizontalSpacing][size],
-        ...css,
-      }}
-      size={size}
-      disabled={disabled}
-      fullWidth={fullWidth}
-    >
-      {leftIcon ? (
-        <LeftIcon
-          css={{ ml: getIconSpacing(horizontalSpacing, size) }}
-          className='startIcon'
-          name={leftIcon}
-        />
-      ) : null}
-      {children}
-      {rightIcon ? (
-        <RightIcon
-          css={{ mr: getIconSpacing(horizontalSpacing, size) }}
-          className='endIcon'
-          name={rightIcon}
-        />
-      ) : null}
-    </Container>
-  );
-}
-
+const Button = React.forwardRef<
+  React.ElementRef<typeof Container>,
+  IButtonProps
+>(
+  (
+    {
+      color = ColorPaletteEnum.primary,
+      size = 'md',
+      variant = 'contained',
+      fullWidth = false,
+      horizontalSpacing = 'default',
+      disabled,
+      leftIcon,
+      rightIcon,
+      css,
+      children,
+      ...rest
+    }: IButtonProps,
+    forwardedRef,
+  ) => {
+    return (
+      <Container
+        {...rest}
+        css={{
+          ...getButtonStyles(color, variant, disabled),
+          p: ButtonSpacingMap[horizontalSpacing][size],
+          ...css,
+        }}
+        size={size}
+        disabled={disabled}
+        fullWidth={fullWidth}
+        ref={forwardedRef}
+      >
+        {leftIcon ? (
+          <LeftIcon
+            css={{ ml: getIconSpacing(horizontalSpacing, size) }}
+            className='startIcon'
+            name={leftIcon}
+          />
+        ) : null}
+        {children}
+        {rightIcon ? (
+          <RightIcon
+            css={{ mr: getIconSpacing(horizontalSpacing, size) }}
+            className='endIcon'
+            name={rightIcon}
+          />
+        ) : null}
+      </Container>
+    );
+  },
+);
 export default React.memo(Button);
