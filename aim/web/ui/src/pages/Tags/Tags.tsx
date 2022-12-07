@@ -1,7 +1,6 @@
 import React, { memo, useEffect, useState } from 'react';
 
 import { Paper, Tab, Tabs } from '@material-ui/core';
-import { IconDeviceTablet } from '@tabler/icons';
 
 import TabPanel from 'components/TabPanel/TabPanel';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
@@ -49,13 +48,6 @@ function Tags({
     <ErrorBoundary>
       <section className='Tags container'>
         <Paper className='Tags__tabsContainer'>
-          <i className='ti ti-device-tablet'></i>
-          <IconDeviceTablet
-            size={36} // set custom `width` and `height`
-            color='red' // set `stroke` color
-            stroke={3} // set `stroke-width`
-            strokeLinejoin='miter' // override other SVG props
-          />
           <Tabs
             value={value}
             onChange={handleChange}
