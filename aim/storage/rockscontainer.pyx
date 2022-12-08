@@ -618,5 +618,5 @@ class RocksContainerItemsIterator(ContainerItemsIterator):
 
 class LockableRocksContainer(RocksContainer):
     def get_lock_cls(self):
-        """Use both Unix file-locks and Soft file-locks to cover all the scenarios and avoid corruptions."""
+        """Use both Unix/Windows file-locks and Soft file-locks to cover all the scenarios and avoid corruptions."""
         return DualLock

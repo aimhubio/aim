@@ -157,7 +157,7 @@ def AutoFileLock(
 
 
 class DualLock:
-    """ Custom lock that uses both UnixLock and SoftFileLock"""
+    """ Custom lock that uses both UnixFileLock/WindowsFileLock and SoftFileLock"""
     def __init__(self, lock_path: Union[str, os.PathLike], timeout: float = -1):
         self._lock_path = str(lock_path)
         self._lock = PlatformFileLock(self._lock_path, timeout)
