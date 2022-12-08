@@ -97,7 +97,7 @@ class Distribution(CustomObject):
             :type: np.ndarray
         """
         assert (len(self.range) == 2)
-        return np.linspace(self.range[0], self.range[1], num=self.bin_count)
+        return np.linspace(self.range[0], self.range[1], num=self.bin_count + 1)
 
     def json(self):
         """Dump distribution metadata to a dict"""
