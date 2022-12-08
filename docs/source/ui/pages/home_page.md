@@ -1,6 +1,5 @@
 ## Home Page
 
-
 Aim Home Page is a high-level overview of your training activities and how to find your way around the Aim UI.
 
 <img alt="home" style="border: 1px solid #E8F1FC; border-radius: 8px" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/home/home.png" />

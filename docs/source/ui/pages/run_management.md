@@ -21,7 +21,7 @@ Use Search bar to query runs with [Aim QL](../../using/search.html).
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Runs Explorer Search Bar" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/runs-explorer/search_runs.png">
 
-#### Follow runs in real time
+#### Observe runs in real time
 
 Switch `Live Update` to turn on the real time mode.
 
