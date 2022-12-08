@@ -11,10 +11,10 @@ from enum import Enum
 from pathlib import Path
 from dataclasses import dataclass, field
 from dateutil.relativedelta import relativedelta
-from filelock import UnixFileLock, SoftFileLock, Timeout
+from filelock import SoftFileLock, Timeout
 
 from aim.sdk.errors import RunLockingError
-from aim.storage.locking import RunLock
+from aim.storage.locking import RunLock, PlatformFileLock
 
 logger = logging.getLogger(__name__)
 
@@ -97,7 +97,7 @@ class LockManager(object):
                 soft_lock_path = lock_dir / self.softlock_fname(run_hash)
                 if lock_path.exists():
                     try:
-                        lock = UnixFileLock(lock_path, timeout=0)
+                        lock = PlatformFileLock(lock_path, timeout=0)
                         with lock.acquire():
                             pass
                     except Timeout:
