@@ -26,7 +26,7 @@ class LockingVersion(Enum):
 
 class LockType(Enum):
     SOFT_LOCK = 0
-    UNIX_LOCK = 1
+    PLATFORM_LOCK = 1
 
 
 @dataclass(frozen=True)
@@ -103,7 +103,7 @@ class LockManager(object):
                     except Timeout:
                         locked = True
                         lock_version = LockingVersion.LEGACY
-                        lock_type = LockType.UNIX_LOCK
+                        lock_type = LockType.PLATFORM_LOCK
                 elif soft_lock_path.exists():
                     locked = True
                     created_at = datetime.datetime.fromtimestamp(soft_lock_path.stat().st_mtime)
@@ -139,8 +139,8 @@ class LockManager(object):
             for container_dir in ('meta', 'seqs'):
                 soft_lock_path = self.repo_path / container_dir / 'locks' / self.softlock_fname(run_hash)
                 soft_lock_path.unlink(missing_ok=True)
-                unix_lock_path = self.repo_path / container_dir / 'locks' / run_hash
-                unix_lock_path.unlink(missing_ok=True)
+                platform_lock_path = self.repo_path / container_dir / 'locks' / run_hash
+                platform_lock_path.unlink(missing_ok=True)
 
             # Force-release run lock
             lock_path.unlink(missing_ok=True)
