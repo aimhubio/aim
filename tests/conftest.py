@@ -20,7 +20,7 @@ def _init_test_repo():
 
 
 def _cleanup_test_repo(path):
-    shutil.rmtree(TEST_REPO_PATH)
+    shutil.rmtree(path)
 
 
 def _upgrade_api_db():
