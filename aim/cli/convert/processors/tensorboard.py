@@ -44,6 +44,7 @@ def parse_tb_logs(tb_logs, repo_inst, flat=False, no_cache=False):
         # level 0 is the direct parent directory
         if level <= 0:
             return os.path.dirname(current_path)
+        # FIXME: probably broken on Windows (C:\)
         elif current_path in ('', '.', '/'):
             return current_path
         return get_parent(os.path.dirname(current_path), level - 1)
