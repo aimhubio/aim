@@ -13,6 +13,13 @@ import {
   CheckBox as CheckBoxIcon,
   CheckBoxOutlineBlank,
 } from '@material-ui/icons';
+
+import { Badge, Button, Icon, Text } from 'components/kit';
+import AutocompleteInput from 'components/AutocompleteInput';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+
+import { getSuggestionsByExplorer } from 'config/monacoConfig/monacoConfig';
+
 import { IQueryFormProps } from 'modules/BaseExplorer/types';
 import { getQueryStringFromSelect } from 'modules/core/utils/getQueryStringFromSelect';
 import { getSelectFormOptions } from 'modules/core/utils/getSelectFormOptions';
@@ -22,12 +29,6 @@ import {
   QueryRangesState,
 } from 'modules/core/engine/explorer/query';
 import getQueryParamsFromState from 'modules/core/utils/getQueryParamsFromState';
-
-import { Badge, Button, Icon, Text } from 'components/kit';
-import AutocompleteInput from 'components/AutocompleteInput';
-import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
-
-import { getSuggestionsByExplorer } from 'config/monacoConfig/monacoConfig';
 
 import { ISelectOption } from 'types/services/models/explorer/createAppModel';
 import { SequenceTypesEnum } from 'types/core/enums';

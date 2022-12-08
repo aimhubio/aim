@@ -1,13 +1,13 @@
 import React from 'react';
 import AudioPlayer from 'material-ui-audio-player';
 
-import AudioBoxVolume from 'modules/BaseExplorer/components/AudioBox/AudioBoxVolume';
-import AudioBoxProgress from 'modules/BaseExplorer/components/AudioBox/AudioBoxProgress';
-
 import { Button, Icon, Spinner, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { BATCH_COLLECT_DELAY } from 'config/mediaConfigs/mediaConfigs';
+
+import AudioBoxProgress from 'modules/BaseExplorer/components/AudioBox/AudioBoxProgress';
+import AudioBoxVolume from 'modules/BaseExplorer/components/AudioBox/AudioBoxVolume';
 
 import blobsURIModel from 'services/models/media/blobsURIModel';
 
