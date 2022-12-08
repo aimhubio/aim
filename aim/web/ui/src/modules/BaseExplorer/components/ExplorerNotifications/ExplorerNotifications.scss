@@ -16,13 +16,15 @@
         height: 2.375rem;
       }
     }
-
+    .MuiAlert-message {
+      padding: 0;
+    }
     .MuiAlert-action {
       display: flex;
       align-items: flex-start;
       height: 100%;
       .MuiSvgIcon-fontSizeSmall {
-        font-size: 1.05rem;
+        font-size: $text-lg;
         fill: $pico;
       }
     }
@@ -35,7 +37,6 @@
         font-weight: $font-600;
         font-size: $text-md;
         text-transform: capitalize;
-        margin-bottom: $space-xs;
       }
       &__message {
         font-weight: $font-400;
