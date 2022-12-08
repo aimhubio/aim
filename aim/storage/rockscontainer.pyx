@@ -8,7 +8,7 @@ from typing import Iterator, Optional, Tuple
 
 from aim.ext.cleanup import AutoClean
 from aim.ext.exception_resistant import exception_resistant
-from aim.storage.locking import SoftFileLock, NoopLock
+from aim.storage.locking import SoftFileLock, NoopLock, DualLock
 from aim.storage.types import BLOB
 from aim.storage.container import Container, ContainerKey, ContainerValue, ContainerItemsIterator
 from aim.storage.prefixview import PrefixView
@@ -618,5 +618,5 @@ class RocksContainerItemsIterator(ContainerItemsIterator):
 
 class LockableRocksContainer(RocksContainer):
     def get_lock_cls(self):
-        """Use Unix file-locks or Soft file-locks depending on the FS type."""
-        return SoftFileLock
+        """Use both Unix file-locks and Soft file-locks to cover all the scenarios and avoid corruptions."""
+        return DualLock

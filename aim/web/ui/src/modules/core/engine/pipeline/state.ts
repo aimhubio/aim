@@ -90,7 +90,7 @@ const initialProgressState: ProgressState = {
 
 function getInitialState<TObject>(): IPipelineState<TObject> {
   const initialState: IPipelineState<TObject> = {
-    status: PipelineStatusEnum.NeverExecuted,
+    status: PipelineStatusEnum.Never_Executed,
     currentPhase: PipelinePhasesEnum.Waiting,
     progress: initialProgressState,
     additionalData: {
@@ -111,7 +111,7 @@ function getInitialState<TObject>(): IPipelineState<TObject> {
 function createState<TStore, TObject>(
   store: StoreApi<ExtractState<TStore, TObject>>,
   initialState: IPipelineState<TObject> = {
-    status: PipelineStatusEnum.NeverExecuted,
+    status: PipelineStatusEnum.Never_Executed,
     currentPhase: PipelinePhasesEnum.Waiting,
     progress: initialProgressState,
     additionalData: {

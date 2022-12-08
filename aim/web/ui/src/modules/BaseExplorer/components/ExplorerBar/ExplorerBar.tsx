@@ -17,7 +17,7 @@ function ExplorerBar(props: IExplorerBarProps) {
   const disableResetControls = React.useMemo(
     () =>
       [
-        PipelineStatusEnum.NeverExecuted,
+        PipelineStatusEnum.Never_Executed,
         PipelineStatusEnum.Empty,
         PipelineStatusEnum.Insufficient_Resources,
         PipelineStatusEnum.Executing,
