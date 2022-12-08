@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.15.2
+
+- Fix styling issues on the experiment page (KaroMourad)
+
 ## 3.15.1 Dec 1, 2022
 
 - Fix issue with index container lock for older repos (mihran113)
