@@ -11,10 +11,9 @@ Create an empty directory and place inside the build scripts (`.bat` files) with
 ### 1-build-deps.bat
 
 ```batchfile
-git clone https://github.com/Microsoft/vcpkg.git
+git clone -b 2022.11.14 https://github.com/Microsoft/vcpkg.git
 
 cd vcpkg
-git checkout tags/2022.11.14
 
 call bootstrap-vcpkg.bat -disableMetrics
 
