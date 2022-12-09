@@ -2,7 +2,7 @@
 
 ### Prerequisites
 
-Visual Studio 2019 or 2022. The free edition (Community Edition) is supported .
+Visual Studio 2019 or 2022. The free edition (Community Edition) is supported.
 
 ### Overview
 
