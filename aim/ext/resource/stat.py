@@ -9,7 +9,7 @@ try:
     # Initialize it or pass if NVIDIA ML is not initialized
     from py3nvml import py3nvml as nvml
     nvml.nvmlInit()
-except Exception:
+except nvml.NVMLError_LibraryNotFound:
     pass
 
 
