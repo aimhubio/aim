@@ -9,6 +9,9 @@ const Runs = React.lazy(
 const RunDetail = React.lazy(
   () => import(/* webpackChunkName: "run" */ 'pages/RunDetail/RunDetail'),
 );
+const Experiment = React.lazy(
+  () => import(/* webpackChunkName: "run" */ 'pages/Experiment/Experiment'),
+);
 const Metrics = React.lazy(
   () =>
     import(/* webpackChunkName: "metrics" */ 'pages/Metrics/MetricsContainer'),
@@ -22,8 +25,8 @@ const Bookmarks = React.lazy(
       /* webpackChunkName: "bookmarks" */ 'pages/Bookmarks/BookmarksContainer'
     ),
 );
-const Home = React.lazy(
-  () => import(/* webpackChunkName: "home" */ 'pages/Home/HomeContainer'),
+const Dashboard = React.lazy(
+  () => import(/* webpackChunkName: "dashboard" */ 'pages/Dashboard/Dashboard'),
 );
 const TagsContainer = React.lazy(
   () => import(/* webpackChunkName: "tags" */ 'pages/Tags/TagsContainer'),
@@ -43,6 +46,9 @@ const ImagesExplore = React.lazy(
 const FiguresExplore = React.lazy(
   () => import(/* webpackChunkName: "figures" */ 'pages/FiguresExplorer'),
 );
+const AudiosExplorer = React.lazy(
+  () => import(/* webpackChunkName: "audios" */ 'pages/AudiosExplorer'),
+);
 
 export interface IRoute {
   path: PathEnum;
@@ -57,13 +63,14 @@ export interface IRoute {
 }
 
 const routes = {
-  HOME: {
-    path: PathEnum.Home,
-    component: Home,
+  DASHBOARD: {
+    path: PathEnum.Dashboard,
+    component: Dashboard,
     showInSidebar: false,
-    displayName: null,
+    displayName: 'Dashboard',
+    icon: 'dashboard',
     isExact: true,
-    title: pageTitlesEnum.HOME,
+    title: pageTitlesEnum.DASHBOARD,
   },
   RUNS: {
     path: PathEnum.Runs,
@@ -129,10 +136,19 @@ const routes = {
     path: PathEnum.Figures_Explorer,
     component: FiguresExplore,
     showInSidebar: true,
-    icon: 'figures-explorer',
+    icon: 'figures',
     displayName: 'Figures',
     isExact: true,
     title: pageTitlesEnum.FIGURES_EXPLORER,
+  },
+  AUDIOS_EXPLORER: {
+    path: PathEnum.Audios_Explorer,
+    component: AudiosExplorer,
+    showInSidebar: true,
+    icon: 'audios',
+    displayName: 'Audios',
+    isExact: true,
+    title: pageTitlesEnum.AUDIOS_EXPLORER,
   },
   SCATTERS: {
     path: PathEnum.Scatters,
@@ -176,6 +192,14 @@ const routes = {
     displayName: 'Run Detail',
     isExact: false,
     title: pageTitlesEnum.RUN_DETAIL,
+  },
+  Experiment: {
+    path: PathEnum.Experiment,
+    component: Experiment,
+    showInSidebar: false,
+    displayName: 'Experiment',
+    isExact: false,
+    title: pageTitlesEnum.EXPERIMENT,
   },
 };
 

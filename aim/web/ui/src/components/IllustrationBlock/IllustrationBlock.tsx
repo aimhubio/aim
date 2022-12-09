@@ -22,6 +22,7 @@ function IllustrationBlock({
   type = IllustrationsEnum.ExploreData,
   className = '',
   size = 'small',
+  showImage = true,
 }: IIllustrationBlockProps): React.FunctionComponentElement<React.ReactNode> {
   const [imgLoaded, setImgLoaded] = React.useState(false);
 
@@ -32,19 +33,22 @@ function IllustrationBlock({
   return (
     <div
       className={classNames(`IllustrationBlock ${className}`, {
-        IllustrationBlock__hidden: !imgLoaded,
+        IllustrationBlock__hidden: showImage && !imgLoaded,
       })}
     >
       <div className='IllustrationBlock__container'>
-        <div className={`IllustrationBlock__${size}__img`}>
-          {image || (
-            <img
-              onLoad={onImgLoad}
-              src={Illustrations_List[type]}
-              alt='Illustration'
-            />
-          )}
-        </div>
+        {showImage ? (
+          <div className={`IllustrationBlock__${size}__img`}>
+            {image || (
+              <img
+                onLoad={onImgLoad}
+                src={Illustrations_List[type]}
+                alt='Illustration'
+              />
+            )}
+          </div>
+        ) : null}
+
         <Text
           component='p'
           className={`IllustrationBlock__title IllustrationBlock__${size}__title`}

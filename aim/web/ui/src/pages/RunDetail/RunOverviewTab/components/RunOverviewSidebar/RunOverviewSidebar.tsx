@@ -150,6 +150,7 @@ function RunOverviewSidebar({
           <AttachedTagsList
             runHash={runHash}
             initialTags={info.tags}
+            addTagButtonSize='small'
             onTagsChange={runDetailAppModel.editTags}
           />
         </div>

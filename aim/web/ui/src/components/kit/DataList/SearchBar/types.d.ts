@@ -6,6 +6,8 @@ export interface ISearchBarProps {
   onInputClear: () => void;
   onMatchTypeChange: (value: MatchTypes | null) => void;
   isDisabled: boolean;
+  toolbarItems?: React.FunctionComponentElement<React.ReactNode>[];
+  disableMatchBar?: boolean;
 }
 
 export interface ISearchInputProps {

@@ -1,5 +1,3 @@
-import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
-
 import { IDrawLinesArgs } from 'types/utils/d3/drawLines';
 import {
   IProcessedAggrData,
@@ -8,11 +6,10 @@ import {
 import { IAxisScale } from 'types/utils/d3/getAxisScale';
 
 import { AggregationAreaMethods } from 'utils/aggregateGroupData';
+import { CurveEnum, HighlightEnum } from 'utils/d3';
 
 import lineGenerator from './lineGenerator';
 import areaGenerator from './areaGenerator';
-
-import { CurveEnum } from './';
 
 function drawLines(args: IDrawLinesArgs): void {
   const {
@@ -27,7 +24,6 @@ function drawLines(args: IDrawLinesArgs): void {
     aggregationConfig,
     processedData,
     processedAggrData,
-    readOnly = false,
   } = args;
 
   if (!linesNodeRef?.current) {
@@ -42,17 +38,6 @@ function drawLines(args: IDrawLinesArgs): void {
     linesNodeRef.current
       .selectAll('.Line')
       .attr('d', lineGenerator(xScale, yScale, curve));
-
-    if (!readOnly) {
-      linesNodeRef.current
-        ?.selectAll('.inProgressLineIndicator')
-        .attr('cx', (d: IProcessedData) => {
-          return xScale(d.data[d.data.length - 1][0]);
-        })
-        .attr('cy', (d: IProcessedData) => yScale(d.data[d.data.length - 1][1]))
-        .attr('r', 2)
-        .raise();
-    }
   };
 
   linesRef.current.updateLines = function (data: IProcessedData[]): void {
@@ -74,29 +59,6 @@ function drawLines(args: IDrawLinesArgs): void {
       .style('stroke-dasharray', (d: IProcessedData) => d.dasharray)
       .data(data.map((d: IProcessedData) => d.data))
       .attr('d', lineGenerator(xScale, yScale, curveInterpolation));
-
-    if (!readOnly) {
-      const filteredData =
-        data?.filter((d: IProcessedData) => d?.run?.props?.active) ?? [];
-      linesNodeRef.current
-        ?.selectAll('.inProgressLineIndicator')
-        .data(filteredData)
-        .join('circle')
-        .attr(
-          'data-selector',
-          (d: IProcessedData) =>
-            `Line-Sel-${highlightMode}-${d.selectors?.[highlightMode]}`,
-        )
-        .attr('clip-path', `url(#${nameKey}-circles-rect-clip-${index})`)
-        .attr('class', 'inProgressLineIndicator')
-        .style('stroke', (d: IProcessedData) => d.color)
-        .style('fill', (d: IProcessedData) => d.color)
-        .attr('id', (d: IProcessedData) => `inProgressLineIndicator-${d.key}`)
-        .attr('cx', (d: IProcessedData) => xScale(d.data[d.data.length - 1][0]))
-        .attr('cy', (d: IProcessedData) => yScale(d.data[d.data.length - 1][1]))
-        .attr('r', 2)
-        .raise();
-    }
   };
 
   linesRef.current.updateAggregatedAreasScales = function (

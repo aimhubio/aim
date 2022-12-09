@@ -15,13 +15,13 @@ function EndAdornment({
     <ErrorBoundary>
       <span className='EndAdornment'>
         {showSearchIcon ? (
-          <Icon name='search' />
+          <Icon name='search' fontSize={14} />
         ) : (
           <>
             <span className='divider-vertical' />
             <Button
               withOnlyIcon
-              size='small'
+              size='xxSmall'
               onClick={onClickClearButton}
               color='secondary'
               disabled={isDisabled}

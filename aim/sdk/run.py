@@ -1,28 +1,26 @@
 import logging
 
-import os
 import datetime
 import json
 import pytz
 import sys
 
 from collections import defaultdict
+from functools import partialmethod
+from inspect import currentframe, getframeinfo
 
 from aim.sdk.base_run import BaseRun
 from aim.sdk.sequence import Sequence
 from aim.sdk.tracker import RunTracker
-from aim.sdk.reporter import RunStatusReporter
+from aim.sdk.reporter import RunStatusReporter, ScheduledStatusReporter
+from aim.sdk.run_heartbeat_reporter import RemoteRunHeartbeatReporter
 from aim.sdk.sequence_collection import SingleRunSequenceCollection
 from aim.sdk.utils import (
     backup_run,
 )
-from aim.ext.utils import (
-    get_environment_variables,
-    get_installed_packages,
-    get_git_info,
-)
+
 from aim.sdk.types import AimObject
-from aim.sdk.configs import AIM_RUN_INDEXING_TIMEOUT
+from aim.sdk.logging import LogRecord, LogRecords
 
 from aim.storage.treeview import TreeView
 from aim.storage.context import Context
@@ -30,6 +28,11 @@ from aim.storage import treeutils
 
 from aim.ext.resource import ResourceTracker, DEFAULT_SYSTEM_TRACKING_INT
 from aim.ext.cleanup import AutoClean
+from aim.ext.utils import (
+    get_environment_variables,
+    get_installed_packages,
+    get_git_info,
+)
 
 from typing import Any, Dict, Iterator, Optional, Tuple, Union
 from typing import TYPE_CHECKING
@@ -71,6 +74,8 @@ class BasicRunAutoClean(AutoClean['BasicRun']):
 
         self._tracker = instance._tracker
         self._checkins = instance._checkins
+        self._heartbeat = instance._heartbeat
+        self._lock = instance._lock
 
     def add_extra_resource(self, resource) -> None:
         self.extra_resources.append(resource)
@@ -80,13 +85,10 @@ class BasicRunAutoClean(AutoClean['BasicRun']):
         Finalize the run by indexing all the data.
         """
         self.meta_run_tree['end_time'] = datetime.datetime.now(pytz.utc).timestamp()
-        try:
-            timeout = os.getenv(AIM_RUN_INDEXING_TIMEOUT, 2 * 60)
-            index = self.repo._get_index_tree('meta', timeout=timeout).view(())
-            logger.debug(f'Indexing Run {self.hash}...')
-            self.meta_run_tree.finalize(index=index)
-        except TimeoutError:
-            logger.warning(f'Cannot index Run {self.hash}. Index is locked.')
+
+    def empty_rpc_queue(self):
+        if self.repo.is_remote_repo:
+            self.repo._client.get_queue(self.hash).wait_for_finish()
 
     def finalize_rpc_queue(self):
         if self.repo.is_remote_repo:
@@ -100,15 +102,19 @@ class BasicRunAutoClean(AutoClean['BasicRun']):
         if self.read_only:
             logger.debug(f'Run {self.hash} is read-only, skipping cleanup')
             return
-
         for res in reversed(self.extra_resources):
             logger.debug(f'Closing resource {res}')
             res.close()
 
+        self.empty_rpc_queue()
         self.finalize_run()
-        self.finalize_rpc_queue()
+        if self._heartbeat is not None:
+            self._heartbeat.stop()
         if self._checkins is not None:
             self._checkins.close()
+        if self._lock:
+            self._lock.release()
+        self.finalize_rpc_queue()
 
 
 # TODO: [AT] generate automatically based on ModelMappedRun
@@ -260,7 +266,9 @@ class BasicRun(BaseRun, StructuredRunMixin):
     def __init__(self, run_hash: Optional[str] = None, *,
                  repo: Optional[Union[str, 'Repo']] = None,
                  read_only: bool = False,
-                 experiment: Optional[str] = None):
+                 experiment: Optional[str] = None,
+                 force_resume: bool = False,
+                 ):
         self._resources: Optional[BasicRunAutoClean] = None
         super().__init__(run_hash, repo=repo, read_only=read_only)
 
@@ -294,10 +302,15 @@ class BasicRun(BaseRun, StructuredRunMixin):
 
         self._props = None
         self._checkins = None
+        self._heartbeat = None
 
         if not read_only:
             if not self.repo.is_remote_repo:
-                self._checkins = RunStatusReporter(self)
+                self._checkins = RunStatusReporter(self.hash, self.repo.path)
+                self._heartbeat = ScheduledStatusReporter(self._checkins)
+            else:
+                self._heartbeat = RemoteRunHeartbeatReporter(self.repo._client, self.hash)
+
             try:
                 self.meta_run_attrs_tree.first_key()
             except (KeyError, StopIteration):
@@ -392,6 +405,27 @@ class BasicRun(BaseRun, StructuredRunMixin):
 
         self._tracker(value, name, step, epoch, context=context)
 
+    # logging API
+    def _log_message(self, level: int, msg: str, **params):
+        frame_info = getframeinfo(currentframe().f_back)
+        logger_info = (frame_info.filename, frame_info.lineno)
+        self.track(LogRecord(msg, level, logger_info=logger_info, **params), name='__log_records')
+        block = (level > logging.WARNING)
+        self._checkins.check_in(flag_name="new_logs", block=block)
+
+    log_error = partialmethod(_log_message, logging.ERROR)
+    log_warning = partialmethod(_log_message, logging.WARNING)
+    log_info = partialmethod(_log_message, logging.INFO)
+    log_debug = partialmethod(_log_message, logging.DEBUG)
+
+    def get_log_records(self) -> Optional[LogRecords]:
+        """Retrieve duplicated terminal logs for a run
+
+        Returns:
+            :obj:`Sequence` object if exists, `None` otherwise.
+        """
+        return self._get_sequence('log_records', '__log_records', Context({}))
+
     @property
     def props(self):
         if self._props is None:
@@ -442,7 +476,9 @@ class BasicRun(BaseRun, StructuredRunMixin):
             >>> for metric in run.metrics():
             >>>     metric.values.sparse_numpy()
         """
-        return SingleRunSequenceCollection(self)
+        from aim.sdk.sequences.metric import Metric
+        self.repo._prepare_runs_cache()
+        return SingleRunSequenceCollection(self, seq_cls=Metric)
 
     def __eq__(self, other: 'Run') -> bool:
         return self.hash == other.hash and self.repo == other.repo
@@ -585,7 +621,11 @@ class BasicRun(BaseRun, StructuredRunMixin):
         sequence = seq_cls(sequence_name, context, self)
         return sequence if bool(sequence) else None
 
-    def collect_sequence_info(self, sequence_types: Tuple[str, ...], skip_last_value=False) -> Dict[str, list]:
+    def collect_sequence_info(
+            self,
+            sequence_types: Union[str, Tuple[str, ...]],
+            skip_last_value=False
+    ) -> Dict[str, list]:
         """Retrieve Run's all sequences general overview.
 
         Args:
@@ -761,6 +801,7 @@ class Run(BasicRun):
             Default is False, meaning Run object can be used to track metrics.
          experiment (:obj:`str`, optional): Sets Run's `experiment` property. 'default' if not specified.
             Can be used later to query runs/sequences.
+         force_resume (:obj:`bool`, optional): Forcefully resume stalled Run.
          system_tracking_interval (:obj:`int`, optional): Sets the tracking interval in seconds for system usage
             metrics (CPU, Memory, etc.). Set to `None` to disable system metrics tracking.
          log_system_params (:obj:`bool`, optional): Enable/Disable logging of system params such as installed packages,
@@ -771,10 +812,11 @@ class Run(BasicRun):
                  repo: Optional[Union[str, 'Repo']] = None,
                  read_only: bool = False,
                  experiment: Optional[str] = None,
+                 force_resume: bool = False,
                  system_tracking_interval: Optional[Union[int, float]] = DEFAULT_SYSTEM_TRACKING_INT,
                  log_system_params: Optional[bool] = False,
                  capture_terminal_logs: Optional[bool] = True):
-        super().__init__(run_hash, repo=repo, read_only=read_only, experiment=experiment)
+        super().__init__(run_hash, repo=repo, read_only=read_only, experiment=experiment, force_resume=force_resume)
 
         self._system_resource_tracker: ResourceTracker = None
         if not read_only:

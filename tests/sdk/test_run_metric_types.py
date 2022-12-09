@@ -2,7 +2,6 @@ import pytest
 import numpy as np
 
 from tests.base import TestBase
-from tests.utils import full_class_name
 
 from aim.sdk import Repo, Run
 from aim.sdk.types import QueryReportMode

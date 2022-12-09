@@ -1,8 +1,6 @@
 import React, { memo, useMemo } from 'react';
 import _ from 'lodash-es';
 
-import { IInstructionsState } from 'modules/core/engine/store/instructionsSlice';
-import { QueryUIStateUnit } from 'modules/core/engine';
 import {
   Checkbox,
   Divider,
@@ -16,11 +14,14 @@ import {
   CheckBoxOutlineBlank,
 } from '@material-ui/icons';
 import { IQueryFormProps } from 'modules/BaseExplorer/types';
-import { getQueryFromRanges } from 'modules/core/utils/getQueryFromRanges';
-import { IRangesState } from 'modules/BaseExplorer/components/RangePanel/RangePanel.d';
 import { getQueryStringFromSelect } from 'modules/core/utils/getQueryStringFromSelect';
 import { getSelectFormOptions } from 'modules/core/utils/getSelectFormOptions';
-import { PipelineStatusEnum } from 'modules/core/engine';
+import { PipelineStatusEnum } from 'modules/core/engine/types';
+import {
+  QueryFormState,
+  QueryRangesState,
+} from 'modules/core/engine/explorer/query';
+import getQueryParamsFromState from 'modules/core/utils/getQueryParamsFromState';
 
 import { Badge, Button, Icon, Text } from 'components/kit';
 import AutocompleteInput from 'components/AutocompleteInput';
@@ -32,6 +33,7 @@ import { ISelectOption } from 'types/services/models/explorer/createAppModel';
 import { SequenceTypesEnum } from 'types/core/enums';
 
 import getAdvancedSuggestion from 'utils/getAdvancedSuggestions';
+import removeSyntaxErrBrackets from 'utils/removeSyntaxErrBrackets';
 
 import SearchButton from './SearchButton';
 
@@ -42,20 +44,24 @@ type StatusCheckResult = {
   isInsufficientResources: boolean;
 };
 
-function QueryForm(props: IQueryFormProps) {
+function QueryForm(props: Omit<IQueryFormProps, 'visualizationName'>) {
   const [anchorEl, setAnchorEl] = React.useState<any>(null);
   const [searchValue, setSearchValue] = React.useState<string>('');
   const engine = props.engine;
-  const updateQuery = React.useRef(engine.queryUI.methods.update);
-  const queryable: IInstructionsState = engine.useStore(
-    engine.instructions.dataSelector,
+
+  const updateQuery = React.useRef(engine.query.form.update);
+  const queryable = engine.useStore(engine.instructions.stateSelector);
+  const sequenceName: SequenceTypesEnum = engine.pipeline.getSequenceName();
+
+  const query: QueryFormState = engine.useStore(
+    engine.query.form.stateSelector,
   );
-  const sequenceName: SequenceTypesEnum = engine.useStore(
-    (state: Record<string | number | symbol, unknown>) => state.sequenceName,
+  const ranges: QueryRangesState = engine.useStore(
+    engine.query.ranges.stateSelector,
   );
-  const query: QueryUIStateUnit = engine.useStore(engine.queryUI.stateSelector);
-  const ranges: IRangesState = engine.useStore(engine.ranges.stateSelector);
-  const status = engine.useStore(engine.pipelineStatusSelector);
+  const status = engine.useStore(engine.pipeline.statusSelector);
+  const error = engine.useStore(engine.pipeline.errorSelector);
+  const updateError = React.useRef(engine.pipeline.setError);
 
   const { isExecuting, isInsufficientResources } =
     useMemo((): StatusCheckResult => {
@@ -73,6 +79,32 @@ function QueryForm(props: IQueryFormProps) {
       return result;
     }, [status]);
 
+  const processedError = React.useMemo(() => {
+    if (error) {
+      let message = error.message || 'Something went wrong';
+      let detail = { ...(error.detail || {}) };
+      if (message === 'SyntaxError') {
+        const syntaxErrDetail = removeSyntaxErrBrackets(
+          detail,
+          query.advancedModeOn,
+        );
+        return {
+          message: `Query syntax error at line (${syntaxErrDetail.line}, ${
+            syntaxErrDetail.offset
+          }${
+            syntaxErrDetail.end_offset &&
+            syntaxErrDetail.end_offset !== syntaxErrDetail.offset
+              ? `-${syntaxErrDetail.end_offset}`
+              : ''
+          })`,
+          detail: syntaxErrDetail,
+        };
+      }
+      return { message, detail };
+    }
+    return;
+  }, [error, query.advancedModeOn]);
+
   const onInputChange = React.useCallback(
     (val: string) => {
       updateQuery.current({
@@ -87,10 +119,15 @@ function QueryForm(props: IQueryFormProps) {
       //TODO: abort request
       return;
     } else {
-      engine.search({
-        q: getQueryStringFromSelect(query, sequenceName),
+      engine.pipeline.search({
+        ...getQueryParamsFromState(
+          {
+            form: query,
+            ranges,
+          },
+          sequenceName,
+        ),
         report_progress: true,
-        ...getQueryFromRanges(ranges),
       });
     }
   }, [engine, isExecuting, query, sequenceName, ranges]);
@@ -129,6 +166,7 @@ function QueryForm(props: IQueryFormProps) {
     if (q === '()') {
       q = '';
     }
+    updateError.current(null);
     updateQuery.current({
       advancedModeOn: !query.advancedModeOn,
       advancedInput: q,
@@ -225,6 +263,8 @@ function QueryForm(props: IQueryFormProps) {
                     value={query.advancedInput}
                     onChange={onInputChange}
                     onEnter={onSubmit}
+                    error={processedError}
+                    forceRemoveError={true}
                   />
                 </div>
               </ErrorBoundary>
@@ -319,17 +359,15 @@ function QueryForm(props: IQueryFormProps) {
                     </Text>
                   )}
                   <div className='QueryForm__tags ScrollBar__hidden'>
-                    {query.selections?.map((tag: ISelectOption) => {
-                      return (
-                        <Badge
-                          size='large'
-                          key={tag.label}
-                          label={tag.label}
-                          disabled={isExecuting}
-                          onDelete={onSelectOptionDelete}
-                        />
-                      );
-                    })}
+                    {query.selections?.map((tag: ISelectOption) => (
+                      <Badge
+                        size='large'
+                        key={tag.label}
+                        label={tag.label}
+                        disabled={isExecuting}
+                        onDelete={onSelectOptionDelete}
+                      />
+                    ))}
                   </div>
                   {query.selections.length > 1 && (
                     <span
@@ -359,6 +397,8 @@ function QueryForm(props: IQueryFormProps) {
                 value={query.simpleInput}
                 context={autocompleteContext.suggestions}
                 onEnter={onSubmit}
+                error={processedError}
+                forceRemoveError={true}
               />
             </div>
           )}
@@ -368,7 +408,7 @@ function QueryForm(props: IQueryFormProps) {
             <SearchButton
               isFetching={isExecuting}
               onSubmit={onSubmit}
-              disabled={ranges?.isInputInvalid || isInsufficientResources}
+              disabled={!ranges?.isValid || isInsufficientResources}
             />
             <div className='QueryForm__search__actions'>
               <Tooltip title='Reset query'>
@@ -415,4 +455,10 @@ function QueryForm(props: IQueryFormProps) {
   );
 }
 
-export default memo(QueryForm);
+export const AdvancedQueryForm = memo(
+  (props: Omit<IQueryFormProps, 'visualizationName'>) => (
+    <QueryForm engine={props.engine} hasAdvancedMode />
+  ),
+);
+
+export default memo<Omit<IQueryFormProps, 'visualizationName'>>(QueryForm);

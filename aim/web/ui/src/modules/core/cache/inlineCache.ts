@@ -5,12 +5,16 @@ export type InlineCache = {
 };
 
 /**
- * function to create an inline cache
- * @usage
+ * Function to create an inline cache
+ *
+ * Usage:
+ * <pre>
  *  const cache = createInlineCache();
  *  cache.set('key', 'value');
  *  const value = cache.get('key');
  *  cache.clear();
+ * </pre>
+ *
  * @param {optional number} cacheSize - the max size of the cache
  */
 function createInlineCache(cacheSize?: number): InlineCache {

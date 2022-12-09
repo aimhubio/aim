@@ -7,7 +7,7 @@ from collections import Counter
 from threading import Thread
 from typing import Union
 
-import aim.ext.transport.remote_tracking_pb2 as rpc_messages
+import aim.ext.transport.remote_router_pb2 as rpc_messages
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +36,7 @@ class RPCHeartbeatSender(object):
         self._heartbeat_responses = Counter(success=0, fail=0)
 
         # Start thread to collect stats and logs at intervals
-        self._th_collector = Thread(target=self._send_heartbeat, daemon=True)
+        self._th_collector = Thread(target=self._target_f, daemon=True)
         self._shutdown = False
         self._started = False
 
@@ -55,10 +55,24 @@ class RPCHeartbeatSender(object):
         self._th_collector.join()
 
     def _send_heartbeat(self):
+        if self._remote_client():
+            try:
+                response = self._remote_client().client_heartbeat()
+                if response.status == rpc_messages.HeartbeatResponse.Status.OK:
+                    self._heartbeat_responses['success'] += 1
+                else:
+                    self._heartbeat_responses['fail'] += 1
+            except Exception:
+                # at the moment we don't care about failures for heartbeats
+                self._heartbeat_responses['fail'] += 1
+
+    def _target_f(self):
         heartbeat_interval_counter = 0
         stability_check_interval_counter = 0
+        # send initial heartbeat
+        self._send_heartbeat()
+
         while True:
-            # Get system statistics
             if self._shutdown:
                 break
 
@@ -67,17 +81,7 @@ class RPCHeartbeatSender(object):
             stability_check_interval_counter += 1
 
             if heartbeat_interval_counter > self._heartbeat_send_interval:
-                if self._remote_client():
-                    try:
-                        response = self._remote_client().health_check(health_check_type='heartbeat')
-                        if response.status == rpc_messages.HealthCheckResponse.Status.OK:
-                            self._heartbeat_responses['success'] += 1
-                        else:
-                            self._heartbeat_responses['fail'] += 1
-                    except Exception:
-                        # at the moment we don't care about failures for heartbeats
-                        self._heartbeat_responses['fail'] += 1
-
+                self._send_heartbeat()
                 heartbeat_interval_counter = 0
 
             if stability_check_interval_counter > self._network_stability_check_interval:
@@ -109,15 +113,15 @@ class RPCHeartbeatSender(object):
 
 
 class RPCHeartbeatWatcher:
-    CLIENT_KEEP_ALIVE_TIME_DEFAULT = 30 * 60
+    CLIENT_KEEP_ALIVE_TIME_DEFAULT = 30 * 60  # 30 minutes
 
     def __init__(self,
                  heartbeat_pool,
-                 resource_pool,
+                 worker_pool,
                  keep_alive_time: Union[int, float] = CLIENT_KEEP_ALIVE_TIME_DEFAULT):
 
         self._heartbeat_pool = heartbeat_pool
-        self._resource_pool = resource_pool
+        self._worker_pool = worker_pool
 
         self._client_keep_alive_time = keep_alive_time
 
@@ -142,11 +146,10 @@ class RPCHeartbeatWatcher:
 
     def _release_client_resources(self, dead_client_uri):
         logger.warning(f'Cleaning up resources for client `{dead_client_uri}`.')
-        resource_handlers = list(self._resource_pool.keys())
-        for handler in resource_handlers:
-            (client_uri, _) = self._resource_pool[handler]
-            if dead_client_uri == client_uri:
-                del self._resource_pool[handler]
+        for worker in self._worker_pool:
+            if dead_client_uri in worker.clients:
+                worker.cleanup_client_resources(dead_client_uri)
+                worker.remove_client(dead_client_uri)
 
     def _interval_check(self):
         while True:
@@ -154,9 +157,11 @@ class RPCHeartbeatWatcher:
             if self._shutdown:
                 break
 
-            time.sleep(60)
+            time.sleep(1)
 
-            for client_uri, last_heartbeat_time in self._heartbeat_pool.items():
-                if datetime.datetime.now().timestamp() - last_heartbeat_time > self._client_keep_alive_time:
+            client_uris = list(self._heartbeat_pool.keys())
+            for client_uri in client_uris:
+                now = datetime.datetime.now().timestamp()
+                if now - self._heartbeat_pool[client_uri] > self._client_keep_alive_time:
                     self._release_client_resources(client_uri)
                     del self._heartbeat_pool[client_uri]

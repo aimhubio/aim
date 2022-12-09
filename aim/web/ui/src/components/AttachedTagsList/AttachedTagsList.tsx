@@ -24,13 +24,13 @@ function AttachedTagsList({
   addTagButtonSize = 'xSmall',
   onTagsChange,
   onRunsTagsChange,
-  hasAttachedTagsPopup = false,
+  inlineAttachedTagsList = false,
 }: IAttachedTagsListProps) {
   const [attachedTags, setAttachedTags] = React.useState<ITagInfo[]>(
     tags ?? initialTags ?? [],
   );
+  const [, setSelectTagPopoverKey] = React.useState(`${Date.now()}`);
   const getRunInfoRef = React.useRef<any>(null);
-  const deleteRunsTagRef = React.useRef<any>(null);
 
   const getRunInfo = React.useCallback((runHash: string): void => {
     getRunInfoRef.current = runsService?.getRunInfo(runHash);
@@ -39,39 +39,16 @@ function AttachedTagsList({
     });
   }, []);
 
-  const deleteRunsTag = React.useCallback(
-    (run_id: string, tag: ITagInfo): void => {
-      deleteRunsTagRef.current = runsService?.deleteRunsTag(run_id, tag.id);
-      deleteRunsTagRef.current.call();
-    },
-    [],
-  );
-
-  const onAttachedTagDelete = React.useCallback(
-    (label: string): void => {
-      const tag = attachedTags.find((tag) => tag.name === label);
-      if (tag) {
-        const resultTags: ITagInfo[] = attachedTags.filter(
-          (t) => tag.id !== t.id,
-        );
-        setAttachedTags(resultTags);
-        deleteRunsTag(runHash, tag);
-        onRunsTagsChange && onRunsTagsChange(runHash, resultTags);
-      }
-    },
-    [onRunsTagsChange, attachedTags, deleteRunsTag, runHash],
-  );
-
   React.useEffect(() => {
     if (runHash) {
-      if (!initialTags) {
+      if (!initialTags && !tags) {
         getRunInfo(runHash);
       }
     }
     return () => {
       getRunInfoRef.current?.abort();
     };
-  }, [runHash, initialTags, getRunInfo]);
+  }, [runHash, initialTags, getRunInfo, tags]);
 
   React.useEffect(() => {
     if (tags) {
@@ -87,83 +64,43 @@ function AttachedTagsList({
 
   const renderTagsBadges = React.useCallback(() => {
     if (!_.isEmpty(attachedTags)) {
-      if (hasAttachedTagsPopup) {
-        return (
-          <div className='AttachedTagsList__tags ScrollBar__hidden'>
-            <ControlPopover
-              title={`Attached Tags (${attachedTags?.length})`}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'left',
-              }}
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'left',
-              }}
-              anchor={({ onAnchorClick }) => (
-                <div
-                  className='AttachedTagsList__tags ScrollBar__hidden'
-                  onClick={onAnchorClick}
-                >
-                  {attachedTags.map((tag: ITagInfo) => (
-                    <Badge
-                      size='xSmall'
-                      key={tag.id}
-                      color={tag.color}
-                      label={tag.name}
-                      id={tag.id}
-                      onDelete={onAttachedTagDelete}
-                    />
-                  ))}
-                </div>
-              )}
-              component={
-                <div className='InlineAttachedTagsList__tagsContainer'>
-                  <div className='InlineAttachedTagsList__tagsContainer__tags'>
-                    {attachedTags.map((tag: ITagInfo) => {
-                      return (
-                        <div
-                          key={tag.id}
-                          className='InlineAttachedTagsList__tagsContainer__tags__badge'
-                        >
-                          <Badge
-                            size='xSmall'
-                            color={tag.color}
-                            label={tag.name}
-                            id={tag.id}
-                            onDelete={onAttachedTagDelete}
-                          />
-                        </div>
-                      );
-                    })}
-                  </div>
-                  )
-                </div>
-              }
-            />
-          </div>
-        );
-      }
       return (
         <div className='AttachedTagsList__tags ScrollBar__hidden'>
           {attachedTags.map((tag: ITagInfo) => (
-            <Badge
-              size='xSmall'
-              key={tag.id}
-              color={tag.color}
-              label={tag.name}
-              id={tag.id}
-              onDelete={onAttachedTagDelete}
-            />
+            <Tooltip key={tag.id} title={tag.name}>
+              <div className='AttachedTagsList__tags__tagWrapper'>
+                <Badge
+                  size='xSmall'
+                  color={tag.color}
+                  label={tag.name}
+                  id={tag.id}
+                />
+              </div>
+            </Tooltip>
           ))}
         </div>
       );
     }
 
     return (
-      <div className='AttachedTagsList__noAttachedTags'>No attached tags</div>
+      <div className='AttachedTagsList__noAttachedTags'>
+        {inlineAttachedTagsList ? 'Click to edit tags' : 'No attached tags'}
+      </div>
     );
-  }, [attachedTags, onAttachedTagDelete, hasAttachedTagsPopup]);
+  }, [attachedTags, inlineAttachedTagsList]);
+
+  const renderAddTagsButton = React.useCallback(() => {
+    return (
+      <Button
+        withOnlyIcon
+        size={addTagButtonSize}
+        color='secondary'
+        className='AttachedTagsList__ControlPopover__editPopoverButton'
+      >
+        <Icon name='edit' />
+      </Button>
+    );
+  }, [addTagButtonSize]);
 
   return (
     <ErrorBoundary>
@@ -177,12 +114,12 @@ function AttachedTagsList({
         )}
         <Box
           className={classNames('AttachedTagsList', {
-            InlineAttachedTagsList: hasAttachedTagsPopup,
+            InlineAttachedTagsList: inlineAttachedTagsList,
           })}
         >
-          {renderTagsBadges()}
+          {!inlineAttachedTagsList && renderTagsBadges()}
           <ControlPopover
-            title='Select Tag'
+            title='Tags'
             titleClassName='AttachedTagsList__ControlPopover__title'
             anchorOrigin={{
               vertical: 'bottom',
@@ -193,36 +130,15 @@ function AttachedTagsList({
               horizontal: 'right',
             }}
             anchor={({ onAnchorClick, opened }) => (
-              <Tooltip
-                title={`${!_.isEmpty(attachedTags) ? 'Select' : 'Attach'} Tag`}
+              <div
+                onClick={onAnchorClick}
+                className={`AttachedTagsList__ControlPopover__anchor ${
+                  opened ? 'active' : ''
+                }`}
               >
-                <div
-                  onClick={onAnchorClick}
-                  className={`AttachedTagsList__ControlPopover__anchor ${
-                    opened ? 'active' : ''
-                  }`}
-                >
-                  {!_.isEmpty(attachedTags) ? (
-                    <Button
-                      withOnlyIcon
-                      size={addTagButtonSize}
-                      color='secondary'
-                    >
-                      <Icon name='edit'></Icon>
-                    </Button>
-                  ) : (
-                    <Button
-                      size={addTagButtonSize}
-                      color='primary'
-                      variant='outlined'
-                      className='AttachedTagsList__ControlPopover__attach'
-                    >
-                      <Icon name='plus' />
-                      <span>Attach</span>
-                    </Button>
-                  )}
-                </div>
-              </Tooltip>
+                {inlineAttachedTagsList && renderTagsBadges()}
+                {!inlineAttachedTagsList && renderAddTagsButton()}
+              </div>
             )}
             component={
               <SelectTag
@@ -230,6 +146,7 @@ function AttachedTagsList({
                 attachedTags={attachedTags}
                 setAttachedTags={setAttachedTags}
                 onRunsTagsChange={onRunsTagsChange}
+                updatePopover={setSelectTagPopoverKey}
               />
             }
           />

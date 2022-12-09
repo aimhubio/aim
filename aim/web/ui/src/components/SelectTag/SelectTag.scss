@@ -3,28 +3,81 @@
 .SelectTag {
   max-width: 20rem;
   width: 20rem;
-
+  max-height: 240px;
+  display: flex;
+  flex-direction: column;
+  &__searchBarContainer {
+    padding: $space-xs;
+  }
   &__tags {
-    padding: $space-xs $space-unit;
     overflow: auto;
-    display: flex;
-    flex-wrap: wrap;
-    max-height: 50vh;
-    .Badge {
-      margin: 0;
-      max-width: unset;
-      cursor: pointer;
-    }
-
+    max-height: 200px;
+    flex: 1 1;
     .icon-check {
       padding: 0;
     }
 
-    &__badge {
+    &__item {
       display: flex;
-      margin-bottom: $space-xs;
-      margin-right: $space-xs;
+      width: 100%;
+      max-width: 100%;
+      border-bottom: $border-main;
+      padding: $space-xs toRem(25px) $space-xs toRem(30px);
+      position: relative;
+      cursor: pointer;
+      &:hover {
+        background-color: $cuddle-20;
+      }
+      &:last-child {
+        border-bottom: $border-transparent;
+      }
+      &__checkedIcon {
+        position: absolute;
+        left: toRem(10px);
+        top: $space-xs;
+      }
+      &__deleteButton {
+        position: absolute;
+        right: toRem(10px);
+        top: $space-xxs;
+      }
+      &__content {
+        display: flex;
+        max-width: 100%;
+        flex-direction: column;
+        width: 100%;
+        padding-right: $space-xxxs;
+
+        &__nameWrapper {
+          display: flex;
+          align-items: flex-start;
+          &__name {
+            word-break: break-all;
+          }
+          &__colorBadge {
+            width: toRem(14px);
+            min-width: toRem(14px);
+            height: toRem(14px);
+            display: block;
+            border-radius: $border-radius-circle;
+            margin-right: $space-xxxs;
+          }
+        }
+
+        &__description {
+          margin-top: $space-xxxxs;
+          word-break: break-all;
+        }
+      }
     }
+  }
+
+  &__noTags {
+    padding: 1rem 0;
+    display: flex;
+    justify-content: center;
+    flex: 1;
+    align-items: center;
   }
 
   &__createTag__container {

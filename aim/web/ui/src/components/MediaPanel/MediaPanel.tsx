@@ -42,6 +42,7 @@ function MediaPanel({
   sortFieldsDict,
   sortFields,
   illustrationConfig,
+  onChangeTooltip = () => {},
   selectOptions = [],
   onRunsTagsChange = () => {},
 }: IMediaPanelProps): React.FunctionComponentElement<React.ReactNode> {
@@ -302,9 +303,11 @@ function MediaPanel({
                         }
                         chartType={tooltipType}
                         tooltipContent={tooltip?.content || {}}
+                        tooltipAppearance={tooltip?.appearance}
                         focusedState={focusedState}
                         selectOptions={selectOptions}
                         onRunsTagsChange={onRunsTagsChange}
+                        onChangeTooltip={onChangeTooltip}
                       />
                     </ErrorBoundary>
                   )}

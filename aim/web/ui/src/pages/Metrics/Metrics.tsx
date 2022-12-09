@@ -31,7 +31,7 @@ import { AppNameEnum } from 'services/models/explorer';
 import { ILine } from 'types/components/LineChart/LineChart';
 import { IMetricProps } from 'types/pages/metrics/Metrics';
 
-import { ChartTypeEnum } from 'utils/d3';
+import { ChartTypeEnum, CurveEnum } from 'utils/d3';
 
 import MetricsBar from './components/MetricsBar/MetricsBar';
 import Controls from './components/Controls/Controls';
@@ -44,28 +44,29 @@ function Metrics(
 ): React.FunctionComponentElement<React.ReactNode> {
   const [isProgressBarVisible, setIsProgressBarVisible] =
     React.useState<boolean>(false);
-  const chartProps: any[] = React.useMemo(() => {
-    return (props.lineChartData || []).map(
-      (chartData: ILine[], index: number) => ({
-        axesScaleType: props.axesScaleType,
-        axesScaleRange: props.axesScaleRange,
-        curveInterpolation: props.curveInterpolation,
-        ignoreOutliers: props.ignoreOutliers,
-        highlightMode: props.highlightMode,
-        aggregatedData: props.aggregatedData?.filter(
-          (data) => data.chartIndex === index,
-        ),
-        zoom: props.zoom,
-        chartTitle: props.chartTitleData[index],
-        aggregationConfig: props.aggregationConfig,
-        alignmentConfig: props.alignmentConfig,
-        onZoomChange: props.onZoomChange,
-      }),
-    );
+  const chartProps = React.useMemo(() => {
+    return (props.lineChartData || []).map((chartData: ILine[], i: number) => ({
+      axesScaleType: props.axesScaleType,
+      axesScaleRange: props.axesScaleRange,
+      curveInterpolation: props.smoothing.isApplied
+        ? props.smoothing.curveInterpolation
+        : CurveEnum.Linear,
+      ignoreOutliers: props.ignoreOutliers,
+      highlightMode: props.highlightMode,
+      aggregatedData: props.aggregatedData?.filter(
+        (data) => data.chartIndex === i,
+      ),
+      zoom: props.zoom,
+      chartTitle: props.chartTitleData[i],
+      aggregationConfig: props.aggregationConfig,
+      alignmentConfig: props.alignmentConfig,
+      onZoomChange: props.onZoomChange,
+    }));
   }, [
     props.lineChartData,
     props.axesScaleType,
-    props.curveInterpolation,
+    props.smoothing.curveInterpolation,
+    props.smoothing.isApplied,
     props.ignoreOutliers,
     props.highlightMode,
     props.zoom,
@@ -161,24 +162,28 @@ function Metrics(
                         panelResizing={props.panelResizing}
                         chartType={ChartTypeEnum.LineChart}
                         data={props.lineChartData}
+                        legendsData={props.legendsData}
                         focusedState={props.focusedState}
                         tooltip={props.tooltip}
+                        legends={props.legends}
                         alignmentConfig={props.alignmentConfig}
                         zoom={props.zoom}
-                        onActivePointChange={props.onActivePointChange}
                         chartProps={chartProps}
                         resizeMode={props.resizeMode}
+                        onActivePointChange={props.onActivePointChange}
                         onRunsTagsChange={props.onRunsTagsChange}
+                        onChangeTooltip={props.onChangeTooltip}
+                        onLegendsChange={props.onLegendsChange}
                         controls={
                           <Controls
                             data={props.lineChartData}
+                            legendsData={props.legendsData}
                             chartType={ChartTypeEnum.LineChart}
                             chartProps={chartProps}
                             selectOptions={props.groupingSelectOptions}
                             tooltip={props.tooltip}
-                            smoothingAlgorithm={props.smoothingAlgorithm}
-                            smoothingFactor={props.smoothingFactor}
-                            curveInterpolation={props.curveInterpolation}
+                            legends={props.legends}
+                            smoothing={props.smoothing}
                             densityType={props.densityType}
                             ignoreOutliers={props.ignoreOutliers}
                             zoom={props.zoom}
@@ -191,6 +196,7 @@ function Metrics(
                             onIgnoreOutliersChange={
                               props.onIgnoreOutliersChange
                             }
+                            onLegendsChange={props.onLegendsChange}
                             onZoomChange={props.onZoomChange}
                             onHighlightModeChange={props.onHighlightModeChange}
                             onAxesScaleTypeChange={props.onAxesScaleTypeChange}

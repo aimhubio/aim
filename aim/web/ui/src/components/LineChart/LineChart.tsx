@@ -21,6 +21,8 @@ import {
   drawBrush,
   drawHoverAttributes,
   drawUnableToRender,
+  CurveEnum,
+  HighlightEnum,
 } from 'utils/d3';
 
 import './LineChart.scss';
@@ -38,10 +40,10 @@ const LineChart = React.forwardRef(function LineChart(
     syncHoverState,
     axesScaleType,
     axesScaleRange,
-    ignoreOutliers,
+    ignoreOutliers = false,
     alignmentConfig,
-    highlightMode,
-    curveInterpolation,
+    highlightMode = HighlightEnum.Off,
+    curveInterpolation = CurveEnum.Linear,
     chartTitle,
     zoom,
     onZoomChange,
@@ -157,30 +159,6 @@ const LineChart = React.forwardRef(function LineChart(
       }
     }
 
-    if (!readOnly) {
-      drawHoverAttributes({
-        index,
-        nameKey,
-        data,
-        axesScaleType,
-        highlightMode,
-        syncHoverState,
-        visAreaRef,
-        attributesRef,
-        plotBoxRef,
-        visBoxRef,
-        svgNodeRef,
-        bgRectNodeRef,
-        attributesNodeRef,
-        xAxisLabelNodeRef,
-        yAxisLabelNodeRef,
-        linesNodeRef,
-        highlightedNodeRef,
-        aggregationConfig,
-        alignmentConfig,
-      });
-    }
-
     drawBrush({
       index,
       plotBoxRef,
@@ -199,6 +177,31 @@ const LineChart = React.forwardRef(function LineChart(
       readOnly,
       unableToDrawConditions,
     });
+
+    if (!readOnly) {
+      drawHoverAttributes({
+        index,
+        nameKey,
+        data,
+        processedData,
+        axesScaleType,
+        highlightMode,
+        syncHoverState,
+        visAreaRef,
+        attributesRef,
+        plotBoxRef,
+        visBoxRef,
+        svgNodeRef,
+        bgRectNodeRef,
+        attributesNodeRef,
+        xAxisLabelNodeRef,
+        yAxisLabelNodeRef,
+        linesNodeRef,
+        highlightedNodeRef,
+        aggregationConfig,
+        alignmentConfig,
+      });
+    }
 
     drawUnableToRender({
       renderArr: unableToDrawConditions,

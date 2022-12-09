@@ -1,67 +1,64 @@
 import * as React from 'react';
+import { FunctionComponent } from 'react';
 
-import { PipelineStatusEnum } from 'modules/core/engine';
+import { PipelineStatusEnum } from 'modules/core/engine/types';
 import { IVisualizationsProps } from 'modules/BaseExplorer/types';
-
-import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
+import VisualizerPanel from 'modules/BaseExplorer/components/VisualizerPanel';
 
 import ProgressBar from '../ProgressBar';
-import VisualizerPanel from '../VisualizerPanel';
 
 import './Visualizations.scss';
 
 function Visualizations(props: IVisualizationsProps) {
   const {
     engine,
-    engine: { pipelineStatusSelector, useStore },
+    engine: { pipeline, useStore },
     components,
+    visualizers,
+    getStaticContent,
   } = props;
 
-  const status = useStore(pipelineStatusSelector);
+  const status: PipelineStatusEnum = useStore(pipeline.statusSelector);
 
-  const Visualizations = React.useMemo(
+  const Visualizations: React.ReactNode = React.useMemo(
     () =>
-      components.visualizations.map((Viz, index) => (
-        <Viz
-          key={Viz.displayName}
-          engine={engine}
-          box={components.box}
-          panelRenderer={() => (
-            <VisualizerPanel
-              engine={engine}
-              controls={components.controls} // @TODO need to set "visualization.controls" instead of "components.controls"
-              grouping={index === 0 ? components.grouping : null}
-            />
-          )}
-        />
-      )),
-    [
-      engine,
-      components.box,
-      components.controls,
-      components.visualizations,
-      components.grouping,
-    ],
+      Object.keys(visualizers).map((name: string, index: number) => {
+        const visualizer = visualizers[name];
+        const Viz = visualizer.component as FunctionComponent;
+
+        return (
+          <Viz
+            key={Viz.displayName || name}
+            // @ts-ignore
+            engine={engine}
+            name={name}
+            box={visualizer.box.component}
+            hasDepthSlider={visualizer.box.hasDepthSlider}
+            panelRenderer={() => (
+              <VisualizerPanel
+                engine={engine}
+                controls={visualizer.controlsContainer}
+                grouping={index === 0 ? components.grouping : null}
+                visualizationName={name}
+              />
+            )}
+          />
+        );
+      }),
+    [components, engine, visualizers],
   );
 
-  const renderIllustration = React.useMemo(
-    () =>
-      [
-        PipelineStatusEnum.NeverExecuted,
-        PipelineStatusEnum.Empty,
-        PipelineStatusEnum.Insufficient_Resources,
-      ].indexOf(status) !== -1,
-    [status],
-  );
+  const Content = React.useMemo(() => {
+    if (typeof getStaticContent === 'function') {
+      return getStaticContent(status) || Visualizations;
+    }
+    return Visualizations;
+  }, [status, Visualizations, getStaticContent]);
 
   return (
     <div className='Visualizations'>
       <ProgressBar engine={engine} />
-      {renderIllustration ? (
-        <IllustrationBlock size='xLarge' page='figures' type={status} />
-      ) : (
-        Visualizations
-      )}
+      {Content}
     </div>
   );
 }

@@ -1,28 +1,25 @@
 import React from 'react';
 
-import { PipelineStatusEnum } from 'modules/core/engine';
+import { PipelineStatusEnum } from 'modules/core/engine/types';
 
 import ProgressBar from 'components/ProgressBar/ProgressBar';
 
 import { IProgressBarProps } from '../../types';
 
-function ProgressBarWrapper(props: IProgressBarProps) {
+function ProgressBarWrapper(
+  props: Omit<IProgressBarProps, 'visualizationName'>,
+) {
   const {
-    engine: {
-      useStore,
-      pipelineStatusSelector,
-      pipelineProgressSelector,
-      resetPipelineProgress,
-    },
+    engine: { useStore, pipeline },
   } = props;
-  const progressData = useStore(pipelineProgressSelector);
-  const status = useStore(pipelineStatusSelector);
+  const progressData = useStore(pipeline.progressSelector);
+  const status = useStore(pipeline.statusSelector);
 
   const setIsProgressBarVisible = React.useCallback(
     (isVisible: boolean) => {
-      !isVisible && resetPipelineProgress();
+      !isVisible && pipeline.resetProgress();
     },
-    [resetPipelineProgress],
+    [pipeline],
   );
 
   return (
@@ -35,4 +32,6 @@ function ProgressBarWrapper(props: IProgressBarProps) {
   );
 }
 
-export default React.memo<IProgressBarProps>(ProgressBarWrapper);
+export default React.memo<Omit<IProgressBarProps, 'visualizationName'>>(
+  ProgressBarWrapper,
+);

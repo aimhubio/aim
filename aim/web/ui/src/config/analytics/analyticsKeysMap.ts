@@ -45,6 +45,15 @@ export const ANALYTICS_EVENT_KEYS = {
         tooltip: {
           changeTooltipContent:
             '[MetricsExplorer][Chart][Controls] Change tooltip content',
+          display:
+            '[MetricsExplorer][Chart][Controls] Change tooltip visibility on hover',
+          appearance:
+            '[MetricsExplorer][Chart][Controls] Change tooltip appearance mode to',
+        },
+        legends: {
+          display:
+            '[MetricsExplorer][Chart][Controls] Change legends visibility', // to visible/hidden
+          mode: '[MetricsExplorer][Chart][Controls] Change legends mode', // to pinned/unpinned
         },
         exportChart: '[MetricsExplorer][Chart][Controls] Export Chart as Image',
       },
@@ -96,6 +105,10 @@ export const ANALYTICS_EVENT_KEYS = {
         tooltip: {
           changeTooltipContent:
             '[ParamsExplorer][Chart][Controls] Change tooltip content',
+          display:
+            '[ParamsExplorer][Chart][Controls] Change tooltip visibility on hover',
+          appearance:
+            '[ParamsExplorer][Chart][Controls] Change tooltip appearance mode to',
         },
         changeColorIndicatorMode:
           '[ParamsExplorer][Chart][Controls] Change color indicator mode', // to value
@@ -170,6 +183,10 @@ export const ANALYTICS_EVENT_KEYS = {
         tooltip: {
           changeTooltipContent:
             '[ScattersExplorer][Chart][Controls] Change tooltip content',
+          display:
+            '[ScattersExplorer][Chart][Controls] Change tooltip visibility on hover',
+          appearance:
+            '[ScattersExplorer][Chart][Controls] Change tooltip appearance mode to',
         },
         exportChart:
           '[ScattersExplorer][Chart][Controls] Export Chart as Image',
@@ -228,10 +245,37 @@ export const ANALYTICS_EVENT_KEYS = {
         tooltip: {
           changeTooltipContent:
             '[ImagesExplorer][ImagesPanel][Controls] Change tooltip content',
+          display:
+            '[ImagesExplorer][Chart][Controls] Change tooltip visibility on hover',
+          appearance:
+            '[ImagesExplorer][Chart][Controls] Change tooltip appearance mode to',
         },
       },
       openFullSizeMode:
         '[ImagesExplorer][ImagesPanel][ImageBox] Open full size mode',
+    },
+  },
+  experiment: {
+    pageView: '[Experiment] Page view',
+    tabs: {
+      overview: {
+        tabView: '[Experiment] [Overview] Tab view',
+      },
+      runs: {
+        tabView: '[Experiment] [Runs] Tab view',
+      },
+      notes: {
+        tabView: '[Experiment] [Notes] Tab view',
+        clickSaveButton: '[Experiment] [Notes] Click save button',
+        clickUpdateButton: '[Experiment] [Notes] Click update button',
+        clickDeleteButton: '[Experiment] [Notes] Click delete button',
+      },
+      settings: {
+        tabView: '[Experiment] [Settings] Tab view',
+      },
+    },
+    table: {
+      compareSelectedRuns: '[Experiment] [Runs] Compare selected runs',
     },
   },
   runDetails: {
@@ -301,17 +345,22 @@ export const ANALYTICS_EVENT_KEYS = {
     pageView: '[BookmarksPage] Page view',
     view: '[BookmarksPage] View bookmark',
   },
-  home: {
-    pageView: '[HomePage] Page view',
-    activityCellClick: '[HomePage] Click on Activity cell',
-    createGithubIssue: '[HomePage] Click on create gitHub issue',
-    slackCommunity: '[HomePage] Click on Join Aim slack community',
-    docs: '[HomePage] Click on documentation icon',
-    colab: '[HomePage] Click on colab notebook icon',
-    liveDemo: '[HomePage] Click on Live demo icon',
+  dashboard: {
+    pageView: '[DashboardPage] Page view',
+    activityCellClick: '[DashboardPage] Click on Activity cell',
+    createGithubIssue: '[DashboardPage] Click on create gitHub issue',
+    slackCommunity: '[DashboardPage] Click on Join Aim slack community',
+    docs: '[DashboardPage] Click on documentation icon',
+    colab: '[DashboardPage] Click on colab notebook icon',
+    liveDemo: '[DashboardPage] Click on Live demo icon',
+    table: {
+      compareSelectedRuns: '[MetricsExplorer][Table] Compare selected runs',
+    },
   },
   sidebar: {
     slack: '[SideBar] Click on slack community link',
     docs: '[Sidebar] Click on docs link',
   },
+  figures: {} as any,
+  audios: {} as any,
 };

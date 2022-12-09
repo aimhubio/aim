@@ -1,9 +1,9 @@
 import * as d3 from 'd3';
 import _ from 'lodash-es';
 
-import { ZoomEnum } from 'components/ZoomInPopover/ZoomInPopover';
-
 import { IDrawBrushArgs } from 'types/utils/d3/drawBrush';
+
+import { ZoomEnum } from 'utils/d3';
 
 import getAxisScale from './getAxisScale';
 
@@ -102,7 +102,6 @@ function drawBrush(args: IDrawBrushArgs): void {
       attributesRef.current.xScale,
       attributesRef.current.yScale,
     );
-    attributesRef.current.updateFocusedChart?.();
   }
 
   // This remove the grey brush area as soon as the selection has been done

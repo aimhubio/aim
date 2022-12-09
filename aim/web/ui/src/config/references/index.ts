@@ -1,8 +1,14 @@
+import { AIM_VERSION } from 'config/config';
+
 const DOCUMENTATIONS = {
   MAIN_PAGE: 'https://aimstack.readthedocs.io',
   STABLE: 'https://aimstack.readthedocs.io/en/stable/',
   AIM_QL: 'https://aimstack.readthedocs.io/en/latest/using/search.html',
+  SUPPORTED_TYPES:
+    'https://aimstack.readthedocs.io/en/latest/quick_start/supported_types.html',
   EXPLORERS: {
+    SEARCH: 'https://aimstack.readthedocs.io/en/latest/ui/pages/explorers.html',
+
     PARAMS: {
       MAIN: 'https://aimstack.readthedocs.io/en/latest/ui/pages/explorers.html#params-explorer',
       SEARCH:
@@ -28,12 +34,26 @@ const DOCUMENTATIONS = {
       SEARCH:
         'https://aimstack.readthedocs.io/en/latest/ui/pages/run_management.html#search-runs',
     },
-    //@TODO set right docs link after adding Figures docs to the docs
-    FIGURES: {
-      MAIN: 'https://aimstack.readthedocs.io/en/latest/ui/pages/explorers.html',
-      SEARCH:
-        'https://aimstack.readthedocs.io/en/latest/ui/pages/explorers.html',
-    },
+  },
+  INTEGRATIONS: {
+    PYTORCH_LIGHTNING:
+      'https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-pytorch-lightning',
+    HUGGING_FACE:
+      'https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-hugging-face',
+    KERAS:
+      'https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-keras-tf-keras',
+    KERAS_TUNER:
+      'https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-kerastuner',
+    XGBOOST:
+      'https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-xgboost',
+    CATBOOST:
+      'https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-catboost',
+    FASTAI:
+      'https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-fastai',
+    LIGHT_GBM:
+      'https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-lightgbm',
+    PYTORCH_IGNITE:
+      'https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-pytorch-ignite',
   },
 };
 
@@ -48,4 +68,97 @@ const GUIDES = {
   },
 };
 
-export { DOCUMENTATIONS, GUIDES, DEMOS };
+/*
+ getDocsVersion() returns the version of the docs to be used in the links
+ */
+function getDocsVersion() {
+  let [majorVersion, minorVersion] = `${AIM_VERSION}`.split('.');
+  return `v${majorVersion}.${minorVersion}.0`;
+}
+
+const version: string = getDocsVersion();
+
+const DASHBOARD_PAGE_GUIDES: { name: string; url: string }[] = [
+  {
+    name: 'UI - Runs Management',
+    url: `https://aimstack.readthedocs.io/en/${version}/ui/pages/run_management.html`,
+  },
+  {
+    name: 'UI - Explorers',
+    url: `https://aimstack.readthedocs.io/en/${version}/ui/pages/explorers.html`,
+  },
+  {
+    name: 'UI - Bookmarks',
+    url: `https://aimstack.readthedocs.io/en/${version}/ui/pages/bookmarks.html`,
+  },
+  {
+    name: 'UI - Tags page',
+    url: `https://aimstack.readthedocs.io/en/${version}/ui/pages/tags.html`,
+  },
+  {
+    name: 'Manage runs',
+    url: `https://aimstack.readthedocs.io/en/${version}/using/manage_runs.html`,
+  },
+  {
+    name: 'Configure runs',
+    url: `https://aimstack.readthedocs.io/en/${version}/using/configure_runs.html`,
+  },
+  {
+    name: 'Query runs and objects',
+    url: `https://aimstack.readthedocs.io/en/${version}/using/query_runs.html`,
+  },
+  {
+    name: 'Query language basics',
+    url: `https://aimstack.readthedocs.io/en/${version}/using/search.html`,
+  },
+  {
+    name: 'Track experiments with aim remote server',
+    url: `https://aimstack.readthedocs.io/en/${version}/using/remote_tracking.html`,
+  },
+  {
+    name: 'Notify on failed/stuck runs',
+    url: `https://aimstack.readthedocs.io/en/${version}/using/training_monitoring.html`,
+  },
+  {
+    name: 'Log messages during training process',
+    url: `https://aimstack.readthedocs.io/en/${version}/using/logging.html`,
+  },
+  {
+    name: 'Set up the notification service',
+    url: `https://aimstack.readthedocs.io/en/${version}/using/notifications.html`,
+  },
+  {
+    name: 'Define custom callbacks',
+    url: `https://aimstack.readthedocs.io/en/${version}/using/callbacks.html`,
+  },
+  {
+    name: 'Host Aim on Kubernetes (K8S)',
+    url: `https://aimstack.readthedocs.io/en/${version}/using/k8s_deployment.html`,
+  },
+  {
+    name: 'Run Aim UI on Jupyter Notebook',
+    url: `https://aimstack.readthedocs.io/en/${version}/using/jupyter_notebook_ui.html`,
+  },
+  {
+    name: 'Run Aim UI on SageMaker Notebook instance',
+    url: `https://aimstack.readthedocs.io/en/${version}/using/sagemaker_notebook_ui.html`,
+  },
+  {
+    name: 'Integration guides',
+    url: `https://aimstack.readthedocs.io/en/${version}/using/integration_guides.html`,
+  },
+  {
+    name: 'Data storage - where Aim data is collected',
+    url: `https://aimstack.readthedocs.io/en/${version}/understanding/data_storage.html`,
+  },
+  {
+    name: 'Storage indexing - how Aim data is indexed',
+    url: `https://aimstack.readthedocs.io/en/${version}/understanding/storage_indexing.html`,
+  },
+  {
+    name: 'Concepts',
+    url: `https://aimstack.readthedocs.io/en/${version}/understanding/concepts.html`,
+  },
+];
+
+export { DOCUMENTATIONS, GUIDES, DEMOS, DASHBOARD_PAGE_GUIDES };

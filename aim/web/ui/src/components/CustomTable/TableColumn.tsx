@@ -21,6 +21,7 @@ import {
 } from 'config/table/tableConfigs';
 
 import getColorFromRange from 'utils/d3/getColorFromRange';
+import changeDasharraySize from 'utils/changeDasharraySize';
 
 import ControlPopover from '../ControlPopover/ControlPopover';
 
@@ -57,6 +58,7 @@ function Column({
   setColWidth,
   colLeft,
   listWindow,
+  noColumnActions,
 }) {
   const [maxWidth, setMaxWidth] = React.useState(width);
   const [isResizing, setIsResizing] = React.useState(false);
@@ -307,189 +309,193 @@ function Column({
             {firstColumn ? headerMeta : null}
             {col.content}
           </Text>
-          {col.key !== 'actions' && col.key !== '#' && col.key !== 'selection' && (
-            <>
-              <ControlPopover
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'left',
-                }}
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                anchor={({ onAnchorClick }) => (
-                  <Tooltip title='Column actions'>
-                    <div>
-                      <Button
-                        withOnlyIcon
-                        size='xxSmall'
-                        onClick={onAnchorClick}
-                        color='secondary'
-                      >
-                        <Icon
-                          className='Table__action__anchor'
-                          name='more-vertical'
-                        />
-                      </Button>
-                    </div>
-                  </Tooltip>
-                )}
-                component={
-                  <div className='Table__action__popup__body'>
-                    {!_.isEmpty(colorScaleRange) && onToggleColumnsColorScales && (
-                      <MenuItem
-                        className='Table__action__popup__item'
-                        onClick={() => onToggleColumnsColorScales(col.key)}
-                      >
-                        {columnsColorScales[col.key] ? (
-                          <>
-                            <span className='Table__action__popup__item_icon'>
-                              <Icon fontSize={12} name='color-scale-off' />
-                            </span>
-                            <span>Reset color scale</span>
-                          </>
-                        ) : (
-                          <>
-                            <span className='Table__action__popup__item_icon'>
-                              <Icon fontSize={13} name='color-scale-on' />
-                            </span>
-                            <span>Apply color scale</span>
-                          </>
-                        )}
-                      </MenuItem>
-                    )}
-                    {columnOptions && (
-                      <>
-                        {columnOptions?.map((option) => (
+          {!noColumnActions &&
+            col.key !== 'actions' &&
+            col.key !== '#' &&
+            col.key !== 'selection' && (
+              <>
+                <ControlPopover
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                  }}
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  anchor={({ onAnchorClick }) => (
+                    <Tooltip title='Column actions'>
+                      <div>
+                        <Button
+                          withOnlyIcon
+                          size='xxSmall'
+                          onClick={onAnchorClick}
+                          color='secondary'
+                        >
+                          <Icon
+                            className='Table__action__anchor'
+                            name='more-vertical'
+                          />
+                        </Button>
+                      </div>
+                    </Tooltip>
+                  )}
+                  component={
+                    <div className='Table__action__popup__body'>
+                      {!_.isEmpty(colorScaleRange) &&
+                        onToggleColumnsColorScales && (
                           <MenuItem
-                            key={option.value}
                             className='Table__action__popup__item'
-                            onClick={option.onClick}
+                            onClick={() => onToggleColumnsColorScales(col.key)}
                           >
-                            <span className='Table__action__popup__item_icon'>
-                              <Icon fontSize={14} name={option.icon} />
-                            </span>
-                            <span>{option.value}</span>
+                            {columnsColorScales[col.key] ? (
+                              <>
+                                <span className='Table__action__popup__item_icon'>
+                                  <Icon fontSize={12} name='color-scale-off' />
+                                </span>
+                                <span>Reset color scale</span>
+                              </>
+                            ) : (
+                              <>
+                                <span className='Table__action__popup__item_icon'>
+                                  <Icon fontSize={13} name='color-scale-on' />
+                                </span>
+                                <span>Apply color scale</span>
+                              </>
+                            )}
                           </MenuItem>
-                        ))}
-                        <Divider
-                          orientation='horizontal'
-                          style={{ margin: '0.5rem 0' }}
-                        />
-                      </>
-                    )}
-                    {!isAlwaysVisible && (
-                      <MenuItem
-                        className='Table__action__popup__item'
-                        onClick={hideColumn}
-                      >
-                        <span className='Table__action__popup__item_icon'>
-                          <Icon fontSize={12} name='eye-outline-hide' />
-                        </span>
-                        <span>Hide column</span>
-                      </MenuItem>
-                    )}
-                    {(pinnedTo === 'left' || pinnedTo === 'right') && (
-                      <MenuItem
-                        className='Table__action__popup__item'
-                        onClick={() => togglePin(col.key, null)}
-                      >
-                        <span className='Table__action__popup__item_icon'>
-                          <Icon fontSize={12} name='pin' />
-                        </span>
-                        <span>Unpin</span>
-                      </MenuItem>
-                    )}
-                    {pinnedTo !== 'left' && (
-                      <MenuItem
-                        className='Table__action__popup__item'
-                        onClick={() => togglePin(col.key, 'left')}
-                      >
-                        <span className='Table__action__popup__item_icon'>
-                          <Icon fontSize={12} name='pin-left' />
-                        </span>
-                        <span>Pin to left</span>
-                      </MenuItem>
-                    )}
-                    {pinnedTo !== 'right' && (
-                      <MenuItem
-                        className='Table__action__popup__item'
-                        onClick={() => togglePin(col.key, 'right')}
-                      >
-                        <span className='Table__action__popup__item_icon'>
-                          <Icon fontSize={12} name='pin-right' />
-                        </span>
-                        <span>Pin to right</span>
-                      </MenuItem>
-                    )}
-                    {!paneFirstColumn && (
-                      <MenuItem
-                        className='Table__action__popup__item'
-                        onClick={() => moveColumn('left')}
-                      >
-                        <span className='Table__action__popup__item_icon'>
-                          <Icon fontSize={10} name='arrow-left' />
-                        </span>
-                        <span>Move left</span>
-                      </MenuItem>
-                    )}
-                    {!paneLastColumn && (
-                      <MenuItem
-                        className='Table__action__popup__item'
-                        onClick={() => moveColumn('right')}
-                      >
-                        <span className='Table__action__popup__item_icon'>
-                          <Icon fontSize={10} name='arrow-right' />
-                        </span>
-                        <span>Move right</span>
-                      </MenuItem>
-                    )}
-                    {pinnedTo === null && !paneFirstColumn && (
-                      <MenuItem
-                        className='Table__action__popup__item'
-                        onClick={() => moveColumn('start')}
-                      >
-                        <span className='Table__action__popup__item_icon'>
-                          <Icon fontSize={10} name='move-to-left' />
-                        </span>
-                        <span>Move to start</span>
-                      </MenuItem>
-                    )}
-                    {pinnedTo === null && !paneLastColumn && (
-                      <MenuItem
-                        className='Table__action__popup__item'
-                        onClick={() => moveColumn('end')}
-                      >
-                        <span className='Table__action__popup__item_icon'>
-                          <Icon fontSize={10} name='move-to-right' />
-                        </span>
-                        <span>Move to end</span>
-                      </MenuItem>
-                    )}
-                    {width !== undefined && (
-                      <MenuItem
-                        className='Table__action__popup__item'
-                        onClick={resetWidth}
-                      >
-                        <span className='Table__action__popup__item_icon'>
-                          <Icon name='reset-width-outside' />
-                        </span>
-                        <span>Reset width</span>
-                      </MenuItem>
-                    )}
-                  </div>
-                }
-              />
-              <div
-                className={classNames('Table__column__resizeHandler', {
-                  leftResize: pinnedTo === 'right',
-                  isResizing: isResizing,
-                })}
-                onMouseDown={resizeStart}
-              />
-            </>
-          )}
+                        )}
+                      {columnOptions && (
+                        <>
+                          {columnOptions?.map((option) => (
+                            <MenuItem
+                              key={option.value}
+                              className='Table__action__popup__item'
+                              onClick={option.onClick}
+                            >
+                              <span className='Table__action__popup__item_icon'>
+                                <Icon fontSize={14} name={option.icon} />
+                              </span>
+                              <span>{option.value}</span>
+                            </MenuItem>
+                          ))}
+                          <Divider
+                            orientation='horizontal'
+                            style={{ margin: '0.5rem 0' }}
+                          />
+                        </>
+                      )}
+                      {!isAlwaysVisible && (
+                        <MenuItem
+                          className='Table__action__popup__item'
+                          onClick={hideColumn}
+                        >
+                          <span className='Table__action__popup__item_icon'>
+                            <Icon fontSize={12} name='eye-outline-hide' />
+                          </span>
+                          <span>Hide column</span>
+                        </MenuItem>
+                      )}
+                      {(pinnedTo === 'left' || pinnedTo === 'right') && (
+                        <MenuItem
+                          className='Table__action__popup__item'
+                          onClick={() => togglePin(col.key, null)}
+                        >
+                          <span className='Table__action__popup__item_icon'>
+                            <Icon fontSize={12} name='pin' />
+                          </span>
+                          <span>Unpin</span>
+                        </MenuItem>
+                      )}
+                      {pinnedTo !== 'left' && (
+                        <MenuItem
+                          className='Table__action__popup__item'
+                          onClick={() => togglePin(col.key, 'left')}
+                        >
+                          <span className='Table__action__popup__item_icon'>
+                            <Icon fontSize={12} name='pin-left' />
+                          </span>
+                          <span>Pin to left</span>
+                        </MenuItem>
+                      )}
+                      {pinnedTo !== 'right' && (
+                        <MenuItem
+                          className='Table__action__popup__item'
+                          onClick={() => togglePin(col.key, 'right')}
+                        >
+                          <span className='Table__action__popup__item_icon'>
+                            <Icon fontSize={12} name='pin-right' />
+                          </span>
+                          <span>Pin to right</span>
+                        </MenuItem>
+                      )}
+                      {!paneFirstColumn && (
+                        <MenuItem
+                          className='Table__action__popup__item'
+                          onClick={() => moveColumn('left')}
+                        >
+                          <span className='Table__action__popup__item_icon'>
+                            <Icon fontSize={10} name='arrow-left' />
+                          </span>
+                          <span>Move left</span>
+                        </MenuItem>
+                      )}
+                      {!paneLastColumn && (
+                        <MenuItem
+                          className='Table__action__popup__item'
+                          onClick={() => moveColumn('right')}
+                        >
+                          <span className='Table__action__popup__item_icon'>
+                            <Icon fontSize={10} name='arrow-right' />
+                          </span>
+                          <span>Move right</span>
+                        </MenuItem>
+                      )}
+                      {pinnedTo === null && !paneFirstColumn && (
+                        <MenuItem
+                          className='Table__action__popup__item'
+                          onClick={() => moveColumn('start')}
+                        >
+                          <span className='Table__action__popup__item_icon'>
+                            <Icon fontSize={10} name='move-to-left' />
+                          </span>
+                          <span>Move to start</span>
+                        </MenuItem>
+                      )}
+                      {pinnedTo === null && !paneLastColumn && (
+                        <MenuItem
+                          className='Table__action__popup__item'
+                          onClick={() => moveColumn('end')}
+                        >
+                          <span className='Table__action__popup__item_icon'>
+                            <Icon fontSize={10} name='move-to-right' />
+                          </span>
+                          <span>Move to end</span>
+                        </MenuItem>
+                      )}
+                      {width !== undefined && (
+                        <MenuItem
+                          className='Table__action__popup__item'
+                          onClick={resetWidth}
+                        >
+                          <span className='Table__action__popup__item_icon'>
+                            <Icon name='reset-width-outside' />
+                          </span>
+                          <span>Reset width</span>
+                        </MenuItem>
+                      )}
+                    </div>
+                  }
+                />
+                <div
+                  className={classNames('Table__column__resizeHandler', {
+                    leftResize: pinnedTo === 'right',
+                    isResizing: isResizing,
+                  })}
+                  onMouseDown={resizeStart}
+                />
+              </>
+            )}
         </div>
         {groups
           ? Object.keys(data).map((groupKey) => {
@@ -716,8 +722,16 @@ function Column({
                                         ? top
                                         : null,
                                   }}
-                                  onRowHover={() => onRowHover(item)}
-                                  onRowClick={() => onRowClick(item)}
+                                  onRowHover={
+                                    onRowHover
+                                      ? () => onRowHover(item)
+                                      : undefined
+                                  }
+                                  onRowClick={
+                                    onRowClick
+                                      ? () => onRowClick(item)
+                                      : undefined
+                                  }
                                   setColumnWidth={fixColumnWidth}
                                 />
                               </React.Fragment>
@@ -785,8 +799,12 @@ function Column({
                         box={{
                           top: firstVisibleCellTop === top ? top : null,
                         }}
-                        onRowHover={() => onRowHover(item)}
-                        onRowClick={() => onRowClick(item)}
+                        onRowHover={
+                          onRowHover ? () => onRowHover(item) : undefined
+                        }
+                        onRowClick={
+                          onRowClick ? () => onRowClick(item) : undefined
+                        }
                         setColumnWidth={fixColumnWidth}
                       />
                     ) : (
@@ -811,8 +829,12 @@ function Column({
                         box={{
                           top: firstVisibleCellTop === top ? top : null,
                         }}
-                        onRowHover={() => onRowHover(item)}
-                        onRowClick={() => onRowClick(item)}
+                        onRowHover={
+                          onRowHover ? () => onRowHover(item) : undefined
+                        }
+                        onRowClick={
+                          onRowClick ? () => onRowClick(item) : undefined
+                        }
                         setColumnWidth={fixColumnWidth}
                       />
                     )}
@@ -943,10 +965,7 @@ function GroupConfig({
                 x2='100%'
                 y2='50%'
                 style={{
-                  strokeDasharray: config.dasharray
-                    .split(' ')
-                    .map((elem) => (elem / 5) * 3)
-                    .join(' '),
+                  strokeDasharray: changeDasharraySize(config.dasharray, 3 / 5),
                 }}
               />
             </svg>

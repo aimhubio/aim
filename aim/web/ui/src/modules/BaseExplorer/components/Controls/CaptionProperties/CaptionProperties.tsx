@@ -3,8 +3,8 @@ import classNames from 'classnames';
 
 import { IBaseComponentProps } from 'modules/BaseExplorer/types';
 
-import ControlPopover from 'components/ControlPopover/ControlPopover';
 import { Button, Icon, Text } from 'components/kit';
+import ControlPopover from 'components/ControlPopover/ControlPopover';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import CaptionPropertiesPopover from './CaptionPropertiesPopover';
@@ -14,14 +14,15 @@ import { ICaptionProperties, ICaptionPropertiesProps } from './';
 function CaptionProperties(props: ICaptionPropertiesProps) {
   const {
     engine,
-    engine: {
-      useStore,
-      controls: {
-        captionProperties: { stateSelector },
-      },
-    },
+    visualizationName,
+    engine: { useStore, visualizations },
   } = props;
-  const captionProperties: ICaptionProperties = useStore(stateSelector);
+  const vizEngine = visualizations[visualizationName];
+
+  const captionProperties: ICaptionProperties = useStore(
+    vizEngine.controls.captionProperties.stateSelector,
+  );
+
   return (
     <ErrorBoundary>
       <ControlPopover
@@ -54,6 +55,7 @@ function CaptionProperties(props: ICaptionPropertiesProps) {
           <CaptionPropertiesPopover
             engine={engine}
             captionProperties={captionProperties}
+            visualizationName={props.visualizationName}
           />
         }
       />

@@ -1,4 +1,4 @@
-import { PipelineStatusEnum } from 'modules/core/engine';
+import { PipelineStatusEnum } from 'modules/core/engine/types';
 
 import emptyBookmarks from 'assets/illustrations/emptyBookmarks.svg';
 import emptySearch from 'assets/illustrations/emptySearch.svg';
@@ -23,9 +23,10 @@ const Illustrations_List: { [key: string]: string } = {
   [IllustrationsEnum.WrongSearch]: wrongSearch,
   [IllustrationsEnum.EmptyData]: exploreData,
   // for base explorer statuses
-  [PipelineStatusEnum.NeverExecuted]: exploreData,
+  [PipelineStatusEnum.Never_Executed]: exploreData,
   [PipelineStatusEnum.Insufficient_Resources]: exploreData,
   [PipelineStatusEnum.Empty]: emptySearch,
+  [PipelineStatusEnum.Failed]: wrongSearch,
 };
 
 const Request_Illustrations = {
@@ -128,7 +129,7 @@ const Illustration_Title_Config: { [key: string]: object | any } = {
     ),
   },
   figures: {
-    [PipelineStatusEnum.NeverExecuted]: (
+    [PipelineStatusEnum.Never_Executed]: (
       <>
         It’s super easy to search Aim experiments. Just start typing your query
         in the search bar above.
@@ -136,7 +137,7 @@ const Illustration_Title_Config: { [key: string]: object | any } = {
         Look up
         <a
           className='qlAnchor'
-          href={DOCUMENTATIONS.EXPLORERS.FIGURES.SEARCH}
+          href={DOCUMENTATIONS.EXPLORERS.SEARCH}
           target='_blank'
           rel='noreferrer'
         >
@@ -145,6 +146,7 @@ const Illustration_Title_Config: { [key: string]: object | any } = {
         to learn more.
       </>
     ),
+    [PipelineStatusEnum.Failed]: 'Incorrect Query',
     [PipelineStatusEnum.Insufficient_Resources]: (
       <span>You don't have any tracked figures</span>
     ),

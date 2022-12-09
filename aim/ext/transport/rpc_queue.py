@@ -2,6 +2,7 @@ import time
 import queue
 import logging
 import threading
+import weakref
 
 logger = logging.getLogger(__name__)
 
@@ -10,8 +11,11 @@ class RpcQueueWithRetry(object):
     def __init__(self, name, max_queue_memory=0,
                  retry_count=0, retry_interval=0):
 
+        self._client = None
+
         self.retry_count = retry_count or 1
         self.retry_interval = retry_interval
+        self._needs_reconnect = False
 
         self.max_memory_usage = max_queue_memory
         self.current_memory_usage = 0
@@ -24,7 +28,10 @@ class RpcQueueWithRetry(object):
         self._thread.daemon = True
         self._thread.start()
 
-    def register_task(self, task_f, *args):
+    def register_task(self, client, task_f, *args):
+        if not self._client:
+            self._client = weakref.ref(client)
+
         if self._shutdown:
             logger.debug('Cannot register task: rpc task queue is stopped.')
             return
@@ -61,19 +68,30 @@ class RpcQueueWithRetry(object):
 
         retry = 0
         while retry < self.retry_count:
+            if self._needs_reconnect:
+                try:
+                    self._client().reconnect()
+                    self._needs_reconnect = False
+                except Exception:
+                    retry += 1
+                    time.sleep(self.retry_interval)
+                    continue
+
             try:
                 task_f(*args)
                 return True
             except grpc.RpcError as e:
                 if e.code() != grpc.StatusCode.UNAVAILABLE:
                     raise e
+                self._needs_reconnect = True
 
                 retry += 1
-                logger.warning(f'Remote Server is unavailable, please check network connection: {e}, attempt: {retry}')
                 time.sleep(self.retry_interval)
+                logger.warning(f'Remote Server is unavailable, please check network connection: {e}.')
+
         return False
 
-    def _put_front(self, task_f, *args):
+    def _put_front(self, task_f, args):
         with self._queue.not_full:
             self._queue.queue.appendleft((task_f, args))
             self._queue.not_empty.notify()

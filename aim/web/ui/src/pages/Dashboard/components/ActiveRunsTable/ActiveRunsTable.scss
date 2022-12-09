@@ -1,0 +1,33 @@
+@use 'src/styles/abstracts' as *;
+
+.ActiveRunsTable {
+  margin-top: $space-lg;
+}
+
+.ActiveRunsTable__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 28px;
+
+  .CompareSelectedRunsPopover__trigger {
+    margin-right: 0 !important;
+  }
+}
+
+.ActiveRunsTable__table {
+  height: 271px;
+  margin-top: $space-xxs;
+  border: $border-grey;
+  border-top: none;
+}
+
+.ActiveRunsTable__table--loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ActiveRunsTable__table--empty {
+  border: none;
+}

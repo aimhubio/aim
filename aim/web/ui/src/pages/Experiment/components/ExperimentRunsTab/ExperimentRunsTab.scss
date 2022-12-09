@@ -1,0 +1,15 @@
+@use 'styles/abstracts/index' as *;
+
+.ExperimentRunsTab {
+  width: 100%;
+  height: 100%;
+  padding: $space-lg 0;
+  &__content {
+    height: 100%;
+    background: $white;
+    padding: $space-lg;
+    border: $border-grey;
+    border-radius: $border-radius-lg;
+    width: 100%;
+  }
+}

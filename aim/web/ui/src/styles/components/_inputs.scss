@@ -16,7 +16,7 @@ body {
   }
 
   .Mui-disabled {
-    color: $text-color-50;
+    color: $text-color-50 !important;
     .MuiOutlinedInput-notchedOutline {
       border-color: $cuddle-70 !important;
     }

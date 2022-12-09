@@ -7,4 +7,5 @@ export interface ISelectTagProps {
   attachedTags: ITagInfo[];
   setAttachedTags: Dispatch<SetStateAction<ITagInfo[]>>;
   onRunsTagsChange?: (runHash: string, tags: ITagInfo[]) => void;
+  updatePopover?: (key: string) => void;
 }

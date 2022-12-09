@@ -94,6 +94,7 @@ import { onCopyToClipBoard } from 'utils/onCopyToClipBoard';
 import getFilteredRow from 'utils/app/getFilteredRow';
 import { getMetricHash } from 'utils/app/getMetricHash';
 import onRunsTagsChange from 'utils/app/onRunsTagsChange';
+import saveRecentSearches from 'utils/saveRecentSearches';
 
 import createModel from '../model';
 import { AppNameEnum } from '../explorer';
@@ -137,6 +138,7 @@ function getConfig(): IImagesExploreAppConfig {
       indexDensity: '5',
       recordDensity: '50',
       tooltip: {
+        appearance: CONTROLS_DEFAULT_CONFIG.images.tooltip.appearance,
         display: CONTROLS_DEFAULT_CONFIG.images.tooltip.display,
         selectedFields: CONTROLS_DEFAULT_CONFIG.images.tooltip.selectedFields,
       },
@@ -417,6 +419,7 @@ function getImagesData(
           if (shouldUrlUpdate) {
             updateURL(configData);
           }
+          saveRecentSearches(AppNameEnum.IMAGES, query!);
         } catch (ex: Error | any) {
           if (ex.name === 'AbortError') {
             // Abort Error
@@ -1179,7 +1182,7 @@ function onActivePointChange(
 
   const tooltipContent = configData.images?.focusedState?.key
     ? getTooltipContent({
-        groupingItems: [GroupNameEnum.ROW],
+        groupingNames: [GroupNameEnum.ROW],
         groupingSelectOptions,
         data,
         configData,
@@ -1225,7 +1228,7 @@ function onChangeTooltip(tooltipObj: Partial<ITooltip>): void {
 
     const tooltipContent = configData.images?.focusedState?.key
       ? getTooltipContent({
-          groupingItems: [GroupNameEnum.ROW],
+          groupingNames: [GroupNameEnum.ROW],
           groupingSelectOptions,
           data,
           configData,
@@ -1285,7 +1288,7 @@ function getDataAsTableRows(
     const columnsValues: { [key: string]: string[] } = {};
 
     if (metricsCollection.config !== null) {
-      const groupConfigData: { [key: string]: string } = {};
+      const groupConfigData: { [key: string]: unknown } = {};
       for (let key in metricsCollection.config) {
         groupConfigData[getValueByField(groupingSelectOptions, key)] =
           metricsCollection.config[key];
@@ -1331,6 +1334,7 @@ function getDataAsTableRows(
           color: metricsCollection.color ?? metric.color,
           dasharray: metricsCollection.dasharray ?? metric.dasharray,
           experiment: metric.run.props.experiment?.name ?? 'default',
+          experimentId: metric.run.props.experiment?.id ?? '',
           run: metric.run.props?.name ?? '-',
           description: metric.run.props?.description ?? '-',
           date: moment(metric.run.props.creation_time * 1000).format(
@@ -1840,35 +1844,45 @@ function getQueryStringFromSelect(
   selectData: IImagesExploreAppConfig['select'],
   error?: ISyntaxErrorDetails,
 ) {
-  let query: string | undefined = '';
-  if (selectData !== undefined) {
-    if (selectData.advancedMode) {
-      query = selectData.advancedQuery;
+  let query = '()';
+  if (selectData === undefined) {
+    return query;
+  }
+  if (selectData.advancedMode) {
+    query = selectData.advancedQuery || '';
+  } else {
+    const simpleInput =
+      selectData.query?.trim() && !error?.message
+        ? `(${selectData.query.trim()})`
+        : '';
+    const selections = selectData.options?.length
+      ? `(${selectData.options
+          .map(
+            (option: ISelectOption) =>
+              `(images.name == "${option.value?.option_name}"${
+                option.value?.context === null
+                  ? ''
+                  : ' and ' +
+                    Object.keys(option.value?.context)
+                      .map(
+                        (item) =>
+                          `images.context.${item} == ${formatValue(
+                            (option.value?.context as any)[item],
+                          )}`,
+                      )
+                      .join(' and ')
+              })`,
+          )
+          .join(' or ')})`
+      : '';
+
+    if (simpleInput && selections) {
+      query = `${simpleInput} and ${selections}`;
     } else {
-      query = `${
-        selectData.query && !error?.message ? `(${selectData.query}) and ` : ''
-      }(${selectData.options
-        .map(
-          (option: ISelectOption) =>
-            `(images.name == "${option.value?.option_name}"${
-              option.value?.context === null
-                ? ''
-                : ' and ' +
-                  Object.keys(option.value?.context)
-                    .map(
-                      (item) =>
-                        `images.context.${item} == ${formatValue(
-                          (option.value?.context as any)[item],
-                        )}`,
-                    )
-                    .join(' and ')
-            })`,
-        )
-        .join(' or ')})`.trim();
+      query = `${simpleInput}${selections}`;
     }
   }
-
-  return query;
+  return query.trim() || '()';
 }
 
 function onSelectAdvancedQueryChange(query: string) {

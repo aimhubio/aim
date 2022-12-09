@@ -233,6 +233,27 @@ _See documentation [here](https://aimstack.readthedocs.io/en/latest/quick_start/
 
 <details>
 <summary>
+  Integrate KerasTuner
+</summary>
+
+```python
+from aim.keras_tuner import AimCallback
+
+# ...
+tuner.search(
+    train_ds,
+    validation_data=test_ds,
+    callbacks=[AimCallback(tuner=tuner, repo='.', experiment='keras_tuner_test')],
+)
+# ...
+```
+
+_See documentation [here](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-kerastuner)._
+
+</details>
+
+<details>
+<summary>
   Integrate XGBoost
 </summary>
 
@@ -246,6 +267,98 @@ bst = xgb.train(param, xg_train, num_round, watchlist, callbacks=[aim_callback])
 ```
 
 _See documentation [here](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-xgboost)._
+</details>
+
+
+<details>
+<summary>
+  Integrate CatBoost
+</summary>
+
+```python
+from aim.catboost import AimLogger
+
+# ...
+model.fit(train_data, train_labels, log_cout=AimLogger(loss_function='Logloss'), logging_level="Info")
+# ...
+```
+
+_See documentation [here](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-catboost)._
+</details>
+
+
+
+<details>
+<summary>
+  Integrate fastai
+</summary>
+
+```python
+from aim.fastai import AimCallback
+
+# ...
+learn = cnn_learner(dls, resnet18, pretrained=True,
+                    loss_func=CrossEntropyLossFlat(),
+                    metrics=accuracy, model_dir="/tmp/model/",
+                    cbs=AimCallback(repo='.', experiment='fastai_test'))
+# ...
+```
+
+_See documentation [here](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-fastai)._
+</details>
+
+
+<details>
+<summary>
+  Integrate LightGBM
+</summary>
+
+```python
+from aim.lightgbm import AimCallback
+
+# ...
+aim_callback = AimCallback(experiment='lgb_test')
+aim_callback.experiment['hparams'] = params
+
+gbm = lgb.train(params,
+                lgb_train,
+                num_boost_round=20,
+                valid_sets=lgb_eval,
+                callbacks=[aim_callback, lgb.early_stopping(stopping_rounds=5)])
+# ...
+```
+
+_See documentation [here](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-lightgbm)._
+</details>
+
+
+<details>
+<summary>
+  Integrate PyTorch Ignite
+</summary>
+
+```python
+from aim.pytorch_ignite import AimLogger
+
+# ...
+aim_logger = AimLogger()
+
+aim_logger.log_params({
+    "model": model.__class__.__name__,
+    "pytorch_version": str(torch.__version__),
+    "ignite_version": str(ignite.__version__),
+})
+
+aim_logger.attach_output_handler(
+    trainer,
+    event_name=Events.ITERATION_COMPLETED,
+    tag="train",
+    output_transform=lambda loss: {'loss': loss}
+)
+# ...
+```
+
+_See documentation [here](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-pytorch-ignite)._
 </details>
 
 # Comparisons to familiar tools
@@ -328,10 +441,14 @@ The high-level features we are going to work on the next few months
   - [x] Notify on stuck runs (Start: _Jul 22 2022_, Shipped: _Aug 21 2022_)
   - [x] Integration with KerasTuner (Start: _Aug 10 2022_, Shipped: _Aug 21 2022_)
   - [x] Integration with WandB (Start: _Aug 15 2022_, Shipped: _Aug 21 2022_)
+  - [x] Stable remote tracking server (Start: _Jun 15 2022_, Shipped: _Aug 21 2022_)
+  - [x] Integration with fast.ai (Start: _Aug 22 2022_, Shipped: _Oct 6 2022_)
+  - [x] Integration with MXNet (Start: _Sep 20 2022_, Shipped: _Oct 6 2022_)
+  - [x] Project overview page (Start: _Sep 1 2022_, Shipped: _Oct 6 2022_)
 
 ### In Progress
-  - [ ] **Stable** remote tracking server
-  - [ ] Integration with fast.ai (Start: _Aug 22 2022_)
+  - [ ] Remote tracking server scaling (Start: _Sep 1 2022_)
+  - [ ] Aim SDK low-level interface (Start: _Aug 22 2022_)
 
 ### To Do
 
@@ -350,9 +467,6 @@ The high-level features we are going to work on the next few months
 - Scalability
     - Smooth UI and SDK experience with over 10.000 runs
 - Runs management
-    - SDK interfaces
-        - Reporting – query and compare runs, explore data with familiar tools such as matlpotlib and pandas
-        - Manipulations – copy, move, delete runs, params and sequences
     - CLI interfaces
         - Reporting - runs summary and run details in a CLI compatible format
         - Manipulations – copy, move, delete runs, params and sequences
@@ -360,7 +474,7 @@ The high-level features we are going to work on the next few months
 **Integrations**
 
 - ML Frameworks:
-    - Shortlist: MONAI, SpaCy, Raytune, MXNet, PaddlePaddle
+    - Shortlist: MONAI, SpaCy, Raytune, PaddlePaddle
 - Datasets versioning tools
     - Shortlist: HuggingFace Datasets
 - Resource management tools
