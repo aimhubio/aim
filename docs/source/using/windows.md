@@ -24,7 +24,7 @@ cd ..
 
 ### 2-create-venv.bat
 
-You need to edit the script to select the Python version that you require. You can either use the Windows Python Launcher (`py -3.10`) or you can directly specify the path to the Python installation (`C:\Program Files\Python 3.10\python.exe`, ...)
+You need to edit the script to select the Python version that you require. You can either use the Windows Python launcher (`py -3.10`) or you can directly specify the path to the Python installation (`C:\Program Files\Python 3.10\python.exe`, ...)
 
 ```batchfile
 py -3.10 -m venv venv
