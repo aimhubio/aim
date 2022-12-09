@@ -4,13 +4,7 @@ from typing import List
 
 from aim.ext.resource.utils import round10e5
 
-try:
-    # Import python wrapper for the NVIDIA Management Library
-    # Initialize it or pass if NVIDIA ML is not initialized
-    from py3nvml import py3nvml as nvml
-    nvml.nvmlInit()
-except nvml.NVMLError_LibraryNotFound:
-    pass
+from py3nvml import py3nvml as nvml
 
 
 class StatDict(object):
@@ -151,6 +145,7 @@ class Stat(object):
         # Collect GPU statistics
         gpus = []
         try:
+            nvml.nvmlInit()
             gpu_device_count = nvml.nvmlDeviceGetCount()
             for i in range(gpu_device_count):
                 handle = nvml.nvmlDeviceGetHandleByIndex(i)
@@ -182,7 +177,8 @@ class Stat(object):
                     # Device temperature
                     'gpu_temp': round10e5(temp),
                 })
-        except nvml.NVMLError_NotSupported::
+            nvml.nvmlShutdown()
+        except (nvml.NVMLError_LibraryNotFound, nvml.NVMLError_NotSupported):
             pass
 
         return system, gpus
