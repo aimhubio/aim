@@ -182,7 +182,7 @@ class Stat(object):
                     # Device temperature
                     'gpu_temp': round10e5(temp),
                 })
-        except Exception:
+        except nvml.NVMLError_NotSupported::
             pass
 
         return system, gpus
