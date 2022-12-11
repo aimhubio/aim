@@ -2,13 +2,13 @@ import { StoreApi } from 'zustand';
 import produce, { Draft } from 'immer';
 
 import { GetParamsResult } from 'modules/core/api/projectApi';
-import { SelectorCreator } from 'modules/core/engine/types';
+import { AimErrorType, SelectorCreator } from 'modules/core/engine/types';
 
 import { SequenceTypesEnum } from 'types/core/enums';
 
 type Status = {
   isLoading: boolean;
-  error: string | null;
+  error: AimErrorType | null;
 };
 
 /**
@@ -49,7 +49,7 @@ export type InstructionsStateBridge<
     params_info: GetParamsResult,
     sequence_info: GetParamsResult[SequenceName],
   ) => void;
-  setError: (error: string | null) => void;
+  setError: (error: AimErrorType | null) => void;
   getStatus: () => Status;
   getParamsInfo: () => GetParamsResult | null;
 } & {
@@ -115,7 +115,7 @@ function createState<TStore, SequenceName extends SequenceTypesEnum>(
         '@PROJECTS/setInfo',
       );
     },
-    setError: (error: string | null = null): void => {
+    setError: (error: AimErrorType | null = null): void => {
       store.setState(
         produce<Store>((draft_state: Draft<Store>) => {
           draft_state.instructions.status.isLoading = false;

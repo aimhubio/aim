@@ -107,13 +107,13 @@ export enum PipelineStatusEnum {
 
 export type SelectorCreator<TState, P> = (state: TState) => P;
 
-export interface BaseErrorType {
+export interface AimErrorType {
   name: string;
   message: string;
   detail: Record<string, any>;
 }
 
-export interface PipelineErrorType extends BaseErrorType {
+export interface PipelineErrorType extends AimErrorType {
   source: string;
 }
 

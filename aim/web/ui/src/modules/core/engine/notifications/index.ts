@@ -9,10 +9,10 @@ type NotifyMethod = (args: {
   iconName?: string;
   duration?: number;
 }) => void;
-type WarningMethod = (messages: string[] | string, duration: number) => void;
-type SuccessMethod = (messages: string[] | string, duration: number) => void;
-type ErrorMethod = (messages: string[] | string, duration: number) => void;
-type InfoMethod = (messages: string[] | string, duration: number) => void;
+type WarningMethod = (messages: string[] | string, duration?: number) => void;
+type SuccessMethod = (messages: string[] | string, duration?: number) => void;
+type ErrorMethod = (messages: string[] | string, duration?: number) => void;
+type InfoMethod = (messages: string[] | string, duration?: number) => void;
 type RemoveMethod = (id: string) => void;
 
 type NotificationsSelector<TStore> = (

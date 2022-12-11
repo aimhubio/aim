@@ -21,6 +21,7 @@ import { encode } from 'utils/encoder/encoder';
 
 import { PipelineStatusEnum, ProgressState } from '../types';
 import { QueryState } from '../explorer/query';
+import { INotificationsEngine } from '../notifications';
 
 import createState, {
   CurrentGrouping,
@@ -48,6 +49,7 @@ function createPipelineEngine<TStore, TObject>(
   store: any,
   options: Omit<PipelineOptions, 'callbacks'>,
   defaultGroupings?: any,
+  notificationsEngine?: INotificationsEngine<TStore>['engine'],
 ): IPipelineEngine<TObject, TStore> {
   const initialState = getInitialState<TObject>();
 
@@ -193,6 +195,9 @@ function createPipelineEngine<TStore, TObject>(
       .catch((err) => {
         state.setError(err);
         state.changeCurrentPhaseOrStatus(PipelineStatusEnum.Failed);
+        if (err && err.message !== 'SyntaxError') {
+          notificationsEngine?.error(err.message);
+        }
       });
   }
 
