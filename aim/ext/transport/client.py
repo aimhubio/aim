@@ -160,7 +160,7 @@ class Client:
             port_offset = int(response.worker_index)
             worker_port = router_port + port_offset
             return worker_port
-        except:
+        except Exception:
             return response.port
 
     def client_heartbeat(self):
