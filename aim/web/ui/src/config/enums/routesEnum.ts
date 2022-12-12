@@ -16,6 +16,7 @@ enum PathEnum {
   Figures_Explorer = '/figures',
   Audios_Explorer = '/audios',
   New_Figures_Explorer = '/new-fig',
+  Metrics_Explorer = '/metrics_new',
 }
 
 export { PathEnum };

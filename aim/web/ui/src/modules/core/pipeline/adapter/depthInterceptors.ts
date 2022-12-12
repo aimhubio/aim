@@ -13,6 +13,8 @@ const depthInterceptors: DepthInterceptors = {
     };
   },
   [AimObjectDepths.Sequence]: (sequence: SequenceFullView) => {
+    debugger;
+
     return {
       data: sequence as SequenceFullView,
     };
