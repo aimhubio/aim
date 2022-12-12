@@ -13,8 +13,10 @@ class Run(BasicRun):
     def __init__(self, run_hash: Optional[str] = None, *,
                  sync_tensorboard_log_dir: str,
                  repo: Optional[Union[str, 'Repo']] = None,
-                 experiment: Optional[str] = None):
-        super().__init__(run_hash, repo=repo, read_only=False, experiment=experiment)
+                 experiment: Optional[str] = None,
+                 force_resume: Optional[bool] = False,
+                 ):
+        super().__init__(run_hash, repo=repo, read_only=False, experiment=experiment, force_resume=force_resume)
         self['tb_log_directory'] = sync_tensorboard_log_dir
         self._tensorboard_tracker = TensorboardTracker(self._tracker, sync_tensorboard_log_dir)
         self._tensorboard_tracker.start()
