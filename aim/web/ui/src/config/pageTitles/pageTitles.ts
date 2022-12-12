@@ -12,6 +12,7 @@ const pageTitles = {
   RUN_DETAIL: '',
   EXPERIMENT: '',
   FIGURES_EXPLORER_NEW: 'New Figures',
+  METRICS_EXPLORER_NEW: 'New Metrics Explorer',
 };
 
 export default pageTitles;
