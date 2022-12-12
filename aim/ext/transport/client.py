@@ -155,7 +155,13 @@ class Client:
         response = self._remote_router_stub.connect(request, metadata=[('x-client', self.uri)])
         if response.status == router_messages.ConnectResponse.Status.ERROR:
             raise_exception(response.exception)
-        return response.port
+        try:
+            router_port = int(self._remote_path.rsplit(':', maxsplit=1)[1])
+            port_offset = int(response.worker_index)
+            worker_port = router_port + port_offset
+            return worker_port
+        except:
+            return response.port
 
     def client_heartbeat(self):
         request = router_messages.HeartbeatRequest(
