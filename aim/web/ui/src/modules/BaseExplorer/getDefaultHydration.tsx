@@ -37,7 +37,7 @@ const controls: ControlsConfigs = {
     state: {
       initialState: {
         displayBoxCaption: true,
-        selectedFields: ['run.name', 'figures.name', 'figures.context'],
+        selectedFields: [],
       },
       persist: 'url',
     },
@@ -67,8 +67,8 @@ const groupings: GroupingConfigs = {
       };
     },
     defaultApplications: {
-      fields: ['run.hash', 'figures.name'],
-      orders: [Order.ASC, Order.ASC],
+      fields: [],
+      orders: [],
     },
     // state: {
     //   // observable state, to listen on base visualizer
@@ -101,8 +101,8 @@ const groupings: GroupingConfigs = {
       };
     },
     defaultApplications: {
-      fields: ['record.step'],
-      orders: [Order.DESC],
+      fields: [],
+      orders: [],
     },
     // state: {
     //   // observable state, to listen on base visualizer

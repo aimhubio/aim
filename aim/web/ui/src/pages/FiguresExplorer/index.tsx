@@ -1,13 +1,14 @@
 import type { FunctionComponent } from 'react';
 
-import renderer, { getDefaultHydration } from 'modules/BaseExplorer';
+import renderer from 'modules/BaseExplorer';
 import Figures from 'modules/BaseExplorer/components/Figures/Figures';
 
 import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
 
 import getFiguresExplorerStaticContent from './getStaticContent';
+import { getFiguresDefaultConfig } from './config';
 
-const defaultConfig = getDefaultHydration();
+const defaultConfig = getFiguresDefaultConfig();
 
 const FiguresExplorer = renderer(
   {
