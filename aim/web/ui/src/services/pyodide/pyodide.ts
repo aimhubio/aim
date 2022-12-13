@@ -13,7 +13,9 @@ let pyodideStore: any = {
 (window as any).search = search;
 (window as any).updateLayout = noop;
 
-export async function loadPyodideInstance(cb?: Function, reload = false) {
+export async function loadPyodideInstance(cb?: Function) {
+  pyodideStore.current = null;
+  pyodideStore.namespace = null;
   pyodideStore.current = await (window as any).loadPyodide({
     stdout: (...args: any[]) => {
       window.requestAnimationFrame(() => {
@@ -32,7 +34,6 @@ export async function loadPyodideInstance(cb?: Function, reload = false) {
   let namespace = pyodideStore.current.toPy({});
 
   pyodideStore.namespace = namespace;
-  // (window as any).pyo = pyodideStore.current;
 
   await pyodideStore.current.loadPackage('pandas');
 

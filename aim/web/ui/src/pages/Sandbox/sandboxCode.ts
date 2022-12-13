@@ -1,28 +1,35 @@
 export const initialCode = `from aim.sequences import Metric 
-from aim.ui.layout import Cell
-from aim.ui.viz import LineChart, Table, JSON
+from aim.ui.layout import Grid, Cell
+from aim.ui.viz import LineChart, Table
+from hrepr import H
 
-metrics = Metric.query('metric.name == "accuracy"')
+metrics = Metric.query()
 
-def render(state, set_state):
-    line_chart = LineChart(metrics, x='steps', y='values',
-                    color=["run.name"],
-                    stroke_style=["metric.context"],
-                    set_state=set_state)
-
-    line_chart_cell = Cell(line_chart)
-
-    table_cell = None
-    params_cell = None
-
-    if state != None and "focused_line_data" in state.keys():
-        metric = state["focused_line_data"]
-        metric_df = Metric.dataframe(metric["key"])
-        table_cell = Cell(Table(metric_df))
-        params_cell = Cell(JSON(metric["run"]))
-
-    return [
+def on_click(metric, point):
+    html = H.span()
+    html = html("Only ")
+    html = html(H.b("YOU", style="color: brown;"), " can prevent forest fires!")
+    html = HTML(html)
+    
+    Grid([
         [line_chart_cell],
-        [table_cell, params_cell]
-    ]
+        [Cell(html)]
+    ])
+
+line_chart = LineChart(metrics, x='steps', y='values',
+                color=["run.name"],
+                stroke_style=["metric.context"],
+                on_point_click=on_click)
+
+line_chart_cell = Cell(
+                    line_chart, 
+                    facet={
+                        "row": ["metric.name"], 
+                        "column": ["run.name"]
+                    })
+
+Grid([
+    [line_chart_cell],
+    []
+])
 `;

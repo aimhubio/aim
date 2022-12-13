@@ -72,4 +72,10 @@ export const dataVizElementsMap = {
       <DictVisualizer src={props.data} />
     </div>
   ),
+  HTML: (props: any) => (
+    <div
+      style={{ width: '100%', height: '100%', overflow: 'auto' }}
+      dangerouslySetInnerHTML={{ __html: props.data }}
+    />
+  ),
 };

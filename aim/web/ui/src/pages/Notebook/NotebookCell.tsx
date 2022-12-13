@@ -61,11 +61,11 @@ def Grid(grid):
       );
       const packagesList = pyodide.pyodide_py.find_imports(code).toJs();
 
-      packagesList.forEach(async (lib: string) => {
+      for await (const lib of packagesList) {
         await pyodide?.loadPackage('micropip');
         const micropip = pyodide?.pyimport('micropip');
         await micropip.install(lib);
-      });
+      }
 
       await pyodide.loadPackagesFromImports(code);
 

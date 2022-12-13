@@ -220,7 +220,7 @@ def Cell(viz, facet={"row": [], "column": []}, size={}, stack=[None]):
 
         def get_viz_for_type(type):
             for el in viz:
-                if el["data"][0]["type"] == type:
+                if el["data"] and el["data"][0] and el["data"][0]["type"] == type:
                     return el["type"]
 
         union_viz = {}
@@ -276,7 +276,6 @@ def LineChart(
                 set_state({"focused_line_data": item, "focused_point_data": data})
             if callable(on_point_click):
                 await on_point_click(item, data)
-
         else:
             if callable(set_state):
                 set_state({"hovered_line_data": item, "hovered_point_data": data})
@@ -366,3 +365,10 @@ def JSON(data):
 
 def Table(data):
     return {"type": "DataFrame", "data": data.to_json(orient="records")}
+
+
+def HTML(data):
+    return {
+        "type": "HTML",
+        "data": data,
+    }

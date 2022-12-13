@@ -6,7 +6,6 @@ function usePyodide() {
   let [isLoading, setIsLoading] = React.useState(pyodideStore.isLoading);
   let [pyodide, setPyodide] = React.useState(pyodideStore.current);
   let namespace = React.useRef(pyodideStore.namespace);
-  let isInit = React.useRef(true);
 
   React.useEffect(() => {
     if (pyodide === null && isLoading === null) {
@@ -15,17 +14,19 @@ function usePyodide() {
         namespace.current = pyodideStore.namespace;
         setPyodide(pyodideStore.current);
         setIsLoading(false);
-        isInit.current = false;
-      }, !isInit.current);
+      });
+    }
+
+    if (pyodide !== null) {
+      pyodide._api.fatal_error = async (err: unknown) => {
+        console.log('---- fatal error ----', err);
+        setPyodide(null);
+      };
     }
   }, [pyodide, isLoading]);
 
   return {
     isLoading,
-    reload: () => {
-      setIsLoading(null);
-      setPyodide(null);
-    },
     pyodide,
     namespace: namespace.current,
   };

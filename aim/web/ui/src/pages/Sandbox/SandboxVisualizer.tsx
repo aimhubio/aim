@@ -25,7 +25,7 @@ function toObject(x: any): any {
 }
 
 export default function SandboxVisualizer() {
-  const { pyodide, namespace, reload: reloadPyodide } = usePyodide();
+  const { pyodide, namespace, isLoading } = usePyodide();
 
   const editorValue = React.useRef(initialCode);
   const [result, setResult] = React.useState<Record<string, any>>([[]]);
@@ -57,11 +57,11 @@ export default function SandboxVisualizer() {
 
         const packagesList = pyodide?.pyodide_py.code.find_imports(code).toJs();
 
-        packagesList.forEach(async (lib: string) => {
+        for await (const lib of packagesList) {
           await pyodide?.loadPackage('micropip');
           const micropip = pyodide?.pyimport('micropip');
           await micropip.install(lib);
-        });
+        }
 
         await pyodide?.loadPackagesFromImports(code);
 
@@ -131,6 +131,10 @@ export default function SandboxVisualizer() {
     }
   }, [state, runEffect]);
 
+  React.useEffect(() => {
+    setIsProcessing(isLoading);
+  }, [isLoading]);
+
   return (
     <div className='SandboxVisualizer'>
       <div className='SandboxVisualizer__panel'>
@@ -158,6 +162,7 @@ export default function SandboxVisualizer() {
           />
         </div>
         <div
+          key={`${isProcessing}`}
           className={classnames('SandboxVisualizer__main__components', {
             'SandboxVisualizer__main__components--loading':
               isProcessing === null,
