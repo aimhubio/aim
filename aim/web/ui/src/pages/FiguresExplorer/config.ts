@@ -4,16 +4,16 @@ import { getDefaultHydration } from 'modules/BaseExplorer';
 import { GroupType, Order } from 'modules/core/pipeline';
 import { defaultHydration } from 'modules/BaseExplorer/getDefaultHydration';
 
-import getAudiosExplorerStaticContent from './getStaticContent';
+import getFiguresExplorerStaticContent from './getStaticContent';
 
-export const getAudiosDefaultConfig = (): typeof defaultHydration => {
+export const getFiguresDefaultConfig = (): typeof defaultHydration => {
   const defaultConfig = getDefaultHydration();
 
   const groupings = produce(defaultConfig.groupings, (draft: any) => {
     draft[GroupType.COLUMN].defaultApplications.orders = [Order.ASC, Order.ASC];
     draft[GroupType.COLUMN].defaultApplications.fields = [
       'run.hash',
-      'audios.name',
+      'figures.name',
     ];
     draft[GroupType.ROW].defaultApplications.orders = [Order.DESC];
     draft[GroupType.ROW].defaultApplications.fields = ['record.step'];
@@ -22,8 +22,8 @@ export const getAudiosDefaultConfig = (): typeof defaultHydration => {
   const controls = produce(defaultConfig.controls, (draft: any) => {
     draft.captionProperties.state.initialState.selectedFields = [
       'run.name',
-      'audios.name',
-      'audios.context',
+      'figures.name',
+      'figures.context',
     ];
   });
 
@@ -39,6 +39,6 @@ export const getAudiosDefaultConfig = (): typeof defaultHydration => {
         gap: 0,
       },
     },
-    getStaticContent: getAudiosExplorerStaticContent,
+    getStaticContent: getFiguresExplorerStaticContent,
   };
 };
