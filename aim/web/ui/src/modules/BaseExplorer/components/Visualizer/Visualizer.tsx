@@ -168,21 +168,20 @@ function Visualizer(props: IVisualizationProps) {
         {!_.isEmpty(dataState) && (
           <BoxVirtualizer
             data={data}
-            itemsRenderer={([groupId, items]) => {
-              return (
-                <BoxWrapper
-                  visualizationName={name}
-                  key={groupId}
-                  groupId={groupId}
-                  engine={engine}
-                  component={BoxContent}
-                  hasDepthSlider={hasDepthSlider}
-                  items={items}
-                  depthSelector={depthSelector}
-                  onDepthMapChange={onDepthMapChange}
-                />
-              );
-            }}
+            itemsRenderer={([groupId, groupItems], groupIndex) => (
+              <BoxWrapper
+                key={groupId}
+                groupId={groupId}
+                groupIndex={groupIndex}
+                engine={engine}
+                component={BoxContent}
+                visualizationName={name}
+                hasDepthSlider={hasDepthSlider}
+                items={groupItems}
+                depthSelector={depthSelector}
+                onDepthMapChange={onDepthMapChange}
+              />
+            )}
             offset={boxConfig.gap}
             axisData={{
               columns: columnsAxisData,

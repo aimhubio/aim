@@ -1,7 +1,10 @@
 import * as React from 'react';
 
+import LineChart from 'components/LineChart/LineChart';
+
+import { ScaleEnum } from 'utils/d3';
+
 function Metrics(props: any) {
-  console.log('props', props, 'data', props.data);
   let [data, setData] = React.useState<any>(null);
   let [scale, setScale] = React.useState<number | null | undefined>(
     !!props.style ? undefined : null,
@@ -10,11 +13,11 @@ function Metrics(props: any) {
 
   React.useEffect(() => {
     let rAFRef = window.requestAnimationFrame(() => {
-      setData(JSON.parse(props.data.data.data));
+      setData(props.data.data);
     });
 
     return () => window.cancelAnimationFrame(rAFRef);
-  }, [props.data.data.data]);
+  }, [props.data.data]);
 
   React.useEffect(() => {
     if (data && containerRef.current && props.style) {
@@ -49,7 +52,21 @@ function Metrics(props: any) {
         }}
         ref={containerRef}
       >
-        Metrics V2
+        <LineChart
+          data={[
+            {
+              key: props.data.key,
+              data,
+              color: '#1c2852',
+              dasharray: 'none',
+            },
+          ]}
+          style={{ minHeight: 300, minWidth: 400 }}
+          axesScaleType={{
+            xAxis: ScaleEnum.Linear,
+            yAxis: ScaleEnum.Linear,
+          }}
+        />
       </div>
     )
   );
