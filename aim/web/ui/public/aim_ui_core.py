@@ -172,12 +172,14 @@ def Grid(grid):
     updateLayout(grid)
 
 
-def Cell(viz, facet={"row": [], "column": []}, size={}, stack=[None]):
+def Group(viz, facet={"row": [], "column": []}, size={}, stack=[None]):
     if type(viz) is list:
+        viz = list(viz)
         data = []
         for el in viz:
             data = data + el["data"]
     else:
+        viz = dict(viz)
         data = viz["data"]
 
     if type(data) is not list:

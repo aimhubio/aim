@@ -7,13 +7,14 @@ metrics = Metric.query()
 
 def on_click(metric, point):
     html = H.span()
-    html = html("Only ")
-    html = html(H.b("YOU", style="color: brown;"), " can prevent forest fires!")
+    html = html(H.div("Run: ", H.b(f'{metric["run"]["hash"]}', style="color: blue;")))
+    html = html(H.div("metric: ", H.b(f'{metric["name"]}', style="color: blue;")))
+
     html = HTML(html)
     
     Grid([
-        [line_chart_cell],
-        [Cell(html)]
+        [metrics_explorer],
+        [html]
     ])
 
 line_chart = LineChart(metrics, x='steps', y='values',
@@ -21,7 +22,7 @@ line_chart = LineChart(metrics, x='steps', y='values',
                 stroke_style=["metric.context"],
                 on_point_click=on_click)
 
-line_chart_cell = Cell(
+metrics_explorer = Group(
                     line_chart, 
                     facet={
                         "row": ["metric.name"], 
@@ -29,7 +30,8 @@ line_chart_cell = Cell(
                     })
 
 Grid([
-    [line_chart_cell],
+    [metrics_explorer],
     []
 ])
+
 `;

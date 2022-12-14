@@ -42,7 +42,7 @@ function GridCell(props: any) {
         overflow: 'hidden',
       }}
     >
-      {props.viz.no_facet ? (
+      {props.viz.no_facet !== false ? (
         <div
           style={{
             width: '100%',
