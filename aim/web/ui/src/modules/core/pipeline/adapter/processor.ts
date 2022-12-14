@@ -78,7 +78,7 @@ export function storageDataToFlatList(
     /** depth 0 */
     if (objectDepth > 0) {
       // for readability
-      item.traces.forEach((trace: any) => {
+      item.traces.forEach((trace: any, traceIndex: number) => {
         /** depth 1 */ // Sequence
         const trace_context = {
           [sequenceName]: {
@@ -108,7 +108,7 @@ export function storageDataToFlatList(
           const object: AimFlatObjectBase = {
             key: buildObjectHash(objectHashCreator),
             ...collectedDataByDepth,
-            data: depthInterceptor(trace).data,
+            data: depthInterceptor(trace, traceIndex).data,
           };
           objectList.push(object);
           return;

@@ -36,7 +36,8 @@ export interface ILine {
 }
 
 export interface ILineChartProps {
-  index: number;
+  style?: {};
+  index?: number;
   data: IChartPanelProps['data'];
   nameKey?: string;
   aggregatedData?: IAggregatedData[];

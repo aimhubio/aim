@@ -49,6 +49,7 @@ const LineChart = React.forwardRef(function LineChart(
     onZoomChange,
     readOnly = false,
     resizeMode,
+    style = {},
   } = props;
 
   // boxes
@@ -299,6 +300,7 @@ const LineChart = React.forwardRef(function LineChart(
         className={classNames('LineChart', {
           zoomMode: !readOnly && zoom?.active,
         })}
+        style={style}
       >
         <div ref={visAreaRef} />
       </div>

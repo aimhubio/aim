@@ -80,9 +80,6 @@ function RunMetricCard({
                   xAxis: ScaleEnum.Linear,
                   yAxis: ScaleEnum.Linear,
                 }}
-                ignoreOutliers={false}
-                highlightMode={HighlightEnum.Off}
-                curveInterpolation={CurveEnum.Linear}
               />
             </ErrorBoundary>
           ) : (

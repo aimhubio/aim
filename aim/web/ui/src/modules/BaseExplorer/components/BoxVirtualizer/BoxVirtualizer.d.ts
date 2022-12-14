@@ -2,7 +2,10 @@ import React from 'react';
 
 export interface IBoxVirtualizerProps<T> {
   data: Array<T>;
-  itemsRenderer: (value: [groupId: string, items: Array<T>]) => React.ReactNode;
+  itemsRenderer: (
+    value: [groupId: string, groupItems: Array<T>],
+    groupIndex?: number,
+  ) => React.ReactNode;
   offset: number;
   axisData?: {
     columns?: any;

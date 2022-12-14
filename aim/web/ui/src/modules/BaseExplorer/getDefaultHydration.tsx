@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 
 import { ControlsConfigs } from 'modules/core/engine/visualizations/controls';
 import { GroupingConfigs } from 'modules/core/engine/explorer/groupings';
-import { GroupType, Order } from 'modules/core/pipeline';
+import { GroupType } from 'modules/core/pipeline';
 
 import { AimFlatObjectBase } from 'types/core/AimObjects';
 

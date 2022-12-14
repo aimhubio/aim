@@ -1,11 +1,13 @@
 import type { FunctionComponent } from 'react';
 
-import renderer, { getDefaultHydration } from 'modules/BaseExplorer';
+import renderer from 'modules/BaseExplorer';
 import Metrics from 'modules/BaseExplorer/components/Metrics/Metrics';
 
 import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
 
-const defaultConfig = getDefaultHydration();
+import { getMetricsDefaultConfig } from './config';
+
+const defaultConfig = getMetricsDefaultConfig();
 
 const MetricsExplorer = renderer(
   {

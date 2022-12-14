@@ -151,7 +151,7 @@ import {
   decodePathsVals,
   iterFoldTree,
 } from 'utils/encoder/streamEncoding';
-import { filterMetricsData } from 'utils/filterMetricData';
+import { filterMetricsData } from 'utils/app/filterMetricData';
 import { formatValue } from 'utils/formatValue';
 import getClosestValue from 'utils/getClosestValue';
 import getObjectPaths from 'utils/getObjectPaths';
@@ -1075,7 +1075,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 values: metricValues,
                 steps,
                 epochs,
-                timestamps: timestamps.map((timestamp) =>
+                timestamps: timestamps.map((timestamp: number) =>
                   Math.round(timestamp * 1000),
                 ),
                 xValues: [...steps],
