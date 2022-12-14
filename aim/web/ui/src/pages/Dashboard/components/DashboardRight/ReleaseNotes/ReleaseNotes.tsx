@@ -69,16 +69,14 @@ function ReleaseNotes(): React.FunctionComponentElement<React.ReactNode> {
                 ref={releaseNoteRef}
                 className='ReleaseNotes__changelog__content'
               >
-                {changelogData.map((item) => {
-                  return (
-                    <ReleaseNoteItem
-                      key={item.tagName}
-                      tagName={item.tagName}
-                      info={item.info}
-                      href={item.url}
-                    />
-                  );
-                })}
+                {changelogData.map((item) => (
+                  <ReleaseNoteItem
+                    key={item.tagName}
+                    tagName={item.tagName}
+                    info={item.info}
+                    href={item.url}
+                  />
+                ))}
               </div>
               {currentReleaseData ? (
                 <div

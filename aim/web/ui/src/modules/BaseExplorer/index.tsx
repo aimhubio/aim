@@ -73,6 +73,8 @@ function createExplorer(
         ...(configuration.states || {}),
       },
       enablePipelineCache: configuration.enablePipelineCache || true,
+      getStaticContent:
+        configuration.getStaticContent || defaultHydration.getStaticContent,
     };
 
     const basePath =

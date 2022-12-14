@@ -157,7 +157,7 @@ import getClosestValue from 'utils/getClosestValue';
 import getObjectPaths from 'utils/getObjectPaths';
 import getSmoothenedData from 'utils/getSmoothenedData';
 import JsonToCSV from 'utils/JsonToCSV';
-import { getItem, setItem } from 'utils/storage';
+import { setItem } from 'utils/storage';
 import { encode } from 'utils/encoder/encoder';
 import onBookmarkCreate from 'utils/app/onBookmarkCreate';
 import onBookmarkUpdate from 'utils/app/onBookmarkUpdate';
@@ -808,6 +808,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               color: metricsCollection.color ?? metric.color,
               dasharray: metricsCollection.dasharray ?? metric.dasharray,
               experiment: metric.run.props?.experiment?.name ?? 'default',
+              experimentId: metric.run.props?.experiment?.id ?? '',
               run: metric.run.props?.name ?? '-',
               description: metric.run.props?.description ?? '-',
               date: moment(metric.run.props.creation_time * 1000).format(
@@ -2746,6 +2747,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               color: metricsCollection.color ?? metric.color,
               dasharray: metricsCollection.dasharray ?? metric.dasharray,
               experiment: metric.run.props.experiment?.name ?? 'default',
+              experimentId: metric.run.props.experiment?.id ?? '',
               run: metric.run.props.name,
               description: metric.run.props?.description ?? '-',
               date: moment(metric.run.props.creation_time * 1000).format(
@@ -2795,7 +2797,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
               const value = getValue(metric.run.params, paramKey, '-');
               rowValues[paramKey] = formatValue(value);
               if (columnsValues.hasOwnProperty(paramKey)) {
-                if (!columnsValues[paramKey].includes(value)) {
+                if (
+                  _.findIndex(columnsValues[paramKey], (paramValue) =>
+                    _.isEqual(value, paramValue),
+                  ) === -1
+                ) {
                   columnsValues[paramKey].push(value);
                 }
               } else {
@@ -3525,6 +3531,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 color: metricsCollection.color ?? metric.color,
                 dasharray: metricsCollection.dasharray ?? metric.dasharray,
                 experiment: metric.run.props.experiment.name ?? 'default',
+                experimentId: metric.run.props.experiment.id ?? '',
                 run: metric.run.props?.name ?? '-',
                 description: metric.run.props?.description ?? '-',
                 date: moment(metric.run.props.creation_time * 1000).format(
@@ -3580,7 +3587,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 const value = getValue(metric.run.params, paramKey, '-');
                 rowValues[paramKey] = formatValue(value);
                 if (columnsValues.hasOwnProperty(paramKey)) {
-                  if (!columnsValues[paramKey].includes(value)) {
+                  if (
+                    _.findIndex(columnsValues[paramKey], (paramValue) =>
+                      _.isEqual(value, paramValue),
+                    ) === -1
+                  ) {
                     columnsValues[paramKey].push(value);
                   }
                 } else {
@@ -5228,6 +5239,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 color: metricsCollection.color ?? metric.color,
                 dasharray: metricsCollection.dasharray ?? metric.dasharray,
                 experiment: metric.run.props.experiment?.name ?? 'default',
+                experimentId: metric.run.props.experiment?.id ?? '',
                 run: metric.run.props?.name ?? '-',
                 description: metric.run.props?.description ?? '-',
                 date: moment(metric.run.props.creation_time * 1000).format(
@@ -5283,7 +5295,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 const value = getValue(metric.run.params, paramKey, '-');
                 rowValues[paramKey] = formatValue(value);
                 if (columnsValues.hasOwnProperty(paramKey)) {
-                  if (!columnsValues[paramKey].includes(value)) {
+                  if (
+                    _.findIndex(columnsValues[paramKey], (paramValue) =>
+                      _.isEqual(value, paramValue),
+                    ) === -1
+                  ) {
                     columnsValues[paramKey].push(value);
                   }
                 } else {

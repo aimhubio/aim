@@ -154,4 +154,4 @@ async def project_status_api():
     if not project.exists():
         raise HTTPException(status_code=404)
 
-    return RepoIndexManager.get_index_manager(project.repo.path).repo_status
+    return RepoIndexManager.get_index_manager(project.repo).repo_status
