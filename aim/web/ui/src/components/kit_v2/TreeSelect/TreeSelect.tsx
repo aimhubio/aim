@@ -224,7 +224,6 @@ function Select({
   const [value, setValue] = React.useState(['parent 1-0', 'your leaf']);
   const [searchValue, setSearchValue] = React.useState<string>('');
   const onChange = (newValue: any, e: any, a: any) => {
-    console.log('onChange ', newValue, e, a);
     setValue(newValue);
   };
 

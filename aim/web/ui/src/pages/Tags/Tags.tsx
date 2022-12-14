@@ -7,6 +7,9 @@ import TabPanel from 'components/TabPanel/TabPanel';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import TreeSelect from 'components/kit_v2/TreeSelect/TreeSelect';
+import Tree from 'components/kit_v2/Tree/Tree';
+import Popover from 'components/kit_v2/Popover';
+import Button from 'components/kit_v2/Button';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
@@ -17,7 +20,25 @@ import { ITagsProps } from 'types/pages/tags/Tags';
 import TagsList from './TagsList';
 
 import './Tags.scss';
+const dig = (path = '0', level = 3) => {
+  const list = [];
+  for (let i = 0; i < 10; i += 1) {
+    const key = `${path}-${i}`;
+    const treeNode: any = {
+      title: key,
+      key,
+    };
 
+    if (level > 0) {
+      treeNode.children = dig(key, level - 1);
+    }
+
+    list.push(treeNode);
+  }
+  return list;
+};
+
+const treeData = dig();
 function Tags({
   tagsListData,
   isTagsDataLoading,
@@ -46,6 +67,7 @@ function Tags({
     setTagsList(tagsListData?.filter((tag) => !tag.archived) || []);
   }, [tagsListData]);
 
+  console.log(treeData);
   return (
     <ErrorBoundary>
       <div style={{ margin: 100 }}>
@@ -96,6 +118,13 @@ function Tags({
           />
         )}
       </section> */}
+
+      <div style={{ margin: 200 }}>
+        <Popover
+          trigger={<Button>Open Tree</Button>}
+          content={<Tree data={treeData} height={300} checkable />}
+        />
+      </div>
     </ErrorBoundary>
   );
 }

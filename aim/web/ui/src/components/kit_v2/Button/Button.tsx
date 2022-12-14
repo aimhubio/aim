@@ -1,5 +1,4 @@
 import React from 'react';
-import { Container } from 'react-dom';
 
 import { Icon } from 'components/kit';
 
