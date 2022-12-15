@@ -3,12 +3,13 @@ import { TreeProps } from 'antd';
 export interface ITreeProps extends Partial<TreeProps> {
   /**
    * Tree data
-   * @default: []
+   * @default []
+   * @type {TreeProps['DataNode']}
    */
   data?: TreeProps['DataNode'];
   /**
    * tree node check callback
-   * @default: () => {}
+   * @default () => {}
    * */
   onCheckChange?: TreeProps['onCheck'];
   /**

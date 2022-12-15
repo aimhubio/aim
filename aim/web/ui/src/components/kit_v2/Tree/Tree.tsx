@@ -35,6 +35,9 @@ const TreeListWrapper = styled('div', {
       '&.ant-tree-node-selected': {
         bc: '$primary',
       },
+      '&:hover': {
+        bc: 'unset',
+      },
     },
   },
   '.ant-tree-focused:not(:hover):not(.ant-tree-active-focused)': {
@@ -87,7 +90,7 @@ const TreeListWrapper = styled('div', {
 });
 
 type DataNode = {
-  key: string | number;
+  key: string;
   title?: React.ReactNode | ((data: DataNode) => React.ReactNode);
   children?: DataNode[];
 };
@@ -135,15 +138,13 @@ const TreeList = ({ searchValue = '', data, ...props }: ITreeProps) => {
   React.useEffect(() => {
     if (searchValue) {
       const newExpandedKeys = dataList
-        .map((item: any) => {
-          if (item.title.indexOf(searchValue) > -1) {
+        .map((item) => {
+          if (item.key.indexOf(searchValue) > -1) {
             return getParentKey(item.key, data);
           }
           return null;
         })
-        .filter(
-          (item: any, i: any, self: any) => item && self.indexOf(item) === i,
-        );
+        .filter((item, i, self) => item && self.indexOf(item) === i);
       setExpandedKeys(newExpandedKeys as React.Key[]);
       setAutoExpandParent(true);
     }
@@ -151,8 +152,8 @@ const TreeList = ({ searchValue = '', data, ...props }: ITreeProps) => {
 
   const treeData = React.useMemo(() => {
     const loop = (d: DataNode[]): DataNode[] =>
-      d.map((item: any) => {
-        const strTitle = item.title as string;
+      d.map((item) => {
+        const strTitle = item.key as string;
         const index = strTitle.indexOf(searchValue);
         const beforeStr = strTitle.substring(0, index);
         const afterStr = strTitle.slice(index + searchValue.length);
