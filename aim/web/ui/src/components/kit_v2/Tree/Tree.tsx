@@ -12,6 +12,7 @@ import 'antd/es/tree/style/index.css';
 const TreeListWrapper = styled('div', {
   '.ant-tree': {
     '.ant-tree-treenode': {
+      position: 'relative',
       height: '$5',
       display: 'flex',
       ai: 'center',
@@ -27,6 +28,7 @@ const TreeListWrapper = styled('div', {
       alignSelf: 'unset',
       ai: 'center',
       jc: 'center',
+      zIndex: 20,
     },
     '.ant-tree-node-content-wrapper': {
       display: 'flex',
@@ -34,6 +36,9 @@ const TreeListWrapper = styled('div', {
       jc: 'center',
       '&.ant-tree-node-selected': {
         bc: '$primary',
+      },
+      '&:hover': {
+        bc: 'unset',
       },
     },
   },
@@ -47,6 +52,15 @@ const TreeListWrapper = styled('div', {
     ai: 'center',
     jc: 'center',
     border: 'unset',
+    position: 'unset',
+    '&::before': {
+      content: '""',
+      position: 'absolute',
+      zIndex: 10,
+      width: '100%',
+      height: '100%',
+      left: 0,
+    },
   },
   '.ant-tree-checkbox-indeterminate': {
     '.ant-tree-checkbox-inner': {
@@ -87,7 +101,7 @@ const TreeListWrapper = styled('div', {
 });
 
 type DataNode = {
-  key: string | number;
+  key: string;
   title?: React.ReactNode | ((data: DataNode) => React.ReactNode);
   children?: DataNode[];
 };
@@ -135,15 +149,13 @@ const TreeList = ({ searchValue = '', data, ...props }: ITreeProps) => {
   React.useEffect(() => {
     if (searchValue) {
       const newExpandedKeys = dataList
-        .map((item: any) => {
-          if (item.title.indexOf(searchValue) > -1) {
+        .map((item) => {
+          if (item.key.indexOf(searchValue) > -1) {
             return getParentKey(item.key, data);
           }
           return null;
         })
-        .filter(
-          (item: any, i: any, self: any) => item && self.indexOf(item) === i,
-        );
+        .filter((item, i, self) => item && self.indexOf(item) === i);
       setExpandedKeys(newExpandedKeys as React.Key[]);
       setAutoExpandParent(true);
     }
@@ -151,8 +163,8 @@ const TreeList = ({ searchValue = '', data, ...props }: ITreeProps) => {
 
   const treeData = React.useMemo(() => {
     const loop = (d: DataNode[]): DataNode[] =>
-      d.map((item: any) => {
-        const strTitle = item.title as string;
+      d.map((item) => {
+        const strTitle = item.key as string;
         const index = strTitle.indexOf(searchValue);
         const beforeStr = strTitle.substring(0, index);
         const afterStr = strTitle.slice(index + searchValue.length);
