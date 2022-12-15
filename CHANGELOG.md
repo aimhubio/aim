@@ -5,6 +5,7 @@
 ### Enhancements
 
 - Add other x-axis alignment and system logs tracking to cli convert wandb (hjoonjang)
+- Add support for pre-binned distribution/histogram (YodaEmbedding)
 
 ## 3.15.1 Dec 1, 2022
 

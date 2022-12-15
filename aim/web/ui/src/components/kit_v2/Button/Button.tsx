@@ -9,7 +9,7 @@ import { getButtonStyles } from '../utils/getButtonStyles';
 import { IButtonProps } from './Button.d';
 import { ButtonSpacingMap, getIconSpacing } from './buttonConfig';
 
-const Container = styled('button', {
+const Container: any = styled('button', {
   all: 'unset',
   display: 'inline-flex',
   width: 'fit-content',
@@ -141,4 +141,5 @@ const Button = React.forwardRef<
     );
   },
 );
+
 export default React.memo(Button);

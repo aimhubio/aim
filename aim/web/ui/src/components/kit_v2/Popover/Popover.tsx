@@ -50,18 +50,9 @@ const StyledContent = styled(PopoverPrimitive.Content, {
   },
 });
 
-function Content({ children, ...props }: any) {
-  return (
-    <PopoverPrimitive.Portal>
-      <StyledContent {...props}>{children}</StyledContent>
-    </PopoverPrimitive.Portal>
-  );
-}
-
 // Primitives
 const PopoverContainer = PopoverPrimitive.Root;
 const PopoverTrigger = PopoverPrimitive.Trigger;
-const PopoverContent = Content;
 
 function Popover({
   trigger,
@@ -69,7 +60,7 @@ function Popover({
   defaultOpen,
   popperProps,
 }: IPopoverProps) {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(defaultOpen);
 
   const handleOpenChange = React.useCallback((val: boolean) => {
     setOpen(val);
@@ -81,11 +72,16 @@ function Popover({
         typeof trigger === 'function' ? handleOpenChange : undefined
       }
       defaultOpen={defaultOpen}
+      open={open}
     >
       <PopoverTrigger asChild>
         {typeof trigger === 'function' ? trigger({ open }) : trigger}
       </PopoverTrigger>
-      <PopoverContent {...popperProps}>{content}</PopoverContent>
+      <PopoverPrimitive.Portal>
+        <StyledContent sideOffset={5} {...popperProps}>
+          {content}
+        </StyledContent>
+      </PopoverPrimitive.Portal>
     </PopoverContainer>
   );
 }
