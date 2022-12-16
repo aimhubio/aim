@@ -6,6 +6,7 @@
 
 - Add other x-axis alignment and system logs tracking to cli convert wandb (hjoonjang)
 - Add support for pre-binned distribution/histogram (YodaEmbedding)
+- Add discord community link in the sidebar (arsengit)
 
 ### Fixes
 
