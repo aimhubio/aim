@@ -2,14 +2,14 @@ import React from 'react';
 
 import { Icon } from 'components/kit';
 
-import { styled } from 'config/stitches/stitches.config';
+import { ColorPaletteEnum, styled } from 'config/stitches/stitches.config';
 
 import { getButtonStyles } from '../utils/getButtonStyles';
 
 import { IButtonProps } from './Button.d';
 import { ButtonSpacingMap, getIconSpacing } from './buttonConfig';
 
-const Container = styled('button', {
+const Container: any = styled('button', {
   all: 'unset',
   display: 'inline-flex',
   width: 'fit-content',
@@ -72,50 +72,10 @@ const IconContainer = styled(Icon, {
 
 const LeftIcon = styled(IconContainer, {
   mr: '$2',
-  variants: {
-    size: {
-      xs: {
-        ml: 'calc($3 * -1)',
-      },
-      sm: {
-        ml: 'calc($3 * -1)',
-      },
-      md: {
-        ml: 'calc($4 * -1)',
-      },
-      lg: {
-        ml: 'calc($5 * -1)',
-      },
-      xl: {
-        ml: 'calc($7 * -1)',
-        fontSize: '$3',
-      },
-    },
-  },
 });
 
 const RightIcon = styled(IconContainer, {
   ml: '$2',
-  variants: {
-    size: {
-      xs: {
-        mr: 'calc($3 * -1)',
-      },
-      sm: {
-        mr: 'calc($3 * -1)',
-      },
-      md: {
-        mr: 'calc($4 * -1)',
-      },
-      lg: {
-        mr: 'calc($5 * -1)',
-      },
-      xl: {
-        mr: 'calc($7 * -1)',
-        fontSize: '$3',
-      },
-    },
-  },
 });
 
 /**
@@ -129,50 +89,57 @@ const RightIcon = styled(IconContainer, {
  * @property {IButtonProps['children']} children - children to be displayed inside the button
  */
 
-function Button({
-  color = 'primary',
-  size = 'md',
-  variant = 'contained',
-  fullWidth = false,
-  horizontalSpacing = 'default',
-  disabled,
-  leftIcon,
-  rightIcon,
-  css,
-  children,
-  ...rest
-}: IButtonProps): React.FunctionComponentElement<React.ReactNode> {
-  return (
-    <Container
-      {...rest}
-      css={{
-        ...getButtonStyles(color, variant, disabled),
-        p: ButtonSpacingMap[horizontalSpacing][size],
-        ...css,
-      }}
-      size={size}
-      disabled={disabled}
-      fullWidth={fullWidth}
-    >
-      {leftIcon ? (
-        <LeftIcon
-          css={{ ml: getIconSpacing(horizontalSpacing, size) }}
-          size={size}
-          className='startIcon'
-          name={leftIcon}
-        />
-      ) : null}
-      {children}
-      {rightIcon ? (
-        <RightIcon
-          css={{ mr: getIconSpacing(horizontalSpacing, size) }}
-          size={size}
-          className='endIcon'
-          name={rightIcon}
-        />
-      ) : null}
-    </Container>
-  );
-}
+const Button = React.forwardRef<
+  React.ElementRef<typeof Container>,
+  IButtonProps
+>(
+  (
+    {
+      color = ColorPaletteEnum.primary,
+      size = 'md',
+      variant = 'contained',
+      fullWidth = false,
+      horizontalSpacing = 'default',
+      disabled,
+      leftIcon,
+      rightIcon,
+      css,
+      children,
+      ...rest
+    }: IButtonProps,
+    forwardedRef,
+  ) => {
+    return (
+      <Container
+        {...rest}
+        css={{
+          ...getButtonStyles(color, variant, disabled),
+          p: ButtonSpacingMap[horizontalSpacing][size],
+          ...css,
+        }}
+        size={size}
+        disabled={disabled}
+        fullWidth={fullWidth}
+        ref={forwardedRef}
+      >
+        {leftIcon ? (
+          <LeftIcon
+            css={{ ml: getIconSpacing(horizontalSpacing, size) }}
+            className='startIcon'
+            name={leftIcon}
+          />
+        ) : null}
+        {children}
+        {rightIcon ? (
+          <RightIcon
+            css={{ mr: getIconSpacing(horizontalSpacing, size) }}
+            className='endIcon'
+            name={rightIcon}
+          />
+        ) : null}
+      </Container>
+    );
+  },
+);
 
 export default React.memo(Button);

@@ -1,6 +1,6 @@
 {
   "name": "ui_v2",
-  "version": "3.14.3",
+  "version": "3.15.1",
   "private": true,
   "dependencies": {
     "@aksel/structjs": "^1.0.0",
@@ -9,7 +9,11 @@
     "@material-ui/lab": "^4.0.0-alpha.60",
     "@monaco-editor/react": "4.4.4",
     "@radix-ui/primitive": "^1.0.0",
+    "@radix-ui/react-checkbox": "^1.0.1",
     "@radix-ui/react-popover": "^1.0.2",
+    "@radix-ui/react-radio-group": "^1.1.0",
+    "@radix-ui/react-switch": "^1.0.1",
+    "@radix-ui/react-slot": "^1.0.1",
     "@stitches/react": "^1.2.8",
     "@storybook/react": "^6.5.12",
     "@types/history": "^5.0.0",
@@ -25,6 +29,7 @@
     "highcharts-react-official": "^3.1.0",
     "history": "^5.3.0",
     "humanize-duration": "^3.27.0",
+    "immer": "^9.0.16",
     "lodash-es": "^4.17.21",
     "marked": "^4.1.1",
     "material-ui-audio-player": "^1.7.1",
@@ -43,6 +48,7 @@
     "react-router-dom": "^5.3.0",
     "react-scripts": "4.0.3",
     "react-select": "^5.1.0",
+    "react-split": "^2.0.14",
     "react-virtualized-auto-sizer": "^1.0.5",
     "react-window": "^1.8.6",
     "rich-markdown-editor": "^11.21.3",
@@ -55,7 +61,7 @@
   "scripts": {
     "start": "react-app-rewired --max_old_space_size=4096 start",
     "build": "react-app-rewired --max_old_space_size=4096 build && gzipper c -i js,css,html ./build && node tasks/index-html-template-generator.js",
-    "test": "react-app-rewired test ",
+    "test": "react-scripts test ",
     "test:coverage": "react-app-rewired test --collectCoverage",
     "test:watch": "react-app-rewired test --watchAll",
     "eject": "react-scripts eject",
@@ -85,6 +91,12 @@
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged"
+    }
+  },
+  "jest": {
+    "moduleNameMapper": {
+      "^lodash-es$": "lodash",
+      "^d3$": "<rootDir>/node_modules/d3/dist/d3.min.js"
     }
   },
   "lint-staged": {

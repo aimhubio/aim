@@ -7,7 +7,7 @@ import IconButton from 'components/kit_v2/IconButton';
 import ControlsButton from 'components/kit_v2/ControlsButton';
 import Popover from 'components/kit_v2/Popover';
 
-import { styled } from 'config/stitches/stitches.config';
+import { ColorPaletteEnum, styled } from 'config/stitches/stitches.config';
 
 const Container = styled('section', {
   display: 'flex',
@@ -116,13 +116,25 @@ function LayoutExperimental() {
           </QueryContainerBottom>
         </QueryContainer>
         <SearchContainer>
-          <Button leftIcon='reset' color='success'>
+          <Button leftIcon='reset' color={ColorPaletteEnum.success}>
             Update
           </Button>
           <SearchContainerButtons>
-            <IconButton icon='edit' color='secondary' variant='text' />
-            <IconButton icon='copy' color='secondary' variant='text' />
-            <IconButton icon='eye-fill-show' color='secondary' variant='text' />
+            <IconButton
+              icon='edit'
+              color={ColorPaletteEnum.secondary}
+              variant='text'
+            />
+            <IconButton
+              icon='copy'
+              color={ColorPaletteEnum.secondary}
+              variant='text'
+            />
+            <IconButton
+              icon='eye-fill-show'
+              color={ColorPaletteEnum.secondary}
+              variant='text'
+            />
           </SearchContainerButtons>
         </SearchContainer>
       </Container>
@@ -208,7 +220,11 @@ function LayoutExperimental() {
             content={<div>Tooltip Params</div>}
           />
         </ControlsContainer>
-        <IconButton icon='download' color='secondary' variant='text' />
+        <IconButton
+          icon='download'
+          color={ColorPaletteEnum.secondary}
+          variant='text'
+        />
       </ControlsPanelContainer>
     </>
   );

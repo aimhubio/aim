@@ -32,6 +32,11 @@
           }
         }
       }
+      &__saveBtn {
+        &.Mui-disabled {
+          color: $white !important;
+        }
+      }
     }
     &__container {
       justify-content: start !important;
@@ -102,10 +107,16 @@
         font-size: $text-xxxl;
       }
     }
-    .Spinner {
-      position: absolute;
-      top: 0;
-    }
+  }
+  &__spinnerWrapper {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: 0;
+    left: 0;
   }
 }
 #block-menu-container {

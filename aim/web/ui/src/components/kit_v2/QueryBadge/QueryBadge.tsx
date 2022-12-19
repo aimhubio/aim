@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { styled } from 'config/stitches/stitches.config';
+import { ColorPaletteEnum, styled } from 'config/stitches/stitches.config';
 
 import ButtonGroup from '../ButtonGroup';
 import Button from '../Button';
@@ -11,6 +11,14 @@ import { IQueryBadgeProps } from './QueryBadge.d';
 const ButtonText = styled('span', {
   color: '$textPrimary',
   variants: {
+    color: {
+      primary: {
+        color: '$textPrimary80',
+      },
+      secondary: {
+        color: '$textPrimary',
+      },
+    },
     disabled: {
       true: {
         color: '$textPrimary50',
@@ -45,7 +53,7 @@ const QueryBadge = React.forwardRef<
     return (
       <ButtonGroup
         {...rest}
-        color={color}
+        color={color as ColorPaletteEnum}
         size={size}
         variant={variant}
         disabled={disabled}
@@ -55,7 +63,9 @@ const QueryBadge = React.forwardRef<
           css={color === 'primary' ? { bc: '$primary10' } : {}}
           horizontalSpacing='compact'
         >
-          <ButtonText disabled={disabled}>{children}</ButtonText>
+          <ButtonText color={color} disabled={disabled}>
+            {children}
+          </ButtonText>
         </Button>
         <IconButton
           icon='eye-show-outline'

@@ -1,65 +1,95 @@
 ## Home Page
 
 
-Aim Home Page is a high level overview of your training activities and how to find your way around the Aim UI.
+Aim Home Page is a high-level overview of your training activities and how to find your way around the Aim UI.
 
 <img alt="home" style="border: 1px solid #E8F1FC; border-radius: 8px" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/home/home.png" />
 
-There are four main sections:
+There are three main sections:
 
-* [Statistics and Activity](#statistics-and-activity)
+- [Explore Aim](#explore-aim)
 
-* [Integrate Aim with your code](#integrate-aim-with-your-code)
+- [Overview](#overview)
 
-* [Explore Aim](#explore-aim)
-
-* [Get Involved](#get-involved)
+- [Latest Changes](#latest-changes)
 
 ---
 
-#### Statistics and activity
+### Explore Aim
 
-Use the Statistics and activity to obvserve general info about your experiments and runs.
+In the Explore Aim section, you will find a list of recommended resources to help you get started with Aim or navigate through an existing Aim project. Here are its main sections
 
-The `heatmap` shows the intensity of experiments you have made for the day - the darker the color the more experiments.
+- [Quick navigation to some of the most used features queries](#quick-navigation)
+- [Recent searches](#recent-searches)
+- [Experiments table](#experiments-table)
+- [Tags table](#tags-table)
+- [Bookmarks](#bookmarks)
 
-<img alt="activity" style="border: 1px solid #E8F1FC; border-radius: 8px" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/home/activity.png" />
+#### Quick Navigation
 
-Each cell represents the set of training runs for that day.
+The quick navigation section provides a quick way to navigate through your runs. It includes:
 
-The cells are clickable!
+- Active Runs
+- Archived Runs
+- Last week's runs
 
-<img alt="heatmap" style="border: 1px solid #E8F1FC; border-radius: 8px" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/home/heatmap.png" />
+#### Recent searches
 
-Once clicked, you will navigate to the [Runs explorer](../pages/run_management.html#runs-explorer) page and automatically [query](../../using/search.html) the runs made on that day.
+In this block, you will find your last three successful queries with the ability to navigate through them.
 
-<img alt="search run" style="border: 1px solid #E8F1FC; border-radius: 8px" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/home/runSearch.png" />
+#### Experiments table
 
----
-#### Integrate Aim with your code
+This block displays your experiment data in the table format. Also, it provides the ability to compare the selected ones on the explorer pages.
 
-A quick guide on how to get started with Aim.
+#### Tags table
 
-Also links to the [docs](https://aimstack.readthedocs.io/en/latest), [a colab example](https://colab.research.google.com/drive/14rIAjpEyklf5fSMiRbyZs6iYG7IVibcI?usp=sharing) and [a live Aim demo](http://play.aimstack.io:10004/).
+The tags table provides a quick way to navigate to your tags and compare them on the other explorer pages.
 
-<img alt="integrate" style="border: 1px solid #E8F1FC; border-radius: 8px" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/home/integrate.png" />
+#### Bookmarks
 
----
-
-#### Get Involved
-
-The Aim community is growing rapidly.
-Join the [Aim slack](https://slack.aimstack.io).
-
-Ask questions!
-You'll be most welcome!
-
-<img alt="get involved" style="border: 1px solid #E8F1FC; border-radius: 8px" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/home/getInvolved.png" />
+This section displays your bookmarks and provides the ability to navigate through them.
 
 ---
 
-#### Explore Aim
-Aim is a collection of super-effective ML experiment [Explorers](../pages/explorers.html).
-Use this section to navigate through them.
+### Overview
 
-<img alt="explore aim" style="border: 1px solid #E8F1FC; border-radius: 8px" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/home/explore.png" />
+The overview section is a high-level overview of your training activities. It includes:
+
+- [Statistics of your training activities](#statistics)
+- [Active Runs table](#active-runs-table)
+- [Contributions heatmap](#contributions-heatmap)
+- [Activity feed](#activity-feed)
+
+#### Statistics
+
+Here you can find the total number of runs and tracked sequences. Also, each card is clickable and you can navigate to the Runs and Sequences pages.
+
+#### Active Runs table
+
+The `active runs` table provides the list of your active runs. Also, the ability to compare your runs in other explorer pages.
+
+#### Contributions heatmap
+
+The `heatmap` shows the intensity of experiments you have made for the day - the darker the color the more experiments. 
+
+Each cell represents the set of training runs for that day. The cells are clickable!
+
+Once clicked, you will navigate to the Runs explorer page and automatically query the runs made on that day.
+
+#### Activity feed
+
+This section represents the activity feed of your contributions. It includes the following information:
+
+- The date of the activity
+- The type of activity
+- The name of the activity
+
+
+---
+
+### Latest Changes
+
+In this section, you can find the latest changes in Aim. It includes:
+- The latest changes to the Aim version
+- The Changelog of the Aim versions
+- The helpful doc links for exploring the Aim

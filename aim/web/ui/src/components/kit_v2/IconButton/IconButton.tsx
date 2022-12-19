@@ -2,7 +2,7 @@ import React from 'react';
 
 import Icon from 'components/kit/Icon';
 
-import { styled } from 'config/stitches/stitches.config';
+import { ColorPaletteEnum, styled } from 'config/stitches/stitches.config';
 
 import { getButtonStyles } from '../utils/getButtonStyles';
 
@@ -23,15 +23,12 @@ const Container = styled('button', {
     size: {
       xs: {
         size: '$1',
-        fontSize: '$2',
       },
       sm: {
         size: '$2',
-        fontSize: '$2',
       },
       md: {
         size: '$3',
-        fontSize: '$2',
       },
       lg: {
         size: '$5',
@@ -57,8 +54,8 @@ const IconButton = React.forwardRef<
   (
     {
       icon,
-      size = 'md',
-      color = 'primary',
+      size = 'sm',
+      color = ColorPaletteEnum.primary,
       variant = 'contained',
       disabled = false,
       css,

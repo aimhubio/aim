@@ -67,9 +67,7 @@ function Popover({
   trigger,
   content,
   defaultOpen,
-  placement,
-  placementOffset = 5,
-  placementAlign,
+  popperProps,
 }: IPopoverProps) {
   const [open, setOpen] = React.useState(false);
 
@@ -87,13 +85,7 @@ function Popover({
       <PopoverTrigger asChild>
         {typeof trigger === 'function' ? trigger({ open }) : trigger}
       </PopoverTrigger>
-      <PopoverContent
-        sideOffset={placementOffset}
-        side={placement}
-        align={placementAlign}
-      >
-        {content}
-      </PopoverContent>
+      <PopoverContent {...popperProps}>{content}</PopoverContent>
     </PopoverContainer>
   );
 }

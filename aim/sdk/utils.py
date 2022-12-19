@@ -134,3 +134,5 @@ def restore_run_backup(repo, run_hash):
         shutil.rmtree(f'seqs/chunks/{run_hash}', ignore_errors=True)
         with tarfile.open(run_bcp_file, 'r:gz') as tar:
             tar.extractall()
+        progress_path = pathlib.Path('meta') / 'progress' / run_hash
+        progress_path.touch(exist_ok=True)

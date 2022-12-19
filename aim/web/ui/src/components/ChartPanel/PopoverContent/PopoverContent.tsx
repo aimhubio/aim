@@ -282,6 +282,18 @@ const PopoverContent = React.forwardRef(function PopoverContent(
               <Icon name='link' />
               <div>Run Details</div>
             </Link>
+            <Link
+              to={PathEnum.Experiment.replace(
+                ':experimentId',
+                run?.props?.experiment?.id,
+              )}
+              component={RouteLink}
+              className='PopoverContent__runDetails'
+              underline='none'
+            >
+              <Icon name='link' />
+              <div>Experiment Detail</div>
+            </Link>
           </div>
         </div>
         <div>

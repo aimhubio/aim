@@ -6,6 +6,8 @@ import io
 import zipfile
 from datetime import datetime
 
+from aim.storage.rockscontainer import RocksContainer
+
 
 def list_repo_runs(repo_path: str, lookup_dir: str = None) -> List[str]:
     if lookup_dir is None:
@@ -71,3 +73,8 @@ def upload_repo_runs(buffer: io.BytesIO, bucket_name: str) -> Tuple[bool, str]:
         return True, key
     except Exception as e:
         return False, e
+
+
+def optimize_container(path, extra_options):
+    rc = RocksContainer(path, read_only=True, **extra_options)
+    rc.optimize_for_read()

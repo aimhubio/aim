@@ -4,6 +4,8 @@ import type * as Stitches from '@stitches/react';
 
 import { IconName } from 'components/kit/Icon';
 
+import { ColorPaletteEnum } from 'config/stitches/stitches.config';
+
 // Button component props
 export interface IButtonProps
   extends Partial<React.HTMLAttributes<HTMLButtonElement>> {
@@ -11,11 +13,11 @@ export interface IButtonProps
    * @description The color of the button
    * @example 'primary'
    */
-  color?: ButtonColorType;
+  color?: ColorPaletteEnum;
   /**
    * @description The size of the button
-   * @example 'medium'
-   * @default 'medium'
+   * @example 'md'
+   * @default 'md'
    */
   size?: ButtonSizeType;
   /**
@@ -63,11 +65,3 @@ export type ButtonSizeType = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
 // Button component variants
 type ButtonVariantType = 'text' | 'outlined' | 'contained';
-
-// Button component color types
-type ButtonColorType =
-  | 'primary'
-  | 'secondary'
-  | 'success'
-  | 'error'
-  | 'warning';

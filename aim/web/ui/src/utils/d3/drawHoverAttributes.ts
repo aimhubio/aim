@@ -77,7 +77,6 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
     mouseX: number,
     mouseY: number,
     data: HoverAttrData[],
-    circleId?: string,
   ): INearestCircle | null {
     const { scaledValues } = attrRef.current;
     if (!scaledValues) {

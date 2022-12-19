@@ -33,9 +33,11 @@ function ActionCard({
       </div>
 
       <Tooltip title={btnTooltip} placement='top'>
-        <Button onClick={onAction} {...btnProps}>
-          {btnText}
-        </Button>
+        <div>
+          <Button onClick={onAction} {...btnProps}>
+            {btnText}
+          </Button>
+        </div>
       </Tooltip>
     </div>
   );

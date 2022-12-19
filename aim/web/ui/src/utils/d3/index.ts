@@ -15,6 +15,7 @@ import getCoordinates from './getCoordinates';
 import drawPoints from './drawPoints';
 import drawScatterTrendline from './drawScatterTrendline';
 import drawUnableToRender from './drawUnableToRender';
+import drawLegends from './drawLegends';
 
 const gradientStartColor = '#2980B9';
 const gradientEndColor = '#E74C3C';
@@ -43,6 +44,11 @@ enum HighlightEnum {
 enum ZoomEnum {
   SINGLE = 0,
   MULTIPLE = 1,
+}
+
+enum LegendsModeEnum {
+  PINNED = 'pinned',
+  UNPINNED = 'unpinned',
 }
 
 enum CurveEnum {
@@ -100,6 +106,7 @@ export {
   TrendlineTypeEnum,
   HighlightEnum,
   ZoomEnum,
+  LegendsModeEnum,
   clearArea,
   drawArea,
   drawAxes,
@@ -117,6 +124,7 @@ export {
   drawPoints,
   drawScatterTrendline,
   drawUnableToRender,
+  drawLegends,
   gradientStartColor,
   gradientEndColor,
   MIN_LOG_VALUE,
