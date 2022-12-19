@@ -7,6 +7,10 @@
 - Add other x-axis alignment and system logs tracking to cli convert wandb (hjoonjang)
 - Add support for pre-binned distribution/histogram (YodaEmbedding)
 
+### Fixes
+
+- Fix gpu stats logging when some stats are unavailable (timokau)
+
 ## 3.15.1 Dec 1, 2022
 
 - Fix issue with index container lock for older repos (mihran113)
