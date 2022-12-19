@@ -32,7 +32,7 @@ const FiguresExplorer = renderer(
     },
     getStaticContent: getFiguresExplorerStaticContent,
   },
-  // (__DEV__ = true),
+  (__DEV__ = true),
 );
 
 export default FiguresExplorer;

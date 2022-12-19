@@ -140,8 +140,6 @@ export const {
       pale100: '#7FFFC3',
       pale110: '#4DFFA6',
       pale120: '#00FF8C',
-      // mark colors
-      mark: '#fffac1',
     },
     fonts: {
       inter: 'Inter, sans-serif',
