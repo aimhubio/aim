@@ -168,11 +168,38 @@ def group(name, data, options):
     return sorted_groups, grouped_data
 
 
-def Grid(grid):
+def automatic_layout_update(data):
+    from js import view
+
+    current_layout = view and view.to_py() or None
+    is_found = False
+    for row in current_layout:
+        for cell in row:
+            if cell["type"] == data["type"]:
+                cell = data
+                is_found = True
+
+    if is_found == False:
+        current_layout = (
+            [[data]]
+            if current_layout == [[]] or current_layout == None
+            else current_layout + [[data]]
+        )
+
+    updateLayout(current_layout)
+
+
+def layout(grid):
     updateLayout(grid)
 
 
-def Group(viz, facet={"row": [], "column": []}, size={}, stack=[None]):
+def Group(
+    viz,
+    facet={"row": [], "column": []},
+    size={},
+    stack=[None],
+    **group_list,
+):
     if type(viz) is list:
         viz = list(viz)
         data = []
@@ -195,6 +222,20 @@ def Group(viz, facet={"row": [], "column": []}, size={}, stack=[None]):
     row_map, row_data = group("row", data, facet["row"])
     column_map, column_data = group("column", data, facet["column"])
 
+    additional_groups = []
+
+    for group_option in group_list.items():
+        group_name, group_options = group_option
+        group_option_map, group_option_data = group(group_name, data, group_options)
+        additional_groups.append(
+            {
+                "name": group_name,
+                "options": group_options,
+                "data": group_option_data,
+                "map": group_option_map,
+            }
+        )
+
     stack_map, stack_data = group("stack", data, stack)
 
     items = []
@@ -205,12 +246,22 @@ def Group(viz, facet={"row": [], "column": []}, size={}, stack=[None]):
             column_val = column_map[column_data[i]["column"]]
             stack_val = stack_map[stack_data[i]["stack"]]
 
+            for additional in additional_groups:
+                additional["current"] = additional["map"][
+                    additional["data"][i][additional["name"]]
+                ]
+
             item["row"] = row_val["order"]
             item["column"] = column_val["order"]
             item["row_val"] = row_val["val"]
             item["column_val"] = column_val["val"]
             item["row_options"] = facet["row"]
             item["column_options"] = facet["column"]
+
+            for additional in additional_groups:
+                item[additional["name"]] = additional["current"]["order"]
+                item[f'{additional["name"]}_val'] = additional["current"]["val"]
+                item[f'{additional["name"]}_options'] = additional["options"]
 
             item["stack"] = stack_val["order"]
             item["stack_val"] = stack_val["val"]
@@ -252,8 +303,9 @@ def LineChart(
     options={},
     on_point_click=None,
     on_chart_hover=None,
-    set_state=None,
 ):
+    # from js import setState, state
+
     color_map, color_data = group("color", data, color)
     stroke_map, stroke_data = group("stroke_style", data, stroke_style)
     lines = []
@@ -274,22 +326,43 @@ def LineChart(
         data = val.to_py()
         item = lines[data["key"]]
         if is_active:
-            if callable(set_state):
-                set_state({"focused_line_data": item, "focused_point_data": data})
+            if callable(setState):
+                setState({"focused_line_data": item, "focused_point_data": data})
             if callable(on_point_click):
                 await on_point_click(item, data)
         else:
-            if callable(set_state):
-                set_state({"hovered_line_data": item, "hovered_point_data": data})
+            if callable(setState):
+                setState({"hovered_line_data": item, "hovered_point_data": data})
             if callable(on_chart_hover):
                 await on_chart_hover(item, data)
 
-    return {
+    fields = state and state.to_py() or None
+    line_chart_data = {
         "type": "LineChart",
         "data": lines,
         "callbacks": {"on_active_point_change": on_active_point_change},
         "options": options,
+        "hovered_line_data": fields
+        and "hovered_line_data" in fields
+        and fields["hovered_line_data"]
+        or None,
+        "focused_line_data": fields
+        and "focused_line_data" in fields
+        and fields["focused_line_data"]
+        or None,
+        "hovered_point_data": fields
+        and "hovered_point_data" in fields
+        and fields["hovered_point_data"]
+        or None,
+        "focused_point_data": fields
+        and "focused_point_data" in fields
+        and fields["focused_point_data"]
+        or None,
     }
+
+    automatic_layout_update(line_chart_data)
+
+    return line_chart_data
 
 
 def ImagesList(data):
@@ -359,14 +432,22 @@ def FiguresList(data):
 
 
 def JSON(data):
-    return {
+    json_data = {
         "type": "JSON",
         "data": data,
     }
 
+    automatic_layout_update(json_data)
+
+    return json_data
+
 
 def Table(data):
-    return {"type": "DataFrame", "data": data.to_json(orient="records")}
+    table_data = {"type": "DataFrame", "data": data.to_json(orient="records")}
+
+    automatic_layout_update(table_data)
+
+    return table_data
 
 
 def HTML(data):

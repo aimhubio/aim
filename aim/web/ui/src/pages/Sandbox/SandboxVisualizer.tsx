@@ -32,12 +32,19 @@ export default function SandboxVisualizer() {
   const [isProcessing, setIsProcessing] = React.useState<boolean | null>(null);
   const [execCode, setExecCode] = React.useState('');
   const [state, setState] = React.useState<any>();
-  const effect = React.useRef<any>();
-  const [executionCount, setExecutionConut] = React.useState<number>(0);
+  const [executionCount, setExecutionCount] = React.useState<number>(0);
 
   (window as any).updateLayout = (grid: any) => {
     setResult(toObject(grid.toJs()));
   };
+  (window as any).state = state;
+  (window as any).setState = (update: any) => {
+    setState((s: any) => ({
+      ...s,
+      ...toObject(update.toJs()),
+    }));
+  };
+  (window as any).view = result;
 
   const execute = React.useCallback(async () => {
     if (pyodide !== null) {
@@ -65,7 +72,9 @@ export default function SandboxVisualizer() {
 
         await pyodide?.loadPackagesFromImports(code);
 
-        setExecutionConut((eC) => eC + 1);
+        (window as any).search.cache.clear();
+
+        setExecutionCount((eC) => eC + 1);
         setExecCode(code);
       } catch (ex) {
         // eslint-disable-next-line no-console
@@ -80,32 +89,14 @@ export default function SandboxVisualizer() {
     }
   }, [pyodide, execute]);
 
-  const runEffect = React.useCallback(async () => {
-    if (pyodide !== null) {
-      try {
-        effect.current = namespace.get('render');
-        if (effect.current) {
-          const res = await effect.current(pyodide?.toPy(state), (val: any) =>
-            setState((s: any) => Object.assign({}, s, toObject(val.toJs()))),
-          );
-          let parsedResult = toObject(res.toJs());
-          setResult(parsedResult);
-        }
-      } catch (ex: unknown) {
-        // eslint-disable-next-line no-console
-        console.log(ex);
-      }
-
-      setIsProcessing(false);
-    }
-  }, [pyodide, state, namespace]);
-
   const runParsedCode = React.useCallback(() => {
     if (pyodide !== null) {
       try {
         pyodide
           ?.runPythonAsync(execCode, { globals: namespace })
-          .then(runEffect)
+          .then(() => {
+            setIsProcessing(false);
+          })
           .catch((ex: unknown) => {
             // eslint-disable-next-line no-console
             console.log(ex);
@@ -117,23 +108,21 @@ export default function SandboxVisualizer() {
         setIsProcessing(false);
       }
     }
-  }, [pyodide, execCode, namespace, runEffect]);
+  }, [pyodide, execCode, namespace, state]);
 
   React.useEffect(() => {
     if (execCode) {
+      (window as any).state = state;
+      (window as any).view = result;
       runParsedCode();
     }
   }, [execCode, executionCount, runParsedCode]);
 
   React.useEffect(() => {
-    if (state) {
-      runEffect();
-    }
-  }, [state, runEffect]);
-
-  React.useEffect(() => {
     setIsProcessing(isLoading);
   }, [isLoading]);
+
+  console.log(result);
 
   return (
     <div className='SandboxVisualizer'>
