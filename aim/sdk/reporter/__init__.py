@@ -186,7 +186,7 @@ class CheckIn:
             return per_run_cache[key]
         except KeyError:
             now = time.monotonic()
-            logger.info(f"* first time ({now}) seen for {key} for {run_hash}")
+            logger.debug(f"* first time ({now}) seen for {key} for {run_hash}")
             per_run_cache[key] = now
             return now
 
@@ -241,14 +241,14 @@ class CheckIn:
         paths = list(directory.glob(pattern))
 
         if not paths:
-            logger.info(f"no check-in found for {run_hash}; returning zero-check-in")
+            logger.debug(f"no check-in found for {run_hash}; returning zero-check-in")
             return CheckIn()
 
         check_in_path = max(paths)
-        logger.info(f"found check-in: {check_in_path}")
+        logger.debug(f"found check-in: {check_in_path}")
         parsed_run_hash, check_in = cls.parse(check_in_path)
         assert parsed_run_hash == run_hash
-        logger.info(f"parsed check-in: {check_in}")
+        logger.debug(f"parsed check-in: {check_in}")
 
         return check_in
 
@@ -272,7 +272,7 @@ class CheckIn:
             first_seen=now,
             flag_name=self.flag_name,
         )
-        logger.info(f"calibrated check-in: {self} -> {new}")
+        logger.debug(f"calibrated check-in: {self} -> {new}")
         return new
 
     @classmethod
@@ -311,20 +311,20 @@ class CheckIn:
         """
         pattern = self.generate_filename(run_hash=run_hash, flag_name=self.flag_name)
         *paths_to_remove, current_check_in_path = sorted(directory.glob(pattern))
-        logger.info(f"found {len(paths_to_remove)} check-ins:")
-        logger.info(f"the acting one: {current_check_in_path}")
+        logger.debug(f"found {len(paths_to_remove)} check-ins:")
+        logger.debug(f"the acting one: {current_check_in_path}")
         for path in paths_to_remove:
-            logger.info(f"check-in {path} is being removed")
+            logger.debug(f"check-in {path} is being removed")
             try:
                 # Ignore errors, as the file may have been removed already.
                 path.unlink()
             except OSError:
                 pass
-            logger.info(f"check-in {path} removed")
+            logger.debug(f"check-in {path} removed")
 
         parsed_run_hash, check_in = self.parse(current_check_in_path)
         assert parsed_run_hash == run_hash
-        logger.info(f"returning acting check-in after cleanup: {check_in}")
+        logger.debug(f"returning acting check-in after cleanup: {check_in}")
 
         return check_in
 
@@ -368,7 +368,7 @@ class CheckIn:
             flag_name=self.flag_name,
         )
         new_path = directory / filename
-        logger.info(f"touching check-in: {new_path}")
+        logger.debug(f"touching check-in: {new_path}")
 
         new_path.touch(exist_ok=True)
 
@@ -424,7 +424,7 @@ class RunStatusReporter:
         self.run_hash = run_hash
         self.repo_dir = Path(repo_path)
         self.dir = self.repo_dir / "check_ins"
-        logger.info(f"polling for check-ins in {self.dir}")
+        logger.debug(f"polling for check-ins in {self.dir}")
 
         # Detect if the run was resumed. If so, we need to find the last
         # check-in index and continue counting from there.
@@ -433,9 +433,9 @@ class RunStatusReporter:
             run_hash=self.run_hash,
         )
         if leftover:
-            logger.info(f"leftover check-in: {leftover}")
+            logger.debug(f"leftover check-in: {leftover}")
         else:
-            logger.info("no leftover check-in found. starting from zero")
+            logger.debug("no leftover check-in found. starting from zero")
 
         self.refresh_condition = threading.Condition()
         self.flush_condition = threading.Condition()
@@ -494,9 +494,9 @@ class RunStatusReporter:
         check_in = self.last_check_ins[flag_name]
 
         if flag_name in self.physical_check_ins and self.physical_check_ins[flag_name].idx == check_in.idx:
-            logger.info(f"Skipping touching `{flag_name}` as it is already up to date")
+            logger.debug(f"Skipping touching `{flag_name}` as it is already up to date")
             self.timed_tasks.pop(flag_name, None)
-            logger.info(f'{flag_name} is not scheduled anymore. It will be invoked as soon as next one appears')
+            logger.debug(f'{flag_name} is not scheduled anymore. It will be invoked as soon as next one appears')
             return
 
         # Now let's touch the file on the filesystem
@@ -546,7 +546,7 @@ class RunStatusReporter:
         idx = self.counter + 1
         self.counter = idx
 
-        logger.info(f"incrementing {flag_name} idx -> {idx}")
+        logger.debug(f"incrementing {flag_name} idx -> {idx}")
 
         check_in = CheckIn(
             idx=idx,
@@ -566,7 +566,7 @@ class RunStatusReporter:
             # Schedule to flush ASAP
             timed_task = TimedTask(when=0, flag_name=flag_name)
             self._schedule(timed_task)
-            logger.info(f"scheduled {timed_task} ASAP because no physical check-in was found")
+            logger.debug(f"scheduled {timed_task} ASAP because no physical check-in was found")
         else:
             if was_scheduled.when > check_in.expiry_date:
                 # Schedule to flush ASAP
@@ -579,7 +579,7 @@ class RunStatusReporter:
                 # flag to `True` and inserting the new item with the same
                 # `flag_name`. The writer thread will just ignore such items.
                 was_scheduled.overwritten = True
-                logger.info(f"scheduled {timed_task} because it newer is stricter than {was_scheduled}")
+                logger.debug(f"scheduled {timed_task} because it newer is stricter than {was_scheduled}")
 
         return check_in
 
@@ -636,9 +636,9 @@ class RunStatusReporter:
             # next appropriate flush time. It is either the remaining time from
             # the previous flush, or the moment new check-in is registered.
             with self.refresh_condition:
-                logger.info(f"no interesting things to do, sleeping for {remaining}")
-                logger.info("until woken up")
-                logger.info(f'unfinished tasks: {self.queue.unfinished_tasks}')
+                logger.debug(f"no interesting things to do, sleeping for {remaining}")
+                logger.debug("until woken up")
+                logger.debug(f'unfinished tasks: {self.queue.unfinished_tasks}')
                 self.refresh_condition.wait(timeout=remaining)
 
             timed_task: Optional[TimedTask]
@@ -650,21 +650,21 @@ class RunStatusReporter:
                 assert isinstance(timed_task, TimedTask)
 
                 if timed_task.overwritten:
-                    logger.info('detected overwritten task... done')
+                    logger.debug('detected overwritten task... done')
                     self.queue.task_done()
                     continue
 
                 remaining = timed_task.when - time.monotonic() - PLAN_ADVANCE_TIME
                 # remaining = max(remaining, MIN_SUSPEND_TIME)
                 remaining = min(remaining, MAX_SUSPEND_TIME)
-                logger.info(f'time remaining: {remaining}')
+                logger.debug(f'time remaining: {remaining}')
 
                 if remaining > 0:
                     # TODO Should we push a little late?
                     self._schedule(timed_task)
-                    logger.info(f'too soon, {remaining} remaining')
-                    logger.info(f'putting back for the future: {timed_task}')
-                    logger.info(f'now: {time.monotonic()}... scheduled for: {timed_task.when}')
+                    logger.debug(f'too soon, {remaining} remaining')
+                    logger.debug(f'putting back for the future: {timed_task}')
+                    logger.debug(f'now: {time.monotonic()}... scheduled for: {timed_task.when}')
                     self.queue.task_done()
                     # Mark the task to signal about the clean state.
                     timed_task = None
@@ -680,7 +680,7 @@ class RunStatusReporter:
                 if self.stop_signal.is_set():
                     return
             else:
-                logger.info(f'only {remaining} remaining... flushing one task')
+                logger.debug(f'only {remaining} remaining... flushing one task')
                 self._touch_flag(timed_task.flag_name)
                 self.queue.task_done()
                 # Let's immediately proceed to the next iteration to check if
@@ -699,13 +699,13 @@ class RunStatusReporter:
         Otherwise, all the check-ins will be flushed. In this case, the order
         of (active) check-ins (per flag name) will be preserved.
         """
-        logger.info(f"notifying {self}")
+        logger.debug(f"notifying {self}")
 
         with self.reporter_lock:
             flag_names = [flag_name] if flag_name is not None else self.timed_tasks
             with self.flush_condition:
                 for flag_name in flag_names:
-                    logger.info(f"flushing {flag_name}")
+                    logger.debug(f"flushing {flag_name}")
                     # We add a new task with the highest priority to flush the
                     # last check-in. This task will be processed by the writer
                     # thread immediately.
@@ -720,9 +720,9 @@ class RunStatusReporter:
                 # If `block` is set, we wait until the writer thread finishes
                 # flushing the last check-in.
                 if block:
-                    logger.info("blocking until the writer finishes...")
+                    logger.debug("blocking until the writer finishes...")
                     self.flush_condition.wait()
-                    logger.info("done")
+                    logger.debug("done")
 
     def _check_in(
         self,
