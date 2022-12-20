@@ -4,6 +4,7 @@
 
 - Change logging level for reporter debug messages (alberttorosyan)
 - Fix styling issues on the experiment page (KaroMourad)
+- Fix client side worker port calculation for RTS (mihran113)
 
 ## 3.15.1 Dec 1, 2022
 
