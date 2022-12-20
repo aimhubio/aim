@@ -33,12 +33,19 @@ export default function SandboxVisualizer() {
   const [execCode, setExecCode] = React.useState('');
   const [state, setState] = React.useState<any>();
   const [executionCount, setExecutionCount] = React.useState<number>(0);
+  const timerId = React.useRef(0);
 
   (window as any).updateLayout = (grid: any) => {
-    setResult(toObject(grid.toJs()));
+    let layout = toObject(grid.toJs());
     grid.destroy();
+
+    (window as any).view = layout;
+
+    window.clearTimeout(timerId.current);
+    timerId.current = window.setTimeout(() => {
+      setResult(layout);
+    }, 50);
   };
-  (window as any).state = state;
   (window as any).setState = (update: any) => {
     setState((s: any) => ({
       ...s,
@@ -46,6 +53,7 @@ export default function SandboxVisualizer() {
     }));
     update.destroy();
   };
+  (window as any).state = state;
   (window as any).view = result;
 
   const execute = React.useCallback(async () => {
@@ -77,7 +85,11 @@ export default function SandboxVisualizer() {
         await pyodide?.loadPackagesFromImports(code);
 
         (window as any).search.cache.clear();
+        (window as any).state = undefined;
+        (window as any).view = [[]];
 
+        setState(undefined);
+        setResult([[]]);
         setExecutionCount((eC) => eC + 1);
         setExecCode(code);
       } catch (ex) {
@@ -112,7 +124,7 @@ export default function SandboxVisualizer() {
         setIsProcessing(false);
       }
     }
-  }, [pyodide, execCode, namespace, state]);
+  }, [pyodide, execCode, namespace, state, executionCount]);
 
   React.useEffect(() => {
     if (execCode) {
@@ -120,11 +132,15 @@ export default function SandboxVisualizer() {
       (window as any).view = result;
       runParsedCode();
     }
-  }, [execCode, executionCount, runParsedCode]);
+  }, [execCode, runParsedCode]);
 
   React.useEffect(() => {
     setIsProcessing(isLoading);
   }, [isLoading]);
+
+  React.useEffect(() => {
+    return () => window.clearTimeout(timerId.current);
+  }, []);
 
   return (
     <div className='SandboxVisualizer'>
