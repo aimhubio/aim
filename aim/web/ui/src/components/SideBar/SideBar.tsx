@@ -4,6 +4,7 @@ import { NavLink } from 'react-router-dom';
 import { Drawer, Tooltip } from '@material-ui/core';
 
 import logoImg from 'assets/logo.svg';
+import discordIcon from 'assets/icons/discord.svg';
 
 import { Icon, Text } from 'components/kit';
 import { IconName } from 'components/kit/Icon';
@@ -88,6 +89,17 @@ function SideBar(): React.FunctionComponentElement<React.ReactNode> {
                 onClick={() => trackEvent(ANALYTICS_EVENT_KEYS.sidebar.slack)}
               >
                 <Icon name='slack' />
+              </a>
+            </Tooltip>
+            <Tooltip title='Community Discord' placement='right'>
+              <a
+                target='_blank'
+                href='https://discord.com/invite/zXq2NfVdtF'
+                rel='noreferrer'
+                className='Sidebar__bottom__anchor'
+                onClick={() => trackEvent(ANALYTICS_EVENT_KEYS.sidebar.discord)}
+              >
+                <img src={discordIcon} alt='discord' />
               </a>
             </Tooltip>
             <Tooltip title='Docs' placement='right'>
