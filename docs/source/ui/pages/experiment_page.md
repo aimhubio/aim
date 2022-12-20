@@ -11,15 +11,16 @@ Here are the tabs available on the experiment page.
 
 ### Overview tab
 
-Overview tab shows general information about the attached runs.
+The Overview tab provides an overview of the runs that are attached with the experiment. 
+It displays general information about these runs, such as their status, progress, and other relevant metadata. 
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Experiment page overview tab" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/experiment-page/experiment-page-overview-tab.png">
 
 #### Statistics
 
-In this section you can see the count of `total runs`, and the cards for `archived`, `non-archived`, `active` and `finished` runs.
-Cards are clickable and showing the corresponding statistic info. By clicking them, you can navigate to the [Runs explorer](../pages/run_management.html#runs-explorer) page with the corresponding query.
-The distribution of runs by `status` is shown under the `status` cards by statistics bar.
+On this page, you can view the total number of runs, as well as the number of runs that are `archived`, `active`, and `finished`. 
+You can click on the corresponding cards to view more information about these runs, and you can also use these cards to navigate to the [Runs explorer](../pages/run_management.html#runs-explorer) page with a specific query. 
+The statistics bar, below the `status` cards, displays the distribution of runs by status.
 
 #### Contributions heatmap
 
