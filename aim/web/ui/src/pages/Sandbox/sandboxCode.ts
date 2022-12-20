@@ -16,7 +16,4 @@ if focused_metric != None:
     images = Images.query(f'run.hash == "{focused_metric["run"]["hash"]}"')
     images_list = ImagesList(images)
     Images_Explorer = Group(images_list, facet={"row": ["record.index"], "column": ["images.name"]})
-
-    Heterogenous_Explorer = Group([line_chart, images_list], facet={"row": ["record.index"], "column": []}, stack=["record.index"])
-
 `;

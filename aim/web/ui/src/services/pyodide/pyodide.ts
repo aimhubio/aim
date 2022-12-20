@@ -10,7 +10,7 @@ let pyodideStore: any = {
   namespace: null,
 };
 
-(window as any).search = memoize(search);
+(window as any).search = memoize(search, (...args) => JSON.stringify(args));
 (window as any).updateLayout = noop;
 
 export async function loadPyodideInstance(cb?: Function) {
