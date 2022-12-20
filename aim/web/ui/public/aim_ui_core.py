@@ -2,6 +2,7 @@
 ### Bindings for fetching Aim Objects
 ####################
 
+from pyodide import create_proxy
 from js import search, updateLayout
 import hashlib
 
@@ -14,12 +15,14 @@ class Object:
 
     async def query(self, query=""):
         data = await search(self.type, query)
+        data = create_proxy(data.to_py())
         items = []
         for item in data:
-            d = dict(item.to_py())
+            d = item
             d["type"] = self.type
             items.append(d)
         self.items = items
+        data.destroy()
         return items
 
 
@@ -173,10 +176,10 @@ def automatic_layout_update(data):
 
     current_layout = view and view.to_py() or None
     is_found = False
-    for row in current_layout:
-        for cell in row:
+    for i, row in enumerate(current_layout):
+        for j, cell in enumerate(row):
             if cell["type"] == data["type"]:
-                cell = data
+                current_layout[i][j] = data
                 is_found = True
 
     if is_found == False:
@@ -213,6 +216,7 @@ def Group(
         viz["no_facet"] = True
         viz["size"] = size
 
+        automatic_layout_update(viz)
         return viz
 
     no_facet = False
@@ -285,12 +289,14 @@ def Group(
         union_viz["data"] = items
         union_viz["no_facet"] = no_facet
 
+        automatic_layout_update(union_viz)
         return union_viz
     else:
         viz["data"] = items
         viz["no_facet"] = no_facet
         viz["size"] = size
 
+        automatic_layout_update(viz)
         return viz
 
 
@@ -304,7 +310,7 @@ def LineChart(
     on_point_click=None,
     on_chart_hover=None,
 ):
-    # from js import setState, state
+    from js import setState, state
 
     color_map, color_data = group("color", data, color)
     stroke_map, stroke_data = group("stroke_style", data, stroke_style)
@@ -372,10 +378,15 @@ def ImagesList(data):
         image["key"] = i
 
         images.append(image)
-    return {
+
+    images_data = {
         "type": "Images",
         "data": images,
     }
+
+    automatic_layout_update(images_data)
+
+    return images_data
 
 
 def AudiosList(data):
@@ -385,10 +396,15 @@ def AudiosList(data):
         audio["key"] = i
 
         audios.append(audio)
-    return {
+
+    audios_data = {
         "type": "Audios",
         "data": audios,
     }
+
+    automatic_layout_update(audios_data)
+
+    return audios_data
 
 
 def TextsList(data, color=[]):
@@ -402,10 +418,15 @@ def TextsList(data, color=[]):
         text["color"] = color_val
 
         texts.append(text)
-    return {
+
+    texts_data = {
         "type": "Text",
         "data": texts,
     }
+
+    automatic_layout_update(texts_data)
+
+    return texts_data
 
 
 def FiguresList(data):
@@ -425,10 +446,14 @@ def FiguresList(data):
 
         figures.append(figure)
 
-    return {
+    figures_data = {
         "type": "Plotly",
         "data": figures,
     }
+
+    automatic_layout_update(figures_data)
+
+    return figures_data
 
 
 def JSON(data):
@@ -451,7 +476,11 @@ def Table(data):
 
 
 def HTML(data):
-    return {
+    html_data = {
         "type": "HTML",
         "data": data,
     }
+
+    automatic_layout_update(html_data)
+
+    return html_data

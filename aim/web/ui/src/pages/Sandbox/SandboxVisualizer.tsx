@@ -36,6 +36,7 @@ export default function SandboxVisualizer() {
 
   (window as any).updateLayout = (grid: any) => {
     setResult(toObject(grid.toJs()));
+    grid.destroy();
   };
   (window as any).state = state;
   (window as any).setState = (update: any) => {
@@ -43,6 +44,7 @@ export default function SandboxVisualizer() {
       ...s,
       ...toObject(update.toJs()),
     }));
+    update.destroy();
   };
   (window as any).view = result;
 
@@ -62,7 +64,9 @@ export default function SandboxVisualizer() {
           .replaceAll('def ', 'async def ')
           .replaceAll('async async def ', 'async def ');
 
-        const packagesList = pyodide?.pyodide_py.code.find_imports(code).toJs();
+        const packagesListProxy = pyodide?.pyodide_py.code.find_imports(code);
+        const packagesList = packagesListProxy.toJs();
+        packagesListProxy.destroy();
 
         for await (const lib of packagesList) {
           await pyodide?.loadPackage('micropip');
@@ -121,8 +125,6 @@ export default function SandboxVisualizer() {
   React.useEffect(() => {
     setIsProcessing(isLoading);
   }, [isLoading]);
-
-  console.log(result);
 
   return (
     <div className='SandboxVisualizer'>
