@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.15.2
+- Change logging level for reporter debug messages (alberttorosyan)
+
 ## 3.15.1 Dec 1, 2022
 
 - Fix issue with index container lock for older repos (mihran113)
