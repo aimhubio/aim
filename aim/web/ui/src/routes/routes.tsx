@@ -50,10 +50,10 @@ const AudiosExplorer = React.lazy(
   () => import(/* webpackChunkName: "audios" */ 'pages/AudiosExplorer'),
 );
 
-const LayoutExperimental = React.lazy(
+const FiguresExperimental = React.lazy(
   () =>
     import(
-      /* webpackChunkName: "layout" */ 'pages/LayoutExperimental/LayoutExperimental'
+      /* webpackChunkName: "figures-experimental" */ 'pages/FiguresExperimental'
     ),
 );
 
@@ -201,12 +201,12 @@ const routes = {
     title: pageTitlesEnum.RUN_DETAIL,
   },
   LAYOUT_EXPERIMENTAL: {
-    path: '/layout' as PathEnum,
-    component: LayoutExperimental,
+    path: '/figures-experimental' as PathEnum,
+    component: FiguresExperimental,
     showInSidebar: true,
-    displayName: 'Layout',
+    displayName: 'Figures Experimental',
     isExact: false,
-    title: 'layout',
+    title: 'Figures Experimental',
   },
   Experiment: {
     path: PathEnum.Experiment,
