@@ -27,30 +27,6 @@ function getRunsTableColumns(
 ): ITableColumn[] {
   let columns: ITableColumn[] = [
     {
-      key: 'hash',
-      content: <span>Hash</span>,
-      topHeader: 'Run',
-      pin: order?.left?.includes('hash')
-        ? 'left'
-        : order?.middle?.includes('hash')
-        ? null
-        : order?.right?.includes('hash')
-        ? 'right'
-        : null,
-    },
-    {
-      key: 'run',
-      content: <span>Name</span>,
-      topHeader: 'Run',
-      pin: order?.left?.includes('run')
-        ? 'left'
-        : order?.middle?.includes('run')
-        ? null
-        : order?.right?.includes('run')
-        ? 'right'
-        : 'left',
-    },
-    {
       key: 'experiment',
       content: <span>Name</span>,
       topHeader: 'Experiment',
@@ -73,6 +49,30 @@ function getRunsTableColumns(
         : order?.right?.includes('experiment_description')
         ? 'right'
         : null,
+    },
+    {
+      key: 'hash',
+      content: <span>Hash</span>,
+      topHeader: 'Run',
+      pin: order?.left?.includes('hash')
+        ? 'left'
+        : order?.middle?.includes('hash')
+        ? null
+        : order?.right?.includes('hash')
+        ? 'right'
+        : null,
+    },
+    {
+      key: 'run',
+      content: <span>Name</span>,
+      topHeader: 'Run',
+      pin: order?.left?.includes('run')
+        ? 'left'
+        : order?.middle?.includes('run')
+        ? null
+        : order?.right?.includes('run')
+        ? 'right'
+        : 'left',
     },
     {
       key: 'description',
