@@ -1,4 +1,5 @@
 import time
+import logging
 
 from inspect import getframeinfo, currentframe
 from typing import Optional, Union, Tuple
@@ -42,7 +43,7 @@ class LogRecord(CustomObject):
     def json(self):
         return {
             'message': self.message,
-            'log_level': self.level,
+            'log_level': logging.getLevelName(self.level),
             'timestamp': self.storage['timestamp'],
             'args': self.storage.get('extra_args', None)
         }
