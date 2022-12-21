@@ -39,6 +39,14 @@ class LogRecord(CustomObject):
     def level(self):
         return self.storage['log_level']
 
+    def json(self):
+        return {
+            'message': self.message,
+            'log_level': self.level,
+            'timestamp': self.storage['timestamp'],
+            'args': self.storage.get('extra_args', None)
+        }
+
     def __hash__(self):
         return hash_auto((self.storage['__logger_info'], self.storage['log_level']))
 
