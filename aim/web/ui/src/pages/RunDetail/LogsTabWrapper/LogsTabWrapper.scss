@@ -1,0 +1,90 @@
+@use 'src/styles/abstracts' as *;
+
+.LogsTabWrapper {
+  height: 100%;
+  &__tabsContainer {
+    background: #ffffff;
+    box-shadow: 0 toRem(4px) toRem(6px) rgba(144, 175, 218, 0.2),
+      0 1px 0 0 $cuddle-20;
+    border-top: $border-grey-lighter;
+    position: relative;
+    z-index: 1;
+    &____tabs {
+      background: $white;
+      .MuiTabs-fixed {
+        overflow: auto !important;
+      }
+      .MuiTabs-scroller {
+        --ms-overflow-style: none;
+        --scrollbar-width: none;
+        scrollbar-width: none;
+        &::-webkit-scrollbar {
+          display: none;
+        }
+      }
+      .MuiTabs-indicator {
+        display: none;
+      }
+    }
+    .PrivateTabIndicator-root-1 {
+      display: none;
+    }
+    .MuiTabs-root {
+      height: toRem(40px);
+      min-height: auto;
+    }
+    .MuiTabs-flexContainer {
+      .MuiTab-textColorPrimary {
+        color: $pico-80;
+        font-size: $text-md;
+        font-weight: $font-500;
+        text-transform: unset;
+        min-height: 40px;
+        transition: all 0.18s ease-out;
+        &:hover {
+          color: $pico;
+          background-color: $cuddle-30;
+        }
+        .MuiTab-wrapper {
+          line-height: 1.05;
+        }
+        &.MuiTab-root {
+          padding: 0.625rem $space-unit;
+          min-width: auto !important;
+          border-right: 1px solid transparent;
+          text-transform: capitalize;
+        }
+        &.Mui-selected {
+          color: $pico;
+          position: relative;
+          &::before {
+            content: '';
+            width: 100%;
+            height: toRem(3px);
+            background: $primary-color;
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            transition: all 3s;
+          }
+        }
+      }
+    }
+    .PrivateTabIndicator-root-5 {
+      display: none;
+    }
+    &.MuiPaper-rounded {
+      border-radius: unset;
+    }
+  }
+  &__tabPanelWrapper {
+    height: calc(100% - 41px);
+    &__suspenseLoaderContainer {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      width: 100%;
+    }
+  }
+}
