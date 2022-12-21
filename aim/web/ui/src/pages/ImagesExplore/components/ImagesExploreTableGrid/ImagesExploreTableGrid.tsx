@@ -79,8 +79,8 @@ function getImagesExploreTableColumns(
     },
     {
       key: 'experiment',
-      content: <span>Experiment</span>,
-      topHeader: 'Run',
+      content: <span>Name</span>,
+      topHeader: 'Experiment',
       pin: order?.left?.includes('experiment')
         ? 'left'
         : order?.middle?.includes('experiment')
@@ -94,6 +94,18 @@ function getImagesExploreTableColumns(
         AppNameEnum.IMAGES!,
         'run.props.experiment.name',
       ),
+    },
+    {
+      key: 'experiment_description',
+      content: <span>Description</span>,
+      topHeader: 'Experiment',
+      pin: order?.left?.includes('experiment_description')
+        ? 'left'
+        : order?.middle?.includes('experiment_description')
+        ? null
+        : order?.right?.includes('experiment_description')
+        ? 'right'
+        : null,
     },
     {
       key: 'description',

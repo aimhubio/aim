@@ -90,8 +90,8 @@ function getMetricsTableColumns(
     },
     {
       key: 'experiment',
-      content: <span>Experiment</span>,
-      topHeader: 'Run',
+      content: <span>Name</span>,
+      topHeader: 'Experiment',
       pin: order?.left?.includes('experiment')
         ? 'left'
         : order?.middle?.includes('experiment')
@@ -105,6 +105,16 @@ function getMetricsTableColumns(
         AppNameEnum.METRICS!,
         'run.props.experiment.name',
       ),
+    },
+    {
+      key: 'experiment_description',
+      content: <span>Description</span>,
+      topHeader: 'Experiment',
+      pin: order?.left?.includes('experiment_description')
+        ? 'left'
+        : order?.right?.includes('experiment_description')
+        ? 'right'
+        : null,
     },
     {
       key: 'description',

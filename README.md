@@ -16,7 +16,7 @@
   <a href="#quick-start"><b>Quick Start</b></a> &bull;
   <a href="https://aimstack.readthedocs.io/en/latest/"><b>Documentation</b></a> &bull;
   <a href="#roadmap"><b>Roadmap</b></a> &bull;
-  <a href="https://slack.aimstack.io/"><b>Slack Community</b></a> &bull;
+  <a href="https://community.aimstack.io/"><b>Discord Community</b></a> &bull;
   <a href="https://twitter.com/aimstackio"><b>Twitter</b></a>
 </p>
 
@@ -494,4 +494,4 @@ The high-level features we are going to work on the next few months
 
 1. [Read the docs](https://aimstack.readthedocs.io/en/latest/)
 2. [Open a feature request or report a bug](https://github.com/aimhubio/aim/issues)
-3. [Join our slack](https://slack.aimstack.io/)
+3. [Join Discord community server](https://community.aimstack.io/)

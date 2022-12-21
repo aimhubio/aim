@@ -52,13 +52,25 @@ function getRunsTableColumns(
     },
     {
       key: 'experiment',
-      content: <span>Experiment</span>,
-      topHeader: 'Run',
+      content: <span>Name</span>,
+      topHeader: 'Experiment',
       pin: order?.left?.includes('experiment')
         ? 'left'
         : order?.middle?.includes('experiment')
         ? null
         : order?.right?.includes('experiment')
+        ? 'right'
+        : null,
+    },
+    {
+      key: 'experiment_description',
+      content: <span>Description</span>,
+      topHeader: 'Experiment',
+      pin: order?.left?.includes('experiment_description')
+        ? 'left'
+        : order?.middle?.includes('experiment_description')
+        ? null
+        : order?.right?.includes('experiment_description')
         ? 'right'
         : null,
     },
