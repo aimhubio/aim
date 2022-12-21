@@ -83,7 +83,7 @@ function SideBar(): React.FunctionComponentElement<React.ReactNode> {
             <Tooltip title='Community Discord' placement='right'>
               <a
                 target='_blank'
-                href='https://discord.com/invite/zXq2NfVdtF'
+                href='https://community.aimstack.io/'
                 rel='noreferrer'
                 className='Sidebar__bottom__anchor'
                 onClick={() => trackEvent(ANALYTICS_EVENT_KEYS.sidebar.discord)}
