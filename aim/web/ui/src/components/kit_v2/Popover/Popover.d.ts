@@ -1,5 +1,7 @@
 import { PopperContentProps } from '@radix-ui/react-popover';
 
+import { CSS } from 'config/stitches/stitches.config';
+
 // Interface of the Popover component
 export interface IPopoverProps {
   /**
@@ -14,10 +16,18 @@ export interface IPopoverProps {
   /**
    * popper props
    */
-  popperProps?: PopperContentProps;
+  popperProps?: PopperProps;
   /**
     * Popover is default open
     @default: false
     */
   defaultOpen?: boolean;
+}
+
+interface PopperProps extends Partial<PopperContentProps> {
+  /**
+   * styles for popper
+   * @default: {}
+   * */
+  css?: CSS;
 }

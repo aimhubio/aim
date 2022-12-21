@@ -16,6 +16,8 @@ import IconButton from 'components/kit_v2/IconButton';
 import ControlsButton from 'components/kit_v2/ControlsButton';
 import Popover from 'components/kit_v2/Popover';
 import Box from 'components/kit_v2/Box';
+import Tree from 'components/kit_v2/Tree';
+import { ITreeProps } from 'components/kit_v2/Tree';
 
 import { ColorPaletteEnum, styled } from 'config/stitches/stitches.config';
 import { getSuggestionsByExplorer } from 'config/monacoConfig/monacoConfig';
@@ -26,41 +28,8 @@ import { ISelectOption } from 'types/services/models/explorer/createAppModel';
 import removeSyntaxErrBrackets from 'utils/removeSyntaxErrBrackets';
 import getAdvancedSuggestion from 'utils/getAdvancedSuggestions';
 
-const ControlsPanelContainer = styled('div', {
-  display: 'flex',
-  p: '$3 $7',
-  bs: '0px 3px 4px rgba(0, 0, 0, 0.05), 0px 3px 3px rgba(0, 0, 0, 0.08);',
-});
-
-const GroupingContainer = styled('div', {
-  display: 'flex',
-  ai: 'center',
-  gap: '$3',
-  flex: 1,
-});
-
-const GroupingText = styled('span', {
-  color: '$textPrimary',
-  fontSize: '$2',
-  mr: '$2',
-});
-
-const ControlsContainer = styled('div', {
-  display: 'flex',
-  gap: '$3',
-});
-
-const PageTopPanel = styled('div', {
-  height: '18px',
-  bc: '#EAEBEC',
-  borderBottom: '1px solid #DCDCDC',
-  color: '$textPrimary',
-  fontWeight: '$4',
-  fontSize: '$2',
-  pl: '$7',
-  display: 'flex',
-  ai: 'center',
-});
+import ExplorerBar from './ExplorerBar';
+import ControlsBar from './ControlsBar';
 
 function LayoutExperimental(props: any) {
   const [anchorEl, setAnchorEl] = React.useState<any>(null);
@@ -70,7 +39,6 @@ function LayoutExperimental(props: any) {
   const updateQuery = React.useRef(engine.query.form.update);
   const queryable = engine.useStore(engine.instructions.stateSelector);
   const sequenceName: SequenceTypesEnum = engine.pipeline.getSequenceName();
-
   const query: QueryFormState = engine.useStore(
     engine.query.form.stateSelector,
   );
@@ -81,8 +49,6 @@ function LayoutExperimental(props: any) {
   const status = engine.useStore(engine.pipeline.statusSelector);
   const error = engine.useStore(engine.pipeline.errorSelector);
   const updateError = React.useRef(engine.pipeline.setError);
-
-  console.log('LayoutExperimental', state);
 
   const { isExecuting, isInsufficientResources } = React.useMemo((): any => {
     let result: any = {
@@ -204,8 +170,6 @@ function LayoutExperimental(props: any) {
     );
   }, [queryable.project_sequence_info, searchValue]);
 
-  console.log('options', options);
-
   const handleAutocompleteClose: (
     event: React.ChangeEvent<{}>,
     reason: string,
@@ -271,9 +235,81 @@ function LayoutExperimental(props: any) {
     );
   }, [query, sequenceName]);
 
+  const treeData = React.useMemo(() => {
+    return getTreeDataFromQueryableData(queryable.queryable_data[sequenceName]);
+  }, [queryable.queryable_data]);
+
+  function filterData(array: any) {
+    let modified: any = {};
+    for (let key in array) {
+      const objKey = Object.keys(array[key])[0];
+      const objVal = Object.values(array[key])[0];
+      if (modified.hasOwnProperty(objKey)) {
+        modified[objKey] = [...modified[objKey], objVal];
+      } else {
+        modified[objKey] = [objVal];
+      }
+    }
+    return modified;
+  }
+
+  function getTreeDataFromQueryableData(
+    data: ITreeProps['data'],
+    path?: string,
+  ): ITreeProps['data'] {
+    let modifiedData: ITreeProps['data'] = [];
+    for (let key in data) {
+      let val = data[key];
+      let treeItemKey: string = path ? `${path}.${key}` : key;
+      if (typeof val === 'object') {
+        if (Array.isArray(val)) {
+          let filtered: any = filterData(val);
+          modifiedData.push({
+            title: key,
+            key: treeItemKey,
+            children: getTreeDataFromQueryableData([filtered], treeItemKey),
+          });
+        } else {
+          for (let key1 in val) {
+            let treeItemKey = path ? `${path}.${key1}` : key1;
+            if (typeof val[key1] === 'object') {
+              modifiedData.push({
+                title: key1,
+                key: treeItemKey,
+                children: getTreeDataFromQueryableData(val[key1], treeItemKey),
+              });
+            }
+          }
+        }
+      } else {
+        let treeItemKey = path ? `${path}.${data[key]}` : key;
+        modifiedData.push({
+          title: data[key],
+          key: treeItemKey,
+        });
+      }
+    }
+    return modifiedData;
+  }
+
+  const onTreeCheckChange: ITreeProps['onCheck'] = (checked, info) => {
+    let childrenKeysFromChecked = info?.checkedNodes
+      ?.filter((node: any) => node.children)
+      .map((node) => node.children?.map((child) => child.key))
+      .flat();
+    const data = info.checkedNodes
+      .filter((node) => childrenKeysFromChecked.indexOf(node.key) === -1)
+      .map((node) => node.key);
+    updateQuery.current({
+      checkedTreeKeys: data,
+    });
+  };
+
+  console.log('query', query.checkedTreeKeys);
+
   return (
     <>
-      <PageTopPanel>METRICS EXPLORER</PageTopPanel>
+      <ExplorerBar />
       <Box
         as='section'
         css={{
@@ -285,7 +321,15 @@ function LayoutExperimental(props: any) {
         <Box css={{ display: 'flex', fd: 'column', gap: '$4', flex: 1 }}>
           <Box css={{ display: 'flex', ai: 'center' }}>
             <Popover
-              content={'sss'}
+              popperProps={{ align: 'start' }}
+              content={
+                <Tree
+                  onCheck={onTreeCheckChange}
+                  checkedKeys={query.checkedTreeKeys}
+                  checkable
+                  data={treeData}
+                />
+              }
               trigger={
                 <Button size='md' leftIcon='menu'>
                   Filter {sequenceName}
@@ -293,12 +337,11 @@ function LayoutExperimental(props: any) {
               }
             />
             <Box css={{ display: 'flex', gap: '$3', ml: '$5' }}>
-              <QueryBadge color='primary' size='md'>
-                metric.name in loss
-              </QueryBadge>
-              <QueryBadge color='primary' size='md'>
-                metric.context.subset in train, test
-              </QueryBadge>
+              {query.checkedTreeKeys?.map((key) => (
+                <QueryBadge key={key} color='primary' size='md'>
+                  {key}
+                </QueryBadge>
+              ))}
             </Box>
           </Box>
           <Box
@@ -346,94 +389,7 @@ function LayoutExperimental(props: any) {
           </Box>
         </Box>
       </Box>
-      <ControlsPanelContainer>
-        <GroupingContainer>
-          <GroupingText>Group by:</GroupingText>
-          <Popover
-            trigger={({ open }) => (
-              <ControlsButton open={open}>Color</ControlsButton>
-            )}
-            content={<div>Color</div>}
-          />
-          <Popover
-            trigger={({ open }) => (
-              <ControlsButton open={open}>Stroke</ControlsButton>
-            )}
-            content={<div>Color</div>}
-          />
-          <Popover
-            trigger={({ open }) => (
-              <ControlsButton
-                appliedValuesCount={1}
-                open={open}
-                rightIcon={{ name: 'eye-fill-show', onClick: () => {} }}
-              >
-                Chart
-              </ControlsButton>
-            )}
-            content={<div>Color</div>}
-          />
-        </GroupingContainer>
-        <ControlsContainer>
-          <Popover
-            trigger={({ open }) => (
-              <ControlsButton leftIcon='aggregation' open={open}>
-                Aggregate
-              </ControlsButton>
-            )}
-            content={<div>Aggregate</div>}
-          />
-          <Popover
-            trigger={({ open }) => (
-              <ControlsButton
-                leftIcon='ignore-outliers'
-                hasAppliedValues
-                open={open}
-              >
-                Ignore Outliers
-              </ControlsButton>
-            )}
-            content={<div>Outliers</div>}
-          />
-          <Popover
-            trigger={({ open }) => (
-              <ControlsButton leftIcon='axes-props' open={open}>
-                Configure axes
-              </ControlsButton>
-            )}
-            content={<div>Axes Props</div>}
-          />
-          <Popover
-            trigger={({ open }) => (
-              <ControlsButton leftIcon='smoothing' open={open}>
-                Smoothing
-              </ControlsButton>
-            )}
-            content={<div>Smoothing</div>}
-          />
-          <Popover
-            trigger={({ open }) => (
-              <ControlsButton leftIcon='highlight-mode' open={open}>
-                Highlight
-              </ControlsButton>
-            )}
-            content={<div>Highlight</div>}
-          />
-          <Popover
-            trigger={({ open }) => (
-              <ControlsButton leftIcon='cursor' open={open}>
-                Tooltip params
-              </ControlsButton>
-            )}
-            content={<div>Tooltip Params</div>}
-          />
-        </ControlsContainer>
-        <IconButton
-          icon='download'
-          color={ColorPaletteEnum.secondary}
-          variant='text'
-        />
-      </ControlsPanelContainer>
+      <ControlsBar />
     </>
   );
 }

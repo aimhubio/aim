@@ -10,6 +10,8 @@ export type QueryFormState = {
   advancedInput: string;
   selections: ISelectOption[];
   advancedModeOn: boolean;
+  checkedTreeKeys?: string[];
+  halfCheckedTreeKeys?: string[];
 };
 
 export type QueryRangesState = {

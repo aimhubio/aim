@@ -26,13 +26,12 @@ const slideLeftAndFade = keyframes({
 });
 
 const StyledContent = styled(PopoverPrimitive.Content, {
-  borderRadius: 4,
-  padding: 20,
+  br: '$3',
+  p: '$5',
   width: 260,
   zIndex: '$popover',
-  backgroundColor: 'white',
-  boxShadow:
-    'hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px',
+  bc: 'white',
+  bs: 'hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px',
   '@media (prefers-reduced-motion: no-preference)': {
     animationDuration: '400ms',
     animationTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)',
@@ -45,23 +44,13 @@ const StyledContent = styled(PopoverPrimitive.Content, {
     },
   },
   '&:focus': {
-    boxShadow:
-      "hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px, 0 0 0 2px 'black'",
+    bs: "hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px, 0 0 0 2px 'black'",
   },
 });
-
-function Content({ children, ...props }: any) {
-  return (
-    <PopoverPrimitive.Portal>
-      <StyledContent {...props}>{children}</StyledContent>
-    </PopoverPrimitive.Portal>
-  );
-}
 
 // Primitives
 const PopoverContainer = PopoverPrimitive.Root;
 const PopoverTrigger = PopoverPrimitive.Trigger;
-const PopoverContent = Content;
 
 function Popover({
   trigger,
@@ -69,7 +58,7 @@ function Popover({
   defaultOpen,
   popperProps,
 }: IPopoverProps) {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(defaultOpen);
 
   const handleOpenChange = React.useCallback((val: boolean) => {
     setOpen(val);
@@ -81,11 +70,16 @@ function Popover({
         typeof trigger === 'function' ? handleOpenChange : undefined
       }
       defaultOpen={defaultOpen}
+      open={open}
     >
       <PopoverTrigger asChild>
         {typeof trigger === 'function' ? trigger({ open }) : trigger}
       </PopoverTrigger>
-      <PopoverContent {...popperProps}>{content}</PopoverContent>
+      <PopoverPrimitive.Portal>
+        <StyledContent sideOffset={5} {...popperProps}>
+          {content}
+        </StyledContent>
+      </PopoverPrimitive.Portal>
     </PopoverContainer>
   );
 }
