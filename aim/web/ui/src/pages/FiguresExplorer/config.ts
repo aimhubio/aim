@@ -3,6 +3,7 @@ import produce from 'immer';
 import { getDefaultHydration } from 'modules/BaseExplorer';
 import { GroupType, Order } from 'modules/core/pipeline';
 import { defaultHydration } from 'modules/BaseExplorer/getDefaultHydration';
+import { CaptionProperties } from 'modules/BaseExplorer/components/Controls';
 
 import getFiguresExplorerStaticContent from './getStaticContent';
 
@@ -20,11 +21,16 @@ export const getFiguresDefaultConfig = (): typeof defaultHydration => {
   });
 
   const controls = produce(defaultConfig.controls, (draft: any) => {
-    draft.captionProperties.state.initialState.selectedFields = [
-      'run.name',
-      'figures.name',
-      'figures.context',
-    ];
+    draft.captionProperties = {
+      component: CaptionProperties,
+      state: {
+        initialState: {
+          displayBoxCaption: true,
+          selectedFields: ['run.name', 'figures.name', 'figures.context'],
+        },
+        persist: 'url',
+      },
+    };
   });
 
   return {

@@ -19,29 +19,33 @@ function BoxWrapper(props: IBoxWrapperProps<AimFlatObjectBase<any>>) {
   const {
     engine,
     engine: { useStore },
-    items,
     component: BoxContent,
     hasDepthSlider,
-    groupId,
     depthSelector,
     onDepthMapChange,
+    boxId,
+    boxItems,
+    boxIndex,
+    visualizationName,
   } = props;
-  const vizEngine = engine.visualizations[props.visualizationName];
+  const vizEngine = engine.visualizations[visualizationName];
 
   const [fullView, setFullView] = React.useState<boolean>(false);
   const sequenceName: SequenceTypesEnum = engine.pipeline.getSequenceName();
   const boxConfig = useStore(vizEngine.box.stateSelector);
-  const captionProperties: ICaptionProperties = useStore(
-    vizEngine.controls.captionProperties.stateSelector,
+  const captionProperties: ICaptionProperties | null = useStore(
+    (state: any) =>
+      state.visualizations[visualizationName].controls.captionProperties ||
+      null,
   );
 
   const foundGroups = engine.useStore(engine.pipeline.foundGroupsSelector);
-  const depth = engine.useStore(depthSelector(groupId));
+  const depth = engine.useStore(depthSelector(boxId));
   const captionBoxRef: React.RefObject<HTMLDivElement | null> =
     React.useRef<HTMLDivElement>(null);
   const [captionBoxHeight, setCaptionBoxHeight] = React.useState<number>(0);
 
-  const currentItem = React.useMemo(() => items[depth], [items, depth]);
+  const currentItem = React.useMemo(() => boxItems[depth], [boxItems, depth]);
   const groupInfo = React.useMemo(() => {
     const groupTypes = Object.keys(currentItem?.groups || {});
     const info: Record<string, object> = {};
@@ -64,12 +68,20 @@ function BoxWrapper(props: IBoxWrapperProps<AimFlatObjectBase<any>>) {
     return info;
   }, [foundGroups, currentItem]);
 
+  const boxData = React.useMemo(() => {
+    if (hasDepthSlider) {
+      return currentItem;
+    } else {
+      return boxItems;
+    }
+  }, [hasDepthSlider, boxItems, currentItem]);
+
   const renderDepthSlider = (props: Partial<IDepthSliderProps> = {}) => {
-    return hasDepthSlider && items.length > 1 ? (
+    return hasDepthSlider && boxItems.length > 1 ? (
       <DepthSlider
-        items={items}
+        items={boxItems}
         depth={depth}
-        onDepthChange={(value) => onDepthMapChange(value, groupId)}
+        onDepthChange={(value) => onDepthMapChange(value, boxId)}
         valueLabelDisplay='on'
         {...props}
       />
@@ -80,8 +92,8 @@ function BoxWrapper(props: IBoxWrapperProps<AimFlatObjectBase<any>>) {
     setCaptionBoxHeight(captionBoxRef.current?.offsetHeight ?? 0);
   }, [
     captionBoxRef.current?.offsetHeight,
-    captionProperties.selectedFields,
-    captionProperties.displayBoxCaption,
+    captionProperties?.selectedFields,
+    captionProperties?.displayBoxCaption,
     boxConfig.height,
   ]);
 
@@ -105,11 +117,11 @@ function BoxWrapper(props: IBoxWrapperProps<AimFlatObjectBase<any>>) {
         {BoxContent && (
           <BoxContent
             key={currentItem.key}
-            data={currentItem}
-            items={items}
+            index={boxIndex}
+            data={boxData}
             engine={engine}
             style={currentItem.style}
-            visualizationName={props.visualizationName}
+            visualizationName={visualizationName}
           />
         )}
       </div>
@@ -117,7 +129,7 @@ function BoxWrapper(props: IBoxWrapperProps<AimFlatObjectBase<any>>) {
         className: 'BoxWrapper__depthSlider',
         style: { bottom: captionBoxHeight + 1 },
       })}
-      {captionProperties.displayBoxCaption &&
+      {captionProperties?.displayBoxCaption &&
         !_.isEmpty(captionProperties.selectedFields) && (
           <CaptionBox
             captionBoxRef={captionBoxRef}
@@ -131,17 +143,16 @@ function BoxWrapper(props: IBoxWrapperProps<AimFlatObjectBase<any>>) {
           onClose={() => setFullView(false)}
           groupInfo={groupInfo}
           sequenceName={sequenceName}
-          item={currentItem}
+          item={boxData}
         >
           <div className='BoxWrapper__fullViewContent'>
             <div className='BoxWrapper__fullViewContent__box'>
               {BoxContent && (
                 <BoxContent
                   key={'fullView-' + currentItem.key}
-                  data={currentItem}
-                  items={items}
+                  data={boxData}
                   engine={engine}
-                  visualizationName={props.visualizationName}
+                  visualizationName={visualizationName}
                   isFullView
                 />
               )}

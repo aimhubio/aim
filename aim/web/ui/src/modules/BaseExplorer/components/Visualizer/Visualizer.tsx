@@ -147,7 +147,7 @@ function Visualizer(props: IVisualizationProps) {
         });
     }
   }, [foundGroups, boxConfig, rowsAxisData]);
-
+  console.log('foundGroups', foundGroups);
   const [depthSelector, onDepthMapChange] = useDepthMap<AimFlatObjectBase<any>>(
     {
       data,
@@ -169,16 +169,16 @@ function Visualizer(props: IVisualizationProps) {
         {!_.isEmpty(dataState) && (
           <BoxVirtualizer
             data={data}
-            itemsRenderer={([groupId, groupItems], groupIndex) => (
+            itemsRenderer={([boxId, boxItems], boxIndex) => (
               <BoxWrapper
-                key={groupId}
-                groupId={groupId}
-                groupIndex={groupIndex}
+                key={boxId}
+                boxId={boxId}
+                boxIndex={boxIndex}
+                boxItems={boxItems}
                 engine={engine}
                 component={BoxContent}
                 visualizationName={name}
                 hasDepthSlider={hasDepthSlider}
-                items={groupItems}
                 depthSelector={depthSelector}
                 onDepthMapChange={onDepthMapChange}
               />

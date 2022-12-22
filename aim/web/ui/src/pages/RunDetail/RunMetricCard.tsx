@@ -9,7 +9,7 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import COLORS from 'config/colors/colors';
 
 import contextToString from 'utils/contextToString';
-import { CurveEnum, ScaleEnum, HighlightEnum } from 'utils/d3';
+import { ScaleEnum } from 'utils/d3';
 import { isSystemMetric } from 'utils/isSystemMetric';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 

@@ -17,6 +17,7 @@ export enum GroupType {
   ROW = 'rows',
   COLUMN = 'columns',
   COLOR = 'color',
+  STROKE = 'stroke',
 }
 
 export type GroupOptions = {

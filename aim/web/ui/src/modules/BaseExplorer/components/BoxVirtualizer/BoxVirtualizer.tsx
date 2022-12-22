@@ -135,9 +135,7 @@ function BoxVirtualizer(props: IBoxVirtualizerProps<AimFlatObjectBase<any>>) {
           (rowsAxisItems && rowsAxisItems.length > 0)) && (
           <div
             className='BoxVirtualizer__container__horizontalRuler'
-            style={{
-              width: gridSize.width,
-            }}
+            style={{ width: gridSize.width }}
           >
             {columnsAxisItems?.map(props.axisItemRenderer?.columns)}
           </div>
@@ -145,9 +143,7 @@ function BoxVirtualizer(props: IBoxVirtualizerProps<AimFlatObjectBase<any>>) {
         {rowsAxisItems && rowsAxisItems.length > 0 && (
           <div
             className='BoxVirtualizer__container__verticalRuler'
-            style={{
-              height: gridSize.height,
-            }}
+            style={{ height: gridSize.height }}
           >
             {rowsAxisItems?.map(props.axisItemRenderer?.rows)}
           </div>
@@ -155,10 +151,7 @@ function BoxVirtualizer(props: IBoxVirtualizerProps<AimFlatObjectBase<any>>) {
         <div
           ref={grid}
           className='BoxVirtualizer__grid'
-          style={{
-            width: gridSize.width,
-            height: gridSize.height,
-          }}
+          style={{ width: gridSize.width, height: gridSize.height }}
         >
           {Object.entries(groupedByPosition).map(props.itemsRenderer)}
         </div>

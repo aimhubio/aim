@@ -1,70 +1,57 @@
 import * as React from 'react';
 
+import { IBoxProps } from 'modules/BaseExplorer/types';
+
 import LineChart from 'components/LineChart/LineChart';
 
 import { ScaleEnum } from 'utils/d3';
 
-function Metrics(props: any) {
+function Metrics(props: IBoxProps) {
   let [data, setData] = React.useState<any>(null);
-  let [scale, setScale] = React.useState<number | null | undefined>(
-    !!props.style ? undefined : null,
-  );
   let containerRef = React.useRef<HTMLDivElement | null>(null);
 
   React.useEffect(() => {
     let rAFRef = window.requestAnimationFrame(() => {
-      setData(props.data.data);
+      setData(props.data);
     });
 
     return () => window.cancelAnimationFrame(rAFRef);
-  }, [props.data.data]);
+  }, [props.data]);
 
-  React.useEffect(() => {
-    if (data && containerRef.current && props.style) {
-      let plot = containerRef.current.firstChild;
-      let container = containerRef.current.parentElement;
-      if (plot && container) {
-        let width = containerRef.current.offsetWidth + 20;
-        let height = containerRef.current.offsetHeight + 20;
-        let containerWidth = container.offsetWidth;
-        let containerHeight = container.offsetHeight - 30;
+  console.log(data);
 
-        let wK = containerWidth / width; // Calculate width ratio
-        let hK = containerHeight / height; // Calculate height ratio
-
-        if (wK < 1 || hK < 1) {
-          setScale(Math.min(wK, hK)); // Apply scale based on object-fit: 'contain' pattern
-        } else {
-          setScale(null);
-        }
-      }
-    }
-  }, [data, props.style]);
+  const lineChartData = React.useMemo(() => {
+    return (data || []).map((item: any) => ({
+      key: item.key,
+      data: item.data,
+      color: item.style.color,
+      dasharray: item.style.dasharray,
+      selectors: [item.key],
+    }));
+  }, [data]);
 
   return (
     data && (
       <div
         style={{
-          display: 'inline-block',
-          visibility: scale === undefined ? 'hidden' : 'visible',
-          transform:
-            scale === undefined || scale === null ? '' : `scale(${scale})`,
+          width: '100%',
+          height: '100%',
+          padding: 20,
         }}
         ref={containerRef}
       >
         <LineChart
-          data={[
-            {
-              key: props.data.key,
-              data,
-              color: '#1c2852',
-              dasharray: 'none',
-            },
-          ]}
-          style={{ minHeight: 300, minWidth: 400 }}
+          index={props.index}
+          data={lineChartData}
           axesScaleType={{
             xAxis: ScaleEnum.Linear,
             yAxis: ScaleEnum.Linear,
+          }}
+          margin={{
+            top: 30,
+            right: 40,
+            bottom: 30,
+            left: 60,
           }}
         />
       </div>

@@ -18,9 +18,7 @@ import AudioBoxVolume from './AudioBoxVolume';
 
 import './AudioBox.scss';
 
-function AudioBox(
-  props: IBoxProps,
-): React.FunctionComponentElement<React.ReactNode> {
+function AudioBox(props: IBoxProps) {
   const {
     engine: { events, blobURI },
     data: {

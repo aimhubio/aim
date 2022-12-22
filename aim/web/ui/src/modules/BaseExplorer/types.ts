@@ -91,7 +91,6 @@ export interface IProgressBarProps extends IBaseComponentProps {}
 
 export interface IBoxProps extends IBaseComponentProps {
   data: any;
-  items: AimFlatObjectBase[];
   style?: React.CSSProperties;
   isFullView?: boolean;
   visualizationName: string;

@@ -30,7 +30,7 @@ const MetricsExplorer = renderer(
         },
       },
     },
-    // getStaticContent: getFiguresExplorerStaticContent,
+    getStaticContent: defaultConfig.getStaticContent,
   },
   __DEV__,
 );
