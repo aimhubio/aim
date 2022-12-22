@@ -14,6 +14,7 @@ function createListener<T>(
   let latest: string | null = new URLSearchParams(history.location.search).get(
     param,
   );
+
   return (update: Update) => {
     const searchParams = new URLSearchParams(update.location.search);
     const current = searchParams.get(param);

@@ -34,7 +34,6 @@ function Figures(props: IBoxProps) {
   }, [blobData]);
 
   React.useEffect(() => {
-    let timeoutID: number;
     let unsubscribe: () => void;
     if (blobData === null) {
       if (props.engine.blobURI.getBlobData(props.data.data.blob_uri)) {
@@ -47,22 +46,17 @@ function Figures(props: IBoxProps) {
             unsubscribe();
           },
         );
-        timeoutID = window.setTimeout(() => {
-          if (props.engine.blobURI.getBlobData(props.data.data.blob_uri)) {
-            setBlobData(
-              props.engine.blobURI.getBlobData(props.data.data.blob_uri),
-            );
-            unsubscribe();
-          } else {
-            props.engine.blobURI.addUriToQueue(props.data.data.blob_uri);
-          }
-        }, BATCH_COLLECT_DELAY);
+        if (props.engine.blobURI.getBlobData(props.data.data.blob_uri)) {
+          setBlobData(
+            props.engine.blobURI.getBlobData(props.data.data.blob_uri),
+          );
+          unsubscribe();
+        } else {
+          props.engine.blobURI.addUriToQueue(props.data.data.blob_uri);
+        }
       }
     }
     return () => {
-      if (timeoutID) {
-        clearTimeout(timeoutID);
-      }
       if (unsubscribe) {
         unsubscribe();
       }

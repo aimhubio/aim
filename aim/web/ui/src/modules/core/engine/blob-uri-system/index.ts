@@ -90,27 +90,28 @@ function createBlobURISystemEngine(
   function addUriToQueue(blobUri: string) {
     if (!blobsData[blobUri]) {
       blobUriQueue.add(blobUri);
-      getBatch();
+      getBatch(Array.from(blobUriQueue));
     }
   }
 
   /**
    * Function to throttle the batch get request
+   *
    */
-  const getBatch = throttle(() => {
+  const getBatch = (batch: string[]) => {
     if (timeoutID) {
       window.clearTimeout(timeoutID);
     }
     timeoutID = window.setTimeout(() => {
-      if (!_.isEmpty(blobUriQueue)) {
-        getBlobsData(Array.from(blobUriQueue))
+      if (blobUriQueue.size) {
+        getBlobsData(batch)
           .call()
           .then(() => {
             blobUriQueue.clear();
           });
       }
     }, BATCH_SEND_DELAY);
-  }, BATCH_SEND_DELAY);
+  };
 
   /**
    * Function to throttle the batch get request
