@@ -3,8 +3,8 @@ import React from 'react';
 export interface IBoxVirtualizerProps<T> {
   data: Array<T>;
   itemsRenderer: (
-    value: [groupId: string, groupItems: Array<T>],
-    groupIndex?: number,
+    value: [boxId: string, boxItems: Array<T>],
+    boxIndex: number,
   ) => React.ReactNode;
   offset: number;
   axisData?: {

@@ -68,8 +68,6 @@ function getPipelineEngine(
     {},
   );
 
-  console.log('config', config);
-
   // const defaultControls = config.controls || {};
 
   const pipelineOptions: Omit<PipelineOptions, 'callbacks'> = {

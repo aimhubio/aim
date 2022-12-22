@@ -33,6 +33,7 @@ function drawArea(args: IDrawAreaArgs): void {
   const visArea = d3.select(visAreaRef.current);
 
   const parentRect = parent.node().getBoundingClientRect();
+
   const { width, height } = parentRect;
   const { margin } = visBoxRef.current;
 

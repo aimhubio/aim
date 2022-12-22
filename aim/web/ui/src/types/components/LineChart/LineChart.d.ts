@@ -37,6 +37,7 @@ export interface ILine {
 
 export interface ILineChartProps {
   style?: {};
+  margin?: { top: number; right: number; bottom: number; left: number };
   index?: number;
   data: IChartPanelProps['data'];
   nameKey?: string;

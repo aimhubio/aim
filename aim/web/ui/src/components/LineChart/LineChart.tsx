@@ -50,16 +50,17 @@ const LineChart = React.forwardRef(function LineChart(
     readOnly = false,
     resizeMode,
     style = {},
-  } = props;
-
-  // boxes
-  const visBoxRef = React.useRef({
-    margin: {
+    margin = {
       top: 30,
       right: 20,
       bottom: 30,
       left: 60,
     },
+  } = props;
+
+  // boxes
+  const visBoxRef = React.useRef({
+    margin,
     height: 0,
     width: 0,
   });
