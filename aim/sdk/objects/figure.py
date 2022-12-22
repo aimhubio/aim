@@ -83,6 +83,6 @@ class Figure(CustomObject):
 
 
 def matplotlib_get_offset_position(self):
-    # self._offset_position got depricated
+    # self._offset_position is depricated
     # using 'screen' as the default value
     return 'screen'
