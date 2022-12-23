@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.15.2
+## 3.15.2 Dec 23, 2022
 
 - Change logging level for reporter debug messages (alberttorosyan)
 - Fix styling issues on the experiment page (KaroMourad)
