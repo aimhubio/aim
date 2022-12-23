@@ -22,11 +22,12 @@ class RemoteWorkerAutoClean(AutoClean['RemoteWorker']):
 class RemoteWorker:
     WORKER_START_GRACE_PERIOD = datetime.timedelta(minutes=5)
 
-    def __init__(self, target_f, *, host, port, ssl_keyfile=None, ssl_certfile=None):
+    def __init__(self, target_f, *, host, port, index, ssl_keyfile=None, ssl_certfile=None):
         self._resources: Optional[RemoteWorkerAutoClean] = None
         self.worker_process = Process(target=target_f, args=(host, port, ssl_keyfile, ssl_certfile))
         self._host = host
         self._port = port
+        self._idx = index
         self._ssl_keyfile = ssl_keyfile
         self._ssl_certfile = ssl_certfile
         self._start_time = None
@@ -76,6 +77,10 @@ class RemoteWorker:
     def client_count(self):
         return len(self._clients)
 
+    @property
+    def index(self):
+        return str(self._idx)
+
     def cleanup_client_resources(self, client_uri):
         import grpc
 
@@ -92,10 +97,11 @@ class RemoteWorker:
 
 
 class LocalWorker(RemoteWorker):
-    def __init__(self, target_f, *, host, port, ssl_keyfile=None, ssl_certfile=None):
+    def __init__(self, target_f, *, host, port, index, ssl_keyfile=None, ssl_certfile=None):
         self._resources: Optional[RemoteWorkerAutoClean] = None
         self._host = host
         self._port = port
+        self._idx = index
         self._ssl_keyfile = ssl_keyfile
         self._ssl_certfile = ssl_certfile
         self._start_time = None
