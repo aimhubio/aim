@@ -1,9 +1,11 @@
-import { shouldMatchObject } from 'tests/utils';
-
 import { IMenuItem } from 'components/kit/Menu';
+
+import { shouldMatchObject } from 'tests/utils';
 
 import { TraceRawDataItem } from './types';
 import { getMenuItemFromRawInfo, getContextObjFromMenuActiveKey } from './util';
+
+//@TODO: The next action on this may try to solve the testing issues by going further with the components used here.
 
 describe('first', () => {
   it('should match object', () => {});

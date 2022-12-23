@@ -1,11 +1,12 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 
-import { IDashboardData } from 'modules/core/api/dashboardsApi';
 import { Tooltip } from '@material-ui/core';
 
 import { Button, Icon, Text } from 'components/kit';
 import ListItem from 'components/kit/ListItem/ListItem';
+
+import { IDashboardData } from 'modules/core/api/dashboardsApi';
 
 import { BookmarkIconType } from 'pages/Bookmarks/components/BookmarkCard/BookmarkCard';
 
