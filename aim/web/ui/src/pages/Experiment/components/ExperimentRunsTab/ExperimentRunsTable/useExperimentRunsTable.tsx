@@ -2,12 +2,12 @@ import React from 'react';
 import moment from 'moment';
 import _ from 'lodash-es';
 
-import { IResourceState } from 'modules/core/utils/createResource';
-
 import { Badge } from 'components/kit';
 import RunNameColumn from 'components/Table/RunNameColumn';
 
 import { TABLE_DATE_FORMAT } from 'config/dates/dates';
+
+import { IResourceState } from 'modules/core/utils/createResource';
 
 import { IRun } from 'types/services/models/metrics/runModel';
 

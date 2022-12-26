@@ -1,13 +1,13 @@
 import React from 'react';
 import moment from 'moment';
 
-import { IResourceState } from 'modules/core/utils/createResource';
-
 import {
   CONTRIBUTION_DAY_FORMAT,
   CONTRIBUTION_MONTH_FORMAT,
   CONTRIBUTION_TIME_FORMAT,
 } from 'config/dates/dates';
+
+import { IResourceState } from 'modules/core/utils/createResource';
 
 import { IRun } from 'types/services/models/metrics/runModel';
 

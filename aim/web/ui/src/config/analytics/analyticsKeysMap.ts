@@ -349,7 +349,6 @@ export const ANALYTICS_EVENT_KEYS = {
     pageView: '[DashboardPage] Page view',
     activityCellClick: '[DashboardPage] Click on Activity cell',
     createGithubIssue: '[DashboardPage] Click on create gitHub issue',
-    slackCommunity: '[DashboardPage] Click on Join Aim slack community',
     docs: '[DashboardPage] Click on documentation icon',
     colab: '[DashboardPage] Click on colab notebook icon',
     liveDemo: '[DashboardPage] Click on Live demo icon',
@@ -358,7 +357,6 @@ export const ANALYTICS_EVENT_KEYS = {
     },
   },
   sidebar: {
-    slack: '[SideBar] Click on slack community link',
     discord: '[Sidebar] Click on discord community link',
     docs: '[Sidebar] Click on docs link',
   },

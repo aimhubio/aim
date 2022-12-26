@@ -1,11 +1,11 @@
 import * as React from 'react';
 
+import { DOCUMENTATIONS } from 'config/references';
+
 import getBaseExplorerStaticContent, {
   STATIC_CONTENT_TYPES,
 } from 'modules/BaseExplorer/utils/getBaseExplorerStaticContent';
 import { StaticContentType } from 'modules/BaseExplorer/types';
-
-import { DOCUMENTATIONS } from 'config/references';
 
 function getAudiosExplorerStaticContent(
   type: StaticContentType,
