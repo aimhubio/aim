@@ -111,6 +111,12 @@ stroke_styles = [
 ]
 
 
+def apply_group_value_pattern(value, list):
+    if type(value) is int:
+        return list[value % len(list)]
+    return value
+
+
 def group(name, data, options):
     group_map = {}
     grouped_data = []
@@ -118,6 +124,8 @@ def group(name, data, options):
         group_values = []
         if callable(options):
             val = options(item)
+            if type(val) == bool:
+                val = int(val)
             group_values.append(val)
         else:
             for opt in options:
@@ -166,7 +174,9 @@ def group(name, data, options):
 
     i = 0
     for group_key in sorted_groups:
-        sorted_groups[group_key]["order"] = i
+        sorted_groups[group_key]["order"] = (
+            sorted_groups[group_key]["val"][0] if callable(options) else i
+        )
         i = i + 1
     return sorted_groups, grouped_data
 
@@ -264,6 +274,14 @@ def Group(
 
             for additional in additional_groups:
                 item[additional["name"]] = additional["current"]["order"]
+                if additional["name"] == "color":
+                    item[additional["name"]] = apply_group_value_pattern(
+                        item[additional["name"]], colors
+                    )
+                elif additional["name"] == "stroke_style":
+                    item[additional["name"]] = apply_group_value_pattern(
+                        item[additional["name"]], stroke_styles
+                    )
                 item[f'{additional["name"]}_val'] = additional["current"]["val"]
                 item[f'{additional["name"]}_options'] = additional["options"]
 
@@ -316,10 +334,13 @@ def LineChart(
     stroke_map, stroke_data = group("stroke_style", data, stroke_style)
     lines = []
     for i, item in enumerate(data):
-        color_val = colors[color_map[color_data[i]["color"]]["order"] % len(colors)]
-        stroke_val = stroke_styles[
-            stroke_map[stroke_data[i]["stroke_style"]]["order"] % len(stroke_styles)
-        ]
+        color_val = apply_group_value_pattern(
+            color_map[color_data[i]["color"]]["order"], colors
+        )
+        stroke_val = apply_group_value_pattern(
+            stroke_map[stroke_data[i]["stroke_style"]]["order"], stroke_styles
+        )
+
         line = item
         line["key"] = i
         line["data"] = {"xValues": item[x], "yValues": item[y]}
