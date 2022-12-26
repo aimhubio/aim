@@ -358,10 +358,10 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
       if (!hoverLineY.empty()) {
         // update vertical hoverLine
         hoverLineY
-          .attr('x1', axisLineData.x1.toFixed(2))
-          .attr('y1', axisLineData.y1.toFixed(2))
-          .attr('x2', axisLineData.x2.toFixed(2))
-          .attr('y2', axisLineData.y2.toFixed(2));
+          .attr('x1', axisLineData.x1?.toFixed(2))
+          .attr('y1', axisLineData.y1?.toFixed(2))
+          .attr('x2', axisLineData.x2?.toFixed(2))
+          .attr('y2', axisLineData.y2?.toFixed(2));
       } else {
         // create vertical hoverLine
         attrNodeRef.current
@@ -373,10 +373,10 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
           .style('stroke-dasharray', '4 2')
           .style('fill', 'none')
           .style('pointer-events', 'none')
-          .attr('x1', axisLineData.x1.toFixed(2))
-          .attr('y1', axisLineData.y1.toFixed(2))
-          .attr('x2', axisLineData.x2.toFixed(2))
-          .attr('y2', axisLineData.y2.toFixed(2))
+          .attr('x1', axisLineData.x1?.toFixed(2))
+          .attr('y1', axisLineData.y1?.toFixed(2))
+          .attr('x2', axisLineData.x2?.toFixed(2))
+          .attr('y2', axisLineData.y2?.toFixed(2))
           .lower();
       }
     }
