@@ -83,4 +83,4 @@ function ExplorerBar(props: IExplorerBarProps) {
   );
 }
 
-export default ExplorerBar;
+export default React.memo(ExplorerBar);

@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
 
-import Visualizations from '../Visualizations/Visualizations';
+import Visualizations from '../Visualizations';
 import ExplorerBar from '../ExplorerBar';
+import ExplorerNotifications from '../ExplorerNotifications';
 import { ExplorerProps } from '../../types';
 
 import './styles.scss';
@@ -27,6 +28,7 @@ function Explorer({ configuration, engineInstance }: ExplorerProps) {
         // @ts-ignore
         documentationLink={configuration.documentationLink}
       />
+      <ExplorerNotifications engine={engineInstance} />
       {/* @ts-ignore*/}
       <configuration.components.queryForm engine={engineInstance} />
       <Visualizations

@@ -9,11 +9,11 @@ function Figures(props: any) {
   let containerRef = React.useRef<HTMLDivElement | null>(null);
 
   React.useEffect(() => {
-    let rAFRef = window.requestAnimationFrame(() => {
+    let rafId = window.requestAnimationFrame(() => {
       setData(JSON.parse(props.data.data.data));
     });
 
-    return () => window.cancelAnimationFrame(rAFRef);
+    return () => window.cancelAnimationFrame(rafId);
   }, [props.data.data.data]);
 
   React.useEffect(() => {

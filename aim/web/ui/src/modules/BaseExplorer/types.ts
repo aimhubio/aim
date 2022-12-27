@@ -66,8 +66,7 @@ export interface IUIComponents {
 export interface IQueryFormProps extends IBaseComponentProps {
   hasAdvancedMode?: boolean;
 }
-export interface IGroupingProps
-  extends Omit<IBaseComponentProps, 'visualizationName'> {}
+export interface IGroupingProps extends IBaseComponentProps {}
 export interface IControlsProps extends IBaseComponentProps {
   visualizationName: string;
 }
@@ -95,18 +94,18 @@ export interface IBoxProps extends IBaseComponentProps {
   items: AimFlatObjectBase[];
   style?: React.CSSProperties;
   isFullView?: boolean;
+  visualizationName: string;
 }
 
 export interface IOptionalExplorerConfig {}
-export interface IExplorerBarProps
-  extends Omit<IBaseComponentProps, 'visualizationName'> {
+export interface IExplorerBarProps extends IBaseComponentProps {
   explorerName: string;
   documentationLink: string;
 }
+export interface IExplorerNotificationProps extends IBaseComponentProps {}
 
 export interface IBaseComponentProps {
   engine: any;
-  visualizationName: string;
   // dataSelector: () => any;
 }
 

@@ -20,27 +20,14 @@ function Illustration({
   size = 'xLarge',
   showImage = true,
 }: IIllustrationProps): React.FunctionComponentElement<React.ReactNode> {
-  const [imgLoaded, setImgLoaded] = React.useState(false);
-
   return (
-    <div
-      className={classNames('Illustration', {
-        Illustrations__hidden: showImage && !imgLoaded,
-        [className]: !!className,
-      })}
-    >
+    <div className={classNames('Illustration', { [className]: !!className })}>
       <div className='Illustration__container'>
         {showImage ? (
           <div
             className={`Illustration__container__img Illustration__container__${size}__img `}
           >
-            {image || (
-              <img
-                onLoad={() => setImgLoaded(true)}
-                src={ILLUSTRATION_LIST[type]}
-                alt='Illustration'
-              />
-            )}
+            {image || ILLUSTRATION_LIST[type]}
           </div>
         ) : null}
 

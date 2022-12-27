@@ -15,7 +15,7 @@ import { SequenceTypesEnum } from 'types/core/enums';
 
 import createPipelineEngine, { IPipelineEngine } from '../pipeline';
 import createInstructionsEngine, { IInstructionsEngine } from '../instructions';
-import { PipelineStatusEnum } from '../types';
+import { INotificationsState, PipelineStatusEnum } from '../types';
 import createVisualizationsEngine from '../visualizations';
 import createExplorerAdditionalEngine from '../explorer';
 import createCustomStatesEngine, { CustomStatesEngine } from '../custom-states';
@@ -23,6 +23,9 @@ import createEventSystemEngine, { IEventSystemEngine } from '../event-system';
 import createBlobURISystemEngine, {
   IBlobURISystemEngine,
 } from '../blob-uri-system';
+import createNotificationsEngine, {
+  INotificationsEngine,
+} from '../notifications';
 
 type State = {
   pipeline?: any;
@@ -31,6 +34,7 @@ type State = {
   visualizations?: any;
   events?: IEventSystemEngine['state'];
   blobURI?: any;
+  notifications?: INotificationsState;
 };
 
 export type EngineNew<
@@ -42,6 +46,7 @@ export type EngineNew<
   pipeline: IPipelineEngine<TObject, TStore>['engine'];
   instructions: IInstructionsEngine<TStore, SequenceName>['engine'];
   events: IEventSystemEngine['engine'];
+  notifications: INotificationsEngine<TStore>['engine'];
   visualizations: any;
 
   // methods
@@ -58,6 +63,7 @@ function getPipelineEngine(
   set: any,
   get: any,
   state: State, // mutable
+  notificationsEngine: INotificationsEngine<State>['engine'],
 ) {
   const useCache = config.enablePipelineCache;
 
@@ -88,6 +94,7 @@ function getPipelineEngine(
     { setState: set, getState: get },
     pipelineOptions,
     defaultGroupings,
+    notificationsEngine,
   );
 
   state['pipeline'] = pipeline.state.pipeline;
@@ -100,10 +107,12 @@ function getInstructionsEngine(
   set: any,
   get: any,
   state: State, // mutable,
+  notificationsEngine: INotificationsEngine<State>['engine'],
 ) {
   const instructions = createInstructionsEngine<object>(
     { setState: set, getState: get },
     { sequenceName: config.sequenceName },
+    notificationsEngine,
   );
 
   state['instructions'] = instructions.state.instructions;
@@ -165,12 +174,29 @@ function getBlobURIEngine(config: ExplorerEngineConfiguration) {
   return blobURI.engine;
 }
 
+function getNotificationsEngine(
+  state: State, // mutable
+  set: any,
+  get: any,
+) {
+  const { state: notificationsState, engine: notificationsEngine } =
+    createNotificationsEngine<State>({
+      setState: set,
+      getState: get,
+    });
+
+  state['notifications'] = notificationsState.notifications;
+
+  return notificationsEngine;
+}
+
 function createEngine<TObject = any>(
   config: ExplorerEngineConfiguration,
   basePath: string,
   name: string = 'ExplorerEngine',
   devtool: boolean = false,
 ): EngineNew<object, AimFlatObjectBase<TObject>, typeof config.sequenceName> {
+  let notifications: INotificationsEngine<State>['engine'];
   let pipeline: IPipelineEngine<AimFlatObjectBase<TObject>, object>['engine'];
   let instructions: IInstructionsEngine<
     object,
@@ -185,7 +211,13 @@ function createEngine<TObject = any>(
   let query: any;
   let groupings: any;
   let initialState = {};
+
   function buildEngine(set: any, get: any) {
+    /**
+     * Notifications engine
+     */
+    notifications = getNotificationsEngine(initialState, set, get);
+
     /**
      * Custom states
      */
@@ -223,32 +255,32 @@ function createEngine<TObject = any>(
     /**
      * Instructions
      */
-    instructions = getInstructionsEngine(config, set, get, initialState);
+    instructions = getInstructionsEngine(
+      config,
+      set,
+      get,
+      initialState,
+      notifications,
+    );
 
     /**
      * Pipeline
      */
-    pipeline = getPipelineEngine(config, set, get, initialState);
+    pipeline = getPipelineEngine(config, set, get, initialState, notifications);
 
-    /*
+    /**
      * Visualizations
      */
     visualizations = getVisualizationsEngine(config, set, get, initialState);
 
     /** Additional **/
 
-    /*
+    /**
      * Event System
      */
     events = getEventSystemEngine(initialState, set, get);
 
     /**
-     * @TODO add notification engine here
-     */
-    /**
-     * @TODO add blobs_uri engine here
-     */
-    /*
      * Blob URI System
      */
     blobURI = getBlobURIEngine(config);
@@ -362,6 +394,8 @@ function createEngine<TObject = any>(
     events,
     // @ts-ignore
     blobURI,
+    // @ts-ignore
+    notifications,
     finalize,
     initialize,
   };
