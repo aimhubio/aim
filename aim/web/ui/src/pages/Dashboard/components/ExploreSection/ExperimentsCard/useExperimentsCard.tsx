@@ -1,12 +1,13 @@
 import React from 'react';
 import _ from 'lodash-es';
 
-import { IExperimentData } from 'modules/core/api/experimentsApi';
-import { IResourceState } from 'modules/core/utils/createResource';
 import { Checkbox } from '@material-ui/core';
 
 import { Icon, Text } from 'components/kit';
 import ExperimentNameBox from 'components/ExperimentNameBox';
+
+import { IResourceState } from 'modules/core/utils/createResource';
+import { IExperimentData } from 'modules/core/api/experimentsApi';
 
 import createExperimentEngine from './ExperimentsStore';
 

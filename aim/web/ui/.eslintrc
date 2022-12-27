@@ -87,6 +87,11 @@
             "position": "before"
           },
           {
+            "pattern": "modules/**",
+            "group": "parent",
+            "position": "before"
+          },
+          {
             "pattern": "pages/**",
             "group": "parent",
             "position": "before"
@@ -103,6 +108,11 @@
           },
           {
             "pattern": "styles/**",
+            "group": "parent",
+            "position": "before"
+          },
+          {
+            "pattern": "tests/**",
             "group": "parent",
             "position": "before"
           },

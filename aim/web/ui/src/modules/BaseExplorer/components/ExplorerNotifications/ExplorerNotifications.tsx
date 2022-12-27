@@ -3,10 +3,11 @@ import _ from 'lodash-es';
 
 import { Fade, Portal, Snackbar } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
-import { INotificationItem } from 'modules/core/engine/types';
-import { IExplorerNotificationProps } from 'modules/BaseExplorer/types';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+
+import { INotificationItem } from 'modules/core/engine/types';
+import { IExplorerNotificationProps } from 'modules/BaseExplorer/types';
 
 import { getNotificationIcon } from './config';
 

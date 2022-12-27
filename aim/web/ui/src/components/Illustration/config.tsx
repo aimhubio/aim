@@ -1,13 +1,13 @@
 import * as React from 'react';
 
-import { PipelineStatusEnum } from 'modules/core/engine/types';
-
 import { ReactComponent as EmptyBookmarks } from 'assets/illustrations/emptyBookmarks.svg';
 import { ReactComponent as EmptySearch } from 'assets/illustrations/emptySearch.svg';
 import { ReactComponent as ExploreData } from 'assets/illustrations/exploreData.svg';
 import { ReactComponent as WrongSearch } from 'assets/illustrations/wrongSearch.svg';
 
 import { DOCUMENTATIONS } from 'config/references';
+
+import { PipelineStatusEnum } from 'modules/core/engine/types';
 
 import { IllustrationType } from '.';
 

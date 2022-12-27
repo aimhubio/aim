@@ -1,5 +1,25 @@
 # Changelog
 
+## Unreleased
+
+### Enhancements
+
+- Add other x-axis alignment and system logs tracking to cli convert wandb (hjoonjang)
+- Add support for pre-binned distribution/histogram (YodaEmbedding)
+- Fix plotly and matplotlib compatibility (tmynn)
+
+### Fixes
+
+- Fix gpu stats logging when some stats are unavailable (timokau)
+
+## 3.15.2 Dec 23, 2022
+
+- Change logging level for reporter debug messages (alberttorosyan)
+- Fix styling issues on the experiment page (KaroMourad)
+- Fix client side worker port calculation for RTS (mihran113)
+- Add discord community link in the sidebar (arsengit)
+- Display experiments descriptions in the explorers tables (arsengit)
+
 ## 3.15.1 Dec 1, 2022
 
 - Fix issue with index container lock for older repos (mihran113)

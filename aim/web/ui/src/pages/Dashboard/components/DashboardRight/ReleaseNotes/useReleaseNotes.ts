@@ -2,11 +2,11 @@ import React from 'react';
 import _ from 'lodash-es';
 import { marked } from 'marked';
 
+import { AIM_VERSION } from 'config/config';
+
 import { IReleaseNote } from 'modules/core/api/releaseNotesApi/types';
 import { IResourceState } from 'modules/core/utils/createResource';
 import { fetchReleaseByTagName } from 'modules/core/api/releaseNotesApi';
-
-import { AIM_VERSION } from 'config/config';
 
 import createReleaseNotesEngine from './ReleasesStore';
 

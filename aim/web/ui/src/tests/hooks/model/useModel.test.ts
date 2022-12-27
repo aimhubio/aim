@@ -1,9 +1,10 @@
 import { renderHook, act } from '@testing-library/react-hooks';
-import { shouldMatchObject } from 'tests/utils';
 
 import useModel from 'hooks/useModel';
 
 import createModel from 'services/models/model';
+
+import { shouldMatchObject } from 'tests/utils';
 
 import { IModel } from 'types/services/models/model';
 

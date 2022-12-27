@@ -1,13 +1,14 @@
 import React, { useCallback } from 'react';
 
 import { MenuItem } from '@material-ui/core';
-import { IExplorerBarProps } from 'modules/BaseExplorer/types';
-import { PipelineStatusEnum } from 'modules/core/engine/types';
 
 import AppBar from 'components/AppBar/AppBar';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import { Button, Icon } from 'components/kit';
+
+import { PipelineStatusEnum } from 'modules/core/engine/types';
+import { IExplorerBarProps } from 'modules/BaseExplorer/types';
 
 import './ExplorerBar.scss';
 

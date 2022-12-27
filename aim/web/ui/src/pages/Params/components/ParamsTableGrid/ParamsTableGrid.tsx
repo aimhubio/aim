@@ -47,6 +47,36 @@ function getParamsTableColumns(
 ): ITableColumn[] {
   let columns: ITableColumn[] = [
     {
+      key: 'experiment',
+      content: <span>Name</span>,
+      topHeader: 'Experiment',
+      pin: order?.left?.includes('experiment')
+        ? 'left'
+        : order?.middle?.includes('experiment')
+        ? null
+        : order?.right?.includes('experiment')
+        ? 'right'
+        : null,
+      columnOptions: getColumnOptions(
+        grouping!,
+        onGroupingToggle!,
+        appName!,
+        'run.props.experiment.name',
+      ),
+    },
+    {
+      key: 'experiment_description',
+      content: <span>Description</span>,
+      topHeader: 'Experiment',
+      pin: order?.left?.includes('experiment_description')
+        ? 'left'
+        : order?.middle?.includes('experiment_description')
+        ? null
+        : order?.right?.includes('experiment_description')
+        ? 'right'
+        : null,
+    },
+    {
       key: 'hash',
       content: <span>Hash</span>,
       topHeader: 'Run',
@@ -82,24 +112,7 @@ function getParamsTableColumns(
         'run.props.name',
       ),
     },
-    {
-      key: 'experiment',
-      content: <span>Experiment</span>,
-      topHeader: 'Run',
-      pin: order?.left?.includes('experiment')
-        ? 'left'
-        : order?.middle?.includes('experiment')
-        ? null
-        : order?.right?.includes('experiment')
-        ? 'right'
-        : null,
-      columnOptions: getColumnOptions(
-        grouping!,
-        onGroupingToggle!,
-        appName!,
-        'run.props.experiment.name',
-      ),
-    },
+
     {
       key: 'description',
       content: <span>Description</span>,
