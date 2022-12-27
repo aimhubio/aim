@@ -95,6 +95,7 @@ export interface IBoxProps extends IBaseComponentProps {
   style?: React.CSSProperties;
   isFullView?: boolean;
   index?: number;
+  id?: string;
 }
 
 export interface IOptionalExplorerConfig {}

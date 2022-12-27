@@ -39,6 +39,7 @@ export interface ILineChartProps {
   style?: {};
   margin?: { top: number; right: number; bottom: number; left: number };
   index?: number;
+  id?: string;
   data: IChartPanelProps['data'];
   nameKey?: string;
   aggregatedData?: IAggregatedData[];
@@ -55,6 +56,17 @@ export interface ILineChartProps {
   onZoomChange?: (zoom: Partial<IChartZoom>) => void;
   readOnly?: boolean;
   resizeMode?: ResizeModeEnum;
+}
+
+export interface ILineChartRef {
+  setActiveLineAndCircle: (
+    lineKey: string,
+    focusedStateActive: boolean = false,
+    force: boolean = false,
+  ) => void;
+  updateHoverAttributes: (xValue: number, dataSelector?: string) => void;
+  clearHoverAttributes: () => void;
+  setFocusedState: (focusedState: IFocusedState) => void;
 }
 
 export interface IUpdateFocusedChartArgs {

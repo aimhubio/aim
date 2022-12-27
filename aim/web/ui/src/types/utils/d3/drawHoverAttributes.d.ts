@@ -17,6 +17,7 @@ export type HoverAttrData = ILine | IPoint;
 
 export interface IDrawHoverAttributesArgs {
   index: number;
+  id: string;
   nameKey: string;
   data: HoverAttrData[];
   processedData?: IProcessedData[];
@@ -75,6 +76,7 @@ export interface IActivePoint {
   xPos: number;
   yPos: number;
   chartIndex: number;
+  chartId: string;
   inProgress?: boolean;
   pointRect: {
     top: number;

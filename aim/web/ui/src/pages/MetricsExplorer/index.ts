@@ -2,6 +2,7 @@ import type { FunctionComponent } from 'react';
 
 import renderer from 'modules/BaseExplorer';
 import Metrics from 'modules/BaseExplorer/components/Metrics/Metrics';
+import { PersistenceTypesEnum } from 'modules/core/engine/types';
 
 import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
 
@@ -28,6 +29,19 @@ const MetricsExplorer = renderer(
           hasDepthSlider: defaultConfig.box.hasDepthSlider,
           initialState: defaultConfig.box.initialState,
         },
+      },
+    },
+    states: {
+      focusedState: {
+        initialState: {
+          key: null,
+          xValue: null,
+          yValue: null,
+          active: false,
+          chartIndex: null,
+          chartId: null,
+        },
+        persist: PersistenceTypesEnum.Url,
       },
     },
     getStaticContent: defaultConfig.getStaticContent,

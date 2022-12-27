@@ -25,6 +25,7 @@ import { CircleEnum, ScaleEnum, HighlightEnum } from './index';
 function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
   const {
     index,
+    id,
     nameKey,
     data,
     processedData = [],
@@ -605,6 +606,7 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
       yPos,
       inProgress: !!circle.inProgress,
       chartIndex: index,
+      chartId: id,
       pointRect: {
         top: chartRect.top + margin.top + boundedY - CircleEnum.ActiveRadius,
         bottom: chartRect.top + margin.top + boundedY + CircleEnum.ActiveRadius,

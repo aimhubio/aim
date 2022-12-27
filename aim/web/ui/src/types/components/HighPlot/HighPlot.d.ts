@@ -7,6 +7,7 @@ import { CurveEnum } from 'utils/d3';
 
 export interface IHighPlotProps {
   index: number;
+  id?: string;
   nameKey?: string;
   brushExtents: {
     [key: string]: {

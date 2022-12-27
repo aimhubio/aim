@@ -27,6 +27,7 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
 ): React.FunctionComponentElement<React.ReactNode> {
   const {
     index = 0,
+    id = `${index}`,
     nameKey = '',
     data: { dimensions, data },
     syncHoverState,
@@ -146,6 +147,7 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
     if (!readOnly) {
       drawHoverAttributes({
         index,
+        id,
         nameKey,
         data,
         axesScaleType,

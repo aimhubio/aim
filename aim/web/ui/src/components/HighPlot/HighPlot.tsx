@@ -27,6 +27,7 @@ const HighPlot = React.forwardRef(function HighPlot(
 ): React.FunctionComponentElement<React.ReactNode> {
   const {
     index = 0,
+    id = `${index}`,
     nameKey = '',
     curveInterpolation,
     syncHoverState,
@@ -133,6 +134,7 @@ const HighPlot = React.forwardRef(function HighPlot(
         drawParallelHoverAttributes({
           dimensions: data.dimensions,
           index,
+          id,
           nameKey,
           visAreaRef,
           linesRef,

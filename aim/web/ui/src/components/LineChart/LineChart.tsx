@@ -9,6 +9,7 @@ import { RENDER_LINES_OPTIMIZED_LIMIT } from 'config/charts';
 import {
   IAttributesRef,
   ILineChartProps,
+  ILineChartRef,
 } from 'types/components/LineChart/LineChart';
 import { IFocusedState } from 'types/services/models/metrics/metricsAppModel';
 
@@ -29,11 +30,12 @@ import './LineChart.scss';
 
 const LineChart = React.forwardRef(function LineChart(
   props: ILineChartProps,
-  ref,
+  ref: React.ForwardedRef<ILineChartRef>,
 ): React.FunctionComponentElement<React.ReactNode> {
   const {
     data,
     index = 0,
+    id = `${index}`,
     nameKey = '',
     aggregatedData,
     aggregationConfig,
@@ -183,6 +185,7 @@ const LineChart = React.forwardRef(function LineChart(
     if (!readOnly) {
       drawHoverAttributes({
         index,
+        id,
         nameKey,
         data,
         processedData,

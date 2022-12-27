@@ -20,6 +20,7 @@ export interface IPoint {
 
 export interface IScatterPlotProps {
   index: number;
+  id?: string;
   nameKey?: string;
   data: { dimensions: IDimensionType[]; data: IPoint[] };
   chartTitle?: IChartTitle;

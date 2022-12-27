@@ -118,6 +118,7 @@ function BoxWrapper(props: IBoxWrapperProps<AimFlatObjectBase<any>>) {
           <BoxContent
             key={currentItem.key}
             index={boxIndex}
+            id={boxId}
             data={boxData}
             engine={engine}
             style={currentItem.style}

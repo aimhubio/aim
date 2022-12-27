@@ -20,6 +20,7 @@ import { CircleEnum, ScaleEnum } from './';
 const drawParallelHoverAttributes = ({
   dimensions,
   index,
+  id,
   nameKey,
   attributesNodeRef: attrNodeRef,
   attributesRef: attrRef,
@@ -164,6 +165,7 @@ const drawParallelHoverAttributes = ({
       xPos: circle.x,
       yPos: circle.y,
       chartIndex: index,
+      chartId: id,
       pointRect: {
         top: chartRect.top + margin.top + circle.y - CircleEnum.ActiveRadius,
         bottom: chartRect.top + margin.top + circle.y + CircleEnum.ActiveRadius,

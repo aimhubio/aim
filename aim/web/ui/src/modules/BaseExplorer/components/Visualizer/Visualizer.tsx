@@ -146,7 +146,7 @@ function Visualizer(props: IVisualizationProps) {
         });
     }
   }, [foundGroups, boxConfig, rowsAxisData]);
-  console.log('foundGroups', foundGroups);
+
   const [depthSelector, onDepthMapChange] = useDepthMap<AimFlatObjectBase<any>>(
     {
       data,
