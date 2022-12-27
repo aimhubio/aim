@@ -81,27 +81,22 @@ function QueryForm(props: Omit<IQueryFormProps, 'visualizationName'>) {
     }, [status]);
 
   const processedError = React.useMemo(() => {
-    if (error) {
-      let message = error.message || 'Something went wrong';
-      let detail = { ...(error.detail || {}) };
-      if (message === 'SyntaxError') {
-        const syntaxErrDetail = removeSyntaxErrBrackets(
-          detail,
-          query.advancedModeOn,
-        );
-        return {
-          message: `Query syntax error at line (${syntaxErrDetail.line}, ${
-            syntaxErrDetail.offset
-          }${
-            syntaxErrDetail.end_offset &&
-            syntaxErrDetail.end_offset !== syntaxErrDetail.offset
-              ? `-${syntaxErrDetail.end_offset}`
-              : ''
-          })`,
-          detail: syntaxErrDetail,
-        };
-      }
-      return { message, detail };
+    if (error?.message === 'SyntaxError') {
+      const syntaxErrDetail = removeSyntaxErrBrackets(
+        { ...(error.detail || {}) },
+        query.advancedModeOn,
+      );
+      return {
+        message: `Query syntax error at line (${syntaxErrDetail.line}, ${
+          syntaxErrDetail.offset
+        }${
+          syntaxErrDetail.end_offset &&
+          syntaxErrDetail.end_offset !== syntaxErrDetail.offset
+            ? `-${syntaxErrDetail.end_offset}`
+            : ''
+        })`,
+        detail: syntaxErrDetail,
+      };
     }
     return;
   }, [error, query.advancedModeOn]);
@@ -144,7 +139,7 @@ function QueryForm(props: Omit<IQueryFormProps, 'visualizationName'>) {
     let advancedSuggestions = {};
     if (props.hasAdvancedMode) {
       let contextData = getAdvancedSuggestion(
-        queryable.queryable_data[sequenceName],
+        queryable.queryable_data?.[sequenceName] || {},
       );
       advancedSuggestions = {
         ...suggestions,

@@ -4,8 +4,8 @@ import _ from 'lodash-es';
 import { Alert } from '@material-ui/lab';
 import { Box, Snackbar } from '@material-ui/core';
 
-import successIconImg from 'assets/icons/successIcon.svg';
-import errorIconImg from 'assets/icons/errorIcon.svg';
+import { ReactComponent as SuccessIcon } from 'assets/icons/notifications/success.svg';
+import { ReactComponent as ErrorIcon } from 'assets/icons/notifications/error.svg';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
@@ -34,8 +34,8 @@ export default function NotificationContainer({
                     variant='outlined'
                     severity={severity}
                     iconMapping={{
-                      success: <img src={successIconImg} alt='' />,
-                      error: <img src={errorIconImg} alt='' />,
+                      success: <SuccessIcon />,
+                      error: <ErrorIcon />,
                     }}
                     style={{ height: 'auto' }}
                   >

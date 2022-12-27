@@ -1,9 +1,9 @@
 import * as React from 'react';
 
-import emptyBookmarks from 'assets/illustrations/emptyBookmarks.svg';
-import emptySearch from 'assets/illustrations/emptySearch.svg';
-import exploreData from 'assets/illustrations/exploreData.svg';
-import wrongSearch from 'assets/illustrations/wrongSearch.svg';
+import { ReactComponent as EmptyBookmarks } from 'assets/illustrations/emptyBookmarks.svg';
+import { ReactComponent as EmptySearch } from 'assets/illustrations/emptySearch.svg';
+import { ReactComponent as ExploreData } from 'assets/illustrations/exploreData.svg';
+import { ReactComponent as WrongSearch } from 'assets/illustrations/wrongSearch.svg';
 
 import { DOCUMENTATIONS } from 'config/references';
 
@@ -19,12 +19,12 @@ const ILLUSTRATION_TYPES: Record<string, IllustrationType> = {
   Empty_Bookmarks: 'emptyBookmarks',
 };
 
-const ILLUSTRATION_LIST: Record<IllustrationType, string> = {
-  [ILLUSTRATION_TYPES.Never_Executed]: exploreData,
-  [ILLUSTRATION_TYPES.Insufficient_Resources]: exploreData,
-  [ILLUSTRATION_TYPES.Empty]: emptySearch,
-  [ILLUSTRATION_TYPES.Failed]: wrongSearch,
-  [ILLUSTRATION_TYPES.Empty_Bookmarks]: emptyBookmarks,
+const ILLUSTRATION_LIST: Record<IllustrationType, React.ReactNode> = {
+  [ILLUSTRATION_TYPES.Never_Executed]: <ExploreData />,
+  [ILLUSTRATION_TYPES.Insufficient_Resources]: <ExploreData />,
+  [ILLUSTRATION_TYPES.Empty]: <EmptySearch />,
+  [ILLUSTRATION_TYPES.Failed]: <WrongSearch />,
+  [ILLUSTRATION_TYPES.Empty_Bookmarks]: <EmptyBookmarks />,
 };
 
 function getDefaultIllustrationContent(
