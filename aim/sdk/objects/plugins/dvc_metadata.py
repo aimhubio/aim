@@ -1,6 +1,11 @@
 from aim.storage.object import CustomObject
-from dvc.repo import Repo
-import dvc.api as api
+import logging
+
+try:
+    from dvc.repo import Repo
+    import dvc.api as api
+except ImportError:
+    raise ImportError("module dvc could not be imported")
 
 
 @CustomObject.alias('dvc.metadata')
@@ -43,4 +48,4 @@ class DvcData(CustomObject):
             params = api.params_show(repo=url)
             return params
         except Exception:
-            print("Failed to log params")
+            logging.warning("Failed to log params")
