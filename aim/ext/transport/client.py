@@ -144,24 +144,24 @@ class Client:
         # further incompatibility list will be added manually
 
     def _get_worker_address(self):
-        worker_host = self._remote_path.rsplit(':', maxsplit=1)[0]
-        worker_port = self._get_worker_port()
-        return f'{worker_host}:{worker_port}'
+        worker_port_offset = self._get_worker_port_offset()
+        if worker_port_offset == 0:
+            return self._remote_path
+        else:
+            router_host = self._remote_path.rsplit(':', maxsplit=1)[0]
+            router_port = int(self._remote_path.rsplit(':', maxsplit=1)[1])
 
-    def _get_worker_port(self):
+            return f'{router_host}:{router_port + worker_port_offset}'
+
+    def _get_worker_port_offset(self):
         request = router_messages.ConnectRequest(
             client_uri=self.uri
         )
         response = self._remote_router_stub.connect(request, metadata=[('x-client', self.uri)])
         if response.status == router_messages.ConnectResponse.Status.ERROR:
             raise_exception(response.exception)
-        try:
-            router_port = int(self._remote_path.rsplit(':', maxsplit=1)[1])
-            port_offset = int(response.worker_index)
-            worker_port = router_port + port_offset
-            return worker_port
-        except Exception:
-            return response.port
+
+        return int(response.worker_index)
 
     def client_heartbeat(self):
         request = router_messages.HeartbeatRequest(
