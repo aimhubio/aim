@@ -356,6 +356,28 @@ Check out a simple objective optimization example [here](https://github.com/aimh
 
 
 
+### Integration with Stable-Baselines3
+
+Aim provides a callback to easily track one of the reliable Reinforcement Learning implementations [Stable-Baselines3](https://stable-baselines3.readthedocs.io/en/master/) trainings.
+It takes two steps to integrate Aim into your training script.
+
+Step 1: Explicitly import the `AimCallback` for tracking training metadata.
+
+```python
+from aim.sb3 import AimCallback
+```
+
+Step 2: Pass the callback to `callback` upon initiating your training.
+
+```python
+model.learn(total_timesteps=10_000, callback=AimCallback(repo='.', experiment_name='sb3_test'))
+```
+
+See `AimCallback` source [here](https://github.com/aimhubio/aim/blob/main/aim/sdk/adapters/sb3.py).  
+Check out a simple objective optimization example [here](https://github.com/aimhubio/aim/blob/main/examples/sb3_track.py).
+
+
+
 ### What's next?
 
 During the training process, you can start another terminal in the same directory, start `aim up` and you can observe
