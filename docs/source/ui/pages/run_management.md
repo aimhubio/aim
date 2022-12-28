@@ -1,5 +1,12 @@
 # Runs Management
 
+The page represents a comprehensive overview of runs. The following are the primary sections of the page:
+
+- [Runs explorer](#id1)
+- [Single run page](#id5)
+- [Experiment page](#id18)
+- [Tags page](#id27)
+
 ## Runs Explorer
 
 ### Overview
@@ -9,9 +16,9 @@ To navigate into Runs Explorer, click on the `Runs` navigation item from the lef
 Runs explorer helps you to
 
 - [Search runs with pythonic query](#search-runs)
-- [Observe runs in real time](#id1)
-- [Delete or archive runs](#id2)
-- [Export Runs report](#id3)
+- [Observe runs in real time](#id2)
+- [Delete or archive runs](#id3)
+- [Export Runs report](#id4)
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Runs Explorer" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/runs-explorer/runs.png">
 
@@ -56,17 +63,17 @@ Each training run has a dedicated page on Aim. Use the single run page to observ
 Here are the tabs available on the single run page.
 Each tab visualizes respective tracked metadata or empty if not tracked.
 
-- [Overview](#id5)
-- [Params](#id6)
-- [Metrics](#id7)
-- [System](#id8)
-- [Distributions](#id9)
-- [Images](#id10)
-- [Audios](#id11)
-- [Texts](#id12)
-- [Figures](#id13)
-- [Terminal Logs](#id14)
-- [Settings](#id15)
+- [Overview](#id7)
+- [Params](#id8)
+- [Metrics](#id9)
+- [System](#id10)
+- [Distributions](#id11)
+- [Images](#id12)
+- [Audios](#id13)
+- [Texts](#id14)
+- [Figures](#id15)
+- [Terminal Logs](#id16)
+- [Settings](#id17)
 
 ### Overview
 
@@ -196,10 +203,10 @@ The experiment page provides overall information about the single experiment, an
 
 Here are the tabs available on the experiment page.
 
-- [Overview](#id18)
-- [Runs](#id21)
-- [Notes](#id22)
-- [Settings](#id23)
+- [Overview](#id21)
+- [Runs](#id24)
+- [Notes](#id25)
+- [Settings](#id26)
 
 ### Overview
 
@@ -269,7 +276,7 @@ There are two options for creating a tag.
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Attach tag popover" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/tags/3.png">
 
-- Click create tag button and you will be redirected to the tags page than the actual first option.
+- Click create tag button, and you will be redirected to the tags page than the actual first option.
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Attach tag popover" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/tags/4.png">
 
@@ -300,7 +307,7 @@ How to update attached tags?
 ### Edit tag
 #### How to edit tag?
 - Go to the tags page
-- Click to edit icon in the right side in the tag row
+- Click to edit icon on the right side in the tag row
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Tags table" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/tags/9.png">
 
@@ -313,16 +320,16 @@ How to update attached tags?
 ### Delete tag
 #### How to delete tag?
 - Go to the tags page.
-- Click on the trash icon in the right side in the tag row to open the delete modal.
+- Click on the trash icon on the right side in the tag row to open the delete modal.
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Select tag popover" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/tags/11.png">
 
-- In the delete modal there is a tag name input field and a tag name label at the top of the tag name input. You need to type the tag name for approving you are want to delete that tag.
-- Then you have two possible actions delete the tag or close the modal by canceling the delete operation. If you want to delete a tag please double-check the tag name and click to delete button. After tag deletion, there are no possibilities to recover it. Also if you are deleting the tag it will be removed from all relations too.
+- In the delete modal there is a tag name input field, and a tag name label at the top of the tag name input. You need to type the tag name for approving you are want to delete that tag.
+- Then you have two possible actions delete the tag or close the modal by canceling the delete operation. If you want to delete a tag please double-check the tag name and click to delete button. After tag deletion, there are no possibilities to recover it. Also, if you are deleting the tag it will be removed from all relations too.
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Select tag popover" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/tags/12.png">
 
 ### Used in overlay
-In the tags page you can select tag by clicking on circle icon then will opened overlay in the right side of window. Here is visible that runs which are use the tag. By clicking a run hash you will be redirected to single run page.
+In the tags page you can select tag by clicking on circle icon then will open overlay on the right side of window. Here is visible that runs which are use the tag. By clicking a run hash you will be redirected to single run page.
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Tags delete modal" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/tags/13.png">
