@@ -20,6 +20,10 @@ const RunLogsTab = React.lazy(
   () => import(/* webpackChunkName: "RunLogsTab" */ '../RunLogsTab'),
 );
 
+const RunLogRecords = React.lazy(
+  () => import(/* webpackChunkName: "RunLogRecords" */ '../RunLogRecords'),
+);
+
 function LogsTabWrapper({
   isRunLogsLoading,
   runHash,
@@ -55,7 +59,7 @@ function LogsTabWrapper({
         updatedLogsCount={updatedLogsCount}
       />
     ),
-    run_output_logs: <div></div>,
+    run_output_logs: <RunLogRecords runHash={runHash} />,
   };
 
   return (

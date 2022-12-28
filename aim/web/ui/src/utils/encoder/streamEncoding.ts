@@ -474,7 +474,7 @@ export async function parseStream<T extends Array>(
   try {
     for await (let [keys, val] of objects) {
       const object: T = { ...(val as any), hash: keys[0] };
-      if (object.hash.startsWith('progress')) {
+      if (object.hash?.startsWith?.('progress')) {
         // maybe typeof progressCallback === 'function'
         if (options?.progressCallback) {
           options.progressCallback(object as IRunProgress);
