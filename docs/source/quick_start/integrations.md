@@ -356,6 +356,45 @@ Check out a simple objective optimization example [here](https://github.com/aimh
 
 
 
+### Integration with Acme
+
+Aim provides a built in callback to easily track [Acme](https://dm-acme.readthedocs.io/en/latest/) trainings.
+It takes few simple steps to integrate Aim into your training script.
+
+Step 1: Explicitly import the `AimCallback` and `AimWritter` for tracking training metadata.
+
+```python
+from aim.sdk.acme import AimCallback, AimWritter
+```
+
+Step 2: Initialize a Aim Run via `AimCallback`, and create a logg factory using the Run.
+
+```python
+aim_run = AimCallback(repo=".", experiment_name="acme_test")
+def logger_factory(
+    name: str,
+    steps_key: Optional[str] = None,
+    task_id: Optional[int] = None,
+) -> loggers.Logger:
+    return AimWritter(aim_run, name, steps_key, task_id)
+```
+
+Step 3: Pass the logger factory to `logger_factory` upon initiating your training.
+
+```python
+experiment_config = experiments.ExperimentConfig(
+    builder=d4pg_builder,
+    environment_factory=make_environment,
+    network_factory=network_factory,
+    logger_factory=logger_factory,
+    seed=0,
+    max_num_actor_steps=5000)
+```
+
+See `AimCallback` source [here](https://github.com/aimhubio/aim/blob/main/aim/sdk/adapters/acme.py).  
+Check out a simple objective optimization example [here](https://github.com/aimhubio/aim/blob/main/examples/acme_track.py).
+
+
 ### What's next?
 
 During the training process, you can start another terminal in the same directory, start `aim up` and you can observe
