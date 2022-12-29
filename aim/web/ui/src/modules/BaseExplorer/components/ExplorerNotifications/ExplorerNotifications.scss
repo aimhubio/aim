@@ -1,0 +1,44 @@
+@use 'src/styles/abstracts' as *;
+
+.ExplorerNotifications {
+  .MuiPaper-root {
+    background: $white;
+    height: 4rem;
+    display: flex;
+    align-items: center;
+    border: $border-width-main;
+    border-radius: $border-radius-main;
+    .MuiAlert-icon {
+      padding: 0;
+      font-size: $text-xxs;
+      svg {
+        width: 2.375rem;
+        height: 2.375rem;
+      }
+    }
+    .MuiAlert-action {
+      display: flex;
+      align-items: flex-start;
+      height: 100%;
+      .MuiSvgIcon-fontSizeSmall {
+        font-size: $text-lg;
+        fill: $pico;
+      }
+    }
+  }
+  &__item {
+    color: $pico;
+    margin-top: $space-xs;
+    &__content {
+      &__title {
+        font-weight: $font-600;
+        font-size: $text-md;
+        text-transform: capitalize;
+      }
+      &__message {
+        font-weight: $font-400;
+        font-size: $text-md;
+      }
+    }
+  }
+}

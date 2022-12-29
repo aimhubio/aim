@@ -1,3 +1,5 @@
+import { notificationContainerStore } from 'components/NotificationContainer';
+
 import {
   createExperimentNote,
   getExperimentNote,
@@ -5,8 +7,6 @@ import {
   updateExperimentNote,
 } from 'modules/core/api/experimentsApi';
 import createResource from 'modules/core/utils/createResource';
-
-import { notificationContainerStore } from 'components/NotificationContainer';
 
 function createExperimentNotesEngine() {
   const { fetchData, state, destroy } = createResource<GetExperimentNoteResult>(

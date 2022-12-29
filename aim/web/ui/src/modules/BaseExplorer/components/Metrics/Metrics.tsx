@@ -1,8 +1,8 @@
 import * as React from 'react';
 
-import { IBoxProps } from 'modules/BaseExplorer/types';
-
 import LineChart from 'components/LineChart/LineChart';
+
+import { IBoxProps } from 'modules/BaseExplorer/types';
 
 import {
   IActivePoint,

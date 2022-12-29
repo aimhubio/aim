@@ -3,10 +3,11 @@ import _ from 'lodash-es';
 import { useDepthMap } from 'hooks';
 
 import { Tooltip } from '@material-ui/core';
-import { GroupType } from 'modules/core/pipeline';
-import { IQueryableData } from 'modules/core/pipeline';
 
 import { Text } from 'components/kit';
+
+import { GroupType } from 'modules/core/pipeline';
+import { IQueryableData } from 'modules/core/pipeline';
 
 import { AimFlatObjectBase } from 'types/core/AimObjects';
 

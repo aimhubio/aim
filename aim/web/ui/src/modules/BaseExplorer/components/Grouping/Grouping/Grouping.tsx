@@ -1,9 +1,9 @@
 import React, { memo } from 'react';
 
-import { IBaseComponentProps } from 'modules/BaseExplorer/types';
-
 import { Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+
+import { IBaseComponentProps } from 'modules/BaseExplorer/types';
 
 import './Grouping.scss';
 
