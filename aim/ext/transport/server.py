@@ -83,12 +83,13 @@ def run_router(host, port, workers=1, ssl_keyfile=None, ssl_certfile=None):
     worker_pool = []
 
     if workers == 1:
-        worker = LocalWorker(lambda: None, host=host, port=port, ssl_keyfile=ssl_keyfile, ssl_certfile=ssl_certfile)
+        worker = LocalWorker(lambda: None, host=host, port=port, index=0,
+                             ssl_keyfile=ssl_keyfile, ssl_certfile=ssl_certfile)
         worker_pool.append(worker)
     else:
         for i in range(1, workers + 1):
             worker_port = port + i
-            worker = RemoteWorker(run_worker, host=host, port=worker_port,
+            worker = RemoteWorker(run_worker, host=host, port=worker_port, index=i,
                                   ssl_keyfile=ssl_keyfile, ssl_certfile=ssl_certfile)
             worker_pool.append(worker)
             worker.start()

@@ -29,79 +29,41 @@ function Text({
 }: ITextProps): React.FunctionComponentElement<React.ReactNode> {
   const Element = (): React.FunctionComponentElement<React.ReactNode> => {
     const classes: string = classNames({
-      [`${className}`]: !!className,
       Text: true,
       [`Text__size_${size || 12}`]: true,
       [`Text__weight_${weight || 500}`]: true,
       [`Text__color_${color || 'primary'}${tint ? `_${tint}` : ''}`]: true,
+      [`${className}`]: !!className,
     });
+
+    const elementProps = {
+      ...rest,
+      className: classes,
+    };
+
     switch (component) {
       case 'h1':
-        return (
-          <h1 {...rest} className={classes}>
-            {children}
-          </h1>
-        );
+        return <h1 {...elementProps}>{children}</h1>;
       case 'h2':
-        return (
-          <h2 {...rest} className={classes}>
-            {children}
-          </h2>
-        );
+        return <h2 {...elementProps}>{children}</h2>;
       case 'h3':
-        return (
-          <h3 {...rest} className={classes}>
-            {children}
-          </h3>
-        );
+        return <h3 {...elementProps}>{children}</h3>;
       case 'h4':
-        return (
-          <h4 {...rest} className={classes}>
-            {children}
-          </h4>
-        );
+        return <h4 {...elementProps}>{children}</h4>;
       case 'h5':
-        return (
-          <h5 {...rest} className={classes}>
-            {children}
-          </h5>
-        );
+        return <h5 {...elementProps}>{children}</h5>;
       case 'h6':
-        return (
-          <h6 {...rest} className={classes}>
-            {children}
-          </h6>
-        );
+        return <h6 {...elementProps}>{children}</h6>;
       case 'span':
-        return (
-          <span {...rest} className={classes}>
-            {children}
-          </span>
-        );
+        return <span {...elementProps}>{children}</span>;
       case 'strong':
-        return (
-          <strong {...rest} className={classes}>
-            {children}
-          </strong>
-        );
+        return <strong {...elementProps}>{children}</strong>;
       case 'small':
-        return (
-          <small {...rest} className={classes}>
-            {children}
-          </small>
-        );
+        return <small {...elementProps}>{children}</small>;
       case 'p':
-        return (
-          <p {...rest} className={classes}>
-            {children}
-          </p>
-        );
+        return <p {...elementProps}>{children}</p>;
       default:
-        return (
-          <span {...rest} className={classes}>
-            {children}
-          </span>
-        );
+        return <span {...elementProps}>{children}</span>;
     }
   };
 

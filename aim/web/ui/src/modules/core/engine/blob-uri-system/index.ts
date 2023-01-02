@@ -1,8 +1,8 @@
 import _ from 'lodash-es';
 
-import { createBlobsRequest } from 'modules/core/api/runsApi';
-
 import { throttle } from 'components/Table/utils';
+
+import { createBlobsRequest } from 'modules/core/api/runsApi';
 
 import { SequenceTypesEnum } from 'types/core/enums';
 

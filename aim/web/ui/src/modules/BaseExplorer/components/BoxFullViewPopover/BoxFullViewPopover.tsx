@@ -158,12 +158,14 @@ function BoxFullViewPopover({
                     {item.label}:
                   </Text>
                   <Tooltip title={item.value}>
-                    <Text
-                      tint={100}
-                      className='BoxFullViewPopover__container__detail__truncatedInfo'
-                    >
-                      {item.value}
-                    </Text>
+                    <div>
+                      <Text
+                        tint={100}
+                        className='BoxFullViewPopover__container__detail__truncatedInfo'
+                      >
+                        {item.value}
+                      </Text>
+                    </div>
                   </Tooltip>
                 </div>
               ))}

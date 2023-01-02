@@ -1,3 +1,5 @@
+import { notificationContainerStore } from 'components/NotificationContainer';
+
 import {
   getExperimentById,
   getExperiments,
@@ -5,8 +7,6 @@ import {
   IExperimentData,
 } from 'modules/core/api/experimentsApi';
 import createResource from 'modules/core/utils/createResource';
-
-import { notificationContainerStore } from 'components/NotificationContainer';
 
 import * as analytics from 'services/analytics';
 

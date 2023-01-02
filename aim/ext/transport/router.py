@@ -45,6 +45,7 @@ class RemoteRouterServicer(router_pb2_grpc.RemoteRouterServiceServicer):
         try:
             worker = self.new_client(request.client_uri)
             return router_rpc.ConnectResponse(port=worker.port,
+                                              worker_index=worker.index,
                                               status=router_rpc.ConnectResponse.Status.OK)
         except Exception as e:
             return router_rpc.ConnectResponse(status=router_rpc.ConnectResponse.Status.ERROR,
