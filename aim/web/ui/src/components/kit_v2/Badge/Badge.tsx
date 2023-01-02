@@ -3,7 +3,7 @@ import React from 'react';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import Icon from 'components/kit/Icon';
 
-import { ColorPaletteEnum, styled } from 'config/stitches/stitches.config';
+import { styled } from 'config/stitches/stitches.config';
 
 import { IBadgeProps } from './Badge.d';
 
@@ -105,7 +105,7 @@ const RightIcon = styled(Icon, {
  * Badge component params
  * @param {string} label - Label of the badge
  * @param {string} size - Size of the badge
- * @param {ColorPaletteEnum} color - Color of the badge
+ * @param {ColorPaletteType} color - Color of the badge
  * @param {boolean} disabled - Disabled state of the badge
  * @param {boolean} monospace - Monospace font of the badge
  * @param {function} onDelete - Callback function for delete action
@@ -119,7 +119,7 @@ const Badge = React.forwardRef<
     {
       label,
       size = 'md',
-      color = ColorPaletteEnum.pink,
+      color = 'pink',
       monospace = false,
       disabled = false,
       onDelete,

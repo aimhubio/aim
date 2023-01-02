@@ -3,7 +3,7 @@ import React from 'react';
 import * as Toast from '@radix-ui/react-toast';
 import { StyledComponent } from '@stitches/react/types/styled-component';
 
-import { ColorPaletteEnum, styled } from 'config/stitches/stitches.config';
+import { styled } from 'config/stitches/stitches.config';
 
 import Button from '../Button';
 import IconButton from '../IconButton';
@@ -17,7 +17,8 @@ export const ToastRoot: StyledComponent<typeof Toast.Root, any> = styled(
     color: 'white',
     display: 'flex',
     bs: 'hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px',
-    p: '$5',
+    p: '$5 $9',
+    transition: 'all $main',
     ai: 'center',
     '&[data-state="open"]': {
       animation: 'slideIn 150ms cubic-bezier(0.16, 1, 0.3, 1)',
@@ -30,7 +31,6 @@ export const ToastRoot: StyledComponent<typeof Toast.Root, any> = styled(
     },
     '&[data-swipe="cancel"]': {
       transform: 'translateX(0)',
-      transition: 'transform 200ms ease-out',
     },
     '&[data-swipe="end"]': {
       animation: 'swipeOut 100ms ease-out',
@@ -66,7 +66,12 @@ export const ToastDescription = styled(Toast.Description, {
   lineHeight: '$5',
 });
 
-export const ToastAction = styled(Toast.Action, {});
+export const ToastAction = styled('div', {
+  display: 'flex',
+  ai: 'center',
+  jc: 'center',
+  ml: '$8',
+});
 
 /**
  * Toast component
@@ -104,11 +109,11 @@ const ToastItem = React.forwardRef<typeof ToastRoot, IToastProps>(
         {icon ? icon : null}
         <ToastDescription>{message}</ToastDescription>
         {onDelete || onUndo ? (
-          <div className='ToastAction'>
+          <ToastAction className='ToastAction'>
             {onUndo ? (
               <Button
                 color={status as any}
-                css={{ ml: '$2' }}
+                css={{ ml: '$4' }}
                 onClick={() => onUndo(id)}
               >
                 Undo
@@ -116,8 +121,7 @@ const ToastItem = React.forwardRef<typeof ToastRoot, IToastProps>(
             ) : null}
             {onDelete ? (
               <IconButton
-                css={{ ml: '$2' }}
-                size='xs'
+                css={{ ml: '$4' }}
                 color={status as any}
                 icon='close'
                 onClick={() => onDelete(id)}
@@ -125,7 +129,7 @@ const ToastItem = React.forwardRef<typeof ToastRoot, IToastProps>(
                 Delete
               </IconButton>
             ) : null}
-          </div>
+          </ToastAction>
         ) : null}
       </ToastRoot>
     );

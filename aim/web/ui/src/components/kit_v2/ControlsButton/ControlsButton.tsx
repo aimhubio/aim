@@ -2,7 +2,7 @@ import React from 'react';
 
 import Icon, { IconName } from 'components/kit/Icon';
 
-import { ColorPaletteEnum, styled } from 'config/stitches/stitches.config';
+import { ColorPaletteType, styled } from 'config/stitches/stitches.config';
 
 import IconButton from '../IconButton';
 
@@ -231,7 +231,7 @@ const ControlsButton = React.forwardRef<
             disabled={disabled}
             icon={rightIcon?.name}
             variant='text'
-            color={ColorPaletteEnum.secondary}
+            color='secondary'
           />
         ) : null}
       </Trigger>

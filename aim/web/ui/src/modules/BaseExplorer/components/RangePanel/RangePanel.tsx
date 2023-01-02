@@ -1,9 +1,9 @@
 import React from 'react';
 
+import { Button, Icon, Text } from 'components/kit';
+
 import { QueryFormState } from 'modules/core/engine/explorer/query/state';
 import getQueryParamsFromState from 'modules/core/utils/getQueryParamsFromState';
-
-import { Button, Icon, Text } from 'components/kit';
 
 import { SequenceTypesEnum } from 'types/core/enums';
 
