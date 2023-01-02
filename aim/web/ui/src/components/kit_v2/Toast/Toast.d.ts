@@ -1,0 +1,67 @@
+import { ToastProviderProps } from '@radix-ui/react-toast';
+import * as Toast from 'radix-ui/react-toast';
+
+import { CSS } from 'config/stitches/stitches.config';
+
+export interface IToastProps extends Partial<Toast.ToastProps> {
+  /**
+   * @required
+   * @description Toast id
+   * @example
+   * <Toast id={1} />
+   * @default
+   * */
+
+  id: string | number;
+  /**
+   * @optional
+   * @default {}
+   * @description CSS styles
+   * @example
+   * <Box css={{ color: '$red', backgroundColor: '$blue' }} />
+   */
+  css?: CSS;
+  /**
+   * @required
+   * @description Toast message
+   * @example
+   * <Toast message="Hello world" />
+   * @default
+   * <Toast message="Hello world" />
+   * */
+  message: string;
+  /**
+   * @optional
+   * @description Toast icon
+   * @example
+   * <Toast icon={<Icon name="check" />} />
+   * @default null
+   * */
+  icon?: React.ReactNode;
+  /**
+   * @optional
+   * @description Toast delete callback
+   * @example
+   * <Toast onDelete={(id: string | number) => console.log('deleted')} />
+   * @default null
+   * */
+  onDelete?: (id: string | number) => void;
+  /**
+   * @optional
+   * @description Toast undo callback
+   * @example
+   * <Toast onUndo={(id?: string | number) => console.log('undone')} />
+   * @default null
+   * */
+  onUndo?: (id?: string | number) => void;
+  /**
+   * @optional
+   * @description Toast status
+   * @example
+   * <Toast status="success" />
+   * @default "info"
+   * */
+  status?: 'success' | 'danger' | 'warning' | 'info';
+}
+
+export interface IToastProviderProps extends ToastProviderProps {}
