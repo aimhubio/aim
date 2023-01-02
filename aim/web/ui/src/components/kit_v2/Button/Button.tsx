@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Icon } from 'components/kit';
 
-import { ColorPaletteEnum, styled } from 'config/stitches/stitches.config';
+import { styled } from 'config/stitches/stitches.config';
 
 import { getButtonStyles } from '../utils/getButtonStyles';
 
@@ -95,7 +95,7 @@ const Button = React.forwardRef<
 >(
   (
     {
-      color = ColorPaletteEnum.primary,
+      color = 'primary',
       size = 'md',
       variant = 'contained',
       fullWidth = false,
