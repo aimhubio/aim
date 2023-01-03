@@ -30,6 +30,7 @@ export default function SandboxVisualizer() {
   const editorValue = React.useRef(initialCode);
   const [result, setResult] = React.useState<Record<string, any>>([[]]);
   const [isProcessing, setIsProcessing] = React.useState<boolean | null>(null);
+  const [error, setError] = React.useState<string | null>(null);
   const [execCode, setExecCode] = React.useState('');
   const [state, setState] = React.useState<any>();
   const [executionCount, setExecutionCount] = React.useState<number>(0);
@@ -111,11 +112,11 @@ export default function SandboxVisualizer() {
         pyodide
           ?.runPythonAsync(execCode, { globals: namespace })
           .then(() => {
+            setError(null);
             setIsProcessing(false);
           })
-          .catch((ex: unknown) => {
-            // eslint-disable-next-line no-console
-            console.log(ex);
+          .catch((ex: any) => {
+            setError(ex.message);
             setIsProcessing(false);
           });
       } catch (ex: unknown) {
@@ -185,31 +186,37 @@ export default function SandboxVisualizer() {
             key={`${isProcessing}`}
             className='SandboxVisualizer__main__components__viz'
           >
-            {result.map(
-              (row: any[], i: number) =>
-                row && (
-                  <div
-                    key={i}
-                    style={{
-                      position: 'relative',
-                      display: 'flex',
-                      flex: 1,
-                      maxHeight: `${100 / result.length}%`,
-                    }}
-                  >
-                    {row.map((viz: any, i: number) => {
-                      return (
-                        viz && (
-                          <GridCell
-                            key={i}
-                            viz={viz}
-                            maxWidth={`${100 / row.length}%`}
-                          />
-                        )
-                      );
-                    })}
-                  </div>
-                ),
+            {error ? (
+              <pre className='SandboxVisualizer__main__components__viz__error'>
+                {error}
+              </pre>
+            ) : (
+              result.map(
+                (row: any[], i: number) =>
+                  row && (
+                    <div
+                      key={i}
+                      style={{
+                        position: 'relative',
+                        display: 'flex',
+                        flex: 1,
+                        maxHeight: `${100 / result.length}%`,
+                      }}
+                    >
+                      {row.map((viz: any, i: number) => {
+                        return (
+                          viz && (
+                            <GridCell
+                              key={i}
+                              viz={viz}
+                              maxWidth={`${100 / row.length}%`}
+                            />
+                          )
+                        );
+                      })}
+                    </div>
+                  ),
+              )
             )}
           </div>
           <pre
