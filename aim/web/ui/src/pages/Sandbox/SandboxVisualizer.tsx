@@ -69,9 +69,7 @@ export default function SandboxVisualizer() {
           .replaceAll('= Audios.query', '= await Audios.query')
           .replaceAll('= Figures.query', '= await Figures.query')
           .replaceAll('= Texts.query', '= await Texts.query')
-          .replaceAll('= Distributions.query', '= await Distributions.query')
-          .replaceAll('def ', 'async def ')
-          .replaceAll('async async def ', 'async def ');
+          .replaceAll('= Distributions.query', '= await Distributions.query');
 
         const packagesListProxy = pyodide?.pyodide_py.code.find_imports(code);
         const packagesList = packagesListProxy.toJs();
@@ -92,7 +90,9 @@ export default function SandboxVisualizer() {
         setState(undefined);
         setResult([[]]);
         setExecutionCount((eC) => eC + 1);
-        setExecCode(code);
+        let vizMapResetCode = `viz_map = {}
+`;
+        setExecCode(vizMapResetCode.concat(code));
       } catch (ex) {
         // eslint-disable-next-line no-console
         console.log(ex);

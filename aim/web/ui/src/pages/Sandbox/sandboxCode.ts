@@ -1,4 +1,4 @@
-export const initialCode = `metrics = Metric.query('metric.name == "Loss"')
+export const initialCode = `metrics = Metric.query()
 
 line_chart = LineChart(metrics, x='steps', y='values',
                     color=["run.name"],
@@ -6,21 +6,9 @@ line_chart = LineChart(metrics, x='steps', y='values',
 
 Metric_Explorer = Group(
     line_chart, 
-    facet={"row": ["metric.context"], "column": ["run.name"]},
-    color=lambda m: "red" if m["context"]["type"] == "duration_loss" else "green",
+    facet={"row": ["metric.name"], "column": ["run.name"]},
+    size={"width": 400, "height": 300}
 )
 
-focused_metric = line_chart["focused_line_data"]
-hovered_metric = line_chart["hovered_line_data"]
 
-if hovered_metric != None:
-    Table(Metric.dataframe(hovered_metric["key"]))
-
-if focused_metric != None:
-    images = Images.query(f'run.hash == "{focused_metric["run"]["hash"]}"')
-    images_list = ImagesList(images)
-    Images_Explorer = Group(
-        images_list, 
-        facet={"row": ["record.index"], "column": ["record.index"]}
-    )
 `;

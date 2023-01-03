@@ -111,6 +111,23 @@ stroke_styles = [
 ]
 
 
+def generate_key(data):
+    key = " ".join(map(str, data))
+    return hashlib.md5(key.encode()).hexdigest()
+
+
+viz_map = {}
+
+
+def update_viz_map(viz):
+    if viz in viz_map:
+        viz_map[viz] = viz_map[viz] + 1
+    else:
+        viz_map[viz] = 0
+
+    return viz + str(viz_map[viz])
+
+
 def apply_group_value_pattern(value, list):
     if type(value) is int:
         return list[value % len(list)]
@@ -134,8 +151,9 @@ def group(name, data, options):
                     str(opt) if type(opt) is not str else opt.replace("metric.", ""),
                 )
                 group_values.append(val)
-        key = " ".join(map(str, group_values))
-        group_key = hashlib.md5(key.encode()).hexdigest()
+
+        group_key = generate_key(group_values)
+
         if group_key not in group_map:
             group_map[group_key] = {
                 "options": options,
@@ -186,9 +204,10 @@ def automatic_layout_update(data):
 
     current_layout = view and view.to_py() or None
     is_found = False
+
     for i, row in enumerate(current_layout):
         for j, cell in enumerate(row):
-            if cell["type"] == data["type"]:
+            if cell["key"] == data["key"]:
                 current_layout[i][j] = data
                 is_found = True
 
@@ -389,6 +408,8 @@ def LineChart(
         or None,
     }
 
+    line_chart_data["key"] = update_viz_map(line_chart_data["type"])
+
     automatic_layout_update(line_chart_data)
 
     return line_chart_data
@@ -407,6 +428,8 @@ def ImagesList(data):
         "data": images,
     }
 
+    images_data["key"] = update_viz_map(images_data["type"])
+
     automatic_layout_update(images_data)
 
     return images_data
@@ -424,6 +447,8 @@ def AudiosList(data):
         "type": "Audios",
         "data": audios,
     }
+
+    audios_data["key"] = update_viz_map(audios_data["type"])
 
     automatic_layout_update(audios_data)
 
@@ -446,6 +471,8 @@ def TextsList(data, color=[]):
         "type": "Text",
         "data": texts,
     }
+
+    texts_data["key"] = update_viz_map(texts_data[""])
 
     automatic_layout_update(texts_data)
 
@@ -474,6 +501,8 @@ def FiguresList(data):
         "data": figures,
     }
 
+    figures_data["key"] = update_viz_map(figures_data["type"])
+
     automatic_layout_update(figures_data)
 
     return figures_data
@@ -485,6 +514,8 @@ def JSON(data):
         "data": data,
     }
 
+    json_data["key"] = update_viz_map(json_data["type"])
+
     automatic_layout_update(json_data)
 
     return json_data
@@ -492,6 +523,8 @@ def JSON(data):
 
 def Table(data):
     table_data = {"type": "DataFrame", "data": data.to_json(orient="records")}
+
+    table_data["key"] = update_viz_map(table_data["type"])
 
     automatic_layout_update(table_data)
 
@@ -503,6 +536,8 @@ def HTML(data):
         "type": "HTML",
         "data": data,
     }
+
+    html_data["key"] = update_viz_map(html_data["type"])
 
     automatic_layout_update(html_data)
 
