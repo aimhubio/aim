@@ -13,7 +13,8 @@ Metric_Explorer = Group(
 focused_metric = line_chart["focused_line_data"]
 hovered_metric = line_chart["hovered_line_data"]
 
-Table(Metric.dataframe(hovered_metric["key"]))
+if hovered_metric != None:
+    Table(Metric.dataframe(hovered_metric["key"]))
 
 if focused_metric != None:
     images = Images.query(f'run.hash == "{focused_metric["run"]["hash"]}"')

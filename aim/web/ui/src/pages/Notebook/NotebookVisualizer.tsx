@@ -10,10 +10,8 @@ import NotebookCell from './NotebookCell';
 
 import './NotebookVisualizer.scss';
 
-(window as any).search = search;
-
 export default function SandboxVisualizer() {
-  let { isLoading, pyodide } = usePyodide();
+  let { isLoading, pyodide, namespace } = usePyodide();
 
   const [cells, setCells] = React.useState([
     {
@@ -35,7 +33,12 @@ from aim.ui.viz import LineChart, ImagesList, AudiosList, TextsList, FiguresList
       ) : (
         cells.map((cell, i) => (
           <React.Fragment key={cell.key}>
-            <NotebookCell pyodide={pyodide} {...cell} />
+            <NotebookCell
+              pyodide={pyodide}
+              namespace={namespace}
+              isLoading={isLoading}
+              {...cell}
+            />
             <Button
               onClick={() =>
                 setCells((c) =>

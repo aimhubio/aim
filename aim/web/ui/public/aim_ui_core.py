@@ -3,7 +3,7 @@
 ####################
 
 from pyodide import create_proxy
-from js import search, updateLayout
+from js import search
 import hashlib
 
 
@@ -182,7 +182,7 @@ def group(name, data, options):
 
 
 def automatic_layout_update(data):
-    from js import view
+    from js import view, updateLayout
 
     current_layout = view and view.to_py() or None
     is_found = False
@@ -203,6 +203,8 @@ def automatic_layout_update(data):
 
 
 def layout(grid):
+    from js import updateLayout
+
     updateLayout(grid)
 
 

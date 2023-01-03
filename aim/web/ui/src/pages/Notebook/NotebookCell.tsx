@@ -23,7 +23,7 @@ function toObject(x: any): any {
 let lineHeight = 18;
 
 function NotebookCell(props: any) {
-  const { pyodide, code, readOnly } = props;
+  const { pyodide, namespace, isLoading, code, readOnly } = props;
 
   const editorValue = React.useRef(code);
   const editorRef = React.useRef<any>();
@@ -35,31 +35,47 @@ function NotebookCell(props: any) {
   const [isProcessing, setIsProcessing] = React.useState<boolean | null>(null);
   const [execCode, setExecCode] = React.useState('');
   const [state, setState] = React.useState<any>();
+  const [executionCount, setExecutionCount] = React.useState<number>(0);
+  const timerId = React.useRef(0);
+
+  (window as any).updateLayout = (grid: any) => {
+    let layout = toObject(grid.toJs());
+    grid.destroy();
+
+    (window as any).view = layout;
+
+    window.clearTimeout(timerId.current);
+    timerId.current = window.setTimeout(() => {
+      setResult(layout);
+    }, 50);
+  };
+
+  (window as any).setState = (update: any) => {
+    setState((s: any) => ({
+      ...s,
+      ...toObject(update.toJs()),
+    }));
+    update.destroy();
+  };
+  (window as any).state = state;
+  (window as any).view = result;
 
   const execute = React.useCallback(async () => {
     try {
-      (window as any).updateCellLayout = (grid: any) => {
-        setResult(toObject(grid.toJs()));
-      };
-
-      const layoutUpdateCode = `from js import updateCellLayout
-def Grid(grid):
-    updateCellLayout(grid)
-`;
-
       setIsProcessing(true);
-      const code = layoutUpdateCode.concat(
-        editorValue.current
-          .replaceAll('= Metric.query', '= await Metric.query')
-          .replaceAll('= Images.query', '= await Images.query')
-          .replaceAll('= Audios.query', '= await Audios.query')
-          .replaceAll('= Figures.query', '= await Figures.query')
-          .replaceAll('= Texts.query', '= await Texts.query')
-          .replaceAll('= Distributions.query', '= await Distributions.query')
-          .replaceAll('def ', 'async def ')
-          .replaceAll('async async def ', 'async def '),
-      );
-      const packagesList = pyodide.pyodide_py.find_imports(code).toJs();
+      const code = editorValue.current
+        .replaceAll('= Metric.query', '= await Metric.query')
+        .replaceAll('= Images.query', '= await Images.query')
+        .replaceAll('= Audios.query', '= await Audios.query')
+        .replaceAll('= Figures.query', '= await Figures.query')
+        .replaceAll('= Texts.query', '= await Texts.query')
+        .replaceAll('= Distributions.query', '= await Distributions.query')
+        .replaceAll('def ', 'async def ')
+        .replaceAll('async async def ', 'async def ');
+
+      const packagesListProxy = pyodide?.pyodide_py.code.find_imports(code);
+      const packagesList = packagesListProxy.toJs();
+      packagesListProxy.destroy();
 
       for await (const lib of packagesList) {
         await pyodide?.loadPackage('micropip');
@@ -69,57 +85,62 @@ def Grid(grid):
 
       await pyodide.loadPackagesFromImports(code);
 
+      (window as any).search.cache.clear();
+      (window as any).state = undefined;
+      (window as any).view = [[]];
+
+      setState(undefined);
+      setResult([[]]);
+      setExecutionCount((eC) => eC + 1);
       setExecCode(code);
     } catch (ex) {
+      // eslint-disable-next-line no-console
       console.log(ex);
     }
   }, [editorValue]);
 
+  React.useEffect(() => {
+    if (pyodide !== null) {
+      execute();
+    }
+  }, [pyodide, execute]);
+
   const runParsedCode = React.useCallback(() => {
     if (pyodide !== null) {
-      pyodide
-        ?.runPythonAsync(execCode)
-        .then(runEffect)
-        .catch((ex: Error) => {
-          setError(ex.message);
-          setIsProcessing(false);
-        });
-    }
-  }, [pyodide, execCode, state]);
-
-  const runEffect = React.useCallback(
-    async (value = null) => {
-      if (pyodide !== null) {
-        let effect = pyodide?.globals.get('render');
-        if (effect) {
-          const res = await effect(pyodide?.toPy(state), (val: any) =>
-            setState((s: any) => Object.assign({}, s, toObject(val.toJs()))),
-          );
-          let parsedResult = toObject(res.toJs());
-          setResult(parsedResult);
-        }
-
-        if (value) {
-          setReprValue(toObject(value));
-        }
-        setError(null);
+      try {
+        pyodide
+          ?.runPythonAsync(execCode, { globals: namespace })
+          .then(() => {
+            setError(null);
+            setIsProcessing(false);
+          })
+          .catch((ex: Error) => {
+            setError(ex.message);
+            setIsProcessing(false);
+          });
+      } catch (ex: unknown) {
+        // eslint-disable-next-line no-console
+        console.log(ex);
         setIsProcessing(false);
       }
-    },
-    [pyodide, state],
-  );
+    }
+  }, [pyodide, execCode, namespace, state, executionCount]);
 
   React.useEffect(() => {
     if (execCode) {
+      (window as any).state = state;
+      (window as any).view = result;
       runParsedCode();
     }
-  }, [execCode]);
+  }, [execCode, runParsedCode]);
 
   React.useEffect(() => {
-    if (state) {
-      runEffect();
-    }
-  }, [state]);
+    setIsProcessing(isLoading);
+  }, [isLoading]);
+
+  React.useEffect(() => {
+    return () => window.clearTimeout(timerId.current);
+  }, []);
 
   function handleDidMount(editor: monacoEditor.editor.IStandaloneCodeEditor) {
     editorRef.current = editor;
