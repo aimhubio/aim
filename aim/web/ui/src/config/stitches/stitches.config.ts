@@ -407,18 +407,17 @@ export const darkTheme = createTheme('dark-theme', {
   },
 });
 
-export enum ColorPaletteEnum {
-  primary = 'primary',
-  secondary = 'secondary',
-  success = 'success',
-  warning = 'warning',
-  danger = 'danger',
-  blue = 'blue',
-  green = 'green',
-  red = 'red',
-  yellow = 'yellow',
-  pale = 'pale',
-  purple = 'purple',
-  pink = 'pink',
-  orange = 'orange',
-}
+export type ColorPaletteType =
+  | 'primary'
+  | 'secondary'
+  | 'success'
+  | 'warning'
+  | 'danger'
+  | 'blue'
+  | 'green'
+  | 'red'
+  | 'yellow'
+  | 'pale'
+  | 'purple'
+  | 'pink'
+  | 'orange';

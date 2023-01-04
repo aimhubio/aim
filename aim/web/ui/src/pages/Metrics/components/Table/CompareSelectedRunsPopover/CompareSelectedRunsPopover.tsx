@@ -2,7 +2,6 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 
 import { MenuItem, Tooltip } from '@material-ui/core';
-import getUpdatedUrl from 'modules/core/utils/getUpdatedUrl';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
@@ -11,6 +10,8 @@ import { IconName } from 'components/kit/Icon';
 
 import { EXPLORE_SELECTED_RUNS_CONFIG } from 'config/table/tableConfigs';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
+
+import getUpdatedUrl from 'modules/core/utils/getUpdatedUrl';
 
 import { AppNameEnum } from 'services/models/explorer';
 import * as analytics from 'services/analytics';

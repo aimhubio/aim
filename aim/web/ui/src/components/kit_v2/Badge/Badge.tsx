@@ -111,7 +111,7 @@ const RightIcon = styled(Icon, {
  * Badge component params
  * @param {string} label - Label of the badge
  * @param {string} size - Size of the badge
- * @param {ColorPaletteEnum} color - Color of the badge
+ * @param {ColorPaletteType} color - Color of the badge
  * @param {boolean} disabled - Disabled state of the badge
  * @param {boolean} monospace - Monospace font of the badge
  * @param {function} onDelete - Callback function for delete action

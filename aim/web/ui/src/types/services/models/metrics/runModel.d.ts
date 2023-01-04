@@ -3,7 +3,7 @@ import { ITagProps } from 'types/pages/tags/Tags';
 export interface IRun<T> {
   params: IRunParams;
   props: {
-    experiment: { name: string; id: string } | null;
+    experiment: { name: string; id: string; description: string } | null;
     name: string;
     creation_time: number;
     end_time: number;

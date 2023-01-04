@@ -1,9 +1,6 @@
 @use 'src/styles/abstracts' as *;
 
 .ExperimentStatistics {
-  &__totalRuns {
-    margin-top: $space-lg;
-  }
   &__trackedSequences {
     margin-top: $space-lg;
   }

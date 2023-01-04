@@ -78,7 +78,7 @@ export const getSuggestionsByExplorer = (
       created_at: 0,
       finalized_at: 0,
       duration: 0,
-      ...data.params,
+      ...(data?.params || {}),
     },
   };
 

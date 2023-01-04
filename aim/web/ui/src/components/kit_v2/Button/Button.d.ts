@@ -4,7 +4,7 @@ import type * as Stitches from '@stitches/react';
 
 import { IconName } from 'components/kit/Icon';
 
-import { ColorPaletteEnum } from 'config/stitches/stitches.config';
+import { ColorPaletteType } from 'config/stitches/stitches.config';
 
 // Button component props
 export interface IButtonProps
@@ -13,7 +13,7 @@ export interface IButtonProps
    * @description The color of the button
    * @example 'primary'
    */
-  color?: ColorPaletteEnum;
+  color?: ColorPaletteType;
   /**
    * @description The size of the button
    * @example 'md'

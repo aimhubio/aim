@@ -1,8 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import { IBaseComponentProps } from 'modules/BaseExplorer/types';
-
 import { Button, Icon, Text } from 'components/kit';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
@@ -65,4 +63,4 @@ function CaptionProperties(props: ICaptionPropertiesProps) {
 
 CaptionProperties.displayName = 'CaptionProperties';
 
-export default React.memo<IBaseComponentProps>(CaptionProperties);
+export default React.memo<ICaptionPropertiesProps>(CaptionProperties);
