@@ -1,4 +1,3 @@
-import numpy as np
 from typing import Optional, Dict
 from aim.sdk.run import Run
 from aim.ext.resource.configs import DEFAULT_SYSTEM_TRACKING_INT
@@ -12,7 +11,7 @@ class AimCallback:
         experiment_name: Optional[str] = None,
         system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT,
         log_system_params: bool = True,
-        args: Optional[Dict] = None
+        args: Optional[Dict] = None,
     ):
         self.repo = repo
         self.experiment_name = experiment_name
@@ -52,8 +51,7 @@ class AimCallback:
                 self._run.set(key, value, strict=False)
 
     def track(self, logs, context, step=None):
-        for k, v in logs.items():
-            self._run.track(v, k, step=step, context=context)
+        self._run.track(logs, step=step, context=context)
 
     def close(self):
         if self._run and self._run.active:
@@ -61,16 +59,14 @@ class AimCallback:
 
 
 class AimWritter(Logger):
-    def __init__(
-        self, aim_run, logger_label, steps_key, task_id
-    ):
+    def __init__(self, aim_run, logger_label, steps_key, task_id):
         self.aim_run = aim_run
         self.logger_label = logger_label
         self.steps_key = steps_key
         self.task_id = task_id
 
     def write(self, values: LoggingData):
-        self.aim_run.track(values, context={'logger_label': self.logger_label})
+        self.aim_run.track(values, context={"logger_label": self.logger_label})
 
     def close(self):
         if self.aim_run and self.aim_run.active:
