@@ -1,3 +1,4 @@
+import * as Stitches from 'config/stitches/stitches.config';
 import { ColorPaletteType } from 'config/stitches/stitches.config';
 
 export interface IBadgeProps {
@@ -32,4 +33,9 @@ export interface IBadgeProps {
    * @type boolean
    */
   monospace?: boolean;
+  /**
+   * @description Badge stitches css prop object
+   * @example { backgroundColor: 'red' }
+   */
+  css?: Stitches.CSS;
 }
