@@ -1,6 +1,6 @@
 import logging
 from abc import abstractmethod
-from typing import Iterator
+from typing import Iterator, Union, Tuple
 from typing import TYPE_CHECKING
 from tqdm import tqdm
 
@@ -247,7 +247,7 @@ class QueryRunSequenceCollection(SequenceCollection):
         for run in runs_iterator:
             run_view = RunView(run, timezone_offset=self._timezone_offset)
             match = self.query.check(run=run_view)
-            seq_collection = SingleRunSequenceCollection(run, self.seq_cls) if match else None
+            seq_collection = SingleRunSequenceCollection(run, self.__class__) if match else None
             if self.report_mode == QueryReportMode.PROGRESS_TUPLE:
                 yield seq_collection, (runs_counter, total_runs)
             else:
@@ -256,3 +256,11 @@ class QueryRunSequenceCollection(SequenceCollection):
                 if match:
                     yield seq_collection
             runs_counter += 1
+
+    @classmethod
+    def allowed_dtypes(cls) -> Union[str, Tuple[str, ...]]:
+        return "*"
+
+    @classmethod
+    def sequence_name(cls) -> str:
+        return 'run'
