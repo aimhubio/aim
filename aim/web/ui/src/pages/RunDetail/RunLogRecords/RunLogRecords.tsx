@@ -17,9 +17,6 @@ function RunLogRecords({
     useRunLogRecords(runHash);
   return totalRunLogRecordCount ? (
     <div className='RunLogRecords'>
-      <Text size={14} component='h3' tint={100} weight={700}>
-        Activity
-      </Text>
       {isLoading && _.isEmpty(data) ? (
         <div className='flex fac fjc'>
           <Spinner size='24px' />

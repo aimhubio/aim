@@ -2,12 +2,14 @@
 
 .RunLogRecords {
   border-top: none;
+  padding: 1rem;
+  overflow: auto;
+  max-height: 100%;
   &__title {
     margin-bottom: $space-sm;
     padding: 0 $space-sm;
   }
   &__content {
-    margin-top: $space-sm;
     padding-bottom: $space-xxxxs;
     &-title {
       margin-bottom: $space-sm;

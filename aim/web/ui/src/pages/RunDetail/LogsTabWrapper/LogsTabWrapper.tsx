@@ -1,16 +1,7 @@
 import React from 'react';
-import {
-  Link,
-  Route,
-  Switch,
-  useLocation,
-  useRouteMatch,
-} from 'react-router-dom';
-
-import { Tab, Tabs } from '@material-ui/core';
+import Split from 'react-split';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
-import { Spinner } from 'components/kit';
 
 import { ILogsTabWrapperProps } from './LogsTabWrapper.d';
 
@@ -31,80 +22,36 @@ function LogsTabWrapper({
   inProgress,
   updatedLogsCount,
 }: ILogsTabWrapperProps) {
-  const { url } = useRouteMatch();
-  const { pathname } = useLocation();
-  const [activeTab, setActiveTab] = React.useState(pathname);
-
-  const tabs: Record<string, string> = {
-    run_logs: 'Run Logs',
-    run_output_logs: 'Run Output Logs',
-  };
-
-  function handleTabChange(event: React.ChangeEvent<{}>, newValue: string) {
-    setActiveTab(newValue);
-  }
-
-  function getCurrentTabValue(pathname: string, url: string) {
-    const values = Object.keys(tabs).map((tabKey) => `${url}/${tabKey}`);
-    return values.indexOf(pathname) === -1 ? false : pathname;
-  }
-
-  const tabContent: Record<string, JSX.Element> = {
-    run_logs: (
-      <RunLogsTab
-        isRunLogsLoading={isRunLogsLoading}
-        runHash={runHash}
-        runLogs={runLogs}
-        inProgress={inProgress}
-        updatedLogsCount={updatedLogsCount}
-      />
-    ),
-    run_output_logs: <RunLogRecords runHash={runHash} />,
-  };
-
   return (
     <ErrorBoundary>
       <div className='LogsTabWrapper'>
-        <div className='LogsTabWrapper__tabsContainer'>
-          <Tabs
-            className='LogsTabWrapper__tabsContainer__tabs'
-            value={getCurrentTabValue(pathname, url)}
-            onChange={handleTabChange}
-            indicatorColor='primary'
-            textColor='primary'
-            variant='fullWidth'
+        <div className='LogsTabWrapper__container'>
+          <Split
+            className='LogsTabWrapper__container__resizePanel'
+            sizes={[65, 35]}
+            minSize={300}
+            expandToMin={false}
+            gutterSize={10}
+            gutterAlign='center'
+            snapOffset={30}
+            dragInterval={1}
+            direction='horizontal'
+            cursor='col-resize'
           >
-            {Object.keys(tabs).map((tabKey: string) => (
-              <Tab
-                key={`${url}/${tabKey}`}
-                label={tabs[tabKey]}
-                value={`${url}/${tabKey}`}
-                component={Link}
-                to={`${url}/${tabKey}`}
+            <div className='LogsTabWrapper__container__resizePanel__panelBox'>
+              <RunLogsTab
+                isRunLogsLoading={isRunLogsLoading}
+                runHash={runHash}
+                runLogs={runLogs}
+                inProgress={inProgress}
+                updatedLogsCount={updatedLogsCount}
               />
-            ))}
-          </Tabs>
+            </div>
+            <div className='LogsTabWrapper__container__resizePanel__panelBox'>
+              <RunLogRecords runHash={runHash} />
+            </div>
+          </Split>
         </div>
-
-        <Switch>
-          {Object.keys(tabs).map((tabKey: string) => (
-            <Route path={`${url}/${tabKey}`} key={tabKey}>
-              <ErrorBoundary>
-                <div className='LogsTabWrapper__tabPanelWrapper'>
-                  <React.Suspense
-                    fallback={
-                      <div className='LogsTabWrapper__tabPanelWrapper__suspenseLoaderContainer'>
-                        <Spinner />
-                      </div>
-                    }
-                  >
-                    {tabContent[tabKey]}
-                  </React.Suspense>
-                </div>
-              </ErrorBoundary>
-            </Route>
-          ))}
-        </Switch>
       </div>
     </ErrorBoundary>
   );
@@ -113,3 +60,7 @@ function LogsTabWrapper({
 LogsTabWrapper.displayName = 'LogsTabWrapper';
 
 export default React.memo(LogsTabWrapper);
+
+// border: 0.0625rem solid rgb(222, 230, 243);
+//     border-radius: 0.5rem;
+//     display: flex;
