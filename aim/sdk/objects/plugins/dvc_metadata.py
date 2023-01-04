@@ -1,5 +1,7 @@
 from aim.storage.object import CustomObject
 import logging
+from pathlib import Path
+import yaml
 
 try:
     from dvc.repo import Repo
@@ -27,6 +29,7 @@ class DvcData(CustomObject):
 
         self.storage['dataset'] = {
             'source': 'dvc',
+            'version': self._get_dvc_lock(url),
             'params': self._get_dvc_params(url),
             'tracked_files': self._get_dvc_tracked_files(
                 **dict(
@@ -49,3 +52,15 @@ class DvcData(CustomObject):
             return params
         except Exception:
             logging.warning("Failed to log params")
+
+    def _get_dvc_lock(self, url):
+        try:
+            with open(Path(url).joinpath('dvc.lock'), 'r') as f:
+                try:
+                    content = yaml.safe_load(f)
+                    return content
+                except yaml.YAMLError as exc:
+                    logging.warning(exc)
+                content = f.readlines()
+        except FileNotFoundError:
+            raise FileNotFoundError(f"Failed to find dvc.lock in the repo {url}")
