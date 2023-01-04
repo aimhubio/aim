@@ -63,9 +63,6 @@ const ButtonGroup = React.forwardRef<
       variant={rest.variant}
       css={{
         color: `$${color}50`,
-        '& > button': {
-          // borderColor: `$colors$${color}50 !important`,
-        },
       }}
     >
       {childrenWIthProps}
