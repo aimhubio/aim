@@ -1,4 +1,4 @@
-import { isEmpty, isEqual, omit } from 'lodash-es';
+import _ from 'lodash-es';
 
 import {
   IRunProgressObject,
@@ -22,6 +22,7 @@ import { encode } from 'utils/encoder/encoder';
 
 import { PipelineStatusEnum, ProgressState } from '../types';
 import { QueryState } from '../explorer/query';
+import { INotificationsEngine } from '../notifications';
 
 import createState, {
   CurrentGrouping,
@@ -49,6 +50,7 @@ function createPipelineEngine<TStore, TObject>(
   store: any,
   options: Omit<PipelineOptions, 'callbacks'>,
   defaultGroupings?: any,
+  notificationsEngine?: INotificationsEngine<TStore>['engine'],
 ): IPipelineEngine<TObject, TStore> {
   const initialState = getInitialState<TObject>();
 
@@ -172,7 +174,7 @@ function createPipelineEngine<TStore, TObject>(
         // save to state
         state.setResult(data, foundGroups, additionalData, queryableData);
         state.changeCurrentPhaseOrStatus(
-          isEmpty(data) ? PipelineStatusEnum.Empty : state.getStatus(),
+          _.isEmpty(data) ? PipelineStatusEnum.Empty : state.getStatus(),
         );
 
         if (!isInternal && pipelineOptions.persist) {
@@ -194,6 +196,9 @@ function createPipelineEngine<TStore, TObject>(
       .catch((err) => {
         state.setError(err);
         state.changeCurrentPhaseOrStatus(PipelineStatusEnum.Failed);
+        if (err && err.message !== 'SyntaxError') {
+          notificationsEngine?.error(err.message);
+        }
       });
   }
 
@@ -231,7 +236,7 @@ function createPipelineEngine<TStore, TObject>(
   function group(config: CurrentGrouping, isInternal: boolean = false): void {
     state.setCurrentGroupings(config);
 
-    const equal = isEqual(config, defaultGroupings);
+    const equal = _.isEqual(config, defaultGroupings);
 
     if (!isInternal && pipelineOptions.persist) {
       const url = getUpdatedUrl('groupings', equal ? null : encode(config));
@@ -262,14 +267,14 @@ function createPipelineEngine<TStore, TObject>(
     if (pipelineOptions.persist) {
       const stateFromStorage = getUrlSearchParam('groupings') || {};
       // update state
-      if (!isEmpty(stateFromStorage)) {
+      if (!_.isEmpty(stateFromStorage)) {
         state.setCurrentGroupings(stateFromStorage);
       }
 
       const removeGroupingsListener = browserHistory.listenSearchParam<any>(
         'groupings',
         (groupings: any) => {
-          if (!isEmpty(groupings)) {
+          if (!_.isEmpty(groupings)) {
             group(groupings, true);
           } else {
             group(defaultGroupings, true);
@@ -282,7 +287,7 @@ function createPipelineEngine<TStore, TObject>(
         browserHistory.listenSearchParam<QueryState | null>(
           'query',
           (query: QueryState | null) => {
-            if (!isEmpty(query)) {
+            if (!_.isEmpty(query)) {
               search(
                 {
                   ...getQueryParamsFromState(
@@ -316,7 +321,7 @@ function createPipelineEngine<TStore, TObject>(
       pipeline: state.initialState,
     },
     engine: {
-      ...omit(state, ['selectors']),
+      ..._.omit(state, ['selectors']),
       ...state.selectors,
       getSequenceName: () => options.sequenceName,
       search,
