@@ -7,6 +7,8 @@ import { Button, Spinner } from 'components/kit';
 
 import usePyodide from 'services/pyodide/usePyodide';
 
+import { getItem, setItem } from 'utils/storage';
+
 import { initialCode } from './sandboxCode';
 import GridCell from './GridCell';
 
@@ -27,7 +29,7 @@ function toObject(x: any): any {
 export default function SandboxVisualizer() {
   const { pyodide, namespace, isLoading } = usePyodide();
 
-  const editorValue = React.useRef(initialCode);
+  const editorValue = React.useRef(getItem('sandboxCode') ?? initialCode);
   const [result, setResult] = React.useState<Record<string, any>>([[]]);
   const [isProcessing, setIsProcessing] = React.useState<boolean | null>(null);
   const [error, setError] = React.useState<string | null>(null);
@@ -45,7 +47,7 @@ export default function SandboxVisualizer() {
     window.clearTimeout(timerId.current);
     timerId.current = window.setTimeout(() => {
       setResult(layout);
-    }, 50);
+    }, 100);
   };
   (window as any).setState = (update: any) => {
     setState((s: any) => ({
@@ -115,7 +117,7 @@ export default function SandboxVisualizer() {
             setError(null);
             setIsProcessing(false);
           })
-          .catch((ex: any) => {
+          .catch((ex: Error) => {
             setError(ex.message);
             setIsProcessing(false);
           });
@@ -161,7 +163,10 @@ export default function SandboxVisualizer() {
             language='python'
             height='100%'
             value={editorValue.current}
-            onChange={(v) => (editorValue.current = v!)}
+            onChange={(v) => {
+              editorValue.current = v!;
+              setItem('sandboxCode', editorValue.current);
+            }}
             loading={<span />}
             options={{
               tabSize: 4,

@@ -1,4 +1,4 @@
-export const initialCode = `metrics = Metric.query()
+export const initialCode = `metrics = Metric.query('metric.name in ["loss"]')
 
 line_chart = LineChart(metrics, x='steps', y='values',
                     color=["run.name"],
