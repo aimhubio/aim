@@ -233,7 +233,11 @@ function createEngine<TObject = any>(
       ...initialState,
       ...customStates.state.initialState,
     };
-    customStatesEngine = customStates.engine;
+    // @ts-ignore
+    customStatesEngine = {
+      ...customStates.engine,
+      initialize: customStates.initialize,
+    };
 
     /**
      * Explorer Additional, includes query and groupings
@@ -313,6 +317,7 @@ function createEngine<TObject = any>(
     const finalizeGrouping = groupings.initialize();
     const finalizePipeline = pipeline.initialize();
     const finalizeVisualizations = visualizations.initialize(name);
+    const finalizeCustomStates = customStatesEngine.initialize();
 
     // subscribe to history
     instructions
@@ -355,6 +360,7 @@ function createEngine<TObject = any>(
       finalizeGrouping();
       finalizePipeline();
       finalizeVisualizations();
+      finalizeCustomStates();
       removeHistoryListener && removeHistoryListener();
 
       finalize();
