@@ -23,7 +23,8 @@ function toObject(x: any): any {
 let lineHeight = 18;
 
 function NotebookCell(props: any) {
-  const { pyodide, namespace, isLoading, code, readOnly } = props;
+  const { pyodide, namespace, isLoading, code, readOnly, index, editCellCode } =
+    props;
 
   const editorValue = React.useRef(code);
   const editorRef = React.useRef<any>();
@@ -31,7 +32,6 @@ function NotebookCell(props: any) {
   const [result, setResult] = React.useState<Record<string, any>>([[]]);
   const [editorHeight, setEditorHeight] = React.useState(lineHeight);
   const [error, setError] = React.useState<string | null>(null);
-  const [reprValue, setReprValue] = React.useState<any>(null);
   const [isProcessing, setIsProcessing] = React.useState<boolean | null>(null);
   const [execCode, setExecCode] = React.useState('');
   const [state, setState] = React.useState<any>();
@@ -69,9 +69,7 @@ function NotebookCell(props: any) {
         .replaceAll('= Audios.query', '= await Audios.query')
         .replaceAll('= Figures.query', '= await Figures.query')
         .replaceAll('= Texts.query', '= await Texts.query')
-        .replaceAll('= Distributions.query', '= await Distributions.query')
-        .replaceAll('def ', 'async def ')
-        .replaceAll('async async def ', 'async def ');
+        .replaceAll('= Distributions.query', '= await Distributions.query');
 
       const packagesListProxy = pyodide?.pyodide_py.code.find_imports(code);
       const packagesList = packagesListProxy.toJs();
@@ -92,18 +90,20 @@ function NotebookCell(props: any) {
       setState(undefined);
       setResult([[]]);
       setExecutionCount((eC) => eC + 1);
-      setExecCode(code);
+      let vizMapResetCode = `viz_map_keys = {}
+`;
+      setExecCode(vizMapResetCode.concat(code));
     } catch (ex) {
       // eslint-disable-next-line no-console
       console.log(ex);
     }
   }, [editorValue]);
 
-  React.useEffect(() => {
-    if (pyodide !== null) {
-      execute();
-    }
-  }, [pyodide, execute]);
+  // React.useEffect(() => {
+  //   if (pyodide !== null) {
+  //     execute();
+  //   }
+  // }, [pyodide, execute]);
 
   const runParsedCode = React.useCallback(() => {
     if (pyodide !== null) {
@@ -152,6 +152,7 @@ function NotebookCell(props: any) {
     ev: monacoEditor.editor.IModelContentChangedEvent,
   ) {
     editorValue.current = val!;
+    editCellCode(index, editorValue.current);
     setEditorHeight(
       (editorRef.current.getModel().getLineCount() ?? 1) * lineHeight,
     );
@@ -199,8 +200,6 @@ function NotebookCell(props: any) {
       </div>
       {error ? (
         <pre className='NotebookCell__error'>{error}</pre>
-      ) : reprValue ? (
-        <pre className='NotebookCell__repr'>{reprValue}</pre>
       ) : result.flat().length > 0 ? (
         <div className='NotebookCell__grid'>
           {result.map(

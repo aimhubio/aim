@@ -92,7 +92,7 @@ export default function SandboxVisualizer() {
         setState(undefined);
         setResult([[]]);
         setExecutionCount((eC) => eC + 1);
-        let vizMapResetCode = `viz_map = {}
+        let vizMapResetCode = `viz_map_keys = {}
 `;
         setExecCode(vizMapResetCode.concat(code));
       } catch (ex) {
@@ -111,9 +111,11 @@ export default function SandboxVisualizer() {
   const runParsedCode = React.useCallback(() => {
     if (pyodide !== null) {
       try {
+        console.time('run');
         pyodide
           ?.runPythonAsync(execCode, { globals: namespace })
           .then(() => {
+            console.timeEnd('run');
             setError(null);
             setIsProcessing(false);
           })
