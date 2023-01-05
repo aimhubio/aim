@@ -5,19 +5,20 @@ import * as Toast from '@radix-ui/react-toast';
 import { styled } from 'config/stitches/stitches.config';
 
 const ToastViewPort = styled(Toast.Viewport, {
-  '--viewport-padding': '25px',
   position: 'fixed',
   bottom: 0,
   right: 0,
   display: 'flex',
   flexDirection: 'column',
-  padding: 'var(--viewport-padding)',
-  gap: '10px',
-  maxWidth: '100vw',
+  padding: '$8',
+  gap: '$5',
+  maxWidth: '50vw',
+  minWidth: '300px',
   margin: 0,
   listStyle: 'none',
   zIndex: '$',
   outline: 'none',
+  ai: 'flex-end',
 });
 
 const ToastProvider = React.forwardRef<

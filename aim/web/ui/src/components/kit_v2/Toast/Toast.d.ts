@@ -1,9 +1,8 @@
-import { ToastProviderProps } from '@radix-ui/react-toast';
-import * as Toast from 'radix-ui/react-toast';
+import * as Toast from '@radix-ui/react-toast';
 
 import { CSS } from 'config/stitches/stitches.config';
 
-export interface IToastProps extends Partial<Toast.ToastProps> {
+export interface IToastProps extends Toast.ToastProps {
   /**
    * @required
    * @description Toast id
@@ -64,4 +63,4 @@ export interface IToastProps extends Partial<Toast.ToastProps> {
   status?: 'success' | 'danger' | 'warning' | 'info';
 }
 
-export interface IToastProviderProps extends ToastProviderProps {}
+export interface IToastProviderProps extends Toast.ToastProviderProps {}

@@ -1,15 +1,14 @@
 import React from 'react';
 
 import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { IconCheck } from '@tabler/icons';
 
 import {
   Toast as ToastComponent,
-  ToastAction,
-  ToastDescription,
   ToastProvider,
-  ToastRoot,
 } from 'components/kit_v2/Toast';
 import Button from 'components/kit_v2/Button';
+import { IToastProps } from 'components/kit_v2/Toast/Toast.d';
 
 export default {
   title: 'Kit/Inputs',
@@ -17,56 +16,48 @@ export default {
 } as ComponentMeta<typeof ToastComponent>;
 
 const Template: ComponentStory<typeof ToastComponent> = (args) => {
-  const [open, setOpen] = React.useState(false);
-  const eventDateRef = React.useRef(new Date());
-  const timerRef = React.useRef(0);
+  const [notifications, setNotifications] = React.useState<IToastProps[]>([]);
 
-  React.useEffect(() => {
-    return () => clearTimeout(timerRef.current);
-  }, []);
+  function onAddToast() {
+    const id = Math.random().toString(36).substr(2, 9);
+    const notification = {
+      id,
+      icon: <IconCheck />,
+      message: 'Aim is an open-source, self-hosted ML experiment tracking tool',
+      onDelete: () => {
+        setNotifications((notifications) =>
+          notifications.filter((n) => n.id !== id),
+        );
+      },
+      onUndo: () => {
+        setNotifications((notifications) =>
+          notifications.filter((n) => n.id !== id),
+        );
+      },
+    };
+    setNotifications((list) => [...list, notification]);
+  }
+
   return (
     <div>
-      <Button
-        onClick={() => {
-          setOpen(false);
-          window.clearTimeout(timerRef.current);
-          timerRef.current = window.setTimeout(() => {
-            eventDateRef.current = oneWeekAway();
-            setOpen(true);
-          }, 100);
-        }}
-      >
-        Add to calendar
-      </Button>
+      <Button onClick={onAddToast}>Add Toast</Button>
       <ToastProvider swipeDirection='right'>
-        {open && (
+        {notifications.map((notification) => (
           <ToastComponent
-            onDelete={() => {}}
-            onUndo={() => {}}
-            message='message'
-            id='1'
             {...args}
+            key={notification.id}
+            // onOpenChange={(open) => {
+            //   if (!open && notification.onDelete) {
+            //     notification.onDelete(notification.id)!;
+            //   }
+            // }}
+            {...notification}
           />
-          //   <ToastRoot className='ToastRoot' open={open} onOpenChange={setOpen}>
-          //     <ToastDescription asChild></ToastDescription>
-          //     <ToastAction
-          //       className='ToastAction'
-          //       asChild
-          //       altText='Goto schedule to undo'
-          //     >
-          //       <button className='Button small green'>Undo</button>
-          //     </ToastAction>
-          //   </ToastRoot>
-        )}
+        ))}
       </ToastProvider>
     </div>
   );
 };
-function oneWeekAway(date?: any) {
-  const now = new Date();
-  const inOneWeek = now.setDate(now.getDate() + 7);
-  return new Date(inOneWeek);
-}
 
 export const Toast = Template.bind({});
 
