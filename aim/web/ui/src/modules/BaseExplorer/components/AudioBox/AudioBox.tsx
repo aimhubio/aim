@@ -2,12 +2,13 @@ import React from 'react';
 import AudioPlayer from 'material-ui-audio-player';
 
 import { Tooltip } from '@material-ui/core';
-import { IBoxProps } from 'modules/BaseExplorer/types';
 
 import { Button, Icon, Spinner, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { BATCH_COLLECT_DELAY } from 'config/mediaConfigs/mediaConfigs';
+
+import { IBoxProps } from 'modules/BaseExplorer/types';
 
 import contextToString from 'utils/contextToString';
 import { downloadLink } from 'utils/helper';
