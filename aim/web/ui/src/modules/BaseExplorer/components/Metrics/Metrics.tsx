@@ -133,24 +133,16 @@ function Metrics(props: IBoxProps) {
   }, [data]);
 
   React.useEffect(() => {
-    const unsubscribeLeave = engine.events.on(
-      EVENT.MOUSE_LEAVE,
-      onChartMouseLeave,
-    );
-    const unsubscribeMove = engine.events.on(
-      EVENT.MOUSE_MOVE,
-      onChartMouseMove,
-    );
-    const unsubscribeFocusPoint = engine.events.on(
-      EVENT.FOCUS_POINT,
-      onChartFocusPoint,
-    );
-    return () => {
-      unsubscribeLeave();
-      unsubscribeMove();
-      unsubscribeFocusPoint();
-    };
-  }, [engine.events, onChartMouseLeave, onChartMouseMove, onChartFocusPoint]);
+    return engine.events.on(EVENT.MOUSE_LEAVE, onChartMouseLeave);
+  }, [engine.events, onChartMouseLeave]);
+
+  React.useEffect(() => {
+    return engine.events.on(EVENT.MOUSE_MOVE, onChartMouseMove);
+  }, [engine.events, onChartMouseMove]);
+
+  React.useEffect(() => {
+    return engine.events.on(EVENT.FOCUS_POINT, onChartFocusPoint);
+  }, [engine.events, onChartFocusPoint]);
 
   React.useEffect(() => {
     chartRef.current?.setFocusedState(focusedState);
