@@ -12,7 +12,7 @@ export const {
   config,
   reset,
 } = createStitches({
-  prefix: 'AimUi',
+  prefix: 'aim-ui',
   theme: {
     colors: {
       // primary colors

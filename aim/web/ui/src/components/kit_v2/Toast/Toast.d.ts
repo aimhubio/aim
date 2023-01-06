@@ -63,4 +63,25 @@ export interface IToastProps extends Toast.ToastProps {
   status?: 'success' | 'danger' | 'warning' | 'info';
 }
 
-export interface IToastProviderProps extends Toast.ToastProviderProps {}
+export interface IToastProviderProps extends Toast.ToastProviderProps {
+  /**
+   * @description Toast placement
+   * @optional
+   * @default "bottomRight"
+   * @example
+   * <ToastProvider placement="topLeft" />
+   * @default
+   * <ToastProvider placement="bottomRight" />
+   * */
+  placement?: 'topLeft' | 'topRight' | 'bottomLeft' | 'bottomRight';
+  /**
+   * @description Toast css styles
+   * @optional
+   * @default {}
+   * @example
+   * <ToastProvider css={{ color: '$red', backgroundColor: '$blue' }} />
+   * @default
+   * <ToastProvider css={{}} />
+   * */
+  css?: CSS;
+}

@@ -3,11 +3,7 @@ import React from 'react';
 import * as Toast from '@radix-ui/react-toast';
 import { StyledComponent } from '@stitches/react/types/styled-component';
 
-import {
-  ColorPaletteType,
-  keyframes,
-  styled,
-} from 'config/stitches/stitches.config';
+import { ColorPaletteType, styled } from 'config/stitches/stitches.config';
 import {
   fadeOut,
   toastSlideIn,
@@ -105,6 +101,17 @@ export const ToastAction = styled('div', {
  * @returns {React.FunctionComponentElement<React.ReactNode>}
  * @see https://www.radix-ui.com/docs/primitives/components/toast
  * @see https://stitches.dev/docs/overriding-styles#the-css-prop
+ * @constructor
+ * @example
+ * import { Toast } from 'components/kit_v2/Toast';
+ * <Toast
+ *  message='This is a toast message'
+ * icon={<Icon icon='info' />}
+ * onUndo={() => console.log('undo')}
+ * onDelete={() => console.log('delete')}
+ * id='1'
+ * status='info'
+ * />
  */
 
 const ToastItem = React.forwardRef<typeof ToastRoot, IToastProps>(

@@ -13,9 +13,25 @@ import { IToastProps } from 'components/kit_v2/Toast/Toast.d';
 export default {
   title: 'Kit/Inputs',
   component: ToastComponent,
+  argTypes: {
+    placement: {
+      control: 'radio',
+      options: ['topLeft', 'topRight', 'bottomLeft', 'bottomRight'],
+    },
+    id: {
+      control: 'text',
+    },
+    swipeDirection: {
+      control: 'radio',
+      options: ['left', 'right', 'up', 'down'],
+    },
+    duration: {
+      control: 'number',
+    },
+  },
 } as ComponentMeta<typeof ToastComponent>;
 
-const Template: ComponentStory<typeof ToastComponent> = (args) => {
+const Template: ComponentStory<typeof ToastComponent> = (args: any) => {
   const [notifications, setNotifications] = React.useState<IToastProps[]>([]);
 
   function onAddToast() {
@@ -23,7 +39,9 @@ const Template: ComponentStory<typeof ToastComponent> = (args) => {
     const notification = {
       id,
       icon: <IconCheck />,
-      message: 'Aim is an open-source, self-hosted ML experiment tracking tool',
+      message:
+        args.message ||
+        'Aim is an open-source, self-hosted ML experiment tracking tool',
       onDelete: () => {
         setNotifications((notifications) =>
           notifications.filter((n) => n.id !== id),
@@ -41,16 +59,20 @@ const Template: ComponentStory<typeof ToastComponent> = (args) => {
   return (
     <div>
       <Button onClick={onAddToast}>Add Toast</Button>
-      <ToastProvider swipeDirection='right'>
+      <ToastProvider
+        placement={args.placement}
+        swipeDirection={args.swipeDirection}
+        duration={args.duration}
+      >
         {notifications.map((notification) => (
           <ToastComponent
             {...args}
             key={notification.id}
-            // onOpenChange={(open) => {
-            //   if (!open && notification.onDelete) {
-            //     notification.onDelete(notification.id)!;
-            //   }
-            // }}
+            onOpenChange={(open) => {
+              if (!open && notification.onDelete) {
+                notification.onDelete(notification.id)!;
+              }
+            }}
             {...notification}
           />
         ))}
@@ -61,4 +83,6 @@ const Template: ComponentStory<typeof ToastComponent> = (args) => {
 
 export const Toast = Template.bind({});
 
-Toast.args = {};
+Toast.args = {
+  duration: 5000,
+};
