@@ -52,10 +52,11 @@ def get_tree(args: bytes):
     from_union = kwargs['from_union']
     index = kwargs['index']
     timeout = kwargs['timeout']
+    no_cache = kwargs.get('no_cache', False)
     if index:
         return ResourceRef(repo._get_index_tree(name, timeout))
     else:
-        return ResourceRef(repo.request_tree(name, sub, read_only=read_only, from_union=from_union))
+        return ResourceRef(repo.request_tree(name, sub, read_only=read_only, from_union=from_union, no_cache=no_cache))
 
 
 def get_structured_run(args: bytes):

@@ -232,10 +232,6 @@ class RocksUnionContainer(RocksContainer):
         return super().__init__(*args, **kwargs)
 
     @property
-    def writable_db(self) -> aimrocks.DB:
-        raise NotImplementedError
-
-    @property
     def db(self) -> aimrocks.DB:
         assert self.read_only
 
@@ -268,10 +264,6 @@ class RocksUnionSubContainer(RocksContainer):
     def __init__(self, container: 'RocksUnionContainer', domain: bytes):
         self._parent = container
         self.domain = domain
-
-    @property
-    def writable_db(self) -> aimrocks.DB:
-        raise NotImplementedError
 
     @property
     def db(self) -> aimrocks.DB:
