@@ -1,6 +1,6 @@
 <div align="center">
   <img src="https://user-images.githubusercontent.com/13848158/154338760-edfe1885-06f3-4e02-87fe-4b13a403516b.png">
-  <h3>An easy-to-use & supercharged open-source experiment tracker</h3>
+  <h1>2022</h1>
   Aim logs your training runs, enables a beautiful UI to compare them and an API to query them programmatically.
 </div>
 
