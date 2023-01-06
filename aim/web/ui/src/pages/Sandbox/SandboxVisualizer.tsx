@@ -30,7 +30,7 @@ export default function SandboxVisualizer() {
   const { pyodide, namespace, isLoading } = usePyodide();
 
   const editorValue = React.useRef(getItem('sandboxCode') ?? initialCode);
-  const [result, setResult] = React.useState<Record<string, any>>([[]]);
+  const [result, setResult] = React.useState([[]]);
   const [isProcessing, setIsProcessing] = React.useState<boolean | null>(null);
   const [error, setError] = React.useState<string | null>(null);
   const [execCode, setExecCode] = React.useState('');
@@ -46,22 +46,27 @@ export default function SandboxVisualizer() {
 
     window.clearTimeout(timerId.current);
     timerId.current = window.setTimeout(() => {
+      (window as any).view = layout;
       setResult(layout);
-    }, 100);
+    }, 50);
   };
+
   (window as any).setState = (update: any) => {
+    let stateUpdate = update.toJs();
+    update.destroy();
     setState((s: any) => ({
       ...s,
-      ...toObject(update.toJs()),
+      ...toObject(stateUpdate),
     }));
-    update.destroy();
   };
+
   (window as any).state = state;
   (window as any).view = result;
 
   const execute = React.useCallback(async () => {
     if (pyodide !== null) {
       try {
+        window.clearTimeout(timerId.current);
         setIsProcessing(true);
         const code = editorValue.current
           .replaceAll('from aim', '# from aim')
@@ -91,10 +96,8 @@ export default function SandboxVisualizer() {
 
         setState(undefined);
         setResult([[]]);
+        setExecCode(code);
         setExecutionCount((eC) => eC + 1);
-        let vizMapResetCode = `viz_map_keys = {}
-`;
-        setExecCode(vizMapResetCode.concat(code));
       } catch (ex) {
         // eslint-disable-next-line no-console
         console.log(ex);
@@ -111,6 +114,9 @@ export default function SandboxVisualizer() {
   const runParsedCode = React.useCallback(() => {
     if (pyodide !== null) {
       try {
+        let vizMapResetCode = `viz_map_keys = {}
+`;
+        pyodide?.runPython(vizMapResetCode, { globals: namespace });
         console.time('run');
         pyodide
           ?.runPythonAsync(execCode, { globals: namespace })
@@ -133,11 +139,19 @@ export default function SandboxVisualizer() {
 
   React.useEffect(() => {
     if (execCode) {
+      (window as any).state = undefined;
+      (window as any).view = [[]];
+      runParsedCode();
+    }
+  }, [executionCount]);
+
+  React.useEffect(() => {
+    if (state !== undefined) {
       (window as any).state = state;
       (window as any).view = result;
       runParsedCode();
     }
-  }, [execCode, runParsedCode]);
+  }, [state]);
 
   React.useEffect(() => {
     setIsProcessing(isLoading);
@@ -177,7 +191,6 @@ export default function SandboxVisualizer() {
           />
         </div>
         <div
-          key={`${isProcessing}`}
           className={classnames('SandboxVisualizer__main__components', {
             'SandboxVisualizer__main__components--loading':
               isProcessing === null,

@@ -29,7 +29,7 @@ function NotebookCell(props: any) {
   const editorValue = React.useRef(code);
   const editorRef = React.useRef<any>();
 
-  const [result, setResult] = React.useState<Record<string, any>>([[]]);
+  const [result, setResult] = React.useState([[]]);
   const [editorHeight, setEditorHeight] = React.useState(lineHeight);
   const [error, setError] = React.useState<string | null>(null);
   const [isProcessing, setIsProcessing] = React.useState<boolean | null>(null);
@@ -51,11 +51,12 @@ function NotebookCell(props: any) {
   };
 
   (window as any).setState = (update: any) => {
+    let stateUpdate = update.toJs();
+    update.destroy();
     setState((s: any) => ({
       ...s,
-      ...toObject(update.toJs()),
+      ...toObject(stateUpdate),
     }));
-    update.destroy();
   };
   (window as any).state = state;
   (window as any).view = result;
@@ -89,10 +90,8 @@ function NotebookCell(props: any) {
 
       setState(undefined);
       setResult([[]]);
+      setExecCode(code);
       setExecutionCount((eC) => eC + 1);
-      let vizMapResetCode = `viz_map_keys = {}
-`;
-      setExecCode(vizMapResetCode.concat(code));
     } catch (ex) {
       // eslint-disable-next-line no-console
       console.log(ex);
@@ -108,6 +107,9 @@ function NotebookCell(props: any) {
   const runParsedCode = React.useCallback(() => {
     if (pyodide !== null) {
       try {
+        let vizMapResetCode = `viz_map_keys = {}
+`;
+        pyodide?.runPython(vizMapResetCode, { globals: namespace });
         pyodide
           ?.runPythonAsync(execCode, { globals: namespace })
           .then(() => {
@@ -128,11 +130,19 @@ function NotebookCell(props: any) {
 
   React.useEffect(() => {
     if (execCode) {
+      (window as any).state = undefined;
+      (window as any).view = [[]];
+      runParsedCode();
+    }
+  }, [executionCount]);
+
+  React.useEffect(() => {
+    if (state !== undefined) {
       (window as any).state = state;
       (window as any).view = result;
       runParsedCode();
     }
-  }, [execCode, runParsedCode]);
+  }, [state]);
 
   React.useEffect(() => {
     setIsProcessing(isLoading);

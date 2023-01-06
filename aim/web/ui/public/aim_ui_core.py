@@ -116,9 +116,9 @@ def update_viz_map(viz):
     else:
         viz_map_keys[viz_type] = 0
 
-    viz_map
+    viz_key = viz_type + str(viz_map_keys[viz_type])
 
-    return viz_type + str(viz_map_keys[viz_type])
+    return viz_key
 
 
 def apply_group_value_pattern(value, list):

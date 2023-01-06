@@ -4,11 +4,8 @@ line_chart = LineChart(metrics, x='steps', y='values',
                     color=["run.name"],
                     stroke_style=["metric.context"])
 
-Metric_Explorer = Group(
-    line_chart, 
-    facet={"row": ["metric.name"], "column": ["run.name"]},
-    size={"width": 400, "height": 300}
-)
-
+if line_chart["focused_line_data"] != None:               
+    metric_df = Metric.dataframe(metric["key"])
+    Table(metric_df)
 
 `;
