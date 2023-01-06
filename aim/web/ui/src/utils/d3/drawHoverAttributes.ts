@@ -12,6 +12,7 @@ import {
 import { IAxisScale } from 'types/utils/d3/getAxisScale';
 import { IUpdateFocusedChartArgs } from 'types/components/LineChart/LineChart';
 import { IProcessedData } from 'types/utils/d3/processLineChartData';
+import { IFocusedState } from 'types/services/models/metrics/metricsAppModel';
 
 import { AggregationAreaMethods } from 'utils/aggregateGroupData';
 import getRoundedValue from 'utils/roundValue';
@@ -714,14 +715,8 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
   }
 
   function updateFocusedChart(args: IUpdateFocusedChartArgs = {}): void {
-    const {
-      xScale,
-      yScale,
-      focusedState,
-      activePoint,
-      currentXValue,
-      dataSelector,
-    } = attrRef.current;
+    const { xScale, yScale, focusedState, activePoint, dataSelector } =
+      attrRef.current;
 
     const {
       mousePos,
@@ -732,7 +727,7 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
     let mousePosition: [number, number] | [] = [];
     if (mousePos) {
       mousePosition = mousePos;
-    } else if (focusedState?.active && focusedState.chartIndex === index) {
+    } else if (focusedState?.active && focusedState.chartId === id) {
       mousePosition = [
         xScale(focusedState.xValue),
         yScale(focusedState.yValue),
@@ -750,32 +745,45 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
         if (focusedStateActive) {
           drawFocusedCircle(activePoint.key, activePoint.inProgress);
         }
-        safeSyncHoverState({ activePoint, focusedStateActive, dataSelector });
+        const focusedState = getFocusedState(activePoint, focusedStateActive);
+        attrRef.current.focusedState = focusedState;
+
+        safeSyncHoverState({ activePoint, focusedState, dataSelector });
       }
     } else {
-      const xValue = currentXValue ?? xScale.domain()[1];
-      const mouseX = xScale(xValue);
-
-      const nearestCircles = getNearestCircles(mouseX);
-      clearHorizontalAxisLine();
-      clearYAxisLabel();
-
-      if (focusedStateActive) {
-        setLinesHighlightMode();
-        setCirclesHighlightMode();
-      }
-
-      drawVerticalAxisLine(mouseX);
-      drawCircles(nearestCircles);
-
-      const newXValue = getInvertedValue(
-        axesScaleType.xAxis,
-        mouseX,
-        attrRef.current.xScale,
-      );
-      drawXAxisLabel(newXValue);
-      attrRef.current.currentXValue = newXValue;
+      drawInitialAttributes();
     }
+  }
+
+  function drawInitialAttributes() {
+    const {
+      xScale,
+      focusedState,
+      currentXValue = xScale.domain()[1],
+    } = attrRef.current;
+
+    const xValue = focusedState?.active ? focusedState.xValue : currentXValue;
+    const mouseX = xScale(xValue);
+
+    const nearestCircles = getNearestCircles(mouseX);
+    clearHorizontalAxisLine();
+    clearYAxisLabel();
+
+    if (focusedState?.active) {
+      setLinesHighlightMode();
+      setCirclesHighlightMode();
+    }
+
+    drawVerticalAxisLine(mouseX);
+    drawCircles(nearestCircles);
+
+    const newXValue = getInvertedValue(
+      axesScaleType.xAxis,
+      mouseX,
+      attrRef.current.xScale,
+    );
+    drawXAxisLabel(newXValue);
+    attrRef.current.currentXValue = newXValue;
   }
 
   function setActiveLineAndCircle(
@@ -801,7 +809,10 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
         if (focusedStateActive) {
           drawFocusedCircle(activePoint.key, activePoint.inProgress);
         }
-        safeSyncHoverState({ activePoint, focusedStateActive, dataSelector });
+        const focusedState = getFocusedState(activePoint, focusedStateActive);
+        attrRef.current.focusedState = focusedState;
+
+        safeSyncHoverState({ activePoint, focusedState, dataSelector });
       }
     }
   }
@@ -820,7 +831,7 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
   }
 
   function handlePointClick(this: SVGElement, event: MouseEvent): void {
-    if (attrRef.current.focusedState?.chartIndex !== index) {
+    if (attrRef.current.focusedState?.chartId !== id) {
       safeSyncHoverState({ activePoint: null });
     }
     const mousePos = d3.pointer(event);
@@ -829,26 +840,42 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
     if (closestCircle) {
       const nearestCircles = getNearestCircles(closestCircle.x);
       let activePoint = drawAttributes(closestCircle, nearestCircles, true);
+      const focusedState = getFocusedState(activePoint, true);
+      attrRef.current.focusedState = focusedState;
+
       drawFocusedCircle(activePoint.key, activePoint.inProgress);
       safeSyncHoverState({
         activePoint,
-        focusedStateActive: true,
+        focusedState,
         dataSelector: attrRef.current.dataSelector,
       });
     }
   }
 
+  function getFocusedState(
+    activePoint: IActivePoint,
+    focusedStateActive: boolean = false,
+  ): IFocusedState {
+    return {
+      active: focusedStateActive,
+      key: activePoint.key,
+      xValue: activePoint.xValue,
+      yValue: activePoint.yValue,
+      chartIndex: activePoint.chartIndex,
+      chartId: activePoint.chartId,
+    };
+  }
+
   function handleLineClick(this: SVGElement, event: MouseEvent): void {
-    if (attrRef.current.focusedState?.chartIndex !== index) {
+    if (attrRef.current.focusedState?.chartId !== id) {
       safeSyncHoverState({ activePoint: null });
     }
     const mousePos = d3.pointer(event);
-
     updateFocusedChart({ mousePos, focusedStateActive: false, force: true });
   }
 
   function handleLeaveFocusedPoint(event: MouseEvent): void {
-    if (attrRef.current.focusedState?.chartIndex !== index) {
+    if (attrRef.current.focusedState?.chartId !== id) {
       safeSyncHoverState({ activePoint: null });
     }
     const mousePos = d3.pointer(event);
@@ -928,6 +955,8 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
   drawActiveRunsIndicators(processedData);
   if (attrRef.current.focusedState) {
     updateFocusedChart({ force: true });
+  } else {
+    drawInitialAttributes();
   }
 }
 export default drawHoverAttributes;

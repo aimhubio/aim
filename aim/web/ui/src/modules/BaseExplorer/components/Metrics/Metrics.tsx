@@ -1,4 +1,5 @@
 import * as React from 'react';
+import _ from 'lodash-es';
 
 import LineChart from 'components/LineChart/LineChart';
 
@@ -11,11 +12,10 @@ import {
 import { ILineChartRef } from 'types/components/LineChart/LineChart';
 import { IFocusedState } from 'types/services/models/metrics/metricsAppModel';
 
-import { ScaleEnum } from 'utils/d3';
-
 const EVENT = {
   MOUSE_LEAVE: 'onMouseLeave',
   MOUSE_MOVE: 'onMouseMove',
+  FOCUS_POINT: 'onFocusPoint',
 };
 
 function Metrics(props: IBoxProps) {
@@ -27,78 +27,89 @@ function Metrics(props: IBoxProps) {
     id,
     engine: { useStore },
   } = props;
+  const [chartData, setChartData] = React.useState(null);
 
-  let [chartData, setChartData] = React.useState<any>(null);
+  const chartRef = React.useRef<ILineChartRef>(null);
+  const containerRef = React.useRef<HTMLDivElement | null>(null);
 
-  let containerRef = React.useRef<HTMLDivElement | null>(null);
-  let chartRef = React.useRef<ILineChartRef>(null);
+  const { isInitial: isInitialFocusedState, ...focusedState } = useStore(
+    engine.focusedState.stateSelector,
+  );
 
-  const focusedState = useStore((state: any) => state.focusedState);
-
-  const setFocusedState = React.useCallback(
-    (activePoint: IActivePoint, focusedStateActive: boolean = false) => {
-      const state: IFocusedState = {
-        active: focusedStateActive,
-        key: activePoint.key,
-        xValue: activePoint.xValue,
-        yValue: activePoint.yValue,
-        chartIndex: activePoint.chartIndex,
-        chartId: activePoint.chartId,
-      };
-      chartRef.current?.setFocusedState(state);
-      return state;
+  const onChartFocusPoint = React.useCallback(
+    (currentFocusedState: IFocusedState) => {
+      if (currentFocusedState.chartId !== id) {
+        chartRef.current?.setFocusedState(currentFocusedState);
+        return;
+      }
+      if (!_.isEqual(focusedState, currentFocusedState)) {
+        engine.focusedState.update(currentFocusedState);
+      }
     },
-    [],
+    [id, engine.focusedState, focusedState],
   );
 
   const onChartMouseLeave = React.useCallback(() => {
-    if (typeof chartRef.current?.clearHoverAttributes === 'function') {
-      chartRef.current.clearHoverAttributes();
-    }
+    chartRef.current?.clearHoverAttributes();
   }, []);
 
   const onChartMouseMove = React.useCallback(
     ({
-      state,
+      activePoint,
       dataSelector,
     }: {
-      state: IFocusedState;
+      activePoint: IActivePoint;
       dataSelector?: string;
     }) => {
-      if (state.chartId === id) {
-        if (state.active !== focusedState.active) {
-          engine.focusedState.update(state, true);
-        }
+      if (activePoint.chartId === id) {
         return;
       }
       window.requestAnimationFrame(() => {
-        if (chartRef.current) {
-          chartRef.current?.setFocusedState(state);
-          chartRef.current.updateHoverAttributes(
-            state.xValue as number,
-            dataSelector,
-          );
-        }
+        chartRef.current?.updateHoverAttributes(
+          activePoint.xValue as number,
+          dataSelector,
+        );
       });
     },
-    [id, focusedState.active, engine.focusedState],
+    [id],
   );
 
   const syncHoverState = React.useCallback(
     ({
       activePoint,
-      focusedStateActive = false,
+      focusedState: currentFocusedState,
       dataSelector,
     }: ISyncHoverStateArgs): void => {
       if (activePoint === null) {
-        engine.events.fire(EVENT.MOUSE_LEAVE, null);
-      } else {
-        const state = setFocusedState(activePoint, focusedStateActive);
-        engine.events.fire(EVENT.MOUSE_MOVE, { state, dataSelector });
+        engine.events.fire(EVENT.MOUSE_LEAVE);
+        return;
+      }
+      engine.events.fire(EVENT.MOUSE_MOVE, {
+        activePoint,
+        dataSelector,
+      });
+      if (
+        currentFocusedState?.active !== focusedState.active ||
+        (focusedState.active && activePoint.key !== focusedState.key)
+      ) {
+        engine.events.fire(EVENT.FOCUS_POINT, currentFocusedState);
       }
     },
-    [engine.events, setFocusedState],
+    [engine.events, focusedState.active, focusedState.key],
   );
+
+  const onChartMount = React.useCallback(() => {
+    chartRef.current?.setFocusedState(focusedState);
+    const mouseMovePayload = engine.events.getEventPayload(EVENT.MOUSE_MOVE);
+    if (mouseMovePayload) {
+      window.requestAnimationFrame(() => {
+        chartRef.current?.updateHoverAttributes(
+          mouseMovePayload.activePoint.xValue as number,
+          mouseMovePayload.dataSelector,
+        );
+      });
+    }
+  }, [focusedState, engine.events]);
 
   React.useEffect(() => {
     let rafId = window.requestAnimationFrame(() => {
@@ -109,7 +120,13 @@ function Metrics(props: IBoxProps) {
         dasharray: item.style.dasharray,
         selectors: [item.key],
       }));
-      setChartData(chartData);
+
+      setChartData((prevState) => {
+        if (prevState && _.isEqual(prevState, chartData)) {
+          return prevState;
+        }
+        return chartData;
+      });
     });
 
     return () => window.cancelAnimationFrame(rafId);
@@ -124,47 +141,39 @@ function Metrics(props: IBoxProps) {
       EVENT.MOUSE_MOVE,
       onChartMouseMove,
     );
+    const unsubscribeFocusPoint = engine.events.on(
+      EVENT.FOCUS_POINT,
+      onChartFocusPoint,
+    );
     return () => {
       unsubscribeLeave();
       unsubscribeMove();
+      unsubscribeFocusPoint();
     };
-  }, [engine.events, onChartMouseLeave, onChartMouseMove]);
+  }, [engine.events, onChartMouseLeave, onChartMouseMove, onChartFocusPoint]);
 
   React.useEffect(() => {
-    if (focusedState) {
-      chartRef.current?.setFocusedState(focusedState);
-    }
+    chartRef.current?.setFocusedState(focusedState);
   }, [focusedState]);
 
   return chartData ? (
     <div
-      style={{
-        width: '100%',
-        height: '100%',
-        padding: 20,
-      }}
       ref={containerRef}
+      style={{ width: '100%', height: '100%', padding: 10 }}
     >
       <LineChart
         ref={chartRef}
+        id={id}
         nameKey={visualizationName}
         index={index}
-        id={id}
         data={chartData}
         syncHoverState={syncHoverState}
-        axesScaleType={{
-          xAxis: ScaleEnum.Linear,
-          yAxis: ScaleEnum.Linear,
-        }}
-        margin={{
-          top: 30,
-          right: 40,
-          bottom: 30,
-          left: 60,
-        }}
+        onMount={onChartMount}
       />
     </div>
   ) : null;
 }
+
+Metrics.displayName = 'MetricsBox';
 
 export default React.memo(Metrics);

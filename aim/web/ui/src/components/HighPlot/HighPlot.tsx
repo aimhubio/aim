@@ -36,18 +36,20 @@ const HighPlot = React.forwardRef(function HighPlot(
     chartTitle,
     onAxisBrushExtentChange,
     brushExtents,
-    readOnly = false,
     resizeMode,
-  } = props;
-
-  // boxes
-  const visBoxRef = React.useRef({
-    margin: {
+    onMount,
+    readOnly = false,
+    margin = {
       top: 64,
       right: 60,
       bottom: 30,
       left: 60,
     },
+  } = props;
+
+  // boxes
+  const visBoxRef = React.useRef({
+    margin,
     height: 0,
     width: 0,
   });
@@ -75,6 +77,16 @@ const HighPlot = React.forwardRef(function HighPlot(
   const linesRef = React.useRef<any>({});
   const brushRef = React.useRef<any>({});
   const rafIDRef = React.useRef<number>();
+
+  const updateDeps = [
+    data,
+    curveInterpolation,
+    index,
+    isVisibleColorIndicator,
+    readOnly,
+    resizeMode,
+    id,
+  ];
 
   function draw() {
     drawArea({
@@ -178,14 +190,7 @@ const HighPlot = React.forwardRef(function HighPlot(
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [
-      data,
-      curveInterpolation,
-      index,
-      isVisibleColorIndicator,
-      readOnly,
-      resizeMode,
-    ],
+    updateDeps,
   );
 
   const observerReturnCallback = React.useCallback(() => {
@@ -204,14 +209,14 @@ const HighPlot = React.forwardRef(function HighPlot(
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    data,
-    curveInterpolation,
-    index,
-    isVisibleColorIndicator,
-    readOnly,
-    resizeMode,
-  ]);
+  }, updateDeps);
+
+  React.useEffect(() => {
+    if (typeof onMount === 'function') {
+      onMount();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   React.useImperativeHandle(ref, () => ({
     clearHoverAttributes: () => {
@@ -219,7 +224,10 @@ const HighPlot = React.forwardRef(function HighPlot(
     },
     setFocusedState: (focusedState: IFocusedState) => {
       const prevFocusState = { ...attributesRef.current.focusedState };
-      attributesRef.current.focusedState = focusedState;
+      attributesRef.current.focusedState = {
+        ...focusedState,
+        chartId: focusedState.chartId ?? `${focusedState.chartIndex}`,
+      };
 
       if (
         !_.isEmpty(brushExtents) &&

@@ -12,6 +12,7 @@ import {
 } from 'types/utils/d3/drawParallelHoverAttributes';
 import { IAxisScale } from 'types/utils/d3/getAxisScale';
 import { ILineDataType } from 'types/utils/d3/drawParallelLines';
+import { IFocusedState } from 'types/services/models/metrics/metricsAppModel';
 
 import getRoundedValue from 'utils/roundValue';
 
@@ -176,6 +177,20 @@ const drawParallelHoverAttributes = ({
     };
   }
 
+  function getFocusedState(
+    activePoint: IActivePoint,
+    focusedStateActive: boolean = false,
+  ): IFocusedState {
+    return {
+      active: focusedStateActive,
+      key: activePoint.key,
+      xValue: activePoint.xValue,
+      yValue: activePoint.yValue,
+      chartIndex: activePoint.chartIndex,
+      chartId: activePoint.chartId,
+    };
+  }
+
   function updateFocusedChart(args: IUpdateParallelFocusedChartProps = {}) {
     const { xScale, yScale, focusedState, activePoint } = attrRef.current;
 
@@ -190,7 +205,7 @@ const drawParallelHoverAttributes = ({
     if (mousePos) {
       dimensionLabel = scalePointValue(xScale, mousePos[0]);
       mousePosition = mousePos;
-    } else if (focusedState?.active && focusedState.chartIndex === index) {
+    } else if (focusedState?.active && focusedState.chartId === id) {
       const xPos = xScale(focusedState.xValue);
       dimensionLabel = scalePointValue(xScale, xPos);
       mousePosition = [xPos, yScale[dimensionLabel]?.(focusedState.yValue)];
@@ -225,9 +240,11 @@ const drawParallelHoverAttributes = ({
             closestCircle,
           );
           if (focusedStateActive) {
-            drawFocusedCircle(closestCircle.key);
+            drawFocusedCircle(activePoint.key);
           }
-          safeSyncHoverState({ activePoint, focusedStateActive });
+          const focusedState = getFocusedState(activePoint, focusedStateActive);
+          attrRef.current.focusedState = focusedState;
+          safeSyncHoverState({ activePoint, focusedState });
           attrRef.current.activePoint = activePoint;
           attrRef.current.lineKey = closestCircle.key;
           attrRef.current.x = closestCircle.x;
@@ -334,7 +351,7 @@ const drawParallelHoverAttributes = ({
 
   // Interactions
   function handlePointClick(this: SVGElement, event: MouseEvent): void {
-    if (attrRef.current.focusedState?.chartIndex !== index) {
+    if (attrRef.current.focusedState?.chartId !== id) {
       safeSyncHoverState({ activePoint: null });
     }
     const mousePos = d3.pointer(event);
@@ -342,7 +359,7 @@ const drawParallelHoverAttributes = ({
   }
 
   function handleLineClick(this: SVGElement, event: MouseEvent): void {
-    if (attrRef.current.focusedState?.chartIndex !== index) {
+    if (attrRef.current.focusedState?.chartId !== id) {
       safeSyncHoverState({ activePoint: null });
     }
     const mousePos = d3.pointer(event);
@@ -389,7 +406,9 @@ const drawParallelHoverAttributes = ({
         if (focusedStateActive) {
           drawFocusedCircle(closestCircle?.key);
         }
-        safeSyncHoverState({ activePoint, focusedStateActive });
+        const focusedState = getFocusedState(activePoint, focusedStateActive);
+        attrRef.current.focusedState = focusedState;
+        safeSyncHoverState({ activePoint, focusedState });
         attrRef.current.activePoint = activePoint;
         attrRef.current.lineKey = closestCircle.key;
         attrRef.current.x = closestCircle.x + margin.left;
@@ -450,7 +469,7 @@ const drawParallelHoverAttributes = ({
     event: MouseEvent,
     type: 'axes' | 'bg',
   ): void {
-    if (attrRef.current.focusedState?.chartIndex !== index) {
+    if (attrRef.current.focusedState?.chartId !== id) {
       safeSyncHoverState({ activePoint: null });
     }
     const mousePos = d3.pointer(event);

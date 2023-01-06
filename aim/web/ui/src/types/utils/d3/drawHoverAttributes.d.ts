@@ -6,6 +6,7 @@ import { ILine, IAttributesRef } from 'types/components/LineChart/LineChart';
 import {
   IAggregationConfig,
   IAlignmentConfig,
+  IFocusedState,
 } from 'types/services/models/metrics/metricsAppModel';
 
 import { ScaleEnum, HighlightEnum } from 'utils/d3';
@@ -44,7 +45,7 @@ export interface IDrawHoverAttributesArgs {
 export interface ISyncHoverStateArgs {
   activePoint: IActivePoint | null;
   dataSelector?: string;
-  focusedStateActive?: boolean;
+  focusedState?: IFocusedState;
 }
 
 export type IAxisLineData = { x1: number; y1: number; x2: number; y2: number };

@@ -9,7 +9,6 @@ import { EngineNew } from 'modules/core/engine/explorer-engine';
 import { PipelineStatusEnum } from 'modules/core/engine/types';
 
 import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
-import { AimFlatObjectBase } from 'types/core/AimObjects';
 
 export interface IEngineStates {
   [key: string]: {

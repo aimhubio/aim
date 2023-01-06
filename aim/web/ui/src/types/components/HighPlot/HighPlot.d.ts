@@ -24,6 +24,8 @@ export interface IHighPlotProps {
   ) => void;
   data: any;
   chartTitle?: IChartTitle;
-  readOnly?: boolean;
   resizeMode?: ResizeModeEnum;
+  onMount?: () => void;
+  readOnly?: boolean;
+  margin?: { top: number; right: number; bottom: number; left: number };
 }
