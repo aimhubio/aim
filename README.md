@@ -445,10 +445,15 @@ The high-level features we are going to work on the next few months
   - [x] Integration with fast.ai (Start: _Aug 22 2022_, Shipped: _Oct 6 2022_)
   - [x] Integration with MXNet (Start: _Sep 20 2022_, Shipped: _Oct 6 2022_)
   - [x] Project overview page (Start: _Sep 1 2022_, Shipped: _Oct 6 2022_)
+  - [x] Remote tracking server scaling (Start: _Sep 11 2022_, Shipped: _Nov 26 2022_)
+  - [x] Integration with PaddlePaddle (Start: _Oct 2 2022_, Shipped: _Nov 26 2022_)
+  - [x] Integration with Optuna (Start: _Oct 2 2022_, Shipped: _Nov 26 2022_)
+  - [x] Audios Explorer (Start: _Oct 30 2022_, Shipped: _Nov 26 2022_)
+  - [x] Experiment page (Start: _Nov 9 2022_, Shipped: _Nov 26 2022_)
 
 ### In Progress
-  - [ ] Remote tracking server scaling (Start: _Sep 1 2022_)
-  - [ ] Aim SDK low-level interface (Start: _Aug 22 2022_)
+  - [ ] Aim SDK low-level interface (Start: _Aug 22 2022_, )
+  - [ ] HuggingFace datasets (Start: _Dec 29 2022_, )
 
 ### To Do
 
@@ -457,7 +462,6 @@ The high-level features we are going to work on the next few months
 - Runs management
     - Runs explorer – query and visualize runs data(images, audio, distributions, ...) in a central dashboard
 - Explorers
-    - Audio Explorer
     - Text Explorer
     - Distributions Explorer
 - Dashboards – customizable layouts with embedded explorers
@@ -474,9 +478,7 @@ The high-level features we are going to work on the next few months
 **Integrations**
 
 - ML Frameworks:
-    - Shortlist: MONAI, SpaCy, Raytune, PaddlePaddle
-- Datasets versioning tools
-    - Shortlist: HuggingFace Datasets
+    - Shortlist: MONAI, SpaCy, Raytune
 - Resource management tools
     - Shortlist: Kubeflow, Slurm
 - Workflow orchestration tools
