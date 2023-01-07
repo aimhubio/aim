@@ -3,11 +3,17 @@ import React from 'react';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import Icon from 'components/kit/Icon';
 
-import { styled } from 'config/stitches/stitches.config';
+import { CSS, styled } from 'config/stitches/stitches.config';
 
 import { IBadgeProps } from './Badge.d';
 
-const getColors: any = (color?: string, disabled?: boolean) => {
+function getColors({
+  color,
+  disabled,
+}: {
+  color: string | undefined;
+  disabled: boolean;
+}): CSS {
   if (color) {
     return {
       bc: `$${color}${disabled ? 50 : 70}`,
@@ -24,7 +30,7 @@ const getColors: any = (color?: string, disabled?: boolean) => {
       bc: '$colors$secondary10',
     },
   };
-};
+}
 
 const BadgeContainer = styled('div', {
   width: 'fit-content',
@@ -105,7 +111,7 @@ const RightIcon = styled(Icon, {
  * Badge component params
  * @param {string} label - Label of the badge
  * @param {string} size - Size of the badge
- * @param {ColorPaletteEnum} color - Color of the badge
+ * @param {ColorPaletteType} color - Color of the badge
  * @param {boolean} disabled - Disabled state of the badge
  * @param {boolean} monospace - Monospace font of the badge
  * @param {function} onDelete - Callback function for delete action
@@ -133,7 +139,7 @@ const Badge = React.forwardRef<
         <BadgeContainer
           {...rest}
           size={size}
-          css={{ ...css, ...getColors(color, disabled) }}
+          css={{ ...css, ...getColors({ color, disabled }) }}
           role='button'
           font={monospace ? 'mono' : 'default'}
           rightIcon={!!onDelete}

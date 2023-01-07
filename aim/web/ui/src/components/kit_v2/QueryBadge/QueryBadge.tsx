@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { ColorPaletteEnum, styled } from 'config/stitches/stitches.config';
+import { styled } from 'config/stitches/stitches.config';
 
 import ButtonGroup from '../ButtonGroup';
 import Button from '../Button';
@@ -53,7 +53,7 @@ const QueryBadge = React.forwardRef<
     return (
       <ButtonGroup
         {...rest}
-        color={color as ColorPaletteEnum}
+        color={color}
         size={size}
         variant={variant}
         disabled={disabled}

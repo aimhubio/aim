@@ -12,6 +12,7 @@ import 'antd/es/tree/style/index.css';
 const TreeListWrapper = styled('div', {
   '.ant-tree': {
     '.ant-tree-treenode': {
+      position: 'relative',
       height: '$5',
       display: 'flex',
       ai: 'center',
@@ -27,6 +28,7 @@ const TreeListWrapper = styled('div', {
       alignSelf: 'unset',
       ai: 'center',
       jc: 'center',
+      zIndex: 20,
     },
     '.ant-tree-node-content-wrapper': {
       display: 'flex',
@@ -50,6 +52,15 @@ const TreeListWrapper = styled('div', {
     ai: 'center',
     jc: 'center',
     border: 'unset',
+    position: 'unset',
+    '&::before': {
+      content: '""',
+      position: 'absolute',
+      zIndex: 10,
+      width: '100%',
+      height: '100%',
+      left: 0,
+    },
   },
   '.ant-tree-checkbox-indeterminate': {
     '.ant-tree-checkbox-inner': {

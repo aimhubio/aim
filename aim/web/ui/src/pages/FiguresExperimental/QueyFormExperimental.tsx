@@ -2,25 +2,25 @@ import React from 'react';
 import _ from 'lodash-es';
 
 import { QueryBadge } from 'stories/QueryBadge.stories';
-import {
-  QueryFormState,
-  QueryRangesState,
-} from 'modules/core/engine/explorer/query';
-import { getQueryStringFromSelect } from 'modules/core/utils/getQueryStringFromSelect';
-import { PipelineStatusEnum } from 'modules/core/engine/types';
-import getQueryParamsFromState from 'modules/core/utils/getQueryParamsFromState';
-import { getSelectFormOptions } from 'modules/core/utils/getSelectFormOptions';
 
 import Button from 'components/kit_v2/Button';
 import IconButton from 'components/kit_v2/IconButton';
-import ControlsButton from 'components/kit_v2/ControlsButton';
 import Popover from 'components/kit_v2/Popover';
 import Box from 'components/kit_v2/Box';
 import Tree from 'components/kit_v2/Tree';
 import { ITreeProps } from 'components/kit_v2/Tree';
+import AutocompleteInput from 'components/AutocompleteInput';
 
-import { ColorPaletteEnum, styled } from 'config/stitches/stitches.config';
 import { getSuggestionsByExplorer } from 'config/monacoConfig/monacoConfig';
+
+import { getSelectFormOptions } from 'modules/core/utils/getSelectFormOptions';
+import getQueryParamsFromState from 'modules/core/utils/getQueryParamsFromState';
+import { PipelineStatusEnum } from 'modules/core/engine/types';
+import { getQueryStringFromSelect } from 'modules/core/utils/getQueryStringFromSelect';
+import {
+  QueryFormState,
+  QueryRangesState,
+} from 'modules/core/engine/explorer/query';
 
 import { SequenceTypesEnum } from 'types/core/enums';
 import { ISelectOption } from 'types/services/models/explorer/createAppModel';
@@ -31,8 +31,12 @@ import getAdvancedSuggestion from 'utils/getAdvancedSuggestions';
 import ExplorerBar from './ExplorerBar';
 import ControlsBar from './ControlsBar';
 
+type StatusCheckResult = {
+  isExecuting: boolean;
+  isInsufficientResources: boolean;
+};
+
 function LayoutExperimental(props: any) {
-  const [anchorEl, setAnchorEl] = React.useState<any>(null);
   const [searchValue, setSearchValue] = React.useState<string>('');
   const engine = props.engine;
 
@@ -45,7 +49,7 @@ function LayoutExperimental(props: any) {
   const ranges: QueryRangesState = engine.useStore(
     engine.query.ranges.stateSelector,
   );
-  const state = engine.useStore(engine.pipeline.stateSelector);
+
   const status = engine.useStore(engine.pipeline.statusSelector);
   const error = engine.useStore(engine.pipeline.errorSelector);
   const updateError = React.useRef(engine.pipeline.setError);
@@ -170,27 +174,22 @@ function LayoutExperimental(props: any) {
     );
   }, [queryable.project_sequence_info, searchValue]);
 
-  const handleAutocompleteClose: (
-    event: React.ChangeEvent<{}>,
-    reason: string,
-  ) => void = React.useCallback(
-    (event: React.ChangeEvent<{}>, reason: string) => {
-      if (reason === 'toggleInput') {
-        return;
-      }
-      if (anchorEl) {
-        anchorEl.focus();
-      }
-      setAnchorEl(null);
-      setSearchValue('');
-    },
-    [anchorEl],
-  );
-
-  const handleAutocompleteOpen: (event: React.ChangeEvent<{}>) => void =
-    React.useCallback((event: React.ChangeEvent<{}>) => {
-      setAnchorEl(event.currentTarget);
-    }, []);
+  // const handleAutocompleteClose: (
+  //   event: React.ChangeEvent<{}>,
+  //   reason: string,
+  // ) => void = React.useCallback(
+  //   (event: React.ChangeEvent<{}>, reason: string) => {
+  //     if (reason === 'toggleInput') {
+  //       return;
+  //     }
+  //     if (anchorEl) {
+  //       anchorEl.focus();
+  //     }
+  //     setAnchorEl(null);
+  //     setSearchValue('');
+  //   },
+  //   [anchorEl],
+  // );
 
   function onSelect(event: object, value: ISelectOption[]): void {
     const lookup = value.reduce(
@@ -239,7 +238,7 @@ function LayoutExperimental(props: any) {
     return getTreeDataFromQueryableData(queryable.queryable_data[sequenceName]);
   }, [queryable.queryable_data]);
 
-  function filterData(array: any) {
+  function filterTreeData(array: any) {
     let modified: any = {};
     for (let key in array) {
       const objKey = Object.keys(array[key])[0];
@@ -263,7 +262,7 @@ function LayoutExperimental(props: any) {
       let treeItemKey: string = path ? `${path}.${key}` : key;
       if (typeof val === 'object') {
         if (Array.isArray(val)) {
-          let filtered: any = filterData(val);
+          let filtered: any = filterTreeData(val);
           modifiedData.push({
             title: key,
             key: treeItemKey,
@@ -293,19 +292,39 @@ function LayoutExperimental(props: any) {
   }
 
   const onTreeCheckChange: ITreeProps['onCheck'] = (checked, info) => {
+    // console.log(info);
     let childrenKeysFromChecked = info?.checkedNodes
       ?.filter((node: any) => node.children)
       .map((node) => node.children?.map((child) => child.key))
       .flat();
+
     const data = info.checkedNodes
       .filter((node) => childrenKeysFromChecked.indexOf(node.key) === -1)
       .map((node) => node.key);
+    console.log(data);
     updateQuery.current({
       checkedTreeKeys: data,
     });
   };
 
-  console.log('query', query.checkedTreeKeys);
+  // onTreeSelect
+  const onTreeSelect: ITreeProps['onSelect'] = (selected, info) => {
+    const { key, checked, children } = info.node;
+    console.log(selected, info);
+    if (!checked) {
+      updateQuery.current({
+        checkedTreeKeys: [...(query?.checkedTreeKeys || []), key],
+      });
+    }
+    if (checked) {
+      updateQuery.current({
+        checkedTreeKeys: (query?.checkedTreeKeys || []).filter(
+          (item) => item !== key,
+        ),
+      });
+    }
+    // let childrenKeysFromChecked = info.node.children
+  };
 
   return (
     <>
@@ -327,7 +346,11 @@ function LayoutExperimental(props: any) {
                   onCheck={onTreeCheckChange}
                   checkedKeys={query.checkedTreeKeys}
                   checkable
-                  data={treeData}
+                  data={options.map((item) => ({
+                    ...item,
+                    title: item.label,
+                    key: item.label,
+                  }))}
                 />
               }
               trigger={
@@ -339,7 +362,7 @@ function LayoutExperimental(props: any) {
             <Box css={{ display: 'flex', gap: '$3', ml: '$5' }}>
               {query.checkedTreeKeys?.map((key) => (
                 <QueryBadge key={key} color='primary' size='md'>
-                  {key}
+                  {}
                 </QueryBadge>
               ))}
             </Box>
@@ -350,42 +373,53 @@ function LayoutExperimental(props: any) {
               ai: 'center',
             }}
           >
-            <Button size='md' leftIcon='plus' variant='text'>
+            {/* {query.advancedModeOn ? null : ( */}
+            <Box css={{ width: '100%' }}>
+              <AutocompleteInput
+                advanced={query.advancedModeOn}
+                disabled={isExecuting}
+                onChange={onInputChange}
+                value={query.simpleInput}
+                context={autocompleteContext.suggestions}
+                onEnter={onSubmit}
+                error={processedError}
+                forceRemoveError={true}
+              />
+            </Box>
+            {/* )} */}
+            {/* <Button size='md' leftIcon='plus' variant='text'>
               Add run filter
             </Button>
             <Box css={{ display: 'flex', gap: '$3', ml: '$5' }}>
               <QueryBadge size='md'>run.dataset.name {'>'} 0.00001</QueryBadge>
-            </Box>
+            </Box> */}
           </Box>
         </Box>
+        <Box css={{ m: '0 $7', width: '1px', bc: '$secondary20' }} />
         <Box
           css={{
             display: 'flex',
             fd: 'column',
             gap: '$4',
-            pl: '$7',
-            borderLeft: '1px solid $secondary20',
           }}
         >
-          <Button leftIcon='reset' color={ColorPaletteEnum.success}>
+          <Button onClick={onSubmit} leftIcon='reset' color='success'>
             Update
           </Button>
           <Box css={{ display: 'flex', ai: 'center', jc: 'space-between' }}>
             <IconButton
+              onClick={onToggleAdvancedMode}
               icon='edit'
-              color={ColorPaletteEnum.secondary}
+              color='secondary'
               variant='text'
             />
             <IconButton
+              onClick={onQueryCopy}
               icon='copy'
-              color={ColorPaletteEnum.secondary}
+              color='secondary'
               variant='text'
             />
-            <IconButton
-              icon='eye-fill-show'
-              color={ColorPaletteEnum.secondary}
-              variant='text'
-            />
+            <IconButton icon='reset' color='secondary' variant='text' />
           </Box>
         </Box>
       </Box>

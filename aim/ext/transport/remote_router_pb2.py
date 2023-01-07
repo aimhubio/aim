@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x13remote_router.proto\x1a\x15remote_tracking.proto\"\x10\n\x0eVersionRequest\"\x8f\x01\n\x0fVersionResponse\x12\x0f\n\x07version\x18\x01 \x01(\t\x12\'\n\x06status\x18\x02 \x01(\x0e\x32\x17.VersionResponse.Status\x12%\n\texception\x18\x03 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"&\n\x10HeartbeatRequest\x12\x12\n\nclient_uri\x18\x01 \x01(\t\"\x82\x01\n\x11HeartbeatResponse\x12)\n\x06status\x18\x01 \x01(\x0e\x32\x19.HeartbeatResponse.Status\x12%\n\texception\x18\x02 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"$\n\x0e\x43onnectRequest\x12\x12\n\nclient_uri\x18\x01 \x01(\t\"\x8c\x01\n\x0f\x43onnectResponse\x12\x0c\n\x04port\x18\x01 \x01(\t\x12\'\n\x06status\x18\x02 \x01(\x0e\x32\x17.ConnectResponse.Status\x12%\n\texception\x18\x03 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"&\n\x10ReconnectRequest\x12\x12\n\nclient_uri\x18\x01 \x01(\t\"\x90\x01\n\x11ReconnectResponse\x12\x0c\n\x04port\x18\x01 \x01(\t\x12)\n\x06status\x18\x02 \x01(\x0e\x32\x19.ReconnectResponse.Status\x12%\n\texception\x18\x03 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"\'\n\x11\x44isconnectRequest\x12\x12\n\nclient_uri\x18\x01 \x01(\t\"\x84\x01\n\x12\x44isconnectResponse\x12*\n\x06status\x18\x01 \x01(\x0e\x32\x1a.DisconnectResponse.Status\x12%\n\texception\x18\x03 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\x32\xa5\x02\n\x13RemoteRouterService\x12;\n\x10\x63lient_heartbeat\x12\x11.HeartbeatRequest\x1a\x12.HeartbeatResponse\"\x00\x12\x32\n\x0bget_version\x12\x0f.VersionRequest\x1a\x10.VersionResponse\"\x00\x12.\n\x07\x63onnect\x12\x0f.ConnectRequest\x1a\x10.ConnectResponse\"\x00\x12\x34\n\treconnect\x12\x11.ReconnectRequest\x1a\x12.ReconnectResponse\"\x00\x12\x37\n\ndisconnect\x12\x12.DisconnectRequest\x1a\x13.DisconnectResponse\"\x00\x62\x06proto3'
+  serialized_pb=b'\n\x13remote_router.proto\x1a\x15remote_tracking.proto\"\x10\n\x0eVersionRequest\"\x8f\x01\n\x0fVersionResponse\x12\x0f\n\x07version\x18\x01 \x01(\t\x12\'\n\x06status\x18\x02 \x01(\x0e\x32\x17.VersionResponse.Status\x12%\n\texception\x18\x03 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"&\n\x10HeartbeatRequest\x12\x12\n\nclient_uri\x18\x01 \x01(\t\"\x82\x01\n\x11HeartbeatResponse\x12)\n\x06status\x18\x01 \x01(\x0e\x32\x19.HeartbeatResponse.Status\x12%\n\texception\x18\x02 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"$\n\x0e\x43onnectRequest\x12\x12\n\nclient_uri\x18\x01 \x01(\t\"\xa2\x01\n\x0f\x43onnectResponse\x12\x0c\n\x04port\x18\x01 \x01(\t\x12\x14\n\x0cworker_index\x18\x02 \x01(\t\x12\'\n\x06status\x18\x03 \x01(\x0e\x32\x17.ConnectResponse.Status\x12%\n\texception\x18\x04 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"&\n\x10ReconnectRequest\x12\x12\n\nclient_uri\x18\x01 \x01(\t\"\x90\x01\n\x11ReconnectResponse\x12\x0c\n\x04port\x18\x01 \x01(\t\x12)\n\x06status\x18\x02 \x01(\x0e\x32\x19.ReconnectResponse.Status\x12%\n\texception\x18\x03 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"\'\n\x11\x44isconnectRequest\x12\x12\n\nclient_uri\x18\x01 \x01(\t\"\x84\x01\n\x12\x44isconnectResponse\x12*\n\x06status\x18\x01 \x01(\x0e\x32\x1a.DisconnectResponse.Status\x12%\n\texception\x18\x03 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\x32\xa5\x02\n\x13RemoteRouterService\x12;\n\x10\x63lient_heartbeat\x12\x11.HeartbeatRequest\x1a\x12.HeartbeatResponse\"\x00\x12\x32\n\x0bget_version\x12\x0f.VersionRequest\x1a\x10.VersionResponse\"\x00\x12.\n\x07\x63onnect\x12\x0f.ConnectRequest\x1a\x10.ConnectResponse\"\x00\x12\x34\n\treconnect\x12\x11.ReconnectRequest\x1a\x12.ReconnectResponse\"\x00\x12\x37\n\ndisconnect\x12\x12.DisconnectRequest\x1a\x13.DisconnectResponse\"\x00\x62\x06proto3'
   ,
   dependencies=[remote__tracking__pb2.DESCRIPTOR,])
 
@@ -344,15 +344,22 @@ _CONNECTRESPONSE = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='status', full_name='ConnectResponse.status', index=1,
-      number=2, type=14, cpp_type=8, label=1,
+      name='worker_index', full_name='ConnectResponse.worker_index', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='status', full_name='ConnectResponse.status', index=2,
+      number=3, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='exception', full_name='ConnectResponse.exception', index=2,
-      number=3, type=11, cpp_type=10, label=1,
+      name='exception', full_name='ConnectResponse.exception', index=3,
+      number=4, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -371,7 +378,7 @@ _CONNECTRESPONSE = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=422,
-  serialized_end=562,
+  serialized_end=584,
 )
 
 
@@ -402,8 +409,8 @@ _RECONNECTREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=564,
-  serialized_end=602,
+  serialized_start=586,
+  serialized_end=624,
 )
 
 
@@ -449,8 +456,8 @@ _RECONNECTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=605,
-  serialized_end=749,
+  serialized_start=627,
+  serialized_end=771,
 )
 
 
@@ -481,8 +488,8 @@ _DISCONNECTREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=751,
-  serialized_end=790,
+  serialized_start=773,
+  serialized_end=812,
 )
 
 
@@ -521,8 +528,8 @@ _DISCONNECTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=793,
-  serialized_end=925,
+  serialized_start=815,
+  serialized_end=947,
 )
 
 _VERSIONRESPONSE.fields_by_name['status'].enum_type = _VERSIONRESPONSE_STATUS
@@ -631,8 +638,8 @@ _REMOTEROUTERSERVICE = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=928,
-  serialized_end=1221,
+  serialized_start=950,
+  serialized_end=1243,
   methods=[
   _descriptor.MethodDescriptor(
     name='client_heartbeat',

@@ -4,7 +4,7 @@ import Popover from 'components/kit_v2/Popover';
 import ControlsButton from 'components/kit_v2/ControlsButton';
 import IconButton from 'components/kit_v2/IconButton';
 
-import { ColorPaletteEnum, styled } from 'config/stitches/stitches.config';
+import { styled } from 'config/stitches/stitches.config';
 
 const ControlsPanelContainer = styled('div', {
   display: 'flex',
@@ -114,11 +114,7 @@ function ControlsBar() {
           content={<div>Tooltip Params</div>}
         />
       </ControlsContainer>
-      <IconButton
-        icon='download'
-        color={ColorPaletteEnum.secondary}
-        variant='text'
-      />
+      <IconButton icon='download' color='secondary' variant='text' />
     </ControlsPanelContainer>
   );
 }

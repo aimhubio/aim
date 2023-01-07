@@ -37,7 +37,7 @@ const FiguresExperimental = renderer(
     },
     getStaticContent: getFiguresExplorerStaticContent,
   },
-  __DEV__,
+  // __DEV__,
 );
 
 export default FiguresExperimental;

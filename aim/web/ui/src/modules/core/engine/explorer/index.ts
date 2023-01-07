@@ -53,9 +53,7 @@ function createExplorerAdditionalEngine<T>(
   );
 
   const initialState = {
-    query: {
-      ...query.initialState,
-    },
+    query: { ...query.initialState },
     ...groupings.state,
   };
 
