@@ -76,9 +76,9 @@ Run parameters could be accessed both via chained properties and attributes.
 .. note::
 
 The three following examples are functionally equal:
-- run.hparams.learning_rate == 32
-- run["hparams", "learning_rate"] == 32
-- run["hparams"]["learning_rate"] == 32 (not performant)
+- run.hparams.learning_rate == 32 (recommended)
+- run["hparams", "learning_rate"] == 32 (recommended)
+- run["hparams"]["learning_rate"] == 32 
 
 .. warning::
 AimQL has been designed to be highly performant.
