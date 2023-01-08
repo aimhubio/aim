@@ -84,7 +84,11 @@ function NotebookCell(props: any) {
 
       await pyodide.loadPackagesFromImports(code);
 
-      (window as any).search.cache.clear();
+      let resetCode = `memoize_cache = {}
+current_layout = [[]]
+`;
+      pyodide?.runPython(resetCode, { globals: namespace });
+
       (window as any).state = undefined;
       (window as any).view = [[]];
 

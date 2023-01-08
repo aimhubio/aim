@@ -48,7 +48,7 @@ export default function SandboxVisualizer() {
     timerId.current = window.setTimeout(() => {
       (window as any).view = layout;
       setResult(layout);
-    }, 50);
+    }, 0);
   };
 
   (window as any).setState = (update: any) => {
@@ -90,7 +90,11 @@ export default function SandboxVisualizer() {
 
         await pyodide?.loadPackagesFromImports(code);
 
-        (window as any).search.cache.clear();
+        let resetCode = `memoize_cache = {}
+current_layout = [[]]
+`;
+        pyodide?.runPython(resetCode, { globals: namespace });
+
         (window as any).state = undefined;
         (window as any).view = [[]];
 

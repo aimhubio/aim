@@ -8,12 +8,46 @@ import hashlib
 import time
 
 
+memoize_cache = {}
+
+
+def memoize_async(func):
+    async def wrapper(*args, **kwargs):
+        if func.__name__ not in memoize_cache:
+            memoize_cache[func.__name__] = {}
+
+        key = generate_key(args + tuple(kwargs.items()))
+
+        if key not in memoize_cache[func.__name__]:
+            memoize_cache[func.__name__][key] = await func(*args, **kwargs)
+
+        return memoize_cache[func.__name__][key]
+
+    return wrapper
+
+
+def memoize(func):
+    def wrapper(*args, **kwargs):
+        if func.__name__ not in memoize_cache:
+            memoize_cache[func.__name__] = {}
+
+        key = generate_key(args + tuple(kwargs.items()))
+
+        if key not in memoize_cache[func.__name__]:
+            memoize_cache[func.__name__][key] = func(*args, **kwargs)
+
+        return memoize_cache[func.__name__][key]
+
+    return wrapper
+
+
 class Object:
     def __init__(self, type, methods={}):
         self.type = type
         self.methods = methods
         self.items = []
 
+    @memoize_async
     async def query(self, query=""):
         data = await search(self.type, query)
         data = create_proxy(data.to_py())
@@ -28,6 +62,7 @@ class Object:
 
 
 class MetricObject(Object):
+    @memoize
     def dataframe(self, key):
         import pandas as pd
 
@@ -100,17 +135,14 @@ stroke_styles = [
 
 
 def generate_key(data):
-    key = " ".join(map(str, data))
-    return hashlib.md5(key.encode()).hexdigest()
+    content = str(data)
+    return hashlib.md5(content.encode()).hexdigest()
 
 
 viz_map_keys = {}
 
-viz_map = {}
 
-
-def update_viz_map(viz):
-    viz_type = viz["type"]
+def update_viz_map(viz_type):
     if viz_type in viz_map_keys:
         viz_map_keys[viz_type] = viz_map_keys[viz_type] + 1
     else:
@@ -127,6 +159,7 @@ def apply_group_value_pattern(value, list):
     return value
 
 
+@memoize
 def group(name, data, options):
     group_map = {}
     grouped_data = []
@@ -192,15 +225,13 @@ def group(name, data, options):
     return sorted_groups, grouped_data
 
 
+current_layout = [[]]
+
+
 def automatic_layout_update(data):
-    from js import view, updateLayout
+    from js import updateLayout
 
-    current_layout = view and view.to_py() or None
-    view_proxy = create_proxy(current_layout)
-    current_layout = list(view_proxy)
-    view_proxy.destroy()
     is_found = False
-
     for i, row in enumerate(current_layout):
         for j, cell in enumerate(row):
             if cell["key"] == data["key"]:
@@ -208,11 +239,10 @@ def automatic_layout_update(data):
                 is_found = True
 
     if is_found == False:
-        current_layout = (
-            [[data]]
-            if current_layout == [[]] or current_layout == None
-            else current_layout + [[data]]
-        )
+        if current_layout == [[]]:
+            current_layout[0] = [data]
+        else:
+            current_layout.append([data])
 
     updateLayout(current_layout)
 
@@ -347,6 +377,8 @@ def LineChart(
 ):
     from js import setState, state
 
+    component_key = update_viz_map("LineChart")
+
     start = time.time()
     color_map, color_data = group("color", data, color)
     stroke_map, stroke_data = group("stroke_style", data, stroke_style)
@@ -359,15 +391,13 @@ def LineChart(
             stroke_map[stroke_data[i]["stroke_style"]]["order"], stroke_styles
         )
 
-        line = item
+        line = dict(item)
         line["key"] = i
         line["data"] = {"xValues": item[x], "yValues": item[y]}
         line["color"] = color_val
         line["dasharray"] = stroke_val
 
         lines.append(line)
-
-    print(time.time() - start)
 
     async def on_active_point_change(val, is_active):
         data = create_proxy(val.to_py())
@@ -376,45 +406,67 @@ def LineChart(
         item = lines[point["key"]]
         if is_active:
             if callable(setState):
-                setState({"focused_line_data": item, "focused_point_data": point})
+                setState(
+                    {
+                        component_key: {
+                            "focused_line_data": item,
+                            "focused_point_data": point,
+                        }
+                    }
+                )
             if callable(on_point_click):
                 await on_point_click(item, point)
         else:
             if callable(setState):
-                setState({"hovered_line_data": item, "hovered_point_data": point})
+                setState(
+                    {
+                        component_key: {
+                            "hovered_line_data": item,
+                            "hovered_point_data": point,
+                        }
+                    }
+                )
             if callable(on_chart_hover):
                 await on_chart_hover(item, point)
+
+    line_chart_data = {
+        "type": "LineChart",
+        "key": component_key,
+        "data": lines,
+        "callbacks": {"on_active_point_change": on_active_point_change},
+        "options": options,
+    }
 
     fields = state and state.to_py() or None
     if fields != None:
         fields = create_proxy(fields)
-    line_chart_data = {
-        "type": "LineChart",
-        "data": lines,
-        "callbacks": {"on_active_point_change": on_active_point_change},
-        "options": options,
-        "hovered_line_data": fields
-        and "hovered_line_data" in fields
-        and fields["hovered_line_data"]
-        or None,
-        "focused_line_data": fields
-        and "focused_line_data" in fields
-        and fields["focused_line_data"]
-        or None,
-        "hovered_point_data": fields
-        and "hovered_point_data" in fields
-        and fields["hovered_point_data"]
-        or None,
-        "focused_point_data": fields
-        and "focused_point_data" in fields
-        and fields["focused_point_data"]
-        or None,
-    }
+
+    component_fields = (
+        fields
+        and component_key in fields
+        and fields[component_key]
+        or {component_key: {}}
+    )
 
     if fields != None:
         fields.destroy()
 
-    line_chart_data["key"] = update_viz_map(line_chart_data)
+    component_state = {
+        "hovered_line_data": "hovered_line_data" in component_fields
+        and component_fields["hovered_line_data"]
+        or None,
+        "focused_line_data": "focused_line_data" in component_fields
+        and component_fields["focused_line_data"]
+        or None,
+        "hovered_point_data": "hovered_point_data" in component_fields
+        and component_fields["hovered_point_data"]
+        or None,
+        "focused_point_data": "focused_point_data" in component_fields
+        and component_fields["focused_point_data"]
+        or None,
+    }
+
+    line_chart_data.update(component_state)
 
     automatic_layout_update(line_chart_data)
 

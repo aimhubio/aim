@@ -1,4 +1,4 @@
-import { noop, memoize } from 'lodash-es';
+import { noop } from 'lodash-es';
 
 import { getBasePath } from 'config/config';
 
@@ -10,7 +10,7 @@ let pyodideStore: any = {
   namespace: null,
 };
 
-(window as any).search = memoize(search, (...args) => JSON.stringify(args));
+(window as any).search = search;
 (window as any).updateLayout = noop;
 
 export async function loadPyodideInstance(cb?: Function) {
