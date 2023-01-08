@@ -52,9 +52,12 @@ class Object:
         data = await search(self.type, query)
         data = create_proxy(data.to_py())
         items = []
+        i = 0
         for item in data:
             d = item
             d["type"] = self.type
+            d["key"] = i
+            i = i + 1
             items.append(d)
         self.items = items
         data.destroy()
@@ -228,9 +231,13 @@ def group(name, data, options):
 current_layout = [[]]
 
 
-def automatic_layout_update(data):
+def layout(grid):
     from js import updateLayout
 
+    updateLayout(grid)
+
+
+def automatic_layout_update(data):
     is_found = False
     for i, row in enumerate(current_layout):
         for j, cell in enumerate(row):
@@ -244,13 +251,17 @@ def automatic_layout_update(data):
         else:
             current_layout.append([data])
 
-    updateLayout(current_layout)
+    layout(current_layout)
 
 
-def layout(grid):
-    from js import updateLayout
+state = {}
 
-    updateLayout(grid)
+
+def set_state(update):
+    from js import setState
+
+    state.update(update)
+    setState(update)
 
 
 def Group(
@@ -375,11 +386,9 @@ def LineChart(
     on_point_click=None,
     on_chart_hover=None,
 ):
-    from js import setState, state
 
     component_key = update_viz_map("LineChart")
 
-    start = time.time()
     color_map, color_data = group("color", data, color)
     stroke_map, stroke_data = group("stroke_style", data, stroke_style)
     lines = []
@@ -393,7 +402,7 @@ def LineChart(
 
         line = dict(item)
         line["key"] = i
-        line["data"] = {"xValues": item[x], "yValues": item[y]}
+        line["data"] = {"xValues": find(item, x), "yValues": find(item, y)}
         line["color"] = color_val
         line["dasharray"] = stroke_val
 
@@ -405,8 +414,8 @@ def LineChart(
         data.destroy()
         item = lines[point["key"]]
         if is_active:
-            if callable(setState):
-                setState(
+            if callable(set_state):
+                set_state(
                     {
                         component_key: {
                             "focused_line_data": item,
@@ -417,8 +426,8 @@ def LineChart(
             if callable(on_point_click):
                 await on_point_click(item, point)
         else:
-            if callable(setState):
-                setState(
+            if callable(set_state):
+                set_state(
                     {
                         component_key: {
                             "hovered_line_data": item,
@@ -437,19 +446,9 @@ def LineChart(
         "options": options,
     }
 
-    fields = state and state.to_py() or None
-    if fields != None:
-        fields = create_proxy(fields)
-
     component_fields = (
-        fields
-        and component_key in fields
-        and fields[component_key]
-        or {component_key: {}}
+        state and component_key in state and state[component_key] or {component_key: {}}
     )
-
-    if fields != None:
-        fields.destroy()
 
     component_state = {
         "hovered_line_data": "hovered_line_data" in component_fields
@@ -486,7 +485,7 @@ def ImagesList(data):
         "data": images,
     }
 
-    images_data["key"] = update_viz_map(images_data)
+    images_data["key"] = update_viz_map(images_data["type"])
 
     automatic_layout_update(images_data)
 
@@ -506,7 +505,7 @@ def AudiosList(data):
         "data": audios,
     }
 
-    audios_data["key"] = update_viz_map(audios_data)
+    audios_data["key"] = update_viz_map(audios_data["type"])
 
     automatic_layout_update(audios_data)
 
@@ -532,7 +531,7 @@ def TextsList(data, color=[]):
         "data": texts,
     }
 
-    texts_data["key"] = update_viz_map(texts_data)
+    texts_data["key"] = update_viz_map(texts_data["type"])
 
     automatic_layout_update(texts_data)
 
@@ -561,7 +560,7 @@ def FiguresList(data):
         "data": figures,
     }
 
-    figures_data["key"] = update_viz_map(figures_data)
+    figures_data["key"] = update_viz_map(figures_data["type"])
 
     automatic_layout_update(figures_data)
 
@@ -574,7 +573,7 @@ def JSON(data):
         "data": data,
     }
 
-    json_data["key"] = update_viz_map(json_data)
+    json_data["key"] = update_viz_map(json_data["type"])
 
     automatic_layout_update(json_data)
 
@@ -584,7 +583,7 @@ def JSON(data):
 def Table(data):
     table_data = {"type": "DataFrame", "data": data.to_json(orient="records")}
 
-    table_data["key"] = update_viz_map(table_data)
+    table_data["key"] = update_viz_map(table_data["type"])
 
     automatic_layout_update(table_data)
 
@@ -597,7 +596,7 @@ def HTML(data):
         "data": data,
     }
 
-    html_data["key"] = update_viz_map(html_data)
+    html_data["key"] = update_viz_map(html_data["type"])
 
     automatic_layout_update(html_data)
 

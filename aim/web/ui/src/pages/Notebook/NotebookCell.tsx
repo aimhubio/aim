@@ -42,8 +42,6 @@ function NotebookCell(props: any) {
     let layout = toObject(grid.toJs());
     grid.destroy();
 
-    (window as any).view = layout;
-
     window.clearTimeout(timerId.current);
     timerId.current = window.setTimeout(() => {
       setResult(layout);
@@ -58,8 +56,6 @@ function NotebookCell(props: any) {
       ...toObject(stateUpdate),
     }));
   };
-  (window as any).state = state;
-  (window as any).view = result;
 
   const execute = React.useCallback(async () => {
     try {
@@ -86,11 +82,9 @@ function NotebookCell(props: any) {
 
       let resetCode = `memoize_cache = {}
 current_layout = [[]]
+state = {}
 `;
       pyodide?.runPython(resetCode, { globals: namespace });
-
-      (window as any).state = undefined;
-      (window as any).view = [[]];
 
       setState(undefined);
       setResult([[]]);
@@ -134,16 +128,12 @@ current_layout = [[]]
 
   React.useEffect(() => {
     if (execCode) {
-      (window as any).state = undefined;
-      (window as any).view = [[]];
       runParsedCode();
     }
   }, [executionCount]);
 
   React.useEffect(() => {
     if (state !== undefined) {
-      (window as any).state = state;
-      (window as any).view = result;
       runParsedCode();
     }
   }, [state]);
