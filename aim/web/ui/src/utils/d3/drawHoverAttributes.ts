@@ -638,6 +638,7 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
       mouseX,
       attrRef.current.xScale,
     );
+
     drawXAxisLabel(newXValue);
     attrRef.current.currentXValue = newXValue;
     attrRef.current.dataSelector = dataSelector;
@@ -953,7 +954,7 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
   // call on every render
   setScaledValues(data);
   drawActiveRunsIndicators(processedData);
-  if (attrRef.current.focusedState) {
+  if (attrRef.current.focusedState?.key) {
     updateFocusedChart({ force: true });
   } else {
     drawInitialAttributes();

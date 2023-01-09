@@ -98,8 +98,7 @@ function Metrics(props: IBoxProps) {
     [engine.events, focusedState.active, focusedState.key],
   );
 
-  const onChartMount = React.useCallback(() => {
-    chartRef.current?.setFocusedState(focusedState);
+  const updateVirtualizedChartHoverAttributes = React.useCallback(() => {
     const mouseMovePayload = engine.events.getEventPayload(EVENT.MOUSE_MOVE);
     if (mouseMovePayload) {
       window.requestAnimationFrame(() => {
@@ -109,7 +108,7 @@ function Metrics(props: IBoxProps) {
         );
       });
     }
-  }, [focusedState, engine.events]);
+  }, [engine.events]);
 
   React.useEffect(() => {
     let rafId = window.requestAnimationFrame(() => {
@@ -133,20 +132,27 @@ function Metrics(props: IBoxProps) {
   }, [data]);
 
   React.useEffect(() => {
-    return engine.events.on(EVENT.MOUSE_LEAVE, onChartMouseLeave);
+    const unsubscribe = engine.events.on(EVENT.MOUSE_LEAVE, onChartMouseLeave);
+    return () => unsubscribe();
   }, [engine.events, onChartMouseLeave]);
 
   React.useEffect(() => {
-    return engine.events.on(EVENT.MOUSE_MOVE, onChartMouseMove);
+    const unsubscribe = engine.events.on(EVENT.MOUSE_MOVE, onChartMouseMove);
+    return () => unsubscribe();
   }, [engine.events, onChartMouseMove]);
 
   React.useEffect(() => {
-    return engine.events.on(EVENT.FOCUS_POINT, onChartFocusPoint);
+    const unsubscribe = engine.events.on(EVENT.FOCUS_POINT, onChartFocusPoint);
+    return () => unsubscribe();
   }, [engine.events, onChartFocusPoint]);
 
   React.useEffect(() => {
     chartRef.current?.setFocusedState(focusedState);
-  }, [focusedState]);
+
+    if (!focusedState.active) {
+      updateVirtualizedChartHoverAttributes();
+    }
+  }, [focusedState, updateVirtualizedChartHoverAttributes]);
 
   return chartData ? (
     <div
@@ -160,7 +166,6 @@ function Metrics(props: IBoxProps) {
         index={index}
         data={chartData}
         syncHoverState={syncHoverState}
-        onMount={onChartMount}
       />
     </div>
   ) : null;

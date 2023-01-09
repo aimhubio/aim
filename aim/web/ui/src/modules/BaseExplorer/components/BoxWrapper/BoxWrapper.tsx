@@ -117,7 +117,7 @@ function BoxWrapper(props: IBoxWrapperProps<AimFlatObjectBase<any>>) {
       <div className='BoxWrapper__box'>
         {BoxContent && (
           <BoxContent
-            key={currentItem.key}
+            key={boxId + '-' + currentItem.key}
             index={boxIndex}
             id={boxId}
             data={boxData}
