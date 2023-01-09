@@ -69,8 +69,11 @@ const TraceVisualizationContainer = React.lazy(
 const RunOverviewTab = React.lazy(
   () => import(/* webpackChunkName: "RunOverviewTab" */ './RunOverviewTab'),
 );
-const LogsTabWrapper = React.lazy(
-  () => import(/* webpackChunkName: "LogsTabWrapper" */ './LogsTabWrapper'),
+const RunLogsTab = React.lazy(
+  () => import(/* webpackChunkName: "RunLogsTab" */ './RunLogsTab'),
+);
+const RunLogRecords = React.lazy(
+  () => import(/* webpackChunkName: "RunLogRecords" */ './RunLogRecords'),
 );
 
 const tabs: Record<string, string> = {
@@ -78,6 +81,7 @@ const tabs: Record<string, string> = {
   run_parameters: 'Run Params',
   notes: 'Notes',
   logs: 'Logs',
+  messages: 'Messages',
   metrics: 'Metrics',
   system: 'System',
   distributions: 'Distributions',
@@ -129,7 +133,7 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
       />
     ),
     logs: (
-      <LogsTabWrapper
+      <RunLogsTab
         runHash={runHash}
         runLogs={runData?.runLogs}
         inProgress={_.isNil(runData?.runInfo?.end_time)}
@@ -137,6 +141,7 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
         isRunLogsLoading={runData?.isRunLogsLoading}
       />
     ),
+    messages: <RunLogRecords runHash={runHash} />,
     metrics: (
       <RunDetailMetricsAndSystemTab
         runHash={runHash}
