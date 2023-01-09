@@ -81,9 +81,7 @@ class AimCallback(BaseCallback):
         self._run_hash = None
 
     def _init_callback(self) -> None:
-        args = {}
-        if "algo" not in args:
-            args["algo"] = type(self.model).__name__
+        args = {"algo": type(self.model).__name__}
         for key in self.model.__dict__:
             if type(self.model.__dict__[key]) in [float, int, str]:
                 args[key] = self.model.__dict__[key]
