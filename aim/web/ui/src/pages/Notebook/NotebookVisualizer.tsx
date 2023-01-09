@@ -42,6 +42,15 @@ from aim.ui.viz import LineChart, ImagesList, AudiosList, TextsList, FiguresList
         readOnly: false,
       })
       .concat(content.current.slice(index + 1));
+
+    setItem('notebookCode', JSON.stringify(content.current));
+    setCellsCount(content.current.length);
+  }
+
+  function removeCell(index: number) {
+    content.current.splice(index, 1);
+
+    setItem('notebookCode', JSON.stringify(content.current));
     setCellsCount(content.current.length);
   }
 
@@ -56,7 +65,7 @@ from aim.ui.viz import LineChart, ImagesList, AudiosList, TextsList, FiguresList
         <Spinner />
       ) : (
         content.current.map((cell, i) => (
-          <React.Fragment key={cell.key}>
+          <div key={cell.key} className='NotebookVisualizer__cell'>
             <NotebookCell
               index={i}
               pyodide={pyodide}
@@ -65,17 +74,29 @@ from aim.ui.viz import LineChart, ImagesList, AudiosList, TextsList, FiguresList
               editCellCode={editCellCode}
               {...cell}
             />
+            {!cell.readOnly && (
+              <Button
+                onClick={() => removeCell(i)}
+                size='xxSmall'
+                variant='contained'
+                color='default'
+                withOnlyIcon
+                className='NotebookVisualizer__cell__remove'
+              >
+                <Icon name='close' />
+              </Button>
+            )}
             <Button
               onClick={() => addCell(i)}
               size='xSmall'
-              className='NotebookVisualizer__addCell'
+              className='NotebookVisualizer__cell__add'
             >
               <Icon name='plus' />
-              <Text className='NotebookVisualizer__addCell__text'>
+              <Text className='NotebookVisualizer__cell__add__text'>
                 Add cell
               </Text>
             </Button>
-          </React.Fragment>
+          </div>
         ))
       )}
     </div>

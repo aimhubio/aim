@@ -11,6 +11,31 @@
   overflow: auto;
 }
 
+.NotebookVisualizer__cell {
+  width: 100%;
+  max-width: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.NotebookVisualizer__cell__remove {
+  position: absolute;
+  right: 0;
+  top: 0;
+  transform: translate(50%, -50%);
+}
+
+.NotebookVisualizer__cell__add {
+  margin: $space-xxs 0;
+}
+
+.NotebookVisualizer__cell__add__text {
+  margin-left: $space-xxs;
+  color: inherit;
+}
+
 .NotebookCell {
   width: 100%;
   border: $border-dark;
@@ -57,9 +82,3 @@
   background-color: $pico-5;
   border: $border-dark;
 }
-
-.NotebookVisualizer__addCell__text {
-  margin-left: $space-xxs;
-  color: inherit;
-}
-
