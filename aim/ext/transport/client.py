@@ -63,7 +63,11 @@ class Client:
 
     def _separate_paths(self, remote_path):
         hostname, port_sub_path = remote_path.rsplit(':', maxsplit=1)
-        port, sub_path = port_sub_path.split('/', maxsplit=1)
+        try:
+            port, sub_path = port_sub_path.split('/', maxsplit=1)
+        except ValueError:  # no sub_path specified
+            port = port_sub_path
+            sub_path = ''
         self._remote_path = f'{hostname}:{port}'
         self._sub_path = sub_path
 

@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.15.3 
+
+- Sub-path support for RTS addresses (mihran113)
+
 ## 3.15.2 Dec 23, 2022
 
 - Change logging level for reporter debug messages (alberttorosyan)
