@@ -1,5 +1,6 @@
 import os
 import uuid
+import pathlib
 
 from aim.ext.transport.config import AIM_SERVER_MOUNTED_REPO_PATH
 from aim.ext.transport.message_utils import unpack_args
@@ -103,4 +104,6 @@ def get_run_heartbeat(args: bytes):
         repo = Repo.default_repo()
     kwargs = decode_tree(unpack_args(args))
     run_hash = kwargs['run_hash']
-    return ResourceRef(ScheduledStatusReporter(RunStatusReporter(run_hash, repo.path)), ScheduledStatusReporter.stop)
+    progress_flag_path = pathlib.Path(repo.path) / 'meta' / 'progress' / run_hash
+    return ResourceRef(ScheduledStatusReporter(RunStatusReporter(run_hash, repo.path), touch_path=progress_flag_path),
+                       ScheduledStatusReporter.stop)

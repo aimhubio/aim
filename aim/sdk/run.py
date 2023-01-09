@@ -4,6 +4,7 @@ import datetime
 import json
 import pytz
 import sys
+import pathlib
 
 from collections import defaultdict
 from functools import partialmethod
@@ -307,7 +308,8 @@ class BasicRun(BaseRun, StructuredRunMixin):
         if not read_only:
             if not self.repo.is_remote_repo:
                 self._checkins = RunStatusReporter(self.hash, self.repo.path)
-                self._heartbeat = ScheduledStatusReporter(self._checkins)
+                progress_flag_path = pathlib.Path(self.repo.path) / 'meta' / 'progress' / run_hash
+                self._heartbeat = ScheduledStatusReporter(self._checkins, touch_path=progress_flag_path)
             else:
                 self._heartbeat = RemoteRunHeartbeatReporter(self.repo._client, self.hash)
 
