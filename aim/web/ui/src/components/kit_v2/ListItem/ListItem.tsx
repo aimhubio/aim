@@ -38,6 +38,8 @@ const Content = styled('div', {
   overflow: 'hidden',
   m: '0 $3',
   flex: 1,
+  display: 'flex',
+  ai: 'center',
 });
 
 /**
