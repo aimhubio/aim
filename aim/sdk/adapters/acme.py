@@ -58,7 +58,7 @@ class AimCallback:
             self._run.close()
 
 
-class AimWritter(Logger):
+class AimWriter(Logger):
     def __init__(self, aim_run, logger_label, steps_key, task_id):
         self.aim_run = aim_run
         self.logger_label = logger_label

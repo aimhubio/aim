@@ -9,7 +9,7 @@ from acme.agents.jax import d4pg
 from acme.jax import experiments
 from acme.utils import loggers
 
-from aim.sdk.acme import AimCallback, AimWritter
+from aim.sdk.acme import AimCallback, AimWriter
 
 
 def make_environment(seed: int) -> dm_env.Environment:
@@ -48,7 +48,7 @@ def logger_factory(
     steps_key: Optional[str] = None,
     task_id: Optional[int] = None,
 ) -> loggers.Logger:
-    return AimWritter(aim_run, name, steps_key, task_id)
+    return AimWriter(aim_run, name, steps_key, task_id)
 
 
 experiment_config = experiments.ExperimentConfig(

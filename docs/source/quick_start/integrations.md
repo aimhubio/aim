@@ -361,13 +361,13 @@ Check out a simple objective optimization example [here](https://github.com/aimh
 Aim provides a built in callback to easily track [Acme](https://dm-acme.readthedocs.io/en/latest/) trainings.
 It takes few simple steps to integrate Aim into your training script.
 
-Step 1: Explicitly import the `AimCallback` and `AimWritter` for tracking training metadata.
+Step 1: Explicitly import the `AimCallback` and `AimWriter` for tracking training metadata.
 
 ```python
-from aim.sdk.acme import AimCallback, AimWritter
+from aim.sdk.acme import AimCallback, AimWriter
 ```
 
-Step 2: Initialize a Aim Run via `AimCallback`, and create a logg factory using the Run.
+Step 2: Initialize an Aim Run via `AimCallback`, and create a log factory using the Run.
 
 ```python
 aim_run = AimCallback(repo=".", experiment_name="acme_test")
@@ -376,7 +376,7 @@ def logger_factory(
     steps_key: Optional[str] = None,
     task_id: Optional[int] = None,
 ) -> loggers.Logger:
-    return AimWritter(aim_run, name, steps_key, task_id)
+    return AimWriter(aim_run, name, steps_key, task_id)
 ```
 
 Step 3: Pass the logger factory to `logger_factory` upon initiating your training.
