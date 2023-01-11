@@ -24,8 +24,8 @@ class LogRecord(CustomObject):
         self.storage['message'] = message
         self.storage['log_level'] = level
         self.storage['timestamp'] = timestamp or time.time()
-        for k, v in kwargs:
-            self.storage['extra_args'].set(k, v, strict=False)
+        if kwargs:
+            self.storage['extra_args'] = kwargs
 
         if not logger_info:
             frame_info = getframeinfo(currentframe().f_back)
