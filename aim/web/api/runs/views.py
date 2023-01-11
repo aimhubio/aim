@@ -1,4 +1,4 @@
-from fastapi import Depends, HTTPException, Query, Header
+from fastapi import APIRouter, Depends, HTTPException, Query, Header
 from fastapi.responses import JSONResponse, StreamingResponse
 from starlette import status
 
@@ -9,7 +9,6 @@ from aim.web.api.runs.object_views import (
     AudioApiConfig,
     FigureApiConfig
 )
-from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
 from typing import Optional, Tuple
 
 from aim.sdk.types import QueryReportMode
@@ -48,7 +47,7 @@ from aim.web.api.runs.pydantic_models import (
 )
 from aim.web.api.utils import object_factory
 
-runs_router = APIRouter()
+runs_router = APIRouter(redirect_slashes=False)
 
 # static msgs
 NOTE_NOT_FOUND = 'Note with id {id} is not found in this run.'

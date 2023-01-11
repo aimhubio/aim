@@ -1,5 +1,4 @@
-from fastapi import HTTPException, Depends
-from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
+from fastapi import APIRouter, HTTPException, Depends
 from typing import Optional
 
 from aim.web.api.projects.project import Project
@@ -12,7 +11,7 @@ from aim.web.api.tags.pydantic_models import (
     TagListOut,
     TagGetRunsOut,
 )
-tags_router = APIRouter()
+tags_router = APIRouter(redirect_slashes=False)
 
 
 @tags_router.get('/', response_model=TagListOut)

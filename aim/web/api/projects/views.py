@@ -3,8 +3,7 @@ from datetime import timedelta
 from typing import Optional, Tuple
 
 from collections import Counter
-from fastapi import Depends, HTTPException, Query, Header
-from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
+from fastapi import APIRouter, Depends, HTTPException, Query, Header
 
 from aim.web.configs import AIM_UI_TELEMETRY_KEY, AIM_PROJECT_SETTINGS_FILE
 from aim.web.api.projects.project import Project
@@ -19,7 +18,7 @@ from aim.web.api.utils import object_factory
 from aim.sdk.index_manager import RepoIndexManager
 from aim.storage.locking import AutoFileLock
 
-projects_router = APIRouter()
+projects_router = APIRouter(redirect_slashes=False)
 
 
 @projects_router.get('/', response_model=ProjectApiOut)

@@ -1,5 +1,4 @@
-from fastapi import Depends, HTTPException
-from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 from aim.web.api.dashboards.models import Dashboard
@@ -12,7 +11,7 @@ from aim.web.api.dashboards.pydantic_models import (
     DashboardUpdateIn
 )
 
-dashboards_router = APIRouter()
+dashboards_router = APIRouter(redirect_slashes=False)
 
 
 @dashboards_router.get('/', response_model=List[DashboardOut])

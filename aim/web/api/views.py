@@ -1,13 +1,12 @@
 import os
 from pathlib import Path
 
-from fastapi import HTTPException, Request
+from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import FileResponse, HTMLResponse
 
-from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
 from aim.web.configs import AIM_UI_BASE_PATH
 
-statics_router = APIRouter()
+statics_router = APIRouter(redirect_slashes=False)
 
 
 @statics_router.get('/static-files/{path:path}/')

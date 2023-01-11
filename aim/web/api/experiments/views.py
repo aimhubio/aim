@@ -1,7 +1,6 @@
 from datetime import timedelta
 from collections import Counter
-from fastapi import Request, HTTPException, Depends, Header
-from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
+from fastapi import APIRouter, Request, HTTPException, Depends, Header
 from typing import Optional
 
 from aim.web.api.projects.project import Project
@@ -17,7 +16,7 @@ from aim.web.api.experiments.pydantic_models import (
 )
 from aim.web.api.runs.pydantic_models import NoteIn
 
-experiment_router = APIRouter()
+experiment_router = APIRouter(redirect_slashes=False)
 
 # static msgs
 NOTE_NOT_FOUND = 'Note with id {id} is not found in this experiment.'
