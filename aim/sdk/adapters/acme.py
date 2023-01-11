@@ -50,7 +50,7 @@ class AimCallback:
             for key, value in args.items():
                 self._run.set(key, value, strict=False)
 
-    def track(self, logs, context, step=None):
+    def track(self, logs, step=None, context=None):
         self._run.track(logs, step=step, context=context)
 
     def close(self):
