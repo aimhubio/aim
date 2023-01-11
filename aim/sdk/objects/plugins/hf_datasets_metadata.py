@@ -41,30 +41,33 @@ class HFDatasetsData(CustomObject):
 
     def _get_features(self, dataset_info):
         try:
-            return [
-                {feature: str(dataset_info.get("features")[feature])}
-                for feature in dataset_info.get("features").keys()
-            ]
+            if dataset_info.get("features"):
+                return [
+                    {feature: str(dataset_info.get("features")[feature])}
+                    for feature in dataset_info.get("features").keys()
+                ]
         except LookupError:
             logger.warning("Failed to get features information")
 
     def _get_task_templates(self, dataset_info):
         try:
-            return [str(template) for template in dataset_info.get("task_templates")]
+            if dataset_info.get("task_templates"):
+                return [str(template) for template in dataset_info.get("task_templates")]
         except LookupError:
             logger.warning("Failed to get task templates information")
 
     def _get_splits(self, dataset_info):
         try:
-            return [
-                {
-                    subset: {
-                        "num_bytes": dataset_info.get("splits")[subset].num_bytes,
-                        "num_examples": dataset_info.get("splits")[subset].num_examples,
-                        "dataset_name": dataset_info.get("splits")[subset].dataset_name,
+            if dataset_info.get("splits"):
+                return [
+                    {
+                        subset: {
+                            "num_bytes": dataset_info.get("splits")[subset].num_bytes,
+                            "num_examples": dataset_info.get("splits")[subset].num_examples,
+                            "dataset_name": dataset_info.get("splits")[subset].dataset_name,
+                        }
                     }
-                }
-                for subset in dataset_info.get("splits")
-            ]
+                    for subset in dataset_info.get("splits")
+                ]
         except LookupError:
             logger.warning("Failed to get splits information")
