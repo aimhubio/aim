@@ -20,10 +20,10 @@ here = os.path.abspath(os.path.dirname(__file__))
 NAME = 'aim'
 DESCRIPTION = 'A super-easy way to record, search and compare AI experiments.'
 VERSION = __version__
-REQUIRES_PYTHON = '>=3.6.0'
+REQUIRES_PYTHON = '>=3.7.0'
 
 # Get packages
-packages = find_packages(exclude=('tests', 'aim.web.ui'))
+packages = find_packages(exclude=('tests', 'performance_tests', 'aim.web.ui'))
 
 
 # Get a list of all files in the html directory to include in our module
@@ -200,10 +200,9 @@ setup(
     package_data={'aim': migration_files + storage_migration_files + notifier_files + version_files},
     include_package_data=True,
     classifiers=[
-        'License :: OSI Approved :: MIT License',
+        'License :: OSI Approved :: Apache Software License',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
