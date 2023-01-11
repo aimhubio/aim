@@ -4,7 +4,7 @@ set -e
 cd /opt/aim
 
 echo "build python wheels"
-for python_version in 'cp36-cp36m' 'cp37-cp37m' 'cp38-cp38' 'cp39-cp39' 'cp310-cp310'
+for python_version in 'cp37-cp37m' 'cp38-cp38' 'cp39-cp39' 'cp310-cp310'
 do
   export PATH=/opt/python/${python_version}/bin:$PATH
   echo "build wheels for ${PYTHON_VERSION}"
