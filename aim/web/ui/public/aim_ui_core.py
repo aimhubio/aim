@@ -1,14 +1,31 @@
 ####################
-### Bindings for fetching Aim Objects
+# Bindings for fetching Aim Objects
 ####################
 
 from pyodide import create_proxy
 from js import search
 import hashlib
-import time
+import copy
 
 
 memoize_cache = {}
+
+
+def deep_copy(obj):
+    if isinstance(obj, (list, tuple)):
+        return type(obj)(deep_copy(x) for x in obj)
+    elif isinstance(obj, dict):
+        return type(obj)((deep_copy(k), deep_copy(v)) for k, v in obj.items())
+    elif isinstance(obj, set):
+        return type(obj)(deep_copy(x) for x in obj)
+    elif hasattr(obj, '__dict__'):
+        result = type(obj)()
+        result.__dict__.update(deep_copy(obj.__dict__))
+        return result
+    elif isinstance(obj, memoryview):
+        return memoryview(bytes(obj))
+    else:
+        return obj
 
 
 def memoize_async(func):
@@ -21,7 +38,7 @@ def memoize_async(func):
         if key not in memoize_cache[func.__name__]:
             memoize_cache[func.__name__][key] = await func(*args, **kwargs)
 
-        return memoize_cache[func.__name__][key]
+        return deep_copy(memoize_cache[func.__name__][key])
 
     return wrapper
 
@@ -36,7 +53,7 @@ def memoize(func):
         if key not in memoize_cache[func.__name__]:
             memoize_cache[func.__name__][key] = func(*args, **kwargs)
 
-        return memoize_cache[func.__name__][key]
+        return deep_copy(memoize_cache[func.__name__][key])
 
     return wrapper
 
@@ -98,7 +115,7 @@ Distributions = Object("distributions")
 
 
 ####################
-### Bindings for visualizing data with data viz elements
+# Bindings for visualizing data with data viz elements
 ####################
 
 
