@@ -7,6 +7,8 @@
 - Add other x-axis alignment and system logs tracking to cli convert wandb (hjoonjang)
 - Add support for pre-binned distribution/histogram (YodaEmbedding)
 - Fix plotly and matplotlib compatibility (tmynn)
+- Drop support for python 3.6 (mihran113)
+- Enable support for protobuf v4 (mihran113)
 
 ### Fixes
 
