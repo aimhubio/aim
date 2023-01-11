@@ -1,11 +1,10 @@
 import React from 'react';
 import { omit } from 'lodash-es';
 
-import { ControlsConfigs } from 'modules/core/engine/visualizations/controls';
-
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
-import { IControlsProps } from '../../types';
+import { ControlsConfigs } from 'modules/core/engine/visualizations/controls';
+import { IControlsProps } from 'modules/BaseExplorer/types';
 
 import './Controls.scss';
 

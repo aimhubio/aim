@@ -1,11 +1,12 @@
 import React from 'react';
 import _ from 'lodash-es';
 
-import { IResourceState } from 'modules/core/utils/createResource';
 import { Checkbox } from '@material-ui/core';
-import { ITagData } from 'modules/core/api/tagsApi/types';
 
 import { Badge, Icon, Text } from 'components/kit';
+
+import { IResourceState } from 'modules/core/utils/createResource';
+import { ITagData } from 'modules/core/api/tagsApi/types';
 
 import createTagsEngine from './TagsStore';
 
