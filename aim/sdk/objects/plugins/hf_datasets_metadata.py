@@ -46,15 +46,13 @@ class HFDatasetsData(CustomObject):
                 for feature in dataset_info.get("features").keys()
             ]
         except LookupError:
-            logger.warning(f'Failed to get features information')
+            logger.warning("Failed to get features information")
 
     def _get_task_templates(self, dataset_info):
         try:
-            return [
-                str(template) for template in dataset_info.get("task_templates")
-            ]
+            return [str(template) for template in dataset_info.get("task_templates")]
         except LookupError:
-            logger.warning(f'Failed to get task templates information')
+            logger.warning("Failed to get task templates information")
 
     def _get_splits(self, dataset_info):
         try:
@@ -69,4 +67,4 @@ class HFDatasetsData(CustomObject):
                 for subset in dataset_info.get("splits")
             ]
         except LookupError:
-            logger.warning(f'Failed to get splits information')
+            logger.warning("Failed to get splits information")
