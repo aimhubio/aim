@@ -6,7 +6,7 @@ logger = getLogger(__name__)
 
 
 @CustomObject.alias("hf_datasets.metadata")
-class HFDatasetsData(CustomObject):
+class HFDataset(CustomObject):
     AIM_NAME = "hf_datasets.metadata"
 
     def __init__(self, dataset: DatasetDict):

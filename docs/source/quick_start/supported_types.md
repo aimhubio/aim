@@ -398,13 +398,13 @@ parameter and retrieve it later just as any other `Run` param. Here is an exampl
 ```python
 from datasets import load_dataset
 
-from aim.sdk import Run
-from aim.sdk.objects.plugins.hf_datasets_metadata import HFDatasetsData
+from aim import Run
+from aim.hf_dataset import HFDataset
 
 # create dataset object
 dataset = load_dataset('rotten_tomatoes')
 
-# log dataset metadata
-run = Run(system_tracking_interval=None)
-run['datasets_info'] = HFDatasetsData(dataset)
+# store dataset metadata
+run = Run()
+run['datasets_info'] = HFDataset(dataset)
 ```
