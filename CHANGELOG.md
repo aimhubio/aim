@@ -11,6 +11,7 @@
 ### Fixes
 
 - Fix gpu stats logging when some stats are unavailable (timokau)
+- Fix experiment name update issues (mihran113)
 
 ## 3.15.2 Dec 23, 2022
 
