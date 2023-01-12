@@ -88,7 +88,7 @@ async def update_experiment_properties_api(exp_id: str, exp_in: ExperimentUpdate
             exp.name = exp_in.name.strip()
         except IntegrityError:
             exp.refresh_model()
-            raise HTTPException(status_code=400,  detail=(
+            raise HTTPException(status_code=400, detail=(
                 f'Experiment with name \'{exp_in.name}\' already exists.'
             ))
     if exp_in.description is not None:
