@@ -1,4 +1,5 @@
 import React from 'react';
+import { FixedSizeList as List } from 'react-window';
 
 import * as SelectPrimitive from '@radix-ui/react-select';
 import { styled } from '@stitches/react';
@@ -8,48 +9,162 @@ import Popover from '../Popover';
 import Button from '../Button';
 import ListItem from '../ListItem';
 import Icon from '../Icon';
+import { CheckBox } from '../Checkbox/Checkbox';
+import Box from '../Box';
+import Text from '../Text';
+import Input from '../Input';
 
 import { ISelectProps } from './Select.d';
 
+const sizeDict = {
+  sm: 20,
+  md: 24,
+  lg: 28,
+};
 export const Select = React.forwardRef(
-  ({ multiple, options, trigger, ...props }: ISelectProps, forwardedRef) => {
+  ({
+    multiple,
+    options,
+    trigger,
+    popoverProps,
+    value,
+    size = 'md',
+    onValueChange,
+    searchable,
+    height = 256,
+    ...props
+  }: ISelectProps) => {
+    const [search, setSearch] = React.useState('');
+
+    const flattenOptions: any = React.useMemo(() => {
+      const flatten = options
+        ?.map((item: any) => {
+          if (item.group) {
+            return [{ group: item.group }, ...item.options];
+          } else {
+            return [...item.options];
+          }
+        })
+        .flat();
+      return flatten;
+    }, [options]);
+
+    const searchedOptions: any = React.useMemo(() => {
+      let data: any = [];
+      if (searchable) {
+        data = options
+          ?.map((item) => {
+            const options = item.options.filter((option) =>
+              option.label.toLowerCase().includes(search.toLowerCase()),
+            );
+            if (options.length) {
+              return { ...item, options };
+            }
+            return null;
+          })
+          .filter(Boolean);
+      }
+
+      if (data.length > 0) {
+        const flatten = data
+          ?.map((item: any) => {
+            if (item.group) {
+              return [{ group: item.group }, ...item.options];
+            } else {
+              return [...item.options];
+            }
+          })
+          .flat();
+        return flatten;
+      }
+      return [];
+    }, [options, search, searchable]);
+
+    const noResults = React.useMemo(() => {
+      if (searchable) {
+        return (
+          search && searchedOptions.length === 0 && flattenOptions?.length > 0
+        );
+      }
+      return false;
+    }, [search, searchable, searchedOptions, flattenOptions]);
+
+    const data = noResults ? flattenOptions : searchedOptions;
     return (
-      <Popover
-        trigger={<Button>Open</Button>}
-        content={
-          <StyledSelect>
-            <SelectPrimitive.Root
-              onValueChange={(e: any) => {
-                console.log(e);
-              }}
-              open
-            >
-              <SelectContent>
-                {options?.map((item) => {
-                  return (
-                    <SelectPrimitive.Group key={item.group}>
-                      {item.group && <SelectLabel>{item.group}</SelectLabel>}
-                      {item.options.map((option) => (
-                        <SelectItem key={option.label} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectPrimitive.Group>
-                  );
-                })}
-                <SelectPrimitive.Group>
-                  <SelectLabel>Fruits</SelectLabel>
-                  <SelectItem value='apple'>Apple</SelectItem>
-                  <SelectItem value='banana'>Banana</SelectItem>
-                  <SelectItem value='blueberry'>Blueberry</SelectItem>
-                  <SelectItem value='grapes'>Grapes</SelectItem>
-                  <SelectItem value='pineapple'>Pineapple</SelectItem>
-                </SelectPrimitive.Group>
-              </SelectContent>
-            </SelectPrimitive.Root>
-          </StyledSelect>
-        }
-      />
+      <>
+        <Popover
+          {...popoverProps}
+          popperProps={{ css: { p: '$5 0' } }}
+          trigger={({ open }) => <Button size={size}>Select</Button>}
+          content={
+            <div>
+              {searchable ? (
+                <Box css={{ m: '0 $5 $5' }}>
+                  <Input
+                    onChange={(v: any) => setSearch(v)}
+                    value={search}
+                    placeholder='Search'
+                  />
+                  {noResults ? (
+                    <Box>
+                      <Text>No Results</Text>
+                    </Box>
+                  ) : null}
+                </Box>
+              ) : null}
+              <StyledSelect>
+                <SelectPrimitive.Root open={true}>
+                  <List
+                    height={Math.min(
+                      height,
+                      flattenOptions.length * sizeDict[size],
+                    )}
+                    itemCount={data.length}
+                    itemSize={sizeDict[size]}
+                    width={'100%'}
+                  >
+                    {({ index, style }) => {
+                      const item: {
+                        group?: string;
+                        value: string;
+                        label: string;
+                      } = data[index];
+                      return (
+                        <>
+                          {item.group ? (
+                            <Text
+                              css={{ p: '0 $5', display: 'flex', ai: 'center' }}
+                              style={style}
+                              key={index}
+                            >
+                              {item.group}
+                            </Text>
+                          ) : (
+                            <SelectItem
+                              key={index}
+                              style={style}
+                              multiple={multiple}
+                              value={item.value}
+                              selected={
+                                value === item.value ||
+                                value?.indexOf(item.value) !== -1
+                              }
+                              size={size}
+                              onChange={onValueChange}
+                            >
+                              {item.label}
+                            </SelectItem>
+                          )}
+                        </>
+                      );
+                    }}
+                  </List>
+                </SelectPrimitive.Root>
+              </StyledSelect>
+            </div>
+          }
+        />
+      </>
     );
   },
 );
@@ -60,33 +175,33 @@ const StyledSelect = styled('div', {
   },
 });
 
-const SelectIcon = styled(SelectPrimitive.SelectIcon, {});
-
-const SelectContent = styled(SelectPrimitive.Content, {
-  //   boxShadow:
-  //     '0px 10px 38px -10px rgba(22, 23, 24, 0.35), 0px 10px 20px -15px rgba(22, 23, 24, 0.2)',
-});
-
-const SelectViewport = styled(SelectPrimitive.Viewport, {
-  padding: 5,
-});
-
 const SelectItem = React.forwardRef(
-  ({ children, ...props }: any, forwardedRef) => {
+  (
+    { children, multiple, size, selected, onChange, ...props }: any,
+    forwardedRef,
+  ) => {
     return (
-      <StyledItem {...props} ref={forwardedRef}>
-        <ListItem css={{ width: '100%' }}>
-          <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
+      <StyledItem
+        {...props}
+        ref={forwardedRef}
+        leftNode={multiple ? <CheckBox checked={selected} /> : null}
+        css={{ width: '100%' }}
+        size={size}
+        role='option'
+        onClick={() => onChange(props.value)}
+      >
+        <Text>{children}</Text>
+        {multiple ? null : (
           <StyledItemIndicator>
             <Icon css={{ color: '$primary100' }} icon={<IconCheck />} />
           </StyledItemIndicator>
-        </ListItem>
+        )}
       </StyledItem>
     );
   },
 );
 
-const StyledItem = styled(SelectPrimitive.Item, {
+const StyledItem = styled(ListItem, {
   display: 'flex',
   alignItems: 'center',
   position: 'relative',
@@ -98,21 +213,9 @@ const StyledItem = styled(SelectPrimitive.Item, {
     color: 'mauve',
     pointerEvents: 'none',
   },
-  '&[data-highlighted]': {
+  '&[data-highlighted=true]': {
     outline: 'none',
   },
-});
-
-const SelectLabel = styled(SelectPrimitive.Label, {
-  padding: '0 25px',
-  fontSize: 12,
-  lineHeight: '25px',
-  color: 'mauve',
-});
-
-const SelectSeparator = styled(SelectPrimitive.Separator, {
-  height: 1,
-  margin: 5,
 });
 
 const StyledItemIndicator = styled(SelectPrimitive.ItemIndicator, {
@@ -122,24 +225,5 @@ const StyledItemIndicator = styled(SelectPrimitive.ItemIndicator, {
   alignItems: 'center',
   justifyContent: 'center',
 });
-
-const scrollButtonStyles = {
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  height: 25,
-  backgroundColor: 'white',
-  cursor: 'default',
-};
-
-const SelectScrollUpButton = styled(
-  SelectPrimitive.ScrollUpButton,
-  scrollButtonStyles,
-);
-
-const SelectScrollDownButton = styled(
-  SelectPrimitive.ScrollDownButton,
-  scrollButtonStyles,
-);
 
 export default Select;

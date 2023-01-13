@@ -2,6 +2,8 @@ import React from 'react';
 
 import { CSS } from 'config/stitches/stitches.config';
 
+import { IPopoverProps } from '../Popover/Popover';
+
 // The interface of the Select
 
 export interface ISelectProps {
@@ -59,10 +61,29 @@ export interface ISelectProps {
    */
   trigger?: React.ReactNode;
   /**
-   * @description The trigger position of the list item
-   * @example 'right'
+   * @description The popper props of the Select component
+   * @example sideOffset: 8
    */
-  triggerPosition?: 'left' | 'right';
+  popoverProps?: IPopoverProps;
+  /**
+   * @description onValueChange event handler
+   * @example (val: string) => {}
+   * @type (val: string) => void
+   */
+  onValueChange: (val: string) => void;
+  /**
+   * @description the height of the select
+   * @example 400
+   * @default 400
+   * @type number
+   */
+  height?: number;
+  /**
+   * @description searchability of the select
+   * @example false
+   * @default false
+   */
+  searchable?: boolean;
 }
 
 type SelectSizeType = 'sm' | 'md' | 'lg';
