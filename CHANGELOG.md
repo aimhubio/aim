@@ -7,6 +7,8 @@
 - Add other x-axis alignment and system logs tracking to cli convert wandb (hjoonjang)
 - Add support for pre-binned distribution/histogram (YodaEmbedding)
 - Fix plotly and matplotlib compatibility (tmynn)
+- Add Stable-Baselines3 integration (tmynn)
+- Add Acme integration (tmynn)
 - Add huggingface/datasets integration (tmynn)
 
 ### Fixes
