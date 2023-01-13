@@ -22,5 +22,5 @@ model.prepare(optimizer=optim,
               loss=paddle.nn.CrossEntropyLoss(),
               metrics=paddle.metric.Accuracy())
 
-callback = AimCallback(repo='.', experiment='paddle_test')
+callback = AimCallback(repo='.', experiment_name='paddle_test')
 model.fit(train_dataset, eval_dataset, batch_size=64, callbacks=callback)
