@@ -7,10 +7,10 @@ from collections import defaultdict
 from copy import deepcopy
 from typing import Tuple
 
-import aim.ext.transport.remote_tracking_pb2 as rpc_messages
-import aim.ext.transport.remote_router_pb2 as router_messages
-import aim.ext.transport.remote_tracking_pb2_grpc as remote_tracking_pb2_grpc
-import aim.ext.transport.remote_router_pb2_grpc as remote_router_pb2_grpc
+import aim.ext.transport.proto.remote_tracking_pb2 as rpc_messages
+import aim.ext.transport.proto.remote_router_pb2 as router_messages
+import aim.ext.transport.proto.remote_tracking_pb2_grpc as remote_tracking_pb2_grpc
+import aim.ext.transport.proto.remote_router_pb2_grpc as remote_router_pb2_grpc
 
 from aim.ext.transport.message_utils import pack_stream, unpack_stream, raise_exception
 from aim.ext.transport.rpc_queue import RpcQueueWithRetry
@@ -42,7 +42,11 @@ class Client:
         # temporary workaround for M1 build
 
         self._id = str(uuid.uuid4())
-        self._remote_path = remote_path
+        self._remote_path = None
+        self._sub_path = None
+        self._separate_paths(remote_path)
+
+        self._request_metadata = [('x-client', self.uri), ('x-project', self._sub_path)]
 
         self._resource_pool = weakref.WeakValueDictionary()
 
@@ -56,6 +60,16 @@ class Client:
         self._heartbeat_sender = RPCHeartbeatSender(self)
         self._heartbeat_sender.start()
         self._thread_local.atomic_instructions = None
+
+    def _separate_paths(self, remote_path):
+        hostname, port_sub_path = remote_path.rsplit(':', maxsplit=1)
+        try:
+            port, sub_path = port_sub_path.split('/', maxsplit=1)
+        except ValueError:  # no sub_path specified
+            port = port_sub_path
+            sub_path = ''
+        self._remote_path = f'{hostname}:{port}'
+        self._sub_path = sub_path
 
     def _create_remote_channels(self):
         import grpc
@@ -144,37 +158,37 @@ class Client:
         # further incompatibility list will be added manually
 
     def _get_worker_address(self):
-        worker_host = self._remote_path.rsplit(':', maxsplit=1)[0]
-        worker_port = self._get_worker_port()
-        return f'{worker_host}:{worker_port}'
+        worker_port_offset = self._get_worker_port_offset()
+        if worker_port_offset == 0:
+            return self._remote_path
+        else:
+            router_host = self._remote_path.rsplit(':', maxsplit=1)[0]
+            router_port = int(self._remote_path.rsplit(':', maxsplit=1)[1])
 
-    def _get_worker_port(self):
+            return f'{router_host}:{router_port + worker_port_offset}'
+
+    def _get_worker_port_offset(self):
         request = router_messages.ConnectRequest(
             client_uri=self.uri
         )
-        response = self._remote_router_stub.connect(request, metadata=[('x-client', self.uri)])
+        response = self._remote_router_stub.connect(request, metadata=self._request_metadata)
         if response.status == router_messages.ConnectResponse.Status.ERROR:
             raise_exception(response.exception)
-        try:
-            router_port = int(self._remote_path.rsplit(':', maxsplit=1)[1])
-            port_offset = int(response.worker_index)
-            worker_port = router_port + port_offset
-            return worker_port
-        except Exception:
-            return response.port
+
+        return int(response.worker_index)
 
     def client_heartbeat(self):
         request = router_messages.HeartbeatRequest(
             client_uri=self.uri,
         )
-        response = self._remote_router_stub.client_heartbeat(request, metadata=[('x-client', self.uri)])
+        response = self._remote_router_stub.client_heartbeat(request, metadata=self._request_metadata)
         return response
 
     def reconnect(self):
         request = router_messages.ReconnectRequest(
             client_uri=self.uri
         )
-        response = self._remote_router_stub.reconnect(request, metadata=[('x-client', self.uri)])
+        response = self._remote_router_stub.reconnect(request, metadata=self._request_metadata)
         if response.status == router_messages.ReconnectResponse.Status.ERROR:
             raise_exception(response.exception)
 
@@ -186,14 +200,14 @@ class Client:
         request = router_messages.DisconnectRequest(
             client_uri=self.uri
         )
-        response = self._remote_router_stub.disconnect(request, metadata=[('x-client', self.uri)])
+        response = self._remote_router_stub.disconnect(request, metadata=self._request_metadata)
 
         if response.status == router_messages.DisconnectResponse.Status.ERROR:
             raise_exception(response.exception)
 
     def get_version(self,):
         request = router_messages.VersionRequest()
-        response = self._remote_router_stub.get_version(request, metadata=[('x-client', self.uri)])
+        response = self._remote_router_stub.get_version(request, metadata=self._request_metadata)
 
         if response.status == router_messages.VersionResponse.Status.ERROR:
             raise_exception(response.exception)
@@ -206,7 +220,7 @@ class Client:
             client_uri=self.uri,
             args=args
         )
-        response = self.remote.get_resource(request, metadata=[('x-client', self.uri)])
+        response = self.remote.get_resource(request, metadata=self._request_metadata)
         if response.status == rpc_messages.ResourceResponse.Status.ERROR:
             raise_exception(response.exception)
 
@@ -219,7 +233,7 @@ class Client:
             handler=resource_handler,
             client_uri=self.uri
         )
-        response = self.remote.release_resource(request, metadata=[('x-client', self.uri)])
+        response = self.remote.release_resource(request, metadata=self._request_metadata)
         if response.status == rpc_messages.ReleaseResourceResponse.Status.ERROR:
             raise_exception(response.exception)
 
@@ -261,7 +275,7 @@ class Client:
 
         if queue_id != -1:
             self.get_queue(queue_id).wait_for_finish()
-        resp = self.remote.run_instruction(message_stream_generator(), metadata=[('x-client', self.uri)])
+        resp = self.remote.run_instruction(message_stream_generator(), metadata=self._request_metadata)
         status_msg = next(resp)
 
         assert status_msg.WhichOneof('instruction') == 'header'
@@ -280,7 +294,7 @@ class Client:
                     message=chunk
                 )
 
-        response = self.remote.run_write_instructions(message_stream_generator(), metadata=[('x-client', self.uri)])
+        response = self.remote.run_write_instructions(message_stream_generator(), metadata=self._request_metadata)
         if response.status == rpc_messages.WriteInstructionsResponse.Status.ERROR:
             raise_exception(response.exception)
 

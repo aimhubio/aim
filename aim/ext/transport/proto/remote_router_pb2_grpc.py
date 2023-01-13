@@ -6,7 +6,7 @@ try:
 except ImportError:
     grpc = None
 
-import aim.ext.transport.remote_router_pb2 as remote__router__pb2
+import aim.ext.transport.proto.remote_router_pb2 as remote__router__pb2
 
 
 class RemoteRouterServiceStub(object):

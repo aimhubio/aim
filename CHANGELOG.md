@@ -8,10 +8,15 @@
 - Add other x-axis alignment and system logs tracking to cli convert wandb (hjoonjang)
 - Add support for pre-binned distribution/histogram (YodaEmbedding)
 - Fix plotly and matplotlib compatibility (tmynn)
+- Add Stable-Baselines3 integration (tmynn)
+- Add Acme integration (tmynn)
+- Add huggingface/datasets integration (tmynn)
+- Enable support for protobuf v4 (mihran113)
 
 ### Fixes
 
 - Fix gpu stats logging when some stats are unavailable (timokau)
+- Sub-path support for RTS addresses (mihran113)
 
 ## 3.15.2 Dec 23, 2022
 

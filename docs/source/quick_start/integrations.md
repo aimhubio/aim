@@ -356,6 +356,67 @@ Check out a simple objective optimization example [here](https://github.com/aimh
 
 
 
+### Integration with Stable-Baselines3
+
+Aim provides a callback to easily track one of the reliable Reinforcement Learning implementations [Stable-Baselines3](https://stable-baselines3.readthedocs.io/en/master/) trainings.
+It takes two steps to integrate Aim into your training script.
+
+Step 1: Explicitly import the `AimCallback` for tracking training metadata.
+
+```python
+from aim.sb3 import AimCallback
+```
+
+Step 2: Pass the callback to `callback` upon initiating your training.
+
+```python
+model.learn(total_timesteps=10_000, callback=AimCallback(repo='.', experiment_name='sb3_test'))
+```
+
+See `AimCallback` source [here](https://github.com/aimhubio/aim/blob/main/aim/sdk/adapters/sb3.py).  
+Check out a simple objective optimization example [here](https://github.com/aimhubio/aim/blob/main/examples/sb3_track.py).
+
+
+
+### Integration with Acme
+
+Aim provides a built in callback to easily track [Acme](https://dm-acme.readthedocs.io/en/latest/) trainings.
+It takes few simple steps to integrate Aim into your training script.
+
+Step 1: Explicitly import the `AimCallback` and `AimWriter` for tracking training metadata.
+
+```python
+from aim.sdk.acme import AimCallback, AimWriter
+```
+
+Step 2: Initialize an Aim Run via `AimCallback`, and create a log factory using the Run.
+
+```python
+aim_run = AimCallback(repo=".", experiment_name="acme_test")
+def logger_factory(
+    name: str,
+    steps_key: Optional[str] = None,
+    task_id: Optional[int] = None,
+) -> loggers.Logger:
+    return AimWriter(aim_run, name, steps_key, task_id)
+```
+
+Step 3: Pass the logger factory to `logger_factory` upon initiating your training.
+
+```python
+experiment_config = experiments.ExperimentConfig(
+    builder=d4pg_builder,
+    environment_factory=make_environment,
+    network_factory=network_factory,
+    logger_factory=logger_factory,
+    seed=0,
+    max_num_actor_steps=5000)
+```
+
+See `AimCallback` source [here](https://github.com/aimhubio/aim/blob/main/aim/sdk/adapters/acme.py).  
+Check out a simple objective optimization example [here](https://github.com/aimhubio/aim/blob/main/examples/acme_track.py).
+
+
 ### What's next?
 
 During the training process, you can start another terminal in the same directory, start `aim up` and you can observe

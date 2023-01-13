@@ -1,7 +1,7 @@
 from typing import Dict, Union
 
-import aim.ext.transport.remote_tracking_pb2 as tracking_rpc
-import aim.ext.transport.remote_tracking_pb2_grpc as tracking_pb2_grpc
+import aim.ext.transport.proto.remote_tracking_pb2 as tracking_rpc
+import aim.ext.transport.proto.remote_tracking_pb2_grpc as tracking_pb2_grpc
 import aim.ext.transport.message_utils as utils
 
 from aim.ext.transport.handlers import get_handler
