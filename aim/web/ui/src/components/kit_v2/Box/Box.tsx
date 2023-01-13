@@ -26,7 +26,7 @@ const Box = React.forwardRef<typeof StyledBox, IBoxProps>(
   ): React.FunctionComponentElement<React.ReactNode> => {
     const Component: any = as;
     return (
-      <StyledBox {...rest} css={css} ref={forwardedRef}>
+      <StyledBox {...rest} css={{ ...css, ...rest }} ref={forwardedRef}>
         <Component>{children}</Component>
       </StyledBox>
     );
