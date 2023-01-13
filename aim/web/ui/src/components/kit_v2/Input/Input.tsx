@@ -21,13 +21,13 @@ const LeftIcon = styled(Icon, {
   pointerEvents: 'none',
   variants: {
     size: {
-      medium: {
+      md: {
         left: '$space$4',
       },
-      large: {
+      lg: {
         left: '$space$5',
       },
-      xLarge: {
+      xl: {
         left: '$space$6',
       },
     },
@@ -86,17 +86,17 @@ const InputContainer: any = styled('input', {
   variants: {
     leftIcon: { true: {} },
     size: {
-      medium: {
+      md: {
         height: '$sizes$3',
         pl: '$6',
         pr: '$16',
       },
-      large: {
+      lg: {
         pl: '$7',
         pr: '$17',
         height: '$sizes$5',
       },
-      xLarge: {
+      xl: {
         pl: '$8',
         pr: '$18',
         height: '$sizes$7',
@@ -104,7 +104,7 @@ const InputContainer: any = styled('input', {
     },
     error: {
       true: {
-        bs: '0px 0px 0px 1px $colors$error100 !important',
+        bs: '0px 0px 0px 1px $colors$danger100 !important',
       },
     },
     disabled: {
@@ -116,21 +116,21 @@ const InputContainer: any = styled('input', {
   compoundVariants: [
     {
       leftIcon: true,
-      size: 'medium',
+      size: 'md',
       css: {
         pl: '$16',
       },
     },
     {
       leftIcon: true,
-      size: 'large',
+      size: 'lg',
       css: {
         pl: '$17',
       },
     },
     {
       leftIcon: true,
-      size: 'xLarge',
+      size: 'xl',
       css: {
         pl: '$18',
       },
@@ -156,13 +156,13 @@ const ClearButtonContainer = styled('div', {
   },
   variants: {
     size: {
-      medium: {
+      md: {
         right: '$4',
       },
-      large: {
+      lg: {
         right: '$5',
       },
-      xLarge: {
+      xl: {
         right: '$6',
       },
     },
@@ -176,7 +176,7 @@ const Caption = styled('p', {
   variants: {
     error: {
       true: {
-        color: '$error100',
+        color: '$danger100',
       },
     },
     disabled: {
@@ -191,7 +191,7 @@ const Input = React.forwardRef<React.ElementRef<typeof Container>, IInputProps>(
   (
     {
       value,
-      inputSize = 'medium',
+      inputSize = 'md',
       placeholder,
       error,
       inputElementProps = {},

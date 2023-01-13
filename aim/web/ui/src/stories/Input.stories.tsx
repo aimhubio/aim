@@ -17,18 +17,18 @@ const Template: ComponentStory<typeof Input> = (args) => <Input {...args} />;
 export const Medium = Template.bind({});
 
 Medium.args = {
-  inputSize: 'medium',
+  inputSize: 'md',
   value: 'Default Input',
 };
 export const Large = Template.bind({});
 
 Large.args = {
-  inputSize: 'large',
+  inputSize: 'lg',
   value: 'Large Input',
 };
 export const XLarge = Template.bind({});
 
 XLarge.args = {
-  inputSize: 'xLarge',
+  inputSize: 'xl',
   value: 'xLarge Input',
 };
