@@ -3,6 +3,7 @@ torch
 tensorflow
 hub
 requests
+httpx
 pandas
 pytest
 flake8
