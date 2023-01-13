@@ -9,6 +9,7 @@
 - Fix plotly and matplotlib compatibility (tmynn)
 - Add Stable-Baselines3 integration (tmynn)
 - Add Acme integration (tmynn)
+- Add huggingface/datasets integration (tmynn)
 
 ### Fixes
 
