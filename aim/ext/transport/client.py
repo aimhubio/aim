@@ -7,10 +7,10 @@ from collections import defaultdict
 from copy import deepcopy
 from typing import Tuple
 
-import aim.ext.transport.remote_tracking_pb2 as rpc_messages
-import aim.ext.transport.remote_router_pb2 as router_messages
-import aim.ext.transport.remote_tracking_pb2_grpc as remote_tracking_pb2_grpc
-import aim.ext.transport.remote_router_pb2_grpc as remote_router_pb2_grpc
+import aim.ext.transport.proto.remote_tracking_pb2 as rpc_messages
+import aim.ext.transport.proto.remote_router_pb2 as router_messages
+import aim.ext.transport.proto.remote_tracking_pb2_grpc as remote_tracking_pb2_grpc
+import aim.ext.transport.proto.remote_router_pb2_grpc as remote_router_pb2_grpc
 
 from aim.ext.transport.message_utils import pack_stream, unpack_stream, raise_exception
 from aim.ext.transport.rpc_queue import RpcQueueWithRetry

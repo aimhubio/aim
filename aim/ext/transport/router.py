@@ -2,8 +2,8 @@ import datetime
 
 from typing import List, TYPE_CHECKING
 
-import aim.ext.transport.remote_router_pb2 as router_rpc
-import aim.ext.transport.remote_router_pb2_grpc as router_pb2_grpc
+import aim.ext.transport.proto.remote_router_pb2 as router_rpc
+import aim.ext.transport.proto.remote_router_pb2_grpc as router_pb2_grpc
 
 from aim.ext.transport.message_utils import build_exception
 

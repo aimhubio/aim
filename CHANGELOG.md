@@ -10,6 +10,7 @@
 - Add Stable-Baselines3 integration (tmynn)
 - Add Acme integration (tmynn)
 - Add huggingface/datasets integration (tmynn)
+- Enable support for protobuf v4 (mihran113)
 
 ### Fixes
 
