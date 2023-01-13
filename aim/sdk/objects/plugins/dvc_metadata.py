@@ -63,4 +63,4 @@ class DvcData(CustomObject):
                     logging.warning(exc)
                 content = f.readlines()
         except FileNotFoundError:
-            raise FileNotFoundError(f"Failed to find dvc.lock in the repo {url}")
+            logging.warning(f"Failed to find dvc.lock in the repo {url}")
