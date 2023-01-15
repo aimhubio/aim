@@ -106,8 +106,14 @@ export const Select = React.forwardRef(
                     placeholder='Search'
                   />
                   {noResults ? (
-                    <Box>
-                      <Text>No Results</Text>
+                    <Box
+                      flex
+                      ai='center'
+                      jc='center'
+                      p='$4'
+                      css={{ borderBottom: '1px solid $secondary10' }}
+                    >
+                      <Text color='$textPrimary50'>No Results</Text>
                     </Box>
                   ) : null}
                 </Box>
