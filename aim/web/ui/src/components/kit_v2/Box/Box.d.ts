@@ -29,13 +29,20 @@ export interface IBoxProps
 
 interface IBoxCssProps {
   /**
+   * @description display prop
+   * @optional
+   * @example
+   * <Box display="flex" />
+   * @default 'block'
+   */
+  display: CSS['display'];
+  /**
    * @description flex prop
    * @optional
-   * @default false
    * @example
-   * <Box flex />
+   * <Box flex='1' />
    */
-  flex?: boolean;
+  flex?: CSS['flex'];
   /**
    * @description flex direction prop
    * @optional
