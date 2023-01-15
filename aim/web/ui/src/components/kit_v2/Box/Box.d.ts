@@ -35,7 +35,7 @@ interface IBoxCssProps {
    * <Box display="flex" />
    * @default 'block'
    */
-  display: CSS['display'];
+  display?: CSS['display'];
   /**
    * @description flex prop
    * @optional
