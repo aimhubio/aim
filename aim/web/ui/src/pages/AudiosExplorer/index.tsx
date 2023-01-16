@@ -22,9 +22,8 @@ const AudiosExplorer = renderer(
         component: defaultConfig.Visualizer,
         controls: defaultConfig.controls,
         box: {
+          ...defaultConfig.box,
           component: AudioBox,
-          hasDepthSlider: defaultConfig.box.hasDepthSlider,
-          initialState: defaultConfig.box.initialState,
         },
       },
     },

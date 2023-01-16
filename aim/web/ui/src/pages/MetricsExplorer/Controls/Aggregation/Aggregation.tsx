@@ -46,35 +46,37 @@ function Aggregation(props: IAggregationProps) {
                 : 'Aggregate metrics'
             }
           >
-            <Button
-              size='xSmall'
-              className={classNames('Control__anchor', {
-                active: aggregation.isApplied,
-                outlined: aggregation.isApplied,
-                disabled: isGroupingEmpty,
-              })}
-              onClick={() => {
-                if (!isGroupingEmpty) {
-                  updateAggregationConfig({
-                    isApplied: !aggregation?.isApplied,
-                  });
-                }
-              }}
-            >
-              <Icon
-                name='aggregation'
-                className={classNames('Control__anchor__icon', {
+            <div>
+              <Button
+                size='xSmall'
+                className={classNames('Control__anchor', {
                   active: aggregation.isApplied,
+                  outlined: aggregation.isApplied,
+                  disabled: isGroupingEmpty,
                 })}
-              />
-              <Text className='Control__anchor__label'>Aggregate</Text>
-              <Icon
-                name='arrow-down-contained'
-                onClick={onAnchorClick}
-                className={classNames('Control__anchor__arrow', { opened })}
-                fontSize={6}
-              />
-            </Button>
+                onClick={() => {
+                  if (!isGroupingEmpty) {
+                    updateAggregationConfig({
+                      isApplied: !aggregation?.isApplied,
+                    });
+                  }
+                }}
+              >
+                <Icon
+                  name='aggregation'
+                  className={classNames('Control__anchor__icon', {
+                    active: aggregation.isApplied,
+                  })}
+                />
+                <Text className='Control__anchor__label'>Aggregate</Text>
+                <Icon
+                  name='arrow-down-contained'
+                  onClick={onAnchorClick}
+                  className={classNames('Control__anchor__arrow', { opened })}
+                  fontSize={6}
+                />
+              </Button>
+            </div>
           </Tooltip>
         )}
         component={

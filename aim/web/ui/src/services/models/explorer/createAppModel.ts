@@ -1533,7 +1533,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 ...metric,
                 groupKey: metricsCollection.key,
                 color: metricsCollection.color ?? metric.color,
-                dasharray: metricsCollection.dasharray ?? metric.color,
+                dasharray: metricsCollection.dasharray ?? metric.dasharray,
                 chartIndex: metricsCollection.chartIndex,
                 selectors: [
                   metric.key,

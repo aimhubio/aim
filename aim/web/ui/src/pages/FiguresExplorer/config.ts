@@ -37,14 +37,6 @@ export const getFiguresDefaultConfig = (): typeof defaultHydration => {
     ...defaultConfig,
     groupings,
     controls,
-    box: {
-      ...defaultConfig.box,
-      initialState: {
-        width: 350,
-        height: 170,
-        gap: 0,
-      },
-    },
     getStaticContent: getFiguresExplorerStaticContent,
   };
 };

@@ -124,13 +124,15 @@ export const defaultHydration = {
       height: 400,
       gap: 0,
     },
-    hasDepthSlider: true,
+    stacking: true,
   },
   controls,
   groupings,
-  customStates: {
+  states: {
     depthMap: {
-      initialState: {},
+      initialState: {
+        sync: true,
+      },
     },
   },
   getStaticContent: getBaseExplorerStaticContent,

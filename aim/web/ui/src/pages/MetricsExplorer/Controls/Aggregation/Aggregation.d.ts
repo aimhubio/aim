@@ -1,4 +1,4 @@
-import { IBaseComponentProps } from "modules/BaseExplorer/types";
+import { IBaseComponentProps } from 'modules/BaseExplorer/types';
 
 import {
   AggregationAreaMethods,
@@ -16,4 +16,36 @@ export interface IAggregationConfig {
   };
   isApplied: boolean;
   isInitial: boolean;
+}
+
+export interface IAggregationData {
+  area: {
+    min: {
+      xValues: number[];
+      yValues: number[];
+    } | null;
+    max: {
+      xValues: number[];
+      yValues: number[];
+    } | null;
+    stdDevValue?: {
+      xValues: number[];
+      yValues: number[];
+    };
+    stdErrValue?: {
+      xValues: number[];
+      yValues: number[];
+    };
+  };
+  line: {
+    xValues: number[];
+    yValues: number[];
+  } | null;
+}
+
+export interface IAggregatedData extends IAggregationData {
+  key?: string;
+  color: string;
+  dasharray: string;
+  chartIndex?: number;
 }

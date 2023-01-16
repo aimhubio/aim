@@ -1,15 +1,13 @@
 import * as React from 'react';
 import _ from 'lodash-es';
-import { useDepthMap } from 'hooks';
 
 import { Tooltip } from '@material-ui/core';
 
 import { Text } from 'components/kit';
 
+import { buildObjectHash } from 'modules/core/utils/hashing';
 import { GroupType } from 'modules/core/pipeline';
 import { IQueryableData } from 'modules/core/pipeline';
-
-import { AimFlatObjectBase } from 'types/core/AimObjects';
 
 import contextToString from 'utils/contextToString';
 
@@ -18,15 +16,17 @@ import BoxVirtualizer from '../BoxVirtualizer';
 import BoxWrapper from '../BoxWrapper';
 import RangePanel from '../RangePanel';
 
+import { useDepthMap } from './hooks';
+
 import './Visualizer.scss';
 
 function Visualizer(props: IVisualizationProps) {
   const {
     engine,
-    engine: { useStore, pipeline },
+    engine: { useStore, pipeline, visualizations, groupings, depthMap },
     name,
     box: BoxContent,
-    hasDepthSlider,
+    boxStacking,
     panelRenderer,
   } = props;
 
@@ -34,22 +34,22 @@ function Visualizer(props: IVisualizationProps) {
   const dataState = useStore(pipeline.dataSelector);
   const rangesData: IQueryableData = useStore(pipeline.queryableDataSelector);
 
-  const vizEngine = engine.visualizations[name];
+  const vizEngine = visualizations[name];
   const boxConfig = useStore(vizEngine.box.stateSelector);
 
   const data = React.useMemo(() => {
     return dataState?.map((d: any, i: number) => {
       const groupTypes = Object.keys(d.groups || {});
-      const info: Record<string, object> = {};
+      const groupInfo: Record<string, object> = {};
       if (foundGroups) {
         groupTypes.forEach((groupType) => {
-          const current = foundGroups[d.groups[groupType]];
-          if (current) {
-            info[groupType] = {
-              key: current.key,
-              config: current.fields,
-              items_count_in_group: current.items.length,
-              order: current.order,
+          const group = foundGroups[d.groups[groupType]];
+          if (group) {
+            groupInfo[groupType] = {
+              key: group.key,
+              config: group.fields,
+              items_count_in_group: group.items.length,
+              order: group.order,
             };
           }
         });
@@ -60,7 +60,7 @@ function Visualizer(props: IVisualizationProps) {
       // listen to found groups
       function applyStyles(obj: any, group: any, iteration: number) {
         let style = {};
-        engine.groupings.styleAppliers.forEach((applier: any) => {
+        groupings.styleAppliers.forEach((applier: any) => {
           style = {
             ...style,
             ...applier(obj, group, boxConfig, iteration),
@@ -72,14 +72,16 @@ function Visualizer(props: IVisualizationProps) {
 
       return {
         ...d,
+        groupInfo,
+        groupKey: buildObjectHash(groupInfo),
         style: {
           width: boxConfig.width,
           height: boxConfig.height,
-          ...applyStyles(d, info, i),
+          ...applyStyles(d, groupInfo, i),
         },
       };
     });
-  }, [dataState, foundGroups, boxConfig, engine.groupings.styleAppliers]);
+  }, [dataState, foundGroups, boxConfig, groupings.styleAppliers]);
 
   // FOR ROWS
   const rowsAxisData = React.useMemo(() => {
@@ -148,19 +150,11 @@ function Visualizer(props: IVisualizationProps) {
     }
   }, [foundGroups, boxConfig, rowsAxisData]);
 
-  const [depthSelector, onDepthMapChange] = useDepthMap<AimFlatObjectBase<any>>(
-    {
-      data,
-      groupItemCb: (item) => {
-        const rowId = item.groups?.rows ? item.groups.rows[0] : '';
-        const columnId = item.groups?.columns ? item.groups.columns[0] : '';
-        return `${rowId}--${columnId}`;
-      },
-      state: engine.depthMap,
-      sync: true,
-      deps: [dataState, foundGroups],
-    },
-  );
+  const { depthSelector, onDepthMapChange } = useDepthMap({
+    data: dataState,
+    state: depthMap,
+    deps: [dataState, foundGroups],
+  });
 
   return (
     <div className='Visualizer'>
@@ -178,7 +172,7 @@ function Visualizer(props: IVisualizationProps) {
                 engine={engine}
                 component={BoxContent}
                 visualizationName={name}
-                hasDepthSlider={hasDepthSlider}
+                boxStacking={boxStacking}
                 depthSelector={depthSelector}
                 onDepthMapChange={onDepthMapChange}
               />

@@ -9,17 +9,17 @@ import { GroupType, Order } from 'modules/core/pipeline';
 import { defaultHydration } from 'modules/BaseExplorer/getDefaultHydration';
 import { IBaseComponentProps } from 'modules/BaseExplorer/types';
 import { GroupingItem } from 'modules/BaseExplorer/components/Grouping';
+import { PersistenceTypesEnum } from 'modules/core/engine/types';
 
 import { AimFlatObjectBase } from 'types/core/AimObjects';
 
 import {
   AggregationAreaMethods,
   AggregationLineMethods,
-} from '../../utils/aggregateGroupData';
-import { PersistenceTypesEnum } from '../../modules/core/engine/types';
+} from 'utils/aggregateGroupData';
 
 import getMetricsExplorerStaticContent from './getStaticContent';
-import Aggregation from './Controls/Aggregation/Aggregation';
+import Aggregation from './Controls/Aggregation';
 
 export const getMetricsDefaultConfig = (): typeof defaultHydration => {
   const defaultConfig = getDefaultHydration();
@@ -120,12 +120,7 @@ export const getMetricsDefaultConfig = (): typeof defaultHydration => {
     controls,
     box: {
       ...defaultConfig.box,
-      initialState: {
-        width: 400,
-        height: 400,
-        gap: 0,
-      },
-      hasDepthSlider: false,
+      stacking: false,
     },
     getStaticContent: getMetricsExplorerStaticContent,
   };
