@@ -26,7 +26,7 @@ export interface ISelectProps {
    * @type ISelectOption[]
    * @default undefined
    */
-  options?: { group?: string; options: { value: string; label: string }[] }[];
+  options?: SelectOptionType[];
   /**
    * @description The value of the select
    * @example 'metric1' | ['metric1', 'metric2']
@@ -86,4 +86,45 @@ export interface ISelectProps {
   searchable?: boolean;
 }
 
+type SelectOptionType = {
+  group?: string;
+  options?: { value: string; label: string | React.ReactNode }[];
+};
+
 type SelectSizeType = 'sm' | 'md' | 'lg';
+export interface ISelectRowProps {
+  /**
+   * @description The data of the row
+   * @example {items, value, onValueChange, multiple, size}
+   * @required
+   */
+  data: {
+    items: (
+      | {
+          value: string;
+          label: string | React.ReactNode;
+        }
+      | {
+          group: string;
+        }
+    )[];
+    value: string | string[] | undefined;
+    onValueChange: (val: string) => void;
+    multiple?: boolean | undefined;
+    size: SelectSizeType;
+  };
+  /**
+   * @description The index of the row
+   * @example 0
+   * @type number
+   * @required
+   */
+  index: number;
+  /**
+   * @description The style of the row
+   * @example { color: 'red' }
+   * @type CSS
+   * @required
+   */
+  style: React.CSSProperties;
+}
