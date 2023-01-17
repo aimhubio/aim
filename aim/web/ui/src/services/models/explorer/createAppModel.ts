@@ -1677,6 +1677,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   xValue: activePoint.xValue,
                   yValue: activePoint.yValue,
                   chartIndex: activePoint.chartIndex,
+                  chartId: activePoint.chartId || `${activePoint.chartIndex}`,
                 },
               },
             };
@@ -4213,6 +4214,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 xValue: activePoint.xValue,
                 yValue: activePoint.yValue,
                 chartIndex: activePoint.chartIndex,
+                chartId: activePoint.chartId || `${activePoint.chartIndex}`,
               },
             },
           };

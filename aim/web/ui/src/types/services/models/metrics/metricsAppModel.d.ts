@@ -183,6 +183,7 @@ export interface IFocusedState {
   xValue?: number | string | null;
   yValue?: number | string | null;
   chartIndex?: number | null;
+  chartId?: string | null;
 }
 
 export interface IMetricTableRowData {

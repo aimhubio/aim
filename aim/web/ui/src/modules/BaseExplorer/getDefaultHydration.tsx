@@ -48,7 +48,6 @@ const groupings: GroupingConfigs = {
       boxConfig: any,
       iteration: number,
     ) => {
-      console.log('column group applier ,', group);
       return {
         left:
           (group[GroupType.COLUMN]

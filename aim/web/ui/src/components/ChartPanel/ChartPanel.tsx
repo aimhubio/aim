@@ -59,18 +59,14 @@ const ChartPanel = React.forwardRef(function ChartPanel(
 
   const syncHoverState = React.useCallback(
     (args: ISyncHoverStateArgs): void => {
-      const { activePoint, focusedStateActive = false, dataSelector } = args;
+      const { activePoint, focusedState, dataSelector } = args;
       // on MouseHover
       activePointRef.current = activePoint;
       if (activePoint !== null) {
         chartRefs.forEach((chartRef, index) => {
-          chartRef.current?.setFocusedState?.({
-            active: focusedStateActive,
-            key: activePoint.key,
-            xValue: activePoint.xValue,
-            yValue: activePoint.yValue,
-            chartIndex: activePoint.chartIndex,
-          });
+          if (focusedState) {
+            chartRef.current?.setFocusedState?.(focusedState);
+          }
           if (index === activePoint.chartIndex) {
             return;
           }
@@ -88,7 +84,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
         });
 
         if (props.onActivePointChange) {
-          props.onActivePointChange(activePoint, focusedStateActive);
+          props.onActivePointChange(activePoint, focusedState?.active);
         }
         if (activePoint.pointRect !== null) {
           setActiveElemPos();
@@ -126,6 +122,14 @@ const ChartPanel = React.forwardRef(function ChartPanel(
   const onLegendsResizeEnd = React.useCallback((): void => {
     setLegendsResizing(false);
   }, []);
+
+  const onChartMount = React.useCallback(() => {
+    if (props.focusedState) {
+      chartRefs.forEach((chartRef) => {
+        chartRef.current?.setFocusedState?.(props.focusedState);
+      });
+    }
+  }, [props.focusedState, chartRefs]);
 
   React.useImperativeHandle(ref, () => ({
     setActiveLineAndCircle: (
@@ -199,6 +203,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
                       chartType={props.chartType}
                       syncHoverState={syncHoverState}
                       resizeMode={props.resizeMode}
+                      onMount={onChartMount}
                       chartPanelOffsetHeight={props.chartPanelOffsetHeight}
                     />
                     <ErrorBoundary>

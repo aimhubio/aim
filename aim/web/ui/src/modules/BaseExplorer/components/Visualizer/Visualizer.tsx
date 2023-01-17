@@ -147,7 +147,7 @@ function Visualizer(props: IVisualizationProps) {
         });
     }
   }, [foundGroups, boxConfig, rowsAxisData]);
-  console.log('foundGroups', foundGroups);
+
   const [depthSelector, onDepthMapChange] = useDepthMap<AimFlatObjectBase<any>>(
     {
       data,
@@ -189,14 +189,14 @@ function Visualizer(props: IVisualizationProps) {
               rows: rowsAxisData,
             }}
             axisItemRenderer={{
-              columns: (item: any) => (
+              columns: (item) => (
                 <Tooltip key={item.key} title={item.value}>
                   <div style={item.style}>
                     <Text>{item.value}</Text>
                   </div>
                 </Tooltip>
               ),
-              rows: (item: any) => (
+              rows: (item) => (
                 <div key={item.key} style={item.style}>
                   <Tooltip title={item.value}>
                     <span>

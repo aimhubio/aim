@@ -20,11 +20,14 @@ export interface IPoint {
 
 export interface IScatterPlotProps {
   index: number;
+  id?: string;
   nameKey?: string;
   data: { dimensions: IDimensionType[]; data: IPoint[] };
   chartTitle?: IChartTitle;
   trendlineOptions: ITrendlineOptions;
   syncHoverState: (args: ISyncHoverStateArgs) => void;
-  readOnly?: boolean;
   resizeMode?: ResizeModeEnum;
+  onMount?: () => void;
+  readOnly?: boolean;
+  margin?: { top: number; right: number; bottom: number; left: number };
 }

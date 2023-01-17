@@ -27,6 +27,7 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
 ): React.FunctionComponentElement<React.ReactNode> {
   const {
     index = 0,
+    id = `${index}`,
     nameKey = '',
     data: { dimensions, data },
     syncHoverState,
@@ -34,16 +35,18 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
     trendlineOptions,
     readOnly = false,
     resizeMode,
-  } = props;
-
-  // boxes
-  const visBoxRef = React.useRef({
-    margin: {
+    onMount,
+    margin = {
       top: 30,
       right: 20,
       bottom: 30,
       left: 60,
     },
+  } = props;
+
+  // boxes
+  const visBoxRef = React.useRef({
+    margin,
     height: 0,
     width: 0,
   });
@@ -75,6 +78,7 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
   const [yDimension, xDimension] = Object.values(dimensions);
 
   const unableToDrawConditions: { condition: boolean; text?: string }[] = [];
+  const updateDeps = [data, dimensions, trendlineOptions, readOnly, resizeMode];
 
   function draw() {
     drawArea({
@@ -146,6 +150,7 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
     if (!readOnly) {
       drawHoverAttributes({
         index,
+        id,
         nameKey,
         data,
         axesScaleType,
@@ -198,7 +203,7 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [data, dimensions, trendlineOptions, readOnly, resizeMode],
+    updateDeps,
   );
 
   const observerReturnCallback = React.useCallback(() => {
@@ -217,7 +222,14 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, dimensions, trendlineOptions, readOnly]);
+  }, updateDeps);
+
+  React.useEffect(() => {
+    if (typeof onMount === 'function') {
+      onMount();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   React.useImperativeHandle(ref, () => ({
     setActiveLineAndCircle: (
@@ -238,7 +250,12 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
       attributesRef.current.clearHoverAttributes?.();
     },
     setFocusedState: (focusedState: IFocusedState) => {
-      attributesRef.current.focusedState = focusedState;
+      if (focusedState) {
+        attributesRef.current.focusedState = {
+          ...focusedState,
+          chartId: focusedState.chartId ?? `${focusedState.chartIndex}`,
+        };
+      }
     },
   }));
 

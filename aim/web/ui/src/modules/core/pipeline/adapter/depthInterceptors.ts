@@ -3,7 +3,6 @@ import { SequenceFullView, Container } from 'types/core/AimObjects';
 import { Record } from 'types/core/shared';
 
 import { filterMetricsData } from 'utils/app/filterMetricData';
-import { encode } from 'utils/encoder/encoder';
 
 import { DepthInterceptors } from './types';
 

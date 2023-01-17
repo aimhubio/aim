@@ -9,7 +9,6 @@ import { EngineNew } from 'modules/core/engine/explorer-engine';
 import { PipelineStatusEnum } from 'modules/core/engine/types';
 
 import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
-import { AimFlatObjectBase } from 'types/core/AimObjects';
 
 export interface IEngineStates {
   [key: string]: {
@@ -94,6 +93,7 @@ export interface IBoxProps extends IBaseComponentProps {
   style?: React.CSSProperties;
   isFullView?: boolean;
   index?: number;
+  id?: string;
   visualizationName: string;
 }
 
