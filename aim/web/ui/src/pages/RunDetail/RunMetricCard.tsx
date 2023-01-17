@@ -9,7 +9,6 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import COLORS from 'config/colors/colors';
 
 import contextToString from 'utils/contextToString';
-import { ScaleEnum } from 'utils/d3';
 import { isSystemMetric } from 'utils/isSystemMetric';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 
@@ -76,10 +75,6 @@ function RunMetricCard({
                   },
                 ]}
                 index={index}
-                axesScaleType={{
-                  xAxis: ScaleEnum.Linear,
-                  yAxis: ScaleEnum.Linear,
-                }}
               />
             </ErrorBoundary>
           ) : (

@@ -1,6 +1,9 @@
 import * as React from 'react';
 import produce from 'immer';
 
+import COLORS from 'config/colors/colors';
+import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
+
 import { getDefaultHydration } from 'modules/BaseExplorer';
 import { GroupType, Order } from 'modules/core/pipeline';
 import { defaultHydration } from 'modules/BaseExplorer/getDefaultHydration';
@@ -8,9 +11,6 @@ import { IBaseComponentProps } from 'modules/BaseExplorer/types';
 import { GroupingItem } from 'modules/BaseExplorer/components/Grouping';
 
 import { AimFlatObjectBase } from 'types/core/AimObjects';
-
-import COLORS from '../../config/colors/colors';
-import DASH_ARRAYS from '../../config/dash-arrays/dashArrays';
 
 import getMetricsExplorerStaticContent from './getStaticContent';
 

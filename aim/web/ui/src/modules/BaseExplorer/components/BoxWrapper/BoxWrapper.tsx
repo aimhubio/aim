@@ -1,6 +1,8 @@
 import React from 'react';
 import _ from 'lodash-es';
 
+import { Skeleton } from '@material-ui/lab';
+
 import DepthSlider, { IDepthSliderProps } from 'components/DepthSlider';
 import { Button, Icon, Text } from 'components/kit';
 
@@ -41,9 +43,8 @@ function BoxWrapper(props: IBoxWrapperProps<AimFlatObjectBase<any>>) {
 
   const foundGroups = engine.useStore(engine.pipeline.foundGroupsSelector);
   const depth = engine.useStore(depthSelector(boxId));
-  const captionBoxRef: React.RefObject<HTMLDivElement | null> =
-    React.useRef<HTMLDivElement>(null);
-  const [captionBoxHeight, setCaptionBoxHeight] = React.useState<number>(0);
+  const captionBoxRef = React.useRef<HTMLDivElement>(null);
+  const [captionBoxHeight, setCaptionBoxHeight] = React.useState(0);
 
   const currentItem = React.useMemo(() => boxItems[depth], [boxItems, depth]);
   const groupInfo = React.useMemo(() => {
@@ -116,8 +117,9 @@ function BoxWrapper(props: IBoxWrapperProps<AimFlatObjectBase<any>>) {
       <div className='BoxWrapper__box'>
         {BoxContent && (
           <BoxContent
-            key={currentItem.key}
+            key={boxId + '-' + currentItem.key}
             index={boxIndex}
+            id={boxId}
             data={boxData}
             engine={engine}
             style={currentItem.style}
@@ -165,7 +167,9 @@ function BoxWrapper(props: IBoxWrapperProps<AimFlatObjectBase<any>>) {
         </BoxFullViewPopover>
       )}
     </div>
-  ) : null;
+  ) : (
+    <Skeleton variant='rect' width='100%' height='100%' />
+  );
 }
 
 BoxWrapper.displayName = 'BoxWrapper';
