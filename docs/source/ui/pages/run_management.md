@@ -1,6 +1,6 @@
 # Runs Management
 
-The page represents a comprehensive overview of runs. The following are the primary sections of the page:
+The page provides a comprehensive overview of runs. The primary sections of the page include:
 
 - [Runs explorer](#id1)
 - [Single run page](#id5)
@@ -11,7 +11,7 @@ The page represents a comprehensive overview of runs. The following are the prim
 
 ### Overview
 
-To navigate into Runs Explorer, click on the `Runs` navigation item from the left sidebar.
+To navigate to the Runs Explorer, click on the "Runs" navigation item in the left sidebar.
 
 Runs explorer helps you to
 
@@ -30,7 +30,7 @@ Use Search bar to query runs with [Aim QL](../../using/search.html).
 
 #### Observe runs in real time
 
-Switch `Live Update` to turn on the real time mode.
+Switch `Live Update` to turn on the real-time mode.
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Runs Explorer Live Update" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/runs-explorer/live_update.gif">
 
@@ -40,28 +40,27 @@ Step 1: Select runs on the runs table:
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Runs Explorer Batch archive" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/runs-explorer/select_runs.png">
 
-Click on the `Archive` button. Confirmation popup appears. Click `Archive` again and the runs are archived!
+Click on the "Archive" button. A confirmation pop-up appears. Click "Archive" again and the runs are archived!
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Runs Explorer Batch archive" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/runs-explorer/archive_runs_model.png">
 
-In order to batch delete the selected runs, just use the `Delete` button.
-In this case ase well, press `Delete` again on the confirmation popup, and the runs will be hard deleted.
-_**Warning:**_ this operation is irreversible, and the runs are deleted from the disk.
+To batch delete the selected runs, use the "Delete" button. 
+As before, press "Delete" again on the confirmation pop-up, and the runs will be permanently deleted.
+_**Warning:**_ This operation is irreversible, and the runs will be deleted from the disk.
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Runs Explorer Batch delete" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/runs-explorer/delete_runs_model.png">
 
 #### Export Runs report
 
-Generate Runs CSV report by clicking on the `Export` button on the Runs table.
+Generate a Runs CSV report by clicking on the "Export" button on the Runs table.
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Runs Explorer export runs" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/runs-explorer/export_runs.png">
 
 ## Single run page
 
-Each training run has a dedicated page on Aim. Use the single run page to observe all the tracked metadata associated with that run.
+Each training run has its dedicated page on Aim. The single-run page allows you to view all the tracked metadata associated with that run.
 
-Here are the tabs available on the single run page.
-Each tab visualizes respective tracked metadata or empty if not tracked.
+The single-run page includes the following tabs, each of which visualizes the respective tracked metadata or is empty if not tracked.
 
 - [Overview](#id7)
 - [Params](#id8)
@@ -77,113 +76,117 @@ Each tab visualizes respective tracked metadata or empty if not tracked.
 
 ### Overview
 
-Overview tab shows overall info about the run.
+The "Overview" tab provides overall information about the run. 
 
-- These cards can contain information about `Parameters`, `Metrics`, `System Metrics`, `CLI Arguments`, `Environment Variables`, `Packages` and `Git information`. With this data, you can easily reproduce your run.
-
-- Sidebar contains information about `Run Date`, `Run Duration`, `Run Hash`, attached `Tags` and gives the ability to navigate through tabs.
+- It includes cards with information about the `Parameters`, `Metrics`, `System Metrics`, `CLI Arguments`, `Environment Variables`, `Packages` and `Git information`. 
+  This data makes it easy to reproduce the run. 
+- The sidebar displays information about the `Run Date`, `Run Duration`, `Run Hash`, attached `Tags` and provides the ability to navigate through tabs.
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Single Run page overview tab" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/run-single-page/overview_tab.png">
 
-Also, you can apply advanced `searching/filtering` to those card tables.
+You can also apply advanced `searching` and `filtering` to the card tables.
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Single Run page overview tab table" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/run-single-page/overview_tab_table.png">
 
 ### Params
 
-Params tab contains a JSON-like visualization of all the tracked params data related to a single run of interest.
+The "Params" tab contains a JSON-like visualization of all the tracked parameters data related to a single run of interest.
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Single Run page params tab" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/run-single-page/params_tab.png">
 
 ### Metrics
 
-Metrics tab contains the visualizations of all the metrics tracked for the given run.
-
-When exploring run results, some metrics are looked at more often. Pin those metrics to the top of the page to find them easier and faster. Undo pinning by clicking on "unpin" button.
+The "Metrics" tab contains visualizations of all the metrics tracked for a given run. 
+When exploring run results, some metrics are looked at more frequently. 
+To make them easier and faster to find, you can pin them to the top of the page. 
+To undo pinning, click on the "Unpin" button.
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Single Run page metrics tab" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/run-single-page/metrics_tab_pin.png">
 
-**Note:** you can track arbitrary number of runs with lots of steps with Aim!
+**Note:** Aim allows you to track an arbitrary number of runs with lots of steps!
 
 ### System
 
-Aim automatically tracks system metrics, so you can use them in order to detect potential resource mismanagements or anomalies.
+Aim automatically tracks system metrics, allowing you to detect potential resource mismanagement or anomalies.
 
-System tab contains all the tracked system metrics for a single run.
+The "System" tab contains all the tracked system metrics for a single run.
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Single Run page system tab" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/run-single-page/system_tab.png">
 
 ### Distributions
 
-You can track the gradient, the weights and the biases distributions of all the layers for lots of steps with Aim.
+You can track the gradients, weights, and biases distributions of all layers for multiple steps using Aim.
 
-The Distributions tab will allow you to observe them for a single run. You can also
+The "Distributions" tab allows you to observe them for a single run and also:
+- navigate between layers 
+- search for distributions on specific steps.
 
-- navigate between the layers
-- search for distribution on specific steps
-
-The single run distributions tab is quite powerful!
+The single run "Distributions" tab is quite powerful!
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Single Run page distributions tab" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/run-single-page/distributions_tab.png">
 
 ### Images
 
-The Images tab contains all the tracked images of a single run.
+The `Images` tab contains all the tracked images of a single run. 
 You can track runs with different contexts and at different steps of training.
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Single Run page images tab" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/run-single-page/images_tab.png">
 
-On the left-hand side are the names of different image-sets you have tracked along with their [context](../../understanding/concepts.html#sequence-context) unpacked.
+On the left-hand side, you will see the names of the different image sets you have tracked along with their [context](../../understanding/concepts.html#sequence-context) unpacked.
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Select Context" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/run-single-page/select_context.png">
 
-Usually the images are tracked at diff steps and with batches. This control will allow you to quickly slice and dice the specific subset of images to view.
-Use these sliders to search
+Usually, images are tracked at different steps and with batches. 
+The provided controls will allow you to quickly slice and view a specific subset of images.
+
+Use these sliders to search:
 
 - which subset of steps you'd like to see (on the left-hand side)
 - which indices you'd like to see (on the right-hand side)
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Slider" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/images-explore/images-explore-range-panel.png">
 
-If there is only 1 step or only 1 index, you will see the info message instead of the control
+If there is only one step or only one index, you will see an informational message instead of the control.
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Slider" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/run-single-page/range_panel_with_info_massages.png">
 
 ### Audios
 
-You can track audios with Aim. Use the Audios tab to view and play the tracked audios of a single run.
+Aim allows you to track audios. Use the `Audios` tab to view and play the tracked audios of a single run.
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Single Run audios params tab" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/run-single-page/audios_tab.png">
 
 ### Texts
 
-Use the `Texts` tab to view and search all the texts tracked for a single run.
+Use the `Texts` tab to view and search for all the texts tracked for a single run.
 
-On the left-hand side you will see the name and context of the tracked texts.
-You can use the search-bar on top to search the text with regexp or just match word or case.
+On the left-hand side, you will see the name and context of the tracked texts. 
+You can use the search bar at the top to search for the text using regex or just match words or cases.
 
-Use the bottom controllers to control the steps and the indices of the tracked texts too.
+Use the bottom controllers to control the steps and indices of the tracked texts as well.
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Single Run page texts tab" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/run-single-page/texts_tab.png">
 
 ### Figures
 
-Aim allows tracking Plotly and matplotlib figures.
-On the `Figures` tab you can view all the track figures over different contexts and steps.
+Aim allows tracking of Plotly and matplotlib figures. 
+On the `Figures` tab, you can view all the tracked figures across different contexts and steps.
 
-**Note:** Aim will render figures with passed or default dimensions. There will be scrolls if the size exceeds the plotly container space of the Figures tab.
+**Note:** Aim will render figures with passed or default dimensions. If the size exceeds the Plotly container space of the Figures tab, scrollbars will be provided.
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Single Run page figures tab" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/run-single-page/figures_tab.png">
 
 ### Terminal Logs
 
-Aim streams the process output logs (terminal logs) to the Aim UI automatically near-real-time. The terminal logs are displayed under `Logs` tab on the single run page.The terminal logs can be disabled programmatically if needed. [More on terminal logs here](../../using/configure_runs.html#capturing-terminal-logs).
+Aim automatically streams process output logs (terminal logs) to the Aim UI in near-real-time. 
+The terminal logs are displayed under the Logs tab on the single run page. 
+The terminal logs can be programmatically disabled if needed. [More on terminal logs here](../../using/configure_runs.html#capturing-terminal-logs).
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Single Run page logs tab" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/run-single-page/logs_tab.png">
 
 ### Settings
 
-Use the `Settings` tab to delete or archive the single run
+Use the `Settings` tab to delete or archive the run.
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Single Run page settings tab" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/run-single-page/settings_tab.png">
 
@@ -199,9 +202,8 @@ Use the `Settings` tab to delete or archive the single run
 
 ## Experiment page
 
-The experiment page provides overall information about the single experiment, and it helps you to group related runs and explore them.
-
-Here are the tabs available on the experiment page.
+The experiment page provides overall information about a single experiment and helps to explore the runs attached to the experiment. 
+Here are the tabs available on the experiment page:
 
 - [Overview](#id21)
 - [Runs](#id24)
@@ -210,8 +212,8 @@ Here are the tabs available on the experiment page.
 
 ### Overview
 
-The Overview tab provides an overview of the runs that are attached with the experiment.
-It displays general information about these runs, such as their status, progress, and other relevant metadata.
+The Overview tab provides an overview of the runs attached to the experiment. 
+It displays general information such as their status, progress, and other relevant metadata.
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Experiment page overview tab" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/experiment-page/experiment-page-overview-tab.png">
 
@@ -221,115 +223,131 @@ On this page, you can view the total number of runs, as well as the number of ru
 You can click on the corresponding cards to view more information about these runs, and you can also use these cards to navigate to the [Runs explorer](../pages/run_management.html#runs-explorer) page with a specific query.
 The statistics bar, below the `status` cards, displays the distribution of runs by status.
 
-#### Contributions heatmap
+#### Contributions calendar
 
-The heatmap shows the intensity of the runs (attached to the experiment), you have made for the day. More about Contributions heatmap you can read [here](../pages/home_page.html#id8).
+The contributions calendar represents the intensity of executed runs during the previous year. More on this read [here](../pages/home_page.html#id8).
 
 #### Activity feed
 
-This section represents the activity feed of your contributions related to the experiment. More about Activity feed you can read [here](../pages/home_page.html#id9).
+This section represents the activity feed of your contributions related to the experiment. More on this read [here](../pages/home_page.html#id9).
 
 ### Runs
 
-The Runs tab is for showing the list of runs attached to the experiment, it also gives ability to compare them by available explorers.
+The Runs tab shows the list of runs attached to the experiment, and it also gives the ability to compare them using the available explorers.
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Experiment page runs tab" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/experiment-page/experiment-page-runs-tab.png"> 
 
 ### Notes
 
-The Notes tab is for attaching simple text or rich Markdown as note to the experiment.
+The Notes tab is for attaching simple text or rich Markdown as a note to the experiment.
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Experiment page notes tab" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/experiment-page/experiment-page-notes-tab.png">
 
 ### Settings
 
-The Settings tab is for editing experiment name and description.
+The Settings tab is for editing the experiment's name and description.
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Experiment page settings tab" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/experiment-page/experiment-page-settings-tab.png">
 
 ## Tags page
 
 ### Overview
-Tags functionality intended to mark a runs. A tag can be attached to the runs to distribute by segments and then find it quickly.
+
+The Tags functionality is intended to mark runs. A tag can be attached to runs to segment them and then quickly find them.
 
 ### Create tag
-How to create tag?
-There are two options for creating a tag.
-##### First option
-- Go to the tags page by clicking on the Tags from the left sidebar.
 
-- Click on the create tag button to open the create tag form modal. In this modal there is the form that has two input fields first one for tag name the second one for tag comment and also there are exist color pallets for selecting tag color.
+There are two options for creating a tag:
+
+##### First option
+
+- Go to the tags page by clicking on the "Tags" button from the left sidebar.
+
+- Click on the "Create tag" button to open the create tag form modal.
+  In this modal, there is a form that has two input fields: the first one for the tag name, and the second one for the tag comment. 
+  There are also color palettes available for selecting the tag color.
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Create tag" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/tags/1.png">
 
-- Type name for a tag. Name filed is mandatory and can't be empty for tag creation form and has maximum 50 symbol limit validation.
-- Type comment for a tag. Comment field is optional for tag creation form and has max 200 symbol limit validation.
-- Select color for a tag from the color pallet.
-- Click to the create button for saving a the tag then. After successful saving should appear toaster approving the create on the right top corner of the window. Optional there are default selected colors for tag.
+- Type the name for the tag. The name field is mandatory and cannot be empty for the tag creation form, and has a maximum 50 symbol limit validation.
+- Type a comment for the tag. The comment field is optional for the tag creation form and has a maximum 200 symbol limit validation.
+- Select a color for the tag from the color palette.
+- Click on the "Create" button to save the tag. After successful saving, a toast notification should appear in the top-right corner of the window to confirm the creation. 
+  There are also default selected colors for the tag available.
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Create tag modal" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/tags/2.png">
 
 ##### Second option
-- Go to any explorer page (metrics, params, images, scatters).
-- Click to one of the sequence unit to open popover where is exist tag section with attach button.
-- Click on attach button to open the select tag popover where you will see all your previously created tags.
+
+- Go to any explorer page (such as metrics, params, images, or scatters).
+- Click on one of the sequence units to open the popover where the tag section with an "Attach" button exists.
+- Click on the "Attach" button to open the "Select tag" popover where you will see all of your previously created tags.
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Attach tag popover" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/tags/3.png">
 
-- Click create tag button, and you will be redirected to the tags page than the actual first option.
+- Click on the "Create tag" button, and you will be redirected to the tags page than the actual first option.
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Attach tag popover" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/tags/4.png">
 
 ### Attach tag
-#### How to attach tag to the run?
-- Go to any explorer page (metrics, params, images, scatters).
-- Click to one of the sequence unit to open popover where is exist tag section with attach button.
 
+- Go to any explorer page (such as metrics, params, images, or scatters).
+- Click on one of the sequence units to open a popover that contains a tag section with an "Attach" button.
+  
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Attach tag popover" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/tags/5.png">
 
-- Click on attach button to open the select tag popover where will be visible all tags.
-- Select a tag you want to attach to the sequence unit. You can select more then on tag for each point.
+- Click on the "Attach" button to open the "Select tag" popover where all tags will be visible. 
+- Select the tag(s) you want to attach to the sequence unit. You can select more than one tag for each point.
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Select tag popover" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/tags/6.png">
 
 ### Update attached tags
-How to update attached tags?
-- Go to any explorer page (metrics, params, images, scatters).
-- Select point which you want to attach tag and click on it to open popover where is the exist tag section. In tags section will be visible already attached tags.
-- Click on attach button for adding new tag to open the select tag popover where will be visible all existing tags.
+
+- Go to any explorer page (such as metrics, params, images, or scatters).
+- Select the point to which you want to attach a tag and click on it to open a popover. In the tags section, you will see any already attached tags.
+- Click on the "Attach" button to add a new tag and open the "Select tag" popover, where all existing tags will be visible.
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Select tag popover" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/tags/7.png">
 
-- Click on x icon in the right end of the each tag for removing the tag from the point.
+- Click on the "X" icon at the right end of each tag to remove the tag from the point.
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Select tag popover" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/tags/8.png">
 
 ### Edit tag
-#### How to edit tag?
-- Go to the tags page
-- Click to edit icon on the right side in the tag row
+
+- Go to the tags page. 
+- Click on the edit icon on the right side of the tag row.
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Tags table" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/tags/9.png">
 
-- Then should appear the edit modal. In the edit modal there is the form that has two input fields first one for tag name the second one for tag comment and also there are exist color pallets for selecting tag color. In this modal is possible to make changes for tag.
-- Make changes you need.
-- Then you have three possible actions close modal, save changes and reset changes. After closing the modal you will lose all changes, after clicking the reset button modal form fields will be reset to initial values and by clicking the save button you will save all changes for the tag. After successful saving should appear toaster approving the update on the right top corner of the window.
+- An edit modal will appear. In the edit modal, there is a form that has two input fields: the first one is for the tag name, the second one is for the tag comment. 
+  There are also color palettes for selecting the tag color. In this modal, you can make changes to the tag.
+- Make any necessary changes. Then, you have three possible actions: close the modal, save changes, and reset changes. 
+  If you close the modal, you will lose all changes. If you click the reset button, the modal form fields will be reset to their initial values. 
+  If you click the save button, all changes for the tag will be saved. 
+  After successful saving, a toaster notification will appear in the top right corner of the window, approving the update.
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Tags edit modal" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/tags/10.png">
 
 ### Delete tag
-#### How to delete tag?
+
 - Go to the tags page.
-- Click on the trash icon on the right side in the tag row to open the delete modal.
+- Click on the trash icon on the right side of the tag row to open the delete modal.
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Select tag popover" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/tags/11.png">
 
-- In the delete modal there is a tag name input field, and a tag name label at the top of the tag name input. You need to type the tag name for approving you are want to delete that tag.
-- Then you have two possible actions delete the tag or close the modal by canceling the delete operation. If you want to delete a tag please double-check the tag name and click to delete button. After tag deletion, there are no possibilities to recover it. Also, if you are deleting the tag it will be removed from all relations too.
+- In the delete modal, there is a tag name input field, and a tag name label at the top of the input field. 
+  You need to type the tag name to confirm that you want to delete that tag.
+- Then you have two possible actions: delete the tag or close the modal by canceling the delete operation. 
+  If you want to delete a tag, please double-check the tag name and click the delete button. Once a tag is deleted, it cannot be recovered. 
+  Also, if you delete a tag, it will be removed from all related items as well.
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Select tag popover" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/tags/12.png">
 
 ### Used in overlay
-In the tags page you can select tag by clicking on circle icon then will open overlay on the right side of window. Here is visible that runs which are use the tag. By clicking a run hash you will be redirected to single run page.
+
+On the tags page, you can select a tag by clicking on the circle icon. 
+This will open an overlay on the right side of the window. In this overlay, you can see the runs that use the selected tag. 
+By clicking on a run hash, you will be redirected to the single run page.
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Tags delete modal" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/tags/13.png">
