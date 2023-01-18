@@ -5,93 +5,96 @@ import _ from 'lodash-es';
 import { IResourceState } from 'modules/core/utils/createResource';
 
 import {
-  CONTRIBUTION_DAY_FORMAT,
-  CONTRIBUTION_MONTH_FORMAT,
-  CONTRIBUTION_TIME_FORMAT,
+  TIMELINE_DAY_FORMAT,
+  TIMELINE_MONTH_FORMAT,
+  TIMELINE_TIME_FORMAT,
 } from 'config/dates/dates';
 
-import runRecordsEngine from './RunLogRecordsStore';
+import { LogsLastRequestEnum } from '../RunLogsTab';
 
-import { RunLogRecordType } from '.';
+import runRecordsEngine from './RunLogRecordsStore';
+import { ListItemEnum } from './LogRecordItem/config';
+
+import { MessagesItemType, RunLogRecordType } from '.';
 
 function useRunLogRecords(runId: string) {
   const [data, setData] = React.useState<RunLogRecordType[]>([]);
+  const [lastAddedMonth, setLastAddedMonth] = React.useState<string>('');
+  const [lastAddedDay, setLastAddedDay] = React.useState<string>('');
+  const [lastRequestType, setLastRequestType] =
+    React.useState<LogsLastRequestEnum>(LogsLastRequestEnum.DEFAULT);
   const { current: engine } = React.useRef(runRecordsEngine);
-  const runLogRecordsState: IResourceState<RunLogRecordType[]> =
-    engine.runLogRecordsState((state) => state);
+  const runLogRecordsState: IResourceState<{
+    runLogRecordsList: RunLogRecordType[];
+    runLogRecordsTotalCount: number;
+  }> = engine.runLogRecordsState((state) => state);
 
   React.useEffect(() => {
-    if (_.isEmpty(runLogRecordsState.data)) {
-      engine.fetchRunLogRecords({ runId, record_range: '' });
+    if (_.isEmpty(runLogRecordsState.data?.runLogRecordsList)) {
+      engine.fetchRunLogRecords({ runId, record_range: ':1000' });
     }
     return () => engine.destroy();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   React.useEffect(() => {
-    if (runLogRecordsState.data?.length) {
-      let newData = [...data, ...runLogRecordsState.data];
+    if (runLogRecordsState.data?.runLogRecordsList?.length) {
+      let newData = [...data, ...runLogRecordsState.data.runLogRecordsList];
       setData(newData);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [runLogRecordsState.data]);
 
   const memoizedData = React.useMemo(() => {
-    // get existing month list from the contributionsFeedStore data
-    const feedData: { [key: string]: any } = {};
+    const messagesList: MessagesItemType[] = [];
+    let currentMonth = lastAddedMonth;
+    let currentDay = lastAddedDay;
     if (data.length) {
-      const monthList = data?.reduce(
-        (acc: string[], record: RunLogRecordType) => {
-          const month = moment(record.timestamp * 1000).format(
-            CONTRIBUTION_MONTH_FORMAT,
-          );
-          if (!acc.includes(month)) {
-            acc.push(month);
-          }
-          return acc;
-        },
-        [],
-      );
-      // create a list of objects with month and contributions
-
-      monthList.forEach((month: string) => {
-        feedData[month] = {};
-      });
-
-      // add contributions to the month list
       data?.forEach((record: RunLogRecordType) => {
-        // get the month
         const month = moment(record.timestamp * 1000).format(
-          CONTRIBUTION_MONTH_FORMAT,
+          TIMELINE_MONTH_FORMAT,
         );
+        if (month !== currentMonth) {
+          messagesList.push({
+            date: month,
+            itemType: ListItemEnum.MONTH,
+            height: 28,
+          });
+          currentMonth = month;
+        }
 
-        // get the day of the month
-        const day = moment(record.timestamp * 1000).format(
-          CONTRIBUTION_DAY_FORMAT,
-        );
-        // create a contribution object
-        const contribution = {
-          date: moment(record.timestamp * 1000).format(
-            CONTRIBUTION_TIME_FORMAT,
-          ),
+        const day = moment(record.timestamp * 1000).format(TIMELINE_DAY_FORMAT);
+        if (day !== currentDay) {
+          messagesList.push({
+            date: day,
+            itemType: ListItemEnum.DAY,
+            height: 28,
+          });
+          currentDay = day;
+        }
+        const feedItem = {
+          date: moment(record.timestamp * 1000).format(TIMELINE_TIME_FORMAT),
           hash: record.hash,
           message: record.message,
           type: record.log_level,
           creation_time: record.timestamp,
+          extraParams: record.args,
           runId,
+          itemType: ListItemEnum.RECORD,
+          height: 20,
         };
-        if (feedData[month]?.[day]?.length) {
-          feedData[month][day].push(contribution);
-        } else {
-          feedData[month][day] = [contribution];
-        }
+        messagesList.push(feedItem);
       });
     }
-    return feedData;
+    setLastAddedMonth(currentMonth);
+    setLastAddedDay(currentDay);
+    return messagesList;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, runId]);
 
   function loadMore(): void {
     if (runLogRecordsState.data && !runLogRecordsState.loading) {
+      setLastRequestType(LogsLastRequestEnum.LOAD_MORE);
       engine.fetchRunLogRecords({ runId, record_range: '' });
     }
   }
@@ -99,8 +102,9 @@ function useRunLogRecords(runId: string) {
   return {
     isLoading: runLogRecordsState.loading,
     data: memoizedData,
-    totalRunLogRecordCount: 1,
+    totalRunLogRecordCount: runLogRecordsState.data?.runLogRecordsTotalCount,
     fetchedCount: data.length,
+    lastRequestType,
     loadMore,
   };
 }

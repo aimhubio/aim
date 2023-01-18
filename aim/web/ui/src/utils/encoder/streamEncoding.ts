@@ -469,7 +469,7 @@ export async function parseStream<T extends Array>(
   let buffer_pairs = decodeBufferPairs(stream);
   let decodedPairs = decodePathsVals(buffer_pairs);
   let objects = iterFoldTree(decodedPairs, 1);
-  if (options.dataProcessor) {
+  if (options?.dataProcessor) {
     return options.dataProcessor(objects);
   } else {
     const data: T = [];

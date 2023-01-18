@@ -1,6 +1,7 @@
 export interface ILogRecordItemProps {
-  date: string;
-  data: Array<RecordType>;
+  style?: React.CSSProperties;
+  index: number;
+  data: any;
 }
 
 export type RecordType = {
@@ -23,6 +24,12 @@ export type RecordType = {
    */
   hash: string;
   /**
+   * The record extra params
+   * @type {ListItemType}
+   * @example Month
+   */
+  itemType: ListItemType;
+  /**
    * The record creation time
    * @type {number}
    * @example 1610000000
@@ -41,3 +48,5 @@ export type RecordType = {
    */
   type: 'ERROR' | 'WARNING' | 'INFO' | 'DEBUG';
 };
+
+export type ListItemType = 'MONTH' | 'DAY' | 'RECORD';

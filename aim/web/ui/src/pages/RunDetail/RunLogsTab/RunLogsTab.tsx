@@ -221,7 +221,7 @@ function RunLogsTab({
         isLoading={
           isRunLogsLoading && lastRequestType === LogsLastRequestEnum.DEFAULT
         }
-        className='runDetailParamsTabLoader'
+        className='RunDetailTabLoader'
         height='100%'
       >
         {!_.isEmpty(runLogs) &&
@@ -258,7 +258,7 @@ function RunLogsTab({
                         lastRequestType === LogsLastRequestEnum.LOAD_MORE,
                     })}
                   >
-                    <Spinner size={24} thickness={4} color='primary' />
+                    <Spinner size={24} />
                   </div>
                 </div>
               </div>
@@ -267,7 +267,7 @@ function RunLogsTab({
         ) : (
           <IllustrationBlock
             size='xLarge'
-            className='runDetailParamsTabLoader'
+            className='RunDetailTabLoader'
             title='No Logs'
           />
         )}
