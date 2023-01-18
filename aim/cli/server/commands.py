@@ -7,6 +7,8 @@ from aim.sdk.utils import clean_repo_path
 from aim.ext.transport.config import AIM_SERVER_DEFAULT_HOST, AIM_SERVER_DEFAULT_PORT, AIM_SERVER_MOUNTED_REPO_PATH
 from aim.ext.transport.server import run_router
 
+from aim.utils.tracking import analytics
+
 
 @click.command()
 @click.option('-h', '--host', default=AIM_SERVER_DEFAULT_HOST, type=str)
@@ -61,6 +63,7 @@ def server(host, port, workers,
                     fg='yellow'))
     click.echo('Server is mounted on {}:{}'.format(host, port), err=True)
     click.echo('Press Ctrl+C to exit')
+    analytics.track_event(event_name='[Aim Remote Tracking] Start server')
 
     try:
         run_router(host, port, workers, ssl_keyfile, ssl_certfile)
