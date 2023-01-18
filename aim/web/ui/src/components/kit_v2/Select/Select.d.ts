@@ -99,15 +99,7 @@ export interface ISelectRowProps {
    * @required
    */
   data: {
-    items: (
-      | {
-          value: string;
-          label: string | React.ReactNode;
-        }
-      | {
-          group: string;
-        }
-    )[];
+    items: RowItemType[];
     value: string | string[] | undefined;
     onValueChange: (val: string) => void;
     multiple?: boolean | undefined;
@@ -128,3 +120,9 @@ export interface ISelectRowProps {
    */
   style: React.CSSProperties;
 }
+
+export type RowItemType = {
+  value?: string;
+  label?: string | React.ReactNode;
+  group?: string;
+};

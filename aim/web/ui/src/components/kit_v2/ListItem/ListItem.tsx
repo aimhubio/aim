@@ -63,6 +63,7 @@ const ListItem = React.forwardRef<
       onClick,
       leftNode,
       rightNode,
+      css = {},
       ...rest
     }: IListItemProps,
     forwardedRef,
@@ -72,6 +73,7 @@ const ListItem = React.forwardRef<
         {...rest}
         onClick={onClick ? onClick : () => null}
         size={size}
+        css={css}
         ref={forwardedRef}
       >
         {leftNode ? leftNode : null}

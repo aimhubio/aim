@@ -1,8 +1,6 @@
 import React from 'react';
 import { areEqual, FixedSizeList as List } from 'react-window';
 
-import * as SelectPrimitive from '@radix-ui/react-select';
-import { styled } from '@stitches/react';
 import { IconCheck } from '@tabler/icons';
 
 import Popover from '../Popover';
@@ -15,30 +13,6 @@ import Text from '../Text';
 import Input from '../Input';
 
 import { ISelectProps, ISelectRowProps } from './Select.d';
-
-const StyledItem: any = styled(ListItem, {
-  display: 'flex',
-  alignItems: 'center',
-  position: 'relative',
-  userSelect: 'none',
-  width: '100%',
-  '&[data-state=checked]': {
-    color: '$primary100',
-  },
-  '&[data-disabled]': {
-    color: 'mauve',
-    pointerEvents: 'none',
-  },
-  '&[data-highlighted=true]': {
-    outline: 'none',
-  },
-});
-
-const StyledSelect = styled('div', {
-  '& > div': {
-    position: 'unset !important',
-  },
-});
 
 const sizeDict = {
   sm: 20,
@@ -57,6 +31,10 @@ const Select = ({
   height = 256,
 }: ISelectProps) => {
   const [search, setSearch] = React.useState('');
+
+  const onSearchChange = React.useCallback((val: string) => {
+    setSearch(val);
+  }, []);
 
   const flattenOptions: ISelectRowProps['data']['items'] | [] =
     React.useMemo(() => {
@@ -88,6 +66,7 @@ const Select = ({
                     .toLowerCase()
                     .includes(search.toLowerCase());
                 }
+                return false;
               })
               .map((opt: any) => {
                 const searchVal = search.toLowerCase();
@@ -100,13 +79,13 @@ const Select = ({
                 );
                 const title =
                   index > -1 ? (
-                    <Text>
+                    <>
                       {beforeStr}
                       <Text css={{ bc: '$mark' }}>{middleStr}</Text>
                       {afterStr}
-                    </Text>
+                    </>
                   ) : (
-                    <Text>{opt.label}</Text>
+                    opt.label
                   );
                 return { ...opt, label: title };
               });
@@ -173,7 +152,7 @@ const Select = ({
           {searchable ? (
             <Box css={{ m: '0 $5 $5' }}>
               <Input
-                onChange={(v: any) => setSearch(v)}
+                onChange={onSearchChange}
                 value={search}
                 placeholder='Search'
               />
@@ -190,57 +169,58 @@ const Select = ({
               ) : null}
             </Box>
           ) : null}
-          <StyledSelect>
-            <SelectPrimitive.Root open={true}>
-              <List
-                height={Math.min(height, data.items.length * sizeDict[size])}
-                itemCount={data.items.length}
-                itemSize={sizeDict[size]}
-                itemData={data}
-                width={'100%'}
-              >
-                {Row}
-              </List>
-            </SelectPrimitive.Root>
-          </StyledSelect>
+          <Box>
+            <List
+              height={Math.min(height, data.items.length * sizeDict[size])}
+              itemCount={data.items.length}
+              itemSize={sizeDict[size]}
+              itemData={data}
+              width={'100%'}
+            >
+              {Row}
+            </List>
+          </Box>
         </>
       }
     />
   );
 };
 
-const Row = React.memo(({ data, index, style }: any) => {
+const Row = React.memo(({ data, index, style }: ISelectRowProps) => {
   const { items, value, onValueChange, multiple, size } = data;
   const item = items[index];
-  const selected = value === item.value || value?.indexOf(item.value) !== -1;
+  let selected: boolean = false;
+  if (item.value) {
+    selected = value === item.value || value?.indexOf(item.value) !== -1;
+  }
   const rightNode = multiple ? null : selected ? (
     <Icon css={{ color: '$primary100' }} icon={<IconCheck />} />
   ) : null;
-
   return (
     <>
       {item.group ? (
         <Text
           css={{ p: '0 $5', display: 'flex', ai: 'center' }}
           style={style}
+          weight='600'
+          color='$textPrimary80'
           key={index}
         >
           {item.group}
         </Text>
       ) : (
-        <StyledItem
+        <ListItem
+          css={{ ...style, p: '0 $8' }}
           key={index}
-          style={style}
-          leftNode={multiple ? <CheckBox checked={selected} /> : null}
           size={size}
-          css={{ p: '0 $8' }}
-          onClick={() => onValueChange(item.value)}
           rightNode={rightNode}
+          leftNode={multiple ? <CheckBox checked={selected} /> : null}
+          onClick={() => onValueChange(item.value!)}
         >
           <Text css={{ color: selected ? '$primary100' : '$textPrimary' }}>
             {item.label}
           </Text>
-        </StyledItem>
+        </ListItem>
       )}
     </>
   );
