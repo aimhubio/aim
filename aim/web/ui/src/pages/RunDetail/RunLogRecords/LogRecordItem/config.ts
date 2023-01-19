@@ -1,11 +1,17 @@
+import { IconName } from 'components/kit/Icon';
+
 export const RunLogRecordsConfig: Record<
   string,
-  { label: string; color: 'primary' | 'error' | 'warning' | 'info' }
+  { icon: IconName; color: string; background: string }
 > = {
-  ERROR: { label: 'Error', color: 'error' },
-  WARNING: { label: 'Warning', color: 'warning' },
-  INFO: { label: 'Info', color: 'info' },
-  DEBUG: { label: 'Debug', color: 'primary' },
+  ERROR: { icon: 'close-circle', color: '#e64e48', background: '#F9E7E6' },
+  WARNING: {
+    icon: 'warning-contained',
+    color: '#ffcc00',
+    background: '#FEF7E8',
+  },
+  INFO: { icon: 'circle-info', color: '#1473e6', background: '#ECF1FD' },
+  DEBUG: { icon: 'search', color: '#1c2852', background: '#E8EAEE' },
 };
 
 export enum ListItemEnum {

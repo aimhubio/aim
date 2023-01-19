@@ -1,6 +1,12 @@
 import React from 'react';
+import _ from 'lodash-es';
 
-import { Icon, Text } from 'components/kit';
+import { Tooltip } from '@material-ui/core';
+
+import { Icon, JsonViewPopover, Text } from 'components/kit';
+import ControlPopover from 'components/ControlPopover/ControlPopover';
+
+import contextToString from 'utils/contextToString';
 
 import { ListItemEnum, RunLogRecordsConfig } from './config';
 
@@ -40,6 +46,19 @@ function LogRecordItem(
           <div className='LogRecordItem__content'>
             <div className='LogRecordItem__content__item' key={item.hash}>
               <div className='LogRecordItem__content__item__leftBox'>
+                <div
+                  className='LogRecordItem__content__item__leftBox__statusBadge'
+                  style={{
+                    backgroundColor:
+                      RunLogRecordsConfig[item?.type ?? 'Error'].background,
+                  }}
+                >
+                  <Icon
+                    name={RunLogRecordsConfig[item?.type ?? 'Error'].icon}
+                    fontSize={10}
+                    color={RunLogRecordsConfig[item?.type ?? 'Error'].color}
+                  />
+                </div>
                 <Text
                   tint={50}
                   size={12}
@@ -47,12 +66,41 @@ function LogRecordItem(
                 >
                   {item?.date ?? 'no date found'}
                 </Text>
-                <Text color={RunLogRecordsConfig[item?.type ?? 'Error'].color}>
-                  {RunLogRecordsConfig[item?.type ?? 'Error'].label}
-                </Text>
               </div>
               <div className='LogRecordItem__content__item__itemBox'>
-                <Text>{item?.message ?? 'no message found'}</Text>
+                <Text
+                  className='LogRecordItem__content__item__itemBox__message'
+                  size={14}
+                >
+                  {item?.message ?? 'no message found'}
+                </Text>
+                {!_.isEmpty(item.extraParams) ? (
+                  <ControlPopover
+                    key={item.hash}
+                    title={'Message Params'}
+                    anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'left',
+                    }}
+                    transformOrigin={{
+                      vertical: 'top',
+                      horizontal: 'left',
+                    }}
+                    anchor={({ onAnchorClick }) => (
+                      <Tooltip title={contextToString(item.extraParams) ?? ''}>
+                        <div
+                          className='LogRecordItem__content__item__itemBox__extraParams'
+                          onClick={onAnchorClick}
+                        >
+                          <Text size={14} color='info'>
+                            {contextToString(item.extraParams)}
+                          </Text>
+                        </div>
+                      </Tooltip>
+                    )}
+                    component={<JsonViewPopover json={item.extraParams} />}
+                  />
+                ) : null}
               </div>
             </div>
           </div>

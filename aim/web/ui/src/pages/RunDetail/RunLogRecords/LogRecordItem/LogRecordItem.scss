@@ -1,7 +1,6 @@
 @use 'src/styles/abstracts' as *;
 
 .LogRecordItem {
-  margin-bottom: $space-xs;
   &__title {
     align-items: center;
     display: flex;
@@ -16,12 +15,13 @@
   &__content {
     position: relative;
     padding-left: toRem(28px);
+    height: 100%;
     &::before {
       content: '';
       position: absolute;
       top: -$space-xxxxs;
       left: $space-sm;
-      width: 1px;
+      width: toRem(1px);
       height: calc(100% + 8px);
       background-color: $primary-color-20;
     }
@@ -29,8 +29,8 @@
       white-space: nowrap;
       display: flex;
       align-items: center;
-      margin-bottom: $space-xs;
       position: relative;
+      height: 100%;
       &::before {
         content: '';
         position: absolute;
@@ -43,11 +43,20 @@
       &__leftBox {
         display: flex;
         align-items: center;
-        &__label {
-          margin-right: $space-xxxs;
+        margin-right: $space-xxs;
+        height: 100%;
+        &__statusBadge {
+          width: 1rem;
+          height: 1rem;
+          border-radius: $border-radius-circle;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          background: red;
+          margin-right: $space-xxs;
         }
         &__date {
-          margin-right: $space-sm;
+          margin-right: $space-xxs;
           @include monospaceFontFamily(12);
         }
         .Table__status_indicator {
@@ -59,8 +68,48 @@
         display: flex;
         align-items: center;
         max-width: calc(100% - 156px);
-        width: 100%;
-        margin-left: $space-xs;
+        height: 100%;
+        position: relative;
+        padding: 0 8px;
+        &::before {
+          content: '';
+          position: absolute;
+          left: 0;
+          top: toRem(5px);
+          width: toRem(1px);
+          height: toRem(10px);
+          background: $pico;
+        }
+        &::after {
+          content: '';
+          position: absolute;
+          right: 0;
+          top: toRem(5px);
+          width: toRem(1px);
+          height: toRem(10px);
+          background: $pico;
+        }
+        &__message {
+          width: 100%;
+        }
+        &__extraParams {
+          margin-left: $space-xxs;
+          padding-left: $space-xxs;
+          max-width: 150px;
+          overflow: hidden;
+          position: relative;
+          text-overflow: ellipsis;
+          cursor: pointer;
+          &::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: toRem(5px);
+            width: toRem(1px);
+            height: toRem(10px);
+            background: $pico;
+          }
+        }
       }
     }
   }
