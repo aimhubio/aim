@@ -21,6 +21,7 @@ function useRunLogRecords(runId: string) {
   const [data, setData] = React.useState<RunLogRecordType[]>([]);
   const [lastAddedMonth, setLastAddedMonth] = React.useState<string>('');
   const [lastAddedDay, setLastAddedDay] = React.useState<string>('');
+  const [elementsHeightsSum, setElementsHeightsSum] = React.useState<number>(0);
   const [lastRequestType, setLastRequestType] =
     React.useState<LogsLastRequestEnum>(LogsLastRequestEnum.DEFAULT);
   const { current: engine } = React.useRef(runRecordsEngine);
@@ -31,7 +32,7 @@ function useRunLogRecords(runId: string) {
 
   React.useEffect(() => {
     if (_.isEmpty(runLogRecordsState.data?.runLogRecordsList)) {
-      engine.fetchRunLogRecords({ runId, record_range: ':1000' });
+      engine.fetchRunLogRecords({ runId });
     }
     return () => engine.destroy();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -49,6 +50,7 @@ function useRunLogRecords(runId: string) {
     const messagesList: MessagesItemType[] = [];
     let currentMonth = lastAddedMonth;
     let currentDay = lastAddedDay;
+    let pageSize = 0;
     if (data.length) {
       data?.forEach((record: RunLogRecordType) => {
         const month = moment(record.timestamp * 1000).format(
@@ -60,6 +62,7 @@ function useRunLogRecords(runId: string) {
             itemType: ListItemEnum.MONTH,
             height: 28,
           });
+          pageSize += 28;
           currentMonth = month;
         }
 
@@ -70,6 +73,7 @@ function useRunLogRecords(runId: string) {
             itemType: ListItemEnum.DAY,
             height: 28,
           });
+          pageSize += 28;
           currentDay = day;
         }
         const feedItem = {
@@ -83,27 +87,38 @@ function useRunLogRecords(runId: string) {
           itemType: ListItemEnum.RECORD,
           height: 20,
         };
+        pageSize += 20;
         messagesList.push(feedItem);
       });
     }
     setLastAddedMonth(currentMonth);
     setLastAddedDay(currentDay);
+    setElementsHeightsSum(pageSize);
     return messagesList;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, runId]);
 
   function loadMore(): void {
-    if (runLogRecordsState.data && !runLogRecordsState.loading) {
+    if (
+      runLogRecordsState.data?.runLogRecordsList &&
+      !runLogRecordsState.loading
+    ) {
       setLastRequestType(LogsLastRequestEnum.LOAD_MORE);
-      engine.fetchRunLogRecords({ runId, record_range: '' });
+      const { hash } = data[data.length - 1];
+      engine.fetchRunLogRecords({
+        runId,
+        record_range: hash > 200 ? `${hash - 200}:${hash}` : `0:${hash}`,
+      });
     }
   }
 
   return {
     isLoading: runLogRecordsState.loading,
     data: memoizedData,
-    totalRunLogRecordCount: runLogRecordsState.data?.runLogRecordsTotalCount,
+    totalRunLogRecordCount:
+      runLogRecordsState.data?.runLogRecordsTotalCount ?? 0,
     fetchedCount: data.length,
+    elementsHeightsSum,
     lastRequestType,
     loadMore,
   };

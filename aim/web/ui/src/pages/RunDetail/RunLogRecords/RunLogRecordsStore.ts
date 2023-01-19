@@ -29,7 +29,10 @@ function createRunLogRecordsEngine() {
             console.error(e);
             throw e;
           }
-          return data;
+          return {
+            ...data,
+            runLogRecordsList: data.runLogRecordsList.reverse(),
+          };
         },
       }),
   );

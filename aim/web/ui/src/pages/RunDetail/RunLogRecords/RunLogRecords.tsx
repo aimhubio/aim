@@ -2,10 +2,12 @@ import React from 'react';
 import _ from 'lodash-es';
 import { ListOnScrollProps, VariableSizeList as List } from 'react-window';
 import { useResizeObserver } from 'hooks';
+import classNames from 'classnames';
 
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
+import { Spinner } from 'components/kit';
 
 import { LogsLastRequestEnum } from '../RunLogsTab';
 
@@ -26,6 +28,7 @@ function RunLogRecords({
     fetchedCount,
     totalRunLogRecordCount,
     lastRequestType,
+    elementsHeightsSum,
   } = useRunLogRecords(runHash);
   const listRef = React.useRef<any>({});
   const logsContainerRef = React.useRef<any>(null);
@@ -43,6 +46,14 @@ function RunLogRecords({
 
   function onScroll({ scrollOffset, scrollDirection }: ListOnScrollProps) {
     setScrollOffset(scrollOffset);
+    if (
+      scrollDirection === 'forward' &&
+      scrollOffset + parentHeight > elementsHeightsSum &&
+      fetchedCount < totalRunLogRecordCount &&
+      isLoading === false
+    ) {
+      loadMore();
+    }
     // if (
     //   scrollOffset <= SINGLE_LINE_HEIGHT &&
     //   keysList &&
@@ -89,12 +100,20 @@ function RunLogRecords({
                   width={'100%'}
                   overscanCount={100}
                   initialScrollOffset={scrollOffset ?? 0}
-                  // onItemsRendered={onItemsRendered}
                   itemData={data}
                   onScroll={onScroll}
                 >
                   {LogRecordItem}
                 </List>
+                <div
+                  className={classNames('overlay', {
+                    loading:
+                      isLoading &&
+                      lastRequestType === LogsLastRequestEnum.LOAD_MORE,
+                  })}
+                >
+                  <Spinner size={24} />
+                </div>
               </div>
             ) : (
               <IllustrationBlock
