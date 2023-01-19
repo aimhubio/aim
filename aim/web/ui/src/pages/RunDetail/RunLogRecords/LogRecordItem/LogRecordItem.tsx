@@ -24,7 +24,7 @@ function LogRecordItem(
       case ListItemEnum.MONTH:
         return (
           <Text
-            className='RunLogRecords__content-title'
+            className='LogRecordItem__content-title'
             component='h3'
             tint={100}
             weight={700}

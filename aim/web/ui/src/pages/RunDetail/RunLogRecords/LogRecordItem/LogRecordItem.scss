@@ -25,6 +25,9 @@
       height: calc(100% + 8px);
       background-color: $primary-color-20;
     }
+    &-title {
+      margin-bottom: $space-sm;
+    }
     &__item {
       white-space: nowrap;
       display: flex;

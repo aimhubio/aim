@@ -73,31 +73,38 @@ function RunLogRecords({
         className='RunDetailTabLoader'
         height='100%'
       >
-        {totalRunLogRecordCount ? (
-          <div className='RunLogRecords' ref={logsContainerRef}>
-            <List
-              ref={listRef}
-              key={`${parentHeight}${parentWidth}`}
-              height={parentHeight || 100}
-              itemCount={data?.length}
-              itemSize={(index) => data[index]?.height}
-              width={'100%'}
-              overscanCount={100}
-              initialScrollOffset={scrollOffset ?? 0}
-              // onItemsRendered={onItemsRendered}
-              itemData={data}
-              onScroll={onScroll}
-            >
-              {LogRecordItem}
-            </List>
+        <div className='RunLogRecords'>
+          <div className='RunLogRecords__contentWrapper'>
+            {totalRunLogRecordCount ? (
+              <div
+                className='RunLogRecords__contentWrapper__listWrapper'
+                ref={logsContainerRef}
+              >
+                <List
+                  ref={listRef}
+                  key={`${parentHeight}${parentWidth}`}
+                  height={parentHeight || 100}
+                  itemCount={data?.length}
+                  itemSize={(index) => data[index]?.height}
+                  width={'100%'}
+                  overscanCount={100}
+                  initialScrollOffset={scrollOffset ?? 0}
+                  // onItemsRendered={onItemsRendered}
+                  itemData={data}
+                  onScroll={onScroll}
+                >
+                  {LogRecordItem}
+                </List>
+              </div>
+            ) : (
+              <IllustrationBlock
+                size='xLarge'
+                className='RunDetailTabLoader'
+                title='No Messages'
+              />
+            )}
           </div>
-        ) : (
-          <IllustrationBlock
-            size='xLarge'
-            className='RunDetailTabLoader'
-            title='No Messages'
-          />
-        )}
+        </div>
       </BusyLoaderWrapper>
     </ErrorBoundary>
   );
