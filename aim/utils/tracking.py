@@ -1,6 +1,7 @@
 import logging
 import os
 import json
+import sys
 import uuid
 import contextlib
 
@@ -24,6 +25,7 @@ class Analytics:
         else:
             with self._autocommit():
                 self._profile = {
+                    'envs': {},
                     'telemetry': {
                         'enable': True,
                         'warning-shown': False
@@ -33,16 +35,35 @@ class Analytics:
 
         self._user_id = self._profile['user-id']
 
-    def track_install_event(self, aim_version: str) -> None:
+    def track_install_event(self) -> None:
+        env_key = sys.exec_prefix
+        if env_key in self._profile['envs']:
+            is_new_env = False
+            from aim.__version__ import __version__ as aim_version
+            if aim_version == self._profile['envs'][env_key]:
+                return
+        else:
+            is_new_env = True
+            from aim.__version__ import __version__ as aim_version
+
         sa.write_key = Analytics.SEGMENT_WRITE_KEY
         sa.identify(user_id=self._user_id)
-
-        self.track_event(event_name='[Aim] install', aim_version=aim_version)
+        event_name = '[Aim] install' if is_new_env else '[Aim] upgrade'
+        sa.track(self._user_id, event=event_name, properties={'aim_version': aim_version})
+        with self._autocommit():
+            self._profile['envs'][env_key] = aim_version
 
     def track_event(self, *, event_name: str, **kwargs) -> None:
         if not self.dev_mode and self.telemetry_enabled:
             self.initialize()
             self._warn_once()
+
+            def on_error(error, items):
+                print("An error occurred:", error)
+
+            sa.debug = True
+            sa.on_error = on_error
+
             sa.track(self._user_id, event=event_name, properties=kwargs)
 
     def initialize(self) -> None:
@@ -71,7 +92,7 @@ class Analytics:
     def _autocommit(self):
         yield
         with open(aim_profile_path, 'w+') as fh:
-            json.dump(self._profile, fh)
+            json.dump(self._profile, fh, indent=2)
 
     def _warn_once(self):
         assert self.telemetry_enabled

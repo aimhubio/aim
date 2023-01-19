@@ -4,5 +4,7 @@ from aim.ext.notebook.notebook import load_ipython_extension
 from aim.cli.manager.manager import run_process
 
 from aim.utils.deprecation import python_version_deprecation_check
+from aim.utils.tracking import analytics
 
 python_version_deprecation_check()
+analytics.track_install_event()
