@@ -21,12 +21,63 @@ const StyledBox: any = styled(Slot, {});
 
 const Box = React.forwardRef<typeof StyledBox, IBoxProps>(
   (
-    { as = 'div', css, children, ...rest }: IBoxProps,
+    {
+      as = 'div',
+      css,
+      children,
+      display,
+      flex,
+      fd,
+      fw,
+      ai,
+      jc,
+      m,
+      mt,
+      mr,
+      mb,
+      ml,
+      p,
+      pt,
+      pr,
+      pb,
+      pl,
+      width,
+      height,
+      bg,
+      color,
+      ...rest
+    }: IBoxProps,
     forwardedRef,
   ): React.FunctionComponentElement<React.ReactNode> => {
     const Component: any = as;
     return (
-      <StyledBox {...rest} css={{ ...css, ...rest }} ref={forwardedRef}>
+      <StyledBox
+        {...rest}
+        css={{
+          display,
+          flex,
+          fd,
+          fw,
+          ai,
+          jc,
+          m,
+          mt,
+          mr,
+          mb,
+          ml,
+          p,
+          pt,
+          pr,
+          pb,
+          pl,
+          width,
+          height,
+          bg,
+          color,
+          ...css,
+        }}
+        ref={forwardedRef}
+      >
         <Component>{children}</Component>
       </StyledBox>
     );
