@@ -17,14 +17,14 @@ import { ListItemEnum } from './LogRecordItem/config';
 
 import { MessagesItemType, RunLogRecordType } from '.';
 
-function useRunLogRecords(runId: string) {
+function useRunLogRecords(runId: string, inProgress: boolean) {
   const [data, setData] = React.useState<RunLogRecordType[]>([]);
-  const [lastAddedMonth, setLastAddedMonth] = React.useState<string>('');
-  const [lastAddedDay, setLastAddedDay] = React.useState<string>('');
   const [elementsHeightsSum, setElementsHeightsSum] = React.useState<number>(0);
   const [lastRequestType, setLastRequestType] =
     React.useState<LogsLastRequestEnum>(LogsLastRequestEnum.DEFAULT);
   const { current: engine } = React.useRef(runRecordsEngine);
+  const liveUpdate = React.useRef<{ intervalId: number } | null>(null);
+  const lastItemHash = React.useRef<number>(-1);
   const runLogRecordsState: IResourceState<{
     runLogRecordsList: RunLogRecordType[];
     runLogRecordsTotalCount: number;
@@ -32,15 +32,31 @@ function useRunLogRecords(runId: string) {
 
   React.useEffect(() => {
     if (_.isEmpty(runLogRecordsState.data?.runLogRecordsList)) {
-      engine.fetchRunLogRecords({ runId });
+      engine.fetchRunLogRecords({ runId }).then(() => {
+        stopLiveUpdate();
+        startLiveUpdate();
+      });
     }
-    return () => engine.destroy();
+    return () => {
+      engine.destroy();
+      stopLiveUpdate(true);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   React.useEffect(() => {
+    if (!inProgress) {
+      stopLiveUpdate();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inProgress]);
+
+  React.useEffect(() => {
     if (runLogRecordsState.data?.runLogRecordsList?.length) {
-      let newData = [...data, ...runLogRecordsState.data.runLogRecordsList];
+      let newData =
+        lastRequestType === LogsLastRequestEnum.LIVE_UPDATE
+          ? [...runLogRecordsState.data.runLogRecordsList, ...data]
+          : [...data, ...runLogRecordsState.data.runLogRecordsList];
       setData(newData);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -48,8 +64,8 @@ function useRunLogRecords(runId: string) {
 
   const memoizedData = React.useMemo(() => {
     const messagesList: MessagesItemType[] = [];
-    let currentMonth = lastAddedMonth;
-    let currentDay = lastAddedDay;
+    let currentMonth = '';
+    let currentDay = '';
     let pageSize = 0;
     if (data.length) {
       data?.forEach((record: RunLogRecordType) => {
@@ -91,9 +107,8 @@ function useRunLogRecords(runId: string) {
         messagesList.push(feedItem);
       });
     }
-    setLastAddedMonth(currentMonth);
-    setLastAddedDay(currentDay);
     setElementsHeightsSum(pageSize);
+    lastItemHash.current = data[0]?.hash;
     return messagesList;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, runId]);
@@ -103,12 +118,57 @@ function useRunLogRecords(runId: string) {
       runLogRecordsState.data?.runLogRecordsList &&
       !runLogRecordsState.loading
     ) {
+      stopLiveUpdate();
       setLastRequestType(LogsLastRequestEnum.LOAD_MORE);
       const { hash } = data[data.length - 1];
-      engine.fetchRunLogRecords({
-        runId,
-        record_range: hash > 200 ? `${hash - 200}:${hash}` : `0:${hash}`,
-      });
+      engine
+        .fetchRunLogRecords({
+          runId,
+          record_range: hash > 200 ? `${hash - 200}:${hash}` : `0:${hash}`,
+        })
+        .then(() => {
+          stopLiveUpdate();
+          startLiveUpdate();
+        });
+    }
+  }
+
+  function liveUpdateCallBack() {
+    if (lastItemHash.current) {
+      setLastRequestType(LogsLastRequestEnum.LIVE_UPDATE);
+      engine
+        .fetchRunLogRecords({
+          runId,
+          record_range: `${lastItemHash.current}:`,
+        })
+        .then(() => {
+          stopLiveUpdate();
+          startLiveUpdate();
+        });
+    } else {
+      stopLiveUpdate();
+      startLiveUpdate();
+    }
+  }
+
+  function startLiveUpdate() {
+    if (inProgress) {
+      const intervalId: number = window.setTimeout(liveUpdateCallBack, 3000);
+      liveUpdate.current = {
+        intervalId,
+      };
+    }
+  }
+
+  function stopLiveUpdate(forceRequestAbort: boolean = false) {
+    if (
+      forceRequestAbort ||
+      lastRequestType === LogsLastRequestEnum.LIVE_UPDATE
+    ) {
+      engine.abortRunLogRecordsFetching();
+    }
+    if (liveUpdate.current?.intervalId) {
+      clearInterval(liveUpdate.current.intervalId);
     }
   }
 
@@ -121,6 +181,8 @@ function useRunLogRecords(runId: string) {
     elementsHeightsSum,
     lastRequestType,
     loadMore,
+    startLiveUpdate,
+    stopLiveUpdate,
   };
 }
 

@@ -6,7 +6,7 @@ import { parseStream } from 'utils/encoder/streamEncoding';
 import { RunLogRecordStateType } from '.';
 
 function createRunLogRecordsEngine() {
-  const { call } = createRunLogRecordsRequest();
+  let { call, cancel } = createRunLogRecordsRequest();
 
   const { fetchData, state, destroy } = createResource<RunLogRecordStateType>(
     async ({ runId, record_range }: { runId: string; record_range?: string }) =>
@@ -36,9 +36,18 @@ function createRunLogRecordsEngine() {
         },
       }),
   );
+
+  function abortRunLogRecordsFetching() {
+    cancel();
+    const request = createRunLogRecordsRequest();
+    call = request.call;
+    cancel = request.cancel;
+  }
+
   return {
     fetchRunLogRecords: (options: { runId: string; record_range?: string }) =>
       fetchData(options),
+    abortRunLogRecordsFetching,
     runLogRecordsState: state,
     destroy,
   };

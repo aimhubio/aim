@@ -1,5 +1,6 @@
 export interface IRunLogRecordsProps {
   runHash: string;
+  inProgress: boolean;
 }
 
 export type RunLogRecordType = {

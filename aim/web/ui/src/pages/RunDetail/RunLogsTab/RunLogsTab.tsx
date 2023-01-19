@@ -70,7 +70,6 @@ function RunLogsTab({
       record_range: logsRowsData.current
         ? `${logsRange.current?.[1] > 5 ? logsRange.current?.[1] - 5 : 0}:`
         : '',
-      isLiveUpdate: true,
     });
   }
 
@@ -83,12 +82,7 @@ function RunLogsTab({
     }
   }
 
-  function getRunLogs(params: {
-    runHash: string;
-    record_range?: string;
-    isLiveUpdate?: boolean;
-    isLoadMore?: boolean;
-  }) {
+  function getRunLogs(params: { runHash: string; record_range?: string }) {
     setRequestStatus(RequestStatusEnum.Pending);
     runsBatchRequestRef.current = runDetailAppModel.getRunLogs(params);
     runsBatchRequestRef.current.call().then(() => {
@@ -130,7 +124,6 @@ function RunLogsTab({
             ? logsRange.current?.[0] - LOAD_MORE_LOGS_COUNT
             : 0
         }:${logsRange.current?.[0]}`,
-        isLoadMore: true,
       });
     }
   }

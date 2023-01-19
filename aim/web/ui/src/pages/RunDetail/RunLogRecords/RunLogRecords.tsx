@@ -20,6 +20,7 @@ import './RunLogRecords.scss';
 
 function RunLogRecords({
   runHash,
+  inProgress,
 }: IRunLogRecordsProps): React.FunctionComponentElement<React.ReactNode> | null {
   const {
     data,
@@ -29,7 +30,7 @@ function RunLogRecords({
     totalRunLogRecordCount,
     lastRequestType,
     elementsHeightsSum,
-  } = useRunLogRecords(runHash);
+  } = useRunLogRecords(runHash, inProgress);
   const listRef = React.useRef<any>({});
   const logsContainerRef = React.useRef<any>(null);
 
@@ -54,27 +55,6 @@ function RunLogRecords({
     ) {
       loadMore();
     }
-    // if (
-    //   scrollOffset <= SINGLE_LINE_HEIGHT &&
-    //   keysList &&
-    //   keysList[0] !== 0 &&
-    //   scrollDirection === 'backward' &&
-    //   (requestStatus === RequestStatusEnum.Ok ||
-    //     (requestStatus === RequestStatusEnum.Pending &&
-    //       lastRequestType === LogsLastRequestEnum.LIVE_UPDATE))
-    // ) {
-    //   stopLiveUpdate();
-    //   setLastRequestType(LogsLastRequestEnum.LOAD_MORE);
-    //   getRunLogs({
-    //     runHash,
-    //     record_range: `${
-    //       logsRange.current?.[0] > LOAD_MORE_LOGS_COUNT
-    //         ? logsRange.current?.[0] - LOAD_MORE_LOGS_COUNT
-    //         : 0
-    //     }:${logsRange.current?.[0]}`,
-    //     isLoadMore: true,
-    //   });
-    // }
   }
 
   return (

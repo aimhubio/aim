@@ -141,7 +141,12 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
         isRunLogsLoading={runData?.isRunLogsLoading}
       />
     ),
-    messages: <RunLogRecords runHash={runHash} />,
+    messages: (
+      <RunLogRecords
+        runHash={runHash}
+        inProgress={_.isNil(runData?.runInfo?.end_time)}
+      />
+    ),
     metrics: (
       <RunDetailMetricsAndSystemTab
         runHash={runHash}
