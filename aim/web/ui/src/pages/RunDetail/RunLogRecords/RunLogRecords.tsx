@@ -30,13 +30,17 @@ function RunLogRecords({
     totalRunLogRecordCount,
     lastRequestType,
     elementsHeightsSum,
+    updateScrollOffset,
+    scrollOffset,
+    startLiveUpdate,
+    stopLiveUpdate,
+    liveUpdateToken,
   } = useRunLogRecords(runHash, inProgress);
   const listRef = React.useRef<any>({});
   const logsContainerRef = React.useRef<any>(null);
 
   const [parentHeight, setParentHeight] = React.useState<number>(0);
   const [parentWidth, setParentWidth] = React.useState<number>(0);
-  const [scrollOffset, setScrollOffset] = React.useState<number | null>(null);
 
   useResizeObserver(() => {
     if (logsContainerRef.current) {
@@ -46,7 +50,7 @@ function RunLogRecords({
   }, logsContainerRef);
 
   function onScroll({ scrollOffset, scrollDirection }: ListOnScrollProps) {
-    setScrollOffset(scrollOffset);
+    updateScrollOffset(scrollOffset);
     if (
       scrollDirection === 'forward' &&
       scrollOffset + parentHeight > elementsHeightsSum &&
@@ -54,6 +58,12 @@ function RunLogRecords({
       isLoading === false
     ) {
       loadMore();
+    }
+    if (scrollDirection === 'backward' && scrollOffset <= 0) {
+      startLiveUpdate();
+    }
+    if (scrollOffset > 5 && liveUpdateToken) {
+      stopLiveUpdate();
     }
   }
 

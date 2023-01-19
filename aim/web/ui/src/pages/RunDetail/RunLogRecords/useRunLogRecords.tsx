@@ -20,6 +20,7 @@ import { MessagesItemType, RunLogRecordType } from '.';
 function useRunLogRecords(runId: string, inProgress: boolean) {
   const [data, setData] = React.useState<RunLogRecordType[]>([]);
   const [elementsHeightsSum, setElementsHeightsSum] = React.useState<number>(0);
+  const [scrollOffset, setScrollOffset] = React.useState<number>(0);
   const [lastRequestType, setLastRequestType] =
     React.useState<LogsLastRequestEnum>(LogsLastRequestEnum.DEFAULT);
   const { current: engine } = React.useRef(runRecordsEngine);
@@ -169,6 +170,7 @@ function useRunLogRecords(runId: string, inProgress: boolean) {
     }
     if (liveUpdate.current?.intervalId) {
       clearInterval(liveUpdate.current.intervalId);
+      liveUpdate.current = null;
     }
   }
 
@@ -183,6 +185,9 @@ function useRunLogRecords(runId: string, inProgress: boolean) {
     loadMore,
     startLiveUpdate,
     stopLiveUpdate,
+    updateScrollOffset: setScrollOffset,
+    scrollOffset,
+    liveUpdateToken: liveUpdate.current,
   };
 }
 
