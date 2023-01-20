@@ -3,7 +3,7 @@ import _ from 'lodash-es';
 
 import { Tooltip } from '@material-ui/core';
 
-import { Icon, JsonViewPopover, Text } from 'components/kit';
+import { Badge, Icon, JsonViewPopover, Text } from 'components/kit';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 
 import contextToString from 'utils/contextToString';
@@ -68,39 +68,49 @@ function LogRecordItem(
                 </Text>
               </div>
               <div className='LogRecordItem__content__item__itemBox'>
-                <Text
-                  className='LogRecordItem__content__item__itemBox__message'
-                  size={14}
-                >
-                  {item?.message ?? 'no message found'}
-                </Text>
-                {!_.isEmpty(item.extraParams) ? (
-                  <ControlPopover
-                    key={item.hash}
-                    title={'Message Params'}
-                    anchorOrigin={{
-                      vertical: 'bottom',
-                      horizontal: 'left',
-                    }}
-                    transformOrigin={{
-                      vertical: 'top',
-                      horizontal: 'left',
-                    }}
-                    anchor={({ onAnchorClick }) => (
-                      <Tooltip title={contextToString(item.extraParams) ?? ''}>
-                        <div
-                          className='LogRecordItem__content__item__itemBox__extraParams'
-                          onClick={onAnchorClick}
-                        >
-                          <Text size={14} color='info'>
-                            {contextToString(item.extraParams)}
-                          </Text>
-                        </div>
-                      </Tooltip>
-                    )}
-                    component={<JsonViewPopover json={item.extraParams} />}
-                  />
-                ) : null}
+                <Tooltip title={item?.message ?? 'no message found'}>
+                  <Text
+                    className='LogRecordItem__content__item__itemBox__message'
+                    size={14}
+                  >
+                    {item?.message ?? 'no message found'}
+                  </Text>
+                </Tooltip>
+
+                <ControlPopover
+                  key={item.hash}
+                  title={'Message Params'}
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                  }}
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'left',
+                  }}
+                  anchor={({ onAnchorClick }) => (
+                    <Tooltip
+                      title={contextToString(item.extraParams) ?? 'No Params'}
+                    >
+                      <div
+                        className='LogRecordItem__content__item__itemBox__extraParams'
+                        onClick={(e) => {
+                          if (!_.isEmpty(item.extraParams)) {
+                            onAnchorClick(e);
+                          }
+                        }}
+                      >
+                        <Badge
+                          size='xSmall'
+                          label={
+                            contextToString(item.extraParams) ?? 'No Params'
+                          }
+                        />
+                      </div>
+                    </Tooltip>
+                  )}
+                  component={<JsonViewPopover json={item.extraParams} />}
+                />
               </div>
             </div>
           </div>

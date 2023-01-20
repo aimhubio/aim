@@ -102,15 +102,15 @@ function useRunLogRecords(runId: string, inProgress: boolean) {
           extraParams: record.args,
           runId,
           itemType: ListItemEnum.RECORD,
-          height: 20,
+          height: 24,
         };
-        pageSize += 20;
+        pageSize += 24;
         messagesList.push(feedItem);
       });
     }
     setElementsHeightsSum(pageSize);
     lastItemHash.current = data[0]?.hash;
-    return [{ itemType: ListItemEnum.EMPTY, height: 30 }, ...messagesList];
+    return [{ itemType: ListItemEnum.EMPTY, height: 24 }, ...messagesList];
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, runId]);
 

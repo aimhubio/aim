@@ -79,39 +79,30 @@
           content: '';
           position: absolute;
           left: 0;
-          top: toRem(5px);
-          width: toRem(1px);
-          height: toRem(10px);
-          background: $pico;
-        }
-        &::after {
-          content: '';
-          position: absolute;
-          right: 0;
-          top: toRem(5px);
+          top: toRem(8px);
           width: toRem(1px);
           height: toRem(10px);
           background: $pico;
         }
         &__message {
           width: 100%;
-        }
-        &__extraParams {
-          margin-left: $space-xxs;
-          padding-left: $space-xxs;
-          max-width: 150px;
+          max-width: 100%;
           overflow: hidden;
-          position: relative;
           text-overflow: ellipsis;
+          @include monospaceFontFamily(12);
+        }
+
+        &__extraParams {
+          display: flex;
+          position: relative;
+          max-width: 100px;
+          align-items: center;
+          margin-left: 6px;
+          margin-top: 2px;
+          padding-left: 8px;
           cursor: pointer;
-          &::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: toRem(5px);
-            width: toRem(1px);
-            height: toRem(10px);
-            background: $pico;
+          .Badge {
+            border-radius: 2px;
           }
         }
       }
