@@ -6,7 +6,7 @@ try:
 except ImportError:
     grpc = None
 
-import aim.ext.transport.health_pb2 as health__pb2
+import aim.ext.transport.proto.health_pb2 as health__pb2
 
 
 class HealthStub(object):

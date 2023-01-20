@@ -68,6 +68,7 @@ def get_run_props(run: Run):
         'experiment': {
             'id': run.props.experiment_obj.uuid,
             'name': run.props.experiment_obj.name,
+            'description': run.props.experiment_obj.description,
         } if run.props.experiment_obj else None,
         'tags': [{'id': tag.uuid,
                   'name': tag.name,

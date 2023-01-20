@@ -1,20 +1,20 @@
-import { BaseErrorType } from './engine/types';
+import { AimErrorType } from './engine/types';
 /**
- * @class BaseError representing an Aim error object.
+ * @class AimError representing an Aim error object.
  *
  * Usage:
  *  <pre>
- *    new BaseError()
- *    new BaseError(message)
- *    new BaseError(message, detail)
+ *    new AimError()
+ *    new AimError(message)
+ *    new AimError(message, detail)
  *  </pre>
  *
  * @param {string} message - error message
  * @param {Record<string, any>} detail - error details
- * @return {BaseError} - Aim error object
+ * @return {AimError} - Aim error object
  */
 
-class BaseError extends Error {
+class AimError extends Error {
   detail: Record<string, any>;
   constructor(message?: string, detail: Record<string, any> = {}) {
     super(message);
@@ -22,7 +22,7 @@ class BaseError extends Error {
     this.detail = detail;
   }
 
-  getError(): BaseErrorType {
+  getError(): AimErrorType {
     return {
       name: this.name,
       message: this.message,
@@ -31,4 +31,4 @@ class BaseError extends Error {
   }
 }
 
-export default BaseError;
+export default AimError;

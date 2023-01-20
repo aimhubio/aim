@@ -3,11 +3,12 @@ import _ from 'lodash-es';
 import classNames from 'classnames';
 
 import { Tooltip } from '@material-ui/core';
-import { PipelineStatusEnum } from 'modules/core/engine/types';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import { Button, Text, Icon } from 'components/kit';
+
+import { PipelineStatusEnum } from 'modules/core/engine/types';
 
 import { GroupingPopover } from '../GroupingPopover';
 
