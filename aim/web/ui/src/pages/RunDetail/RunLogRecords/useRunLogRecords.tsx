@@ -2,13 +2,13 @@ import React from 'react';
 import moment from 'moment';
 import _ from 'lodash-es';
 
-import { IResourceState } from 'modules/core/utils/createResource';
-
 import {
   TIMELINE_DAY_FORMAT,
   TIMELINE_MONTH_FORMAT,
   TIMELINE_TIME_FORMAT,
 } from 'config/dates/dates';
+
+import { IResourceState } from 'modules/core/utils/createResource';
 
 import { LogsLastRequestEnum } from '../RunLogsTab';
 
