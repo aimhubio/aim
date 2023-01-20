@@ -110,7 +110,7 @@ function useRunLogRecords(runId: string, inProgress: boolean) {
     }
     setElementsHeightsSum(pageSize);
     lastItemHash.current = data[0]?.hash;
-    return messagesList;
+    return [{ itemType: ListItemEnum.EMPTY, height: 30 }, ...messagesList];
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, runId]);
 

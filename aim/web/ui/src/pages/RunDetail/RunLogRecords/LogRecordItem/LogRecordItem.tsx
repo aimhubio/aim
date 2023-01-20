@@ -105,6 +105,8 @@ function LogRecordItem(
             </div>
           </div>
         );
+      case ListItemEnum.EMPTY:
+        <div></div>;
     }
   };
 

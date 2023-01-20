@@ -1,5 +1,4 @@
 import React from 'react';
-import _ from 'lodash-es';
 import { ListOnScrollProps, VariableSizeList as List } from 'react-window';
 import { useResizeObserver } from 'hooks';
 import classNames from 'classnames';

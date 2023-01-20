@@ -18,4 +18,5 @@ export enum ListItemEnum {
   MONTH = 'Month',
   DAY = 'Day',
   RECORD = 'Record',
+  EMPTY = 'Empty',
 }

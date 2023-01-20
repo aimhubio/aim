@@ -4,7 +4,7 @@
   &__title {
     align-items: center;
     display: flex;
-    margin-bottom: $space-xxxs;
+    padding: 0 $space-lg;
     .Icon__container {
       border-radius: $border-radius-circle;
       background-color: $primary-color-10;
@@ -14,19 +14,20 @@
   }
   &__content {
     position: relative;
-    padding-left: toRem(28px);
+    padding-left: toRem(52px);
+    padding-right: toRem(24px);
     height: 100%;
     &::before {
       content: '';
       position: absolute;
       top: -$space-xxxxs;
-      left: $space-sm;
+      left: 2.25rem;
       width: toRem(1px);
       height: calc(100% + 8px);
       background-color: $primary-color-20;
     }
     &-title {
-      margin-bottom: $space-sm;
+      padding: 0 $space-lg;
     }
     &__item {
       white-space: nowrap;
