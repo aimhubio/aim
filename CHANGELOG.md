@@ -6,6 +6,7 @@
 
 - Add other x-axis alignment and system logs tracking to cli convert wandb (hjoonjang)
 - Add support for pre-binned distribution/histogram (YodaEmbedding)
+- Added a "Run Messages" tab to the run page, allowing users to view run messages as a timeline (VkoHov)
 
 ### Fixes
 
