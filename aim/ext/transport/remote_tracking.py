@@ -45,7 +45,17 @@ class RemoteTrackingServicer(tracking_pb2_grpc.RemoteTrackingServiceServicer):
         try:
             resource_cls = self.registry[request.resource_type]
             if len(request.args) > 0:
-                res = resource_cls(request.args)
+                kwargs = decode_tree(utils.unpack_args(request.args))
+                checked_kwargs = {}
+                for argname, arg in kwargs.items():
+                    if isinstance(arg, utils.ResourceObject):
+                        handler = arg.storage['handler']
+                        self._verify_resource_handler(handler, request.client_uri)
+                        checked_kwargs[argname] = self.resource_pool[handler][1].ref
+                    else:
+                        checked_kwargs[argname] = arg
+
+                res = resource_cls(**checked_kwargs)
             else:
                 res = resource_cls()
 
