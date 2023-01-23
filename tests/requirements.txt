@@ -2,7 +2,8 @@
 torch
 tensorflow
 hub
-requests
+fastapi>=0.87.0
+httpx
 pandas
 pytest
 flake8

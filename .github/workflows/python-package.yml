@@ -130,11 +130,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ '3.6', '3.7', '3.8', '3.9', '3.10' ]
+        python-version: [ '3.7', '3.8', '3.9', '3.10' ]
         arch: ['arm64', 'x86_64']
         exclude:
-          - arch: 'arm64'
-            python-version: 3.6
           - arch: 'arm64'
             python-version: 3.7
 
