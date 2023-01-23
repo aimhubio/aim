@@ -14,6 +14,7 @@
 - Add huggingface/datasets integration (tmynn)
 - Enable support for protobuf v4 (mihran113)
 - Support events sigbaling for Remote Tracking server (alberttorosyan)
+- Enhance DVC parameters tracking (tmynn)
 
 ### Fixes
 

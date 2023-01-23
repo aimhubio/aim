@@ -7,6 +7,7 @@ from aim.ext.resource import DEFAULT_SYSTEM_TRACKING_INT
 
 Prophet = TypeVar("Prophet")
 
+
 class AimLogger:
     def __init__(
         self,
@@ -15,8 +16,8 @@ class AimLogger:
         experiment: Optional[str] = None,
         system_tracking_interval: int = DEFAULT_SYSTEM_TRACKING_INT,
         log_system_params: bool = True,
-        log_cout=stdout
-):
+        log_cout=stdout,
+    ):
         """
         AimLogger for Prophet models.
         Prophet doesn't have a callback system and isn't trained iteratively.
@@ -54,14 +55,13 @@ class AimLogger:
                 repo=self._repo_path,
                 experiment=self._experiment,
                 system_tracking_interval=self._system_tracking_interval,
-                log_system_params=self._log_system_params
+                log_system_params=self._log_system_params,
             )
             self._run_hash = self._run.hash
-        
+
         for hparam, value in hparams.items():
             self._run.set(hparam, value, strict=False)
 
-        
     def __del__(self) -> None:
         if self._run and self._run.active:
             self._run.close()
@@ -70,7 +70,7 @@ class AimLogger:
         """
         Since Prophet doesn't compute loss during training,
         only hyperparameters are logged by default.
-        This method can be used to log any user-provied validation metrics. 
+        This method can be used to log any user-provied validation metrics.
         """
         for metric, value in metrics.items():
             self._run.track(value, name=metric, context={"subset": "val"})
