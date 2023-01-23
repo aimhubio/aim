@@ -8,7 +8,7 @@ import { getSelectFormOptions } from 'modules/core/utils/getSelectFormOptions';
 import { isSystemMetric } from 'utils/isSystemMetric';
 import { AlignmentOptionsEnum } from 'utils/d3';
 
-import { IAlignment } from './';
+import { IAlignmentProps } from './';
 
 const METRICS_ALIGNMENT_LIST: {
   value: string;
@@ -35,20 +35,27 @@ const METRICS_ALIGNMENT_LIST: {
 
 const DROPDOWN_LIST_HEIGHT = 253;
 
-function Alignment(props: IAlignment) {
+function Alignment(props: IAlignmentProps) {
   const {
     visualizationName,
     engine,
-    engine: { useStore, visualizations },
+    engine: { visualizations },
+    alignmentConfig,
   } = props;
   const vizEngine = visualizations[visualizationName];
   const updateAxesProps = vizEngine.controls.axesProperties.methods.update;
-  const axesProps = useStore(vizEngine.controls.axesProperties.stateSelector);
   const queryable = engine.useStore(engine.instructions.stateSelector);
   // const data = engine.useStore(engine.pipeline.dataSelector);
 
   const projectSequenceOptions = getSelectFormOptions(
     queryable.project_sequence_info,
+  );
+
+  const updateAlignment = React.useCallback(
+    (alignment) => {
+      updateAxesProps({ alignment: { ...alignmentConfig, ...alignment } });
+    },
+    [updateAxesProps, alignmentConfig],
   );
 
   const alignmentOptions: ISelectOption[] = React.useMemo(() => {
@@ -73,35 +80,31 @@ function Alignment(props: IAlignment) {
 
   const selectedAlignment = React.useMemo(
     () =>
-      axesProps?.alignment?.type === AlignmentOptionsEnum.CUSTOM_METRIC
-        ? axesProps.alignment.metric
-        : axesProps.alignment.type,
-    [axesProps.alignment],
+      alignmentConfig?.type === AlignmentOptionsEnum.CUSTOM_METRIC
+        ? alignmentConfig.metric
+        : alignmentConfig.type,
+    [alignmentConfig],
   );
 
   const handleAlignmentChange = React.useCallback(
     (option: ISelectOption): void => {
       if (option) {
         if (option.group === 'METRIC') {
-          updateAxesProps({
-            alignment: {
-              type: AlignmentOptionsEnum.CUSTOM_METRIC,
-              metric: option.value,
-            },
+          updateAlignment({
+            type: AlignmentOptionsEnum.CUSTOM_METRIC,
+            metric: option.value,
           });
 
           // onCustomMetricChange(option.value);
         } else {
-          updateAxesProps({
-            alignment: {
-              type: option.value as AlignmentOptionsEnum,
-              metric: '',
-            },
+          updateAlignment({
+            type: option.value as AlignmentOptionsEnum,
+            metric: '',
           });
         }
       }
     },
-    [updateAxesProps],
+    [updateAlignment],
   );
 
   // const onCustomMetricChange = React.useCallback((metric: string) => {

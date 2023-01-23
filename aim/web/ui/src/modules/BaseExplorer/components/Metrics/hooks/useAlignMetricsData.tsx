@@ -32,7 +32,7 @@ function useAlignMetricsData(
       const filteredItem: FilteredMetricData = filterMetricsData(
         item.data,
         axesPropsConfig.alignment.type,
-        axesPropsConfig.axesScale.type,
+        axesPropsConfig.axesScaleType,
       );
       const alignedData = alignData(
         filteredItem,

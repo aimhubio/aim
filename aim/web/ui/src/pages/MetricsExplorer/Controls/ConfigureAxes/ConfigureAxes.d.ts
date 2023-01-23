@@ -8,17 +8,13 @@ export interface IConfigureAxesProps extends IBaseComponentProps {
 
 export interface IAxesPropsConfig {
   alignment: IAxesAlignmentConfig;
-  axesScale: IAxesScaleConfig;
+  axesScaleType: IAxesScaleType;
+  axesScaleRange: IAxesScaleRange;
 }
 
 export interface IAxesAlignmentConfig {
   metric?: string;
   type: AlignmentOptionsEnum;
-}
-
-export interface IAxesScaleConfig {
-  type: IAxesScaleType;
-  range: IAxesScaleRange;
 }
 
 export interface IAxesScaleRange {

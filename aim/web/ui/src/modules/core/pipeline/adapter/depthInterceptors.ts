@@ -2,8 +2,6 @@ import { AimObjectDepths } from 'types/core/enums';
 import { SequenceFullView, Container } from 'types/core/AimObjects';
 import { Record } from 'types/core/shared';
 
-import { filterMetricsData } from 'utils/app/filterMetricData';
-
 import { DepthInterceptors } from './types';
 
 const depthInterceptors: DepthInterceptors = {

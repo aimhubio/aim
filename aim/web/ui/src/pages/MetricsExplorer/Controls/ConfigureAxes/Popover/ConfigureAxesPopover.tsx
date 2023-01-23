@@ -1,12 +1,12 @@
 import React from 'react';
 
+import { Divider } from '@material-ui/core';
+
 import ErrorBoundary from 'components/ErrorBoundary';
 
-import { Alignment, IConfigureAxesPopoverProps } from './';
+import { Alignment, IConfigureAxesPopoverProps, AxesRange, AxesType } from './';
 
 import './ConfigureAxesPopover.scss';
-
-export const RANGE_DEBOUNCE_DELAY = 300;
 
 function ConfigureAxesPopover(props: IConfigureAxesPopoverProps) {
   const {
@@ -15,13 +15,28 @@ function ConfigureAxesPopover(props: IConfigureAxesPopoverProps) {
     engine: { useStore, visualizations },
   } = props;
   const vizEngine = visualizations[visualizationName];
-  const updateAxesProps = vizEngine.controls.axesProperties.methods.update;
   const axesProps = useStore(vizEngine.controls.axesProperties.stateSelector);
 
   return (
     <ErrorBoundary>
       <div className='ConfigureAxesPopover'>
-        <Alignment engine={engine} visualizationName={visualizationName} />
+        <Alignment
+          engine={engine}
+          visualizationName={visualizationName}
+          alignmentConfig={axesProps.alignment}
+        />
+        <Divider className='ConfigureAxesPopover__divider' />
+        <AxesRange
+          engine={engine}
+          visualizationName={visualizationName}
+          axesRangeConfig={axesProps.axesScaleRange}
+        />
+        <Divider className='ConfigureAxesPopover__divider' />
+        <AxesType
+          engine={engine}
+          visualizationName={visualizationName}
+          axesTypeConfig={axesProps.axesScaleType}
+        />
       </div>
     </ErrorBoundary>
   );

@@ -50,6 +50,8 @@ function Metrics(props: IBoxContentProps) {
         aggregatedData={aggregatedData}
         aggregationConfig={aggregationConfig}
         alignmentConfig={axesPropsConfig.alignment}
+        axesScaleRange={axesPropsConfig.axesScaleRange}
+        axesScaleType={axesPropsConfig.axesScaleType}
         syncHoverState={syncHoverState}
       />
     </div>

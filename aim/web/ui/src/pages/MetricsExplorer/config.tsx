@@ -90,10 +90,8 @@ export const getMetricsDefaultConfig = (): typeof defaultHydration => {
       state: {
         initialState: {
           alignment: CONTROLS_DEFAULT_CONFIG.metrics.alignmentConfig,
-          axesScale: {
-            type: CONTROLS_DEFAULT_CONFIG.metrics.axesScaleType,
-            range: CONTROLS_DEFAULT_CONFIG.metrics.axesScaleRange,
-          },
+          axesScaleType: CONTROLS_DEFAULT_CONFIG.metrics.axesScaleType,
+          axesScaleRange: CONTROLS_DEFAULT_CONFIG.metrics.axesScaleRange,
         },
         persist: PersistenceTypesEnum.Url,
       },
