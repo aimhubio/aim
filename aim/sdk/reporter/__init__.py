@@ -784,10 +784,12 @@ class ScheduledStatusReporter(object):
     def __init__(self,
                  status_reporter: RunStatusReporter,
                  flag: str = 'progress',
+                 touch_path: Optional[Path] = None,
                  interval: int = REPORT_INTERVAL
                  ):
         self.status_reporter = status_reporter
         self.flag = flag
+        self.touch_path = touch_path
         self.report_interval = interval
         self.throttle = 30
         self.thread = threading.Thread(target=self._run, daemon=True)
@@ -801,9 +803,13 @@ class ScheduledStatusReporter(object):
             if self.stop_signal.wait(timeout=self.report_interval):
                 # report last heartbeat
                 self.status_reporter.check_in(expect_next_in=1, flag_name=self.flag, block=True)
+                if self.touch_path is not None:
+                    self.touch_path.touch(exist_ok=True)
                 break
             else:
                 self.status_reporter.check_in(expect_next_in=self.throttle, flag_name=self.flag)
+                if self.touch_path is not None:
+                    self.touch_path.touch(exist_ok=True)
 
     def stop(self):
         self.stop_signal.set()
