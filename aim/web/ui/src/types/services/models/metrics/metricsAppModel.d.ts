@@ -253,8 +253,8 @@ export interface IAlignMetricsDataParams {
   runs: {
     run_id: string;
     traces: {
-      context: IMetricTrace['context'];
-      metric_name: string;
+      context: { [key: string]: unknown };
+      name: string;
       slice: number[];
     }[];
   }[];

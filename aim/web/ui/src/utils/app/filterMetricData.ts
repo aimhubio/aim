@@ -97,7 +97,7 @@ export function filterMetricsData(
     timestamps: getFilteredMetricValues({
       data: timestamps,
       invalidIndicesArray: [invalidIndices.timestamps, invalidIndices.values],
-    }),
+    }).map((timestamp: number) => Math.round(timestamp * 1000)),
     x_axis_values: getFilteredMetricValues({
       data: x_axis_values,
       invalidIndicesArray: [

@@ -63,3 +63,18 @@ export interface IRunProgressObject {
   checked: number;
   trackedRuns: number;
 }
+
+/**
+ * Request body type for custom metric alignment
+ */
+export interface IAlignMetricsData {
+  align_by: string;
+  runs: {
+    run_id: string;
+    traces: {
+      context: { [key: string]: unknown };
+      name: string;
+      slice: number[];
+    }[];
+  }[];
+}

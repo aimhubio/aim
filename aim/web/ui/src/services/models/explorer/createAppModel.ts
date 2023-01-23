@@ -1075,9 +1075,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 values: metricValues,
                 steps,
                 epochs,
-                timestamps: timestamps.map((timestamp: number) =>
-                  Math.round(timestamp * 1000),
-                ),
+                timestamps,
                 xValues: [...steps],
                 yValues: processedValues,
               },

@@ -10,16 +10,20 @@ import {
   AggregationLineMethods,
 } from 'utils/aggregateGroupData';
 
+import { IAggregationConfig } from '../index';
+
 import { IAggregationPopoverProps } from './';
 
 function AggregationPopover(props: IAggregationPopoverProps) {
   const {
-    aggregationConfig,
     visualizationName,
-    engine: { visualizations },
+    engine: { useStore, visualizations },
   } = props;
-  const updateAggregationConfig =
-    visualizations[visualizationName].controls.aggregation.methods.update;
+  const vizEngine = visualizations[visualizationName];
+  const aggregationConfig: IAggregationConfig = useStore(
+    vizEngine.controls.aggregation.stateSelector,
+  );
+  const updateAggregationConfig = vizEngine.controls.aggregation.methods.update;
 
   const onAggregationChange = React.useCallback(
     (e): void => {

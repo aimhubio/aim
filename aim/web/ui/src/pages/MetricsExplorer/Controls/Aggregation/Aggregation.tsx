@@ -18,14 +18,12 @@ function Aggregation(props: IAggregationProps) {
     engine: { useStore, visualizations, groupings },
   } = props;
   const vizEngine = visualizations[visualizationName];
-
   const isGroupingEmpty = engine.useStore(groupings.isEmptySelector);
 
   const aggregation: IAggregationConfig = useStore(
     vizEngine.controls.aggregation.stateSelector,
   );
-  const updateAggregationConfig =
-    visualizations[visualizationName].controls.aggregation.methods.update;
+  const updateAggregationConfig = vizEngine.controls.aggregation.methods.update;
 
   React.useEffect(() => {
     if (isGroupingEmpty && aggregation.isApplied) {
@@ -82,7 +80,6 @@ function Aggregation(props: IAggregationProps) {
         component={
           <AggregationPopover
             engine={engine}
-            aggregationConfig={aggregation}
             visualizationName={visualizationName}
           />
         }

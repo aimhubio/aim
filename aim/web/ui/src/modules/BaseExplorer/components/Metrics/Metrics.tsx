@@ -12,6 +12,7 @@ import {
   useAggregateChartData,
   useSyncHoverState,
   useSetChartData,
+  useAlignMetricsData,
 } from './hooks';
 
 function Metrics(props: IBoxContentProps) {
@@ -20,11 +21,17 @@ function Metrics(props: IBoxContentProps) {
   const chartRef = React.useRef<ILineChartRef>(null);
   const containerRef = React.useRef<HTMLDivElement | null>(null);
 
-  const chartData = useSetChartData(data);
-  const [aggregatedData, aggregationConfig] = useAggregateChartData(
+  const { alignedData, axesPropsConfig } = useAlignMetricsData(
     engine,
     visualizationName,
     data,
+  );
+  const chartData = useSetChartData(alignedData);
+
+  const [aggregatedData, aggregationConfig] = useAggregateChartData(
+    engine,
+    visualizationName,
+    alignedData,
   );
   const syncHoverState = useSyncHoverState(engine, chartRef, id);
 
@@ -42,6 +49,7 @@ function Metrics(props: IBoxContentProps) {
         highlightMode={HighlightEnum.Metric}
         aggregatedData={aggregatedData}
         aggregationConfig={aggregationConfig}
+        alignmentConfig={axesPropsConfig.alignment}
         syncHoverState={syncHoverState}
       />
     </div>

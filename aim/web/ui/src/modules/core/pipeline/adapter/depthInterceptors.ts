@@ -15,13 +15,8 @@ const depthInterceptors: DepthInterceptors = {
     };
   },
   [AimObjectDepths.Sequence]: (sequence: SequenceFullView) => {
-    const filteredData = filterMetricsData(sequence);
-
     return {
-      data: {
-        xValues: [...filteredData.steps],
-        yValues: [...filteredData.values],
-      },
+      data: sequence,
     };
   },
   [AimObjectDepths.Step]: (sequenceBase: SequenceFullView) => {
