@@ -45,7 +45,7 @@ readme_text = open('/'.join((here, readme_file)), encoding="utf-8").read()
 LONG_DESCRIPTION = readme_text.strip()
 
 SETUP_REQUIRED = [
-    'Cython==3.0.0a9',
+    'Cython==3.0.0a11',
 ]
 
 # What packages are required for this module to be executed?
