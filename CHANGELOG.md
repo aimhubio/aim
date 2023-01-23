@@ -11,6 +11,7 @@
 - Add Acme integration (tmynn)
 - Add huggingface/datasets integration (tmynn)
 - Enable support for protobuf v4 (mihran113)
+- Support events sigbaling for Remote Tracking server (alberttorosyan)
 
 ### Fixes
 
