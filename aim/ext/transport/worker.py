@@ -3,8 +3,8 @@ import datetime
 from multiprocessing import Process
 from typing import Optional
 
-import aim.ext.transport.remote_tracking_pb2 as rpc_messages
-import aim.ext.transport.remote_tracking_pb2_grpc as remote_tracking_pb2_grpc
+import aim.ext.transport.proto.remote_tracking_pb2 as rpc_messages
+import aim.ext.transport.proto.remote_tracking_pb2_grpc as remote_tracking_pb2_grpc
 from aim.ext.cleanup import AutoClean
 
 

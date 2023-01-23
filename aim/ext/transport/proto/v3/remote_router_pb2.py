@@ -11,7 +11,7 @@ from google.protobuf import symbol_database as _symbol_database
 _sym_db = _symbol_database.Default()
 
 
-import aim.ext.transport.remote_tracking_pb2 as remote__tracking__pb2
+import aim.ext.transport.proto.v3.remote_tracking_pb2 as remote__tracking__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
