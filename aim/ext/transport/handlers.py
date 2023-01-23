@@ -1,5 +1,6 @@
 import os
 import uuid
+import pathlib
 
 from aim.ext.transport.config import AIM_SERVER_MOUNTED_REPO_PATH
 
@@ -50,10 +51,11 @@ def get_tree(**kwargs):
     from_union = kwargs['from_union']
     index = kwargs['index']
     timeout = kwargs['timeout']
+    no_cache = kwargs.get('no_cache', False)
     if index:
         return ResourceRef(repo._get_index_tree(name, timeout))
     else:
-        return ResourceRef(repo.request_tree(name, sub, read_only=read_only, from_union=from_union))
+        return ResourceRef(repo.request_tree(name, sub, read_only=read_only, from_union=from_union, no_cache=no_cache))
 
 
 def get_structured_run(hash_, read_only, **kwargs):
@@ -94,7 +96,9 @@ def get_run_heartbeat(run_hash, **kwargs):
     else:
         repo = Repo.default_repo()
     status_reporter = RunStatusReporter(run_hash, LocalFileManager(repo.path))
-    return ResourceRef(ScheduledStatusReporter(status_reporter), ScheduledStatusReporter.stop)
+    progress_flag_path = pathlib.Path(repo.path) / 'meta' / 'progress' / run_hash
+    return ResourceRef(ScheduledStatusReporter(status_reporter, touch_path=progress_flag_path),
+                       ScheduledStatusReporter.stop)
 
 
 def get_file_manager(**kwargs):
