@@ -14,7 +14,8 @@ from aim.sdk.base_run import BaseRun
 from aim.sdk.sequence import Sequence
 from aim.sdk.tracker import RunTracker
 from aim.sdk.reporter import RunStatusReporter, ScheduledStatusReporter
-from aim.sdk.run_heartbeat_reporter import RemoteRunHeartbeatReporter
+from aim.sdk.reporter.file_manager import LocalFileManager
+from aim.sdk.remote_run_reporter import RemoteRunHeartbeatReporter, RemoteFileManager
 from aim.sdk.sequence_collection import SingleRunSequenceCollection
 from aim.sdk.utils import (
     backup_run,
@@ -307,10 +308,11 @@ class BasicRun(BaseRun, StructuredRunMixin):
 
         if not read_only:
             if not self.repo.is_remote_repo:
-                self._checkins = RunStatusReporter(self.hash, self.repo.path)
+                self._checkins = RunStatusReporter(self.hash, LocalFileManager(self.repo.path))
                 progress_flag_path = pathlib.Path(self.repo.path) / 'meta' / 'progress' / self.hash
                 self._heartbeat = ScheduledStatusReporter(self._checkins, touch_path=progress_flag_path)
             else:
+                self._checkins = RunStatusReporter(self.hash, RemoteFileManager(self.repo._client, self.hash))
                 self._heartbeat = RemoteRunHeartbeatReporter(self.repo._client, self.hash)
 
             try:

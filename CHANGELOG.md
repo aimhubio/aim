@@ -12,11 +12,13 @@
 - Add Acme integration (tmynn)
 - Add huggingface/datasets integration (tmynn)
 - Enable support for protobuf v4 (mihran113)
+- Support events sigbaling for Remote Tracking server (alberttorosyan)
 
 ### Fixes
 
 - Fix gpu stats logging when some stats are unavailable (timokau)
 - Sub-path support for RTS addresses (mihran113)
+- Fix experiment name update issues (mihran113)
 
 ## 3.15.2 Dec 23, 2022
 
