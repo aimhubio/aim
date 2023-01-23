@@ -4,6 +4,7 @@
 
 ### Enhancements
 
+- Drop support for python3.6 (mihran113)
 - Add other x-axis alignment and system logs tracking to cli convert wandb (hjoonjang)
 - Add support for pre-binned distribution/histogram (YodaEmbedding)
 - Fix plotly and matplotlib compatibility (tmynn)
