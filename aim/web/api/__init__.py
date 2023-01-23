@@ -68,7 +68,7 @@ def create_app():
     index_mng.start_indexing_thread()
 
     api_app = FastAPI()
-    api_app.add_middleware(GZipMiddleware)
+    api_app.add_middleware(GZipMiddleware, compresslevel=1)
     api_app.add_exception_handler(HTTPException, http_exception_handler)
     api_app.add_exception_handler(Exception, fallback_exception_handler)
 
