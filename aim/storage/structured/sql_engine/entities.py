@@ -431,6 +431,9 @@ class ModelMappedExperiment(IExperiment, metaclass=ModelMappedClassMeta):
         ).delete()
         session.flush()
 
+    def refresh_model(self):
+        self._session.refresh(self._model)
+
 
 class ModelMappedTag(ITag, metaclass=ModelMappedClassMeta):
     __model__ = TagModel
