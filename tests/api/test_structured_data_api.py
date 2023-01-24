@@ -32,12 +32,15 @@ class TestStructuredRunApi(PrefilledDataApiTestBase):
         # set existing experiment
         resp = client.put(f'/api/runs/{run.hash}', json={'experiment': f'Experiment 2 {self.test_id}'})
         self.assertEqual(200, resp.status_code)
-        self.assertEqual(f'Experiment 2 {self.test_id}', run.experiment)
+
+        resp = client.get(f'/api/runs/{run.hash}/info').json()
+        self.assertEqual(f'Experiment 2 {self.test_id}', resp['props']['experiment']['name'])
 
         # set non-existing experiment (create new)
         resp = client.put(f'/api/runs/{run.hash}', json={'experiment': f'New experiment {self.test_id}'})
         self.assertEqual(200, resp.status_code)
-        self.assertEqual(f'New experiment {self.test_id}', run.experiment)
+        resp = client.get(f'/api/runs/{run.hash}/info').json()
+        self.assertEqual(f'New experiment {self.test_id}', resp['props']['experiment']['name'])
 
     def test_add_remove_tag_api(self):
         matching_runs = self.repo.structured_db.search_runs(f'Run number 5 {self.test_id}')
@@ -51,14 +54,20 @@ class TestStructuredRunApi(PrefilledDataApiTestBase):
         # remove tag # 1
         resp = client.delete(f'/api/runs/{run.hash}/tags/{tags[0].uuid}')
         self.assertEqual(200, resp.status_code)
-        self.assertEqual(1, len(run.tags))
-        self.assertListEqual([f'last runs {self.test_id}'], run.tags)
+
+        resp = client.get(f'/api/runs/{run.hash}/info/').json()
+        self.assertEqual(1, len(resp['props']['tags']))
+        tag_names = [tag['name'] for tag in resp['props']['tags']]
+        self.assertListEqual([f'last runs {self.test_id}'], tag_names)
 
         # add new tag
         resp = client.post(f'/api/runs/{run.hash}/tags/new', json={'tag_name': f'new tag {self.test_id}'})
         self.assertEqual(200, resp.status_code)
-        self.assertEqual(2, len(run.tags))
-        self.assertListEqual([f'last runs {self.test_id}', f'new tag {self.test_id}'], run.tags)
+
+        resp = client.get(f'/api/runs/{run.hash}/info/').json()
+        self.assertEqual(2, len(resp['props']['tags']))
+        tag_names = [tag['name'] for tag in resp['props']['tags']]
+        self.assertListEqual([f'last runs {self.test_id}', f'new tag {self.test_id}'], tag_names)
 
     def test_update_run_name_description(self):
         matching_runs = self.repo.structured_db.search_runs('Run number 3')
@@ -67,8 +76,10 @@ class TestStructuredRunApi(PrefilledDataApiTestBase):
         resp = client.put(f'/api/runs/{run.hash}', json={'description': f'long text {self.test_id}',
                                                          'name': f'best run {self.test_id}'})
         self.assertEqual(200, resp.status_code)
-        self.assertEqual(f'best run {self.test_id}', run.name)
-        self.assertEqual(f'long text {self.test_id}', run.description)
+
+        resp = client.get(f'/api/runs/{run.hash}/info/').json()
+        self.assertEqual(f'best run {self.test_id}', resp['props']['name'])
+        self.assertEqual(f'long text {self.test_id}', resp['props']['description'])
 
     # tags API
     def test_list_tags_api(self):
@@ -122,9 +133,11 @@ class TestStructuredRunApi(PrefilledDataApiTestBase):
                                                               'color': '#FFFFFF',
                                                               'description': 'new description'})
         self.assertEqual(200, response.status_code)
-        self.assertEqual('my awesome tag', tag.name)
-        self.assertEqual('#FFFFFF', tag.color)
-        self.assertEqual('new description', tag.description)
+
+        response = client.get(f'/api/tags/{tag.uuid}/').json()
+        self.assertEqual('my awesome tag', response['name'])
+        self.assertEqual('#FFFFFF', response['color'])
+        self.assertEqual('new description', response['description'])
 
     def test_get_tag_runs_api(self):
         client = self.client
@@ -146,7 +159,9 @@ class TestStructuredRunApi(PrefilledDataApiTestBase):
         client = self.client
         response = client.put(f'/api/tags/{tag.uuid}/', json={'archived': True})
         self.assertEqual(200, response.status_code)
-        self.assertTrue(tag.archived)
+
+        response = client.get(f'/api/tags/{tag.uuid}/').json()
+        self.assertTrue(response['archived'])
 
     def test_delete_tag_api(self):
         tag = next(iter(self.repo.structured_db.tags()))
@@ -162,7 +177,10 @@ class TestStructuredRunApi(PrefilledDataApiTestBase):
         client = self.client
         response = client.put(f'/api/tags/{tag.uuid}/', json={'archived': True})
         self.assertEqual(200, response.status_code)
-        self.assertFalse(any(tag in r.tags for r in tag.runs))
+        for run in tag.runs:
+            response = client.get(f'/api/runs/{run.hash}/info/').json()
+            tag_names = [tag['name'] for tag in response['props']['tags']]
+            self.assertFalse(tag.name in tag_names)
 
     # experiments API
     def test_list_experiments_api(self):
@@ -213,7 +231,9 @@ class TestStructuredRunApi(PrefilledDataApiTestBase):
         client = self.client
         response = client.put(f'/api/experiments/{exp.uuid}/', json={'name': 'Updated experiment'})
         self.assertEqual(200, response.status_code)
-        self.assertEqual('Updated experiment', exp.name)
+
+        response = client.get(f'/api/experiments/{exp.uuid}/').json()
+        self.assertEqual('Updated experiment', response['name'])
 
     def test_get_experiment_runs_api(self):
         client = self.client

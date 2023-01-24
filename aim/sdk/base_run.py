@@ -9,6 +9,8 @@ from aim.sdk.repo_utils import get_repo
 from aim.sdk.errors import MissingRunError
 from aim.sdk.tracker import STEP_HASH_FUNCTIONS
 
+from aim.utils.tracking import analytics
+
 if TYPE_CHECKING:
     from aim.sdk.repo import Repo
 
@@ -37,8 +39,10 @@ class BaseRun:
         else:
             if run_hash is None:
                 self.hash = generate_run_hash()
+                analytics.track_event(event_name='[Run] Create new run')
             elif self.repo.run_exists(run_hash):
                 self.hash = run_hash
+                analytics.track_event(event_name='[Run] Resume run')
             else:
                 raise MissingRunError(f'Cannot find Run {run_hash} in aim Repo {self.repo.path}.')
             self._lock = self.repo.request_run_lock(self.hash)

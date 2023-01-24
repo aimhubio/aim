@@ -7,7 +7,7 @@ from collections import Counter
 from threading import Thread
 from typing import Union
 
-import aim.ext.transport.remote_router_pb2 as rpc_messages
+import aim.ext.transport.proto.remote_router_pb2 as rpc_messages
 
 logger = logging.getLogger(__name__)
 
