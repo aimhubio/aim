@@ -21,50 +21,48 @@ class Analytics:
 
         if os.path.exists(aim_profile_path):
             with open(aim_profile_path, 'r') as fh:
-                self._profile = json.load(fh)
+                try:
+                    self._profile = json.load(fh)
+                except json.JSONDecodeError:
+                    logger.error('Corrupted .aim_profile. Replacing with default.')
+                    with self._autocommit():
+                        self._profile = self.default_profile()
         else:
             with self._autocommit():
-                self._profile = {
-                    'envs': {},
-                    'telemetry': {
-                        'enable': True,
-                        'warning-shown': False
-                    },
-                    'user-id': str(uuid.uuid4())
-                }
+                self._profile = self.default_profile()
 
         self._user_id = self._profile['user-id']
 
     def track_install_event(self) -> None:
-        env_key = sys.exec_prefix
-        if env_key in self._profile['envs']:
-            is_new_env = False
-            from aim.__version__ import __version__ as aim_version
-            if aim_version == self._profile['envs'][env_key]:
-                return
-        else:
-            is_new_env = True
-            from aim.__version__ import __version__ as aim_version
+        try:
+            env_key = sys.exec_prefix
+            if env_key in self._profile['envs']:
+                is_new_env = False
+                from aim.__version__ import __version__ as aim_version
+                if aim_version == self._profile['envs'][env_key]:
+                    return
+            else:
+                is_new_env = True
+                from aim.__version__ import __version__ as aim_version
 
-        sa.write_key = Analytics.SEGMENT_WRITE_KEY
-        sa.identify(user_id=self._user_id)
-        event_name = '[Aim] install' if is_new_env else '[Aim] upgrade'
-        sa.track(self._user_id, event=event_name, properties={'aim_version': aim_version})
-        with self._autocommit():
-            self._profile['envs'][env_key] = aim_version
+            sa.write_key = Analytics.SEGMENT_WRITE_KEY
+            sa.identify(user_id=self._user_id)
+            event_name = '[Aim] install' if is_new_env else '[Aim] upgrade'
+            sa.track(self._user_id, event=event_name, properties={'aim_version': aim_version})
+            with self._autocommit():
+                self._profile['envs'][env_key] = aim_version
+        except Exception as e:  # noqa
+            logger.debug(f'Failed to track install event. Reason: {e}.')
 
     def track_event(self, *, event_name: str, **kwargs) -> None:
         if not self.dev_mode and self.telemetry_enabled:
-            self.initialize()
-            self._warn_once()
+            try:
+                self.initialize()
+                self._warn_once()
 
-            def on_error(error, items):
-                print("An error occurred:", error)
-
-            sa.debug = True
-            sa.on_error = on_error
-
-            sa.track(self._user_id, event=event_name, properties=kwargs)
+                sa.track(self._user_id, event=event_name, properties=kwargs)
+            except Exception as e:  # noqa
+                logger.debug(f'Failed to track event {event_name}. Reason: {e}.')
 
     def initialize(self) -> None:
         if self.initialized:
@@ -114,6 +112,17 @@ class Analytics:
             logger.warning('-' * line_width)
             with self._autocommit():
                 self._profile['telemetry']['warning-shown'] = True
+
+    @staticmethod
+    def default_profile():
+        return {
+            'envs': {},
+            'telemetry': {
+                'enable': True,
+                'warning-shown': False
+            },
+            'user-id': str(uuid.uuid4())
+        }
 
 
 analytics = Analytics()
