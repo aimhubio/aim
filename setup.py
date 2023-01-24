@@ -45,14 +45,14 @@ readme_text = open('/'.join((here, readme_file)), encoding="utf-8").read()
 LONG_DESCRIPTION = readme_text.strip()
 
 SETUP_REQUIRED = [
-    'Cython==3.0.0a9',
+    'Cython==3.0.0a11',
 ]
 
 # What packages are required for this module to be executed?
 REQUIRED = [
     f'aim-ui=={__version__}',
     'aimrecords==0.0.7',
-    'aimrocks==0.2.1',
+    'aimrocks==0.3.0',
     'cachetools>=4.0.0',
     'click>=7.0',
     'cryptography>=3.0',
@@ -203,6 +203,7 @@ setup(
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
         'Programming Language :: Python :: Implementation :: PyPy'
     ],
     ext_modules=cytonize_extensions(),

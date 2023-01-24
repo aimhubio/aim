@@ -5,7 +5,7 @@ from aim.storage.types import AimObject, AimObjectKey, AimObjectPath
 from aim.storage.treearrayview import TreeArrayView
 from aim.storage.treeview import TreeView
 
-from typing import Any, Iterator, Tuple, Union, List
+from typing import Any, Iterator, Tuple, Union
 
 
 class InMemoryTreeView(TreeView):
@@ -105,7 +105,7 @@ class InMemoryTreeView(TreeView):
     def keys_eager(
             self,
             path: Union[AimObjectKey, AimObjectPath] = (),
-    ) -> List[Union[AimObjectPath, AimObjectKey]]:
+    ):
         return list(self.subtree(path).keys())
 
     def keys(
@@ -124,10 +124,7 @@ class InMemoryTreeView(TreeView):
     def items_eager(
             self,
             path: Union[AimObjectKey, AimObjectPath] = ()
-    ) -> List[Tuple[
-        AimObjectKey,
-        AimObject
-    ]]:
+    ):
         return list(self.subtree(path).items())
 
     def items(
