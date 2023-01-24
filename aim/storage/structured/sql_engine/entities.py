@@ -2,6 +2,7 @@ import pytz
 
 from typing import Collection, Union, List, Optional
 from sqlalchemy.orm import joinedload
+from sqlalchemy.exc import IntegrityError
 
 from aim.storage.types import SafeNone
 from aim.storage.structured.entities import (
@@ -155,17 +156,25 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
 
     @experiment.setter
     def experiment(self, value: str):
+        def unsafe_set_exp():
+            if value is None:
+                exp = None
+            else:
+                exp = session.query(ExperimentModel).filter(ExperimentModel.name == value).first()
+                if not exp:
+                    exp = ExperimentModel(value)
+                    session.add(exp)
+            self._model.experiment = exp
+            session.add(self._model)
+
         session = self._session
-        if value is None:
-            exp = None
-        else:
-            exp = session.query(ExperimentModel).filter(ExperimentModel.name == value).first()
-            if not exp:
-                exp = ExperimentModel(value)
-                session.add(exp)
-        self._model.experiment = exp
-        session.add(self._model)
-        session.flush()
+        unsafe_set_exp()
+        try:
+            session.flush()
+        except IntegrityError:
+            session.rollback()
+            unsafe_set_exp()
+            session.flush()
 
     @property
     def tags_obj(self) -> TagCollection:
