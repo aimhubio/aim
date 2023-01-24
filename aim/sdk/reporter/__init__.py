@@ -106,6 +106,8 @@ from typing import ClassVar, Dict, Optional, Tuple, Set, Union, TYPE_CHECKING
 
 from cachetools import LRUCache
 
+from aim.sdk.reporter.file_manager import FileManager
+
 if TYPE_CHECKING:
     from aim.sdk import Run
 
@@ -231,20 +233,18 @@ class CheckIn:
         )
 
     @classmethod
-    def poll(cls, *, directory: Path, run_hash: str) -> "CheckIn":
+    def poll(cls, *, file_mgr, run_hash: str) -> "CheckIn":
         """
         Poll the directory for the current check-in.
 
         The `current` check-in is defined as the highest one in the lexicographic order.
         """
         pattern = cls.generate_filename(run_hash=run_hash)
-        paths = list(directory.glob(pattern))
-
-        if not paths:
+        check_in_path = file_mgr.poll(pattern)
+        if not check_in_path:
             logger.debug(f"no check-in found for {run_hash}; returning zero-check-in")
             return CheckIn()
 
-        check_in_path = max(paths)
         logger.debug(f"found check-in: {check_in_path}")
         parsed_run_hash, check_in = cls.parse(check_in_path)
         assert parsed_run_hash == run_hash
@@ -296,42 +296,10 @@ class CheckIn:
         """
         return f"{run_hash}-{idx:016d}-{flag_name}-{absolute_time:011.2f}-{expect_next_in:05d}"
 
-    def cleanup(
-        self,
-        *,
-        directory: Path,
-        run_hash: str,
-    ) -> "CheckIn":
-        """
-        Cleanups all the expired check-ins for the given run hash.
-
-        This will remove all check-ins that are older than the current one
-        matching the same flag_name.
-        Returns the new current check-in.
-        """
-        pattern = self.generate_filename(run_hash=run_hash, flag_name=self.flag_name)
-        *paths_to_remove, current_check_in_path = sorted(directory.glob(pattern))
-        logger.debug(f"found {len(paths_to_remove)} check-ins:")
-        logger.debug(f"the acting one: {current_check_in_path}")
-        for path in paths_to_remove:
-            logger.debug(f"check-in {path} is being removed")
-            try:
-                # Ignore errors, as the file may have been removed already.
-                path.unlink()
-            except OSError:
-                pass
-            logger.debug(f"check-in {path} removed")
-
-        parsed_run_hash, check_in = self.parse(current_check_in_path)
-        assert parsed_run_hash == run_hash
-        logger.debug(f"returning acting check-in after cleanup: {check_in}")
-
-        return check_in
-
     def touch(
         self,
         *,
-        directory: Union[Path, str],
+        file_mgr,
         run_hash: str,
         cleanup: bool = True,
         calibrate: bool = True,
@@ -346,18 +314,14 @@ class CheckIn:
 
         If `cleanup` is True (default), this will remove all the expired check-ins.
         """
-        if not isinstance(directory, Path):
-            directory = Path(directory)
 
         if calibrate and self.expect_next_in:
             return self.time_calibrated().touch(
-                directory=directory,
+                file_mgr=file_mgr,
                 run_hash=run_hash,
                 cleanup=cleanup,
                 calibrate=False,
             )
-
-        directory.mkdir(parents=True, exist_ok=True)
 
         utc_time = time.time()
         filename = self.generate_filename(
@@ -367,13 +331,13 @@ class CheckIn:
             absolute_time=utc_time,
             flag_name=self.flag_name,
         )
-        new_path = directory / filename
-        logger.debug(f"touching check-in: {new_path}")
 
-        new_path.touch(exist_ok=True)
+        cleanup_file_pattern = self.generate_filename(
+            run_hash=run_hash,
+            flag_name=self.flag_name
+        ) if cleanup else None
 
-        if cleanup:
-            self.cleanup(directory=directory, run_hash=run_hash)
+        file_mgr.touch(filename, cleanup_file_pattern)
 
         return self
 
@@ -418,18 +382,18 @@ class RunStatusReporter:
     def __init__(
         self,
         run_hash: str,
-        repo_path: str,
+        file_mgr: FileManager,
     ) -> None:
         logger.info(f"creating RunStatusReporter for {run_hash}")
         self.run_hash = run_hash
-        self.repo_dir = Path(repo_path)
-        self.dir = self.repo_dir / "check_ins"
-        logger.debug(f"polling for check-ins in {self.dir}")
+
+        self.file_manager = file_mgr
+        logger.debug(f"polling for check-ins in {self.file_manager}")
 
         # Detect if the run was resumed. If so, we need to find the last
         # check-in index and continue counting from there.
         leftover = CheckIn.poll(
-            directory=self.dir,
+            file_mgr=self.file_manager,
             run_hash=self.run_hash,
         )
         if leftover:
@@ -501,7 +465,7 @@ class RunStatusReporter:
 
         # Now let's touch the file on the filesystem
         new_check_in = check_in.touch(
-            directory=self.dir,
+            file_mgr=self.file_manager,
             run_hash=self.run_hash,
         )
 
@@ -820,10 +784,12 @@ class ScheduledStatusReporter(object):
     def __init__(self,
                  status_reporter: RunStatusReporter,
                  flag: str = 'progress',
+                 touch_path: Optional[Path] = None,
                  interval: int = REPORT_INTERVAL
                  ):
         self.status_reporter = status_reporter
         self.flag = flag
+        self.touch_path = touch_path
         self.report_interval = interval
         self.throttle = 30
         self.thread = threading.Thread(target=self._run, daemon=True)
@@ -837,9 +803,13 @@ class ScheduledStatusReporter(object):
             if self.stop_signal.wait(timeout=self.report_interval):
                 # report last heartbeat
                 self.status_reporter.check_in(expect_next_in=1, flag_name=self.flag, block=True)
+                if self.touch_path is not None:
+                    self.touch_path.touch(exist_ok=True)
                 break
             else:
                 self.status_reporter.check_in(expect_next_in=self.throttle, flag_name=self.flag)
+                if self.touch_path is not None:
+                    self.touch_path.touch(exist_ok=True)
 
     def stop(self):
         self.stop_signal.set()
