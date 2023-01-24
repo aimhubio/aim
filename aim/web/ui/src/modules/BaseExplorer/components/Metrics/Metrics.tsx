@@ -32,6 +32,7 @@ function Metrics(props: IBoxContentProps) {
     engine,
     visualizationName,
     alignedData,
+    axesPropsConfig.axesScaleType,
   );
   const syncHoverState = useSyncHoverState(engine, chartRef, id);
 

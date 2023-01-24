@@ -27,6 +27,7 @@ function useAggregateChartData(
   engine: IBoxContentProps['engine'],
   visualizationName: string,
   data: any[],
+  axesScaleType: IAxesScaleState,
 ): [IAggregatedData[] | undefined, IAggregationConfig] {
   const vizEngine = engine.visualizations[visualizationName];
   const config: IAggregationConfig = engine.useStore(
@@ -35,16 +36,12 @@ function useAggregateChartData(
 
   const aggrData = React.useMemo(() => {
     if (config.isApplied) {
-      // @TODO: add controls for axes scale and pallet index and listen to changes
-      const scale: IAxesScaleState = {
-        yAxis: ScaleEnum.Linear,
-        xAxis: ScaleEnum.Linear,
-      };
-      const palletIndex: number = 0;
+      // @TODO: add state for pallet index from explorer config
+      const palletIndex = 0;
       const groups = _.groupBy(data, 'groupKey');
-      return aggregateChartData(groups, config, scale, palletIndex);
+      return aggregateChartData(groups, config, axesScaleType, palletIndex);
     }
-  }, [data, config]);
+  }, [data, config, axesScaleType]);
 
   return [aggrData, config];
 }
