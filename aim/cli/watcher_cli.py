@@ -12,6 +12,8 @@ from aim.ext.notifier.utils import has_watcher_config, set_default_config
 from aim.sdk.run_status_watcher import RunStatusWatcher
 from aim.sdk.repo import Repo
 
+from aim.utils.tracking import analytics
+
 core._verify_python3_env = lambda: None
 DEFAULT_MESSAGE_TEMPLATE = "❗️ Something wrong with Run '{run.hash}'. Please check. ❗️"
 MESSAGE_PROMPT = "Stuck Runs notification message"
@@ -76,6 +78,8 @@ def start_watcher(ctx):
         watcher = RunStatusWatcher(repo)
         click.secho(f'Starting Aim watcher for repo \'{repo.path}\'...', fg='yellow')
         click.echo('Press Ctrl+C to exit')
+        analytics.track_event(event_name='[Aim Watcher] Start event watcher')
+
         watcher.start_watcher()
 
 
