@@ -3,7 +3,7 @@ from typing import Any, Dict, Optional, TypeVar
 
 from aim import Run
 from aim.ext.resource import DEFAULT_SYSTEM_TRACKING_INT
-
+from aim.storage.types import AimObject
 
 Prophet = TypeVar("Prophet")
 
@@ -66,11 +66,18 @@ class AimLogger:
         if self._run and self._run.active:
             self._run.close()
 
-    def track_metrics(self, metrics: Dict[str, float]) -> None:
+    def track_metrics(
+        self,
+        metrics: Dict[str, float],
+        context: AimObject = None,
+    ) -> None:
         """
         Since Prophet doesn't compute loss during training,
         only hyperparameters are logged by default.
-        This method can be used to log any user-provied validation metrics.
+        This method can be used to log any user-provied metrics.
+        NOTE: if context is not provided, it's assumed all metrics are validation metrics.
         """
+        if context is None:
+            context = {"subset": "val"}
         for metric, value in metrics.items():
-            self._run.track(value, name=metric, context={"subset": "val"})
+            self._run.track(value, name=metric, context=context)
