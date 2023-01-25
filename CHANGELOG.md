@@ -17,6 +17,7 @@
 - Support events signaling for Remote Tracking server (alberttorosyan)
 - Enhance DVC parameters tracking (tmynn)
 - Add SDK events tracking (alberttorosyan)
+- Add Prophet integration (grigoryan-davit)
 
 ### Fixes
 
@@ -52,7 +53,6 @@
 - Implement the experiment page for the overall experiment info view (VkoHov)
 - Implement dynamic flushing mechanism for `CheckIn`s based on the flag (mahnerak)
 - Implement robust locking and indexing mechanism for Aim Runs (alberttorosyan)
-- Add Prophet integration (grigoryan-davit)
 
 ### Fixes:
 
