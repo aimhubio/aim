@@ -4,14 +4,14 @@ export const RunLogRecordsConfig: Record<
   string,
   { icon: IconName; color: string; background: string }
 > = {
-  ERROR: { icon: 'close-circle', color: '#e64e48', background: '#F9E7E6' },
+  ERROR: { icon: 'close-circle', color: '#e64e48', background: '#e64e484a' },
   WARNING: {
     icon: 'warning-contained',
     color: '#ffcc00',
-    background: '#FEF7E8',
+    background: '#ffcc004a',
   },
-  INFO: { icon: 'circle-info', color: '#1473e6', background: '#ECF1FD' },
-  DEBUG: { icon: 'search', color: '#1c2852', background: '#E8EAEE' },
+  INFO: { icon: 'circle-info', color: '#1473e6', background: '#1473e64a' },
+  DEBUG: { icon: 'search', color: '#1c2852', background: '#1c28524a' },
 };
 
 export enum ListItemEnum {

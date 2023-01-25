@@ -3,10 +3,9 @@ import _ from 'lodash-es';
 
 import { Tooltip } from '@material-ui/core';
 
-import { Badge, Icon, JsonViewPopover, Text } from 'components/kit';
+import { Icon, JsonViewPopover, Text } from 'components/kit';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
-
-import contextToString from 'utils/contextToString';
+import DictVisualizer from 'components/kit/DictVisualizer';
 
 import { ListItemEnum, RunLogRecordsConfig } from './config';
 
@@ -46,71 +45,90 @@ function LogRecordItem(
           <div className='LogRecordItem__content'>
             <div className='LogRecordItem__content__item' key={item.hash}>
               <div className='LogRecordItem__content__item__leftBox'>
-                <div
-                  className='LogRecordItem__content__item__leftBox__statusBadge'
-                  style={{
-                    backgroundColor:
-                      RunLogRecordsConfig[item?.type ?? 'Error'].background,
-                  }}
-                >
+                <div className='LogRecordItem__content__item__leftBox__statusBadge'>
                   <Icon
-                    name={RunLogRecordsConfig[item?.type ?? 'Error'].icon}
-                    fontSize={10}
-                    color={RunLogRecordsConfig[item?.type ?? 'Error'].color}
+                    name={RunLogRecordsConfig[item?.type ?? 'ERROR'].icon}
+                    fontSize={16}
+                    color={RunLogRecordsConfig[item?.type ?? 'ERROR'].color}
                   />
                 </div>
-                <Text
-                  tint={50}
-                  size={12}
-                  className='LogRecordItem__content__item__leftBox__date'
-                >
-                  {item?.date ?? 'no date found'}
-                </Text>
-              </div>
-              <div className='LogRecordItem__content__item__itemBox'>
-                <Tooltip title={item?.message ?? 'no message found'}>
+                <div className='LogRecordItem__content__item__leftBox__content'>
                   <Text
-                    className='LogRecordItem__content__item__itemBox__message'
-                    size={14}
+                    tint={70}
+                    size={12}
+                    weight={600}
+                    className='LogRecordItem__content__item__leftBox__date'
                   >
-                    {item?.message ?? 'no message found'}
+                    {item?.type}
                   </Text>
+                  <Text
+                    tint={50}
+                    size={12}
+                    className='LogRecordItem__content__item__leftBox__date'
+                  >
+                    {item?.date ?? 'no date found'}
+                  </Text>
+                </div>
+              </div>
+              <div
+                className='LogRecordItem__content__item__itemBox'
+                style={{
+                  alignItems: 'flex-start',
+                  justifyContent: item.extraParams ? 'flex-start' : 'center',
+                }}
+              >
+                <Tooltip title={item?.message ?? 'no message found'}>
+                  <div>
+                    <Text
+                      className='LogRecordItem__content__item__itemBox__message'
+                      component='pre'
+                      size={14}
+                    >
+                      {item?.message ?? 'no message found'}
+                    </Text>
+                  </div>
                 </Tooltip>
 
-                <ControlPopover
-                  key={item.hash}
-                  title={'Message Params'}
-                  anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'left',
-                  }}
-                  transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'left',
-                  }}
-                  anchor={({ onAnchorClick }) => (
-                    <Tooltip
-                      title={contextToString(item.extraParams) ?? 'No Params'}
-                    >
-                      <div
-                        className='LogRecordItem__content__item__itemBox__extraParams'
-                        onClick={(e) => {
-                          if (!_.isEmpty(item.extraParams)) {
-                            onAnchorClick(e);
-                          }
-                        }}
-                      >
-                        <Badge
-                          size='xSmall'
-                          label={
-                            contextToString(item.extraParams) ?? 'No Params'
-                          }
+                {item.extraParams && (
+                  <div className='LogRecordItem__content__item__itemBox__extraParams'>
+                    <ControlPopover
+                      key={item.hash}
+                      title='Message Payload'
+                      anchorOrigin={{
+                        vertical: 'top',
+                        horizontal: 'left',
+                      }}
+                      transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'left',
+                      }}
+                      anchor={({ onAnchorClick }) => (
+                        <div
+                          className='LogRecordItem__content__item__itemBox__extraParams__dict'
+                          onClick={(e) => {
+                            if (!_.isEmpty(item.extraParams)) {
+                              onAnchorClick(e);
+                            }
+                          }}
+                        >
+                          <div>
+                            <DictVisualizer
+                              src={item.extraParams}
+                              style={{ width: 500, height: 300 }}
+                              autoScale
+                            />
+                          </div>
+                        </div>
+                      )}
+                      component={
+                        <JsonViewPopover
+                          json={item.extraParams}
+                          dictVisualizerSize={{ width: 500, height: 300 }}
                         />
-                      </div>
-                    </Tooltip>
-                  )}
-                  component={<JsonViewPopover json={item.extraParams} />}
-                />
+                      }
+                    />
+                  </div>
+                )}
               </div>
             </div>
           </div>

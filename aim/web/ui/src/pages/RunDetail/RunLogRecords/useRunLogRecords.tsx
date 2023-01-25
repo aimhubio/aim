@@ -93,18 +93,39 @@ function useRunLogRecords(runId: string, inProgress: boolean) {
           pageSize += 28;
           currentDay = day;
         }
+        let messageSize =
+          42 + (record.message.trim().match(/\n/g) || '').length * 14.5;
+        function getObjectKeysCount(obj: Record<string, any>, count = 0) {
+          let size = count + 2;
+          for (let key in obj) {
+            if (
+              Array.isArray(obj[key]) ||
+              (typeof obj[key] === 'object' && obj[key] !== null)
+            ) {
+              size += getObjectKeysCount(obj[key], size);
+            } else {
+              size++;
+            }
+          }
+
+          return size;
+        }
+        if (record.args) {
+          const payloadRowsCount = getObjectKeysCount(record.args);
+          messageSize += payloadRowsCount * 16.5;
+        }
         const feedItem = {
           date: moment(record.timestamp * 1000).format(TIMELINE_TIME_FORMAT),
           hash: record.hash,
-          message: record.message,
+          message: record.message.trim(),
           type: record.log_level,
           creation_time: record.timestamp,
           extraParams: record.args,
           runId,
           itemType: ListItemEnum.RECORD,
-          height: 24,
+          height: messageSize,
         };
-        pageSize += 24;
+        pageSize += messageSize;
         messagesList.push(feedItem);
       });
     }

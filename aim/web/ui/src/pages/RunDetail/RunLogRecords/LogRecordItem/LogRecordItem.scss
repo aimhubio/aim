@@ -16,6 +16,8 @@
     position: relative;
     padding-left: toRem(52px);
     padding-right: toRem(24px);
+    padding-top: $space-xxxs;
+    padding-bottom: $space-xxxs;
     height: 100%;
     &::before {
       content: '';
@@ -30,6 +32,8 @@
       padding: 0 $space-lg;
     }
     &__item {
+      border: $border-separator;
+      border-radius: $border-radius-main;
       white-space: nowrap;
       display: flex;
       align-items: center;
@@ -38,26 +42,36 @@
       &::before {
         content: '';
         position: absolute;
-        top: $space-xs;
         left: -$space-unit;
-        width: 12px;
+        width: $space-unit;
         height: 1px;
         background-color: $primary-color-20;
       }
       &__leftBox {
         display: flex;
         align-items: center;
-        margin-right: $space-xxs;
         height: 100%;
+        width: 110px;
+        border-right: $border-separator;
+        padding: $space-xxxs $space-xxs;
+        background-color: $cuddle-30;
+        border-top-left-radius: $border-radius-main;
+        border-bottom-left-radius: $border-radius-main;
         &__statusBadge {
-          width: 1rem;
-          height: 1rem;
+          width: 24px;
+          height: 24px;
           border-radius: $border-radius-circle;
           display: flex;
           justify-content: center;
           align-items: center;
-          background: red;
+          background: none;
           margin-right: $space-xxs;
+        }
+        &__content {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          justify-self: center;
         }
         &__date {
           margin-right: $space-xxs;
@@ -69,21 +83,18 @@
       }
       &__itemBox {
         font-size: $text-sm;
+        background-color: rgba($primary-bg, 0.7);
         display: flex;
+        flex-direction: column;
+        flex: 1;
         align-items: center;
-        max-width: calc(100% - 156px);
+        max-width: calc(100% - 110px);
         height: 100%;
         position: relative;
-        padding: 0 8px;
-        &::before {
-          content: '';
-          position: absolute;
-          left: 0;
-          top: toRem(8px);
-          width: toRem(1px);
-          height: toRem(10px);
-          background: $pico;
-        }
+        padding: $space-xxxs $space-xs;
+        overflow: hidden;
+        border-top-right-radius: $border-radius-main;
+        border-bottom-right-radius: $border-radius-main;
         &__message {
           width: 100%;
           max-width: 100%;
@@ -94,15 +105,29 @@
 
         &__extraParams {
           display: flex;
-          position: relative;
-          max-width: 100px;
           align-items: center;
-          margin-left: 6px;
-          margin-top: 2px;
-          padding-left: 8px;
+          max-width: 100%;
+          margin-top: $space-xxxxs;
+          border: $border-separator;
+          padding: $space-xxxxs $space-xxxs;
+          background-color: $cuddle-20;
+          border-radius: $border-radius-main;
+          transform: scale(0.85);
+          transform-origin: left;
           cursor: pointer;
-          .Badge {
-            border-radius: 2px;
+
+          &__dict {
+            @include monospaceFontFamily(12);
+            display: inline-block;
+            position: relative;
+            width: 100%;
+            max-width: 100%;
+            text-overflow: ellipsis;
+            overflow: hidden;
+
+            div {
+              pointer-events: none;
+            }
           }
         }
       }
