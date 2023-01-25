@@ -1,4 +1,3 @@
-from sys import stdout
 from typing import Any, Dict, Optional, TypeVar
 
 from aim import Run
@@ -16,7 +15,6 @@ class AimLogger:
         experiment: Optional[str] = None,
         system_tracking_interval: int = DEFAULT_SYSTEM_TRACKING_INT,
         log_system_params: bool = True,
-        log_cout=stdout,
     ):
         """
         AimLogger for Prophet models.
@@ -29,7 +27,6 @@ class AimLogger:
         self._log_system_params = log_system_params
         self._run = None
         self._run_hash = None
-        self._log_cout = log_cout
         self.setup(prophet_model.__dict__)
 
     @property

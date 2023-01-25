@@ -52,6 +52,7 @@
 - Implement the experiment page for the overall experiment info view (VkoHov)
 - Implement dynamic flushing mechanism for `CheckIn`s based on the flag (mahnerak)
 - Implement robust locking and indexing mechanism for Aim Runs (alberttorosyan)
+- Add Prophet integration (grigoryan-davit)
 
 ### Fixes:
 
