@@ -1,4 +1,4 @@
-from datasets import DatasetDict
+from datasets import Dataset, DatasetDict
 from aim.storage.object import CustomObject
 from logging import getLogger
 
@@ -8,6 +8,7 @@ logger = getLogger(__name__)
 @CustomObject.alias("hf_datasets.metadata")
 class HFDataset(CustomObject):
     AIM_NAME = "hf_datasets.metadata"
+    DEFAULT_KEY = "train"
 
     def __init__(self, dataset: DatasetDict):
         super().__init__()
@@ -17,8 +18,15 @@ class HFDataset(CustomObject):
         }
 
     def _get_ds_meta(self, dataset: DatasetDict):
-        dataset_info = vars(dataset[list(dataset.keys())[0]]._info)
-
+        if isinstance(dataset, DatasetDict):
+            try:
+                dataset_info = vars(dataset[HFDataset.DEFAULT_KEY]._info)
+            except KeyError:
+                raise KeyError(f"Failed to get dataset key '{HFDataset.DEFAULT_KEY}'")
+        elif isinstance(dataset, Dataset):
+            dataset_info = vars(dataset._info)
+        else:
+            raise NotImplementedError(f"Failed to find dataset instance of type {type(dataset)}")
         return {
             "description": dataset_info.get("description"),
             "citation": dataset_info.get("citation"),
@@ -38,6 +46,7 @@ class HFDataset(CustomObject):
             "dataset_size": dataset_info.get("dataset_size"),
             "size_in_bytes": dataset_info.get("size_in_bytes"),
         }
+
 
     def _get_features(self, dataset_info):
         try:
