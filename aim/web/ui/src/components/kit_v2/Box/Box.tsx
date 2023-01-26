@@ -5,6 +5,7 @@ import { Slot } from '@radix-ui/react-slot';
 import { styled } from 'config/stitches/stitches.config';
 
 import { IBoxProps } from './Box.d';
+
 const StyledBox: any = styled(Slot, {});
 
 /**
