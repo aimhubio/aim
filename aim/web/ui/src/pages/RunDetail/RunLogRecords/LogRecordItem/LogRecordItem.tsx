@@ -73,7 +73,6 @@ function LogRecordItem(
               <div
                 className='LogRecordItem__content__item__itemBox'
                 style={{
-                  alignItems: 'flex-start',
                   justifyContent: item.extraParams ? 'flex-start' : 'center',
                 }}
               >

@@ -87,7 +87,7 @@
         display: flex;
         flex-direction: column;
         flex: 1;
-        align-items: center;
+        align-items: flex-start;
         max-width: calc(100% - 110px);
         height: 100%;
         position: relative;
