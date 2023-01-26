@@ -16,9 +16,9 @@ export interface IInputProps {
   placeholder?: string;
   /**
    * The Input size.
-   * @default 'medium'
+   * @default 'md'
    */
-  inputSize?: 'medium' | 'large' | 'xLarge';
+  inputSize?: 'md' | 'lg' | 'xl';
   /**
    * The error state.
    * @default false

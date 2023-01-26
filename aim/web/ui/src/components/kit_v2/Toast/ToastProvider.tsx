@@ -1,55 +1,7 @@
 import React from 'react';
 
-import * as Toast from '@radix-ui/react-toast';
-import { StyledComponent } from '@stitches/react/types/styled-component';
-
-import { styled } from 'config/stitches/stitches.config';
-
 import { IToastProviderProps } from './Toast.d';
-
-const ToastViewPort = styled(Toast.Viewport, {
-  position: 'fixed',
-  bottom: 0,
-  right: 0,
-  display: 'flex',
-  flexDirection: 'column',
-  padding: '$8',
-  gap: '$5',
-  maxWidth: '50vw',
-  minWidth: '300px',
-  margin: 0,
-  listStyle: 'none',
-  zIndex: '$',
-  outline: 'none',
-  ai: 'flex-end',
-  variants: {
-    placement: {
-      topLeft: {
-        top: 0,
-        left: 0,
-        ai: 'flex-start',
-      },
-      topRight: {
-        top: 0,
-        right: 0,
-        ai: 'flex-start',
-      },
-      bottomLeft: {
-        bottom: 0,
-        left: 0,
-        ai: 'flex-end',
-      },
-      bottomRight: {
-        bottom: 0,
-        right: 0,
-        ai: 'flex-end',
-      },
-    },
-  },
-});
-
-const StyledToastProvider: StyledComponent<typeof Toast.ToastProvider, any> =
-  styled(Toast.Provider, {});
+import { StyledToastProvider, ToastViewPort } from './Toast.style';
 
 /**
  * ToastProvider is a wrapper component for the Toast components that allows you to control the placement of the Toasts.

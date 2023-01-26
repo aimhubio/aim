@@ -1,14 +1,6 @@
 import React from 'react';
 
-import * as Toast from '@radix-ui/react-toast';
-import { StyledComponent } from '@stitches/react/types/styled-component';
-
-import { ColorPaletteType, styled } from 'config/stitches/stitches.config';
-import {
-  fadeOut,
-  toastSlideIn,
-  toastSwipeOut,
-} from 'config/stitches/stitches.animations';
+import { ColorPaletteType } from 'config/stitches/stitches.config';
 
 import Button from '../Button';
 import IconButton from '../IconButton';
@@ -16,76 +8,7 @@ import Box from '../Box';
 import Icon from '../Icon';
 
 import { IToastProps } from './Toast.d';
-
-export const ToastRoot: StyledComponent<typeof Toast.Root, any> = styled(
-  Toast.Root,
-  {
-    bc: '$textPrimary',
-    color: 'white',
-    display: 'flex',
-    bs: 'hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px',
-    p: '$6 $9',
-    ai: 'center',
-    '&[data-state="open"]': {
-      animation: `${toastSlideIn} 150ms cubic-bezier(0.16, 1, 0.3, 1)`,
-    },
-    '&[data-state="closed"]': {
-      animation: `${fadeOut} 100ms ease-out`,
-    },
-    '&[data-swipe="move"]': {
-      transform: 'translateX(var(--radix-toast-swipe-move-x))',
-    },
-    '&[data-swipe="cancel"]': {
-      transform: 'translateX(0)',
-    },
-    '&[data-swipe="end"]': {
-      animation: `${toastSwipeOut} 100ms ease-out`,
-    },
-    br: '$3',
-    zIndex: '$max',
-    variants: {
-      hasAction: {
-        true: { p: '$5 $9' },
-      },
-      status: {
-        info: {},
-        success: {
-          bc: '$success100',
-        },
-        warning: {
-          bc: '$warning100',
-        },
-        danger: {
-          bc: '$danger100',
-        },
-      },
-    },
-  },
-);
-
-export const ToastTitle = styled(Toast.Title, {
-  mb: '$1',
-  fontWeight: 500,
-  color: 'red',
-});
-
-export const ToastDescription = styled(Toast.Description, {
-  margin: 0,
-  wordBreak: 'break-word',
-  userSelect: 'text',
-  cursor: 'default',
-  color: 'slate',
-  fontSize: '$4',
-  lineHeight: '$5',
-});
-
-export const ToastAction = styled('div', {
-  display: 'flex',
-  ai: 'center',
-  jc: 'center',
-  ml: '$8',
-  alignSelf: 'start',
-});
+import { ToastAction, ToastDescription, ToastRoot } from './Toast.style';
 
 /**
  * Toast component
