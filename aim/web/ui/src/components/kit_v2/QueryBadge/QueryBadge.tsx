@@ -1,32 +1,11 @@
 import React from 'react';
 
-import { styled } from 'config/stitches/stitches.config';
-
 import ButtonGroup from '../ButtonGroup';
 import Button from '../Button';
 import IconButton from '../IconButton';
 
 import { IQueryBadgeProps } from './QueryBadge.d';
-
-const ButtonText = styled('span', {
-  color: '$textPrimary',
-  variants: {
-    color: {
-      primary: {
-        color: '$textPrimary80',
-      },
-      secondary: {
-        color: '$textPrimary',
-      },
-    },
-    disabled: {
-      true: {
-        color: '$textPrimary50',
-      },
-    },
-  },
-});
-
+import { ButtonText } from './QueryBadge.style';
 /**
  * @component QueryBadge
  * @description QueryBadge component
