@@ -150,7 +150,7 @@ function RunOverviewSidebar({
             <CopyToClipBoard
               className='RunOverviewSidebar__section__info__listItem__copyRunHashButton'
               iconSize='small'
-              copyContent={runHash ?? ''}
+              copyContent={runHash}
             />
           </div>
         </div>
