@@ -95,8 +95,9 @@ function useRunLogRecords(runId: string, inProgress: boolean) {
         }
         let messageSize =
           42 + (record.message.trim().match(/\n/g) || '').length * 14.5;
-        function getObjectKeysCount(obj: Record<string, any>, count = 0) {
-          let size = count + 2;
+
+        function getObjectKeysCount(obj: Record<string, any>, count = 1) {
+          let size = count + (Object.keys(obj).length > 0 ? 1 : 0);
           for (let key in obj) {
             if (
               Array.isArray(obj[key]) ||
@@ -106,6 +107,10 @@ function useRunLogRecords(runId: string, inProgress: boolean) {
             } else {
               size++;
             }
+          }
+
+          if (size > 5) {
+            return 5;
           }
 
           return size;

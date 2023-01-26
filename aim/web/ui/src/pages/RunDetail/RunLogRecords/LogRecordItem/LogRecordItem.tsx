@@ -118,6 +118,9 @@ function LogRecordItem(
                               autoScale
                             />
                           </div>
+                          <div className='LogRecordItem__content__item__itemBox__extraParams__dict__overflowHandler'>
+                            <Icon name='arrow-bidirectional-open' />
+                          </div>
                         </div>
                       )}
                       component={

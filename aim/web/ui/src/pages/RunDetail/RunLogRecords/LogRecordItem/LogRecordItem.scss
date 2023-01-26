@@ -54,7 +54,7 @@
         width: 110px;
         border-right: $border-separator;
         padding: $space-xxxs $space-xxs;
-        background-color: $cuddle-30;
+        background-color: $cuddle-20;
         border-top-left-radius: $border-radius-main;
         border-bottom-left-radius: $border-radius-main;
         &__statusBadge {
@@ -92,7 +92,8 @@
         height: 100%;
         position: relative;
         padding: $space-xxxs $space-xs;
-        overflow: hidden;
+        overflow-x: auto;
+        overflow-y: hidden;
         border-top-right-radius: $border-radius-main;
         border-bottom-right-radius: $border-radius-main;
         &__message {
@@ -105,15 +106,17 @@
 
         &__extraParams {
           display: flex;
-          align-items: center;
           max-width: 100%;
-          margin-top: $space-xxxxs;
+          max-height: 95px;
+          margin-top: $space-sm;
           border: $border-separator;
-          padding: $space-xxxxs $space-xxxs;
           background-color: $cuddle-20;
           border-radius: $border-radius-main;
           transform: scale(0.85);
-          transform-origin: left;
+          -ms-transform-origin-x: left;
+          -ms-transform-origin-y: top;
+          -webkit-transform-origin-x: left;
+          -webkit-transform-origin-y: top;
           cursor: pointer;
 
           &__dict {
@@ -122,11 +125,38 @@
             position: relative;
             width: 100%;
             max-width: 100%;
+            padding: $space-xxxxs $space-xxxs;
             text-overflow: ellipsis;
             overflow: hidden;
+            border-radius: $border-radius-main;
+            box-shadow: inset 0px -12px 20px -16px rgb(0 0 0 / 10%);
+            transition: box-shadow ease-out 0.18s;
+            
+            &:hover {
+              box-shadow: inset 0px -12px 20px -16px rgb(0 0 0 / 20%);
 
-            div {
+              .LogRecordItem__content__item__itemBox__extraParams__dict__overflowHandler {
+                opacity: 1;
+              }
+            }
+
+            > div:first-of-type {
               pointer-events: none;
+            }
+
+            &__overflowHandler {
+              position: absolute;
+              bottom: 0;
+              left: 0;
+              width: 100%;
+              padding: $space-xxxs;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              border-bottom-left-radius: $border-radius-main;
+              border-bottom-right-radius: $border-radius-main;
+              opacity: 0;
+              transition: opacity ease-out 0.18s;
             }
           }
         }
