@@ -17,4 +17,6 @@ const Template: ComponentStory<typeof TooltipComponent> = (args) => (
 
 export const Tooltip = Template.bind({});
 
-Tooltip.args = {};
+Tooltip.args = {
+  content: 'Tooltip',
+};

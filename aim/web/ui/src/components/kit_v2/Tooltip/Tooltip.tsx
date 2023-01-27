@@ -23,7 +23,11 @@ function Tooltip({
       <TooltipPrimitive.Root {...props}>
         <TooltipPrimitive.Trigger asChild>{children}</TooltipPrimitive.Trigger>
         <TooltipPrimitive.Portal>
-          <TooltipContent sideOffset={5} {...contentProps}>
+          <TooltipContent
+            data-testid='tooltip-content'
+            sideOffset={5}
+            {...contentProps}
+          >
             {content}
             <TooltipArrow />
           </TooltipContent>
