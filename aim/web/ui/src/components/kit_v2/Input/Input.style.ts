@@ -1,6 +1,6 @@
-import { styled } from 'config/stitches/stitches.config';
+import Icon from 'components/kit/Icon';
 
-import Icon from '../Icon';
+import { styled } from 'config/stitches/stitches.config';
 
 const Container = styled('div', {
   display: 'flex',

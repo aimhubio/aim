@@ -1,6 +1,6 @@
-import { CSS, styled } from 'config/stitches/stitches.config';
+import Icon from 'components/kit/Icon';
 
-import Icon from '../Icon';
+import { CSS, styled } from 'config/stitches/stitches.config';
 
 function getColors({
   color,
