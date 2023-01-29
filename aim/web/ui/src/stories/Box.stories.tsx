@@ -9,7 +9,7 @@ export default {
 } as ComponentMeta<typeof BoxComponent>;
 
 const Template: ComponentStory<typeof BoxComponent> = (args) => (
-  <BoxComponent {...args} />
+  <BoxComponent {...args} mt='$10' />
 );
 
 export const Box = Template.bind({});
