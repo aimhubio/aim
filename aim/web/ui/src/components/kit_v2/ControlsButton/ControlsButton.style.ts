@@ -1,6 +1,7 @@
+import Icon from 'components/kit/Icon';
+
 import { styled } from 'config/stitches/stitches.config';
 
-import Icon from '../Icon';
 import IconButton from '../IconButton';
 
 const Trigger = styled('button', {
