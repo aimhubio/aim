@@ -58,7 +58,7 @@ export interface IUIComponents {
   queryForm: React.FunctionComponent<IQueryFormProps>;
   grouping: React.FunctionComponent<IGroupingProps>;
   visualizations: React.FunctionComponent<IVisualizationProps>[];
-  box: React.FunctionComponent<IBoxProps>;
+  box: React.FunctionComponent<IBoxContentProps>;
   controls: React.FunctionComponent<IControlsProps>;
 }
 
@@ -80,27 +80,28 @@ export interface IVisualizationsProps extends IBaseComponentProps {
 }
 
 export interface IVisualizationProps extends IBaseComponentProps {
-  box?: React.FunctionComponent<IBoxProps>;
-  hasDepthSlider: boolean;
+  box?: React.FunctionComponent<IBoxContentProps>;
+  boxStacking: boolean;
   panelRenderer: () => React.ReactNode;
   name: string;
 }
 
 export interface IProgressBarProps extends IBaseComponentProps {}
 
-export interface IBoxProps extends IBaseComponentProps {
+export interface IBoxContentProps extends IBaseComponentProps {
   data: any;
   style?: React.CSSProperties;
   isFullView?: boolean;
   index?: number;
   id?: string;
   visualizationName: string;
+  groupInfo?: Record<string, object>;
 }
 
 export interface IOptionalExplorerConfig {}
 export interface IExplorerBarProps extends IBaseComponentProps {
   explorerName: string;
-  documentationLink: string;
+  documentationLink?: string;
 }
 export interface IExplorerNotificationProps extends IBaseComponentProps {}
 

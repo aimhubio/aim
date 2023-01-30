@@ -4,7 +4,11 @@ export interface AimFlatObjectBase<T = any> {
   key: string;
   data: T;
   record?: Record;
-  [key: string]: any;
+  groups?: {
+    rows?: string[];
+    columns?: string[];
+    [key: string]: string[];
+  };
   run?: {
     // run props
     experiment: string;
@@ -12,4 +16,5 @@ export interface AimFlatObjectBase<T = any> {
     // params
     [key: string]: any;
   };
+  [key: string]: any;
 }

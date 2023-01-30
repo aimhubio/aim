@@ -1,11 +1,8 @@
-import type { FunctionComponent } from 'react';
-
 import renderer from 'modules/BaseExplorer';
-import Figures from 'modules/BaseExplorer/components/Figures/Figures';
+import Figures from 'modules/BaseExplorer/components/Figures';
 
 import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
 
-import getFiguresExplorerStaticContent from './getStaticContent';
 import { getFiguresDefaultConfig } from './config';
 
 const defaultConfig = getFiguresDefaultConfig();
@@ -22,16 +19,15 @@ const FiguresExplorer = renderer(
     groupings: defaultConfig.groupings,
     visualizations: {
       vis1: {
-        component: defaultConfig.Visualizer as FunctionComponent,
+        component: defaultConfig.Visualizer,
         controls: defaultConfig.controls,
         box: {
+          ...defaultConfig.box,
           component: Figures,
-          hasDepthSlider: defaultConfig.box.hasDepthSlider,
-          initialState: defaultConfig.box.initialState,
         },
       },
     },
-    getStaticContent: getFiguresExplorerStaticContent,
+    getStaticContent: defaultConfig.getStaticContent,
   },
   __DEV__,
 );

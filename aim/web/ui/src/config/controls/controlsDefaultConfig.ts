@@ -23,7 +23,7 @@ import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 
 export const CONTROLS_DEFAULT_CONFIG = {
   metrics: {
-    highlightMode: HighlightEnum.Metric,
+    highlightMode: HighlightEnum.Run,
     ignoreOutliers: true,
     axesScaleType: {
       xAxis: ScaleEnum.Linear,

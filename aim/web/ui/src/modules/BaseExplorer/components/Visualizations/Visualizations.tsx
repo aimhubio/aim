@@ -33,7 +33,7 @@ function Visualizations(props: IVisualizationsProps) {
             engine={engine}
             name={name}
             box={visualizer.box.component}
-            hasDepthSlider={visualizer.box.hasDepthSlider}
+            boxStacking={visualizer.box.stacking}
             panelRenderer={() => (
               <VisualizerPanel
                 engine={engine}
