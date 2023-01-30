@@ -1,8 +1,8 @@
 import { RunsSearchQueryParams } from 'modules/core/api/runsApi';
 
-import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
+import { RequestInstance } from 'services/NetworkService';
 
-import { RequestInstance } from '../../../services/NetworkService';
+import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
 
 import createGrouping, { Grouping } from './grouping';
 import createQuery, { Query, RequestProgressCallback } from './query';

@@ -31,6 +31,7 @@ function ConfigureAxes(props: IConfigureAxesProps) {
                 active: !axesProps.isInitial,
                 outlined: !axesProps.isInitial,
               })}
+              onClick={onAnchorClick}
             >
               <Icon
                 name='axes-props'
@@ -41,7 +42,6 @@ function ConfigureAxes(props: IConfigureAxesProps) {
               <Text className='Control__anchor__label'>Configure axes</Text>
               <Icon
                 name='arrow-down-contained'
-                onClick={onAnchorClick}
                 className={classNames('Control__anchor__arrow', { opened })}
                 fontSize={6}
               />

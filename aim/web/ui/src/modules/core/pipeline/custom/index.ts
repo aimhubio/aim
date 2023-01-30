@@ -1,14 +1,19 @@
 import { memoize } from 'modules/core/cache';
+import { RunsSearchQueryParams } from 'modules/core/api/runsApi';
+import { buildObjectHash } from 'modules/core/utils/hashing';
+import createInlineCache, { InlineCache } from 'modules/core/cache/inlineCache';
+import {
+  DecodingError,
+  FetchingError,
+} from 'modules/core/pipeline/query/QueryError';
+import AimError from 'modules/core/AimError';
+
+import { RequestInstance } from 'services/NetworkService';
+
+import { parseStream } from 'utils/encoder/streamEncoding';
 
 import { PipelinePhasesEnum, StatusChangeCallback } from '../types';
 import { RequestProgressCallback } from '../query';
-import { DecodingError, FetchingError } from '../query/QueryError';
-import { parseStream } from '../../../../utils/encoder/streamEncoding';
-import createInlineCache, { InlineCache } from '../../cache/inlineCache';
-import { RequestInstance } from '../../../../services/NetworkService';
-import AimError from '../../AimError';
-import { buildObjectHash } from '../../utils/hashing';
-import { RunsSearchQueryParams } from '../../api/runsApi';
 import { CustomPhaseExecutionArgs, ProcessedData } from '../index';
 
 export type CustomPhaseConfigOptions = {
@@ -136,7 +141,7 @@ export async function executeCustomPhase({
     const processedResult = options.processData(currentResult, queryResult);
     return Promise.resolve(processedResult);
   } catch (e) {
-    throw new AimError(e.message || e, e.detail);
+    throw new AimError(e.message || e, e.detail).getError();
   }
 }
 
