@@ -1,5 +1,3 @@
-import type { FunctionComponent } from 'react';
-
 import renderer from 'modules/BaseExplorer';
 import Metrics from 'modules/BaseExplorer/components/Metrics/Metrics';
 import { PersistenceTypesEnum } from 'modules/core/engine/types';
@@ -22,12 +20,11 @@ const MetricsExplorer = renderer(
     groupings: defaultConfig.groupings,
     visualizations: {
       vis1: {
-        component: defaultConfig.Visualizer as FunctionComponent,
+        component: defaultConfig.Visualizer,
         controls: defaultConfig.controls,
         box: {
+          ...defaultConfig.box,
           component: Metrics,
-          hasDepthSlider: defaultConfig.box.hasDepthSlider,
-          initialState: defaultConfig.box.initialState,
         },
       },
     },

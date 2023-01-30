@@ -80,7 +80,7 @@ export interface IAggregatedData extends IAggregationData {
   key?: string;
   color: string;
   dasharray: string;
-  chartIndex: number;
+  chartIndex?: number;
 }
 
 export interface ITooltipContent {
@@ -174,7 +174,7 @@ export interface IAggregationConfig {
     line: AggregationLineMethods;
   };
   isApplied: boolean;
-  isEnabled: boolean;
+  isEnabled?: boolean;
 }
 
 export interface IFocusedState {

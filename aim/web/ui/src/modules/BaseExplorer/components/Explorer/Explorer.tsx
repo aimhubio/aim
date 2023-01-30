@@ -25,7 +25,6 @@ function Explorer({ configuration, engineInstance }: ExplorerProps) {
       <ExplorerBar
         engine={engineInstance}
         explorerName={configuration.name}
-        // @ts-ignore
         documentationLink={configuration.documentationLink}
       />
       <ExplorerNotifications engine={engineInstance} />

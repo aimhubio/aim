@@ -9,20 +9,27 @@ import { GroupType, Order } from 'modules/core/pipeline';
 import { defaultHydration } from 'modules/BaseExplorer/getDefaultHydration';
 import { IBaseComponentProps } from 'modules/BaseExplorer/types';
 import { GroupingItem } from 'modules/BaseExplorer/components/Grouping';
+import { PersistenceTypesEnum } from 'modules/core/engine/types';
 
 import { AimFlatObjectBase } from 'types/core/AimObjects';
 
+import {
+  AggregationAreaMethods,
+  AggregationLineMethods,
+} from 'utils/aggregateGroupData';
+
 import getMetricsExplorerStaticContent from './getStaticContent';
+import Aggregation from './Controls/Aggregation';
 
 export const getMetricsDefaultConfig = (): typeof defaultHydration => {
   const defaultConfig = getDefaultHydration();
 
   const groupings = produce(defaultConfig.groupings, (draft: any) => {
-    draft[GroupType.COLUMN].defaultApplications.orders = [Order.ASC, Order.ASC];
-    draft[GroupType.COLUMN].defaultApplications.fields = [
-      'run.hash',
-      'metric.name',
-    ];
+    draft[GroupType.COLUMN].defaultApplications.orders = [Order.ASC];
+    draft[GroupType.COLUMN].defaultApplications.fields = ['metric.name'];
+
+    draft[GroupType.ROW].defaultApplications.orders = [Order.ASC];
+    draft[GroupType.ROW].defaultApplications.fields = ['metric.context.subset'];
 
     draft[GroupType.COLOR] = {
       component: React.memo((props: IBaseComponentProps) => (
@@ -38,8 +45,8 @@ export const getMetricsDefaultConfig = (): typeof defaultHydration => {
         };
       },
       defaultApplications: {
-        fields: [Order.ASC, Order.ASC],
-        orders: ['run.hash', 'metric.name'],
+        fields: [Order.ASC],
+        orders: ['run.hash'],
       },
       // @TODO add support for selecting color pallet by 'palletIndex'
       // state: {
@@ -51,7 +58,6 @@ export const getMetricsDefaultConfig = (): typeof defaultHydration => {
       //   pallets: COLORS,
       // },
     };
-
     draft[GroupType.STROKE] = {
       component: React.memo((props: IBaseComponentProps) => (
         <GroupingItem groupName='stroke' iconName='group-column' {...props} />
@@ -64,13 +70,26 @@ export const getMetricsDefaultConfig = (): typeof defaultHydration => {
         };
       },
       defaultApplications: {
-        fields: [Order.ASC, Order.ASC],
-        orders: ['run.hash', 'metric.name'],
+        fields: [],
+        orders: [],
       },
     };
   });
 
   const controls = produce(defaultConfig.controls, (draft: any) => {
+    draft.aggregation = {
+      component: Aggregation,
+      state: {
+        initialState: {
+          methods: {
+            area: AggregationAreaMethods.MIN_MAX,
+            line: AggregationLineMethods.MEAN,
+          },
+          isApplied: false,
+        },
+        persist: PersistenceTypesEnum.Url,
+      },
+    };
     // draft.axesProperties = {
     //   component: () => null,
     //   state: {
@@ -101,12 +120,7 @@ export const getMetricsDefaultConfig = (): typeof defaultHydration => {
     controls,
     box: {
       ...defaultConfig.box,
-      initialState: {
-        width: 400,
-        height: 400,
-        gap: 0,
-      },
-      hasDepthSlider: false,
+      stacking: false,
     },
     getStaticContent: getMetricsExplorerStaticContent,
   };

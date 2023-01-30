@@ -1,3 +1,4 @@
+import { UseDepthMap } from 'modules/BaseExplorer/components/Visualizer/hooks/useDepthMap';
 import {
   IBaseComponentProps,
   IVisualizationProps,
@@ -8,8 +9,26 @@ export interface IBoxWrapperProps<T> extends IBaseComponentProps {
   boxIndex: number;
   boxItems: Array<T>;
   component: IVisualizationProps['box'];
-  hasDepthSlider: IVisualizationProps['hasDepthSlider'];
-  depthSelector: (groupKey: string) => (state: any) => number;
-  onDepthMapChange: (value: number, groupId: string) => void;
+  boxStacking: IVisualizationProps['boxStacking'];
   visualizationName: string;
+  depthSelector: UseDepthMap['depthSelector'];
+  onDepthMapChange: UseDepthMap['onDepthMapChange'];
+}
+
+interface IBoxProps<T> extends IBaseComponentProps {
+  boxId: string;
+  boxIndex: number;
+  boxItems: Array<T>;
+  component: IVisualizationProps['box'];
+  visualizationName: string;
+}
+
+interface IBoxWithStackingProps<T> extends IBaseComponentProps {
+  boxId: string;
+  boxIndex: number;
+  boxItems: Array<T>;
+  component: IVisualizationProps['box'];
+  visualizationName: string;
+  depthSelector: UseDepthMap['depthSelector'];
+  onDepthMapChange: UseDepthMap['onDepthMapChange'];
 }

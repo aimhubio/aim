@@ -20,8 +20,6 @@ import { IRun } from 'types/services/models/metrics/runModel';
 
 import { CurveEnum, HighlightEnum } from 'utils/d3';
 
-import { IChartPanelProps } from '../ChartPanel/ChartPanel';
-
 export interface ILine {
   key: string;
   data: {
@@ -38,7 +36,7 @@ export interface ILine {
 export interface ILineChartProps {
   index?: number;
   id?: string;
-  data: IChartPanelProps['data'];
+  data: ILine[];
   nameKey?: string;
   aggregatedData?: IAggregatedData[];
   alignmentConfig?: IAlignmentConfig;

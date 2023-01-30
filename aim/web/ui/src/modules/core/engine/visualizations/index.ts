@@ -3,7 +3,7 @@ import { StoreApi } from 'zustand';
 import { isEmpty, omit } from 'lodash-es';
 
 import {
-  IBoxProps,
+  IBoxContentProps,
   IControlsProps,
   IEngineStates,
   IVisualizationProps,
@@ -28,8 +28,8 @@ type BoxConfig = {
     height: number;
     gap: number;
   };
-  hasDepthSlider: boolean;
-  component: FunctionComponent<IBoxProps>;
+  stacking: boolean;
+  component: FunctionComponent<IBoxContentProps>;
 };
 
 export type VisualizationConfig = {

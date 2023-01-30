@@ -36,8 +36,8 @@ enum CircleEnum {
 
 enum HighlightEnum {
   Off = 0,
-  Run = 1,
-  Metric = 2,
+  Metric = 1,
+  Run = 2,
   Custom = 3,
 }
 
