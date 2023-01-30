@@ -199,6 +199,9 @@ const TreeList = ({ searchValue = '', data, ...props }: ITreeProps) => {
 
   return (
     <TreeListWrapper>
+      {treeData.length > 0 ? null : (
+        <Text css={{ color: '$secondary' }}>No data</Text>
+      )}
       <TreeComponent
         {...props}
         height={props.height || 300}

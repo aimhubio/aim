@@ -174,23 +174,6 @@ function LayoutExperimental(props: any) {
     );
   }, [queryable.project_sequence_info, searchValue]);
 
-  // const handleAutocompleteClose: (
-  //   event: React.ChangeEvent<{}>,
-  //   reason: string,
-  // ) => void = React.useCallback(
-  //   (event: React.ChangeEvent<{}>, reason: string) => {
-  //     if (reason === 'toggleInput') {
-  //       return;
-  //     }
-  //     if (anchorEl) {
-  //       anchorEl.focus();
-  //     }
-  //     setAnchorEl(null);
-  //     setSearchValue('');
-  //   },
-  //   [anchorEl],
-  // );
-
   function onSelect(event: object, value: ISelectOption[]): void {
     const lookup = value.reduce(
       (acc: { [key: string]: number }, curr: ISelectOption) => {
@@ -301,7 +284,6 @@ function LayoutExperimental(props: any) {
     const data = info.checkedNodes
       .filter((node) => childrenKeysFromChecked.indexOf(node.key) === -1)
       .map((node) => node.key);
-    console.log(data);
     updateQuery.current({
       checkedTreeKeys: data,
     });
@@ -328,7 +310,7 @@ function LayoutExperimental(props: any) {
 
   return (
     <>
-      <ExplorerBar />
+      {/* <ExplorerBar /> */}
       <Box
         as='section'
         css={{
@@ -362,7 +344,7 @@ function LayoutExperimental(props: any) {
             <Box css={{ display: 'flex', gap: '$3', ml: '$5' }}>
               {query.checkedTreeKeys?.map((key) => (
                 <QueryBadge key={key} color='primary' size='md'>
-                  {}
+                  {key}
                 </QueryBadge>
               ))}
             </Box>
@@ -386,13 +368,6 @@ function LayoutExperimental(props: any) {
                 forceRemoveError={true}
               />
             </Box>
-            {/* )} */}
-            {/* <Button size='md' leftIcon='plus' variant='text'>
-              Add run filter
-            </Button>
-            <Box css={{ display: 'flex', gap: '$3', ml: '$5' }}>
-              <QueryBadge size='md'>run.dataset.name {'>'} 0.00001</QueryBadge>
-            </Box> */}
           </Box>
         </Box>
         <Box css={{ m: '0 $7', width: '1px', bc: '$secondary20' }} />
@@ -423,7 +398,7 @@ function LayoutExperimental(props: any) {
           </Box>
         </Box>
       </Box>
-      <ControlsBar />
+      {/* <ControlsBar /> */}
     </>
   );
 }
