@@ -3,14 +3,14 @@
 exports[`<Icon icon={<IconDeviceCctvOff />} /> Renders Correctly 1`] = `
 <DocumentFragment>
   <div
-    class="c-inGMmN"
+    class="AimUi-c-inGMmN AimUi-c-inGMmN-igWaLqH-css"
     data-testid="icon"
   >
     <i
-      class="c-dOCGJv c-dOCGJv-kupcZn-size-lg"
+      class="AimUi-c-dOCGJv AimUi-c-dOCGJv-kupcZn-size-lg"
     >
       <svg
-        class="c-hinyfY"
+        class="AimUi-c-hinyfY"
         fill="none"
         height="24"
         stroke="currentColor"

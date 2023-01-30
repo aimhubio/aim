@@ -35,11 +35,6 @@ export interface ISelectProps {
    */
   value?: string | string[];
   /**
-   * @description The css of the select
-   * @example { color: 'red' }
-   */
-  css?: CSS;
-  /**
    * @description The multiple select
    * @example false
    */
