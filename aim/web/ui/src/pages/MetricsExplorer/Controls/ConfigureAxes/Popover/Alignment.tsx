@@ -1,9 +1,18 @@
 import React from 'react';
+import _ from 'lodash-es';
 
 import { SelectDropdown, Text } from 'components/kit';
 import { ISelectDropdownOption as ISelectOption } from 'components/kit/SelectDropdown';
 
+import { AlignmentNotificationsEnum } from 'config/notification-messages/notificationMessages';
+
 import { getSelectFormOptions } from 'modules/core/utils/getSelectFormOptions';
+import { buildObjectHash } from 'modules/core/utils/hashing';
+import {
+  alignMetricsRequest,
+  IAlignMetricsData,
+} from 'modules/core/api/runsApi';
+import { CustomPhaseExecutionArgs } from 'modules/core/pipeline';
 
 import { isSystemMetric } from 'utils/isSystemMetric';
 import { AlignmentOptionsEnum } from 'utils/d3';
@@ -45,7 +54,9 @@ function Alignment(props: IAlignmentProps) {
   const vizEngine = visualizations[visualizationName];
   const updateAxesProps = vizEngine.controls.axesProperties.methods.update;
   const queryable = engine.useStore(engine.instructions.stateSelector);
-  // const data = engine.useStore(engine.pipeline.dataSelector);
+  const data = engine.useStore(engine.pipeline.dataSelector);
+  const executeCustomPhase: (args: CustomPhaseExecutionArgs) => void =
+    engine.pipeline.executeCustomPhase;
 
   const projectSequenceOptions = getSelectFormOptions(
     queryable.project_sequence_info,
@@ -86,6 +97,87 @@ function Alignment(props: IAlignmentProps) {
     [alignmentConfig],
   );
 
+  const onCustomMetricChange = React.useCallback(
+    (metric: string) => {
+      const groupedByRun = _.groupBy(data || [], (d) => d.run.hash);
+      const runs = Object.entries(groupedByRun).map(([runHash, items]) => {
+        const traces = items.map(({ data: { context, slice, name } }) => ({
+          context,
+          name,
+          slice,
+        }));
+        return { run_id: runHash, traces };
+      });
+
+      const reqBody: IAlignMetricsData = { align_by: metric, runs };
+
+      executeCustomPhase({
+        createRequest: alignMetricsRequest,
+        body: reqBody,
+        params: { report_progress: true },
+        ignoreCache: false,
+        processData: (currentResult, alignedDataResponse) => {
+          const alignedDataDict: Record<
+            string,
+            {
+              name: string;
+              context: object;
+              x_axis_iters: Float64Array;
+              x_axis_values: Float64Array;
+            }
+          > = {};
+          for (let run of alignedDataResponse) {
+            const runHash = run.hash;
+            const traces = _.omit(run, 'hash');
+            for (let trace of Object.values(traces || {})) {
+              const uniqKey = buildObjectHash({
+                runHash,
+                name: trace.name,
+                context: trace.context,
+              });
+              alignedDataDict[uniqKey] = trace;
+            }
+          }
+
+          let missingTraces = false;
+          const alignedData = currentResult.objectList.map((item) => {
+            const alignedDataItem = alignedDataDict[item.key];
+            const x_axis_iters = alignedDataItem?.x_axis_iters || null;
+            const x_axis_values = alignedDataItem?.x_axis_values || null;
+            if (!x_axis_iters || !x_axis_values) {
+              missingTraces = true;
+            }
+            return {
+              ...item,
+              data: {
+                ...item.data,
+                x_axis_iters,
+                x_axis_values,
+              },
+            };
+          });
+
+          if (missingTraces) {
+            engine.notifications.error(
+              AlignmentNotificationsEnum.NOT_ALL_ALIGNED,
+            );
+            updateAlignment({
+              type: AlignmentOptionsEnum.STEP,
+              metric: '',
+            });
+            return currentResult;
+          }
+
+          return {
+            ...currentResult,
+            objectList: alignedData,
+          };
+        },
+      } as CustomPhaseExecutionArgs);
+    },
+    [executeCustomPhase, data, engine.notifications, updateAlignment],
+  );
+
   const handleAlignmentChange = React.useCallback(
     (option: ISelectOption): void => {
       if (option) {
@@ -94,8 +186,7 @@ function Alignment(props: IAlignmentProps) {
             type: AlignmentOptionsEnum.CUSTOM_METRIC,
             metric: option.value,
           });
-
-          // onCustomMetricChange(option.value);
+          onCustomMetricChange(option.value);
         } else {
           updateAlignment({
             type: option.value as AlignmentOptionsEnum,
@@ -104,58 +195,8 @@ function Alignment(props: IAlignmentProps) {
         }
       }
     },
-    [updateAlignment],
+    [updateAlignment, onCustomMetricChange],
   );
-
-  // const onCustomMetricChange = React.useCallback((metric: string) => {
-  //   const groupedByRun = _.groupBy(data || [], (d) => d.run.hash);
-  //   const runs = Object.entries(groupedByRun).map(([runHash, items]) => {
-  //     const traces = items.map(({ data: { context, slice, name } }) => ({
-  //       context,
-  //       name,
-  //       slice,
-  //     }));
-  //     return { run_id: runHash, traces };
-  //   });
-  //
-  //   const reqBody: IAlignMetricsData = {
-  //     align_by: metric,
-  //     runs,
-  //   };
-  //
-  //   alignMetrics(reqBody).call();
-  // }, []);
-
-  /**
-   * Function to align the metrics
-   * @param {IAlignMetricsData} reqBody
-   */
-  // function alignMetrics(reqBody: IAlignMetricsData) {
-  //   const request = alignMetricsRequest();
-  //   return {
-  //     abort: request.cancel,
-  //     call: () => {
-  //       return request
-  //         .call(reqBody)
-  //         .then(async (stream) => {
-  //           parseStream(stream, {
-  //             callback: (object) => {
-  //               console.log('parseStream', object);
-  //             },
-  //           });
-  //           return Promise.resolve();
-  //         })
-  //         .catch((ex) => {
-  //           if (ex.name === 'AbortError') {
-  //             // Abort Error
-  //           } else {
-  //             // eslint-disable-next-line no-console
-  //             console.log('Unhandled error: ', ex);
-  //           }
-  //         });
-  //     },
-  //   };
-  // }
 
   return (
     <div className='Alignment'>

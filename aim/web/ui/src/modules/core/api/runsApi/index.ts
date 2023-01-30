@@ -86,10 +86,14 @@ function alignMetricsRequest(): RequestInstance {
   const controller = new AbortController();
   const signal = controller.signal;
 
-  async function call(reqBody: IAlignMetricsData): Promise<RunsSearchResult> {
+  async function call(query: {
+    body: IAlignMetricsData;
+    params: RunsSearchQueryParams;
+  }): Promise<RunsSearchResult> {
     return (
       await api.makeAPIPostRequest(`${ENDPOINTS.RUNS.SEARCH}/metric/align`, {
-        body: reqBody,
+        body: query.body,
+        query_params: query.params,
         signal,
       })
     ).body;

@@ -294,6 +294,8 @@ const drawParallelHoverAttributes = ({
   }
 
   function drawFocusedCircle(key: string): void {
+    if (!attrNodeRef.current) return;
+
     attrNodeRef.current
       .selectAll('circle')
       .attr('r', CircleEnum.Radius)
