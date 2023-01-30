@@ -107,13 +107,13 @@ export enum PipelineStatusEnum {
 
 export type SelectorCreator<TState, P> = (state: TState) => P;
 
-export interface BaseErrorType {
+export interface AimErrorType {
   name: string;
   message: string;
   detail: Record<string, any>;
 }
 
-export interface PipelineErrorType extends BaseErrorType {
+export interface PipelineErrorType extends AimErrorType {
   source: string;
 }
 
@@ -126,3 +126,17 @@ export enum PersistenceTypesEnum {
 export type StatePersistOption =
   | `${PersistenceTypesEnum}`
   | PersistenceFunction;
+
+export interface INotificationItem {
+  id: string;
+  messages: string[];
+  title?: string;
+  style?: {};
+  iconName?: string;
+  duration?: number;
+}
+export interface INotificationsState {
+  data: INotificationItem[];
+}
+
+export type ExtractState<T, S> = S & T;

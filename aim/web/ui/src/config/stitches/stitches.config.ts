@@ -12,6 +12,7 @@ export const {
   config,
   reset,
 } = createStitches({
+  prefix: 'aim-ui',
   theme: {
     colors: {
       // primary colors
@@ -201,6 +202,22 @@ export const {
       12: '1.875rem', // 30px
       13: '2rem', // 32px
     },
+    lineHeights: {
+      1: '0.5rem', // 8px
+      2: '0.625rem', // 10px
+      3: '0.75rem', // 12px
+      4: '0.875rem', // 14px
+      5: '1rem', // 16px
+      6: '1.125rem', // 18px
+      7: '1.25rem', // 20px
+      8: '1.375rem', // 22px
+      9: '1.5rem', // 24px
+      10: '1.625rem', // 26px
+      11: '1.75rem', // 28px
+      12: '1.875rem', // 30px
+      13: '2rem', // 32px
+    },
+
     fontWeights: {
       1: 350,
       2: 450,
@@ -409,18 +426,17 @@ export const darkTheme = createTheme('dark-theme', {
   },
 });
 
-export enum ColorPaletteEnum {
-  primary = 'primary',
-  secondary = 'secondary',
-  success = 'success',
-  warning = 'warning',
-  danger = 'danger',
-  blue = 'blue',
-  green = 'green',
-  red = 'red',
-  yellow = 'yellow',
-  pale = 'pale',
-  purple = 'purple',
-  pink = 'pink',
-  orange = 'orange',
-}
+export type ColorPaletteType =
+  | 'primary'
+  | 'secondary'
+  | 'success'
+  | 'warning'
+  | 'danger'
+  | 'blue'
+  | 'green'
+  | 'red'
+  | 'yellow'
+  | 'pale'
+  | 'purple'
+  | 'pink'
+  | 'orange';

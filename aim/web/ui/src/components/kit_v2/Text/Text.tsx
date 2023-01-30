@@ -1,14 +1,8 @@
 import React from 'react';
 
-import { Slot } from '@radix-ui/react-slot';
-
-import { styled } from 'config/stitches/stitches.config';
-
 import { ITextProps } from './Text.d';
+import { StyledSlot } from './Text.style';
 
-const StyledSlot: any = styled(Slot, {
-  lineHeight: 1,
-});
 const Text = React.forwardRef<React.ElementRef<typeof StyledSlot>, ITextProps>(
   (
     {

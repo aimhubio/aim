@@ -1,6 +1,6 @@
 {
   "name": "ui_v2",
-  "version": "3.15.1",
+  "version": "3.15.2",
   "private": true,
   "dependencies": {
     "@aksel/structjs": "^1.0.0",
@@ -12,10 +12,12 @@
     "@radix-ui/react-checkbox": "^1.0.1",
     "@radix-ui/react-popover": "^1.0.2",
     "@radix-ui/react-radio-group": "^1.1.0",
-    "@radix-ui/react-switch": "^1.0.1",
     "@radix-ui/react-slot": "^1.0.1",
+    "@radix-ui/react-switch": "^1.0.1",
+    "@radix-ui/react-toast": "^1.1.2",
     "@stitches/react": "^1.2.8",
     "@storybook/react": "^6.5.12",
+    "@tabler/icons": "^1.110.0",
     "@uiw/react-textarea-code-editor": "^1.4.14",
     "antd": "^4.23.6",
     "bs58check": "^2.1.2",
