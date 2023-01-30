@@ -45,6 +45,11 @@ export type RunsSearchQueryParams = {
 
   exclude_params?: boolean;
   exclude_traces?: boolean;
+
+  /**
+   * This parameter is used to align metrics by custom metric
+   */
+  x_axis?: string;
 };
 
 /**

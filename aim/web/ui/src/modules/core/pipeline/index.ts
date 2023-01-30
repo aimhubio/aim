@@ -41,12 +41,12 @@ export type PipelineOptions = {
 };
 
 export type PipelineExecutionOptions = {
-  query?: {
+  query: {
     params: RunsSearchQueryParams;
     ignoreCache?: boolean;
   };
-  group?: BettaGroupOption[];
-  custom?: CustomPhaseExecutionArgs | null;
+  group: BettaGroupOption[];
+  custom: CustomPhaseExecutionArgs | null;
 };
 
 export type CustomPhaseExecutionArgs = {

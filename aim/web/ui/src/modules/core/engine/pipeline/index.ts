@@ -129,7 +129,16 @@ function createPipelineEngine<TStore, TObject>(
   ): void {
     const currentGroupings = state.getCurrentGroupings();
 
-    state.setCurrentQuery(params);
+    const customMetric =
+      store.getState().visualizations.vis1.controls.axesProperties.alignment
+        .metric;
+
+    const queryParams = {
+      ...params,
+      ...(customMetric ? { x_axis: customMetric } : {}),
+    };
+
+    state.setCurrentQuery(queryParams);
     state.setError(null);
 
     if (!isInternal && pipelineOptions.persist) {
@@ -160,18 +169,11 @@ function createPipelineEngine<TStore, TObject>(
       orders: currentGroupings[key].orders,
     }));
 
-    const customMetric =
-      store.getState().visualizations.vis1.controls.axesProperties.alignment
-        .metric;
-
     // @TODO complete response typings
     pipeline
       .execute({
         query: {
-          params: {
-            ...params,
-            ...(customMetric ? { x_axis: customMetric } : {}),
-          },
+          params: queryParams,
           ignoreCache: true,
         },
         group: groupOptions,
