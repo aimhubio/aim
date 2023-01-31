@@ -14,6 +14,8 @@ import { IAggregationConfig } from '../index';
 
 import { IAggregationPopoverProps } from './';
 
+import './AggregationPopover.scss';
+
 function AggregationPopover(props: IAggregationPopoverProps) {
   const {
     visualizationName,

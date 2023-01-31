@@ -19,10 +19,9 @@ interface FilteredMetricData {
 
 function useAlignMetricsData(
   engine: IBoxContentProps['engine'],
-  visualizationName: string,
+  vizEngine: any,
   data: any[] = [],
 ) {
-  const vizEngine = engine.visualizations[visualizationName];
   const axesPropsConfig: IAxesPropsConfig = engine.useStore(
     vizEngine.controls.axesProperties.stateSelector,
   );
