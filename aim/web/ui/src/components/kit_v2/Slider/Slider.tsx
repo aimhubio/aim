@@ -35,12 +35,13 @@ const Slider = React.memo(
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [value]);
 
-    const onChange = (value: number[]) => {
+    const onChange = React.useCallback((value: number[]) => {
       setSliderValue(value);
       if (onValueChange) {
         onValueChange(value);
       }
-    };
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     function getMarkPosition(mark: number) {
       // The mark position is calculated based on the min and max values
@@ -64,9 +65,9 @@ const Slider = React.memo(
         <SliderTrack className='SliderTrack'>
           <SliderRange className='SliderRange' />
         </SliderTrack>
-        {sliderValue.map((_: number, i: number) => (
-          <SliderThumb className='SliderThumb' key={i}>
-            <SliderLabel className='SliderLabel'>{sliderValue[i]}</SliderLabel>
+        {sliderValue.map((value: number) => (
+          <SliderThumb className='SliderThumb' key={value}>
+            <SliderLabel className='SliderLabel'>{value}</SliderLabel>
           </SliderThumb>
         ))}
 
@@ -95,4 +96,5 @@ const Slider = React.memo(
 );
 
 Slider.displayName = 'Slider';
+
 export default React.memo(Slider);
