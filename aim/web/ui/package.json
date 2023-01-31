@@ -16,6 +16,7 @@
     "@radix-ui/react-slot": "^1.0.1",
     "@radix-ui/react-switch": "^1.0.1",
     "@radix-ui/react-toast": "^1.1.2",
+    "@radix-ui/react-tooltip": "^1.0.3",
     "@stitches/react": "^1.2.8",
     "@storybook/react": "^6.5.12",
     "@tabler/icons": "^1.110.0",
