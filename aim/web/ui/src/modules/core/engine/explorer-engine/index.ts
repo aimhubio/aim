@@ -406,10 +406,10 @@ function createEngine<TObject = any>(
     initialize,
   };
 
-  if (__DEV__) {
-    // @ts-ignore
-    window[name] = engine;
-  }
+  // if (__DEV__) {
+  //   // @ts-ignore
+  //   window[name] = engine;
+  // }
 
   return engine;
 }
