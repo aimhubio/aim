@@ -417,6 +417,39 @@ See `AimCallback` source [here](https://github.com/aimhubio/aim/blob/main/aim/sd
 Check out a simple objective optimization example [here](https://github.com/aimhubio/aim/blob/main/examples/acme_track.py).
 
 
+### Integration with Prophet
+
+Aim provides an AimLogger object designed to track [Prophet](https://facebook.github.io/prophet/docs/quick_start.html) hyperparameters and metrics.
+It takes three steps to integrate Aim into your Prophet script.
+
+Step 1: Explicitly import the `AimLogger`.
+
+```python
+from aim.prophet import AimLogger
+```
+
+Step 2: After initializing a Prophet model, instantiate the AimLogger with your Prophet model.
+
+```python
+model = Prophet()
+logger = AimLogger(prophet_model=model, repo=".", experiment="prophet_test")
+```
+
+Step 3 (optional): pass any metrics you want after fitting the Prophet model.
+
+```python
+metrics = {"backtest_mse": backtest_mse, "backtest_mape": backtest_mape}
+logger.track_metrics(metrics)
+```
+Note that the metrics are assumed to be validation metrics by default. Alternatively, you can pass a `context` argument to the track_metrics method. 
+
+```python
+metrics = {"train_mse": backtest_mse, "train_mape": backtest_mape}
+logger.track_metrics(metrics, context={"subset": "train"})
+```
+
+See `AimLogger` source [here](https://github.com/aimhubio/aim/blob/main/aim/sdk/adapters/prophet.py).  
+Check out a simple example [here](https://github.com/aimhubio/aim/blob/main/examples/prophet_track.py).
 ### What's next?
 
 During the training process, you can start another terminal in the same directory, start `aim up` and you can observe
