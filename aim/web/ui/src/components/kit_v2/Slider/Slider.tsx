@@ -19,7 +19,7 @@ const Slider = React.memo(
   ({
     min = 0,
     max = 100,
-    value,
+    value = [],
     defaultValue = [10],
     marks = [],
     onValueChange,
@@ -29,10 +29,8 @@ const Slider = React.memo(
       React.useState<number[]>(defaultValue);
 
     React.useEffect(() => {
-      if (value) {
-        if (value && !_.isEqual(value, sliderValue)) {
-          setSliderValue(value);
-        }
+      if (value.length > 0 && !_.isEqual(value, sliderValue)) {
+        setSliderValue(value);
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [value]);
@@ -73,7 +71,7 @@ const Slider = React.memo(
         ))}
 
         {marks.length > 0 &&
-          marks?.map((mark) => {
+          marks.map((mark) => {
             return (
               <SliderMark
                 key={mark.value}
