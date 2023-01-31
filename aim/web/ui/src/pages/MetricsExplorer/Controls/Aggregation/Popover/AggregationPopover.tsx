@@ -96,7 +96,7 @@ function AggregationPopover(props: IAggregationPopoverProps) {
             Max
           </MenuItem>
         </div>
-        <Divider className='AggregationPopover__Divider' />
+        <Divider className='AggregationPopover__divider' />
         <Text component='h4' tint={50} className='AggregationPopover__subtitle'>
           Select Area:
         </Text>
