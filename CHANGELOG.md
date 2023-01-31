@@ -17,6 +17,7 @@
 - Support events signaling for Remote Tracking server (alberttorosyan)
 - Enhance DVC parameters tracking (tmynn)
 - Add SDK events tracking (alberttorosyan)
+- Add the ability to easily copy run hash with a single click (VkoHov)
 - Add Prophet integration (grigoryan-davit)
 
 ### Fixes

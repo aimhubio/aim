@@ -20,6 +20,10 @@
     margin: 0 1rem 1.5rem;
 
     &__info {
+      .Icon__container {
+        font-size: 0.875rem;
+        margin-right: 0.75rem;
+      }
       &__listItem {
         display: flex;
         align-items: center;
@@ -31,11 +35,21 @@
           overflow: hidden;
           text-overflow: ellipsis;
         }
+        &__copyRunHashButton {
+          .Icon__container {
+            margin-right: 0;
+          }
+        }
       }
-
-      .Icon__container {
-        font-size: 0.875rem;
-        margin-right: 0.75rem;
+      .runHashListItem {
+        justify-content: space-between;
+        &__hashWrapper {
+          display: flex;
+          max-width: calc(100% - 1.5rem);
+          span {
+            max-width: calc(100% - 26px);
+          }
+        }
       }
     }
     &__descriptionBox {
