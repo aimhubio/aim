@@ -21,7 +21,7 @@ import { formatValueByAlignment } from '../formatByAlignment';
 
 import { getDimensionValue } from './getDimensionValue';
 
-import { CircleEnum, ScaleEnum, HighlightEnum } from './index';
+import { CircleEnum, HighlightEnum, ScaleEnum } from './index';
 
 function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
   const {
@@ -342,8 +342,9 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
   }
 
   function drawVerticalAxisLine(x: number): void {
-    if (drawAxisLines.y) {
+    if (drawAxisLines.y && plotBoxRef.current) {
       const { height, width } = plotBoxRef.current;
+
       const boundedHoverLineX = x < 0 ? 0 : x > width ? width : x;
 
       const axisLineData: IAxisLineData = {
@@ -765,6 +766,8 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
 
     const xValue = focusedState?.active ? focusedState.xValue : currentXValue;
     const mouseX = xScale(xValue);
+
+    if (isNaN(xValue) || isNaN(mouseX)) return;
 
     const nearestCircles = getNearestCircles(mouseX);
     clearHorizontalAxisLine();

@@ -2,8 +2,6 @@ import { AimObjectDepths } from 'types/core/enums';
 import { SequenceFullView, Container } from 'types/core/AimObjects';
 import { Record } from 'types/core/shared';
 
-import { filterMetricsData } from 'utils/app/filterMetricData';
-
 import { DepthInterceptors } from './types';
 
 const depthInterceptors: DepthInterceptors = {
@@ -15,13 +13,8 @@ const depthInterceptors: DepthInterceptors = {
     };
   },
   [AimObjectDepths.Sequence]: (sequence: SequenceFullView) => {
-    const filteredData = filterMetricsData(sequence);
-
     return {
-      data: {
-        xValues: [...filteredData.steps],
-        yValues: [...filteredData.values],
-      },
+      data: sequence,
     };
   },
   [AimObjectDepths.Step]: (sequenceBase: SequenceFullView) => {

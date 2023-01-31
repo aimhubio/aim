@@ -3,6 +3,7 @@ import produce from 'immer';
 
 import COLORS from 'config/colors/colors';
 import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
+import { CONTROLS_DEFAULT_CONFIG } from 'config/controls/controlsDefaultConfig';
 
 import { getDefaultHydration } from 'modules/BaseExplorer';
 import { GroupType, Order } from 'modules/core/pipeline';
@@ -13,13 +14,9 @@ import { PersistenceTypesEnum } from 'modules/core/engine/types';
 
 import { AimFlatObjectBase } from 'types/core/AimObjects';
 
-import {
-  AggregationAreaMethods,
-  AggregationLineMethods,
-} from 'utils/aggregateGroupData';
-
 import getMetricsExplorerStaticContent from './getStaticContent';
 import Aggregation from './Controls/Aggregation';
+import ConfigureAxes from './Controls/ConfigureAxes/ConfigureAxes';
 
 export const getMetricsDefaultConfig = (): typeof defaultHydration => {
   const defaultConfig = getDefaultHydration();
@@ -81,37 +78,24 @@ export const getMetricsDefaultConfig = (): typeof defaultHydration => {
       component: Aggregation,
       state: {
         initialState: {
-          methods: {
-            area: AggregationAreaMethods.MIN_MAX,
-            line: AggregationLineMethods.MEAN,
-          },
-          isApplied: false,
+          methods: CONTROLS_DEFAULT_CONFIG.metrics.aggregationConfig.methods,
+          isApplied:
+            CONTROLS_DEFAULT_CONFIG.metrics.aggregationConfig.isApplied,
         },
         persist: PersistenceTypesEnum.Url,
       },
     };
-    // draft.axesProperties = {
-    //   component: () => null,
-    //   state: {
-    //     initialState: {
-    //       alignment: {
-    //         metric: CONTROLS_DEFAULT_CONFIG.metrics.alignmentConfig.metric,
-    //         type: CONTROLS_DEFAULT_CONFIG.metrics.alignmentConfig.type,
-    //       },
-    //       axesScale: {
-    //         type: {
-    //           xAxis: CONTROLS_DEFAULT_CONFIG.metrics.axesScaleType.xAxis,
-    //           yAxis: CONTROLS_DEFAULT_CONFIG.metrics.axesScaleType.yAxis,
-    //         },
-    //         range: {
-    //           xAxis: CONTROLS_DEFAULT_CONFIG.metrics.axesScaleRange.xAxis,
-    //           yAxis: CONTROLS_DEFAULT_CONFIG.metrics.axesScaleRange.yAxis,
-    //         },
-    //       },
-    //     },
-    //     persist: 'url',
-    //   },
-    // };
+    draft.axesProperties = {
+      component: ConfigureAxes,
+      state: {
+        initialState: {
+          alignment: CONTROLS_DEFAULT_CONFIG.metrics.alignmentConfig,
+          axesScaleType: CONTROLS_DEFAULT_CONFIG.metrics.axesScaleType,
+          axesScaleRange: CONTROLS_DEFAULT_CONFIG.metrics.axesScaleRange,
+        },
+        persist: PersistenceTypesEnum.Url,
+      },
+    };
   });
 
   return {

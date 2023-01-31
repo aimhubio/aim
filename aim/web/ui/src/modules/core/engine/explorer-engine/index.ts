@@ -89,6 +89,9 @@ function getPipelineEngine(
     query: {
       useCache,
     },
+    custom: {
+      useCache,
+    },
     persist: config.persist,
   };
 

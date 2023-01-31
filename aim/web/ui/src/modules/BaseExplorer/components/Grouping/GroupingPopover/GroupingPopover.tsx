@@ -18,10 +18,9 @@ import { Badge, Icon, Text, ToggleButton } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { Order } from 'modules/core/pipeline';
+import { SelectOption } from 'modules/BaseExplorer/components/Controls/CaptionProperties';
 
 import { IGroupingSelectOption } from 'types/services/models/metrics/metricsAppModel';
-
-import { SelectOption } from '../../Controls/CaptionProperties';
 
 import { IGroupingPopoverProps } from './GroupingPopover.d';
 
