@@ -261,6 +261,10 @@ const LineChart = React.forwardRef(function LineChart(
   useResizeObserver(resizeObserverCallback, parentRef, observerReturnCallback);
 
   React.useEffect(() => {
+    attributesRef.current.currentXValue = undefined;
+  }, [alignmentConfig, data]);
+
+  React.useEffect(() => {
     rafIDRef.current = window.requestAnimationFrame(renderChart);
     return () => {
       if (rafIDRef.current) {

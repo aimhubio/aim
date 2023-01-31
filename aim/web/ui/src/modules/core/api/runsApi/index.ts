@@ -5,7 +5,11 @@ import NetworkService, { RequestInstance } from 'services/NetworkService';
 
 import { SequenceTypesEnum } from 'types/core/enums';
 
-import { RunsSearchQueryParams, RunsSearchResult } from './types';
+import {
+  RunsSearchQueryParams,
+  RunsSearchResult,
+  IAlignMetricsData,
+} from './types';
 
 const api = new NetworkService(`${getAPIHost()}${ENDPOINTS.RUNS.BASE}`);
 
@@ -78,6 +82,33 @@ function createSearchRunRequest(): RequestInstance {
   };
 }
 
+function alignMetricsRequest(): RequestInstance {
+  const controller = new AbortController();
+  const signal = controller.signal;
+
+  async function call(query: {
+    body: IAlignMetricsData;
+    params: RunsSearchQueryParams;
+  }): Promise<RunsSearchResult> {
+    return (
+      await api.makeAPIPostRequest(`${ENDPOINTS.RUNS.SEARCH}/metric/align`, {
+        body: query.body,
+        query_params: query.params,
+        signal,
+      })
+    ).body;
+  }
+
+  function cancel(): void {
+    controller.abort();
+  }
+
+  return {
+    call,
+    cancel,
+  };
+}
+
 function createBlobsRequest(
   sequenceType: `${SequenceTypesEnum}`,
 ): RequestInstance {
@@ -107,9 +138,7 @@ function createActiveRunsRequest(): RequestInstance {
   const controller = new AbortController();
   const signal = controller.signal;
 
-  async function call(
-    queryParams: RunsSearchQueryParams,
-  ): Promise<RunsSearchResult> {
+  async function call(): Promise<RunsSearchResult> {
     return (
       await api.makeAPIGetRequest(`${ENDPOINTS.RUNS.ACTIVE}`, {
         signal,
@@ -133,5 +162,6 @@ export {
   createActiveRunsRequest,
   createSearchRunRequest,
   createBlobsRequest,
+  alignMetricsRequest,
 };
 export * from './types';
