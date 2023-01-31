@@ -1,7 +1,8 @@
 import os
 import logging
+import platform
 
-from filelock import BaseFileLock, SoftFileLock, UnixFileLock, has_fcntl
+from filelock import BaseFileLock, SoftFileLock, UnixFileLock, WindowsFileLock, has_fcntl
 
 from cachetools.func import ttl_cache
 from psutil import disk_partitions
@@ -10,6 +11,10 @@ from typing import Optional, Union, Dict, Set, Tuple
 
 logger = logging.getLogger(__name__)
 
+if platform.system() == 'Windows':
+    PlatformFileLock = WindowsFileLock
+else:
+    PlatformFileLock = UnixFileLock
 
 class FileSystemInspector:
     """
@@ -142,7 +147,7 @@ def AutoFileLock(
         file lock.
     """
     if not FileSystemInspector.needs_soft_lock(lock_file):
-        return UnixFileLock(lock_file, timeout)
+        return PlatformFileLock(lock_file, timeout)
     else:
         # Cleaning lock files is not required by `FileLock`. The leftover lock files
         # (potentially from previous versions) could be interpreted as *acquired*
@@ -152,10 +157,10 @@ def AutoFileLock(
 
 
 class DualLock:
-    """ Custom lock that uses both UnixLock and SoftFileLock"""
+    """ Custom lock that uses both UnixFileLock/WindowsFileLock and SoftFileLock"""
     def __init__(self, lock_path: Union[str, os.PathLike], timeout: float = -1):
         self._lock_path = str(lock_path)
-        self._lock = UnixFileLock(self._lock_path, timeout)
+        self._lock = PlatformFileLock(self._lock_path, timeout)
 
         self._soft_lock_path = f'{self._lock_path}.softlock'
         self._soft_lock = SoftFileLock(self._soft_lock_path, timeout)

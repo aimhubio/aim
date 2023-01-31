@@ -20,7 +20,8 @@ def search_aim_repo(path) -> Tuple[Any, bool]:
         if os.path.exists(repo_path) and os.path.isdir(repo_path):
             found = True
             return path, found
-        if path == '/':
+        # count parts to support both Unix (/) and Windows roots (C:\)
+        if len(pathlib.Path(path).parts) == 1:
             return None, found
         path = os.path.dirname(path)
 
@@ -36,7 +37,7 @@ def clean_repo_path(repo_path: Union[str, pathlib.Path]) -> str:
     if not isinstance(repo_path, str) or not repo_path:
         return ''
 
-    repo_path = repo_path.strip().rstrip('/')
+    repo_path = repo_path.strip().rstrip('/').rstrip('\\')
 
     if isinstance(repo_path, pathlib.Path):
         repo_path = str(repo_path)
