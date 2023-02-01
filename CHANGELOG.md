@@ -19,6 +19,7 @@
 - Add SDK events tracking (alberttorosyan)
 - Add the ability to easily copy run hash with a single click (VkoHov)
 - Add Prophet integration (grigoryan-davit)
+- Add multidataset logging support for HuggingFace transformers (tmynn)
 
 ### Fixes
 

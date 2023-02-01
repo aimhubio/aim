@@ -1,5 +1,6 @@
 from logging import getLogger
-from typing import Optional
+from typing import Optional, List, Dict
+from difflib import SequenceMatcher
 
 from aim.ext.resource.configs import DEFAULT_SYSTEM_TRACKING_INT
 from aim.sdk.num_utils import is_number
@@ -95,6 +96,11 @@ class AimCallback(TrainerCallback):
                 if log_name.startswith(prefix):
                     log_name = log_name[len(prefix):]
                     context = {'subset': prefix[:-1]}
+                    if "_" in log_name:
+                        sub_dataset = AimCallback.find_most_common_substring(list(logs.keys())).split(prefix)[-1]
+                        if sub_dataset != prefix.rstrip("_"):
+                            log_name = log_name.split(sub_dataset)[-1].lstrip("_")
+                            context["sub_dataset"] = sub_dataset
                     break
             if not is_number(log_value):
                 if not self._log_value_warned:
@@ -115,6 +121,23 @@ class AimCallback(TrainerCallback):
             self._run.close()
             del self._run
             self._run = None
+
+    @staticmethod
+    def find_most_common_substring(names: List[str]) -> Dict[str, int]:
+        substring_counts: Dict[str, int] = {}
+
+        for i in range(0, len(names)):
+            for j in range(i + 1, len(names)):
+                string1 = names[i]
+                string2 = names[j]
+                match = SequenceMatcher(None, string1, string2).find_longest_match(0, len(string1), 0, len(string2))
+                matching_substring = string1[match.a:match.a + match.size]
+                if(matching_substring not in substring_counts):
+                    substring_counts[matching_substring] = 1
+                else:
+                    substring_counts[matching_substring] += 1
+        
+        return list(substring_counts.keys())[0].rstrip("_")
 
     def __del__(self):
         self.close()
