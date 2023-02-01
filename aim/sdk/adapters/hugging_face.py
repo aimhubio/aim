@@ -92,7 +92,7 @@ class AimCallback(TrainerCallback):
             prefix_set = {"train_", "eval_", "test_"}
             for prefix in prefix_set:
                 if log_name.startswith(prefix):
-                    log_name = log_name[len(prefix) :]
+                    log_name = log_name[len(prefix):]
                     context = {"subset": prefix[:-1]}
                     if "_" in log_name:
                         sub_dataset = AimCallback.find_most_common_substring(
@@ -137,7 +137,7 @@ class AimCallback(TrainerCallback):
                 match = SequenceMatcher(None, string1, string2).find_longest_match(
                     0, len(string1), 0, len(string2)
                 )
-                matching_substring = string1[match.a : match.a + match.size]
+                matching_substring = string1[match.a:match.a + match.size]
                 if matching_substring not in substring_counts:
                     substring_counts[matching_substring] = 1
                 else:
