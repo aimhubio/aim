@@ -26,6 +26,7 @@
 - Sub-path support for RTS addresses (mihran113)
 - Fix experiment name update issues (mihran113)
 - Fix run experiment setting race conditions (mihran113)
+- Fix the issue with runs not appearing on UI (mihran113)
 
 ## 3.15.2 Dec 23, 2022
 
