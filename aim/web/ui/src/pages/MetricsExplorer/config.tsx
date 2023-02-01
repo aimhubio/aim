@@ -16,7 +16,8 @@ import { AimFlatObjectBase } from 'types/core/AimObjects';
 
 import getMetricsExplorerStaticContent from './getStaticContent';
 import Aggregation from './Controls/Aggregation';
-import ConfigureAxes from './Controls/ConfigureAxes/ConfigureAxes';
+import ConfigureAxes from './Controls/ConfigureAxes';
+import IgnoreOutliers from './Controls/IgnoreOutliers';
 
 export const getMetricsDefaultConfig = (): typeof defaultHydration => {
   const defaultConfig = getDefaultHydration();
@@ -92,6 +93,16 @@ export const getMetricsDefaultConfig = (): typeof defaultHydration => {
           alignment: CONTROLS_DEFAULT_CONFIG.metrics.alignmentConfig,
           axesScaleType: CONTROLS_DEFAULT_CONFIG.metrics.axesScaleType,
           axesScaleRange: CONTROLS_DEFAULT_CONFIG.metrics.axesScaleRange,
+        },
+        persist: PersistenceTypesEnum.Url,
+      },
+    };
+
+    draft.ignoreOutliers = {
+      component: IgnoreOutliers,
+      state: {
+        initialState: {
+          isApplied: CONTROLS_DEFAULT_CONFIG.metrics.ignoreOutliers,
         },
         persist: PersistenceTypesEnum.Url,
       },

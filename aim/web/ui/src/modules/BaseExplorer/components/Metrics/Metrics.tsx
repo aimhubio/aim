@@ -17,9 +17,14 @@ import {
 
 function Metrics(props: IBoxContentProps) {
   const { visualizationName, engine, data, index, id } = props;
+  const vizEngine = engine.visualizations[visualizationName];
 
   const chartRef = React.useRef<ILineChartRef>(null);
   const containerRef = React.useRef<HTMLDivElement | null>(null);
+
+  const ignoreOutliers = engine.useStore(
+    vizEngine.controls.ignoreOutliers.stateSelector,
+  );
 
   const { alignedData, axesPropsConfig } = useAlignMetricsData(
     engine,
@@ -53,6 +58,7 @@ function Metrics(props: IBoxContentProps) {
         alignmentConfig={axesPropsConfig.alignment}
         axesScaleRange={axesPropsConfig.axesScaleRange}
         axesScaleType={axesPropsConfig.axesScaleType}
+        ignoreOutliers={ignoreOutliers.isApplied}
         syncHoverState={syncHoverState}
       />
     </div>
