@@ -10,21 +10,21 @@ try:
     from transformers.trainer_callback import TrainerCallback
 except ImportError:
     raise RuntimeError(
-        'This contrib module requires Transformers to be installed. '
-        'Please install it with command: \n pip install transformers'
+        "This contrib module requires Transformers to be installed. "
+        "Please install it with command: \n pip install transformers"
     )
 
 logger = getLogger(__name__)
 
 
 class AimCallback(TrainerCallback):
-    def __init__(self,
-                 repo: Optional[str] = None,
-                 experiment: Optional[str] = None,
-                 system_tracking_interval: Optional[int]
-                 = DEFAULT_SYSTEM_TRACKING_INT,
-                 log_system_params: bool = True,
-                 ):
+    def __init__(
+        self,
+        repo: Optional[str] = None,
+        experiment: Optional[str] = None,
+        system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT,
+        log_system_params: bool = True,
+    ):
         self._repo_path = repo
         self._experiment_name = experiment
         self._system_tracking_interval = system_tracking_interval
@@ -62,15 +62,14 @@ class AimCallback(TrainerCallback):
         if args:
             combined_dict = {**args.to_sanitized_dict()}
             for key, value in combined_dict.items():
-                self._run.set(('hparams', key), value, strict=False)
+                self._run.set(("hparams", key), value, strict=False)
 
         # Store model configs as well
         # if hasattr(model, 'config') and model.config is not None:
         #     model_config = model.config.to_dict()
         #     self._run['model'] = model_config
 
-    def on_train_begin(self, args, state, control,
-                       model=None, **kwargs):
+    def on_train_begin(self, args, state, control, model=None, **kwargs):
         if not state.is_world_process_zero:
             return
         if not self._run:
@@ -81,8 +80,7 @@ class AimCallback(TrainerCallback):
             return
         self.close()
 
-    def on_log(self, args, state, control,
-               model=None, logs=None, **kwargs):
+    def on_log(self, args, state, control, model=None, logs=None, **kwargs):
         if not state.is_world_process_zero:
             return
 
@@ -91,13 +89,15 @@ class AimCallback(TrainerCallback):
 
         for log_name, log_value in logs.items():
             context = {}
-            prefix_set = {'train_', 'eval_', 'test_'}
+            prefix_set = {"train_", "eval_", "test_"}
             for prefix in prefix_set:
                 if log_name.startswith(prefix):
-                    log_name = log_name[len(prefix):]
-                    context = {'subset': prefix[:-1]}
+                    log_name = log_name[len(prefix) :]
+                    context = {"subset": prefix[:-1]}
                     if "_" in log_name:
-                        sub_dataset = AimCallback.find_most_common_substring(list(logs.keys())).split(prefix)[-1]
+                        sub_dataset = AimCallback.find_most_common_substring(
+                            list(logs.keys())
+                        ).split(prefix)[-1]
                         if sub_dataset != prefix.rstrip("_"):
                             log_name = log_name.split(sub_dataset)[-1].lstrip("_")
                             context["sub_dataset"] = sub_dataset
@@ -106,15 +106,19 @@ class AimCallback(TrainerCallback):
                 if not self._log_value_warned:
                     self._log_value_warned = True
                     logger.warning(
-                        f'Trainer is attempting to log a value of '
+                        f"Trainer is attempting to log a value of "
                         f'"{log_value}" of type {type(log_value)} for key "{log_name}"'
-                        f' as a metric which is not a supported value type.'
+                        f" as a metric which is not a supported value type."
                     )
                 continue
 
-            self._run.track(log_value,
-                            name=log_name, context=context,
-                            step=state.global_step, epoch=state.epoch)
+            self._run.track(
+                log_value,
+                name=log_name,
+                context=context,
+                step=state.global_step,
+                epoch=state.epoch,
+            )
 
     def close(self):
         if self._run:
@@ -130,13 +134,15 @@ class AimCallback(TrainerCallback):
             for j in range(i + 1, len(names)):
                 string1 = names[i]
                 string2 = names[j]
-                match = SequenceMatcher(None, string1, string2).find_longest_match(0, len(string1), 0, len(string2))
-                matching_substring = string1[match.a:match.a + match.size]
-                if(matching_substring not in substring_counts):
+                match = SequenceMatcher(None, string1, string2).find_longest_match(
+                    0, len(string1), 0, len(string2)
+                )
+                matching_substring = string1[match.a : match.a + match.size]
+                if matching_substring not in substring_counts:
                     substring_counts[matching_substring] = 1
                 else:
                     substring_counts[matching_substring] += 1
-        
+
         return list(substring_counts.keys())[0].rstrip("_")
 
     def __del__(self):
