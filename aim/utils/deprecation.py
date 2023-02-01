@@ -11,7 +11,7 @@ def sqlalchemy_version_check():
     from aim.__version__ import __version__
     if packaging.version.parse(sqlalchemy.__version__) >= packaging.version.parse('2.0.0'):
         raise RuntimeError(f'Aim v{__version__} does not support sqlalchemy v{sqlalchemy.__version__}. '
-                           f'Please check this is issue for further updates: '
+                           f'Please check the following issue for further updates: '
                            f'https://github.com/aimhubio/aim/issues/2514')
 
 
