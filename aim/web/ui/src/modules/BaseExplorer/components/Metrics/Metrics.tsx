@@ -13,6 +13,7 @@ import {
   useSyncHoverState,
   useSetChartData,
   useAlignMetricsData,
+  useSmoothChartData,
 } from './hooks';
 
 function Metrics(props: IBoxContentProps) {
@@ -21,17 +22,24 @@ function Metrics(props: IBoxContentProps) {
   const chartRef = React.useRef<ILineChartRef>(null);
   const containerRef = React.useRef<HTMLDivElement | null>(null);
 
-  const { alignedData, axesPropsConfig } = useAlignMetricsData(
+  const [alignedData, axesPropsConfig] = useAlignMetricsData(
     engine,
     visualizationName,
     data,
   );
-  const chartData = useSetChartData(alignedData);
+
+  const [smoothedData, smoothingConfig] = useSmoothChartData(
+    engine,
+    visualizationName,
+    alignedData,
+  );
+
+  const chartData = useSetChartData(smoothedData);
 
   const [aggregatedData, aggregationConfig] = useAggregateChartData(
     engine,
     visualizationName,
-    alignedData,
+    smoothedData,
     axesPropsConfig.axesScaleType,
   );
   const syncHoverState = useSyncHoverState(engine, chartRef, id);
@@ -53,6 +61,7 @@ function Metrics(props: IBoxContentProps) {
         alignmentConfig={axesPropsConfig.alignment}
         axesScaleRange={axesPropsConfig.axesScaleRange}
         axesScaleType={axesPropsConfig.axesScaleType}
+        curveInterpolation={smoothingConfig.curveInterpolation}
         syncHoverState={syncHoverState}
       />
     </div>

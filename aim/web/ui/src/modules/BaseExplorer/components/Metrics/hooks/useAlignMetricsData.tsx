@@ -21,9 +21,9 @@ function useAlignMetricsData(
   engine: IBoxContentProps['engine'],
   visualizationName: string,
   data: any[] = [],
-) {
+): [typeof data, IAxesPropsConfig] {
   const vizEngine = engine.visualizations[visualizationName];
-  const axesPropsConfig: IAxesPropsConfig = engine.useStore(
+  const config: IAxesPropsConfig = engine.useStore(
     vizEngine.controls.axesProperties.stateSelector,
   );
 
@@ -32,24 +32,17 @@ function useAlignMetricsData(
     for (let item of data) {
       const filteredItem: FilteredMetricData = filterMetricsData(
         item.data,
-        axesPropsConfig.alignment.type,
-        axesPropsConfig.axesScaleType,
+        config.alignment.type,
+        config.axesScaleType,
       );
-      const alignedData = alignData(
-        filteredItem,
-        axesPropsConfig.alignment.type,
-      );
+      const alignedData = alignData(filteredItem, config.alignment.type);
 
-      items.push({
-        ...item,
-        data: alignedData,
-      });
+      items.push({ ...item, data: alignedData });
     }
-
     return items;
-  }, [data, axesPropsConfig]);
+  }, [data, config]);
 
-  return { alignedData, axesPropsConfig };
+  return [alignedData, config];
 }
 
 export default useAlignMetricsData;
