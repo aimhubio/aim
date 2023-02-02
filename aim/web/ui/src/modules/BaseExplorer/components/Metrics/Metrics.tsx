@@ -11,6 +11,7 @@ import {
   useSyncHoverState,
   useSetChartData,
   useAlignMetricsData,
+  useSmoothChartData,
 } from './hooks';
 
 function Metrics(props: IBoxContentProps) {
@@ -32,17 +33,24 @@ function Metrics(props: IBoxContentProps) {
   );
   const highlighting = useStore(vizEngine.controls.highlighting.stateSelector);
 
-  const { alignedData, axesPropsConfig } = useAlignMetricsData(
+  const [alignedData, axesPropsConfig] = useAlignMetricsData(
     engine,
     vizEngine,
     data,
   );
-  const chartData = useSetChartData(alignedData);
+
+  const [smoothedData, smoothingConfig] = useSmoothChartData(
+    engine,
+    vizEngine,
+    alignedData,
+  );
+
+  const chartData = useSetChartData(smoothedData);
 
   const [aggregatedData, aggregationConfig] = useAggregateChartData(
     engine,
     vizEngine,
-    alignedData,
+    smoothedData,
     axesPropsConfig.axesScaleType,
   );
   const syncHoverState = useSyncHoverState(engine, chartRef, id);
@@ -64,6 +72,7 @@ function Metrics(props: IBoxContentProps) {
         alignmentConfig={axesPropsConfig.alignment}
         axesScaleRange={axesPropsConfig.axesScaleRange}
         axesScaleType={axesPropsConfig.axesScaleType}
+        curveInterpolation={smoothingConfig.curveInterpolation}
         ignoreOutliers={ignoreOutliers.isApplied}
         syncHoverState={syncHoverState}
       />

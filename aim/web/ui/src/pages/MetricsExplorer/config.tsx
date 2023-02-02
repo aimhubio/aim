@@ -17,6 +17,7 @@ import { AimFlatObjectBase } from 'types/core/AimObjects';
 import getMetricsExplorerStaticContent from './getStaticContent';
 import Aggregation from './Controls/Aggregation';
 import ConfigureAxes from './Controls/ConfigureAxes';
+import Smoothing from './Controls/Smoothing';
 import IgnoreOutliers from './Controls/IgnoreOutliers';
 import Highlighting from './Controls/Highlighting';
 
@@ -103,6 +104,19 @@ export const getMetricsDefaultConfig = (): typeof defaultHydration => {
       state: {
         initialState: {
           isApplied: CONTROLS_DEFAULT_CONFIG.metrics.ignoreOutliers,
+        },
+        persist: PersistenceTypesEnum.Url,
+      },
+    };
+    draft.smoothing = {
+      component: Smoothing,
+      state: {
+        initialState: {
+          algorithm: CONTROLS_DEFAULT_CONFIG.metrics.smoothing.algorithm,
+          factor: CONTROLS_DEFAULT_CONFIG.metrics.smoothing.factor,
+          curveInterpolation:
+            CONTROLS_DEFAULT_CONFIG.metrics.smoothing.curveInterpolation,
+          isApplied: CONTROLS_DEFAULT_CONFIG.metrics.smoothing.isApplied,
         },
         persist: PersistenceTypesEnum.Url,
       },
