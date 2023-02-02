@@ -17,10 +17,9 @@ const SMOOTHING_FUNCTION_DICT = {
 
 function useSmoothChartData(
   engine: IBoxContentProps['engine'],
-  visualizationName: string,
+  vizEngine: any,
   data: any[],
 ): [typeof data, ISmoothingConfig] {
-  const vizEngine = engine.visualizations[visualizationName];
   const config: ISmoothingConfig = engine.useStore(
     vizEngine.controls.smoothing.stateSelector,
   );

@@ -6,8 +6,6 @@ import { IBoxContentProps } from 'modules/BaseExplorer/types';
 
 import { ILineChartRef } from 'types/components/LineChart/LineChart';
 
-import { HighlightEnum } from 'utils/d3';
-
 import {
   useAggregateChartData,
   useSyncHoverState,
@@ -17,20 +15,34 @@ import {
 } from './hooks';
 
 function Metrics(props: IBoxContentProps) {
-  const { visualizationName, engine, data, index, id } = props;
+  const {
+    visualizationName,
+    engine,
+    engine: { useStore },
+    data,
+    index,
+    id,
+  } = props;
+  const vizEngine = engine.visualizations[visualizationName];
+
+  console.log('Metrics vizEngine', vizEngine);
 
   const chartRef = React.useRef<ILineChartRef>(null);
   const containerRef = React.useRef<HTMLDivElement | null>(null);
+  const ignoreOutliers = useStore(
+    vizEngine.controls.ignoreOutliers.stateSelector,
+  );
+  const highlighting = useStore(vizEngine.controls.highlighting.stateSelector);
 
   const [alignedData, axesPropsConfig] = useAlignMetricsData(
     engine,
-    visualizationName,
+    vizEngine,
     data,
   );
 
   const [smoothedData, smoothingConfig] = useSmoothChartData(
     engine,
-    visualizationName,
+    vizEngine,
     alignedData,
   );
 
@@ -38,7 +50,7 @@ function Metrics(props: IBoxContentProps) {
 
   const [aggregatedData, aggregationConfig] = useAggregateChartData(
     engine,
-    visualizationName,
+    vizEngine,
     smoothedData,
     axesPropsConfig.axesScaleType,
   );
@@ -55,13 +67,14 @@ function Metrics(props: IBoxContentProps) {
         nameKey={visualizationName}
         index={index}
         data={chartData}
-        highlightMode={HighlightEnum.Metric}
+        highlightMode={highlighting.mode}
         aggregatedData={aggregatedData}
         aggregationConfig={aggregationConfig}
         alignmentConfig={axesPropsConfig.alignment}
         axesScaleRange={axesPropsConfig.axesScaleRange}
         axesScaleType={axesPropsConfig.axesScaleType}
         curveInterpolation={smoothingConfig.curveInterpolation}
+        ignoreOutliers={ignoreOutliers.isApplied}
         syncHoverState={syncHoverState}
       />
     </div>
