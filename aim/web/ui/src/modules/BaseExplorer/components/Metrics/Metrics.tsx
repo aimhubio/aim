@@ -25,10 +25,9 @@ function Metrics(props: IBoxContentProps) {
   } = props;
   const vizEngine = engine.visualizations[visualizationName];
 
-  console.log('Metrics vizEngine', vizEngine);
-
   const chartRef = React.useRef<ILineChartRef>(null);
   const containerRef = React.useRef<HTMLDivElement | null>(null);
+
   const ignoreOutliers = useStore(
     vizEngine.controls.ignoreOutliers.stateSelector,
   );
