@@ -1,4 +1,4 @@
-from datasets import DatasetDict
+from datasets import Dataset, DatasetDict
 from aim.storage.object import CustomObject
 from logging import getLogger
 
@@ -8,6 +8,7 @@ logger = getLogger(__name__)
 @CustomObject.alias("hf_datasets.metadata")
 class HFDataset(CustomObject):
     AIM_NAME = "hf_datasets.metadata"
+    DEFAULT_KEY = "train"
 
     def __init__(self, dataset: DatasetDict):
         super().__init__()
@@ -17,8 +18,17 @@ class HFDataset(CustomObject):
         }
 
     def _get_ds_meta(self, dataset: DatasetDict):
-        dataset_info = vars(dataset[list(dataset.keys())[0]]._info)
-
+        if isinstance(dataset, DatasetDict):
+            try:
+                dataset_info = vars(dataset[HFDataset.DEFAULT_KEY]._info)
+            except KeyError:
+                raise KeyError(f"Failed to get dataset key '{HFDataset.DEFAULT_KEY}'")
+        elif isinstance(dataset, Dataset):
+            dataset_info = vars(dataset._info)
+        else:
+            raise NotImplementedError(
+                f"Failed to find dataset instance of type {type(dataset)}"
+            )
         return {
             "description": dataset_info.get("description"),
             "citation": dataset_info.get("citation"),
@@ -52,7 +62,9 @@ class HFDataset(CustomObject):
     def _get_task_templates(self, dataset_info):
         try:
             if dataset_info.get("task_templates"):
-                return [str(template) for template in dataset_info.get("task_templates")]
+                return [
+                    str(template) for template in dataset_info.get("task_templates")
+                ]
         except LookupError:
             logger.warning("Failed to get task templates information")
 
@@ -63,8 +75,12 @@ class HFDataset(CustomObject):
                     {
                         subset: {
                             "num_bytes": dataset_info.get("splits")[subset].num_bytes,
-                            "num_examples": dataset_info.get("splits")[subset].num_examples,
-                            "dataset_name": dataset_info.get("splits")[subset].dataset_name,
+                            "num_examples": dataset_info.get("splits")[
+                                subset
+                            ].num_examples,
+                            "dataset_name": dataset_info.get("splits")[
+                                subset
+                            ].dataset_name,
                         }
                     }
                     for subset in dataset_info.get("splits")
