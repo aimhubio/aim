@@ -62,6 +62,8 @@ class AimCallback(TrainerCallback):
             combined_dict = {**args.to_sanitized_dict()}
             for key, value in combined_dict.items():
                 self._run.set(('hparams', key), value, strict=False)
+        if model:
+            self._run.set("model", {**vars(model.config), "num_labels": model.num_labels})
 
         # Store model configs as well
         # if hasattr(model, 'config') and model.config is not None:
