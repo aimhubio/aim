@@ -17,6 +17,8 @@
 - Support events signaling for Remote Tracking server (alberttorosyan)
 - Enhance DVC parameters tracking (tmynn)
 - Add SDK events tracking (alberttorosyan)
+- Add the ability to easily copy run hash with a single click (VkoHov)
+- Add Prophet integration (grigoryan-davit)
 - Add 'Dataset' type support for hf/datasets (tmynn)
 
 ### Fixes
@@ -25,6 +27,7 @@
 - Sub-path support for RTS addresses (mihran113)
 - Fix experiment name update issues (mihran113)
 - Fix run experiment setting race conditions (mihran113)
+- Fix the issue with runs not appearing on UI (mihran113)
 
 ## 3.15.2 Dec 23, 2022
 
