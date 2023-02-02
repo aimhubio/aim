@@ -27,6 +27,9 @@ function Metrics(props: IBoxContentProps) {
   const chartRef = React.useRef<ILineChartRef>(null);
   const containerRef = React.useRef<HTMLDivElement | null>(null);
 
+  const ignoreOutliers = useStore(
+    vizEngine.controls.ignoreOutliers.stateSelector,
+  );
   const highlighting = useStore(vizEngine.controls.highlighting.stateSelector);
 
   const { alignedData, axesPropsConfig } = useAlignMetricsData(
@@ -61,6 +64,7 @@ function Metrics(props: IBoxContentProps) {
         alignmentConfig={axesPropsConfig.alignment}
         axesScaleRange={axesPropsConfig.axesScaleRange}
         axesScaleType={axesPropsConfig.axesScaleType}
+        ignoreOutliers={ignoreOutliers.isApplied}
         syncHoverState={syncHoverState}
       />
     </div>
