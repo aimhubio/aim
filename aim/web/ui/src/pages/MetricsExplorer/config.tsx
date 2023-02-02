@@ -18,6 +18,7 @@ import getMetricsExplorerStaticContent from './getStaticContent';
 import Aggregation from './Controls/Aggregation';
 import ConfigureAxes from './Controls/ConfigureAxes';
 import IgnoreOutliers from './Controls/IgnoreOutliers';
+import Highlighting from './Controls/Highlighting';
 
 export const getMetricsDefaultConfig = (): typeof defaultHydration => {
   const defaultConfig = getDefaultHydration();
@@ -97,12 +98,20 @@ export const getMetricsDefaultConfig = (): typeof defaultHydration => {
         persist: PersistenceTypesEnum.Url,
       },
     };
-
     draft.ignoreOutliers = {
       component: IgnoreOutliers,
       state: {
         initialState: {
           isApplied: CONTROLS_DEFAULT_CONFIG.metrics.ignoreOutliers,
+        },
+        persist: PersistenceTypesEnum.Url,
+      },
+    };
+    draft.highlighting = {
+      component: Highlighting,
+      state: {
+        initialState: {
+          mode: CONTROLS_DEFAULT_CONFIG.metrics.highlightMode,
         },
         persist: PersistenceTypesEnum.Url,
       },

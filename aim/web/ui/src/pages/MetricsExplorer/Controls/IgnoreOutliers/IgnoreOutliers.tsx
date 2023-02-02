@@ -34,9 +34,7 @@ function IgnoreOutliers(props: IIgnoreOutliersProps) {
               outlined: ignoreOutliers.isApplied,
             })}
             onClick={() => {
-              updateIgnoreOutliers({
-                isApplied: !ignoreOutliers.isApplied,
-              });
+              updateIgnoreOutliers({ isApplied: !ignoreOutliers.isApplied });
             }}
           >
             <Icon
