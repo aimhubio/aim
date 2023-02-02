@@ -14,7 +14,7 @@ import { ISmoothingPopoverProps } from './';
 
 import './SmoothingPopover.scss';
 
-const emaProps = {
+const EMA_PROPS = {
   marks: [
     { value: 0, label: '0' },
     { value: 0.25, label: '0.25' },
@@ -28,7 +28,7 @@ const emaProps = {
   default: CONTROLS_DEFAULT_CONFIG.metrics.smoothing.factor,
 };
 
-const cmaProps = {
+const CMA_PROPS = {
   marks: [
     { value: 1, label: '1' },
     { value: 25, label: '25' },
@@ -57,8 +57,8 @@ function SmoothingPopover(props: ISmoothingPopoverProps) {
     (event): void => {
       const factorMin =
         event.target.id === SmoothingAlgorithmEnum.EMA
-          ? emaProps.default
-          : cmaProps.default;
+          ? EMA_PROPS.default
+          : CMA_PROPS.default;
 
       setFactor(factorMin);
 
@@ -89,8 +89,8 @@ function SmoothingPopover(props: ISmoothingPopoverProps) {
 
   const sliderProps = React.useMemo(() => {
     return smoothing.algorithm === SmoothingAlgorithmEnum.EMA
-      ? emaProps
-      : cmaProps;
+      ? EMA_PROPS
+      : CMA_PROPS;
   }, [smoothing.algorithm]);
 
   return (

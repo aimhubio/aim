@@ -10,7 +10,7 @@ import {
   SmoothingAlgorithmEnum,
 } from 'utils/smoothingData';
 
-const SmoothingFn = {
+const SMOOTHING_FUNCTION_DICT = {
   [SmoothingAlgorithmEnum.EMA]: calculateExponentialMovingAverage,
   [SmoothingAlgorithmEnum.CMA]: calculateCentralMovingAverage,
 };
@@ -26,15 +26,12 @@ function useSmoothChartData(
   );
 
   const smoothedData = React.useMemo(() => {
-    const smoothingFunction = SmoothingFn[config.algorithm];
-    if (!smoothingFunction) return data;
+    const smoothingFn = SMOOTHING_FUNCTION_DICT[config.algorithm];
+    if (typeof smoothingFn !== 'function') return data;
 
     const items = [];
     for (let item of data) {
-      const smoothedValues = smoothingFunction(
-        item.data.yValues,
-        config.factor,
-      );
+      const smoothedValues = smoothingFn(item.data.yValues, config.factor);
       items.push({ ...item, data: { ...item.data, yValues: smoothedValues } });
     }
     return items;
