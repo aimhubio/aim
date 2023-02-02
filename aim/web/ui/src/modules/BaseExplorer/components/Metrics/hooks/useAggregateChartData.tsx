@@ -25,11 +25,10 @@ import {
 
 function useAggregateChartData(
   engine: IBoxContentProps['engine'],
-  visualizationName: string,
+  vizEngine: any,
   data: any[],
   axesScaleType: IAxesScaleState,
 ): [IAggregatedData[] | undefined, IAggregationConfig] {
-  const vizEngine = engine.visualizations[visualizationName];
   const config: IAggregationConfig = engine.useStore(
     vizEngine.controls.aggregation.stateSelector,
   );
