@@ -22,6 +22,7 @@
 - Add Prophet integration (grigoryan-davit)
 - Add 'Dataset' type support for hf/datasets (tmynn)
 - Add HuggingFace Transformers model info (tmynn)
+- Add multidataset logging support for HuggingFace transformers (tmynn)
 
 ### Fixes
 
