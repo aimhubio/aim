@@ -1,6 +1,7 @@
 from logging import getLogger
 from typing import Optional, List, Dict
 from difflib import SequenceMatcher
+from collections import defaultdict
 
 from aim.ext.resource.configs import DEFAULT_SYSTEM_TRACKING_INT
 from aim.sdk.num_utils import is_number
@@ -130,7 +131,7 @@ class AimCallback(TrainerCallback):
 
     @staticmethod
     def find_most_common_substring(names: List[str]) -> Dict[str, int]:
-        substring_counts: Dict[str, int] = {}
+        substring_counts = defaultdict(lambda: 0)
 
         for i in range(0, len(names)):
             for j in range(i + 1, len(names)):
@@ -140,12 +141,9 @@ class AimCallback(TrainerCallback):
                     0, len(string1), 0, len(string2)
                 )
                 matching_substring = string1[match.a:match.a + match.size]
-                if matching_substring not in substring_counts:
-                    substring_counts[matching_substring] = 1
-                else:
-                    substring_counts[matching_substring] += 1
+                substring_counts[matching_substring] += 1
 
-        return list(substring_counts.keys())[0].rstrip('_')
+        return max(substring_counts, key= lambda x: substring_counts[x]).rstrip('_')
 
     def __del__(self):
         self.close()
