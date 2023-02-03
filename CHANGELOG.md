@@ -30,6 +30,7 @@
 - Fix experiment name update issues (mihran113)
 - Fix run experiment setting race conditions (mihran113)
 - Fix the issue with runs not appearing on UI (mihran113)
+- Fix empty-illustrations font-size issue for Figures and Audios explorers (KaroMourad)
 
 ## 3.15.2 Dec 23, 2022
 
