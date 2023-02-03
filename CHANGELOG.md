@@ -8,6 +8,7 @@
 - Add support for python3.11 (alberttorosyan)
 - Add other x-axis alignment and system logs tracking to cli convert wandb (hjoonjang)
 - Add support for pre-binned distribution/histogram (YodaEmbedding)
+- Display logged run messages in Run page (VkoHov, alberttorosyan, roubkar)
 - Fix plotly and matplotlib compatibility (tmynn)
 - Use read-only mode when opening container for indexing (alberttorosyan)
 - Add Stable-Baselines3 integration (tmynn)
