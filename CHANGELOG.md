@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Fixes
+
+- Fix the issue with an empty-illustrations font-size on Base explorers (KaroMourad)
+
 ## 3.16.0 Feb 3, 2023
 
 ### Enhancements
@@ -30,7 +36,6 @@
 - Fix experiment name update issues (mihran113)
 - Fix run experiment setting race conditions (mihran113)
 - Fix the issue with runs not appearing on UI (mihran113)
-- Fix empty-illustrations font-size issue for Figures and Audios explorers (KaroMourad)
 
 ## 3.15.2 Dec 23, 2022
 
