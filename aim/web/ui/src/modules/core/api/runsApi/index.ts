@@ -6,9 +6,9 @@ import NetworkService, { RequestInstance } from 'services/NetworkService';
 import { SequenceTypesEnum } from 'types/core/enums';
 
 import {
+  IAlignMetricsData,
   RunsSearchQueryParams,
   RunsSearchResult,
-  IAlignMetricsData,
 } from './types';
 
 const api = new NetworkService(`${getAPIHost()}${ENDPOINTS.RUNS.BASE}`);
@@ -82,7 +82,33 @@ function createSearchRunRequest(): RequestInstance {
   };
 }
 
-function alignMetricsRequest(): RequestInstance {
+function createRunLogRecordsRequest(): RequestInstance {
+  const controller = new AbortController();
+  const signal = controller.signal;
+
+  async function call(
+    runId: string,
+    record_range?: string,
+  ): Promise<RunsSearchResult> {
+    return (
+      await api.makeAPIGetRequest(`${runId}/log-records`, {
+        query_params: record_range ? { record_range } : {},
+        signal,
+      })
+    ).body;
+  }
+
+  function cancel(): void {
+    controller.abort();
+  }
+
+  return {
+    call,
+    cancel,
+  };
+}
+
+function createAlignMetricsRequest(): RequestInstance {
   const controller = new AbortController();
   const signal = controller.signal;
 
@@ -138,7 +164,9 @@ function createActiveRunsRequest(): RequestInstance {
   const controller = new AbortController();
   const signal = controller.signal;
 
-  async function call(): Promise<RunsSearchResult> {
+  async function call(
+    queryParams: RunsSearchQueryParams,
+  ): Promise<RunsSearchResult> {
     return (
       await api.makeAPIGetRequest(`${ENDPOINTS.RUNS.ACTIVE}`, {
         signal,
@@ -162,6 +190,7 @@ export {
   createActiveRunsRequest,
   createSearchRunRequest,
   createBlobsRequest,
-  alignMetricsRequest,
+  createRunLogRecordsRequest,
+  createAlignMetricsRequest,
 };
 export * from './types';

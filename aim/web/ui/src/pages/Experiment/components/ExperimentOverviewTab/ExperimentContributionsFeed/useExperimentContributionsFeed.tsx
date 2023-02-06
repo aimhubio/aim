@@ -3,9 +3,9 @@ import moment from 'moment';
 import _ from 'lodash-es';
 
 import {
-  CONTRIBUTION_DAY_FORMAT,
-  CONTRIBUTION_MONTH_FORMAT,
-  CONTRIBUTION_TIME_FORMAT,
+  TIMELINE_DAY_FORMAT,
+  TIMELINE_MONTH_FORMAT,
+  TIMELINE_TIME_FORMAT,
 } from 'config/dates/dates';
 
 import { IResourceState } from 'modules/core/utils/createResource';
@@ -55,7 +55,7 @@ function useExperimentContributionsFeed(
       const monthList = data?.reduce(
         (acc: { [key: string]: any }, run: ExperimentRun) => {
           const month = moment(run.creation_time * 1000).format(
-            CONTRIBUTION_MONTH_FORMAT,
+            TIMELINE_MONTH_FORMAT,
           );
           if (!acc.includes(month) && !run.archived) {
             acc.push(month);
@@ -75,20 +75,18 @@ function useExperimentContributionsFeed(
         if (!run.archived) {
           // get the month
           const month = moment(run.creation_time * 1000).format(
-            CONTRIBUTION_MONTH_FORMAT,
+            TIMELINE_MONTH_FORMAT,
           );
 
           // get the day of the month
           const day = moment(run.creation_time * 1000).format(
-            CONTRIBUTION_DAY_FORMAT,
+            TIMELINE_DAY_FORMAT,
           );
 
           // create a contribution object
           const contribution = {
             name: run.name,
-            date: moment(run.creation_time * 1000).format(
-              CONTRIBUTION_TIME_FORMAT,
-            ),
+            date: moment(run.creation_time * 1000).format(TIMELINE_TIME_FORMAT),
             hash: run.run_id,
             creation_time: run.creation_time,
             experiment: experimentName,

@@ -167,8 +167,8 @@ def close_runs(ctx, hashes):
     def close_run(run_hash):
         if lock_manager.release_locks(run_hash, force=True):
             # Run rocksdb optimizations if container locks are removed
-            meta_db_path = os.path.join(repo_path, 'meta', 'chunks', run_hash)
-            seqs_db_path = os.path.join(repo_path, 'seqs', 'chunks', run_hash)
+            meta_db_path = os.path.join(repo.path, 'meta', 'chunks', run_hash)
+            seqs_db_path = os.path.join(repo.path, 'seqs', 'chunks', run_hash)
             optimize_container(meta_db_path, extra_options={'compaction': True})
             optimize_container(seqs_db_path, extra_options={})
         if index_manager.run_needs_indexing(run_hash):

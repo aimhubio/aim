@@ -9,7 +9,7 @@ import { AlignmentNotificationsEnum } from 'config/notification-messages/notific
 import { getSelectFormOptions } from 'modules/core/utils/getSelectFormOptions';
 import { buildObjectHash } from 'modules/core/utils/hashing';
 import {
-  alignMetricsRequest,
+  createAlignMetricsRequest,
   IAlignMetricsData,
 } from 'modules/core/api/runsApi';
 import { CustomPhaseExecutionArgs } from 'modules/core/pipeline';
@@ -112,7 +112,7 @@ function Alignment(props: IAlignmentProps) {
       const reqBody: IAlignMetricsData = { align_by: metric, runs };
 
       executeCustomPhase({
-        createRequest: alignMetricsRequest,
+        createRequest: createAlignMetricsRequest,
         body: reqBody,
         params: { report_progress: true },
         ignoreCache: false,

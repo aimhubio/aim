@@ -272,7 +272,7 @@ class BasicRun(BaseRun, StructuredRunMixin):
                  force_resume: bool = False,
                  ):
         self._resources: Optional[BasicRunAutoClean] = None
-        super().__init__(run_hash, repo=repo, read_only=read_only)
+        super().__init__(run_hash, repo=repo, read_only=read_only, force_resume=force_resume)
 
         self.meta_attrs_tree: TreeView = self.meta_tree.subtree('attrs')
         self.meta_run_attrs_tree: TreeView = self.meta_run_tree.subtree('attrs')

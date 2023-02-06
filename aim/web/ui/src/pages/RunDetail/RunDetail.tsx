@@ -72,12 +72,16 @@ const RunOverviewTab = React.lazy(
 const RunLogsTab = React.lazy(
   () => import(/* webpackChunkName: "RunLogsTab" */ './RunLogsTab'),
 );
+const RunLogRecords = React.lazy(
+  () => import(/* webpackChunkName: "RunLogRecords" */ './RunLogRecords'),
+);
 
 const tabs: Record<string, string> = {
   overview: 'Overview',
   run_parameters: 'Run Params',
   notes: 'Notes',
   logs: 'Logs',
+  messages: 'Messages',
   metrics: 'Metrics',
   system: 'System',
   distributions: 'Distributions',
@@ -135,6 +139,12 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
         inProgress={_.isNil(runData?.runInfo?.end_time)}
         updatedLogsCount={runData?.updatedLogsCount}
         isRunLogsLoading={runData?.isRunLogsLoading}
+      />
+    ),
+    messages: (
+      <RunLogRecords
+        runHash={runHash}
+        inProgress={_.isNil(runData?.runInfo?.end_time)}
       />
     ),
     metrics: (
