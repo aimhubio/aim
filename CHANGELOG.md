@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.16.1
+
+- Use non-strict mode when logging HF model metadata (alberttorosyan)
+
+
 ## 3.16.0 Feb 3, 2023
 
 ### Enhancements
