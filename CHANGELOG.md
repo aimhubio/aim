@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.16.1
+
+- Add set() method implementation in ProxyTree/SubtreeView classes (alberttorosyan)
+
 ## 3.16.0 Feb 3, 2023
 
 ### Enhancements

@@ -85,10 +85,18 @@ class ProxyTree(TreeView):
     ):
         self._rpc_client.run_instruction(self._hash, self._handler, '__delitem__', (path,), is_write_only=True)
 
+    def set(
+        self,
+        path: Union[AimObjectKey, AimObjectPath],
+        value: AimObject,
+        strict: bool = True
+    ):
+        self._rpc_client.run_instruction(self._hash, self._handler, 'set', (path, value, strict), is_write_only=True)
+
     def __setitem__(
-            self,
-            path: Union[AimObjectKey, AimObjectPath],
-            value: AimObject
+        self,
+        path: Union[AimObjectKey, AimObjectPath],
+        value: AimObject
     ):
         self._rpc_client.run_instruction(self._hash, self._handler, '__setitem__', (path, value), is_write_only=True)
 
@@ -204,6 +212,14 @@ class SubtreeView(TreeView):
         path: Union[AimObjectKey, AimObjectPath]
     ):
         del self.tree[self.absolute_path(path)]
+
+    def set(
+        self,
+        path: Union[AimObjectKey, AimObjectPath],
+        value: AimObject,
+        strict: bool = True
+    ):
+        self.tree.set(self.absolute_path(path), value, strict)
 
     def __setitem__(
             self,
