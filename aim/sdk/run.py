@@ -248,7 +248,7 @@ class StructuredRunMixin:
         """Add tag to run
 
         Args:
-            value (str): Tag to add.
+            value (:obj:`str`): Tag to add.
         """
         return self.props.add_tag(value)
 
@@ -256,7 +256,7 @@ class StructuredRunMixin:
         """Remove run tag.
 
         Args:
-            tag_name (str): :obj:`name` of tag to be removed.
+            tag_name (:obj:`str`): :obj:`name` of tag to be removed.
         """
         return self.props.remove_tag(tag_name)
 
@@ -398,7 +398,7 @@ class BasicRun(BaseRun, StructuredRunMixin):
 
         Args:
              value: The tracked value.
-             name (str): Tracked sequence name.
+             name (:obj:`str`): Tracked sequence name.
              step (:obj:`int`, optional): Sequence tracking iteration. Auto-incremented if not specified.
              epoch (:obj:`int`, optional): The training epoch.
              context (:obj:`dict`, optional): Sequence tracking context.
@@ -495,7 +495,7 @@ class BasicRun(BaseRun, StructuredRunMixin):
         """Retrieve metric sequence by it's name and context.
 
         Args:
-             name (str): Tracked metric name.
+             name (:obj:`str`): Tracked metric name.
              context (:obj:`Context`): Tracking context.
 
         Returns:
@@ -518,7 +518,7 @@ class BasicRun(BaseRun, StructuredRunMixin):
         """Retrieve images sequence by it's name and context.
 
         Args:
-             name (str): Tracked image sequence name.
+             name (:obj:`str`): Tracked image sequence name.
              context (:obj:`Context`): Tracking context.
 
         Returns:
@@ -534,7 +534,7 @@ class BasicRun(BaseRun, StructuredRunMixin):
         """Retrieve figure sequence by its name and context.
 
         Args:
-             name (str): Tracked figure sequence name.
+             name (:obj:`str`): Tracked figure sequence name.
              context (:obj:`Context`): Tracking context.
 
         Returns:
@@ -550,7 +550,7 @@ class BasicRun(BaseRun, StructuredRunMixin):
         """Retrieve audios sequence by its name and context.
 
         Args:
-             name (str): Tracked audios sequence name.
+             name (:obj:`str`): Tracked audios sequence name.
              context (:obj:`Context`): Tracking context.
 
         Returns:
@@ -566,7 +566,7 @@ class BasicRun(BaseRun, StructuredRunMixin):
         """Retrieve distributions sequence by it's name and context.
 
         Args:
-             name (str): Tracked distribution sequence name.
+             name (:obj:`str`): Tracked distribution sequence name.
              context (:obj:`Context`): Tracking context.
 
         Returns:
@@ -590,7 +590,7 @@ class BasicRun(BaseRun, StructuredRunMixin):
         """Retrieve texts sequence by it's name and context.
 
         Args:
-             name (str): Tracked text sequence name.
+             name (:obj:`str`): Tracked text sequence name.
              context (:obj:`Context`): Tracking context.
 
         Returns:
@@ -635,7 +635,7 @@ class BasicRun(BaseRun, StructuredRunMixin):
         Args:
              sequence_types: Type names of sequences for which to collect name/context pairs.
              skip_last_value (:obj:`bool`, optional): Boolean flag to include tracked sequence last value in
-             sequence info. False by default.
+                sequence info. False by default.
 
         Returns:
              :obj:`list`: list of sequence's `context`, `name` and optionally last tracked value triplets.
