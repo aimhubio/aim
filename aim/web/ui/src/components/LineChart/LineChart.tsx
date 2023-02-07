@@ -184,7 +184,7 @@ const LineChart = React.forwardRef(function LineChart(
     }
 
     drawBrush({
-      index,
+      id,
       plotBoxRef,
       plotNodeRef,
       visBoxRef,

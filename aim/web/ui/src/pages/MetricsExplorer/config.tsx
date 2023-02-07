@@ -20,6 +20,7 @@ import ConfigureAxes from './Controls/ConfigureAxes';
 import Smoothing from './Controls/Smoothing';
 import IgnoreOutliers from './Controls/IgnoreOutliers';
 import Highlighting from './Controls/Highlighting';
+import Zoom from './Controls/Zoom';
 
 export const getMetricsDefaultConfig = (): typeof defaultHydration => {
   const defaultConfig = getDefaultHydration();
@@ -126,6 +127,17 @@ export const getMetricsDefaultConfig = (): typeof defaultHydration => {
       state: {
         initialState: {
           mode: CONTROLS_DEFAULT_CONFIG.metrics.highlightMode,
+        },
+        persist: PersistenceTypesEnum.Url,
+      },
+    };
+    draft.zoom = {
+      component: Zoom,
+      state: {
+        initialState: {
+          active: CONTROLS_DEFAULT_CONFIG.metrics.zoom.active,
+          mode: CONTROLS_DEFAULT_CONFIG.metrics.zoom.mode,
+          history: CONTROLS_DEFAULT_CONFIG.metrics.zoom.history,
         },
         persist: PersistenceTypesEnum.Url,
       },
