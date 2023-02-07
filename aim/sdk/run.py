@@ -799,7 +799,7 @@ class Run(BasicRun):
 
     Args:
          run_hash (:obj:`str`, optional): Run's hash. If skipped, generated automatically.
-         repo (:obj:`Union[Repo,str], optional): Aim repository path or Repo object to which Run object is bound.
+         repo (:obj:`Union[Repo,str]`, optional): Aim repository path or Repo object to which Run object is bound.
             If skipped, default Repo is used.
          read_only (:obj:`bool`, optional): Run creation mode.
             Default is False, meaning Run object can be used to track metrics.
