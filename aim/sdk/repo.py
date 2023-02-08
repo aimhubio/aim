@@ -91,7 +91,7 @@ class Repo:
     Provides API for querying Runs/Metrics based on a given expression.
 
     Args:
-        path (str): Path to Aim repository.
+        path (:obj:`str`): Path to Aim repository.
         read_only (:obj:`bool`, optional): Flag for opening Repo in readonly mode. False by default.
         init (:obj:`bool`, optional): Flag used to initialize new Repo. False by default.
             Recommended to use ``aim init`` command instead.
@@ -191,7 +191,7 @@ class Repo:
         """Named constructor for Repo for given path.
 
         Arguments:
-            path (str): Path to Aim repository.
+            path (:obj:`str`): Path to Aim repository.
             read_only (:obj:`bool`, optional): Flag for opening Repo in readonly mode. False by default.
             init (:obj:`bool`, optional): Flag used to initialize new Repo. False by default.
                 Recommended to use ``aim init`` command instead.
@@ -211,7 +211,7 @@ class Repo:
         """Check Aim repository existence.
 
         Args:
-            path (str): Path to Aim repository.
+            path (:obj:`str`): Path to Aim repository.
         Returns:
             True if repository exists, False otherwise.
         """
@@ -224,7 +224,7 @@ class Repo:
         """Remove Aim repository.
 
         Args:
-            path (str): Path to Aim repository.
+            path (:obj:`str`): Path to Aim repository.
         """
         path = clean_repo_path(path)
         repo = cls._pool.get(path)
@@ -444,7 +444,7 @@ class Repo:
         """Get run if exists.
 
         Args:
-            run_hash (str): Run hash.
+            run_hash (:obj:`str`): Run hash.
         Returns:
             :obj:`Run` object if hash is found in repository. `None` otherwise.
         """
@@ -573,7 +573,7 @@ class Repo:
         """Get metrics satisfying query expression.
 
         Args:
-             query (str): query expression.
+             query (:obj:`str`): query expression.
              report_mode(:obj:`QueryReportMode`, optional): indicates report mode
                 (0: DISABLED, 1: PROGRESS BAR, 2: PROGRESS TUPLE). QueryReportMode.PROGRESS_BAR if not specified.
         Returns:
@@ -589,7 +589,7 @@ class Repo:
         """Get image collections satisfying query expression.
 
         Args:
-             query (str): query expression.
+             query (:obj:`str`): query expression.
              report_mode(:obj:`QueryReportMode`, optional): indicates report mode
                 (0: DISABLED, 1: PROGRESS BAR, 2: PROGRESS TUPLE). QueryReportMode.PROGRESS_BAR if not specified.
         Returns:
@@ -605,7 +605,7 @@ class Repo:
         """Get audio collections satisfying query expression.
 
         Args:
-             query (str): query expression.
+             query (:obj:`str`): query expression.
              report_mode(:obj:`QueryReportMode`, optional): indicates report mode
                 (0: DISABLED, 1: PROGRESS BAR, 2: PROGRESS TUPLE). QueryReportMode.PROGRESS_BAR if not specified.
         Returns:
@@ -621,7 +621,7 @@ class Repo:
         """Get Figures collections satisfying query expression.
 
         Args:
-             query (str): query expression.
+             query (:obj:`str`): query expression.
              report_mode(:obj:`QueryReportMode`, optional): indicates report mode
                 (0: DISABLED, 1: PROGRESS BAR, 2: PROGRESS TUPLE). QueryReportMode.PROGRESS_BAR if not specified.
         Returns:
@@ -637,7 +637,7 @@ class Repo:
         """Get distribution collections satisfying query expression.
 
         Args:
-             query (str): query expression.
+             query (:obj:`str`): query expression.
              report_mode(:obj:`QueryReportMode`, optional): indicates report mode
                 (0: DISABLED, 1: PROGRESS BAR, 2: PROGRESS TUPLE). QueryReportMode.PROGRESS_BAR if not specified.
         Returns:
@@ -653,7 +653,7 @@ class Repo:
         """Get text collections satisfying query expression.
 
         Args:
-             query (str): query expression.
+             query (:obj:`str`): query expression.
              report_mode(:obj:`QueryReportMode`, optional): indicates report mode
                 (0: DISABLED, 1: PROGRESS BAR, 2: PROGRESS TUPLE). QueryReportMode.PROGRESS_BAR if not specified.
         Returns:
@@ -712,7 +712,7 @@ class Repo:
 
         Args:
             sequence_types (:obj:`tuple[str]`, optional): Sequence types to get tracked sequence names/contexts for.
-            Defaults to 'metric'.
+                Defaults to 'metric'.
 
         Returns:
             :obj:`dict`: Tree of sequences and their contexts groupped by sequence type.
