@@ -1,10 +1,6 @@
 # Changelog
 
-## Unreleased
-
-### Enhancements
-
-### Fixes
+## 3.16.1
 
 - Pin package version `alembic>=1.5.0` (justinvyu)
 
