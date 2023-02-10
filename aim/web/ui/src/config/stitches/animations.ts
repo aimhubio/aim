@@ -1,4 +1,4 @@
-import { keyframes } from './stitches.config';
+import { keyframes } from '.';
 
 const fadeIn = keyframes({
   '0%': { opacity: 0 },

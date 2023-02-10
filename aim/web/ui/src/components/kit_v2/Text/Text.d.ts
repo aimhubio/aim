@@ -1,4 +1,4 @@
-import { CSS } from 'config/stitches/stitches.config';
+import { CSS } from 'config/stitches/types';
 export interface ITextProps
   extends Partial<
     React.HTMLAttributes<

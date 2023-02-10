@@ -1,6 +1,6 @@
 import * as SwitchPrimitive from '@radix-ui/react-switch';
 
-import { styled } from 'config/stitches/stitches.config';
+import { styled } from 'config/stitches';
 
 const ThumbStyled = styled(SwitchPrimitive.Thumb, {
   display: 'block',

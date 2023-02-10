@@ -1,6 +1,4 @@
-import * as Stitches from '@stitches/react';
-
-import { ColorPaletteType } from 'config/stitches/stitches.config';
+import { CSS, ColorPaletteType } from 'config/stitches/types';
 
 import { IconName } from '../../kit/Icon';
 export interface IIconButtonProps
@@ -38,7 +36,7 @@ export interface IIconButtonProps
    * @example { backgroundColor: 'red' }
    * @default {}
    */
-  css?: Stitches.CSS;
+  css?: CSS;
 }
 
 // IconButton component size types

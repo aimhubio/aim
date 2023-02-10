@@ -5,8 +5,8 @@ import {
   fadeOut,
   toastSlideIn,
   toastSwipeOut,
-} from 'config/stitches/stitches.animations';
-import { styled } from 'config/stitches/stitches.config';
+} from 'config/stitches/animations';
+import { styled } from 'config/stitches';
 
 export const ToastRoot: StyledComponent<typeof Toast.Root, any> = styled(
   Toast.Root,

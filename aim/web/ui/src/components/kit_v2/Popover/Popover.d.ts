@@ -1,6 +1,6 @@
 import { PopperContentProps } from '@radix-ui/react-popover';
 
-import { CSS } from 'config/stitches/stitches.config';
+import { CSS } from 'config/stitches/types';
 
 // Interface of the Popover component
 export interface IPopoverProps {

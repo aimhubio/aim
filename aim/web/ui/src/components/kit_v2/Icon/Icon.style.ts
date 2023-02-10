@@ -1,6 +1,6 @@
 import { Slot } from '@radix-ui/react-slot';
 
-import { styled } from 'config/stitches/stitches.config';
+import { styled } from 'config/stitches';
 
 const Container: any = styled('div', {
   display: 'inline-flex',

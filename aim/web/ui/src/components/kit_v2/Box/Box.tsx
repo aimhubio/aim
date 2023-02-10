@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Slot } from '@radix-ui/react-slot';
 
-import { styled } from 'config/stitches/stitches.config';
+import { styled } from 'config/stitches';
 
 import { IBoxProps } from './Box.d';
 

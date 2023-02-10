@@ -2,7 +2,7 @@ import { ComponentStory, ComponentMeta } from '@storybook/react';
 
 import TextComponent from 'components/kit_v2/Text';
 
-import { config } from 'config/stitches/stitches.config';
+import { config } from 'config/stitches';
 
 export default {
   title: 'Kit/Typography',

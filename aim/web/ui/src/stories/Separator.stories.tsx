@@ -4,7 +4,7 @@ import SeparatorComponent from 'components/kit_v2/Separator';
 import Box from 'components/kit_v2/Box';
 import Text from 'components/kit_v2/Text';
 
-import { config } from 'config/stitches/stitches.config';
+import { config } from 'config/stitches';
 
 export default {
   title: 'Kit/Data Display/Separator',

@@ -1,6 +1,6 @@
 import { SeparatorProps } from '@radix-ui/react-separator';
 
-import { CSS } from 'config/stitches/stitches.config';
+import { CSS } from 'config/stitches/types';
 
 export interface ISeparatorProps extends SeparatorProps {
   /**

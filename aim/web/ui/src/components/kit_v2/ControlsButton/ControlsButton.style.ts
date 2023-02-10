@@ -1,6 +1,6 @@
 import Icon from 'components/kit/Icon';
 
-import { styled } from 'config/stitches/stitches.config';
+import { styled } from 'config/stitches';
 
 import IconButton from '../IconButton';
 

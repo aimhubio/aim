@@ -3,7 +3,7 @@ import { IconDeviceComputerCamera } from '@tabler/icons';
 
 import IconComponent from 'components/kit_v2/Icon';
 
-import { config } from 'config/stitches/stitches.config';
+import { config } from 'config/stitches';
 
 export default {
   title: 'Kit/Inputs',
