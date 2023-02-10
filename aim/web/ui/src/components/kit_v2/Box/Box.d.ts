@@ -11,7 +11,7 @@ export interface IBoxProps
    * @default 'div'
    * @description HTML element to render
    */
-  as?: keyof HTMLElementTagNameMap;
+  as?: React.ElementType;
   /**
    * @optional
    * @default {}
