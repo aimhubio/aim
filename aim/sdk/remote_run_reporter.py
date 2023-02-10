@@ -1,8 +1,9 @@
 from aim.ext.transport.remote_resource import RemoteResourceAutoClean
 from aim.ext.transport.message_utils import pack_args
 from aim.storage.treeutils import encode_tree
+from aim.sdk.reporter.file_manager import FileManager
 
-from typing import TYPE_CHECKING
+from typing import Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from aim.ext.transport.client import Client
@@ -34,3 +35,28 @@ class RemoteRunHeartbeatReporter:
 
     def stop(self):
         self._rpc_client.run_instruction(self._hash, self._handler, 'stop')
+
+
+class RemoteFileManager(FileManager):
+    def __init__(self, client: 'Client', run_hash):
+        self._resources: RemoteResourceAutoClean = None
+
+        self._rpc_client = client
+        self._hash = run_hash
+
+        self.init_args = pack_args(encode_tree({}))
+        self.resource_type = 'FileManager'
+        handler = self._rpc_client.get_resource_handler(self, self.resource_type, args=self.init_args)
+
+        self._resources = RemoteResourceAutoClean(self)
+        self._resources.rpc_client = client
+        self._resources.handler = handler
+        self._handler = handler
+
+    def poll(self, pattern: str) -> Optional[str]:
+        return self._rpc_client.run_instruction(
+            self._hash, self._handler, 'poll', (pattern,))
+
+    def touch(self, filename: str, cleanup_file_pattern: Optional[str] = None):
+        self._rpc_client.run_instruction(
+            self._hash, self._handler, 'touch', (filename, cleanup_file_pattern), is_write_only=True)

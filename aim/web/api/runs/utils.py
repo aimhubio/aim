@@ -359,6 +359,45 @@ async def run_logs_streamer(run: Run, record_range: str) -> bytes:
         pass
 
 
+async def run_log_records_streamer(run: Run, record_range: str) -> bytes:
+    logs = run.get_log_records()
+
+    if not logs:
+        return
+
+    record_range = checked_range(record_range)
+    start = record_range.start
+    stop = record_range.stop
+
+    # range stop is missing
+    if record_range.stop is None:
+        stop = logs.last_step() + 1
+
+    # range start is missing
+    if record_range.start is None:
+        start = 0
+
+    # range is missing completely
+    log_records_count = logs.last_step()
+
+    if record_range.start is None and record_range.stop is None:
+        start = max(log_records_count - 200, 0)
+
+    last_notified_log_step = run.props.info.last_notification_index
+
+    try:
+        yield collect_streamable_data(encode_tree({'log_records_count': log_records_count}))
+        steps_vals = logs.data.view('val').range(start, stop)
+        for step, (val,) in steps_vals:
+            await asyncio.sleep(ASYNC_SLEEP_INTERVAL)
+            result = val.json()
+            result['is_notified'] = (step >= last_notified_log_step)
+            encoded_tree = encode_tree({step: result})
+            yield collect_streamable_data(encoded_tree)
+    except asyncio.CancelledError:
+        pass
+
+
 def get_project():
     project = Project()
     if not project.exists():

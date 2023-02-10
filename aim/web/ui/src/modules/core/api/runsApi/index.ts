@@ -78,6 +78,32 @@ function createSearchRunRequest(): RequestInstance {
   };
 }
 
+function createRunLogRecordsRequest(): RequestInstance {
+  const controller = new AbortController();
+  const signal = controller.signal;
+
+  async function call(
+    runId: string,
+    record_range?: string,
+  ): Promise<RunsSearchResult> {
+    return (
+      await api.makeAPIGetRequest(`${runId}/log-records`, {
+        query_params: record_range ? { record_range } : {},
+        signal,
+      })
+    ).body;
+  }
+
+  function cancel(): void {
+    controller.abort();
+  }
+
+  return {
+    call,
+    cancel,
+  };
+}
+
 function createBlobsRequest(
   sequenceType: `${SequenceTypesEnum}`,
 ): RequestInstance {
@@ -133,5 +159,6 @@ export {
   createActiveRunsRequest,
   createSearchRunRequest,
   createBlobsRequest,
+  createRunLogRecordsRequest,
 };
 export * from './types';

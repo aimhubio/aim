@@ -113,7 +113,8 @@ class RepoIndexManager:
     def index(self, run_hash) -> bool:
         try:
             index = self.repo._get_index_tree('meta', timeout=10).view(())
-            meta_tree = self.repo.request_tree('meta', run_hash, read_only=False).subtree('meta')
+            meta_tree = self.repo.request_tree(
+                'meta', run_hash, read_only=True, from_union=False, no_cache=True).subtree('meta')
             meta_run_tree = meta_tree.subtree('chunks').subtree(run_hash)
             meta_run_tree.finalize(index=index)
             if meta_run_tree['end_time'] is None:
@@ -121,4 +122,7 @@ class RepoIndexManager:
             return True
         except TimeoutError:
             logger.warning(f'Cannot index Run {run_hash}. Index is locked.')
+            return False
+        except Exception as e:
+            logger.warning(f'Failed to index Run {run_hash}. {e}')
             return False

@@ -21,8 +21,10 @@ class ProxyTree(TreeView):
     def __init__(self, client: 'Client',
                  name: str,
                  sub: str,
+                 *,
                  read_only: bool,
                  from_union: bool = False,
+                 no_cache: bool = False,
                  index=False,
                  timeout=None):
         self._resources: ProxyTreeAutoClean = None
@@ -37,6 +39,7 @@ class ProxyTree(TreeView):
             'from_union': from_union,
             'index': index,
             'timeout': timeout,
+            'no_cache': no_cache,
         }
         self.init_args = pack_args(encode_tree(kwargs))
         self.resource_type = 'TreeView'

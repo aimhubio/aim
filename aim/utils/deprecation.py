@@ -5,6 +5,16 @@ logger = logging.getLogger(__name__)
 DEFAULT_MSG_TEMPLATE = 'This functionality will be removed in'
 
 
+def sqlalchemy_version_check():
+    import sqlalchemy
+    import packaging.version
+    from aim.__version__ import __version__
+    if packaging.version.parse(sqlalchemy.__version__) >= packaging.version.parse('2.0.0'):
+        raise RuntimeError(f'Aim v{__version__} does not support sqlalchemy v{sqlalchemy.__version__}. '
+                           f'Please check the following issue for further updates: '
+                           f'https://github.com/aimhubio/aim/issues/2514')
+
+
 def python_version_deprecation_check():
     import sys
     version_info = sys.version_info

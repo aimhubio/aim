@@ -25,9 +25,9 @@ class Image(CustomObject):
     Args:
          image (:obj:): pillow `Image` object or `torch.Tensor` or `numpy.array` used to construct `aim.Image`.
          caption (:obj:`str`, optional): Optional image caption. '' by default.
-         format (:obj: `str`, optional): Parameter for PIL's .save() method. 'png' by default.
-         quality (:obj: `int`, optional): Parameter for PIL's .save() method. 85 by default.
-         optimize (:obj: `bool`, optional): Parameter for PIL's .save() method. False by default.
+         format (:obj:`str`, optional): Parameter for PIL's .save() method. 'png' by default.
+         quality (:obj:`int`, optional): Parameter for PIL's .save() method. 90 by default.
+         optimize (:obj:`bool`, optional): Parameter for PIL's .save() method. False by default.
 
          For more information on the format, quality and optimize parameters, refer to PIL documentation.
 

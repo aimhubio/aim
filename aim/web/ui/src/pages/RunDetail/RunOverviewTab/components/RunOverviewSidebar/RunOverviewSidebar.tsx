@@ -7,6 +7,7 @@ import { Divider } from '@material-ui/core';
 
 import { Button, Icon, Text } from 'components/kit';
 import AttachedTagsList from 'components/AttachedTagsList/AttachedTagsList';
+import CopyToClipBoard from 'components/CopyToClipBoard/CopyToClipBoard';
 
 import runDetailAppModel from 'services/models/runs/runDetailAppModel';
 
@@ -141,9 +142,16 @@ function RunOverviewSidebar({
               )}
             </Text>
           </div>
-          <div className='RunOverviewSidebar__section__info__listItem'>
-            <Icon name='hash' />
-            <Text tint={70}>{runHash}</Text>
+          <div className='RunOverviewSidebar__section__info__listItem runHashListItem'>
+            <div className='runHashListItem__hashWrapper'>
+              <Icon name='hash' />
+              <Text tint={70}>{runHash}</Text>
+            </div>
+            <CopyToClipBoard
+              className='RunOverviewSidebar__section__info__listItem__copyRunHashButton'
+              iconSize='small'
+              copyContent={runHash}
+            />
           </div>
         </div>
         <div className='RunOverviewSidebar__section RunOverviewSidebar__section__tags'>
@@ -162,7 +170,7 @@ function RunOverviewSidebar({
             </Text>
             <NavLink to={`${url.split('/').slice(0, -1).join('/')}/settings`}>
               <Button withOnlyIcon size='small' color='secondary'>
-                <Icon name='edit'></Icon>
+                <Icon name='edit' />
               </Button>
             </NavLink>
           </div>
