@@ -12,6 +12,23 @@ import {
   LeftIcon,
 } from './Input.style';
 
+/**
+ * @description Input component
+ * Input component params
+ * @param {string} value - Value of the input
+ * @param {string} inputSize - Size of the input
+ * @param {string} placeholder - Placeholder of the input
+ * @param {boolean} error - Error state of the input
+ * @param {object} inputElementProps - Props of the input element
+ * @param {string} caption - Caption of the input
+ * @param {string} errorMessage - Error message of the input
+ * @param {string} leftIcon - Left icon of the input
+ * @param {boolean} disabled - Disabled state of the input
+ * @param {function} onChange - On change callback of the input
+ * @returns {React.FunctionComponentElement<React.ReactNode>} - React component
+ * @example
+ * <Input value={value} inputSize="md" placeholder="Placeholder" error={false} inputElementProps={{}} caption="Caption" errorMessage="Error message" leftIcon={IconName} disabled={false} onChange={onChange} />
+ */
 const Input = React.forwardRef<React.ElementRef<typeof Container>, IInputProps>(
   (
     {
@@ -104,4 +121,5 @@ const Input = React.forwardRef<React.ElementRef<typeof Container>, IInputProps>(
   },
 );
 
+Input.displayName = 'Input';
 export default React.memo(Input);

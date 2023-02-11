@@ -5,9 +5,11 @@ import { Container, IconSlot, IconWrapper } from './Icon.style';
 
 /**
  * Icon component
- * @param {IIconProps} props
- * @param {React.ReactNode} icon
  * @param {string} size
+ * @param {React.ReactNode} icon
+ * @param {string} color
+ * @param {CSS} css
+ * @param {IIconProps} props
  * @returns {React.FunctionComponentElement<React.ReactNode>}
  * @example
  * <Icon icon={IconName} />
@@ -23,9 +25,9 @@ const Icon = React.forwardRef<React.ElementRef<typeof Container>, IIconProps>(
     return (
       <Container
         {...props}
-        ref={forwardedRef}
         data-testid='icon'
         css={{ color, ...css }}
+        ref={forwardedRef}
       >
         <IconWrapper size={size}>
           <IconSlot>{typeof icon === 'object' ? icon : <Component />}</IconSlot>
@@ -35,4 +37,5 @@ const Icon = React.forwardRef<React.ElementRef<typeof Container>, IIconProps>(
   },
 );
 
+Icon.displayName = 'Icon';
 export default React.memo(Icon);

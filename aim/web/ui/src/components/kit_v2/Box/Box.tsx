@@ -80,4 +80,5 @@ const Box = React.forwardRef<typeof StyledBox, IBoxProps>(
   },
 );
 
+Box.displayName = 'Box';
 export default React.memo(Box);

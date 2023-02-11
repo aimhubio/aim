@@ -10,6 +10,17 @@ import {
   StyledIndicator,
 } from './Checkbox.style';
 
+/**
+ * @description Checkbox component
+ * Checkbox component params
+ * @param {boolean} checked - Checked state of the checkbox
+ * @param {boolean} defaultChecked - Default checked state of the checkbox
+ * @param {boolean} disabled - Disabled state of the checkbox
+ * @returns {React.FunctionComponentElement<React.ReactNode>}
+ * @constructor
+ * @example
+ * <Checkbox checked={true} />
+ */
 export const CheckBox = React.forwardRef<
   React.ElementRef<typeof StyledCheckbox>,
   ICheckboxProps
@@ -17,7 +28,7 @@ export const CheckBox = React.forwardRef<
   (
     { checked, defaultChecked, disabled, ...props }: ICheckboxProps,
     forwardedRef,
-  ) => {
+  ): React.FunctionComponentElement<React.ReactNode> => {
     const [isChecked, setIsChecked] = React.useState<ICheckboxProps['checked']>(
       checked || defaultChecked,
     );
@@ -64,4 +75,5 @@ export const CheckBox = React.forwardRef<
   },
 );
 
+CheckBox.displayName = 'CheckBox';
 export default React.memo(CheckBox);

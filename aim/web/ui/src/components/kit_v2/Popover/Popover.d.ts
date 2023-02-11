@@ -24,7 +24,7 @@ export interface IPopoverProps {
   defaultOpen?: boolean;
 }
 
-interface PopperProps extends Partial<PopperContentProps> {
+export interface PopperProps extends Partial<PopperContentProps> {
   /**
    * styles for popper
    * @default: {}
