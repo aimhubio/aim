@@ -3,7 +3,7 @@ import { ComponentStory, ComponentMeta } from '@storybook/react';
 import BadgeComponent from 'components/kit_v2/Badge';
 
 export default {
-  title: 'Kit/Inputs',
+  title: 'Kit/Data Display',
   component: BadgeComponent,
   argTypes: {
     color: {

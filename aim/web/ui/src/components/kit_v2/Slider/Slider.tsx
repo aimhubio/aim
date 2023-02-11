@@ -14,7 +14,19 @@ import {
 } from './Slider.style';
 
 //TODO: Fix the thumb label overlapping issue
-
+/**
+ * Slider component
+ * @param {number} min - min value
+ * @param {number} max - max value
+ * @param {number[]} value - value
+ * @param {number[]} defaultValue - default value
+ * @param {number[]} marks - marks
+ * @param {function} onValueChange - onValueChange handler
+ * @param {ISliderProps} rest - rest props
+ * @returns {React.FunctionComponentElement<React.ReactNode>}
+ * @example
+ * <Slider min={0} max={100} value={[10, 20]} defaultValue={[10]} />
+ */
 const Slider = React.memo(
   ({
     min = 0,
@@ -24,7 +36,7 @@ const Slider = React.memo(
     marks = [],
     onValueChange,
     ...props
-  }: ISliderProps) => {
+  }: ISliderProps): React.FunctionComponentElement<React.ReactNode> => {
     const [sliderValue, setSliderValue] =
       React.useState<number[]>(defaultValue);
 
@@ -96,5 +108,4 @@ const Slider = React.memo(
 );
 
 Slider.displayName = 'Slider';
-
 export default React.memo(Slider);

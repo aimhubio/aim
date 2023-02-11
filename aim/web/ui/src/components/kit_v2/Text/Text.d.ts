@@ -12,7 +12,7 @@ export interface ITextProps
   css?: CSS;
 }
 
-type typographyType =
+export type typographyType =
   | 'h1'
   | 'h2'
   | 'h3'

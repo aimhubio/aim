@@ -3,6 +3,16 @@ import React from 'react';
 import { ISwitchProps } from './Switch.d';
 import { SwitchStyled, ThumbStyled } from './Switch.style';
 
+/**
+ * Switch component
+ * @param {boolean} checked - checked state of the switch
+ * @param {boolean} disabled - disabled state of the switch
+ * @param {string} size - size of the switch
+ * @param {function} onCheckedChange - callback function for checked state change
+ * @returns {React.FunctionComponentElement<React.ReactNode>} - React component
+ * @example
+ * <Switch checked={true} disabled={false} size="md" onCheckedChange={() => {}} />
+ */
 const Switch = React.forwardRef<
   React.ElementRef<typeof SwitchStyled>,
   ISwitchProps
@@ -48,4 +58,5 @@ const Switch = React.forwardRef<
   },
 );
 
+Switch.displayName = 'Switch';
 export default React.memo(Switch);

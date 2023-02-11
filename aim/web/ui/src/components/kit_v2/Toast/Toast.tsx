@@ -101,4 +101,5 @@ const ToastItem = React.forwardRef<typeof ToastRoot, IToastProps>(
   },
 );
 
+ToastItem.displayName = 'ToastItem';
 export default React.memo(ToastItem);

@@ -1,13 +1,8 @@
 import React from 'react';
-import { areEqual, FixedSizeList as List } from 'react-window';
-
-import { IconCheck } from '@tabler/icons';
+import { FixedSizeList as List } from 'react-window';
 
 import Popover from '../Popover';
 import Button from '../Button';
-import ListItem from '../ListItem';
-import Icon from '../Icon';
-import { CheckBox } from '../Checkbox/Checkbox';
 import Box from '../Box';
 import Text from '../Text';
 import Input from '../Input';
@@ -20,6 +15,20 @@ const sizeDict = {
   md: 24,
   lg: 28,
 };
+
+/**
+ * @description Virtualized Select component with search
+ * @param {boolean} multiple - whether multiple select
+ * @param {React.ReactNode} trigger - trigger element
+ * @param {PopoverProps} popoverProps - popover props
+ * @param {string | string[] | undefined } value - selected value
+ * @param {(val: string | string[]) => void} onValueChange - on value change callback
+ * @param {boolean} searchable - whether searchable
+ * @param {ISelectItemProps['data']['items']} options - options
+ * @param {('sm' | 'md' | 'lg')} size - size
+ * @param {number} height - the height of the list
+ * @returns {React.FunctionComponentElement<React.ReactNode>}
+ */
 const Select = ({
   multiple,
   trigger,
