@@ -1,4 +1,4 @@
-import { CSS } from 'config/stitches/stitches.config';
+import { CSS } from 'config/stitches/types';
 export interface ITextProps
   extends Partial<
     React.HTMLAttributes<
@@ -12,7 +12,7 @@ export interface ITextProps
   css?: CSS;
 }
 
-type typographyType =
+export type typographyType =
   | 'h1'
   | 'h2'
   | 'h3'

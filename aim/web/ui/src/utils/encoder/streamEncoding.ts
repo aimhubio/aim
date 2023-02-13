@@ -463,43 +463,47 @@ export async function parseStream<T extends Array>(
   options?: {
     progressCallback?: (progress: IRunProgress) => void | null;
     callback?: (item: any) => void;
+    dataProcessor?: (keys: any, value: any) => any;
   },
 ): Promise<T> {
   let buffer_pairs = decodeBufferPairs(stream);
   let decodedPairs = decodePathsVals(buffer_pairs);
   let objects = iterFoldTree(decodedPairs, 1);
+  if (options?.dataProcessor) {
+    return options.dataProcessor(objects);
+  } else {
+    const data: T = [];
 
-  const data: T = [];
+    try {
+      for await (let [keys, val] of objects) {
+        const object: T = { ...(val as any), hash: keys[0] };
+        if (object.hash?.startsWith?.('progress')) {
+          // maybe typeof progressCallback === 'function'
+          if (options?.progressCallback) {
+            options.progressCallback(object as IRunProgress);
+            const { 0: checked, 1: trackedRuns } = object;
 
-  try {
-    for await (let [keys, val] of objects) {
-      const object: T = { ...(val as any), hash: keys[0] };
-      if (object.hash.startsWith('progress')) {
-        // maybe typeof progressCallback === 'function'
-        if (options?.progressCallback) {
-          options.progressCallback(object as IRunProgress);
-          const { 0: checked, 1: trackedRuns } = object;
-
-          options.progressCallback({
-            matched: data.length,
-            checked,
-            trackedRuns,
-          });
+            options.progressCallback({
+              matched: data.length,
+              checked,
+              trackedRuns,
+            });
+          }
+        } else {
+          if (options?.callback) {
+            options.callback({ value: val, hash: keys[0] });
+          }
+          data.push(object);
         }
-      } else {
-        if (options?.callback) {
-          options.callback({ value: val, hash: keys[0] });
-        }
-        data.push(object);
       }
+    } catch (e) {
+      // if (__DEV__) {
+      // eslint-disable-next-line no-console
+      console.error(e);
+      // }
+      throw e;
     }
-  } catch (e) {
-    // if (__DEV__) {
-    // eslint-disable-next-line no-console
-    console.error(e);
-    // }
-    throw e;
-  }
 
-  return data;
+    return data;
+  }
 }

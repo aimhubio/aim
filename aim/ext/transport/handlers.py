@@ -1,13 +1,13 @@
 import os
 import uuid
+import pathlib
 
 from aim.ext.transport.config import AIM_SERVER_MOUNTED_REPO_PATH
-from aim.ext.transport.message_utils import unpack_args
 
 from aim.sdk import Repo
 from aim.sdk.reporter import RunStatusReporter, ScheduledStatusReporter
+from aim.sdk.reporter.file_manager import LocalFileManager
 from aim.ext.cleanup import AutoClean
-from aim.storage.treeutils import decode_tree
 
 
 class ResourceRefAutoClean(AutoClean['ResourceRef']):
@@ -39,40 +39,36 @@ def get_handler():
     return str(uuid.uuid4())
 
 
-def get_tree(args: bytes):
+def get_tree(**kwargs):
     repo_path = os.environ.get(AIM_SERVER_MOUNTED_REPO_PATH)
     if repo_path:
         repo = Repo.from_path(repo_path)
     else:
         repo = Repo.default_repo()
-    kwargs = decode_tree(unpack_args(args))
     name = kwargs['name']
     sub = kwargs['sub']
     read_only = kwargs['read_only']
     from_union = kwargs['from_union']
     index = kwargs['index']
     timeout = kwargs['timeout']
+    no_cache = kwargs.get('no_cache', False)
     if index:
         return ResourceRef(repo._get_index_tree(name, timeout))
     else:
-        return ResourceRef(repo.request_tree(name, sub, read_only=read_only, from_union=from_union))
+        return ResourceRef(repo.request_tree(name, sub, read_only=read_only, from_union=from_union, no_cache=no_cache))
 
 
-def get_structured_run(args: bytes):
+def get_structured_run(hash_, read_only, **kwargs):
     repo_path = os.environ.get(AIM_SERVER_MOUNTED_REPO_PATH)
     if repo_path:
         repo = Repo.from_path(repo_path)
     else:
         repo = Repo.default_repo()
 
-    kwargs = decode_tree(unpack_args(args))
-    hash_ = kwargs['hash_']
-    read_only = kwargs['read_only']
-
     return ResourceRef(repo.request_props(hash_, read_only))
 
 
-def get_repo(args: bytes):
+def get_repo():
     repo_path = os.environ.get(AIM_SERVER_MOUNTED_REPO_PATH)
     if repo_path:
         repo = Repo.from_path(repo_path)
@@ -81,25 +77,34 @@ def get_repo(args: bytes):
     return ResourceRef(repo)
 
 
-def get_lock(args: bytes):
+def get_lock(**kwargs):
     repo_path = os.environ.get(AIM_SERVER_MOUNTED_REPO_PATH)
     if repo_path:
         repo = Repo.from_path(repo_path)
     else:
         repo = Repo.default_repo()
-    kwargs = decode_tree(unpack_args(args))
     run_hash = kwargs['run_hash']
     # TODO Do we need to import SFRunLock here?
     from aim.sdk.lock_manager import SFRunLock
     return ResourceRef(repo.request_run_lock(run_hash), SFRunLock.release)
 
 
-def get_run_heartbeat(args: bytes):
+def get_run_heartbeat(run_hash, **kwargs):
     repo_path = os.environ.get(AIM_SERVER_MOUNTED_REPO_PATH)
     if repo_path:
         repo = Repo.from_path(repo_path)
     else:
         repo = Repo.default_repo()
-    kwargs = decode_tree(unpack_args(args))
-    run_hash = kwargs['run_hash']
-    return ResourceRef(ScheduledStatusReporter(RunStatusReporter(run_hash, repo.path)), ScheduledStatusReporter.stop)
+    status_reporter = RunStatusReporter(run_hash, LocalFileManager(repo.path))
+    progress_flag_path = pathlib.Path(repo.path) / 'meta' / 'progress' / run_hash
+    return ResourceRef(ScheduledStatusReporter(status_reporter, touch_path=progress_flag_path),
+                       ScheduledStatusReporter.stop)
+
+
+def get_file_manager(**kwargs):
+    repo_path = os.environ.get(AIM_SERVER_MOUNTED_REPO_PATH)
+    if repo_path:
+        repo = Repo.from_path(repo_path)
+    else:
+        repo = Repo.default_repo()
+    return ResourceRef(LocalFileManager(repo.path))

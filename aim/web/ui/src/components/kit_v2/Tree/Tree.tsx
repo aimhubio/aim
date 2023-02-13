@@ -3,102 +3,10 @@ import { Tree as TreeComponent } from 'antd';
 
 import Text from 'components/kit_v2/Text';
 
-import { styled } from 'config/stitches/stitches.config';
-
 import { ITreeProps } from './Tree.d';
+import { TreeListWrapper } from './Tree.style';
 
 import 'antd/es/tree/style/index.css';
-
-const TreeListWrapper = styled('div', {
-  '.ant-tree': {
-    '.ant-tree-treenode': {
-      position: 'relative',
-      height: '$5',
-      display: 'flex',
-      ai: 'center',
-      width: '100%',
-      p: 0,
-      '&:hover': {
-        bc: '#EFF0F2',
-      },
-    },
-    '.ant-tree-switcher': {
-      size: '$1',
-      display: 'flex',
-      alignSelf: 'unset',
-      ai: 'center',
-      jc: 'center',
-      zIndex: 20,
-    },
-    '.ant-tree-node-content-wrapper': {
-      display: 'flex',
-      ai: 'center',
-      jc: 'center',
-      '&.ant-tree-node-selected': {
-        bc: '$primary',
-      },
-      '&:hover': {
-        bc: 'unset',
-      },
-    },
-  },
-  '.ant-tree-focused:not(:hover):not(.ant-tree-active-focused)': {
-    background: 'unset',
-  },
-  '.ant-tree-checkbox': {
-    m: 0,
-    size: '$1',
-    display: 'flex',
-    ai: 'center',
-    jc: 'center',
-    border: 'unset',
-    position: 'unset',
-    '&::before': {
-      content: '""',
-      position: 'absolute',
-      zIndex: 10,
-      width: '100%',
-      height: '100%',
-      left: 0,
-    },
-  },
-  '.ant-tree-checkbox-indeterminate': {
-    '.ant-tree-checkbox-inner': {
-      bs: 'inset 0 0 0 1px $colors$primary100',
-    },
-    '.ant-tree-checkbox-inner::after': {
-      top: '50%',
-      left: '50%',
-      size: '6px',
-      br: '$1',
-      bc: '$primary100',
-      border: 0,
-      transform: 'translate(-50%, -50%) scale(1)',
-      opacity: 1,
-      content: ' ',
-    },
-  },
-  '.ant-tree-checkbox-checked': {
-    '&:after': {
-      display: 'none',
-    },
-    '.ant-tree-checkbox-inner': {
-      bc: '$primary100',
-      bs: 'inset 0 0 0 1px $colors$primary100',
-      '&:after': {
-        borderWidth: 1,
-        transition: 'unset',
-        width: '3px',
-        height: '5px',
-      },
-    },
-  },
-  '.ant-tree-checkbox-inner': {
-    size: '10px',
-    border: 'unset',
-    bs: 'inset 0 0 0 1px $colors$secondary100',
-  },
-});
 
 type DataNode = {
   key: string;
@@ -162,9 +70,9 @@ const TreeList = ({ searchValue = '', data, ...props }: ITreeProps) => {
   }, [data, dataList, searchValue]);
 
   const treeData = React.useMemo(() => {
-    const loop = (d: DataNode[]): DataNode[] =>
+    const processTreeData = (d: DataNode[]): DataNode[] =>
       d.map((item) => {
-        const strTitle = item.title as string;
+        const strTitle = item.key as string;
         const index = strTitle.indexOf(searchValue);
         const beforeStr = strTitle.substring(0, index);
         const afterStr = strTitle.slice(index + searchValue.length);
@@ -183,7 +91,7 @@ const TreeList = ({ searchValue = '', data, ...props }: ITreeProps) => {
             ...item,
             title,
             key: item.key,
-            children: loop(item.children),
+            children: processTreeData(item.children),
           };
         }
 
@@ -194,7 +102,7 @@ const TreeList = ({ searchValue = '', data, ...props }: ITreeProps) => {
         };
       });
 
-    return loop(data);
+    return processTreeData(data);
   }, [data, searchValue]);
 
   return (

@@ -1,6 +1,6 @@
 from aim.storage.types import AimObject, AimObjectKey, AimObjectPath
 
-from typing import TYPE_CHECKING, Any, Iterator, Tuple, Union, List
+from typing import TYPE_CHECKING, Any, Iterator, Tuple, Union
 
 if TYPE_CHECKING:
     from aim.storage.arrayview import ArrayView
@@ -85,7 +85,7 @@ class TreeView:
     def keys_eager(
             self,
             path: Union[AimObjectKey, AimObjectPath] = (),
-    ) -> List[Union[AimObjectPath, AimObjectKey]]:
+    ):
         ...
 
     def keys(
@@ -98,10 +98,7 @@ class TreeView:
     def items_eager(
             self,
             path: Union[AimObjectKey, AimObjectPath] = ()
-    ) -> List[Tuple[
-        AimObjectKey,
-        AimObject
-    ]]:
+    ):
         ...
 
     def items(

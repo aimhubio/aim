@@ -4,6 +4,7 @@ import datetime
 import json
 import pytz
 import sys
+import pathlib
 
 from collections import defaultdict
 from functools import partialmethod
@@ -13,7 +14,8 @@ from aim.sdk.base_run import BaseRun
 from aim.sdk.sequence import Sequence
 from aim.sdk.tracker import RunTracker
 from aim.sdk.reporter import RunStatusReporter, ScheduledStatusReporter
-from aim.sdk.run_heartbeat_reporter import RemoteRunHeartbeatReporter
+from aim.sdk.reporter.file_manager import LocalFileManager
+from aim.sdk.remote_run_reporter import RemoteRunHeartbeatReporter, RemoteFileManager
 from aim.sdk.sequence_collection import SingleRunSequenceCollection
 from aim.sdk.utils import (
     backup_run,
@@ -246,7 +248,7 @@ class StructuredRunMixin:
         """Add tag to run
 
         Args:
-            value (str): Tag to add.
+            value (:obj:`str`): Tag to add.
         """
         return self.props.add_tag(value)
 
@@ -254,7 +256,7 @@ class StructuredRunMixin:
         """Remove run tag.
 
         Args:
-            tag_name (str): :obj:`name` of tag to be removed.
+            tag_name (:obj:`str`): :obj:`name` of tag to be removed.
         """
         return self.props.remove_tag(tag_name)
 
@@ -270,7 +272,7 @@ class BasicRun(BaseRun, StructuredRunMixin):
                  force_resume: bool = False,
                  ):
         self._resources: Optional[BasicRunAutoClean] = None
-        super().__init__(run_hash, repo=repo, read_only=read_only)
+        super().__init__(run_hash, repo=repo, read_only=read_only, force_resume=force_resume)
 
         self.meta_attrs_tree: TreeView = self.meta_tree.subtree('attrs')
         self.meta_run_attrs_tree: TreeView = self.meta_run_tree.subtree('attrs')
@@ -306,9 +308,11 @@ class BasicRun(BaseRun, StructuredRunMixin):
 
         if not read_only:
             if not self.repo.is_remote_repo:
-                self._checkins = RunStatusReporter(self.hash, self.repo.path)
-                self._heartbeat = ScheduledStatusReporter(self._checkins)
+                self._checkins = RunStatusReporter(self.hash, LocalFileManager(self.repo.path))
+                progress_flag_path = pathlib.Path(self.repo.path) / 'meta' / 'progress' / self.hash
+                self._heartbeat = ScheduledStatusReporter(self._checkins, touch_path=progress_flag_path)
             else:
+                self._checkins = RunStatusReporter(self.hash, RemoteFileManager(self.repo._client, self.hash))
                 self._heartbeat = RemoteRunHeartbeatReporter(self.repo._client, self.hash)
 
             try:
@@ -394,7 +398,7 @@ class BasicRun(BaseRun, StructuredRunMixin):
 
         Args:
              value: The tracked value.
-             name (str): Tracked sequence name.
+             name (:obj:`str`): Tracked sequence name.
              step (:obj:`int`, optional): Sequence tracking iteration. Auto-incremented if not specified.
              epoch (:obj:`int`, optional): The training epoch.
              context (:obj:`dict`, optional): Sequence tracking context.
@@ -491,7 +495,7 @@ class BasicRun(BaseRun, StructuredRunMixin):
         """Retrieve metric sequence by it's name and context.
 
         Args:
-             name (str): Tracked metric name.
+             name (:obj:`str`): Tracked metric name.
              context (:obj:`Context`): Tracking context.
 
         Returns:
@@ -514,7 +518,7 @@ class BasicRun(BaseRun, StructuredRunMixin):
         """Retrieve images sequence by it's name and context.
 
         Args:
-             name (str): Tracked image sequence name.
+             name (:obj:`str`): Tracked image sequence name.
              context (:obj:`Context`): Tracking context.
 
         Returns:
@@ -530,7 +534,7 @@ class BasicRun(BaseRun, StructuredRunMixin):
         """Retrieve figure sequence by its name and context.
 
         Args:
-             name (str): Tracked figure sequence name.
+             name (:obj:`str`): Tracked figure sequence name.
              context (:obj:`Context`): Tracking context.
 
         Returns:
@@ -546,7 +550,7 @@ class BasicRun(BaseRun, StructuredRunMixin):
         """Retrieve audios sequence by its name and context.
 
         Args:
-             name (str): Tracked audios sequence name.
+             name (:obj:`str`): Tracked audios sequence name.
              context (:obj:`Context`): Tracking context.
 
         Returns:
@@ -562,7 +566,7 @@ class BasicRun(BaseRun, StructuredRunMixin):
         """Retrieve distributions sequence by it's name and context.
 
         Args:
-             name (str): Tracked distribution sequence name.
+             name (:obj:`str`): Tracked distribution sequence name.
              context (:obj:`Context`): Tracking context.
 
         Returns:
@@ -586,7 +590,7 @@ class BasicRun(BaseRun, StructuredRunMixin):
         """Retrieve texts sequence by it's name and context.
 
         Args:
-             name (str): Tracked text sequence name.
+             name (:obj:`str`): Tracked text sequence name.
              context (:obj:`Context`): Tracking context.
 
         Returns:
@@ -631,7 +635,7 @@ class BasicRun(BaseRun, StructuredRunMixin):
         Args:
              sequence_types: Type names of sequences for which to collect name/context pairs.
              skip_last_value (:obj:`bool`, optional): Boolean flag to include tracked sequence last value in
-             sequence info. False by default.
+                sequence info. False by default.
 
         Returns:
              :obj:`list`: list of sequence's `context`, `name` and optionally last tracked value triplets.
@@ -795,7 +799,7 @@ class Run(BasicRun):
 
     Args:
          run_hash (:obj:`str`, optional): Run's hash. If skipped, generated automatically.
-         repo (:obj:`Union[Repo,str], optional): Aim repository path or Repo object to which Run object is bound.
+         repo (:obj:`Union[Repo,str]`, optional): Aim repository path or Repo object to which Run object is bound.
             If skipped, default Repo is used.
          read_only (:obj:`bool`, optional): Run creation mode.
             Default is False, meaning Run object can be used to track metrics.

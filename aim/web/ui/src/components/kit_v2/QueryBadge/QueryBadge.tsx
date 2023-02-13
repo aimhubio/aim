@@ -6,14 +6,17 @@ import IconButton from '../IconButton';
 
 import { IQueryBadgeProps } from './QueryBadge.d';
 import { ButtonText } from './QueryBadge.style';
+
 /**
  * @component QueryBadge
  * @description QueryBadge component
  * @param {string} size - size of the QueryBadge
  * @param {string} color - color of the QueryBadge
  * @param {boolean} disabled - disabled state of the QueryBadge
+ * @returns {React.FunctionComponentElement<React.ReactNode>} - React component
+ * @example
+ * <QueryBadge size="sm" color="primary" disabled={false} />
  */
-
 const QueryBadge = React.forwardRef<
   React.ElementRef<typeof ButtonGroup>,
   IQueryBadgeProps
@@ -55,4 +58,5 @@ const QueryBadge = React.forwardRef<
   },
 );
 
+QueryBadge.displayName = 'QueryBadge';
 export default React.memo(QueryBadge);

@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { CSS } from 'config/stitches/stitches.config';
+import { CSS } from 'config/stitches/types';
 
 // The interface for the Icon component
 export interface IIconProps

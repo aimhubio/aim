@@ -1,6 +1,6 @@
 import { Root, Item, Indicator } from '@radix-ui/react-radio-group';
 
-import { styled } from 'config/stitches/stitches.config';
+import { styled } from 'config/stitches';
 
 const StyledRadioGroup = styled(Root, {});
 

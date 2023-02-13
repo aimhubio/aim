@@ -3,6 +3,13 @@ import React from 'react';
 import { IButtonGroupProps } from './ButtonGroup.d';
 import { Container } from './ButtonGroup.style';
 
+/**
+ * @description ButtonGroup component is a wrapper for Button component to group them together
+ * ButtonGroup component params
+ * @param {string} color - Color of the button group
+ * @param {React.ReactNode} children - React children
+ * @param {Partial<React.AllHTMLAttributes<HTMLElement>>} rest - HTML attributes
+ */
 const ButtonGroup = React.forwardRef<
   React.ElementRef<typeof Container>,
   IButtonGroupProps
@@ -28,4 +35,5 @@ const ButtonGroup = React.forwardRef<
   );
 });
 
-export default ButtonGroup;
+ButtonGroup.displayName = 'ButtonGroup';
+export default React.memo(ButtonGroup);

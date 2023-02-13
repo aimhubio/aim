@@ -12,7 +12,7 @@ export default {
 
 const treeData: any = [
   {
-    title: '0-0-000',
+    title: <span>0-0</span>,
     key: '0-0',
     children: [
       {

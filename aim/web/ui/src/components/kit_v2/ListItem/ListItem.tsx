@@ -21,9 +21,10 @@ const ListItem = React.forwardRef<
     {
       size = 'md',
       children,
-      onClick,
       leftNode,
       rightNode,
+      css = {},
+      onClick,
       ...rest
     }: IListItemProps,
     forwardedRef,
@@ -33,6 +34,7 @@ const ListItem = React.forwardRef<
         {...rest}
         onClick={onClick ? onClick : () => null}
         size={size}
+        css={css}
         ref={forwardedRef}
       >
         {leftNode ? leftNode : null}
@@ -43,4 +45,5 @@ const ListItem = React.forwardRef<
   },
 );
 
+ListItem.displayName = 'ListItem';
 export default React.memo(ListItem);

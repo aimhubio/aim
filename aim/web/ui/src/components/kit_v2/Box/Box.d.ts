@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { CSS } from 'config/stitches/stitches.config';
+import { CSS } from 'config/stitches/types';
 
 // Polymorphic Box component props
 export interface IBoxProps
@@ -11,7 +11,7 @@ export interface IBoxProps
    * @default 'div'
    * @description HTML element to render
    */
-  as?: keyof HTMLElementTagNameMap;
+  as?: React.ElementType;
   /**
    * @optional
    * @default {}

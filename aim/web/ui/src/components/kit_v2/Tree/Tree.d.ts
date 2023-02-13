@@ -11,5 +11,10 @@ export interface ITreeProps extends Partial<TreeProps> {
    * tree node check callback
    * @default () => {}
    * */
+  onCheckChange?: TreeProps['onCheck'];
+  /**
+   * tree search value
+   * @default: ''
+   * */
   searchValue?: string;
 }

@@ -4,6 +4,8 @@ import os
 from aim.sdk.repo import Repo
 from aim.sdk.utils import clean_repo_path
 
+from aim.utils.tracking import analytics
+
 
 @click.command()
 @click.option('--repo', required=False, type=click.Path(exists=True,
@@ -28,7 +30,9 @@ def init(repo):
 
     repo = Repo.from_path(repo_path, init=True)
     if re_init:
+        analytics.track_event(event_name='[Repo] Initialize')
         click.echo(
             'Re-initialized empty Aim repository at {}'.format(repo.root_path))
     else:
+        analytics.track_event(event_name='[Repo] Re-initialize')
         click.echo('Initialized a new Aim repository at {}'.format(repo.root_path))

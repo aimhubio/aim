@@ -11,6 +11,19 @@ import {
   Trigger,
 } from './ControlsButton.style';
 
+/**
+ * @description ControlsButton component
+ * ControlsButton component params
+ * @param {string} children - Label of the button
+ * @param {boolean} open - Open state of the button
+ * @param {string} rightIcon - Right icon of the button
+ * @param {string} size - Size of the button
+ * @param {boolean} hasAppliedValues - Applied values state of the button
+ * @param {number} appliedValuesCount - Applied values count of the button
+ * @param {string} leftIcon - Left icon of the button
+ * @param {boolean} disabled - Disabled state of the button
+ * @returns {React.FunctionComponentElement<React.ReactNode>} - React component
+ */
 const ControlsButton = React.forwardRef<
   React.ElementRef<typeof Trigger>,
   IControlsButtonProps
@@ -69,4 +82,5 @@ const ControlsButton = React.forwardRef<
   },
 );
 
+ControlsButton.displayName = 'ControlsButton';
 export default React.memo(ControlsButton);

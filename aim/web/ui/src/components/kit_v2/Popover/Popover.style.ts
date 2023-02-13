@@ -1,6 +1,6 @@
 import * as PopoverPrimitive from '@radix-ui/react-popover';
 
-import { keyframes, styled } from 'config/stitches/stitches.config';
+import { keyframes, styled } from 'config/stitches';
 
 const slideUpAndFade = keyframes({
   '0%': { opacity: 0, transform: 'translateY(2px)' },

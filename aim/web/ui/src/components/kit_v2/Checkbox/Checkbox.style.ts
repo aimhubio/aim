@@ -1,6 +1,6 @@
 import * as CheckboxPrimitive from '@radix-ui/react-checkbox';
 
-import { styled } from 'config/stitches/stitches.config';
+import { styled } from 'config/stitches';
 
 const IndeterminateIcon = styled('span', {
   width: '6px',

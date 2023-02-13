@@ -1,10 +1,8 @@
 import React from 'react';
 
-import type * as Stitches from '@stitches/react';
-
 import { IconName } from 'components/kit/Icon';
 
-import { ColorPaletteType } from 'config/stitches/stitches.config';
+import { CSS, ColorPaletteType } from 'config/stitches/types';
 
 // Button component props
 export interface IButtonProps
@@ -57,7 +55,7 @@ export interface IButtonProps
    * @description The css prop of the button
    * @example { backgroundColor: 'red' }
    */
-  css?: Stitches.CSS;
+  css?: CSS;
 }
 
 // Button component size types
