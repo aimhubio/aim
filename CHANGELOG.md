@@ -3,6 +3,7 @@
 ## 3.16.1
 
 - Pin package version `alembic>=1.5.0` (justinvyu)
+- Fix segment `flush()` issue with no internet access (alberttorosyan)
 
 ## 3.16.0 Feb 3, 2023
 
