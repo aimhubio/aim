@@ -130,6 +130,8 @@ export const lightTheme: ConfigType.Theme = {
     pale120: '#00FF8C',
     // mark colors
     mark: '#fffac1',
+    // border colors
+    border30: '#CED1D7',
   },
   fonts: {
     inter: 'Inter, sans-serif',
