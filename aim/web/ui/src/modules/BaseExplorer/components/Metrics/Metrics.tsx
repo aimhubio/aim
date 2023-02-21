@@ -1,10 +1,12 @@
 import * as React from 'react';
 
 import LineChart from 'components/LineChart/LineChart';
+import ErrorBoundary from 'components/ErrorBoundary';
 
 import { IBoxContentProps } from 'modules/BaseExplorer/types';
 
 import { ILineChartRef } from 'types/components/LineChart/LineChart';
+import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
 
 import {
   useAggregateChartData,
@@ -22,11 +24,16 @@ function Metrics(props: IBoxContentProps) {
     data,
     index,
     id,
+    style,
   } = props;
   const vizEngine = engine.visualizations[visualizationName];
   const controls = vizEngine.controls;
   const chartRef = React.useRef<ILineChartRef>(null);
-  const containerRef = React.useRef<HTMLDivElement | null>(null);
+  const vizStyleRef = React.useRef({
+    width: '100%',
+    height: '100%',
+    padding: 10,
+  });
 
   const ignoreOutliers = useStore(controls.ignoreOutliers.stateSelector);
   const highlighting = useStore(controls.highlighting.stateSelector);
@@ -52,33 +59,65 @@ function Metrics(props: IBoxContentProps) {
     smoothedData,
     axesPropsConfig.axesScaleType,
   );
-  const syncHoverState = useSyncHoverState(engine, chartRef, id);
+
+  const updateActiveElement = React.useCallback(
+    (activePoint: IActivePoint | null) => {
+      if (activePoint?.key && activePoint.rect) {
+        const boxTop = Number(style?.top) || 0;
+        const boxLeft = Number(style?.left) || 0;
+        const rect = activePoint.rect;
+
+        engine.activeElement.update({
+          key: activePoint.key,
+          xValue: activePoint.xValue,
+          yValue: activePoint.yValue,
+          visId: activePoint.visId,
+          inProgress: activePoint.inProgress,
+          rect: {
+            top: rect.top + vizStyleRef.current.padding + boxTop,
+            left: rect.left + vizStyleRef.current.padding + boxLeft,
+            bottom: rect.bottom + vizStyleRef.current.padding + boxTop,
+            right: rect.right + vizStyleRef.current.padding + boxLeft,
+          },
+        });
+      } else {
+        engine.activeElement.reset();
+      }
+    },
+    [style, engine.activeElement],
+  );
+
+  const syncHoverState = useSyncHoverState(
+    engine,
+    chartRef,
+    updateActiveElement,
+    id,
+  );
 
   return chartData?.length ? (
-    <div
-      ref={containerRef}
-      style={{ width: '100%', height: '100%', padding: 10 }}
-    >
-      <LineChart
-        ref={chartRef}
-        id={id}
-        index={index}
-        nameKey={visualizationName}
-        data={chartData}
-        highlightMode={highlighting.mode}
-        aggregatedData={aggregatedData}
-        aggregationConfig={aggregationConfig}
-        alignmentConfig={axesPropsConfig.alignment}
-        axesScaleRange={axesPropsConfig.axesScaleRange}
-        axesScaleType={axesPropsConfig.axesScaleType}
-        curveInterpolation={smoothingConfig.curveInterpolation}
-        ignoreOutliers={ignoreOutliers.isApplied}
-        zoom={zoom}
-        onZoomChange={controls.zoom.methods.update}
-        chartTitle={{ id: id || '' }}
-        syncHoverState={syncHoverState}
-      />
-    </div>
+    <ErrorBoundary>
+      <div style={vizStyleRef.current}>
+        <LineChart
+          ref={chartRef}
+          id={id}
+          index={index}
+          nameKey={visualizationName}
+          data={chartData}
+          highlightMode={highlighting.mode}
+          aggregatedData={aggregatedData}
+          aggregationConfig={aggregationConfig}
+          alignmentConfig={axesPropsConfig.alignment}
+          axesScaleRange={axesPropsConfig.axesScaleRange}
+          axesScaleType={axesPropsConfig.axesScaleType}
+          curveInterpolation={smoothingConfig.curveInterpolation}
+          ignoreOutliers={ignoreOutliers.isApplied}
+          zoom={zoom}
+          onZoomChange={controls.zoom.methods.update}
+          chartTitle={{ id: id || '' }}
+          syncHoverState={syncHoverState}
+        />
+      </div>
+    </ErrorBoundary>
   ) : null;
 }
 

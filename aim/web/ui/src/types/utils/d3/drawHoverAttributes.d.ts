@@ -77,12 +77,22 @@ export interface IActivePoint {
   xPos: number;
   yPos: number;
   chartIndex: number;
-  chartId: string;
+  visId: string;
   inProgress?: boolean;
-  pointRect: {
-    top: number;
-    bottom: number;
-    left: number;
-    right: number;
-  } | null;
+  pointRect: IActivePointRect | null;
+  rect: IActiveElementRect;
+}
+
+export interface IActivePointRect {
+  top: number;
+  bottom: number;
+  left: number;
+  right: number;
+}
+
+export interface IActiveElementRect {
+  top: number;
+  bottom: number;
+  left: number;
+  right: number;
 }

@@ -36,10 +36,19 @@ export type VisualizationConfig = {
   controls: ControlsConfigs;
   extendDefaultControls?: boolean;
   component?: FunctionComponent<IVisualizationProps>;
+  widgets?: WidgetsConfig;
   controlsContainer?: FunctionComponent<IControlsProps>;
   box: BoxConfig;
   states?: IEngineStates;
 };
+
+export type WidgetsConfig = Record<
+  string,
+  {
+    component: FunctionComponent<any>;
+    props?: object;
+  }
+>;
 
 export type BoxState = BoxConfig['initialState'];
 

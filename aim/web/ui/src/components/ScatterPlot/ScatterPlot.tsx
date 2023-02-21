@@ -253,7 +253,7 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
       if (focusedState) {
         attributesRef.current.focusedState = {
           ...focusedState,
-          chartId: focusedState.chartId ?? `${focusedState.chartIndex}`,
+          visId: focusedState.visId ?? `${focusedState.chartIndex}`,
         };
       }
     },

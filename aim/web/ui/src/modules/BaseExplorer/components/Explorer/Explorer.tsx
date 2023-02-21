@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
 
+import { ExplorerProps } from 'modules/BaseExplorer/types';
+
 import Visualizations from '../Visualizations';
 import ExplorerBar from '../ExplorerBar';
 import ExplorerNotifications from '../ExplorerNotifications';
-import { ExplorerProps } from '../../types';
 
 import './styles.scss';
 
