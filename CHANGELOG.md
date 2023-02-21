@@ -1,10 +1,10 @@
 # Changelog
 
-## Unreleased
+## 3.16.1
 
-### Fixes
-
-- Fix the issue with an empty-illustrations font-size on Base explorers (KaroMourad)
+- Pin package version `alembic>=1.5.0` (justinvyu)
+- Fix segment `flush()` issue with no internet access (alberttorosyan)
+- Fix the issue with an empty-illustrations styles on Base explorers (KaroMourad)
 
 ## 3.16.0 Feb 3, 2023
 
