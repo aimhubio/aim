@@ -132,6 +132,7 @@ export const getMetricsDefaultConfig = (): typeof defaultHydration => {
         persist: PersistenceTypesEnum.Url,
       },
     };
+
     draft.tooltip = {
       component: ConfigureTooltip,
       state: {
@@ -144,6 +145,7 @@ export const getMetricsDefaultConfig = (): typeof defaultHydration => {
         persist: PersistenceTypesEnum.Url,
       },
     };
+
     draft.zoom = {
       component: Zoom,
       state: {
