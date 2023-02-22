@@ -60,6 +60,7 @@ export const CONTROLS_DEFAULT_CONFIG = {
     zoom: {
       active: false,
       mode: ZoomEnum.MULTIPLE,
+      history: [],
     },
     legends: {
       display: true,
