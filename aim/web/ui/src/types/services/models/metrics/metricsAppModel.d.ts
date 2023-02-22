@@ -157,7 +157,7 @@ export interface IChartZoom {
   active: boolean;
   mode: ZoomEnum;
   history: {
-    index: number;
+    id: string;
     xValues: [number, number];
     yValues: [number, number];
   }[];

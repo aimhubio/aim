@@ -24,14 +24,13 @@ function Metrics(props: IBoxContentProps) {
     id,
   } = props;
   const vizEngine = engine.visualizations[visualizationName];
-
+  const controls = vizEngine.controls;
   const chartRef = React.useRef<ILineChartRef>(null);
   const containerRef = React.useRef<HTMLDivElement | null>(null);
 
-  const ignoreOutliers = useStore(
-    vizEngine.controls.ignoreOutliers.stateSelector,
-  );
-  const highlighting = useStore(vizEngine.controls.highlighting.stateSelector);
+  const ignoreOutliers = useStore(controls.ignoreOutliers.stateSelector);
+  const highlighting = useStore(controls.highlighting.stateSelector);
+  const zoom = useStore(controls.zoom.stateSelector);
 
   const [alignedData, axesPropsConfig] = useAlignMetricsData(
     engine,
@@ -63,8 +62,8 @@ function Metrics(props: IBoxContentProps) {
       <LineChart
         ref={chartRef}
         id={id}
-        nameKey={visualizationName}
         index={index}
+        nameKey={visualizationName}
         data={chartData}
         highlightMode={highlighting.mode}
         aggregatedData={aggregatedData}
@@ -74,6 +73,9 @@ function Metrics(props: IBoxContentProps) {
         axesScaleType={axesPropsConfig.axesScaleType}
         curveInterpolation={smoothingConfig.curveInterpolation}
         ignoreOutliers={ignoreOutliers.isApplied}
+        zoom={zoom}
+        onZoomChange={controls.zoom.methods.update}
+        chartTitle={{ id: id || '' }}
         syncHoverState={syncHoverState}
       />
     </div>

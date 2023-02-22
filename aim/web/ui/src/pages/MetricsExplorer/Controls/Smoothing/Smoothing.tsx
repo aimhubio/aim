@@ -19,6 +19,7 @@ function Smoothing(props: ISmoothingProps) {
   } = props;
   const vizEngine = visualizations[visualizationName];
   const smoothing = useStore(vizEngine.controls.smoothing.stateSelector);
+  const updateSmoothingConfig = vizEngine.controls.smoothing.methods.update;
   return (
     <ErrorBoundary>
       <ControlPopover
@@ -33,22 +34,25 @@ function Smoothing(props: ISmoothingProps) {
             <div>
               <Button
                 size='xSmall'
-                onClick={onAnchorClick}
+                onClick={() => {
+                  updateSmoothingConfig({ isApplied: !smoothing.isApplied });
+                }}
                 className={classNames('Control__anchor', {
-                  active: opened || !smoothing.isInitial,
-                  outlined: !opened && !smoothing.isInitial,
+                  active: opened || smoothing.isApplied,
+                  outlined: !opened && smoothing.isApplied,
                 })}
               >
                 <Icon
                   name='smoothing'
                   className={classNames('Control__anchor__icon', {
-                    active: opened || !smoothing.isInitial,
+                    active: opened || smoothing.isApplied,
                   })}
                 />
                 <Text className='Control__anchor__label'>Smoothing</Text>
                 <Icon
                   name='arrow-down-contained'
                   className={classNames('Control__anchor__arrow', { opened })}
+                  onClick={onAnchorClick}
                   fontSize={6}
                 />
               </Button>

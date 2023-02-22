@@ -25,6 +25,9 @@ function useSmoothChartData(
   );
 
   const smoothedData = React.useMemo(() => {
+    if (!config.isApplied) {
+      return data;
+    }
     const smoothingFn = SMOOTHING_FUNCTION_DICT[config.algorithm];
     if (typeof smoothingFn !== 'function') return data;
 
