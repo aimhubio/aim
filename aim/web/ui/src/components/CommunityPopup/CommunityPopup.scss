@@ -13,9 +13,9 @@
   display: flex;
   flex-direction: column;
   &.MuiTooltip-tooltipPlacementRight {
-    margin: 0 (-$space-sm)!important;
+    margin: 0 (-$space-sm) !important;
   }
-  overflow: visible!important;
+  overflow: visible !important;
   &__title {
     white-space: nowrap;
     line-height: toRem(17px);
@@ -29,7 +29,7 @@
     margin-top: auto;
     &__skipBtn {
       color: $pico-70;
-      padding-inline: 0 $space-lg!important;
+      padding-inline: 0 $space-lg !important;
       background-color: transparent;
       &:hover {
         color: $pico-100;
@@ -37,7 +37,7 @@
       }
     }
     &__joinBtn {
-      padding-inline: $space-lg!important;
+      padding-inline: $space-lg !important;
     }
   }
   &__content {
