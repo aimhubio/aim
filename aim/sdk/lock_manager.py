@@ -138,12 +138,15 @@ class LockManager(object):
             # Force-release container locks if any
             for container_dir in ('meta', 'seqs'):
                 soft_lock_path = self.repo_path / container_dir / 'locks' / self.softlock_fname(run_hash)
-                soft_lock_path.unlink(missing_ok=True)
+                if soft_lock_path.exists():
+                    soft_lock_path.unlink()
                 unix_lock_path = self.repo_path / container_dir / 'locks' / run_hash
-                unix_lock_path.unlink(missing_ok=True)
+                if unix_lock_path.exists():
+                    unix_lock_path.unlink()
 
             # Force-release run lock
-            lock_path.unlink(missing_ok=True)
+            if lock_path.exists():
+                lock_path.unlink()
         else:
             lock_info = self.get_run_lock_info(run_hash)
             if lock_info.locked and lock_info.version == LockingVersion.LEGACY:

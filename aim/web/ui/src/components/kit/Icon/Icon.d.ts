@@ -17,6 +17,7 @@ export interface IIconProps
 export type IconName =
   | 'close-rectangle'
   | 'close'
+  | 'close-circle'
   | 'eye-fill-show'
   | 'eye-outline-hide'
   | 'eye-show-outline'

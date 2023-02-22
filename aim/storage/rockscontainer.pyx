@@ -96,12 +96,16 @@ class RocksContainer(Container):
 
         self._wait_if_busy = wait_if_busy  # TODO implement
         self._lock_path: Optional[Path] = None
-        self._progress_path: Optional[Path] = None
 
         self._resources = RocksAutoClean(self)
 
+        progress_dir = self.path.parent.parent / 'progress'
+        self._progress_path = progress_dir / self.path.name
         if not self.read_only:
-            self.writable_db
+            progress_dir.mkdir(parents=True, exist_ok=True)
+            self._progress_path.touch(exist_ok=True)
+
+        self.db
         # TODO check if Containers are reopenable
 
     # The following properties are linked to self._resources to
@@ -148,16 +152,6 @@ class RocksContainer(Container):
                                read_only=self.read_only)
 
         return self._db
-
-    @property
-    def writable_db(self) -> aimrocks.DB:
-        db = self.db
-        if self._progress_path is None:
-            progress_dir = self.path.parent.parent / 'progress'
-            progress_dir.mkdir(parents=True, exist_ok=True)
-            self._progress_path = progress_dir / self.path.name
-            self._progress_path.touch(exist_ok=True)
-        return db
 
     def finalize(self, index: Container):
         """Finalize the Container.
@@ -496,7 +490,7 @@ class RocksContainer(Container):
 
         The `RocksContainer` features atomic writes for batches.
         """
-        self.writable_db.write(batch)
+        self.db.write(batch)
 
     def next_item(
         self,

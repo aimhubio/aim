@@ -78,22 +78,28 @@ async def get_experiment_api(exp_id: str, factory=Depends(object_factory)):
 
 @experiment_router.put('/{exp_id}/', response_model=ExperimentUpdateOut)
 async def update_experiment_properties_api(exp_id: str, exp_in: ExperimentUpdateIn, factory=Depends(object_factory)):
-    with factory:
-        exp = factory.find_experiment(exp_id)
-        if not exp:
-            raise HTTPException(status_code=404)
+    exp = factory.find_experiment(exp_id)
+    if not exp:
+        raise HTTPException(status_code=404)
 
-        if exp_in.name:
+    if exp_in.name:
+        from sqlalchemy.exc import IntegrityError
+        try:
             exp.name = exp_in.name.strip()
-        if exp_in.description is not None:
-            exp.description = exp_in.description
-        if exp_in.archived is not None:
-            if exp_in.archived and len(exp.runs) > 0:
-                raise HTTPException(status_code=400, detail=(
-                    f'Cannot archive experiment \'{exp_id}\'. '
-                    'Experiment has associated runs.'
-                ))
-            exp.archived = exp_in.archived
+        except IntegrityError:
+            exp.refresh_model()
+            raise HTTPException(status_code=400, detail=(
+                f'Experiment with name \'{exp_in.name}\' already exists.'
+            ))
+    if exp_in.description is not None:
+        exp.description = exp_in.description
+    if exp_in.archived is not None:
+        if exp_in.archived and len(exp.runs) > 0:
+            raise HTTPException(status_code=400, detail=(
+                f'Cannot archive experiment \'{exp_id}\'. '
+                'Experiment has associated runs.'
+            ))
+        exp.archived = exp_in.archived
 
     return {
         'id': exp.uuid,

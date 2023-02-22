@@ -91,7 +91,7 @@ class Repo:
     Provides API for querying Runs/Metrics based on a given expression.
 
     Args:
-        path (str): Path to Aim repository.
+        path (:obj:`str`): Path to Aim repository.
         read_only (:obj:`bool`, optional): Flag for opening Repo in readonly mode. False by default.
         init (:obj:`bool`, optional): Flag used to initialize new Repo. False by default.
             Recommended to use ``aim init`` command instead.
@@ -191,7 +191,7 @@ class Repo:
         """Named constructor for Repo for given path.
 
         Arguments:
-            path (str): Path to Aim repository.
+            path (:obj:`str`): Path to Aim repository.
             read_only (:obj:`bool`, optional): Flag for opening Repo in readonly mode. False by default.
             init (:obj:`bool`, optional): Flag used to initialize new Repo. False by default.
                 Recommended to use ``aim init`` command instead.
@@ -211,7 +211,7 @@ class Repo:
         """Check Aim repository existence.
 
         Args:
-            path (str): Path to Aim repository.
+            path (:obj:`str`): Path to Aim repository.
         Returns:
             True if repository exists, False otherwise.
         """
@@ -224,7 +224,7 @@ class Repo:
         """Remove Aim repository.
 
         Args:
-            path (str): Path to Aim repository.
+            path (:obj:`str`): Path to Aim repository.
         """
         path = clean_repo_path(path)
         repo = cls._pool.get(path)
@@ -307,12 +307,13 @@ class Repo:
         sub: str = None,
         *,
         read_only: bool,
-        from_union: bool = False  # TODO maybe = True by default
+        from_union: bool = False,  # TODO maybe = True by default
+        no_cache: bool = False,
     ):
         if not self.is_remote_repo:
-            return self.request(name, sub, read_only=read_only, from_union=from_union).tree()
+            return self.request(name, sub, read_only=read_only, from_union=from_union, no_cache=no_cache).tree()
         else:
-            return ProxyTree(self._client, name, sub, read_only, from_union)
+            return ProxyTree(self._client, name, sub, read_only=read_only, from_union=from_union, no_cache=no_cache)
 
     def request(
             self,
@@ -320,12 +321,13 @@ class Repo:
             sub: str = None,
             *,
             read_only: bool,
-            from_union: bool = False  # TODO maybe = True by default
+            from_union: bool = False,  # TODO maybe = True by default
+            no_cache: bool = False,
     ):
 
         container_config = ContainerConfig(name, sub, read_only)
         container_view = self.container_view_pool.get(container_config)
-        if container_view is None:
+        if container_view is None or no_cache:
             if read_only:
                 if from_union:
                     path = name
@@ -339,7 +341,8 @@ class Repo:
                 container = self._get_container(path, read_only=False, from_union=False)
 
             container_view = container
-            self.container_view_pool[container_config] = container_view
+            if not no_cache:
+                self.container_view_pool[container_config] = container_view
 
         return container_view
 
@@ -441,7 +444,7 @@ class Repo:
         """Get run if exists.
 
         Args:
-            run_hash (str): Run hash.
+            run_hash (:obj:`str`): Run hash.
         Returns:
             :obj:`Run` object if hash is found in repository. `None` otherwise.
         """
@@ -570,7 +573,7 @@ class Repo:
         """Get metrics satisfying query expression.
 
         Args:
-             query (str): query expression.
+             query (:obj:`str`): query expression.
              report_mode(:obj:`QueryReportMode`, optional): indicates report mode
                 (0: DISABLED, 1: PROGRESS BAR, 2: PROGRESS TUPLE). QueryReportMode.PROGRESS_BAR if not specified.
         Returns:
@@ -586,7 +589,7 @@ class Repo:
         """Get image collections satisfying query expression.
 
         Args:
-             query (str): query expression.
+             query (:obj:`str`): query expression.
              report_mode(:obj:`QueryReportMode`, optional): indicates report mode
                 (0: DISABLED, 1: PROGRESS BAR, 2: PROGRESS TUPLE). QueryReportMode.PROGRESS_BAR if not specified.
         Returns:
@@ -602,7 +605,7 @@ class Repo:
         """Get audio collections satisfying query expression.
 
         Args:
-             query (str): query expression.
+             query (:obj:`str`): query expression.
              report_mode(:obj:`QueryReportMode`, optional): indicates report mode
                 (0: DISABLED, 1: PROGRESS BAR, 2: PROGRESS TUPLE). QueryReportMode.PROGRESS_BAR if not specified.
         Returns:
@@ -618,7 +621,7 @@ class Repo:
         """Get Figures collections satisfying query expression.
 
         Args:
-             query (str): query expression.
+             query (:obj:`str`): query expression.
              report_mode(:obj:`QueryReportMode`, optional): indicates report mode
                 (0: DISABLED, 1: PROGRESS BAR, 2: PROGRESS TUPLE). QueryReportMode.PROGRESS_BAR if not specified.
         Returns:
@@ -634,7 +637,7 @@ class Repo:
         """Get distribution collections satisfying query expression.
 
         Args:
-             query (str): query expression.
+             query (:obj:`str`): query expression.
              report_mode(:obj:`QueryReportMode`, optional): indicates report mode
                 (0: DISABLED, 1: PROGRESS BAR, 2: PROGRESS TUPLE). QueryReportMode.PROGRESS_BAR if not specified.
         Returns:
@@ -650,7 +653,7 @@ class Repo:
         """Get text collections satisfying query expression.
 
         Args:
-             query (str): query expression.
+             query (:obj:`str`): query expression.
              report_mode(:obj:`QueryReportMode`, optional): indicates report mode
                 (0: DISABLED, 1: PROGRESS BAR, 2: PROGRESS TUPLE). QueryReportMode.PROGRESS_BAR if not specified.
         Returns:
@@ -709,7 +712,7 @@ class Repo:
 
         Args:
             sequence_types (:obj:`tuple[str]`, optional): Sequence types to get tracked sequence names/contexts for.
-            Defaults to 'metric'.
+                Defaults to 'metric'.
 
         Returns:
             :obj:`dict`: Tree of sequences and their contexts groupped by sequence type.

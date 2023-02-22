@@ -24,8 +24,8 @@ from aim.web.api.runs.utils import (
     metric_search_result_streamer,
     run_active_result_streamer,
     run_search_result_streamer,
-    run_logs_streamer
-
+    run_logs_streamer,
+    run_log_records_streamer,
 )
 from aim.web.api.runs.pydantic_models import (
     MetricAlignApiIn,
@@ -365,6 +365,14 @@ async def get_logs_api(run_id: str, record_range: Optional[str] = ''):
     run = get_run_or_404(run_id, repo=repo)
 
     return StreamingResponse(run_logs_streamer(run, record_range))
+
+
+@runs_router.get('/{run_id}/log-records/')
+async def get_log_records_api(run_id: str, record_range: Optional[str] = ''):
+    repo = get_project_repo()
+    run = get_run_or_404(run_id, repo=repo)
+
+    return StreamingResponse(run_log_records_streamer(run, record_range))
 
 
 def add_api_routes():

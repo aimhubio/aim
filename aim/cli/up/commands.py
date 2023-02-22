@@ -19,6 +19,8 @@ from aim.sdk.utils import clean_repo_path
 from aim.web.utils import exec_cmd
 from aim.web.utils import ShellCommandException
 
+from aim.utils.tracking import analytics
+
 
 @click.command()
 @click.option('-h', '--host', default=AIM_UI_DEFAULT_HOST, type=str)
@@ -112,26 +114,11 @@ def up(dev, host, port, workers, uds,
         except Exception:
             pass
 
-    if dev or (os.getenv(AIM_UI_TELEMETRY_KEY) is not None and os.getenv(AIM_UI_TELEMETRY_KEY) == '0'):
-        os.environ[AIM_UI_TELEMETRY_KEY] = '0'
-    else:
-        os.environ[AIM_UI_TELEMETRY_KEY] = '1'
-        alert_msg = 'Aim UI collects anonymous usage analytics.'
-        opt_out_msg = 'Read how to opt-out here: '
-        opt_out_url = 'https://aimstack.readthedocs.io/en/latest/community/telemetry.html'
-        line_width = max(len(opt_out_msg), len(alert_msg), len(opt_out_url)) + 8
-        click.echo('-' * line_width)
-        click.echo('{}{}{}'.format(' ' * ((line_width - len(alert_msg)) // 2),
-                                   alert_msg,
-                                   ' ' * ((line_width - len(alert_msg)) // 2)))
-        click.echo('{}{}{}'.format(' ' * ((line_width - len(opt_out_msg)) // 2),
-                                   opt_out_msg,
-                                   ' ' * ((line_width - len(opt_out_msg)) // 2)))
-        click.echo('{}{}{}'.format(' ' * ((line_width - len(opt_out_url)) // 2),
-                                   opt_out_url,
-                                   ' ' * ((line_width - len(opt_out_url)) // 2)))
-        click.echo('-' * line_width)
-
+    if not dev and os.getenv(AIM_UI_TELEMETRY_KEY, 1) == '0':
+        click.echo(f'"{AIM_UI_TELEMETRY_KEY}" is ignored. Read how to opt-out here: '
+                   f'https://aimstack.readthedocs.io/en/latest/community/telemetry.html')
+    if dev:
+        analytics.dev_mode = True
     click.echo(click.style('Running Aim UI on repo `{}`'.format(repo_inst), fg='yellow'))
 
     if uds:
@@ -145,6 +132,7 @@ def up(dev, host, port, workers, uds,
         click.echo(f'Proxy {proxy_url}{base_path}/')
 
     click.echo('Press Ctrl+C to exit')
+    analytics.track_event(event_name='[Aim UI] Start UI')
 
     if profiler:
         os.environ[AIM_PROFILER_KEY] = '1'

@@ -7,7 +7,14 @@ from concurrent import futures
 from aim.ext.cleanup import AutoClean
 
 from aim.ext.transport.config import AIM_RT_MAX_MESSAGE_SIZE, AIM_RT_DEFAULT_MAX_MESSAGE_SIZE
-from aim.ext.transport.handlers import get_tree, get_structured_run, get_repo, get_lock, get_run_heartbeat
+from aim.ext.transport.handlers import (
+    get_tree,
+    get_structured_run,
+    get_repo,
+    get_lock,
+    get_run_heartbeat,
+    get_file_manager
+)
 from aim.ext.transport.heartbeat import RPCHeartbeatWatcher
 from aim.ext.transport.worker import RemoteWorker, LocalWorker
 from aim.ext.transport.health import HealthServicer, health_pb2_grpc
@@ -75,6 +82,7 @@ def prepare_resource_registry():
     registry.register('Repo', get_repo)
     registry.register('Lock', get_lock)
     registry.register('RunHeartbeat', get_run_heartbeat)
+    registry.register('FileManager', get_file_manager)
     return registry
 
 

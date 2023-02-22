@@ -199,7 +199,7 @@ class NotificationQueue(object):
                 notification = self._queue.get(timeout=1)
                 if notification.is_sent():
                     logger.debug(f'Notification for object \'{notification.obj_idx}\' '
-                                 f'with event ID {notification.event_idx} has already been sent. Skipping.')
+                                 f'with event ID {notification.rank} has already been sent. Skipping.')
                 else:
                     details = notification.get_msg_details()
                     try:

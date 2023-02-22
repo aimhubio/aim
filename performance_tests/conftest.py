@@ -6,6 +6,7 @@ import time
 from pathlib import Path
 
 from aim.sdk.configs import AIM_REPO_NAME
+from aim.utils.tracking import analytics
 from performance_tests.utils import get_baseline_filename
 
 TEST_REPO_PATHS = {
@@ -41,6 +42,8 @@ def _cleanup_test_repo(path):
 
 
 def pytest_sessionstart(session):
+    analytics.dev_mode = True
+
     if os.environ.get('AIM_LOCAL_PERFORMANCE_TEST'):
         _init_test_repos()
     else:
