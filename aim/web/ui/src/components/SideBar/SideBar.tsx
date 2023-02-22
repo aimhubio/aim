@@ -9,6 +9,7 @@ import { ReactComponent as DiscordIcon } from 'assets/icons/discord.svg';
 import { Icon, Text } from 'components/kit';
 import { IconName } from 'components/kit/Icon';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import CommunityPopup from 'components/CommunityPopup';
 
 import { PathEnum } from 'config/enums/routesEnum';
 import { AIM_VERSION } from 'config/config';
@@ -80,7 +81,7 @@ function SideBar(): React.FunctionComponentElement<React.ReactNode> {
             })}
           </ul>
           <div className='Sidebar__bottom'>
-            <Tooltip title='Community Discord' placement='right'>
+            <CommunityPopup>
               <a
                 target='_blank'
                 href='https://community.aimstack.io/'
@@ -90,7 +91,7 @@ function SideBar(): React.FunctionComponentElement<React.ReactNode> {
               >
                 <DiscordIcon />
               </a>
-            </Tooltip>
+            </CommunityPopup>
             <Tooltip title='Docs' placement='right'>
               <a
                 target='_blank'
