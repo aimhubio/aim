@@ -5,6 +5,7 @@
 - Pin package version `alembic>=1.5.0` (justinvyu)
 - Fix segment `flush()` issue with no internet access (alberttorosyan)
 - Fix the issue with an empty-illustrations styles on Base explorers (KaroMourad)
+- Add 'join community' popup to the sidebar (KaroMourad)
 
 ## 3.16.0 Feb 3, 2023
 
