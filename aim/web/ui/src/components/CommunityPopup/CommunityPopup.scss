@@ -1,0 +1,60 @@
+@use 'src/styles/abstracts' as *;
+
+.CommunityPopup {
+  z-index: 1501;
+  pointer-events: all;
+  &__tooltip {
+    width: toRem(350px);
+    height: toRem(158px);
+    max-width: unset;
+    background-color: white;
+    padding: $space-unit $space-lg $space-unit;
+    border: $border-width-main $pico-80;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25), 0 6px 10px rgba(0, 0, 0, 0.14);
+    border-radius: $border-radius-lg;
+    display: flex;
+    flex-direction: column;
+    overflow: visible !important;
+    &.MuiTooltip-tooltipPlacementRight {
+      margin: 0 (-$space-sm) !important;
+    }
+    &__title {
+      white-space: nowrap;
+      line-height: toRem(17px);
+      font-style: normal;
+      font-weight: 750;
+      @include monospaceFontFamily(4);
+    }
+    &__footer {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: auto;
+      &__skipBtn {
+        color: $pico-70;
+        background-color: transparent;
+        margin-right: $space-sm;
+        &:hover {
+          color: $pico-100;
+          background-color: transparent;
+        }
+      }
+      &__joinBtn {
+        padding-inline: $space-lg !important;
+      }
+    }
+    &__content {
+      margin-top: $space-sm;
+      white-space: nowrap;
+      line-height: toRem(18px);
+      font-style: normal;
+      @include monospaceFontFamily(7.2);
+    }
+    .MuiTooltip-arrow {
+      background-color: transparent;
+      color: white;
+      &::before {
+        border: $border-width-main $pico-80;
+      }
+    }
+  }
+}
