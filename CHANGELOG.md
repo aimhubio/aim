@@ -1,6 +1,14 @@
 # Changelog
 
-## Unreleased
+## 3.16.1
+
+- Pin package version `alembic>=1.5.0` (justinvyu)
+- Fix segment `flush()` issue with no internet access (alberttorosyan)
+- Fix the issue with an empty-illustrations styles on Base explorers (KaroMourad)
+- Use non-strict mode when logging HF model metadata (alberttorosyan)
+- Add set() method implementation in ProxyTree/SubtreeView classes (alberttorosyan)
+
+## 3.16.0 Feb 3, 2023
 
 ### Enhancements
 
@@ -8,7 +16,7 @@
 - Add support for python3.11 (alberttorosyan)
 - Add other x-axis alignment and system logs tracking to cli convert wandb (hjoonjang)
 - Add support for pre-binned distribution/histogram (YodaEmbedding)
-- Fix plotly and matplotlib compatibility (tmynn)
+- Display logged run messages in Run page (VkoHov, alberttorosyan, roubkar)
 - Use read-only mode when opening container for indexing (alberttorosyan)
 - Add Stable-Baselines3 integration (tmynn)
 - Add Acme integration (tmynn)
@@ -17,12 +25,19 @@
 - Support events signaling for Remote Tracking server (alberttorosyan)
 - Enhance DVC parameters tracking (tmynn)
 - Add SDK events tracking (alberttorosyan)
+- Add the ability to easily copy run hash with a single click (VkoHov)
+- Add Prophet integration (grigoryan-davit)
+- Add 'Dataset' type support for hf/datasets (tmynn)
+- Add HuggingFace Transformers model info (tmynn)
+- Add multidataset logging support for HuggingFace transformers (tmynn)
 
 ### Fixes
 
 - Fix gpu stats logging when some stats are unavailable (timokau)
 - Sub-path support for RTS addresses (mihran113)
 - Fix experiment name update issues (mihran113)
+- Fix run experiment setting race conditions (mihran113)
+- Fix the issue with runs not appearing on UI (mihran113)
 
 ## 3.15.2 Dec 23, 2022
 

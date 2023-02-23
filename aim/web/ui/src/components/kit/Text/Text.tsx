@@ -62,6 +62,8 @@ function Text({
         return <small {...elementProps}>{children}</small>;
       case 'p':
         return <p {...elementProps}>{children}</p>;
+      case 'pre':
+        return <pre {...elementProps}>{children}</pre>;
       default:
         return <span {...elementProps}>{children}</span>;
     }
