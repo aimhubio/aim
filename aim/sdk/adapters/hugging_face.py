@@ -65,7 +65,7 @@ class AimCallback(TrainerCallback):
             for key, value in combined_dict.items():
                 self._run.set(('hparams', key), value, strict=False)
         if model:
-            self._run.set('model', {**vars(model.config), 'num_labels': model.num_labels})
+            self._run.set('model', {**vars(model.config), 'num_labels': model.num_labels}, strict=False)
 
         # Store model configs as well
         # if hasattr(model, 'config') and model.config is not None:
@@ -143,7 +143,7 @@ class AimCallback(TrainerCallback):
                 matching_substring = string1[match.a:match.a + match.size]
                 substring_counts[matching_substring] += 1
 
-        return max(substring_counts, key= lambda x: substring_counts[x]).rstrip('_')
+        return max(substring_counts, key=lambda x: substring_counts[x]).rstrip('_')
 
     def __del__(self):
         self.close()
