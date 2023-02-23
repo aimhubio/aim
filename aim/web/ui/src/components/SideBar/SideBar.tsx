@@ -82,15 +82,19 @@ function SideBar(): React.FunctionComponentElement<React.ReactNode> {
           </ul>
           <div className='Sidebar__bottom'>
             <CommunityPopup>
-              <a
-                target='_blank'
-                href='https://community.aimstack.io/'
-                rel='noreferrer'
-                className='Sidebar__bottom__anchor'
-                onClick={() => trackEvent(ANALYTICS_EVENT_KEYS.sidebar.discord)}
-              >
-                <DiscordIcon />
-              </a>
+              <Tooltip title='Community Discord' placement='right'>
+                <a
+                  target='_blank'
+                  href='https://community.aimstack.io/'
+                  rel='noreferrer'
+                  className='Sidebar__bottom__anchor'
+                  onClick={() =>
+                    trackEvent(ANALYTICS_EVENT_KEYS.sidebar.discord)
+                  }
+                >
+                  <DiscordIcon />
+                </a>
+              </Tooltip>
             </CommunityPopup>
             <Tooltip title='Docs' placement='right'>
               <a

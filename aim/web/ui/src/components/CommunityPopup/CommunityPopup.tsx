@@ -12,30 +12,37 @@ import { ICommunityPopupProps } from './';
 
 import './CommunityPopup.scss';
 
+const COMMUNITY_POPUP_SEEN = 'communityPopupSeen';
+const COMMUNITY_URL = 'https://community.aimstack.io/';
+
 function CommunityPopup(props: ICommunityPopupProps) {
   const [open, setOpen] = React.useState(false);
+  let timeoutIdRef = React.useRef<number>();
 
   React.useEffect(() => {
-    const communityPopupSkipped = localStorage.getItem('communityPopupSkipped');
+    const popupSeenStorage = localStorage.getItem(COMMUNITY_POPUP_SEEN);
 
-    if (communityPopupSkipped === 'true') {
+    if (popupSeenStorage === 'true') {
       setOpen(false);
     } else {
-      setOpen(true);
+      window.clearTimeout(timeoutIdRef.current);
+      timeoutIdRef.current = window.setTimeout(() => {
+        setOpen(true);
+      }, 500);
     }
   }, []);
 
   const onSkip = React.useCallback(() => {
-    localStorage.setItem('communityPopupSkipped', 'true');
+    localStorage.setItem(COMMUNITY_POPUP_SEEN, 'true');
     setOpen(false);
-  }, [setOpen]);
+  }, []);
 
   const onJoin = React.useCallback(() => {
-    localStorage.setItem('communityPopupSkipped', 'true');
-    setOpen(false);
-    window.open('https://community.aimstack.io/', '_blank');
+    localStorage.setItem(COMMUNITY_POPUP_SEEN, 'true');
+    window.open(COMMUNITY_URL, '_blank');
     trackEvent(ANALYTICS_EVENT_KEYS.sidebar.discord);
-  }, [setOpen]);
+    setOpen(false);
+  }, []);
 
   return (
     <Tooltip
@@ -44,12 +51,12 @@ function CommunityPopup(props: ICommunityPopupProps) {
       placement='right'
       TransitionProps={{
         timeout: {
-          appear: 1000,
-          enter: 300,
+          // appear doesn't work correct in MUI
+          enter: 400,
           exit: 200,
         },
       }}
-      classes={{ tooltip: 'CommunityPopup' }}
+      classes={{ popper: 'CommunityPopup', tooltip: 'CommunityPopup__tooltip' }}
       title={
         <React.Fragment>
           <Text
@@ -57,11 +64,11 @@ function CommunityPopup(props: ICommunityPopupProps) {
             tint={100}
             size={16}
             component='p'
-            className='CommunityPopup__title'
+            className='CommunityPopup__tooltip__title'
           >
             📣 JOIN THE AIM COMMUNITY!
           </Text>
-          <div className='CommunityPopup__content'>
+          <div className='CommunityPopup__tooltip__content'>
             <Text weight={600} tint={80} size={14} component='p'>
               - Get early access to upcoming Aim features
             </Text>
@@ -72,10 +79,10 @@ function CommunityPopup(props: ICommunityPopupProps) {
               - Discuss all-things MLOps and ML Research
             </Text>
           </div>
-          <div className='CommunityPopup__footer'>
+          <div className='CommunityPopup__tooltip__footer'>
             <Button
               size='xSmall'
-              className='CommunityPopup__footer__skipBtn'
+              className='CommunityPopup__tooltip__footer__skipBtn'
               onClick={onSkip}
             >
               Skip
@@ -83,7 +90,7 @@ function CommunityPopup(props: ICommunityPopupProps) {
             <Button
               variant='contained'
               size='xSmall'
-              className='CommunityPopup__footer__joinBtn'
+              className='CommunityPopup__tooltip__footer__joinBtn'
               onClick={onJoin}
             >
               Join
