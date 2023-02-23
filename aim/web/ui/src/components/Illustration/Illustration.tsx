@@ -2,15 +2,32 @@ import React from 'react';
 import classNames from 'classnames';
 
 import { Text } from 'components/kit';
+import { ITextProps } from 'components/kit/Text';
 
 import {
   IIllustrationProps,
   ILLUSTRATION_TYPES,
   ILLUSTRATION_LIST,
   getDefaultIllustrationContent,
+  IllustrationSizeType,
 } from '.';
 
 import './Illustration.scss';
+
+const CONTENT_PROPS: Record<IllustrationSizeType, ITextProps> = {
+  small: {
+    size: 12,
+  },
+  medium: {
+    size: 14,
+  },
+  large: {
+    size: 16,
+  },
+  xLarge: {
+    size: 18,
+  },
+};
 
 function Illustration({
   type = ILLUSTRATION_TYPES.Never_Executed,
@@ -25,15 +42,17 @@ function Illustration({
       <div className='Illustration__container'>
         {showImage ? (
           <div
-            className={`Illustration__container__img Illustration__container__${size}__img `}
+            className={classNames('Illustration__container__img', {
+              [`Illustration__container__img__${size}`]: true,
+            })}
           >
             {image || ILLUSTRATION_LIST[type]}
           </div>
         ) : null}
-
         <Text
           component='p'
-          className={`Illustration__container__content Illustration__container__${size}__content`}
+          className='Illustration__container__content'
+          {...CONTENT_PROPS[size]}
         >
           {content}
         </Text>
