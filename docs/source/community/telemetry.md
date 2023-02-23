@@ -1,6 +1,8 @@
 ## Anonymized Telemetry
 We constantly seek to improve Aim for the community. 
 Telemetry data helps us immensely by capturing anonymous usage analytics and statistics. 
+The "anonymous usage" means that no user-specific data is tracked. Aim will generate a unique
+random ID, which is not tied to any user data (such as e-mail, UNIX username, etc.).
 You will be notified when you run `aim up`, `aim server` commands,
 as well as when running any SDK method which is tracked by Aim.
 User-defined data is **NOT** tracked. Only the fact of certain event has happened is tracked. Here is the complete list of events tracked by Aim SDK:
