@@ -2,8 +2,10 @@
 
 ## 3.16.1
 
+- Pin package version `alembic>=1.5.0` (justinvyu)
+- Fix segment `flush()` issue with no internet access (alberttorosyan)
+- Fix the issue with an empty-illustrations styles on Base explorers (KaroMourad)
 - Use non-strict mode when logging HF model metadata (alberttorosyan)
-
 
 ## 3.16.0 Feb 3, 2023
 

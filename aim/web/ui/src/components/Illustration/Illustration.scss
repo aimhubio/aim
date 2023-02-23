@@ -14,7 +14,7 @@
   &__container {
     height: fit-content;
     overflow: hidden;
-    padding-bottom: 6 * $space-unit;
+    padding-bottom: 7 * $space-unit;
     &__content {
       text-align: center;
       .qlAnchor {
@@ -28,58 +28,36 @@
     }
     &__img {
       text-align: center;
-      & > img {
+      & > img, & > svg {
         margin: 0 auto;
         display: block;
       }
-    }
-
-    &__small {
-      &__content {
-        font-weight: $font-500;
-        font-size: $text-md;
-      }
-      &__img {
+      &__small {
         padding: $space-xs;
-        & > img {
+        & > img, & > svg {
           width: 3rem;
+          height: auto;
         }
       }
-    }
-    &__medium {
-      &__content {
-        font-weight: $font-500;
-        font-size: $text-md;
-      }
-      &__img {
+      &__medium {
         padding: $space-sm;
-        & > img {
+        & > img, & > svg {
           width: 7.5rem;
+          height: auto;
         }
       }
-    }
-    &__large {
-      &__content {
-        font-weight: $font-500;
-        font-size: $text-lg;
-      }
-      &__img {
+      &__large {
         padding: $space-sm;
-        & > img {
+        & > img, & > svg {
           width: 14.5rem;
+          height: auto;
         }
       }
-    }
-    &__xLarge {
-      &__content {
-        font-weight: $font-500;
-        font-size: $text-xl;
-        margin-bottom: $space-unit;
-      }
-      &__img {
+      &__xLarge {
         padding: $space-unit;
-        & > img {
+        & > img, & > svg {
           width: 19.5rem;
+          height: auto;
         }
       }
     }
