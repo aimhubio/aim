@@ -1,7 +1,5 @@
 import React from 'react';
 
-import { IconName } from 'components/kit/Icon';
-
 import { CSS, ColorPaletteType } from 'config/stitches/types';
 
 // Button component props
@@ -32,14 +30,14 @@ export interface IButtonProps
   disabled?: boolean;
   /**
    * @description The start icon of the button
-   * @example 'add'
+   * @example <IconX/>
    */
-  leftIcon?: IconName;
+  leftIcon?: React.ReactNode;
   /**
    * @description The end icon of the button
-   * @example 'add'
+   * @example <IconX/>
    */
-  rightIcon?: IconName;
+  rightIcon?: React.ReactNode;
   /**
    * @description The full width state of the button
    * @example false

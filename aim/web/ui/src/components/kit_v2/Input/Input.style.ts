@@ -149,6 +149,7 @@ const ClearButtonContainer = styled('div', {
     background: '$secondary20',
     color: '$textPrimary',
     size: '10px',
+    p: '1px',
   },
   variants: {
     size: {

@@ -18,7 +18,7 @@ import { Container, IconSlot, IconWrapper } from './Icon.style';
  */
 const Icon = React.forwardRef<React.ElementRef<typeof Container>, IIconProps>(
   (
-    { size = 'lg', css, icon, color = '$textPrimary', ...props }: IIconProps,
+    { size = 'lg', css, icon, color = 'inherit', ...props }: IIconProps,
     forwardedRef,
   ): React.FunctionComponentElement<React.ReactNode> => {
     const Component = icon;
