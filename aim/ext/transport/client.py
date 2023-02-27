@@ -252,7 +252,7 @@ class Client:
             assert queue_id != -1
             self.get_queue(queue_id).register_task(
                 self,
-                self._run_write_instructions, list(encode_tree([(resource, method, args)])))
+                self._run_write_instructions, list(encode_tree([(resource, method, args)], strict=False)))
             return
 
         return self._run_read_instructions(queue_id, resource, method, args)
