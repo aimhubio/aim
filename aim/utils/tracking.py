@@ -34,7 +34,7 @@ class Analytics:
         self._user_id = self._profile['user-id']
 
     def track_install_event(self) -> None:
-        try:
+        if not self.dev_mode and self.telemetry_enabled:
             env_key = sys.exec_prefix
             if env_key in self._profile['envs']:
                 is_new_env = False
@@ -45,14 +45,10 @@ class Analytics:
                 is_new_env = True
                 from aim.__version__ import __version__ as aim_version
 
-            sa.write_key = Analytics.SEGMENT_WRITE_KEY
-            sa.identify(user_id=self._user_id)
             event_name = '[Aim] install' if is_new_env else '[Aim] upgrade'
-            sa.track(self._user_id, event=event_name, properties={'aim_version': aim_version})
+            self.track_event(event_name=event_name, aim_version=aim_version)
             with self._autocommit():
                 self._profile['envs'][env_key] = aim_version
-        except Exception as e:  # noqa
-            logger.debug(f'Failed to track install event. Reason: {e}.')
 
     def track_event(self, *, event_name: str, **kwargs) -> None:
         if not self.dev_mode and self.telemetry_enabled:
@@ -68,7 +64,13 @@ class Analytics:
         if self.initialized:
             return
 
+        segment_logger = logging.getLogger('segment')
+        segment_logger.disabled = True
+
         sa.write_key = Analytics.SEGMENT_WRITE_KEY
+        sa.timeout = 2  # set send request timeout to 2 seconds
+        sa.max_retries = 2  # set maximum send request retries to 2
+
         sa.identify(user_id=self._user_id)
         self.initialized = True
 
