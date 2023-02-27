@@ -14,10 +14,11 @@ import {
 
 import { ChartTypeEnum } from 'utils/d3';
 
+import ResizingFallback from '../ResizingFallback';
+
 import ChartPopover from './ChartPopover';
 import ChartGrid from './ChartGrid';
 import ChartLegends from './ChartLegends';
-import ChartPanelResizingFallback from './ChartPanelResizingFallback';
 
 import './ChartPanel.scss';
 
@@ -155,7 +156,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
     <ErrorBoundary>
       <div className='ChartPanel__container'>
         {props.panelResizing ? (
-          <ChartPanelResizingFallback />
+          <ResizingFallback />
         ) : (
           <>
             <ErrorBoundary>
@@ -175,7 +176,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
                   <SplitPaneItem
                     ref={gridRef}
                     className='ChartPanel__grid'
-                    resizingFallback={<ChartPanelResizingFallback />}
+                    resizingFallback={<ResizingFallback />}
                   >
                     <ChartGrid
                       data={props.data}

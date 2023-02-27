@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { IWidgetComponentProps } from '../../types';
+import { IBaseComponentProps, IWidgetComponentProps } from '../../types';
 
 export interface IBoxVirtualizerProps<T> {
   data: Array<T>;
@@ -8,7 +8,9 @@ export interface IBoxVirtualizerProps<T> {
     value: [boxId: string, boxItems: Array<T>],
     boxIndex: number,
   ) => React.ReactNode;
-  widgetRenderer?: (props: IWidgetComponentProps) => React.ReactNode;
+  widgetRenderer?: (
+    props: Omit<IWidgetComponentProps, keyof IBaseComponentProps>,
+  ) => React.ReactNode;
   offset: number;
   axisData?: {
     columns?: any;

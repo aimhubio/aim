@@ -115,7 +115,7 @@ export interface IBaseComponentProps {
   // dataSelector: () => any;
 }
 
-export interface IWidgetComponentProps {
+export interface IWidgetComponentProps extends IBaseComponentProps {
   containerNode: HTMLDivElement;
   gridNode: HTMLDivElement;
 }

@@ -8,6 +8,7 @@ import { Text } from 'components/kit';
 import { buildObjectHash } from 'modules/core/utils/hashing';
 import { GroupType } from 'modules/core/pipeline';
 import {
+  IBaseComponentProps,
   IVisualizationProps,
   IWidgetComponentProps,
 } from 'modules/BaseExplorer/types';
@@ -155,8 +156,11 @@ function Visualizer(props: IVisualizationProps) {
   const widgetRenderer = React.useMemo(() => {
     if (!widgets || _.isEmpty(widgets)) return;
 
-    return ({ containerNode, gridNode }: IWidgetComponentProps) => (
-      <div className='VisualizerWidgets'>
+    return ({
+      containerNode,
+      gridNode,
+    }: Omit<IWidgetComponentProps, keyof IBaseComponentProps>) => (
+      <>
         {Object.entries(widgets).map(
           ([widgetKey, { component: WidgetComponent, props }]) =>
             WidgetComponent ? (
@@ -170,7 +174,7 @@ function Visualizer(props: IVisualizationProps) {
               />
             ) : null,
         )}
-      </div>
+      </>
     );
   }, [widgets, engine, name]);
 
