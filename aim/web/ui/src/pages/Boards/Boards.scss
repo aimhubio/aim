@@ -1,0 +1,60 @@
+@use 'src/styles/abstracts' as *;
+
+.Boards {
+  height: 100%;
+  &__appBar {
+    position: fixed;
+    width: 100%;
+  }
+  &__title {
+    margin: 0.5em 0;
+    padding: 0;
+    color: $primary-color;
+  }
+
+  &__list {
+    padding: 4rem 4rem 1.5em;
+    display: flex;
+    flex-wrap: wrap;
+    gap: $space-sm;
+  }
+}
+
+.Boards__list__item {
+  width: 400px;
+  height: 300px;
+  border-radius: $border-radius-main;
+  border: $border-grey;
+}
+
+.Boards__list__item__header {
+  padding: $space-xxs;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: $border-grey;
+}
+
+.Boards__list__item__sub {
+  display: none;
+}
+
+.Boards__list__item__preview {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  color: $blue;
+  height: calc(100% - 41px);
+  overflow: hidden;
+
+  .Illustration__container__img {
+    transform: scale(0.8);
+    transform-origin: top;
+  }
+
+  .CodeBlock {
+    border-radius: 0;
+    height: 100%;
+    width: 100%;
+  }
+}

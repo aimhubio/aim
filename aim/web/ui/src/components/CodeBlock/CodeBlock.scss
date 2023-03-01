@@ -8,6 +8,11 @@
   display: flex;
   align-items: center;
   overflow: auto;
+
+  &.hideCopyIcon {
+    padding: 1em;
+  }
+
   pre {
     margin: 0;
     font-style: normal;

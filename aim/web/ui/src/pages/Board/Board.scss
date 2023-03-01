@@ -1,0 +1,103 @@
+@use 'src/styles/abstracts' as *;
+
+.Board {
+  height: 100%;
+  &__appBar {
+    width: 100%;
+    display: flex;
+    flex: 0;
+    white-space: nowrap;
+    padding-right: $space-xs;
+  }
+  &__title {
+    margin: 0.5em 0;
+    padding: 0;
+    color: $primary-color;
+  }
+}
+.Board__appBar__controls {
+  > * {
+    margin-left: $space-xxs;
+  }
+}
+
+.SandboxVisualizer {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+}
+
+.SandboxVisualizer__main {
+  width: 100%;
+  max-width: 100%;
+  height: calc(100% - 40px);
+  position: relative;
+  display: flex;
+}
+
+.SandboxVisualizer__main__editor {
+  height: 100%;
+  position: relative;
+  flex: 0.6;
+  border-right: $border-dark;
+  display: flex;
+  flex-direction: column;
+}
+
+.SandboxVisualizer__main__editor__code {
+  flex: 0.8;
+}
+
+.SandboxVisualizer__main__components {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.SandboxVisualizer__main__components--loading {
+  align-items: center;
+  justify-content: center;
+}
+
+.SandboxVisualizer__main__components--processing {
+  & > *:not(.SandboxVisualizer__main__components__spinner) {
+    filter: blur(5px);
+  }
+}
+
+.SandboxVisualizer__main__components__spinner {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.SandboxVisualizer__main__components__viz {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  background-color: $pico-5;
+}
+
+.SandboxVisualizer__main__components__viz__error {
+  @include monospaceFontFamily();
+  padding: $space-xs $space-sm;
+  color: $error-color;
+}
+
+.SandboxVisualizer__main__components__console {
+  @include monospaceFontFamily();
+  flex: 0.2;
+  border-top: $border-dark;
+  padding: $space-xs;
+  overflow: auto;
+}
+

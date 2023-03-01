@@ -13,12 +13,17 @@ function CodeBlock({
   code = '',
   className = '',
   language = 'python',
+  hideCopyIcon = false,
 }: ICodeBlockProps): React.FunctionComponentElement<React.ReactNode> {
   const { elementRef } = useCodeHighlighter(language);
 
   return (
     <ErrorBoundary>
-      <div className={`CodeBlock ${className} `}>
+      <div
+        className={`CodeBlock ${className} ${
+          hideCopyIcon ? 'hideCopyIcon' : ''
+        }`}
+      >
         <pre
           className='ScrollBar__hidden'
           data-lang={language}
@@ -26,12 +31,14 @@ function CodeBlock({
         >
           {code}
         </pre>
-        <ErrorBoundary>
-          <CopyToClipBoard
-            className='CodeBlock__copy__button'
-            contentRef={elementRef}
-          />
-        </ErrorBoundary>
+        {!hideCopyIcon && (
+          <ErrorBoundary>
+            <CopyToClipBoard
+              className='CodeBlock__copy__button'
+              contentRef={elementRef}
+            />
+          </ErrorBoundary>
+        )}
       </div>
     </ErrorBoundary>
   );

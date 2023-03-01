@@ -2,7 +2,7 @@
 # Bindings for fetching Aim Objects
 ####################
 
-from pyodide import create_proxy
+from pyodide.ffi import create_proxy
 from js import search
 import hashlib
 import copy
@@ -82,7 +82,6 @@ class Object:
 
 
 class MetricObject(Object):
-    @memoize
     def dataframe(self, key):
         import pandas as pd
 
@@ -179,7 +178,7 @@ def apply_group_value_pattern(value, list):
     return value
 
 
-@memoize
+# @memoize
 def group(name, data, options):
     group_map = {}
     grouped_data = []

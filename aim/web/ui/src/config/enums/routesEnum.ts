@@ -18,6 +18,9 @@ enum PathEnum {
   New_Figures_Explorer = '/new-fig',
   Sandbox = '/sandbox',
   Notebook = '/notebook',
+  Boards = '/boards',
+  Board = '/boards/:boardId',
+  Board_Edit = '/boards/:boardId/edit',
 }
 
 export { PathEnum };

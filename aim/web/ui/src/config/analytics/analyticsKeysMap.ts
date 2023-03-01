@@ -345,6 +345,9 @@ export const ANALYTICS_EVENT_KEYS = {
     pageView: '[BookmarksPage] Page view',
     view: '[BookmarksPage] View bookmark',
   },
+  boards: {
+    pageView: '[BoardsPage] Page view',
+  },
   dashboard: {
     pageView: '[DashboardPage] Page view',
     activityCellClick: '[DashboardPage] Click on Activity cell',

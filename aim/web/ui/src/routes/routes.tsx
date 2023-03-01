@@ -58,6 +58,14 @@ const Notebook = React.lazy(
   () => import(/* webpackChunkName: "notebook" */ 'pages/Notebook'),
 );
 
+const Boards = React.lazy(
+  () => import(/* webpackChunkName: "boards" */ 'pages/Boards/BoardsContainer'),
+);
+
+const Board = React.lazy(
+  () => import(/* webpackChunkName: "board" */ 'pages/Board/BoardContainer'),
+);
+
 export interface IRoute {
   path: PathEnum;
   component:
@@ -79,6 +87,31 @@ const routes = {
     icon: 'dashboard',
     isExact: true,
     title: pageTitlesEnum.DASHBOARD,
+  },
+  BOARDS: {
+    path: PathEnum.Boards,
+    component: Boards,
+    showInSidebar: true,
+    displayName: 'Boards',
+    icon: 'chart-group',
+    isExact: true,
+    title: pageTitlesEnum.BOARDS,
+  },
+  BOARD: {
+    path: PathEnum.Board,
+    component: Board,
+    showInSidebar: false,
+    displayName: 'Board',
+    isExact: true,
+    title: pageTitlesEnum.BOARD,
+  },
+  BOARD_EDIT: {
+    path: PathEnum.Board_Edit,
+    component: Board,
+    showInSidebar: false,
+    displayName: 'Board',
+    isExact: true,
+    title: pageTitlesEnum.BOARD,
   },
   RUNS: {
     path: PathEnum.Runs,
