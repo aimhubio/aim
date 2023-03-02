@@ -18,12 +18,14 @@ class AimCallback(TrainingCallback):
                  experiment: Optional[str] = None,
                  system_tracking_interval: Optional[int]
                  = DEFAULT_SYSTEM_TRACKING_INT,
-                 log_system_params: Optional[int] = True):
+                 log_system_params: Optional[bool] = True,
+                 capture_terminal_logs: Optional[bool] = True,):
         super().__init__()
         self._repo_path = repo
         self._experiment = experiment
         self._system_tracking_interval = system_tracking_interval
         self._log_system_params = log_system_params
+        self._capture_terminal_logs = capture_terminal_logs
         self._run = None
         self._run_hash = None
 
@@ -41,13 +43,15 @@ class AimCallback(TrainingCallback):
                 self._run_hash,
                 repo=self._repo_path,
                 system_tracking_interval=self._system_tracking_interval,
+                capture_terminal_logs=self._capture_terminal_logs,
             )
         else:
             self._run = Run(
                 repo=self._repo_path,
                 experiment=self._experiment,
                 system_tracking_interval=self._system_tracking_interval,
-                log_system_params=self._log_system_params
+                log_system_params=self._log_system_params,
+                capture_terminal_logs=self._capture_terminal_logs,
             )
             self._run_hash = self._run.hash
 

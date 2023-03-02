@@ -24,12 +24,14 @@ class AimCallback(TrainerCallback):
         repo: Optional[str] = None,
         experiment: Optional[str] = None,
         system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT,
-        log_system_params: bool = True,
+        log_system_params: Optional[bool] = True,
+        capture_terminal_logs: Optional[bool] = True,
     ):
         self._repo_path = repo
         self._experiment_name = experiment
         self._system_tracking_interval = system_tracking_interval
         self._log_system_params = log_system_params
+        self._capture_terminal_logs = capture_terminal_logs
         self._run = None
         self._run_hash = None
         self._log_value_warned = False
@@ -50,6 +52,7 @@ class AimCallback(TrainerCallback):
                     self._run_hash,
                     repo=self._repo_path,
                     system_tracking_interval=self._system_tracking_interval,
+                    capture_terminal_logs=self._capture_terminal_logs,
                 )
             else:
                 self._run = Run(
@@ -57,6 +60,7 @@ class AimCallback(TrainerCallback):
                     experiment=self._experiment_name,
                     system_tracking_interval=self._system_tracking_interval,
                     log_system_params=self._log_system_params,
+                    capture_terminal_logs=self._capture_terminal_logs,
                 )
                 self._run_hash = self._run.hash
 
