@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.16.2
+
+- Handle inconsistency between Sequence data and metadata (alberttorosyan) 
+
 ## 3.16.1
 
 - Pin package version `alembic>=1.5.0` (justinvyu)
