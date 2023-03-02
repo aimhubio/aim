@@ -16,13 +16,15 @@ class AimCallback(TunerCallback):
     def __init__(self, tuner=None,
                  repo: Optional[str] = None,
                  experiment: Optional[str] = None,
-                 system_tracking_interval: int = DEFAULT_SYSTEM_TRACKING_INT,
-                 log_system_params: bool = True):
+                 system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT,
+                 log_system_params: Optional[bool] = True,
+                 capture_terminal_logs: Optional[bool] = True,):
         self.tuner = tuner
         self._repo_path = repo
         self._experiment_name = experiment
         self._system_tracking_interval = system_tracking_interval
         self._log_system_params = log_system_params
+        self._capture_terminal_logs = capture_terminal_logs
 
         self._started_trials: List[str] = []
         self.trial = None
@@ -40,11 +42,13 @@ class AimCallback(TunerCallback):
         if self._current_trial_id not in self._started_trials:
             if self._repo_path is None and self._experiment_name is None:
                 self._run = Run(system_tracking_interval=self._system_tracking_interval,
-                                log_system_params=self._log_system_params,)
+                                log_system_params=self._log_system_params,
+                                capture_terminal_logs=self._capture_terminal_logs,)
             else:
                 self._run = Run(repo=self._repo_path, experiment=self._experiment_name,
                                 system_tracking_interval=self._system_tracking_interval,
-                                log_system_params=self._log_system_params,)
+                                log_system_params=self._log_system_params,
+                                capture_terminal_logs=self._capture_terminal_logs,)
             self._run['trial_id'] = self._current_trial_id
             self._started_trials.append(self._current_trial_id)
         trial = self.tuner.oracle.get_trial(self._current_trial_id)

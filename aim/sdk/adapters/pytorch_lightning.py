@@ -40,7 +40,8 @@ class AimLogger(Logger):
                  test_metric_prefix: Optional[str] = 'test_',
                  system_tracking_interval: Optional[int]
                  = DEFAULT_SYSTEM_TRACKING_INT,
-                 log_system_params: bool = True,
+                 log_system_params: Optional[bool] = True,
+                 capture_terminal_logs: Optional[bool] = True,
                  ):
         super().__init__()
 
@@ -52,6 +53,7 @@ class AimLogger(Logger):
         self._test_metric_prefix = test_metric_prefix
         self._system_tracking_interval = system_tracking_interval
         self._log_system_params = log_system_params
+        self._capture_terminal_logs = capture_terminal_logs
 
         self._run = None
         self._run_hash = None
@@ -76,6 +78,7 @@ class AimLogger(Logger):
                     self._run_hash,
                     repo=self._repo_path,
                     system_tracking_interval=self._system_tracking_interval,
+                    capture_terminal_logs=self._capture_terminal_logs
                 )
             else:
                 self._run = Run(
@@ -83,6 +86,7 @@ class AimLogger(Logger):
                     experiment=self._experiment_name,
                     system_tracking_interval=self._system_tracking_interval,
                     log_system_params=self._log_system_params,
+                    capture_terminal_logs=self._capture_terminal_logs,
                 )
                 self._run_hash = self._run.hash
         return self._run
