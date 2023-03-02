@@ -10,4 +10,7 @@
   background-color: $primary-color-5;
   user-select: none;
   text-align: center;
+  &__text {
+    padding: $space-xxs $space-sm;
+  }
 }

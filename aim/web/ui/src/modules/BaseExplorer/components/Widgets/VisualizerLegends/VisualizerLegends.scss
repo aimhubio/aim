@@ -1,10 +1,9 @@
 .VisualizerLegends {
-  position: absolute;
-  z-index: 4;
-
   &.pinToLeft, &.pinToRight, &.pinToTop, &.pinToBottom {
     max-width: 100%;
     max-height: 100%;
+    position: absolute;
+    z-index: 4;
   }
   &.pinToLeft {
     left: 0;
