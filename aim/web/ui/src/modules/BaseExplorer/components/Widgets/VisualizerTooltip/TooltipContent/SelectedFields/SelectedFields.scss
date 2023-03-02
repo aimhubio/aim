@@ -1,7 +1,6 @@
 @use 'src/styles/abstracts' as *;
 
 .SelectedFields {
-  max-height: inherit;
   &__container {
     padding: $space-xs $space-unit;
     display: flex;
