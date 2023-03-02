@@ -35,6 +35,7 @@ from aim.ext.utils import (
     get_installed_packages,
     get_git_info,
 )
+from aim.ext.exception_resistant import noexcept
 
 from typing import Any, Dict, Iterator, Optional, Tuple, Union
 from typing import TYPE_CHECKING
@@ -334,6 +335,7 @@ class BasicRun(BaseRun, StructuredRunMixin):
     def idx_to_ctx(self, idx: int) -> Context:
         return self._tracker.idx_to_ctx(idx)
 
+    @noexcept
     def __setitem__(self, key: str, val: Any):
         """Set Run top-level meta-parameter.
 
@@ -364,6 +366,7 @@ class BasicRun(BaseRun, StructuredRunMixin):
         """
         return self._collect(key)
 
+    @noexcept
     def set(self, key, val: Any, strict: bool = True):
         self.meta_run_attrs_tree.set(key, val, strict)
         self.meta_attrs_tree.set(key, val, strict)
@@ -385,6 +388,7 @@ class BasicRun(BaseRun, StructuredRunMixin):
         del self.meta_attrs_tree[key]
         del self.meta_run_attrs_tree[key]
 
+    @noexcept
     def track(
         self,
         value,
@@ -812,6 +816,7 @@ class Run(BasicRun):
             git info, environment variables, etc.
     """
 
+    @noexcept
     def __init__(self, run_hash: Optional[str] = None, *,
                  repo: Optional[Union[str, 'Repo']] = None,
                  read_only: bool = False,
