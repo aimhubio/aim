@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.16.2
+- Expose `capture_terminal_logs` argument for `aim.sdk.adapters` classes (mihran113)
+
 ## 3.16.1
 
 - Pin package version `alembic>=1.5.0` (justinvyu)
