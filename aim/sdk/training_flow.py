@@ -60,6 +60,21 @@ class TrainingFlow(Caller):
     ):
         """Is called after the training phase is successfully finished."""
 
+    @event
+    def exception_raised(
+        self, *,
+        exception: Exception,
+        **kwargs
+    ):
+        """Is called when exception is raised from Aim codebase. """
+
+    def handle_exceptions(self):
+        from aim.ext.exception_resistant import set_exception_callback
+
+        def callback(e: Exception, func: callable):
+            self.exception_raised(exception=e, function=func)
+        set_exception_callback(callback)
+
     # @event
     # def run_available_experimental(
     #     self, *,
