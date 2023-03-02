@@ -1,6 +1,7 @@
 # Changelog
 
 ## 3.16.2
+- Add exception-free mode to Aim (alberttorosyan)
 - Expose `capture_terminal_logs` argument for `aim.sdk.adapters` classes (mihran113)
 
 ## 3.16.1
