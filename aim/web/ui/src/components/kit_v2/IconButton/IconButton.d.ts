@@ -1,13 +1,13 @@
-import { CSS, ColorPaletteType } from 'config/stitches/types';
+import React from 'react';
 
-import { IconName } from '../../kit/Icon';
+import { CSS, ColorPaletteType } from 'config/stitches/types';
 export interface IIconButtonProps
   extends Partial<React.HTMLAttributes<HTMLButtonElement>> {
   /**
    * @description The name of the icon
    * @example 'add'
    */
-  icon: IconName;
+  icon: React.ReactNode;
   /**
    * @description The color of the icon button
    * @example 'primary'

@@ -21,7 +21,6 @@ const Icon = React.forwardRef<React.ElementRef<typeof Container>, IIconProps>(
     { size = 'lg', css, icon, color = 'inherit', ...props }: IIconProps,
     forwardedRef,
   ): React.FunctionComponentElement<React.ReactNode> => {
-    const Component = icon;
     return (
       <Container
         {...props}
@@ -30,7 +29,7 @@ const Icon = React.forwardRef<React.ElementRef<typeof Container>, IIconProps>(
         ref={forwardedRef}
       >
         <IconWrapper size={size}>
-          <IconSlot>{typeof icon === 'object' ? icon : <Component />}</IconSlot>
+          <IconSlot>{icon}</IconSlot>
         </IconWrapper>
       </Container>
     );

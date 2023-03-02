@@ -1,5 +1,5 @@
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import { IconDeviceComputerCamera } from '@tabler/icons';
+import { IconDeviceComputerCamera } from '@tabler/icons-react';
 
 import IconComponent from 'components/kit_v2/Icon';
 

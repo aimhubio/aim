@@ -54,7 +54,7 @@ const Button = React.forwardRef<
           <LeftIcon
             css={{ ml: getIconSpacing(horizontalSpacing, size) }}
             className='startIcon'
-            size='md'
+            size='xs'
             icon={leftIcon}
           />
         ) : null}
@@ -63,8 +63,8 @@ const Button = React.forwardRef<
           <RightIcon
             css={{ mr: getIconSpacing(horizontalSpacing, size) }}
             className='endIcon'
-            size='md'
-            name={rightIcon}
+            size='xs'
+            icon={rightIcon}
           />
         ) : null}
       </Container>

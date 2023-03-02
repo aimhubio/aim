@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { IconX } from '@tabler/icons';
+import { IconX } from '@tabler/icons-react';
 
 import Icon from 'components/kit_v2/Icon';
 

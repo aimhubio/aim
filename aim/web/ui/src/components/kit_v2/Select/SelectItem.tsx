@@ -1,7 +1,7 @@
 import React from 'react';
 import { areEqual } from 'react-window';
 
-import { IconCheck } from '@tabler/icons';
+import { IconCheck } from '@tabler/icons-react';
 
 import Text from '../Text';
 import Icon from '../Icon';
