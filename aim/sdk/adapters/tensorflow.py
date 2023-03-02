@@ -23,17 +23,17 @@ class AimCallback(TrackerKerasCallbackMetricsEpochEndMixin, Callback):
 
         self._system_tracking_interval = system_tracking_interval
         self._log_system_params = log_system_params
-        self._capture_terimanl_logs = capture_terminal_logs
+        self._capture_terminal_logs = capture_terminal_logs
 
         if repo is None and experiment is None:
             self._run = Run(system_tracking_interval=self._system_tracking_interval,
                             log_system_params=self._log_system_params,
-                            capture_terminal_logs=self._capture_terimanl_logs,)
+                            capture_terminal_logs=self._capture_terminal_logs,)
         else:
             self._run = Run(repo=repo, experiment=experiment,
                             system_tracking_interval=self._system_tracking_interval,
                             log_system_params=self._log_system_params,
-                            capture_terminal_logs=self._capture_terimanl_logs,)
+                            capture_terminal_logs=self._capture_terminal_logs,)
 
         self._run_hash = self._run.hash
         self._repo_path = repo
