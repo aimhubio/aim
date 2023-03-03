@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { IconX } from '@tabler/icons-react';
+
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { IBadgeProps } from './Badge.d';
@@ -48,8 +50,7 @@ const Badge = React.forwardRef<
           {onDelete ? (
             <RightIcon
               role='button'
-              name='close'
-              fontSize={10}
+              icon={<IconX />}
               size={size}
               onClick={() => onDelete(label)}
             />

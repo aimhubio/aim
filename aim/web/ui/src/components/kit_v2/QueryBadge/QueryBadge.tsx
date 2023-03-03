@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { IconEye } from '@tabler/icons-react';
+
 import ButtonGroup from '../ButtonGroup';
 import Button from '../Button';
 import IconButton from '../IconButton';
@@ -50,7 +52,7 @@ const QueryBadge = React.forwardRef<
           </ButtonText>
         </Button>
         <IconButton
-          icon='eye-show-outline'
+          icon={<IconEye />}
           css={color === 'primary' ? { bc: '$primary10' } : {}}
         />
       </ButtonGroup>
