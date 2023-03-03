@@ -24,6 +24,7 @@ import './VisualizerLegends.scss';
 function VisualizerLegends(props: IVisualizerLegendsProps) {
   const {
     vizContainer,
+    boxContainer,
     engine,
     engine: { useStore, pipeline },
     visualizationName,
@@ -113,9 +114,14 @@ function VisualizerLegends(props: IVisualizerLegendsProps) {
         maxHeight: vizContainer.current.offsetHeight,
         maxWidth: vizContainer.current.offsetWidth,
       }));
+      boxContainer.current.classList.remove('ScrollBar__hidden');
     },
-    [vizContainer, updateLegends],
+    [vizContainer, boxContainer, updateLegends],
   );
+
+  const onResizeStart = React.useCallback(() => {
+    boxContainer.current.classList.add('ScrollBar__hidden');
+  }, [boxContainer]);
 
   return displayLegends ? (
     <div className='VisualizerLegends'>
@@ -126,6 +132,7 @@ function VisualizerLegends(props: IVisualizerLegendsProps) {
         useLocalStorage={true}
         initialSizes={initialSizes}
         onResizeEnd={onResizeEnd}
+        onResizeStart={onResizeStart}
       >
         <ResizableElement resizingFallback={<ResizingFallback />}>
           <div className='VisualizerLegends__container'>
