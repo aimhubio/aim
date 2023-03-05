@@ -45,7 +45,7 @@ function Metrics(
   const [isProgressBarVisible, setIsProgressBarVisible] =
     React.useState<boolean>(false);
   const chartProps = React.useMemo(() => {
-    return (props.lineChartData || []).map((chartData: ILine[], i: number) => ({
+    return (props.lineChartData || []).map((chartData: ILine[]) => ({
       axesScaleType: props.axesScaleType,
       axesScaleRange: props.axesScaleRange,
       curveInterpolation: props.smoothing.isApplied
@@ -54,10 +54,10 @@ function Metrics(
       ignoreOutliers: props.ignoreOutliers,
       highlightMode: props.highlightMode,
       aggregatedData: props.aggregatedData?.filter(
-        (data) => data.chartIndex === i,
+        (data) => data.chartIndex === chartData[0].chartIndex,
       ),
       zoom: props.zoom,
-      chartTitle: props.chartTitleData[i],
+      chartTitle: props.chartTitleData[chartData[0].chartIndex!],
       aggregationConfig: props.aggregationConfig,
       alignmentConfig: props.alignmentConfig,
       onZoomChange: props.onZoomChange,
