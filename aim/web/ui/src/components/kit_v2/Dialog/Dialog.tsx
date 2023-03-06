@@ -1,6 +1,7 @@
 import React from 'react';
 
 import * as DialogPrimitive from '@radix-ui/react-dialog';
+import { IconX } from '@tabler/icons-react';
 
 import Button from '../Button';
 import Box from '../Box';
@@ -100,7 +101,7 @@ function Dialog({
               variant='text'
               color='secondary'
               css={{ position: 'absolute', top: 8, right: 8 }}
-              icon='close'
+              icon={<IconX />}
             />
           </DialogPrimitive.Close>
         </DialogContent>

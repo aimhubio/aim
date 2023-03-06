@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Icon from 'components/kit/Icon';
+import Icon from 'components/kit_v2/Icon';
 
 import { getButtonStyles } from '../utils/getButtonStyles';
 
@@ -45,7 +45,7 @@ const IconButton = React.forwardRef<
         disabled={disabled}
         ref={forwardedRef}
       >
-        <Icon name={icon} />
+        <Icon className='Icon' size={size === 'xl' ? 'md' : 'sm'} icon={icon} />
       </Container>
     );
   },

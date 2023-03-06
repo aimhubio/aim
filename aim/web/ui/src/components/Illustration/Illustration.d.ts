@@ -7,8 +7,10 @@ export interface IIllustrationProps {
   image?: React.FunctionComponentElement<React.ReactNode> | HTMLImageElement;
   type?: IllustrationType;
   className?: string;
-  size?: 'small' | 'medium' | 'large' | 'xLarge';
+  size?: IllustrationSizeType;
   showImage?: boolean;
 }
+
+export type IllustrationSizeType = 'small' | 'medium' | 'large' | 'xLarge';
 
 export type IllustrationType = string | PipelineStatusEnum;

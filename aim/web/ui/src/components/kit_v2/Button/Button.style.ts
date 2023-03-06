@@ -1,4 +1,4 @@
-import Icon from 'components/kit/Icon';
+import Icon from 'components/kit_v2/Icon';
 
 import { styled } from 'config/stitches';
 

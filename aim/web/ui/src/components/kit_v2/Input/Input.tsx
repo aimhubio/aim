@@ -1,6 +1,8 @@
 import React from 'react';
 
-import { Icon } from 'components/kit';
+import { IconX } from '@tabler/icons-react';
+
+import Icon from 'components/kit_v2/Icon';
 
 import { IInputProps } from './Input.d';
 import {
@@ -41,6 +43,7 @@ const Input = React.forwardRef<React.ElementRef<typeof Container>, IInputProps>(
       errorMessage,
       leftIcon,
       disabled,
+      css = {},
       onChange,
     }: IInputProps,
     forwardedRef,
@@ -79,7 +82,7 @@ const Input = React.forwardRef<React.ElementRef<typeof Container>, IInputProps>(
     }, []);
 
     return (
-      <Container ref={forwardedRef}>
+      <Container css={css} ref={forwardedRef}>
         <InputWrapper disabled={disabled}>
           {leftIcon && (
             <LeftIcon
@@ -108,7 +111,7 @@ const Input = React.forwardRef<React.ElementRef<typeof Container>, IInputProps>(
             onClick={handleClear}
             size={inputSize}
           >
-            <Icon fontSize={4} name='close' />
+            <Icon className='Icon__container' size='sm' icon={<IconX />} />
           </ClearButtonContainer>
         </InputWrapper>
         {errorMessage || caption ? (

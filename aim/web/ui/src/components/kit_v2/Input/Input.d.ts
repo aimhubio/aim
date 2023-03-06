@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { IconName } from 'components/kit/Icon';
+import { CSS } from '@stitches/react';
 
 // The Input component interface.
 export interface IInputProps {
@@ -51,7 +51,17 @@ export interface IInputProps {
   /**
    * The Input left icon.
    */
-  leftIcon?: IconName;
-
+  leftIcon?: React.ReactNode;
+  /**
+   * Input element props
+   * @default {}
+   * @example { type: 'password' }
+   */
   inputElementProps?: Partial<React.HTMLProps<HTMLInputElement>>;
+  /**
+   * The Input css prop.
+   * @default {}
+   * @example { backgroundColor: 'red' }
+   */
+  css?: CSS;
 }
