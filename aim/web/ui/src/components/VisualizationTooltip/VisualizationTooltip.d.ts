@@ -9,7 +9,7 @@ export interface IVisualizationTooltipProps {
   open: boolean;
   forceOpen?: boolean;
   className?: string;
-  containerNode?: HTMLDivElement | null;
+  containerNode?: HTMLElement | null;
   tooltipAppearance?: TooltipAppearanceEnum;
 }
 

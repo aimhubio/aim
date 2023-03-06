@@ -1,7 +1,10 @@
 import renderer from 'modules/BaseExplorer';
 import Metrics from 'modules/BaseExplorer/components/Metrics/Metrics';
 import { PersistenceTypesEnum } from 'modules/core/engine/types';
-import { VisualizerTooltip } from 'modules/BaseExplorer/components/Widgets';
+import {
+  VisualizerTooltip,
+  VisualizerLegends,
+} from 'modules/BaseExplorer/components/Widgets';
 
 import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
 
@@ -34,6 +37,9 @@ const MetricsExplorer = renderer(
             props: {
               tooltipContentHeader: TooltipContentHeader,
             },
+          },
+          legends: {
+            component: VisualizerLegends,
           },
         },
       },

@@ -18,6 +18,7 @@ import IgnoreOutliers from 'modules/BaseExplorer/components/Controls/IgnoreOutli
 import Highlighting from 'modules/BaseExplorer/components/Controls/Highlighting';
 import Zoom from 'modules/BaseExplorer/components/Controls/Zoom';
 import ConfigureTooltip from 'modules/BaseExplorer/components/Controls/ConfigureTooltip';
+import Legends from 'modules/BaseExplorer/components/Controls/Legends';
 
 import { AimFlatObjectBase } from 'types/core/AimObjects';
 
@@ -132,7 +133,6 @@ export const getMetricsDefaultConfig = (): typeof defaultHydration => {
         persist: PersistenceTypesEnum.Url,
       },
     };
-
     draft.tooltip = {
       component: ConfigureTooltip,
       state: {
@@ -145,7 +145,16 @@ export const getMetricsDefaultConfig = (): typeof defaultHydration => {
         persist: PersistenceTypesEnum.Url,
       },
     };
-
+    draft.legends = {
+      component: Legends,
+      state: {
+        initialState: {
+          display: CONTROLS_DEFAULT_CONFIG.metrics.legends.display,
+          mode: CONTROLS_DEFAULT_CONFIG.metrics.legends.mode,
+        },
+        persist: PersistenceTypesEnum.Url,
+      },
+    };
     draft.zoom = {
       component: Zoom,
       state: {
