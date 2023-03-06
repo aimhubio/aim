@@ -11,16 +11,17 @@ import { defaultHydration } from 'modules/BaseExplorer/getDefaultHydration';
 import { IBaseComponentProps } from 'modules/BaseExplorer/types';
 import { GroupingItem } from 'modules/BaseExplorer/components/Grouping';
 import { PersistenceTypesEnum } from 'modules/core/engine/types';
+import Aggregation from 'modules/BaseExplorer/components/Controls/Aggregation';
+import ConfigureAxes from 'modules/BaseExplorer/components/Controls/ConfigureAxes';
+import Smoothing from 'modules/BaseExplorer/components/Controls/Smoothing';
+import IgnoreOutliers from 'modules/BaseExplorer/components/Controls/IgnoreOutliers';
+import Highlighting from 'modules/BaseExplorer/components/Controls/Highlighting';
+import Zoom from 'modules/BaseExplorer/components/Controls/Zoom';
+import ConfigureTooltip from 'modules/BaseExplorer/components/Controls/ConfigureTooltip';
 
 import { AimFlatObjectBase } from 'types/core/AimObjects';
 
 import getMetricsExplorerStaticContent from './getStaticContent';
-import Aggregation from './Controls/Aggregation';
-import ConfigureAxes from './Controls/ConfigureAxes';
-import Smoothing from './Controls/Smoothing';
-import IgnoreOutliers from './Controls/IgnoreOutliers';
-import Highlighting from './Controls/Highlighting';
-import Zoom from './Controls/Zoom';
 
 export const getMetricsDefaultConfig = (): typeof defaultHydration => {
   const defaultConfig = getDefaultHydration();
@@ -131,6 +132,20 @@ export const getMetricsDefaultConfig = (): typeof defaultHydration => {
         persist: PersistenceTypesEnum.Url,
       },
     };
+
+    draft.tooltip = {
+      component: ConfigureTooltip,
+      state: {
+        initialState: {
+          appearance: CONTROLS_DEFAULT_CONFIG.metrics.tooltip.appearance,
+          display: CONTROLS_DEFAULT_CONFIG.metrics.tooltip.display,
+          selectedFields:
+            CONTROLS_DEFAULT_CONFIG.metrics.tooltip.selectedFields,
+        },
+        persist: PersistenceTypesEnum.Url,
+      },
+    };
+
     draft.zoom = {
       component: Zoom,
       state: {

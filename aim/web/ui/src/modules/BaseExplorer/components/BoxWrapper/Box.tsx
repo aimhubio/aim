@@ -4,7 +4,7 @@ import { AimFlatObjectBase } from 'types/core/AimObjects';
 
 import { IBoxProps } from './';
 
-function Box(props: IBoxProps<AimFlatObjectBase<any>>) {
+function Box(props: IBoxProps<AimFlatObjectBase>) {
   const {
     engine,
     boxId,
@@ -27,6 +27,7 @@ function Box(props: IBoxProps<AimFlatObjectBase<any>>) {
             id={boxId}
             data={boxItems}
             engine={engine}
+            style={firstItem.style}
             visualizationName={visualizationName}
           />
         )}
@@ -35,4 +36,4 @@ function Box(props: IBoxProps<AimFlatObjectBase<any>>) {
   ) : null;
 }
 
-export default React.memo<IBoxProps<AimFlatObjectBase<any>>>(Box);
+export default React.memo<IBoxProps<AimFlatObjectBase>>(Box);

@@ -303,7 +303,7 @@ const LineChart = React.forwardRef(function LineChart(
       if (focusedState) {
         attributesRef.current.focusedState = {
           ...focusedState,
-          chartId: focusedState.chartId ?? `${focusedState.chartIndex}`,
+          visId: focusedState.visId ?? `${focusedState.chartIndex}`,
         };
       }
     },
@@ -312,6 +312,7 @@ const LineChart = React.forwardRef(function LineChart(
   return (
     <ErrorBoundary>
       <div
+        id={'vis-' + id}
         ref={parentRef}
         className={classNames('LineChart', {
           zoomMode: !readOnly && zoom?.active,

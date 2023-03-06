@@ -79,7 +79,7 @@ function cancel(): void {
 async function executeQuery(
   query: {
     body?: {};
-    params: RunsSearchQueryParams;
+    params?: RunsSearchQueryParams;
   },
   ignoreCache: boolean = false,
 ): Promise<any> {
@@ -92,12 +92,15 @@ async function executeQuery(
   }
   cancel();
 
+  if (!config.currentRequest) {
+    return Promise.resolve([]);
+  }
   if (config.statusChangeCallback) {
     config.statusChangeCallback(PipelinePhasesEnum.Fetching);
   }
   let data: ReadableStream;
   try {
-    data = (await config.currentRequest?.call(query)) as ReadableStream;
+    data = (await config.currentRequest.call(query)) as ReadableStream;
   } catch (e) {
     throw new FetchingError(e.message || e, e.detail).getError();
   }
@@ -105,7 +108,7 @@ async function executeQuery(
   if (config.statusChangeCallback) {
     config.statusChangeCallback(PipelinePhasesEnum.Decoding);
   }
-  const progressCallback = query.params.report_progress
+  const progressCallback = query.params?.report_progress
     ? config.requestProgressCallback
     : undefined;
   try {

@@ -1,8 +1,7 @@
 import React from 'react';
 
 import { IBoxContentProps } from 'modules/BaseExplorer/types';
-
-import { ISmoothingConfig } from 'pages/MetricsExplorer/Controls/Smoothing';
+import { ISmoothingConfig } from 'modules/BaseExplorer/components/Controls/Smoothing';
 
 import {
   calculateCentralMovingAverage,

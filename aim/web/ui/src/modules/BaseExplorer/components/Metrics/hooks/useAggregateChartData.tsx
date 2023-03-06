@@ -6,12 +6,11 @@ import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
 
 import { GroupType } from 'modules/core/pipeline';
 import { IBoxContentProps } from 'modules/BaseExplorer/types';
-
 import {
   IAggregationConfig,
   IAggregatedData,
   IAggregationData,
-} from 'pages/MetricsExplorer/Controls/Aggregation';
+} from 'modules/BaseExplorer/components/Controls/Aggregation';
 
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 import { ILine } from 'types/components/LineChart/LineChart';

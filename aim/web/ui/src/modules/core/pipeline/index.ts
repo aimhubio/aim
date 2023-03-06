@@ -50,8 +50,8 @@ export type PipelineExecutionOptions = {
 };
 
 export type CustomPhaseExecutionArgs = {
-  createRequest: () => RequestInstance;
-  params: RunsSearchQueryParams;
+  createRequest?: () => RequestInstance;
+  params?: RunsSearchQueryParams;
   body?: {};
   processData: (
     currentResult: ProcessedData,

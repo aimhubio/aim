@@ -1,8 +1,7 @@
 import React from 'react';
 
 import { IBoxContentProps } from 'modules/BaseExplorer/types';
-
-import { IAxesPropsConfig } from 'pages/MetricsExplorer/Controls/ConfigureAxes';
+import { IAxesPropsConfig } from 'modules/BaseExplorer/components/Controls/ConfigureAxes';
 
 import { filterMetricsData } from 'utils/app/filterMetricData';
 import { AlignmentOptionsEnum } from 'utils/d3';

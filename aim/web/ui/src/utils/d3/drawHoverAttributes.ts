@@ -60,7 +60,6 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
     return;
   }
 
-  const chartRect: DOMRect = visAreaRef.current?.getBoundingClientRect() || {};
   let rafID = 0;
 
   const { margin, width, height } = visBoxRef.current;
@@ -600,6 +599,22 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
     const yPos = circle.y;
     const { boundedX, boundedY } = getBoundedPosition(xPos, yPos);
 
+    const chartRect: DOMRect =
+      visAreaRef.current?.getBoundingClientRect() || {};
+
+    const rect = {
+      top: +(margin.top + boundedY - CircleEnum.ActiveRadius).toFixed(2),
+      bottom: +(margin.top + boundedY + CircleEnum.ActiveRadius).toFixed(2),
+      left: +(margin.left + boundedX - CircleEnum.ActiveRadius).toFixed(2),
+      right: +(margin.left + boundedX + CircleEnum.ActiveRadius).toFixed(2),
+    };
+    // @TODO - remove "pointRect" after refactoring (removing old metrics explorer)
+    const pointRect = {
+      top: +(chartRect.top + rect.top).toFixed(2),
+      bottom: +(chartRect.top + rect.bottom).toFixed(2),
+      left: +(chartRect.left + rect.left).toFixed(2),
+      right: +(chartRect.left + rect.right).toFixed(2),
+    };
     return {
       key: circle.key,
       xValue,
@@ -608,14 +623,9 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
       yPos,
       inProgress: !!circle.inProgress,
       chartIndex: index,
-      chartId: id,
-      pointRect: {
-        top: chartRect.top + margin.top + boundedY - CircleEnum.ActiveRadius,
-        bottom: chartRect.top + margin.top + boundedY + CircleEnum.ActiveRadius,
-        left: chartRect.left + margin.left + boundedX - CircleEnum.ActiveRadius,
-        right:
-          chartRect.left + margin.left + boundedX + CircleEnum.ActiveRadius,
-      },
+      visId: id,
+      pointRect,
+      rect,
     };
   }
 
@@ -729,7 +739,7 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
     let mousePosition: [number, number] | [] = [];
     if (mousePos) {
       mousePosition = mousePos;
-    } else if (focusedState?.active && focusedState.chartId === id) {
+    } else if (focusedState?.active && focusedState.visId === id) {
       mousePosition = [
         xScale(focusedState.xValue),
         yScale(focusedState.yValue),
@@ -835,7 +845,7 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
   }
 
   function handlePointClick(this: SVGElement, event: MouseEvent): void {
-    if (attrRef.current.focusedState?.chartId !== id) {
+    if (attrRef.current.focusedState?.visId !== id) {
       safeSyncHoverState({ activePoint: null });
     }
     const mousePos = d3.pointer(event);
@@ -866,12 +876,12 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
       xValue: activePoint.xValue,
       yValue: activePoint.yValue,
       chartIndex: activePoint.chartIndex,
-      chartId: activePoint.chartId,
+      visId: activePoint.visId,
     };
   }
 
   function handleLineClick(this: SVGElement, event: MouseEvent): void {
-    if (attrRef.current.focusedState?.chartId !== id) {
+    if (attrRef.current.focusedState?.visId !== id) {
       safeSyncHoverState({ activePoint: null });
     }
     const mousePos = d3.pointer(event);
@@ -879,7 +889,7 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
   }
 
   function handleLeaveFocusedPoint(event: MouseEvent): void {
-    if (attrRef.current.focusedState?.chartId !== id) {
+    if (attrRef.current.focusedState?.visId !== id) {
       safeSyncHoverState({ activePoint: null });
     }
     const mousePos = d3.pointer(event);

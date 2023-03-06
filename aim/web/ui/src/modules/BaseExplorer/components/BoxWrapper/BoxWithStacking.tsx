@@ -13,7 +13,7 @@ import { ICaptionProperties } from '../Controls/CaptionProperties';
 
 import { IBoxWithStackingProps } from './';
 
-function BoxWithStacking(props: IBoxWithStackingProps<AimFlatObjectBase<any>>) {
+function BoxWithStacking(props: IBoxWithStackingProps<AimFlatObjectBase>) {
   const {
     engine,
     boxId,
@@ -151,6 +151,6 @@ function BoxWithStacking(props: IBoxWithStackingProps<AimFlatObjectBase<any>>) {
   ) : null;
 }
 
-export default React.memo<IBoxWithStackingProps<AimFlatObjectBase<any>>>(
+export default React.memo<IBoxWithStackingProps<AimFlatObjectBase>>(
   BoxWithStacking,
 );

@@ -7,14 +7,15 @@ import { Text } from 'components/kit';
 
 import { buildObjectHash } from 'modules/core/utils/hashing';
 import { GroupType } from 'modules/core/pipeline';
-import { IQueryableData } from 'modules/core/pipeline';
+import {
+  IVisualizationProps,
+  IWidgetComponentProps,
+} from 'modules/BaseExplorer/types';
 
 import contextToString from 'utils/contextToString';
 
-import { IVisualizationProps } from '../../types';
 import BoxVirtualizer from '../BoxVirtualizer';
 import BoxWrapper from '../BoxWrapper';
-import RangePanel from '../RangePanel';
 
 import { useDepthMap } from './hooks';
 
@@ -27,12 +28,13 @@ function Visualizer(props: IVisualizationProps) {
     name,
     box: BoxContent,
     boxStacking,
-    panelRenderer,
+    topPanelRenderer,
+    bottomPanelRenderer,
+    widgets,
   } = props;
 
   const foundGroups = useStore(pipeline.foundGroupsSelector);
   const dataState = useStore(pipeline.dataSelector);
-  const rangesData: IQueryableData = useStore(pipeline.queryableDataSelector);
 
   const vizEngine = visualizations[name];
   const boxConfig = useStore(vizEngine.box.stateSelector);
@@ -56,7 +58,7 @@ function Visualizer(props: IVisualizationProps) {
       }
 
       // calculate styles by position
-      // get style applier of box  from engine
+      // get style applier of box from engine
       // listen to found groups
       function applyStyles(obj: any, group: any, iteration: number) {
         let style = {};
@@ -150,6 +152,28 @@ function Visualizer(props: IVisualizationProps) {
     }
   }, [foundGroups, boxConfig, rowsAxisData]);
 
+  const widgetRenderer = React.useMemo(() => {
+    if (!widgets || _.isEmpty(widgets)) return;
+
+    return ({ containerNode, gridNode }: IWidgetComponentProps) => (
+      <div className='VisualizerWidgets'>
+        {Object.entries(widgets).map(
+          ([widgetKey, { component: WidgetComponent, props }]) =>
+            WidgetComponent ? (
+              <WidgetComponent
+                key={widgetKey}
+                engine={engine}
+                visualizationName={name}
+                containerNode={containerNode}
+                gridNode={gridNode}
+                {...(props || {})}
+              />
+            ) : null,
+        )}
+      </div>
+    );
+  }, [widgets, engine, name]);
+
   const { depthSelector, onDepthMapChange } = useDepthMap({
     data: dataState,
     state: depthMap,
@@ -158,7 +182,7 @@ function Visualizer(props: IVisualizationProps) {
 
   return (
     <div className='Visualizer'>
-      {panelRenderer()}
+      {topPanelRenderer()}
       <div className='VisualizerContainer'>
         {!_.isEmpty(dataState) && (
           <BoxVirtualizer
@@ -200,12 +224,11 @@ function Visualizer(props: IVisualizationProps) {
                 </div>
               ),
             }}
+            widgetRenderer={widgetRenderer}
           />
         )}
       </div>
-      {!_.isEmpty(rangesData) && (
-        <RangePanel engine={engine} rangesData={rangesData} />
-      )}
+      {bottomPanelRenderer()}
     </div>
   );
 }
