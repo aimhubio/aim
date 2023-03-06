@@ -21,74 +21,79 @@ type MouseMove = (args: {
   dataSelector?: string;
 }) => void;
 type MouseLeave = () => void;
-type FocusPoint = (focusedState: IFocusedState) => void;
+type FocusPoint = (currentFocusedState: IFocusedState) => void;
+type SyncHoverState = ({
+  activePoint,
+  focusedState: currentFocusedState,
+  dataSelector,
+}: ISyncHoverStateArgs) => void;
 
 function useSyncHoverState(
   engine: IBaseComponentProps['engine'],
   chartRef: React.RefObject<ILineChartRef>,
+  updateActiveElement: (activePoint: IActivePoint | null) => void,
   id?: string,
-) {
+): SyncHoverState {
   const focusedState = engine.useStore(engine.focusedState.stateSelector);
+  const focusedStateRef = React.useRef<IFocusedState>(focusedState);
 
-  const syncHoverState = React.useCallback(
-    ({
-      activePoint,
-      focusedState: currentFocusedState,
-      dataSelector,
-    }: ISyncHoverStateArgs): void => {
-      if (activePoint === null) {
+  /**
+    The "syncHoverState" function is only a function for distributing an events correct firing at a time.
+    The "syncHoverState" function is not a function for changing the state of the application.
+    The state of the application will be changed by the "focus point" and the "mouse move" reducer.
+   */
+  const syncHoverState: SyncHoverState = React.useCallback(
+    ({ activePoint, focusedState: currentFocusedState, dataSelector }) => {
+      if (activePoint) {
+        /** on mouse over */
+        engine.events.fire(EVENT.MOUSE_MOVE, { activePoint, dataSelector });
+
+        /** on focus point */
+        if (
+          currentFocusedState?.active !== focusedStateRef.current.active ||
+          (focusedStateRef.current.active &&
+            activePoint.key !== focusedStateRef.current.key)
+        ) {
+          engine.events.fire(EVENT.FOCUS_POINT, currentFocusedState);
+        }
+      } else {
+        /** on mouse leave */
         engine.events.fire(EVENT.MOUSE_LEAVE);
-        return;
-      }
-      engine.events.fire(EVENT.MOUSE_MOVE, { activePoint, dataSelector });
-      if (
-        currentFocusedState?.active !== focusedState.active ||
-        (focusedState.active && activePoint.key !== focusedState.key)
-      ) {
-        engine.events.fire(EVENT.FOCUS_POINT, currentFocusedState);
       }
     },
-    [engine.events, focusedState.active, focusedState.key],
+    [engine.events],
   );
 
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     /**
      * Set focused state in each re-render of the component
      */
     chartRef.current?.setFocusedState(focusedState);
+    focusedStateRef.current = focusedState;
   });
 
   React.useEffect(() => {
-    if (!focusedState.active) {
-      /**
-       * If there is no focused state, we need to update the chart's active point
-       */
-      const mouseMovePayload = engine.events.getEventPayload(EVENT.MOUSE_MOVE);
-      if (mouseMovePayload) {
-        window.requestAnimationFrame(() => {
-          chartRef.current?.updateHoverAttributes(
-            mouseMovePayload.activePoint.xValue as number,
-            mouseMovePayload.dataSelector,
-          );
-        });
-      }
-    }
-  }, [engine.events, focusedState.active, chartRef]);
-
-  React.useEffect(() => {
     const onMouseLeave: MouseLeave = () => {
-      chartRef.current?.clearHoverAttributes();
+      if (!chartRef.current) return;
+
+      updateActiveElement(null);
+      chartRef.current.clearHoverAttributes();
     };
 
     const unsubscribe = engine.events.on(EVENT.MOUSE_LEAVE, onMouseLeave);
     return () => unsubscribe();
-  }, [engine.events, chartRef]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [engine.events, chartRef.current, updateActiveElement]);
 
   React.useEffect(() => {
     const onMouseMove: MouseMove = ({ activePoint, dataSelector }) => {
-      if (activePoint.chartId === id) {
+      if (!chartRef.current) return;
+
+      if (activePoint.visId === id) {
+        updateActiveElement(activePoint);
         return;
       }
+
       window.requestAnimationFrame(() => {
         chartRef.current?.updateHoverAttributes(
           activePoint.xValue as number,
@@ -98,22 +103,27 @@ function useSyncHoverState(
     };
     const unsubscribe = engine.events.on(EVENT.MOUSE_MOVE, onMouseMove);
     return () => unsubscribe();
-  }, [engine.events, chartRef, id]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [engine.events, chartRef.current, id, updateActiveElement]);
 
   React.useEffect(() => {
-    const onFocusPoint: FocusPoint = (currentFocusedState) => {
-      if (currentFocusedState.chartId !== id) {
-        chartRef.current?.setFocusedState(currentFocusedState);
-        return;
+    const onFocusPoint: FocusPoint = (currentState) => {
+      if (!chartRef.current) return;
+
+      chartRef.current.setFocusedState(currentState);
+
+      if (currentState.visId === id) {
+        if (!_.isEqual(focusedStateRef.current, currentState)) {
+          engine.focusedState.update(currentState);
+        }
       }
-      if (!_.isEqual(_.omit(focusedState, 'isInitial'), currentFocusedState)) {
-        engine.focusedState.update(currentFocusedState);
-      }
+      focusedStateRef.current = currentState;
     };
 
     const unsubscribe = engine.events.on(EVENT.FOCUS_POINT, onFocusPoint);
     return () => unsubscribe();
-  }, [engine.events, engine.focusedState, chartRef, focusedState, id]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [engine.events, engine.focusedState, chartRef.current, id]);
 
   return syncHoverState;
 }

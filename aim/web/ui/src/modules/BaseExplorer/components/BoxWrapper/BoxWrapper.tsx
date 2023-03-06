@@ -50,4 +50,4 @@ function BoxWrapper(props: IBoxWrapperProps<AimFlatObjectBase<any>>) {
 
 BoxWrapper.displayName = 'BoxWrapper';
 
-export default React.memo<IBoxWrapperProps<AimFlatObjectBase<any>>>(BoxWrapper);
+export default React.memo<IBoxWrapperProps<AimFlatObjectBase>>(BoxWrapper);

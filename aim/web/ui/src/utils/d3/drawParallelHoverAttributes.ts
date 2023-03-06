@@ -36,7 +36,6 @@ const drawParallelHoverAttributes = ({
   axesNodeRef,
   svgNodeRef,
 }: IDrawParallelHoverAttributesArgs) => {
-  const chartRect: DOMRect = visAreaRef.current?.getBoundingClientRect() || {};
   let rafID = 0;
 
   const { margin, width, height } = visBoxRef.current;
@@ -159,6 +158,23 @@ const drawParallelHoverAttributes = ({
       );
     }
 
+    const chartRect: DOMRect =
+      visAreaRef.current?.getBoundingClientRect() || {};
+
+    const rect = {
+      top: +(margin.top + circle.y - CircleEnum.ActiveRadius).toFixed(2),
+      bottom: +(margin.top + circle.y + CircleEnum.ActiveRadius).toFixed(2),
+      left: +(margin.left + circle.x - CircleEnum.ActiveRadius).toFixed(2),
+      right: +(margin.left + circle.x + CircleEnum.ActiveRadius).toFixed(2),
+    };
+    // @TODO - remove "pointRect" after refactoring (removing old params explorer)
+    const pointRect = {
+      top: +(chartRect.top + rect.top).toFixed(2),
+      bottom: +(chartRect.top + rect.bottom).toFixed(2),
+      left: +(chartRect.left + rect.left).toFixed(2),
+      right: +(chartRect.left + rect.right).toFixed(2),
+    };
+
     return {
       key: circle.key,
       xValue: dimensionLabel,
@@ -166,14 +182,9 @@ const drawParallelHoverAttributes = ({
       xPos: circle.x,
       yPos: circle.y,
       chartIndex: index,
-      chartId: id,
-      pointRect: {
-        top: chartRect.top + margin.top + circle.y - CircleEnum.ActiveRadius,
-        bottom: chartRect.top + margin.top + circle.y + CircleEnum.ActiveRadius,
-        left: chartRect.left + margin.left + circle.x - CircleEnum.ActiveRadius,
-        right:
-          chartRect.left + margin.left + circle.x + CircleEnum.ActiveRadius,
-      },
+      visId: id,
+      pointRect,
+      rect,
     };
   }
 
@@ -187,7 +198,7 @@ const drawParallelHoverAttributes = ({
       xValue: activePoint.xValue,
       yValue: activePoint.yValue,
       chartIndex: activePoint.chartIndex,
-      chartId: activePoint.chartId,
+      visId: activePoint.visId,
     };
   }
 
@@ -205,7 +216,7 @@ const drawParallelHoverAttributes = ({
     if (mousePos) {
       dimensionLabel = scalePointValue(xScale, mousePos[0]);
       mousePosition = mousePos;
-    } else if (focusedState?.active && focusedState.chartId === id) {
+    } else if (focusedState?.active && focusedState.visId === id) {
       const xPos = xScale(focusedState.xValue);
       dimensionLabel = scalePointValue(xScale, xPos);
       mousePosition = [xPos, yScale[dimensionLabel]?.(focusedState.yValue)];
@@ -353,7 +364,7 @@ const drawParallelHoverAttributes = ({
 
   // Interactions
   function handlePointClick(this: SVGElement, event: MouseEvent): void {
-    if (attrRef.current.focusedState?.chartId !== id) {
+    if (attrRef.current.focusedState?.visId !== id) {
       safeSyncHoverState({ activePoint: null });
     }
     const mousePos = d3.pointer(event);
@@ -361,7 +372,7 @@ const drawParallelHoverAttributes = ({
   }
 
   function handleLineClick(this: SVGElement, event: MouseEvent): void {
-    if (attrRef.current.focusedState?.chartId !== id) {
+    if (attrRef.current.focusedState?.visId !== id) {
       safeSyncHoverState({ activePoint: null });
     }
     const mousePos = d3.pointer(event);
@@ -471,7 +482,7 @@ const drawParallelHoverAttributes = ({
     event: MouseEvent,
     type: 'axes' | 'bg',
   ): void {
-    if (attrRef.current.focusedState?.chartId !== id) {
+    if (attrRef.current.focusedState?.visId !== id) {
       safeSyncHoverState({ activePoint: null });
     }
     const mousePos = d3.pointer(event);

@@ -4,7 +4,10 @@ import { GroupType } from 'modules/core/pipeline';
 import { GroupingConfigs } from 'modules/core/engine/explorer/groupings';
 import { ControlsConfigs } from 'modules/core/engine/visualizations/controls';
 import { CustomStates } from 'modules/core/utils/store';
-import { VisualizationsConfig } from 'modules/core/engine/visualizations';
+import {
+  VisualizationsConfig,
+  WidgetsConfig,
+} from 'modules/core/engine/visualizations';
 import { EngineNew } from 'modules/core/engine/explorer-engine';
 import { PipelineStatusEnum } from 'modules/core/engine/types';
 
@@ -82,8 +85,10 @@ export interface IVisualizationsProps extends IBaseComponentProps {
 export interface IVisualizationProps extends IBaseComponentProps {
   box?: React.FunctionComponent<IBoxContentProps>;
   boxStacking: boolean;
-  panelRenderer: () => React.ReactNode;
+  topPanelRenderer: () => React.ReactNode;
+  bottomPanelRenderer: () => React.ReactNode;
   name: string;
+  widgets?: WidgetsConfig;
 }
 
 export interface IProgressBarProps extends IBaseComponentProps {}
@@ -108,6 +113,11 @@ export interface IExplorerNotificationProps extends IBaseComponentProps {}
 export interface IBaseComponentProps {
   engine: any;
   // dataSelector: () => any;
+}
+
+export interface IWidgetComponentProps {
+  containerNode: HTMLDivElement;
+  gridNode: HTMLDivElement;
 }
 
 export declare interface ExplorerEngineConfiguration {

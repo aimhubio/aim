@@ -130,7 +130,7 @@ function createPipelineEngine<TStore, TObject>(
     const currentGroupings = state.getCurrentGroupings();
 
     const customMetric =
-      store.getState().visualizations.vis1.controls.axesProperties.alignment
+      store.getState().visualizations.vis1.controls.axesProperties?.alignment
         .metric;
 
     const queryParams = {

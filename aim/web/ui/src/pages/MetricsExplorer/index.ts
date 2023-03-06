@@ -1,10 +1,12 @@
 import renderer from 'modules/BaseExplorer';
 import Metrics from 'modules/BaseExplorer/components/Metrics/Metrics';
 import { PersistenceTypesEnum } from 'modules/core/engine/types';
+import { VisualizerTooltip } from 'modules/BaseExplorer/components/Widgets';
 
 import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
 
 import { getMetricsDefaultConfig } from './config';
+import TooltipContentHeader from './TooltipContentHeader';
 
 const defaultConfig = getMetricsDefaultConfig();
 
@@ -26,6 +28,14 @@ const MetricsExplorer = renderer(
           ...defaultConfig.box,
           component: Metrics,
         },
+        widgets: {
+          tooltip: {
+            component: VisualizerTooltip,
+            props: {
+              tooltipContentHeader: TooltipContentHeader,
+            },
+          },
+        },
       },
     },
     states: {
@@ -36,9 +46,20 @@ const MetricsExplorer = renderer(
           yValue: null,
           active: false,
           chartIndex: null,
-          chartId: null,
+          visId: null,
         },
         persist: PersistenceTypesEnum.Url,
+      },
+      activeElement: {
+        initialState: {
+          key: null,
+          rect: null,
+          xValue: null,
+          yValue: null,
+          visId: null,
+          inProgress: null,
+        },
+        // persist: PersistenceTypesEnum.LocalStorage, // @TODO: persistence by "LocalStorage" doesn't supported yet
       },
     },
     getStaticContent: defaultConfig.getStaticContent,

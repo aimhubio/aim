@@ -1,6 +1,8 @@
 import { GroupNameEnum } from 'config/grouping/GroupingPopovers';
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 
+import { TooltipAppearanceEnum } from 'modules/BaseExplorer/components/Controls/ConfigureTooltip';
+
 import {
   IAppModelConfig,
   IGroupingConfig,
@@ -96,14 +98,8 @@ export interface ITooltipContent {
   run?: IRun;
 }
 
-export enum TooltipAppearance {
-  Top = 'top',
-  Auto = 'auto',
-  Bottom = 'bottom',
-}
-
 export interface ITooltipConfig {
-  appearance: TooltipAppearance;
+  appearance: TooltipAppearanceEnum;
   display: boolean;
   selectedFields: string[];
 }
@@ -183,7 +179,7 @@ export interface IFocusedState {
   xValue?: number | string | null;
   yValue?: number | string | null;
   chartIndex?: number | null;
-  chartId?: string | null;
+  visId?: string | null;
 }
 
 export interface IMetricTableRowData {
