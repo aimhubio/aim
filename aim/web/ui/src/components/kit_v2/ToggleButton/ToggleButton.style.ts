@@ -1,28 +1,9 @@
 import { styled } from 'config/stitches';
 
 export const Container = styled('div', {
-  bs: 'inset 0 0 0 1px $colors$border30',
-  width: 'fit-content',
   display: 'flex',
+  width: 'fit-content',
   br: '$3',
+  bs: 'inset 0 0 0 1px $colors$border30',
   userSelect: 'none',
-  variants: {
-    size: {
-      xs: {
-        p: '$2',
-      },
-      sm: {
-        p: '$3',
-      },
-      md: {
-        p: '$3',
-      },
-      lg: {
-        p: '$3',
-      },
-      xl: {
-        p: '$3',
-      },
-    },
-  },
 });

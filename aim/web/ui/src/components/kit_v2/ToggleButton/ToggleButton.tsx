@@ -44,19 +44,20 @@ function ToggleButton({
   );
 
   return (
-    <Container size={size}>
+    <Container>
       <Button
         variant={selected === leftValue ? 'contained' : 'text'}
+        css={{ borderRadius: '3px 0 0 3px' }}
         data-value={leftValue}
         onClick={handleToggle}
         size={size}
-        css={{ mr: size === 'xs' ? '$2' : '$3' }}
         color={color}
       >
         {leftLabel}
       </Button>
       <Button
         variant={selected === rightValue ? 'contained' : 'text'}
+        css={{ borderRadius: '0 3px 3px 0' }}
         data-value={rightValue}
         onClick={handleToggle}
         size={size}
