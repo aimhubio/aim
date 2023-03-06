@@ -15,7 +15,7 @@
     font-size: 15px;
     line-height: 1.3125em;
     overflow: auto;
-    @include monospaceFontFamily(15px);
+    @include monospaceFontFamily(15);
   }
   &__copy__button {
     top: 0.75rem;

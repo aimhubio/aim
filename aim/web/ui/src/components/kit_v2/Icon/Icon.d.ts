@@ -36,7 +36,7 @@ export interface IIconProps
    * @default undefined
    * @see https://tablericons.com/
    */
-  icon: React.ReactNode | React.Element;
+  icon: React.ReactNode;
   /**
    * @description The color of the Icon.
    * @example

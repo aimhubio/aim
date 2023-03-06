@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import { IconAlien } from '@tabler/icons';
+import { IconAlien } from '@tabler/icons-react';
 
 import Button from 'components/kit_v2/Button';
 import DialogComponent from 'components/kit_v2/Dialog';

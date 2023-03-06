@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { IconCaretDown, IconCaretUp } from '@tabler/icons-react';
+
 import { IconName } from 'components/kit/Icon';
 
 import { IControlsButtonProps } from './ControlsButton.d';
@@ -53,27 +55,26 @@ const ControlsButton = React.forwardRef<
         disabled={disabled}
         ref={forwardedRef}
       >
-        {leftIcon ? <LeftIcon fontSize={10} name={leftIcon} /> : null}
+        {leftIcon ? <LeftIcon size='sm' icon={leftIcon} /> : null}
         {children}
         {appliedValuesCount ? (
           <AppliedCount>{appliedValuesCount}</AppliedCount>
         ) : null}
-        <ArrowIcon
-          fontSize={6}
-          size={size}
-          rightIcon={!!rightIcon}
-          name={`arrow-${open ? 'up' : 'down'}-contained` as IconName}
-        />
-        {rightIcon?.name ? (
+        {
+          <ArrowIcon rightIcon={!!rightIcon} size={size}>
+            {open ? <IconCaretUp size={10} /> : <IconCaretDown size={10} />}
+          </ArrowIcon>
+        }
+        {rightIcon?.icon ? (
           <RightIcon
             size='sm'
             onClick={(e: React.SyntheticEvent) => {
               e.preventDefault();
               rightIcon?.onClick();
             }}
-            disabled={disabled}
-            icon={rightIcon?.name}
-            variant='text'
+            // disabled={disabled}
+            icon={rightIcon?.icon}
+            // variant='text'
             color='secondary'
           />
         ) : null}

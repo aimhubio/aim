@@ -1,8 +1,6 @@
-import Icon from 'components/kit/Icon';
+import Icon from 'components/kit_v2/Icon';
 
 import { styled } from 'config/stitches';
-
-import IconButton from '../IconButton';
 
 const Trigger = styled('button', {
   all: 'unset',
@@ -106,7 +104,7 @@ const Trigger = styled('button', {
   ],
 });
 
-const ArrowIcon: any = styled(Icon, {
+const ArrowIcon: any = styled('span', {
   width: '10px',
   display: 'flex',
   ai: 'center',
@@ -173,7 +171,7 @@ const LeftIcon: any = styled(Icon, {
   mr: '$2',
 });
 
-const RightIcon = styled(IconButton, {
+const RightIcon = styled(Icon, {
   width: '$1',
 });
 

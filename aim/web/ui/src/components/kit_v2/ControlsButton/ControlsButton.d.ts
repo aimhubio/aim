@@ -1,5 +1,3 @@
-import { IconName } from 'components/kit/Icon';
-
 export interface IControlsButtonProps {
   /**
    * @description Popover open state
@@ -20,17 +18,17 @@ export interface IControlsButtonProps {
   appliedValuesCount?: number;
   /**
    * @description Control popover trigger right icon props
-   * @example { name: 'arrow-down', onClick: () => {} }
+   * @example { icon: <IconX/>, onClick: () => {} }
    */
   rightIcon?: {
-    name: IconName;
+    icon: React.ReactNode;
     onClick: () => void;
   };
   /**
    * @description Control popover trigger left icon
-   * @example 'ignore-outliers'
+   * @example <IconX/>
    */
-  leftIcon?: IconName;
+  leftIcon?: React.ReactNode;
   /**
    * @description Control popover trigger children
    */

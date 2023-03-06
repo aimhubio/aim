@@ -1,5 +1,7 @@
 import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { IconEye } from '@tabler/icons-react';
 
+import { Icon } from 'components/kit';
 import ControlButton from 'components/kit_v2/ControlsButton';
 import Popover from 'components/kit_v2/Popover';
 
@@ -24,6 +26,6 @@ export const ControlsButton = Template.bind({});
 
 ControlsButton.args = {
   children: 'Ignore Outliers',
-  leftIcon: 'ignore-outliers',
-  rightIcon: { name: 'eye-fill-show', onClick: () => {} },
+  leftIcon: <Icon name='ignore-outliers' />,
+  rightIcon: { icon: <IconEye />, onClick: () => {} },
 };
