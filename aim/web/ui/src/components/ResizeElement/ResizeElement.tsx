@@ -206,8 +206,7 @@ function ResizeElement(props: ResizeElementProps) {
     onResize,
     onResizeEnd,
     onResizeStart,
-    containerInitialSize.width,
-    containerInitialSize.height,
+    containerInitialSize,
   ]);
 
   const gutterStyle = {

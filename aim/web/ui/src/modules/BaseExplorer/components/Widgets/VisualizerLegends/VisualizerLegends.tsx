@@ -1,5 +1,6 @@
 import * as React from 'react';
 import _ from 'lodash-es';
+import { useResizeObserver } from 'hooks';
 
 import VisualizationLegends, {
   LegendsDataType,
@@ -95,33 +96,34 @@ function VisualizerLegends(props: IVisualizerLegendsProps) {
     [legends?.display, legendsData],
   );
 
-  React.useEffect(() => {
-    setInitialSizes((prev) => ({
-      ...prev,
-      maxHeight: vizContainer.current.offsetHeight,
-      maxWidth: vizContainer.current.offsetWidth,
-    }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [vizContainer.current]);
-
   const onResizeEnd = React.useCallback(
     (resizeElement, gutterSize) => {
       if (resizeElement.current?.offsetWidth === gutterSize) {
         updateLegends({ display: false });
       }
-      setInitialSizes((prev) => ({
-        ...prev,
-        maxHeight: vizContainer.current.offsetHeight,
-        maxWidth: vizContainer.current.offsetWidth,
-      }));
       boxContainer.current.classList.remove('ScrollBar__hidden');
     },
-    [vizContainer, boxContainer, updateLegends],
+    [boxContainer, updateLegends],
   );
 
   const onResizeStart = React.useCallback(() => {
     boxContainer.current.classList.add('ScrollBar__hidden');
   }, [boxContainer]);
+
+  const resizeObserverCallback: ResizeObserverCallback = React.useCallback(
+    (entries: ResizeObserverEntry[]) => {
+      if (entries?.length) {
+        setInitialSizes((prev) => ({
+          ...prev,
+          maxHeight: entries[0].contentRect.height,
+          maxWidth: entries[0].contentRect.width,
+        }));
+      }
+    },
+    [],
+  );
+
+  useResizeObserver(resizeObserverCallback, vizContainer);
 
   return displayLegends ? (
     <div className='VisualizerLegends'>
