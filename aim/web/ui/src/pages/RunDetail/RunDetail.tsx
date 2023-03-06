@@ -28,9 +28,12 @@ import Spinner from 'components/kit/Spinner';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 import { DATE_WITH_SECONDS } from 'config/dates/dates';
 
+import CompareSelectedRunsPopover from 'pages/Metrics/components/Table/CompareSelectedRunsPopover';
+
 import runDetailAppModel from 'services/models/runs/runDetailAppModel';
 import * as analytics from 'services/analytics';
 import notesModel from 'services/models/notes/notesModel';
+import { AppNameEnum } from 'services/models/explorer';
 
 import { setDocumentTitle } from 'utils/document/documentTitle';
 import { processDurationTime } from 'utils/processDurationTime';
@@ -395,6 +398,13 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
                     />
                   )}
                 </div>
+              </div>
+              <div className='RunDetail__runDetailContainer__appBarContainer__appBarBox__explore'>
+                <CompareSelectedRunsPopover
+                  appName={'run' as AppNameEnum} // @TODO: change to AppNameEnum.RUN
+                  query={`run.hash == "${runHash}"`}
+                  buttonText={'Explore'}
+                />
               </div>
               <div className='RunDetail__runDetailContainer__appBarContainer__appBarBox__actionContainer'>
                 <NavLink to={`${url}/settings`}>

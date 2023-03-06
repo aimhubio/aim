@@ -37,6 +37,14 @@
         &__runInfoBox {
           max-width: 50%;
         }
+        &__explore {
+          display: flex;
+          flex: 1;
+          align-items: center;
+          justify-content: flex-end;
+          margin-right: 1rem;
+          margin-bottom: 1rem;
+        }
         &__actionContainer {
           width: 4.5rem;
           display: flex;

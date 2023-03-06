@@ -174,4 +174,10 @@ export const EXPLORE_SELECTED_RUNS_CONFIG: Record<string, AppNameEnum[]> = {
     AppNameEnum.FIGURES,
     AppNameEnum.AUDIOS,
   ],
+  run: [
+    AppNameEnum.METRICS,
+    AppNameEnum.IMAGES,
+    AppNameEnum.FIGURES,
+    AppNameEnum.AUDIOS,
+  ],
 };
