@@ -1,30 +1,4 @@
 .VisualizerLegends {
-  &.pinToLeft, &.pinToRight, &.pinToTop, &.pinToBottom {
-    max-width: 100%;
-    max-height: 100%;
-    position: absolute;
-    z-index: 4;
-  }
-  &.pinToLeft {
-    left: 0;
-    top: 0;
-    height: 100%;
-  }
-  &.pinToRight {
-    right: 0;
-    top: 0;
-    height: 100%;
-  }
-  &.pinToTop {
-    top: 0;
-    left: 0;
-    width: 100%;
-  }
-  &.pinToBottom {
-    left: 0;
-    bottom: 0;
-    width: 100%;
-  }
   &__container {
     height: 100%;
     width: 100%;
