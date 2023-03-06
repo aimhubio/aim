@@ -33,18 +33,17 @@ export const getAudiosDefaultConfig = (): typeof defaultHydration => {
     };
   });
 
+  const box = produce(defaultConfig.box, (draft: any) => {
+    draft.initialState.width = 350;
+    draft.initialState.height = 170;
+    draft.initialState.gap = 4;
+  });
+
   return {
     ...defaultConfig,
     groupings,
     controls,
-    box: {
-      ...defaultConfig.box,
-      initialState: {
-        width: 350,
-        height: 170,
-        gap: 0,
-      },
-    },
+    box,
     getStaticContent: getAudiosExplorerStaticContent,
   };
 };
