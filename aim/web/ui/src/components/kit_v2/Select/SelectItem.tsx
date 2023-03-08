@@ -39,8 +39,8 @@ const SelectItem = ({
         <Text
           css={{ p: '0 $5', display: 'flex', ai: 'center' }}
           style={style}
-          weight='600'
-          color='$textPrimary80'
+          color='$textPrimary50'
+          weight='$2'
           key={index}
         >
           {item.group}
