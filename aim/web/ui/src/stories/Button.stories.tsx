@@ -39,3 +39,10 @@ Text.args = {
   children: 'Text Button',
   variant: 'text',
 };
+
+export const Static = Template.bind({});
+
+Static.args = {
+  children: 'Static Button',
+  variant: 'static',
+};
