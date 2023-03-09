@@ -2,6 +2,7 @@
 
 ## 3.16.3
 
+- Fix issue with toggling lines visibility during live update (roubkar)
 - Add navigation link to Experiment page from Run page (roubkar)
 
 ## 3.16.2 Mar 3, 2023
