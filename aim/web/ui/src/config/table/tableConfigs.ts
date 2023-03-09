@@ -129,6 +129,7 @@ export const AVOID_COLUMNS_TO_HIDE_LIST = new Set([
 
 export const EXPLORE_SELECTED_RUNS_CONFIG: Record<string, AppNameEnum[]> = {
   [AppNameEnum.RUNS]: [
+    AppNameEnum.RUNS,
     AppNameEnum.METRICS,
     AppNameEnum.IMAGES,
     AppNameEnum.FIGURES,
@@ -136,27 +137,29 @@ export const EXPLORE_SELECTED_RUNS_CONFIG: Record<string, AppNameEnum[]> = {
   ],
   [AppNameEnum.METRICS]: [
     AppNameEnum.RUNS,
+    AppNameEnum.METRICS,
     AppNameEnum.IMAGES,
     AppNameEnum.FIGURES,
     AppNameEnum.AUDIOS,
   ],
   [AppNameEnum.PARAMS]: [
     AppNameEnum.RUNS,
-    AppNameEnum.IMAGES,
     AppNameEnum.METRICS,
+    AppNameEnum.IMAGES,
     AppNameEnum.FIGURES,
     AppNameEnum.AUDIOS,
   ],
   [AppNameEnum.SCATTERS]: [
     AppNameEnum.RUNS,
-    AppNameEnum.IMAGES,
     AppNameEnum.METRICS,
+    AppNameEnum.IMAGES,
     AppNameEnum.FIGURES,
     AppNameEnum.AUDIOS,
   ],
   [AppNameEnum.IMAGES]: [
     AppNameEnum.RUNS,
     AppNameEnum.METRICS,
+    AppNameEnum.IMAGES,
     AppNameEnum.FIGURES,
     AppNameEnum.AUDIOS,
   ],
@@ -175,6 +178,7 @@ export const EXPLORE_SELECTED_RUNS_CONFIG: Record<string, AppNameEnum[]> = {
     AppNameEnum.AUDIOS,
   ],
   run: [
+    AppNameEnum.RUNS,
     AppNameEnum.METRICS,
     AppNameEnum.IMAGES,
     AppNameEnum.FIGURES,
