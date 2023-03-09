@@ -27,6 +27,7 @@ import Spinner from 'components/kit/Spinner';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 import { DATE_WITH_SECONDS } from 'config/dates/dates';
+import { PathEnum } from 'config/enums/routesEnum';
 
 import CompareSelectedRunsPopover from 'pages/Metrics/components/Table/CompareSelectedRunsPopover';
 
@@ -303,16 +304,26 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
                               } / ${runData?.runInfo?.name || ''}`}
                             >
                               <div className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__container'>
+                                <Link
+                                  to={PathEnum.Experiment.replace(
+                                    ':experimentId',
+                                    runData?.runInfo?.experiment?.id,
+                                  )}
+                                  className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__experimentName'
+                                >
+                                  <Text tint={100} size={16} weight={600}>
+                                    {runData?.runInfo?.experiment?.name ||
+                                      'default'}
+                                  </Text>
+                                </Link>
                                 <Text
                                   tint={100}
                                   size={16}
                                   weight={600}
-                                  className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__title'
+                                  className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__runName'
                                 >
-                                  {`${
-                                    runData?.runInfo?.experiment?.name ||
-                                    'default'
-                                  } / ${runData?.runInfo?.name || ''}`}
+                                  {' '}
+                                  / {runData?.runInfo?.name || ''}
                                 </Text>
                               </div>
                             </Tooltip>
