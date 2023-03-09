@@ -23,6 +23,7 @@ const Text = React.forwardRef<React.ElementRef<typeof StyledSlot>, ITextProps>(
       mono = false,
       weight = '$2',
       color = '$textPrimary',
+      disabled = false,
       css,
       children,
       ...rest
@@ -35,7 +36,7 @@ const Text = React.forwardRef<React.ElementRef<typeof StyledSlot>, ITextProps>(
         css={{
           fontSize: size,
           fontWeight: weight,
-          color: color,
+          color: disabled ? `${color}50` : color,
           fontFamily: mono ? '$mono' : '$inter',
           ...css,
         }}

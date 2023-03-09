@@ -4,13 +4,6 @@ import Text from '../Text';
 
 const ButtonText = styled(Text, {
   color: '$textPrimary',
-  variants: {
-    disabled: {
-      true: {
-        color: '$textPrimary50',
-      },
-    },
-  },
 });
 
 export { ButtonText };

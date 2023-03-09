@@ -8,6 +8,7 @@ export interface ITextProps
   as?: typographyType;
   mono?: boolean;
   weight?: CSS['fontWeight'];
+  disabled?: boolean;
   size?: CSS['fontSize'];
   color?: CSS['color'];
   css?: CSS;
