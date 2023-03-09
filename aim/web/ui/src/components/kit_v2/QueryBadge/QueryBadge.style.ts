@@ -1,16 +1,10 @@
 import { styled } from 'config/stitches';
 
-const ButtonText = styled('span', {
+import Text from '../Text';
+
+const ButtonText = styled(Text, {
   color: '$textPrimary',
   variants: {
-    color: {
-      primary: {
-        color: '$textPrimary80',
-      },
-      secondary: {
-        color: '$textPrimary',
-      },
-    },
     disabled: {
       true: {
         color: '$textPrimary50',

@@ -20,6 +20,7 @@ const Text = React.forwardRef<React.ElementRef<typeof StyledSlot>, ITextProps>(
     {
       as = 'span',
       size = '$3',
+      mono = false,
       weight = '$2',
       color = '$textPrimary',
       css,
@@ -28,14 +29,20 @@ const Text = React.forwardRef<React.ElementRef<typeof StyledSlot>, ITextProps>(
     }: ITextProps,
     forwardedRef,
   ): React.FunctionComponentElement<React.ReactNode> => {
-    const Comp = as;
+    const TagElement = as;
     return (
       <StyledSlot
-        css={{ fontSize: size, fontWeight: weight, color: color, ...css }}
+        css={{
+          fontSize: size,
+          fontWeight: weight,
+          color: color,
+          fontFamily: mono ? '$mono' : '$inter',
+          ...css,
+        }}
         ref={forwardedRef}
         {...rest}
       >
-        <Comp>{children}</Comp>
+        <TagElement>{children}</TagElement>
       </StyledSlot>
     );
   },

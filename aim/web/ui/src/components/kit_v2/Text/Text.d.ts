@@ -6,6 +6,7 @@ export interface ITextProps
     >
   > {
   as?: typographyType;
+  mono?: boolean;
   weight?: CSS['fontWeight'];
   size?: CSS['fontSize'];
   color?: CSS['color'];
@@ -22,4 +23,15 @@ export type typographyType =
   | 'span'
   | 'p'
   | 'strong'
-  | 'small';
+  | 'small'
+  | 'b'
+  | 'u'
+  | 'i'
+  | 'em'
+  | 'abbr'
+  | 'cite'
+  | 'del'
+  | 's'
+  | 'samp'
+  | 'sub'
+  | 'sup';

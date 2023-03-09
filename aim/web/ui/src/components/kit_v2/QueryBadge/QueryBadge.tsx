@@ -47,7 +47,11 @@ const QueryBadge = React.forwardRef<
           css={color === 'primary' ? { bc: '$primary10' } : {}}
           horizontalSpacing='compact'
         >
-          <ButtonText color={color} disabled={disabled}>
+          <ButtonText
+            color={color === 'primary' ? '$textPrimary80' : '$textPrimary'}
+            mono
+            disabled={disabled}
+          >
             {children}
           </ButtonText>
         </Button>
