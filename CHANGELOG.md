@@ -6,6 +6,8 @@
 
 ### Fixes
 
+- Add support for jax>0.4.0 (n-gao)
+
 ## 3.16.2 Mar 3, 2023
 
 - Add exception-free mode to Aim (alberttorosyan)
