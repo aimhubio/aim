@@ -17,6 +17,7 @@ import { ISeparatorProps } from './Separator.d';
  * <Separator color="$secondary30" margin="10px" css={{ backgroundColor: 'red' }} orientation="vertical" />
  */
 function Separator({
+  orientation = 'horizontal',
   color = '$secondary30',
   margin,
   css,
@@ -28,10 +29,10 @@ function Separator({
       className='Separator'
       css={{
         backgroundColor: color,
-        margin:
-          props.orientation === 'horizontal' ? `${margin} 0` : `0 ${margin}`,
+        margin: orientation === 'horizontal' ? `${margin} 0` : `0 ${margin}`,
         ...css,
       }}
+      orientation={orientation}
       data-testid='separator'
     />
   );
