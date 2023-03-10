@@ -58,7 +58,7 @@
 <div align="center">
   <br/>
   <kbd>
-    <img width="650px" src="https://user-images.githubusercontent.com/13848158/136374529-af267918-5dc6-4a4e-8ed2-f6333a332f96.gif" />
+    <img src="https://user-images.githubusercontent.com/13848158/136374529-af267918-5dc6-4a4e-8ed2-f6333a332f96.gif" />
   </kbd>
 </div>
 
