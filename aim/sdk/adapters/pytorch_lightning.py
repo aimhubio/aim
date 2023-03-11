@@ -57,9 +57,9 @@ class AimLogger(Logger):
         self._system_tracking_interval = system_tracking_interval
         self._log_system_params = log_system_params
         self._capture_terminal_logs = capture_terminal_logs
-        self._run_hash = run_hash
 
         self._run = None        
+        self._run_hash = run_hash
 
     @staticmethod
     def _convert_params(params: Union[Dict[str, Any], Namespace]) -> Dict[str, Any]:
