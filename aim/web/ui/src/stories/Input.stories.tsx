@@ -1,3 +1,6 @@
+import { useFormik } from 'formik';
+import * as yup from 'yup';
+
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 
 import Input from 'components/kit_v2/Input';
@@ -12,7 +15,36 @@ export default {
   },
 } as ComponentMeta<typeof Input>;
 
-const Template: ComponentStory<typeof Input> = (args) => <Input {...args} />;
+const Template: ComponentStory<typeof Input> = (args) => {
+  const formik = useFormik({
+    initialValues: { name: 'name' },
+    onSubmit: () => {},
+    validationSchema: yup.object({
+      name: yup
+        .string()
+        .required('Required field')
+        .max(50, 'Must be 50 characters or fewer'),
+      comment: yup.string().max(100, 'Must be 100 characters or fewer'),
+    }),
+  });
+  const { values, errors, setFieldValue } = formik;
+
+  const { name } = values;
+
+  function onChange(e: any) {
+    const { name, value } = e.target;
+    setFieldValue(name, value);
+  }
+
+  return (
+    <Input
+      name='name'
+      errorMessage={errors.name}
+      onChange={onChange}
+      value={name}
+    />
+  );
+};
 
 export const Medium = Template.bind({});
 

@@ -3,12 +3,7 @@ import React from 'react';
 import { CSS } from '@stitches/react';
 
 // The Input component interface.
-export interface IInputProps {
-  /**
-   * The Input value.
-   * @default ''
-   */
-  value: string;
+export interface IInputProps extends React.HTMLProps<HTMLInputElement> {
   /**
    * The Input placeholder.
    * @default ''
@@ -25,13 +20,6 @@ export interface IInputProps {
    */
   error?: boolean;
   /**
-   * The onChange event handler.
-   */
-  onChange: (
-    value: string,
-    event?: React.ChangeEvent<HTMLInputElement>,
-  ) => void;
-  /**
    * The caption string.
    */
   caption?: string;
@@ -39,10 +27,6 @@ export interface IInputProps {
    * The Input error message.
    */
   errorMessage?: string;
-  /**
-   * The input element props.
-   */
-
   /**
    * The Input disabled state.
    * @default false
@@ -52,12 +36,6 @@ export interface IInputProps {
    * The Input left icon.
    */
   leftIcon?: React.ReactNode;
-  /**
-   * Input element props
-   * @default {}
-   * @example { type: 'password' }
-   */
-  inputElementProps?: Partial<React.HTMLProps<HTMLInputElement>>;
   /**
    * The Input css prop.
    * @default {}

@@ -42,8 +42,8 @@ const Select = ({
 }: ISelectProps) => {
   const [search, setSearch] = React.useState('');
 
-  const onSearchChange = React.useCallback((val: string) => {
-    setSearch(val);
+  const onSearchChange = React.useCallback((e) => {
+    setSearch(e.target.value);
   }, []);
 
   const flattenOptions: ISelectItemProps['data']['items'] | [] =

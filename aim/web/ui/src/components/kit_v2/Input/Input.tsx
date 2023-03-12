@@ -34,44 +34,48 @@ import {
 const Input = React.forwardRef<React.ElementRef<typeof Container>, IInputProps>(
   (
     {
-      value,
       inputSize = 'md',
       placeholder,
       error,
-      inputElementProps = {},
       caption,
       errorMessage,
       leftIcon,
       disabled,
       css = {},
-      onChange,
+      ...props
     }: IInputProps,
     forwardedRef,
   ): React.FunctionComponentElement<React.ReactNode> => {
-    const [inputValue, setInputValue] = React.useState<string>(value);
+    const [inputValue, setInputValue] = React.useState<any>(props.value || '');
     const [isFocused, setIsFocused] = React.useState<boolean>(false);
 
     React.useEffect(() => {
-      if (value !== inputValue) {
-        setInputValue(value);
+      if (props.value !== inputValue) {
+        setInputValue(props.value);
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [value]);
+    }, [props.value]);
 
     const handleChange = React.useCallback(
       (event: React.ChangeEvent<HTMLInputElement>) => {
         let { value } = event.target;
         setInputValue(value);
-        onChange(value, event);
+        if (props.onChange) {
+          props.onChange(event);
+        }
       },
-      [onChange],
+      [props],
     );
 
     const handleClear = React.useCallback(() => {
       if (disabled) return;
       setInputValue('');
-      onChange('');
-    }, [disabled, onChange]);
+      if (props.onChange) {
+        props.onChange({
+          target: { value: '' },
+        } as React.ChangeEvent<HTMLInputElement>);
+      }
+    }, [disabled, props]);
 
     const onFocus = React.useCallback(() => {
       setIsFocused(true);
@@ -95,7 +99,7 @@ const Input = React.forwardRef<React.ElementRef<typeof Container>, IInputProps>(
             />
           )}
           <InputContainer
-            {...inputElementProps}
+            {...props}
             size={inputSize}
             disabled={disabled}
             placeholder={placeholder}
