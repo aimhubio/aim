@@ -4,6 +4,8 @@ import * as _ from 'lodash-es';
 import ChartPanel from 'components/ChartPanel/ChartPanel';
 import DictVisualizer from 'components/kit/DictVisualizer';
 
+import RunLogRecords from 'pages/RunDetail/RunLogRecords';
+
 import { ChartTypeEnum, CurveEnum, ScaleEnum, HighlightEnum } from 'utils/d3';
 
 import DataTable from './DataTable';
@@ -77,5 +79,8 @@ export const dataVizElementsMap = {
       style={{ width: '100%', height: '100%', overflow: 'auto' }}
       dangerouslySetInnerHTML={{ __html: props.data }}
     />
+  ),
+  RUN_MESSAGES: (props: any) => (
+    <RunLogRecords key={props.data} runHash={props.data} inProgress={false} />
   ),
 };

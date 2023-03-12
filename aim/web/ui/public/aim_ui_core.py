@@ -617,3 +617,16 @@ def HTML(data):
     automatic_layout_update(html_data)
 
     return html_data
+
+
+def RunMessages(run_hash):
+    run_data = {
+        "type": "RUN_MESSAGES",
+        "data": run_hash,
+    }
+
+    run_data["key"] = update_viz_map(run_data["type"])
+
+    automatic_layout_update(run_data)
+
+    return run_data
