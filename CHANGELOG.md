@@ -5,6 +5,7 @@
 - Fix issue with toggling lines visibility during live update (roubkar)
 - Add navigation link to Experiment page from the Run page (roubkar)
 - Add navigation to explorers from the Run page (roubkar)
+- Fix the issue when HF model doesn't have `num_labels` attribute (mihran113)
 
 ## 3.16.2 Mar 3, 2023
 
