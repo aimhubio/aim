@@ -93,19 +93,22 @@ class RepoIndexManager:
                 yield run_hash
 
     def _is_run_stalled(self, run_hash: str) -> bool:
+        stalled = False
         heartbeat_files = list(sorted(self.heartbeat_dir.glob(f'{run_hash}-*-progress-*-*'), reverse=True))
         if heartbeat_files:
             last_heartbeat = Event(heartbeat_files[0].name)
             last_recorded_heartbeat = self.run_heartbeat_cache.get(run_hash)
             if last_recorded_heartbeat is None:
                 self.run_heartbeat_cache[run_hash] = last_heartbeat
+            elif last_heartbeat.idx > last_recorded_heartbeat.idx:
+                self.run_heartbeat_cache[run_hash] = last_heartbeat
             else:
-                if last_heartbeat.idx > last_recorded_heartbeat.idx:
-                    self.run_heartbeat_cache[run_hash] = last_heartbeat
-                else:
-                    time_passed = time.time() - last_recorded_heartbeat.detected_epoch_time
-                    if last_recorded_heartbeat.next_event_in + GRACE_PERIOD < time_passed:
-                        return True
+                time_passed = time.time() - last_recorded_heartbeat.detected_epoch_time
+                if last_recorded_heartbeat.next_event_in + GRACE_PERIOD < time_passed:
+                    stalled = True
+        else:
+            stalled = True
+        return stalled
 
     def run_needs_indexing(self, run_hash: str) -> bool:
         return os.path.exists(self.progress_dir / run_hash)
