@@ -25,10 +25,12 @@
   height: 300px;
   border-radius: $border-radius-main;
   border: $border-grey;
+  box-shadow: 3px 2px 5px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
 }
 
 .Boards__list__item__header {
-  padding: $space-xxs;
+  padding: $space-xxs $space-sm;
   display: flex;
   align-items: center;
   justify-content: space-between;
