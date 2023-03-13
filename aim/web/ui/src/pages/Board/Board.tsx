@@ -230,6 +230,7 @@ state = {}
                     isProcessing === null,
                   'SandboxVisualizer__main__components--processing':
                     isProcessing,
+                  'SandboxVisualizer__main__components--fullWidth': !editMode,
                 })}
               >
                 {isProcessing !== false && (
