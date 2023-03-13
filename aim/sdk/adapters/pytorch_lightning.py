@@ -35,7 +35,7 @@ class AimLogger(Logger):
     def __init__(self,
                  repo: Optional[str] = None,
                  experiment: Optional[str] = None,
-                 run: Optional[str] = None,
+                 run_name: Optional[str] = None,
                  train_metric_prefix: Optional[str] = 'train_',
                  val_metric_prefix: Optional[str] = 'val_',
                  test_metric_prefix: Optional[str] = 'test_',
@@ -48,7 +48,7 @@ class AimLogger(Logger):
         super().__init__()
 
         self._experiment_name = experiment
-        self._run_name = run
+        self._run_name = run_name
         self._repo_path = repo
 
         self._train_metric_prefix = train_metric_prefix
