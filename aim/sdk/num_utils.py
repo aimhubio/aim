@@ -70,7 +70,7 @@ def is_jax_device_array(inst):
     if inst_has_typename(inst, ['jaxlib', 'xla_extension', 'Array']):
         return True
     if inst_has_typename(inst, ['jaxlib', 'xla_extension', 'DeviceArray']):
-        reutrn True
+        return True
     return False
 
 
