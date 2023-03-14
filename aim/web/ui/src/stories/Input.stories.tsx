@@ -2,6 +2,7 @@ import { useFormik } from 'formik';
 import * as yup from 'yup';
 
 import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { IconSearch } from '@tabler/icons-react';
 
 import Input from 'components/kit_v2/Input';
 
@@ -42,6 +43,7 @@ const Template: ComponentStory<typeof Input> = (args) => {
       errorMessage={errors.name}
       onChange={onChange}
       value={name}
+      {...args}
     />
   );
 };
@@ -51,6 +53,7 @@ export const Medium = Template.bind({});
 Medium.args = {
   inputSize: 'md',
   value: 'Default Input',
+  leftIcon: <IconSearch />,
 };
 export const Large = Template.bind({});
 

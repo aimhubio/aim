@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { CSS } from '@stitches/react';
+import { CSS } from 'config/stitches/types';
 
 // The Input component interface.
 export interface IInputProps extends React.HTMLProps<HTMLInputElement> {

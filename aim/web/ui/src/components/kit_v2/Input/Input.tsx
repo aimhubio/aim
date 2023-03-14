@@ -90,10 +90,10 @@ const Input = React.forwardRef<React.ElementRef<typeof Container>, IInputProps>(
         <InputWrapper disabled={disabled}>
           {leftIcon && (
             <LeftIcon
+              size='md'
               className='LeftIcon'
-              size={inputSize}
-              fontSize={12}
-              name={leftIcon}
+              inputSize={inputSize}
+              icon={leftIcon}
               disabled={disabled}
               focused={!!inputValue || isFocused}
             />
@@ -115,7 +115,7 @@ const Input = React.forwardRef<React.ElementRef<typeof Container>, IInputProps>(
             onClick={handleClear}
             size={inputSize}
           >
-            <Icon className='Icon__container' size='sm' icon={<IconX />} />
+            <Icon className='Icon__container' size='md' icon={<IconX />} />
           </ClearButtonContainer>
         </InputWrapper>
         {errorMessage || caption ? (

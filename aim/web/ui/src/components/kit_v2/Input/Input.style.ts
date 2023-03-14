@@ -1,4 +1,4 @@
-import Icon from 'components/kit/Icon';
+import Icon from 'components/kit_v2/Icon';
 
 import { styled } from 'config/stitches';
 
@@ -7,16 +7,16 @@ const Container = styled('div', {
   fd: 'column',
 });
 
-const LeftIcon: any = styled(Icon, {
+const LeftIcon = styled(Icon, {
   position: 'absolute',
   display: 'flex',
   ai: 'center',
   jc: 'center',
   size: '$sizes$1',
-  color: '$textPrimary50',
+  color: '$secondary50',
   pointerEvents: 'none',
   variants: {
-    size: {
+    inputSize: {
       md: {
         left: '$space$4',
       },
@@ -145,11 +145,14 @@ const ClearButtonContainer = styled('div', {
     display: 'flex',
     ai: 'center',
     jc: 'center',
-    br: '$round',
-    background: '$secondary20',
-    color: '$textPrimary',
-    size: '10px',
-    p: '1px',
+    p: '3px',
+    '& > i': {
+      background: '$secondary20',
+      color: '#5A667A',
+      br: '$round',
+      height: '100%',
+      p: '1px',
+    },
   },
   variants: {
     size: {
