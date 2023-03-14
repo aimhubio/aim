@@ -15,8 +15,8 @@ line_chart = LineChart(metrics, x='steps', y='values',
 #####
 # Use component state to make your board interactive
 # Example
-if line_chart["focused_line_data"] != None:
-    run = line_chart["focused_line_data"]["run"]
+if line_chart.active_line:
+    run = line_chart.active_line["run"]
     JSON(run)
 #####
 `;

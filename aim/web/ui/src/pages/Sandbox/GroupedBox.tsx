@@ -19,8 +19,8 @@ function GroupedBox(props: any) {
     return props.viz.data.map((item: any) => ({
       ...item,
       style: {
-        left: 200 + item.column * boxSize.width,
-        top: 30 + item.row * boxSize.height,
+        left: 200 + (item.column ?? 0) * boxSize.width,
+        top: 30 + (item.row ?? 0) * boxSize.height,
         width: boxSize.width,
         height: boxSize.height,
       },
@@ -99,9 +99,9 @@ function GroupedBox(props: any) {
     for (let i = 0; i < data.length; i++) {
       let item = data[i];
       axes.rows[item.row] = {
-        order: item.row,
-        value: formatValue(item.row_val),
-        options: item.row_options,
+        order: item.row ?? 0,
+        value: formatValue(item.row_val) ?? null,
+        options: item.row_options ?? null,
         style: {
           position: 'absolute',
           top: item.style.top,
@@ -115,13 +115,13 @@ function GroupedBox(props: any) {
           textAlign: 'right',
           textOverflow: 'ellipsis',
           lineHeight: '0.875rem',
-          zIndex: item.row,
+          zIndex: item.row ?? 0,
         },
       };
       axes.columns[item.column] = {
-        order: item.column,
-        value: formatValue(item.column_val),
-        options: item.column_options,
+        order: item.column ?? 0,
+        value: formatValue(item.column_val) ?? null,
+        options: item.column_options ?? null,
         style: {
           position: 'absolute',
           top: -1,
@@ -135,7 +135,7 @@ function GroupedBox(props: any) {
           overflow: 'hidden',
           whiteSpace: 'nowrap',
           textOverflow: 'ellipsis',
-          zIndex: item.column,
+          zIndex: item.column ?? 0,
         },
       };
     }
@@ -165,8 +165,8 @@ function GroupedBox(props: any) {
   );
 
   const groupedByPosition = _.groupBy(filteredItems, (item) => {
-    const rowId = item.row;
-    const columnId = item.column;
+    const rowId = item.row ?? 0;
+    const columnId = item.column ?? 0;
     return `${rowId}--${columnId}`;
   });
 
@@ -279,7 +279,9 @@ function GroupedBox(props: any) {
 
                 const compProps = {
                   ...props.viz,
-                  data: vals.filter((v) => v.stack === props.stack.stackValue),
+                  data: vals.filter(
+                    (v) => (v.stack ?? 0) === props.stack.stackValue,
+                  ),
                 };
                 return (
                   <div

@@ -259,118 +259,6 @@ def set_state(update):
     setState(update)
 
 
-def Group(
-    viz,
-    facet={"row": [], "column": []},
-    size={},
-    stack=[None],
-    **group_list,
-):
-    if type(viz) is list:
-        viz = list(viz)
-        data = []
-        for el in viz:
-            data = data + el["data"]
-    else:
-        viz = dict(viz)
-        data = viz["data"]
-
-    if type(data) is not list:
-        viz["no_facet"] = True
-        viz["size"] = size
-
-        automatic_layout_update(viz)
-        return viz
-
-    no_facet = False
-    if facet["row"] == [] and facet["column"] == []:
-        no_facet = True
-
-    row_map, row_data = group("row", data, facet["row"])
-    column_map, column_data = group("column", data, facet["column"])
-
-    additional_groups = []
-
-    for group_option in group_list.items():
-        group_name, group_options = group_option
-        group_option_map, group_option_data = group(group_name, data, group_options)
-        additional_groups.append(
-            {
-                "name": group_name,
-                "options": group_options,
-                "data": group_option_data,
-                "map": group_option_map,
-            }
-        )
-
-    stack_map, stack_data = group("stack", data, stack)
-
-    items = []
-    for i, elem in enumerate(data):
-        item = dict(elem)
-        if no_facet is False:
-            row_val = row_map[row_data[i]["row"]]
-            column_val = column_map[column_data[i]["column"]]
-            stack_val = stack_map[stack_data[i]["stack"]]
-
-            for additional in additional_groups:
-                additional["current"] = additional["map"][
-                    additional["data"][i][additional["name"]]
-                ]
-
-            item["row"] = row_val["order"]
-            item["column"] = column_val["order"]
-            item["row_val"] = row_val["val"]
-            item["column_val"] = column_val["val"]
-            item["row_options"] = facet["row"]
-            item["column_options"] = facet["column"]
-
-            for additional in additional_groups:
-                item[additional["name"]] = additional["current"]["order"]
-                if additional["name"] == "color":
-                    item[additional["name"]] = apply_group_value_pattern(
-                        item[additional["name"]], colors
-                    )
-                elif additional["name"] == "stroke_style":
-                    item[additional["name"]] = apply_group_value_pattern(
-                        item[additional["name"]], stroke_styles
-                    )
-                item[f'{additional["name"]}_val'] = additional["current"]["val"]
-                item[f'{additional["name"]}_options'] = additional["options"]
-
-            item["stack"] = stack_val["order"]
-            item["stack_val"] = stack_val["val"]
-            item["stack_options"] = stack
-
-        items.append(item)
-
-    if type(viz) is list:
-
-        def get_viz_for_type(type):
-            for el in viz:
-                if el["data"] and el["data"][0] and el["data"][0]["type"] == type:
-                    return el["type"]
-
-        union_viz = {}
-        for el in viz:
-            for key in el:
-                union_viz[key] = el[key]
-
-        union_viz["type"] = get_viz_for_type
-        union_viz["data"] = items
-        union_viz["no_facet"] = no_facet
-
-        automatic_layout_update(union_viz)
-        return union_viz
-    else:
-        viz["data"] = items
-        viz["no_facet"] = no_facet
-        viz["size"] = size
-
-        automatic_layout_update(viz)
-        return viz
-
-
 block_context = {
     "current": 0,
 }
@@ -446,6 +334,7 @@ class Component(Element):
         self.callbacks = {}
         self.options = {}
         self.state = state[key] if key in state else {}
+        self.no_facet = True
 
     def set_state(self, value):
         self.state.update(value)
@@ -460,12 +349,49 @@ class Component(Element):
             "data": self.data,
             "callbacks": self.callbacks,
             "options": self.options,
-            "parent_block": self.parent_block
+            "parent_block": self.parent_block,
+            "no_facet": self.no_facet
         }
 
         component_data.update(self.state)
 
         render_to_layout(component_data)
+
+    def group(self, prop, value=[]):
+        group_map, group_data = group(prop, self.data, value)
+
+        items = []
+        for i, item in enumerate(self.data):
+            elem = dict(item)
+            current = group_map[group_data[i][prop]]
+
+            if prop == "color":
+                color_val = apply_group_value_pattern(
+                    current["order"], colors
+                )
+                elem["color"] = color_val
+                elem["color_val"] = current["val"]
+                elem["color_options"] = value
+            elif prop == "stroke_style":
+                stroke_val = apply_group_value_pattern(
+                    current["order"], stroke_styles
+                )
+                elem["dasharray"] = stroke_val
+                elem["dasharray_val"] = current["val"]
+                elem["dasharray_options"] = value
+            else:
+                elem[prop] = current["order"]
+                elem[f"{prop}_val"] = current["val"]
+                elem[f"{prop}_options"] = value
+
+            if prop == "row" or prop == "column":
+                self.no_facet = False
+
+            items.append(elem)
+
+        self.data = items
+
+        self.render()
 
 
 class LineChart(Component):
@@ -473,8 +399,6 @@ class LineChart(Component):
         component_type = "LineChart"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type)
-
-        lines = []
 
         color_map, color_data = group("color", data, color)
         stroke_map, stroke_data = group("stroke_style", data, stroke_style)

@@ -20,7 +20,7 @@ function GridCell(props: any) {
   const [stackValue, setStackValue] = React.useState<number>();
 
   const sliderValues = Object.keys(stackMap)
-    .map((key) => +key)
+    .map((key) => (key === 'undefined' ? 0 : +key))
     .sort((a, b) => a - b);
 
   React.useEffect(() => {
