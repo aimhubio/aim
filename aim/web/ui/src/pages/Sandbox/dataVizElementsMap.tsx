@@ -57,7 +57,7 @@ export const dataVizElementsMap = {
       }
     />
   ),
-  Plotly: (props: any) => <FiguresList key={Date.now()} data={props.data} />,
+  Figures: (props: any) => <FiguresList key={Date.now()} data={props.data} />,
   Images: (props: any) => <ImagesList key={Date.now()} data={props.data} />,
   Audios: (props: any) => <AudiosList key={Date.now()} data={props.data} />,
   Text: (props: any) => <TextList key={Date.now()} data={props.data} />,
@@ -80,7 +80,7 @@ export const dataVizElementsMap = {
       dangerouslySetInnerHTML={{ __html: props.data }}
     />
   ),
-  RUN_MESSAGES: (props: any) => (
+  RunMessages: (props: any) => (
     <RunLogRecords key={props.data} runHash={props.data} inProgress={false} />
   ),
 };

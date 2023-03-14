@@ -35,7 +35,6 @@ function GridCell(props: any) {
         backgroundColor: '#d2d4dc',
         boxShadow: '0 0 0 1px #b5b9c5',
         maxWidth: props.maxWidth,
-        margin: '5px',
         background: '#fff',
         backgroundImage: 'radial-gradient(#b5b9c5 1px, transparent 0)',
         backgroundSize: '10px 10px',

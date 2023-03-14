@@ -274,7 +274,7 @@ function GroupedBox(props: any) {
                   dataVizElementsMap[
                     (typeof props.viz.type === 'function'
                       ? props.viz.type(vals[0].type)
-                      : props.viz.type) as 'LineChart' | 'DataFrame' | 'Plotly'
+                      : props.viz.type) as 'LineChart'
                   ];
 
                 const compProps = {

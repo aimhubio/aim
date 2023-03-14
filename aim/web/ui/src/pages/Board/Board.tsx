@@ -45,7 +45,8 @@ function Board({
   const { pyodide, namespace, isLoading: pyodideIsLoading } = usePyodide();
 
   const editorValue = React.useRef(data.code);
-  const [result, setResult] = React.useState([[]]);
+  const [result, setResult] = React.useState([]);
+  const [blocks, setBlocks] = React.useState<any[]>([]);
   const [isProcessing, setIsProcessing] = React.useState<boolean | null>(null);
   const [error, setError] = React.useState<string | null>(null);
   const [execCode, setExecCode] = React.useState('');
@@ -53,14 +54,15 @@ function Board({
   const [executionCount, setExecutionCount] = React.useState<number>(0);
   const timerId = React.useRef(0);
 
-  (window as any).updateLayout = (grid: any) => {
-    let layout = toObject(grid.toJs());
-    grid.destroy();
+  (window as any).updateLayout = (elements: any) => {
+    let layout = toObject(elements.toJs());
+    elements.destroy();
 
     window.clearTimeout(timerId.current);
     timerId.current = window.setTimeout(() => {
-      setResult(layout);
-    }, 0);
+      setResult(layout.filter((item: any) => item.element !== 'block'));
+      setBlocks(layout.filter((item: any) => item.element === 'block'));
+    }, 50);
   };
 
   (window as any).setState = (update: any) => {
@@ -100,13 +102,13 @@ function Board({
         await pyodide?.loadPackagesFromImports(code);
 
         let resetCode = `memoize_cache = {}
-current_layout = [[]]
+current_layout = []
 state = {}
 `;
         pyodide?.runPython(resetCode, { globals: namespace });
 
         setState(undefined);
-        setResult([[]]);
+        setResult([]);
         setExecCode(code);
         setExecutionCount((eC) => eC + 1);
       } catch (ex) {
@@ -128,11 +130,9 @@ state = {}
         let vizMapResetCode = `viz_map_keys = {}
 `;
         pyodide?.runPython(vizMapResetCode, { globals: namespace });
-        console.time('run');
         pyodide
           ?.runPythonAsync(execCode, { globals: namespace })
           .then(() => {
-            console.timeEnd('run');
             setError(null);
             setIsProcessing(false);
           })
@@ -167,6 +167,100 @@ state = {}
   React.useEffect(() => {
     return () => window.clearTimeout(timerId.current);
   }, []);
+
+  function constructTree(elems: any, tree: any) {
+    for (let i = 0; i < elems.length; i++) {
+      let elem = elems[i];
+      if (elem.element === 'block') {
+        if (!elem.parent_block) {
+          tree.root.elements[elem.block_context.id] = {
+            ...elem.block_context,
+            elements: {},
+          };
+        } else {
+          if (!tree.hasOwnProperty(elem.parent_block.id)) {
+            tree[elem.parent_block.id] = {
+              id: elem.parent_block.id,
+              elements: {},
+            };
+          }
+          tree[elem.parent_block.id].elements[elem.block_context.id] = {
+            ...elem.block_context,
+            elements: {},
+          };
+        }
+        tree[elem.block_context.id] = {
+          ...elem.block_context,
+          elements: {},
+        };
+      } else {
+        if (!elem.parent_block) {
+          tree.root.elements[elem.key] = elem;
+        } else {
+          tree[elem.parent_block.id].elements[elem.key] = elem;
+        }
+      }
+    }
+
+    return tree;
+  }
+
+  function renderTree(tree: any, elements: any) {
+    return Object.values(elements).map((element: any, i: number) => {
+      if (element.type === 'row' || element.type === 'column') {
+        return (
+          <div
+            key={element.type + i}
+            className={`block--${element.type}`}
+            style={{
+              display: 'flex',
+              flexDirection: element.type === 'column' ? 'column' : 'row',
+              flex: element.type === 'column' ? 0 : 1,
+            }}
+          >
+            {renderTree(tree, tree[element.id].elements)}
+          </div>
+        );
+      }
+
+      return (
+        <div
+          key={i}
+          style={{
+            position: 'relative',
+            display: 'flex',
+            flex: 1,
+            gap: 5,
+          }}
+        >
+          <div
+            key={i}
+            style={{
+              position: 'relative',
+              display: 'flex',
+              flex: 1,
+              backgroundColor: '#d2d4dc',
+              boxShadow: '0 0 0 1px #b5b9c5',
+              gap: 5,
+              background: '#fff',
+              backgroundImage: 'radial-gradient(#b5b9c5 1px, transparent 0)',
+              backgroundSize: '10px 10px',
+              overflow: 'hidden',
+            }}
+          >
+            <GridCell viz={element} />
+          </div>
+        </div>
+      );
+    });
+  }
+
+  const tree = constructTree(blocks.concat(result), {
+    root: {
+      id: 0,
+      elements: {},
+    },
+  });
 
   return (
     <ErrorBoundary>
@@ -212,10 +306,7 @@ state = {}
                     language='python'
                     height='100%'
                     value={editorValue.current}
-                    onChange={(v) => {
-                      editorValue.current = v!;
-                      // setItem('sandboxCode', editorValue.current);
-                    }}
+                    onChange={(v) => (editorValue.current = v!)}
                     loading={<span />}
                     options={{
                       tabSize: 4,
@@ -247,32 +338,7 @@ state = {}
                       {error}
                     </pre>
                   ) : (
-                    result.map(
-                      (row: any[], i: number) =>
-                        row && (
-                          <div
-                            key={i}
-                            style={{
-                              position: 'relative',
-                              display: 'flex',
-                              flex: 1,
-                              maxHeight: `${100 / result.length}%`,
-                            }}
-                          >
-                            {row.map((viz: any, i: number) => {
-                              return (
-                                viz && (
-                                  <GridCell
-                                    key={i}
-                                    viz={viz}
-                                    maxWidth={`${100 / row.length}%`}
-                                  />
-                                )
-                              );
-                            })}
-                          </div>
-                        ),
-                    )
+                    renderTree(tree, tree.root.elements)
                   )}
                 </div>
                 {editMode && (

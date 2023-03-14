@@ -21,8 +21,9 @@
 }
 
 .Boards__list__item {
-  width: 400px;
+  min-width: 350px;
   height: 300px;
+  flex: 1 0 30%;
   border-radius: $border-radius-main;
   border: $border-grey;
   box-shadow: 3px 2px 5px rgba(0, 0, 0, 0.1);

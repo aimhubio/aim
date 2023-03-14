@@ -5,7 +5,6 @@
 from pyodide.ffi import create_proxy
 from js import search
 import hashlib
-import copy
 
 
 memoize_cache = {}
@@ -161,7 +160,10 @@ def generate_key(data):
 viz_map_keys = {}
 
 
-def update_viz_map(viz_type):
+def update_viz_map(viz_type, key=None):
+    if key != None:
+        viz_map_keys[key] = key
+        return key
     if viz_type in viz_map_keys:
         viz_map_keys[viz_type] = viz_map_keys[viz_type] + 1
     else:
@@ -178,7 +180,7 @@ def apply_group_value_pattern(value, list):
     return value
 
 
-# @memoize
+@memoize
 def group(name, data, options):
     group_map = {}
     grouped_data = []
@@ -244,30 +246,7 @@ def group(name, data, options):
     return sorted_groups, grouped_data
 
 
-current_layout = [[]]
-
-
-def layout(grid):
-    from js import updateLayout
-
-    updateLayout(grid)
-
-
-def automatic_layout_update(data):
-    is_found = False
-    for i, row in enumerate(current_layout):
-        for j, cell in enumerate(row):
-            if cell["key"] == data["key"]:
-                current_layout[i][j] = data
-                is_found = True
-
-    if is_found == False:
-        if current_layout == [[]]:
-            current_layout[0] = [data]
-        else:
-            current_layout.append([data])
-
-    layout(current_layout)
+current_layout = []
 
 
 state = {}
@@ -392,241 +371,294 @@ def Group(
         return viz
 
 
-def LineChart(
-    data,
-    x,
-    y,
-    color=[],
-    stroke_style=[],
-    options={},
-    on_point_click=None,
-    on_chart_hover=None,
-):
+block_context = {
+    "current": 0,
+}
 
-    component_key = update_viz_map("LineChart")
 
-    color_map, color_data = group("color", data, color)
-    stroke_map, stroke_data = group("stroke_style", data, stroke_style)
-    lines = []
-    for i, item in enumerate(data):
-        color_val = apply_group_value_pattern(
-            color_map[color_data[i]["color"]]["order"], colors
-        )
-        stroke_val = apply_group_value_pattern(
-            stroke_map[stroke_data[i]["stroke_style"]]["order"], stroke_styles
-        )
+def render_to_layout(data):
+    from js import updateLayout
 
-        line = dict(item)
-        line["key"] = i
-        line["data"] = {"xValues": find(item, x), "yValues": find(item, y)}
-        line["color"] = color_val
-        line["dasharray"] = stroke_val
+    is_found = False
+    for i, cell in enumerate(current_layout):
+        if cell["key"] == data["key"]:
+            current_layout[i] = data
+            is_found = True
 
-        lines.append(line)
+    if is_found == False:
+        current_layout.append(data)
 
-    async def on_active_point_change(val, is_active):
+    updateLayout(current_layout)
+
+
+class Element:
+    def __init__(self):
+        self.parent_block = None
+
+    def set_parent_block(self, block):
+        self.parent_block = block
+
+
+class Block(Element):
+    def __init__(self, type):
+        super().__init__()
+        block_context["current"] += 1
+        self.block_context = {
+            "id": block_context["current"],
+            "type": type
+        }
+        self.key = generate_key(self.block_context)
+
+        self.render()
+
+    def add(self, element):
+        element.set_parent_block(self.block_context)
+        element.render()
+
+    def render(self):
+        block_data = {
+            "element": 'block',
+            "block_context": self.block_context,
+            "key": self.key,
+            "parent_block": self.parent_block
+        }
+
+        render_to_layout(block_data)
+
+
+class Row(Block):
+    def __init__(self):
+        super().__init__('row')
+
+
+class Column(Block):
+    def __init__(self):
+        super().__init__('column')
+
+
+class Component(Element):
+    def __init__(self, key, type):
+        super().__init__()
+        self.state = {}
+        self.key = key
+        self.type = type
+        self.data = None
+        self.callbacks = {}
+        self.options = {}
+        self.state = state[key] if key in state else {}
+
+    def set_state(self, value):
+        self.state.update(value)
+        set_state({
+            self.key: value
+        })
+
+    def render(self):
+        component_data = {
+            "type": self.type,
+            "key": self.key,
+            "data": self.data,
+            "callbacks": self.callbacks,
+            "options": self.options,
+            "parent_block": self.parent_block
+        }
+
+        component_data.update(self.state)
+
+        render_to_layout(component_data)
+
+
+class LineChart(Component):
+    def __init__(self, data, x, y, color=[], stroke_style=[], options={}, key=None):
+        component_type = "LineChart"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type)
+
+        lines = []
+
+        color_map, color_data = group("color", data, color)
+        stroke_map, stroke_data = group("stroke_style", data, stroke_style)
+        lines = []
+        for i, item in enumerate(data):
+            color_val = apply_group_value_pattern(
+                color_map[color_data[i]["color"]]["order"], colors
+            )
+            stroke_val = apply_group_value_pattern(
+                stroke_map[stroke_data[i]["stroke_style"]]["order"], stroke_styles
+            )
+
+            line = dict(item)
+            line["key"] = i
+            line["data"] = {"xValues": find(item, x), "yValues": find(item, y)}
+            line["color"] = color_val
+            line["dasharray"] = stroke_val
+
+            lines.append(line)
+
+        self.data = lines
+        self.options = options
+        self.callbacks = {
+            "on_active_point_change": self.on_active_point_change
+        }
+
+        self.render()
+
+    @property
+    def active_line(self):
+        return self.state["active_line"] if "active_line" in self.state else None
+
+    @property
+    def focused_line(self):
+        return self.state["focused_line"] if "focused_line" in self.state else None
+
+    @property
+    def active_point(self):
+        return self.state["active_point"] if "active_point" in self.state else None
+
+    @property
+    def focused_point(self):
+        return self.state["focused_point"] if "focused_point" in self.state else None
+
+    async def on_active_point_change(self, val, is_active):
         data = create_proxy(val.to_py())
         point = dict(data)
         data.destroy()
-        item = lines[point["key"]]
+        item = self.data[point["key"]]
         if is_active:
-            if callable(set_state):
-                set_state(
-                    {
-                        component_key: {
-                            "focused_line_data": item,
-                            "focused_point_data": point,
-                        }
-                    }
-                )
-            if callable(on_point_click):
-                await on_point_click(item, point)
+            self.set_state({
+                "focused_line": item,
+                "focused_point": point,
+            })
         else:
-            if callable(set_state):
-                set_state(
-                    {
-                        component_key: {
-                            "hovered_line_data": item,
-                            "hovered_point_data": point,
-                        }
-                    }
-                )
-            if callable(on_chart_hover):
-                await on_chart_hover(item, point)
-
-    line_chart_data = {
-        "type": "LineChart",
-        "key": component_key,
-        "data": lines,
-        "callbacks": {"on_active_point_change": on_active_point_change},
-        "options": options,
-    }
-
-    component_fields = (
-        state and component_key in state and state[component_key] or {component_key: {}}
-    )
-
-    component_state = {
-        "hovered_line_data": "hovered_line_data" in component_fields
-        and component_fields["hovered_line_data"]
-        or None,
-        "focused_line_data": "focused_line_data" in component_fields
-        and component_fields["focused_line_data"]
-        or None,
-        "hovered_point_data": "hovered_point_data" in component_fields
-        and component_fields["hovered_point_data"]
-        or None,
-        "focused_point_data": "focused_point_data" in component_fields
-        and component_fields["focused_point_data"]
-        or None,
-    }
-
-    line_chart_data.update(component_state)
-
-    automatic_layout_update(line_chart_data)
-
-    return line_chart_data
+            self.set_state({
+                "active_line": item,
+                "active_point": point,
+            })
 
 
-def ImagesList(data):
-    images = []
-    for i, item in enumerate(data):
-        image = item
-        image["key"] = i
+class ImagesList(Component):
+    def __init__(self, data, key=None):
+        component_type = "Images"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type)
 
-        images.append(image)
+        images = []
 
-    images_data = {
-        "type": "Images",
-        "data": images,
-    }
+        for i, item in enumerate(data):
+            image = item
+            image["key"] = i
 
-    images_data["key"] = update_viz_map(images_data["type"])
+            images.append(image)
 
-    automatic_layout_update(images_data)
+        self.data = images
 
-    return images_data
-
-
-def AudiosList(data):
-    audios = []
-    for i, item in enumerate(data):
-        audio = item
-        audio["key"] = i
-
-        audios.append(audio)
-
-    audios_data = {
-        "type": "Audios",
-        "data": audios,
-    }
-
-    audios_data["key"] = update_viz_map(audios_data["type"])
-
-    automatic_layout_update(audios_data)
-
-    return audios_data
+        self.render()
 
 
-def TextsList(data, color=[]):
-    color_map, color_data = group("color", data, color)
+class AudiosList(Component):
+    def __init__(self, data, key=None):
+        component_type = "Audios"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type)
 
-    texts = []
-    for i, item in enumerate(data):
-        color_val = apply_group_value_pattern(
-            color_map[color_data[i]["color"]]["order"], colors
-        )
-        text = item
-        text["key"] = i
-        text["color"] = color_val
+        audios = []
 
-        texts.append(text)
+        for i, item in enumerate(data):
+            audio = item
+            audio["key"] = i
 
-    texts_data = {
-        "type": "Text",
-        "data": texts,
-    }
+            audios.append(audio)
 
-    texts_data["key"] = update_viz_map(texts_data["type"])
+        self.data = audios
 
-    automatic_layout_update(texts_data)
-
-    return texts_data
+        self.render()
 
 
-def FiguresList(data):
-    if type(data) is not list:
-        items = [data.to_json()]
-    else:
-        items = []
-        for d in data:
-            items.append(d.to_json())
+class TextsList(Component):
+    def __init__(self, data, color=[], key=None):
+        component_type = "Text"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type)
 
-    figures = []
-    for i, item in enumerate(items):
-        figure = {
-            "key": i,
-            "data": item,
-        }
+        color_map, color_data = group("color", data, color)
 
-        figures.append(figure)
+        texts = []
 
-    figures_data = {
-        "type": "Plotly",
-        "data": figures,
-    }
+        for i, item in enumerate(data):
+            color_val = apply_group_value_pattern(
+                color_map[color_data[i]["color"]]["order"], colors
+            )
+            text = item
+            text["key"] = i
+            text["color"] = color_val
 
-    figures_data["key"] = update_viz_map(figures_data["type"])
+            texts.append(text)
 
-    automatic_layout_update(figures_data)
+        self.data = texts
 
-    return figures_data
+        self.render()
 
 
-def JSON(data):
-    json_data = {
-        "type": "JSON",
-        "data": data,
-    }
+class FiguresList(Component):
+    def __init__(self, data, key=None):
+        component_type = "Figures"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type)
 
-    json_data["key"] = update_viz_map(json_data["type"])
+        figures = []
 
-    automatic_layout_update(json_data)
+        for i, item in enumerate(data):
+            figure = {
+                "key": i,
+                "data": item.to_json(),
+            }
 
-    return json_data
+            figures.append(figure)
 
+        self.data = figures
 
-def Table(data):
-    table_data = {"type": "DataFrame", "data": data.to_json(orient="records")}
-
-    table_data["key"] = update_viz_map(table_data["type"])
-
-    automatic_layout_update(table_data)
-
-    return table_data
+        self.render()
 
 
-def HTML(data):
-    html_data = {
-        "type": "HTML",
-        "data": data,
-    }
+class JSON(Component):
+    def __init__(self, data, key=None):
+        component_type = "JSON"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type)
 
-    html_data["key"] = update_viz_map(html_data["type"])
+        self.data = data
 
-    automatic_layout_update(html_data)
-
-    return html_data
+        self.render()
 
 
-def RunMessages(run_hash):
-    run_data = {
-        "type": "RUN_MESSAGES",
-        "data": run_hash,
-    }
+class Table(Component):
+    def __init__(self, data, key=None):
+        component_type = "DataFrame"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type)
 
-    run_data["key"] = update_viz_map(run_data["type"])
+        self.data = data.to_json(orient="records")
 
-    automatic_layout_update(run_data)
+        self.render()
 
-    return run_data
+
+class HTML(Component):
+    def __init__(self, data, key=None):
+        component_type = "HTML"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type)
+
+        self.data = data
+
+        self.render()
+
+
+class RunMessages(Component):
+    def __init__(self, run_hash, key=None):
+        component_type = "RunMessages"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type)
+
+        self.data = run_hash
+
+        self.render()
