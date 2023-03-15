@@ -267,7 +267,7 @@ class BasicRun(BaseRun, StructuredRunMixin):
     _metric_version_warning_shown = False
 
     def __init__(self, run_hash: Optional[str] = None, *,
-                 repo: Optional[Union[str, 'Repo']] = None,
+                 repo: Optional[Union[str, 'Repo', pathlib.Path]] = None,
                  read_only: bool = False,
                  experiment: Optional[str] = None,
                  force_resume: bool = False,
@@ -818,7 +818,7 @@ class Run(BasicRun):
 
     @noexcept
     def __init__(self, run_hash: Optional[str] = None, *,
-                 repo: Optional[Union[str, 'Repo']] = None,
+                 repo: Optional[Union[str, 'Repo', pathlib.Path]] = None,
                  read_only: bool = False,
                  experiment: Optional[str] = None,
                  force_resume: bool = False,
