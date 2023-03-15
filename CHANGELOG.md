@@ -6,7 +6,8 @@
 
 ### Fixes
 
-Add support for Path type to the repo attribute of the Run class(emekaokoli19)
+- Add support for Path type to the repo attribute of the Run class(emekaokoli19)
+- Add support for jax>0.4.0 (n-gao)
 
 ## 3.16.2 Mar 3, 2023
 
