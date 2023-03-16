@@ -34,23 +34,23 @@
   <sub><strong>INTEGRATIONS WITH:</strong></sub>
   <br/>
   <br/>
-  <img src="https://user-images.githubusercontent.com/13848158/155354389-d0301620-77ea-4629-a743-f7aa249e14b5.png" width="50" />
-  <img src="https://user-images.githubusercontent.com/13848158/155354496-b39d7b1c-63ef-40f0-9e59-c08d2c5e337c.png" width="50" />
-  <img src="https://user-images.githubusercontent.com/13848158/155354380-3755c741-6960-42ca-b93e-84a8791f088c.png" width="50" />
-  <img src="https://user-images.githubusercontent.com/13848158/155354342-7df0ef5e-63d2-4df7-b9f1-d2fc0e95f53f.png" width="50" />
-  <img src="https://user-images.githubusercontent.com/13848158/155354392-afbff3de-c845-4d86-855d-53df569f91d1.png" width="50" />
-  <img src="https://user-images.githubusercontent.com/13848158/155354355-89210506-e7e5-4d37-b2d6-ad3fda62ef13.png" width="50" />
-  <img src="https://user-images.githubusercontent.com/13848158/155354397-8af8e1d3-4067-405e-9d42-1f131663ed22.png" width="50" />
-  <img src="https://user-images.githubusercontent.com/13848158/155354513-f7486146-3891-4f3f-934f-e58bbf9ce695.png" width="50" />
-  <img src="https://user-images.githubusercontent.com/13848158/155354500-c0471ce6-b2ce-4172-b9e4-07a197256303.png" width="50" />
-  <img src="https://user-images.githubusercontent.com/13848158/155354361-9f911785-008d-4b75-877e-651e026cf47e.png" width="50" />
-  <img src="https://user-images.githubusercontent.com/13848158/155354373-1879ae61-b5d1-41f0-a4f1-04b639b6f05e.png" width="50" />
-  <img src="https://user-images.githubusercontent.com/13848158/155354483-75d9853f-7154-4d95-8190-9ad7a73d6654.png" width="50" />
-  <img src="https://user-images.githubusercontent.com/13848158/155354329-cf7c3352-a72a-478d-82a7-04e3833b03b7.png" width="50" />
-  <img src="https://user-images.githubusercontent.com/13848158/155354349-dcdf3bc3-d7a9-4f34-8258-4824a57f59c7.png" width="50" />
-  <img src="https://user-images.githubusercontent.com/13848158/155354471-518f1814-7a41-4b23-9caf-e516507343f1.png" width="50" />
-  <img src="https://user-images.githubusercontent.com/48801049/165162736-2cc5da39-38aa-4093-874f-e56d0ba9cea2.png" width="50" />
-  <img src="https://user-images.githubusercontent.com/48801049/165074282-36ad18eb-1124-434d-8439-728c22cd7ac7.png" width="50" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354389-d0301620-77ea-4629-a743-f7aa249e14b5.png" height="50" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354496-b39d7b1c-63ef-40f0-9e59-c08d2c5e337c.png" height="50" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354380-3755c741-6960-42ca-b93e-84a8791f088c.png" height="50" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354342-7df0ef5e-63d2-4df7-b9f1-d2fc0e95f53f.png" height="50" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354392-afbff3de-c845-4d86-855d-53df569f91d1.png" height="50" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354355-89210506-e7e5-4d37-b2d6-ad3fda62ef13.png" height="50" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354397-8af8e1d3-4067-405e-9d42-1f131663ed22.png" height="50" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354513-f7486146-3891-4f3f-934f-e58bbf9ce695.png" height="50" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354500-c0471ce6-b2ce-4172-b9e4-07a197256303.png" height="50" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354361-9f911785-008d-4b75-877e-651e026cf47e.png" height="50" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354373-1879ae61-b5d1-41f0-a4f1-04b639b6f05e.png" height="50" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354483-75d9853f-7154-4d95-8190-9ad7a73d6654.png" height="50" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354329-cf7c3352-a72a-478d-82a7-04e3833b03b7.png" height="50" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354349-dcdf3bc3-d7a9-4f34-8258-4824a57f59c7.png" height="50" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354471-518f1814-7a41-4b23-9caf-e516507343f1.png" height="50" />
+  <img src="https://user-images.githubusercontent.com/48801049/165162736-2cc5da39-38aa-4093-874f-e56d0ba9cea2.png" height="50" />
+  <img src="https://user-images.githubusercontent.com/48801049/165074282-36ad18eb-1124-434d-8439-728c22cd7ac7.png" height="50" />
 </div>
 
 <br/>
@@ -59,12 +59,13 @@
   <sub><strong>TRUSTED BY ML TEAMS FROM:</strong></sub>  
   <br/>
   <br/>
-  <img src="https://user-images.githubusercontent.com/13848158/225361121-29c8b84c-424d-4525-9739-aabd4b3bfc8b.png" width="100" />
-  <img src="https://user-images.githubusercontent.com/13848158/225362482-64ceffdc-8574-4bb6-b03a-41c28b3c4a25.png" width="100" />
-  <img src="https://user-images.githubusercontent.com/13848158/225362772-6b098ae6-35e3-4ee7-b082-f0da7e7f3f20.png" width="100" />
-  <img src="https://user-images.githubusercontent.com/13848158/225363430-f47c317c-2fe1-431a-a6f6-79290f753dac.png" width="100" />
-  <img src="https://user-images.githubusercontent.com/13848158/225364459-e833898a-81cd-4e61-864a-723e7c0d6add.png" width="100" />
-  <img src="https://user-images.githubusercontent.com/13848158/225364126-3863d3a8-f9bf-45a1-b265-171f79d86ac0.png" width="100" />
+  <img src="https://user-images.githubusercontent.com/13848158/225590335-2dd44bdc-ac6a-4617-86fc-5657496a8ea8.png" height="50" />
+  <img src="https://user-images.githubusercontent.com/13848158/225590314-0c3f5f60-d723-40cd-8c71-5f8bc1751d10.png" height="50" />
+  <img src="https://user-images.githubusercontent.com/13848158/225590332-32002ee8-fcc7-4c87-b3fa-ce6a798f93f5.png" height="50" />
+  <img src="https://user-images.githubusercontent.com/13848158/225592558-d6b0fca4-544b-418c-aa1b-8709f6c1ec20.png" height="50" />
+  <img src="https://user-images.githubusercontent.com/13848158/225590324-08aacf15-3bef-465f-8f4b-9e8c9dda79ce.png" height="50" />
+  <img src="https://user-images.githubusercontent.com/13848158/225590343-d8386217-5c07-4c7b-81aa-4f1ec4f6d85b.png" height="50" />
+  <img src="https://user-images.githubusercontent.com/13848158/225590347-f57c4f8f-bd38-44a9-8416-1d00bae4ed74.png" height="50" />
 </div>
 
 <br/>
@@ -75,8 +76,6 @@
   <br/>
   <p>
     AimStack offers enterprise support that's beyond core Aim.
-    </br>
-    It involves multi-project Aim deployment and additional Aim modules.
     </br>
     Contact via "hello@aimstack.io" e-mail.
   </p>
@@ -133,13 +132,13 @@ Aim's mission is to democratize AI dev tools.
 
 Follow the steps below to get started with Aim.
 
-**1. Install Aim on your training environment**
+## 1. Install Aim on your training environment
 
 ```shell
 pip3 install aim
 ```
 
-**2. Integrate Aim with your code**
+## 2. Integrate Aim with your code
 
 ```python
 from aim import Run
@@ -161,13 +160,59 @@ for i in range(10):
 
 _See the full list of supported trackable objects(e.g. images, text, etc) [here](https://aimstack.readthedocs.io/en/latest/quick_start/supported_types.html)._
 
-**3. Run the training as usual and start Aim UI**
+## 3. Run the training as usual and start Aim UI
 
 ```shell
 aim up
 ```
 
-**4. Or query runs programmatically via SDK**
+## Learn more
+
+### Migrate from other tools
+
+Aim has built-in converters to easily migrate logs from other tools. 
+These migrations cover the most common usage scenarios. 
+In case of custom and complex scenarios you can use Aim SDK to implement your own conversion script.
+
+- [TensorBoard logs converter](https://aimstack.readthedocs.io/en/latest/quick_start/convert_data.html#show-tensorboard-logs-in-aim)
+- [MLFlow logs converter](https://aimstack.readthedocs.io/en/latest/quick_start/convert_data.html#show-mlflow-logs-in-aim)
+- [Weights & Biases logs converter](https://aimstack.readthedocs.io/en/latest/quick_start/convert_data.html#show-weights-and-biases-logs-in-aim)
+
+### Integrate Aim into an existing project
+
+Aim easily integrates with your favourite ML frameworks.
+Aim has builtin callbacks for mosth of the frameworks.
+
+<details>
+<summary>
+list of supported frameworks
+</summary>
+
+Integration with Pytorch Ignite
+Integration with Pytorch Lightning
+Integration with Hugging Face
+Integration with Keras & tf.Keras
+Integration with Keras Tuner
+Integration with XGboost
+Integration with CatBoost
+Integration with LightGBM
+Integration with fastai
+Integration with MXNet
+Integration with Optuna
+Integration with PaddlePaddle
+Integration with Stable-Baselines3
+Integration with Acme
+Integration with Prophet
+
+</details>
+
+
+### Query runs programmatically via SDK
+
+<details>
+<summary>
+Example
+</summary>
 
 ```python
 from aim import Repo
@@ -185,201 +230,18 @@ for run_metrics_collection in my_repo.query_metrics(query).iter_runs():
         steps, metric_values = metric.values.sparse_numpy()
 ```
 
-# Integrations
-
-<details>
-<summary>
-  Integrate PyTorch Lightning
-</summary>
-
-```python
-from aim.pytorch_lightning import AimLogger
-
-# ...
-trainer = pl.Trainer(logger=AimLogger(experiment='experiment_name'))
-# ...
-```
-
-_See documentation [here](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-pytorch-lightning)._
-
 </details>
 
-<details>
-<summary>
-  Integrate Hugging Face
-</summary>
+### Centralized tracking setup
 
-```python
-from aim.hugging_face import AimCallback
+Aim remote tracking server allows running experiments in a multi-host environment and collect tracked data in a centralized location. 
+See how to set up a remote tracking server in the docs https://aimstack.readthedocs.io/en/latest/using/remote_tracking.html.
 
-# ...
-aim_callback = AimCallback(repo='/path/to/logs/dir', experiment='mnli')
-trainer = Trainer(
-    model=model,
-    args=training_args,
-    train_dataset=train_dataset if training_args.do_train else None,
-    eval_dataset=eval_dataset if training_args.do_eval else None,
-    callbacks=[aim_callback],
-    # ...
-)
-# ...
-```
+### Deploying Aim
 
-_See documentation [here](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-hugging-face)._
+- Aim docker image
+- Host Aim on kubernetes https://aimstack.readthedocs.io/en/latest/using/k8s_deployment.html
 
-</details>
-
-<details>
-<summary>
-  Integrate Keras & tf.keras
-</summary>
-
-```python
-import aim
-
-# ...
-model.fit(x_train, y_train, epochs=epochs, callbacks=[
-    aim.keras.AimCallback(repo='/path/to/logs/dir', experiment='experiment_name')
-    
-    # Use aim.tensorflow.AimCallback in case of tf.keras
-    aim.tensorflow.AimCallback(repo='/path/to/logs/dir', experiment='experiment_name')
-])
-# ...
-```
-
-_See documentation [here](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-keras-tf-keras)._
-
-</details>
-
-<details>
-<summary>
-  Integrate KerasTuner
-</summary>
-
-```python
-from aim.keras_tuner import AimCallback
-
-# ...
-tuner.search(
-    train_ds,
-    validation_data=test_ds,
-    callbacks=[AimCallback(tuner=tuner, repo='.', experiment='keras_tuner_test')],
-)
-# ...
-```
-
-_See documentation [here](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-kerastuner)._
-
-</details>
-
-<details>
-<summary>
-  Integrate XGBoost
-</summary>
-
-```python
-from aim.xgboost import AimCallback
-
-# ...
-aim_callback = AimCallback(repo='/path/to/logs/dir', experiment='experiment_name')
-bst = xgb.train(param, xg_train, num_round, watchlist, callbacks=[aim_callback])
-# ...
-```
-
-_See documentation [here](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-xgboost)._
-</details>
-
-
-<details>
-<summary>
-  Integrate CatBoost
-</summary>
-
-```python
-from aim.catboost import AimLogger
-
-# ...
-model.fit(train_data, train_labels, log_cout=AimLogger(loss_function='Logloss'), logging_level="Info")
-# ...
-```
-
-_See documentation [here](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-catboost)._
-</details>
-
-
-
-<details>
-<summary>
-  Integrate fastai
-</summary>
-
-```python
-from aim.fastai import AimCallback
-
-# ...
-learn = cnn_learner(dls, resnet18, pretrained=True,
-                    loss_func=CrossEntropyLossFlat(),
-                    metrics=accuracy, model_dir="/tmp/model/",
-                    cbs=AimCallback(repo='.', experiment='fastai_test'))
-# ...
-```
-
-_See documentation [here](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-fastai)._
-</details>
-
-
-<details>
-<summary>
-  Integrate LightGBM
-</summary>
-
-```python
-from aim.lightgbm import AimCallback
-
-# ...
-aim_callback = AimCallback(experiment='lgb_test')
-aim_callback.experiment['hparams'] = params
-
-gbm = lgb.train(params,
-                lgb_train,
-                num_boost_round=20,
-                valid_sets=lgb_eval,
-                callbacks=[aim_callback, lgb.early_stopping(stopping_rounds=5)])
-# ...
-```
-
-_See documentation [here](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-lightgbm)._
-</details>
-
-
-<details>
-<summary>
-  Integrate PyTorch Ignite
-</summary>
-
-```python
-from aim.pytorch_ignite import AimLogger
-
-# ...
-aim_logger = AimLogger()
-
-aim_logger.log_params({
-    "model": model.__class__.__name__,
-    "pytorch_version": str(torch.__version__),
-    "ignite_version": str(ignite.__version__),
-})
-
-aim_logger.attach_output_handler(
-    trainer,
-    event_name=Events.ITERATION_COMPLETED,
-    tag="train",
-    output_transform=lambda loss: {'loss': loss}
-)
-# ...
-```
-
-_See documentation [here](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-pytorch-ignite)._
-</details>
 
 # Comparisons to familiar tools
 
