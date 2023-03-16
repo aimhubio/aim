@@ -1,5 +1,10 @@
 from aim.storage.object import CustomObject
 import deeplake
+import warnings
+
+
+class UncommittedDatasetWarning(UserWarning):
+    pass
 
 
 @CustomObject.alias('deeplake.dataset')
@@ -25,6 +30,13 @@ class DeeplakeDataset(CustomObject):
 
     def __init__(self, dataset: deeplake.Dataset):
         super().__init__()
+        if dataset.commit_id is None and dataset.has_head_changes:
+            warnings.warn(
+                f"Deeplake Dataset {dataset.path} has head changes but no commit yet."
+                "Consider committing dataset changes before logging runs to enable full traceability.",
+                UncommittedDatasetWarning,
+                stacklevel=2,
+            )
         self.storage['dataset'] = {
             'source': 'deeplake',
             'meta': self._get_ds_meta(dataset)
