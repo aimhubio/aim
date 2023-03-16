@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://user-images.githubusercontent.com/13848158/225618891-5f43d1a5-a995-46bc-9bcd-63e53326e4b2.png">
+  <img src="https://user-images.githubusercontent.com/13848158/225620298-9f9293e9-a138-41fd-bd77-21d53d0490b7.png">
   <h3>An easy-to-use & supercharged open-source experiment tracker</h3>
   Aim logs your training runs, enables a beautiful UI to compare them and an API to query them programmatically.
 </div>
