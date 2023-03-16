@@ -231,6 +231,8 @@ state = {}
             display: 'flex',
             flex: 1,
             gap: 5,
+            maxHeight: '100vh',
+            overflow: 'hidden',
           }}
         >
           <div

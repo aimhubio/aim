@@ -504,13 +504,13 @@ class TextsList(Component):
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type)
 
-        color_map, color_data = group("color", data, color)
+        color_map, color_data = group("text_color", data, color)
 
         texts = []
 
         for i, item in enumerate(data):
             color_val = apply_group_value_pattern(
-                color_map[color_data[i]["color"]]["order"], colors
+                color_map[color_data[i]["text_color"]]["order"], colors
             )
             text = item
             text["key"] = i
@@ -584,5 +584,31 @@ class RunMessages(Component):
         super().__init__(component_key, component_type)
 
         self.data = run_hash
+
+        self.render()
+
+
+class Union(Component):
+    def __init__(self, components, key=None):
+        component_type = "Union"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type)
+
+        for i, elem in reversed(list(enumerate(current_layout))):
+            for comp in components:
+                if elem["key"] == comp.key:
+                    del current_layout[i]
+
+        self.data = []
+        for comp in components:
+            self.data = self.data + comp.data
+            self.callbacks.update(comp.callbacks)
+
+        def get_viz_for_type(type):
+            for comp in components:
+                if comp.data and comp.data[0] and comp.data[0]["type"] == type:
+                    return comp.type
+
+        self.type = get_viz_for_type
 
         self.render()

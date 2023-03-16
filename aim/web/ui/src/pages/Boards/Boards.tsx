@@ -29,7 +29,10 @@ function Boards({
         <AppBar title={pageTitlesEnum.BOARDS} className='Boards__appBar' />
         <div className='Boards__list'>
           <BusyLoaderWrapper isLoading={isLoading} height={'100%'}>
-            <div key='new' className='Boards__list__item'>
+            <div
+              key='new'
+              className='Boards__list__item Boards__list__item--new'
+            >
               <div className='Boards__list__item__header'>
                 <Text size={16} weight={700}>
                   New board

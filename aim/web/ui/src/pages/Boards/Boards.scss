@@ -27,15 +27,26 @@
   border-radius: $border-radius-main;
   border: $border-grey;
   box-shadow: 3px 2px 5px rgba(0, 0, 0, 0.1);
+  overflow: auto;
+}
+
+.Boards__list__item--new {
   overflow: hidden;
+  .Boards__list__item__preview {
+    background: #fff;
+  }
 }
 
 .Boards__list__item__header {
+  position: sticky;
+  top: 0;
+  background: #fff;
   padding: $space-xxs $space-sm;
   display: flex;
   align-items: center;
   justify-content: space-between;
   border-bottom: $border-grey;
+  z-index: 1;
 }
 
 .Boards__list__item__sub {
@@ -46,9 +57,9 @@
   display: flex;
   align-items: flex-start;
   justify-content: center;
+  background: #f2f3f4;
   color: $blue;
-  height: calc(100% - 41px);
-  overflow: hidden;
+  min-height: calc(100% - 41px);
 
   .Illustration__container__img {
     transform: scale(0.8);
