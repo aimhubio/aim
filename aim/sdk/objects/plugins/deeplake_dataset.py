@@ -58,8 +58,13 @@ class DeeplakeDataset(CustomObject):
             "commit_id": ds.commit_id,
             "branch": ds.branch,
             "has_head_changes": ds.has_head_changes,
+            "pending_commit_id": ds.pending_commit_id if ds.has_head_changes else None,
             "info": dict(ds.info),  # Info might contain keys such as "description" and "title"
-            "num_samples": len(ds),
+            "num_samples": ds.num_samples,
+            "max_len": ds.max_len,
+            "min_len": ds.min_len,
+            "is_view": ds.is_view,
+            "view_info": self.view_info if ds.is_view else None,
             "tensors": {group: self._tensor_meta(tensor) for group, tensor in ds.tensors.items()},
             "size_approx": ds.size_approx(),
             "deeplake_version": ds.meta.version
