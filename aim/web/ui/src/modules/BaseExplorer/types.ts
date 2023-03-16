@@ -115,10 +115,14 @@ export interface IBaseComponentProps {
   // dataSelector: () => any;
 }
 
-export interface IWidgetComponentProps {
-  containerNode: HTMLDivElement;
-  gridNode: HTMLDivElement;
+export interface IWidgetRendererProps {
+  boxContainer: React.MutableRefObject<HTMLDivElement>;
+  vizContainer: React.MutableRefObject<HTMLDivElement>;
 }
+
+export interface IWidgetComponentProps
+  extends IWidgetRendererProps,
+    IBaseComponentProps {}
 
 export declare interface ExplorerEngineConfiguration {
   /**

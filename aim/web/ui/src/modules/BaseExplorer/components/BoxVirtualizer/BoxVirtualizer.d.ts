@@ -1,14 +1,15 @@
 import React from 'react';
 
-import { IWidgetComponentProps } from '../../types';
+import { IWidgetRendererProps } from '../../types';
 
 export interface IBoxVirtualizerProps<T> {
   data: Array<T>;
+  container: React.MutableRefObject<HTMLDivElement>;
   itemsRenderer: (
     value: [boxId: string, boxItems: Array<T>],
     boxIndex: number,
   ) => React.ReactNode;
-  widgetRenderer?: (props: IWidgetComponentProps) => React.ReactNode;
+  widgetRenderer?: (props: IWidgetRendererProps) => React.ReactNode;
   offset: number;
   axisData?: {
     columns?: any;

@@ -9,7 +9,7 @@ import { buildObjectHash } from 'modules/core/utils/hashing';
 import { GroupType } from 'modules/core/pipeline';
 import {
   IVisualizationProps,
-  IWidgetComponentProps,
+  IWidgetRendererProps,
 } from 'modules/BaseExplorer/types';
 
 import contextToString from 'utils/contextToString';
@@ -38,6 +38,13 @@ function Visualizer(props: IVisualizationProps) {
 
   const vizEngine = visualizations[name];
   const boxConfig = useStore(vizEngine.box.stateSelector);
+
+  const boxContainer = React.useRef<HTMLDivElement>(
+    document.createElement('div'),
+  );
+  const vizContainer = React.useRef<HTMLDivElement>(
+    document.createElement('div'),
+  );
 
   const data = React.useMemo(() => {
     return dataState?.map((d: any, i: number) => {
@@ -152,27 +159,26 @@ function Visualizer(props: IVisualizationProps) {
     }
   }, [foundGroups, boxConfig, rowsAxisData]);
 
-  const widgetRenderer = React.useMemo(() => {
-    if (!widgets || _.isEmpty(widgets)) return;
-
-    return ({ containerNode, gridNode }: IWidgetComponentProps) => (
-      <div className='VisualizerWidgets'>
-        {Object.entries(widgets).map(
-          ([widgetKey, { component: WidgetComponent, props }]) =>
-            WidgetComponent ? (
-              <WidgetComponent
-                key={widgetKey}
-                engine={engine}
-                visualizationName={name}
-                containerNode={containerNode}
-                gridNode={gridNode}
-                {...(props || {})}
-              />
-            ) : null,
-        )}
-      </div>
-    );
-  }, [widgets, engine, name]);
+  const widgetRenderer = React.useCallback(
+    ({ boxContainer, vizContainer }: IWidgetRendererProps) => {
+      return widgets && !_.isEmpty(widgets)
+        ? Object.entries(widgets).map(
+            ([widgetKey, { component: WidgetComponent, props = {} }]) =>
+              WidgetComponent ? (
+                <WidgetComponent
+                  key={widgetKey}
+                  engine={engine}
+                  visualizationName={name}
+                  boxContainer={boxContainer}
+                  vizContainer={vizContainer}
+                  {...props}
+                />
+              ) : null,
+          )
+        : null;
+    },
+    [widgets, engine, name],
+  );
 
   const { depthSelector, onDepthMapChange } = useDepthMap({
     data: dataState,
@@ -183,10 +189,11 @@ function Visualizer(props: IVisualizationProps) {
   return (
     <div className='Visualizer'>
       {topPanelRenderer()}
-      <div className='VisualizerContainer'>
+      <div className='VisualizerContainer' ref={vizContainer}>
         {!_.isEmpty(dataState) && (
           <BoxVirtualizer
             data={data}
+            container={boxContainer}
             itemsRenderer={([boxId, boxItems], boxIndex) => (
               <BoxWrapper
                 key={boxId}
@@ -224,9 +231,9 @@ function Visualizer(props: IVisualizationProps) {
                 </div>
               ),
             }}
-            widgetRenderer={widgetRenderer}
           />
         )}
+        {widgetRenderer({ boxContainer, vizContainer })}
       </div>
       {bottomPanelRenderer()}
     </div>
