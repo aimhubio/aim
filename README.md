@@ -6,53 +6,19 @@
 
 <br/>
 
-<img src="https://user-images.githubusercontent.com/13848158/154338753-34484cda-95b8-4da8-a610-7fdf198c05fd.png">
-
-<p align="center">
-  <a href="#about-aim"><b>About</b></a> &bull;
-  <a href="#why-use-aim"><b>Features</b></a> &bull;
-  <a href="#demos"><b>Demos</b></a> &bull;
-  <a href="https://github.com/aimhubio/aim/tree/main/examples"><b>Examples</b></a> &bull;
-  <a href="#quick-start"><b>Quick Start</b></a> &bull;
-  <a href="https://aimstack.readthedocs.io/en/latest/"><b>Documentation</b></a> &bull;
-  <a href="#roadmap"><b>Roadmap</b></a> &bull;
-  <a href="https://community.aimstack.io/"><b>Discord Community</b></a> &bull;
-  <a href="https://twitter.com/aimstackio"><b>Twitter</b></a>
-</p>
-
 <div align="center">
   
+  [![Discord Server](https://dcbadge.vercel.app/api/server/zXq2NfVdtF?compact=true&style=flat)](https://community.aimstack.io/)
+  [![Twitter Follow](https://img.shields.io/twitter/follow/aimstackio?style=social)](https://twitter.com/aimstackio)
+  [![Medium](https://img.shields.io/badge/Medium-12100E?style=flat&logo=medium&logoColor=white)](https://medium.com/aimstack)
+  
   [![Platform Support](https://img.shields.io/badge/platform-Linux%20%7C%20macOS-blue)]()
-  [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/aim)](https://pypi.org/project/aim/)
+  [![PyPI - Python Version](https://img.shields.io/badge/python-%3E%3D%203.7-blue)](https://pypi.org/project/aim/)
   [![PyPI Package](https://img.shields.io/pypi/v/aim?color=yellow)](https://pypi.org/project/aim/)
   [![License](https://img.shields.io/badge/License-Apache%202.0-orange.svg)](https://opensource.org/licenses/Apache-2.0)
   [![PyPI Downloads](https://img.shields.io/pypi/dw/aim?color=green)](https://pypi.org/project/aim/)
   [![Issues](https://img.shields.io/github/issues/aimhubio/aim)](http://github.com/aimhubio/aim/issues)
   
-</div>
-
-<div align="center">
-  <sub>Integrates seamlessly with your favorite tools</sub>
-  <br/>
-  <br/>
-  <img src="https://user-images.githubusercontent.com/13848158/155354389-d0301620-77ea-4629-a743-f7aa249e14b5.png" width="60" />
-  <img src="https://user-images.githubusercontent.com/13848158/155354496-b39d7b1c-63ef-40f0-9e59-c08d2c5e337c.png" width="60" />
-  <img src="https://user-images.githubusercontent.com/13848158/155354380-3755c741-6960-42ca-b93e-84a8791f088c.png" width="60" />
-  <img src="https://user-images.githubusercontent.com/13848158/155354342-7df0ef5e-63d2-4df7-b9f1-d2fc0e95f53f.png" width="60" />
-  <img src="https://user-images.githubusercontent.com/13848158/155354392-afbff3de-c845-4d86-855d-53df569f91d1.png" width="60" />
-  <img src="https://user-images.githubusercontent.com/13848158/155354355-89210506-e7e5-4d37-b2d6-ad3fda62ef13.png" width="60" />
-  <img src="https://user-images.githubusercontent.com/13848158/155354397-8af8e1d3-4067-405e-9d42-1f131663ed22.png" width="60" />
-  <br/>
-  <img src="https://user-images.githubusercontent.com/13848158/155354513-f7486146-3891-4f3f-934f-e58bbf9ce695.png" width="60" />
-  <img src="https://user-images.githubusercontent.com/13848158/155354500-c0471ce6-b2ce-4172-b9e4-07a197256303.png" width="60" />
-  <img src="https://user-images.githubusercontent.com/13848158/155354361-9f911785-008d-4b75-877e-651e026cf47e.png" width="60" />
-  <img src="https://user-images.githubusercontent.com/13848158/155354373-1879ae61-b5d1-41f0-a4f1-04b639b6f05e.png" width="60" />
-  <img src="https://user-images.githubusercontent.com/13848158/155354483-75d9853f-7154-4d95-8190-9ad7a73d6654.png" width="60" />
-  <img src="https://user-images.githubusercontent.com/13848158/155354329-cf7c3352-a72a-478d-82a7-04e3833b03b7.png" width="60" />
-  <img src="https://user-images.githubusercontent.com/13848158/155354349-dcdf3bc3-d7a9-4f34-8258-4824a57f59c7.png" width="60" />
-  <img src="https://user-images.githubusercontent.com/13848158/155354471-518f1814-7a41-4b23-9caf-e516507343f1.png" width="60" />
-  <img src="https://user-images.githubusercontent.com/48801049/165162736-2cc5da39-38aa-4093-874f-e56d0ba9cea2.png" width="60" />
-  <img src="https://user-images.githubusercontent.com/48801049/165074282-36ad18eb-1124-434d-8439-728c22cd7ac7.png" width="60" />
 </div>
 
 <div align="center">
@@ -62,40 +28,88 @@
   </kbd>
 </div>
 
-# About Aim
+</br>
 
-| Track and version ML runs | Visualize runs via beautiful UI | Query runs metadata via SDK |
-|:--------------------:|:------------------------:|:-------------------:|
-| <img width="600px" src="https://user-images.githubusercontent.com/13848158/154337794-e9310239-6614-41b3-a95b-bb91f0bb6c4f.png"> | <img width="600px" src="https://user-images.githubusercontent.com/13848158/154337788-03fe5b31-0fa3-44af-ae79-2861707d8602.png"> | <img width="600px" src="https://user-images.githubusercontent.com/13848158/154337793-85175c78-5659-4dd0-bb2d-05017278e2fa.png"> |
+<div align="center">
+  <sub><strong>INTEGRATIONS WITH:</strong></sub>
+  <br/>
+  <br/>
+  <img src="https://user-images.githubusercontent.com/13848158/155354389-d0301620-77ea-4629-a743-f7aa249e14b5.png" width="50" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354496-b39d7b1c-63ef-40f0-9e59-c08d2c5e337c.png" width="50" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354380-3755c741-6960-42ca-b93e-84a8791f088c.png" width="50" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354342-7df0ef5e-63d2-4df7-b9f1-d2fc0e95f53f.png" width="50" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354392-afbff3de-c845-4d86-855d-53df569f91d1.png" width="50" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354355-89210506-e7e5-4d37-b2d6-ad3fda62ef13.png" width="50" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354397-8af8e1d3-4067-405e-9d42-1f131663ed22.png" width="50" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354513-f7486146-3891-4f3f-934f-e58bbf9ce695.png" width="50" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354500-c0471ce6-b2ce-4172-b9e4-07a197256303.png" width="50" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354361-9f911785-008d-4b75-877e-651e026cf47e.png" width="50" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354373-1879ae61-b5d1-41f0-a4f1-04b639b6f05e.png" width="50" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354483-75d9853f-7154-4d95-8190-9ad7a73d6654.png" width="50" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354329-cf7c3352-a72a-478d-82a7-04e3833b03b7.png" width="50" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354349-dcdf3bc3-d7a9-4f34-8258-4824a57f59c7.png" width="50" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354471-518f1814-7a41-4b23-9caf-e516507343f1.png" width="50" />
+  <img src="https://user-images.githubusercontent.com/48801049/165162736-2cc5da39-38aa-4093-874f-e56d0ba9cea2.png" width="50" />
+  <img src="https://user-images.githubusercontent.com/48801049/165074282-36ad18eb-1124-434d-8439-728c22cd7ac7.png" width="50" />
+</div>
 
-Aim is an open-source, self-hosted ML experiment tracking tool. 
-It's good at tracking lots (1000s) of training runs and it allows you to compare them with a performant and beautiful UI.
+<br/>
 
-You can use not only the great Aim UI but also its SDK to query your runs' metadata programmatically. 
-That's especially useful for automations and additional analysis on a Jupyter Notebook.
+<div align="center">
+  <sub><strong>TRUSTED BY ML TEAMS FROM:</strong></sub>  
+  <br/>
+  <br/>
+  <img src="https://user-images.githubusercontent.com/13848158/225361121-29c8b84c-424d-4525-9739-aabd4b3bfc8b.png" width="100" />
+  <img src="https://user-images.githubusercontent.com/13848158/225362482-64ceffdc-8574-4bb6-b03a-41c28b3c4a25.png" width="100" />
+  <img src="https://user-images.githubusercontent.com/13848158/225362772-6b098ae6-35e3-4ee7-b082-f0da7e7f3f20.png" width="100" />
+  <img src="https://user-images.githubusercontent.com/13848158/225363430-f47c317c-2fe1-431a-a6f6-79290f753dac.png" width="100" />
+  <img src="https://user-images.githubusercontent.com/13848158/225364459-e833898a-81cd-4e61-864a-723e7c0d6add.png" width="100" />
+  <img src="https://user-images.githubusercontent.com/13848158/225364126-3863d3a8-f9bf-45a1-b265-171f79d86ac0.png" width="100" />
+</div>
 
+<br/>
+
+<div align="center">
+  <sub><strong>ENTERPRISE SUPPORT:</strong></sub>  
+  <br/>
+  <br/>
+  <p>
+    AimStack offers enterprise support that's beyond core Aim.
+    </br>
+    It involves multi-project Aim deployment and additional Aim modules.
+    </br>
+    Contact via "hello@aimstack.io" e-mail.
+  </p>
+</div>
+
+---
+
+<h3 align="center">
+  <a href="#about"><b>About</b></a> &bull;
+  <a href="#demos"><b>Demos</b></a> &bull;
+  <a href="#quick-start"><b>Quick Start</b></a> &bull;
+  <a href="https://github.com/aimhubio/aim/tree/main/examples"><b>Examples</b></a> &bull;
+  <a href="https://aimstack.readthedocs.io/en/latest/"><b>Documentation</b></a> &bull;
+  <a href="#roadmap"><b>Roadmap</b></a> &bull;
+  <a href="#community"><b>Community</b></a>
+</h3>  
+
+---
+
+# About
+
+Aim is an open-source, self-hosted ML experiment tracking tool. It's good at tracking lots (10000s) of training runs and it allows you to compare them with a performant and beautiful UI.
+
+You can use not only the great Aim UI but also its SDK to query your runs' metadata programmatically. That's especially useful for automations and additional analysis on a Jupyter Notebook.
 
 Aim's mission is to democratize AI dev tools.
 
-# Why use Aim?
+| Log any metadata across your ML pipeline | Visualize and compare metadata via UI |
+|:---|:---|
+| <ul><li>Track your ML experiments and any type of metadata</li><li>Integrations with the most of popular deep learning frameworks</li><li>Migrate from other experiment trackers with one command</li></ul> | <ul><li>Visualize and compare any metadata at scale via Aim Explorers</li><li>Group and aggregate metadata</li><li>Query metadata via python expressions</li></ul> |
+| **Conduct effective trainings** | **Organize your experimentation** |
+| <ul><li>System info and resource usage tracking</li><li>Get notified on training run progress</li><li>Log messages and configure notifications</li><li>Configure custom callbacks</li></ul> | <ul><li>Deep dive into details of each run for easy debugging</li><li>Centralized dashboard for holistic view</li><li>Group runs with experiments and tags</li></ul> |
 
-### Compare 100s of runs in a few clicks - build models faster
-
-- Compare, group and aggregate 100s of metrics thanks to effective visualizations.
-- Analyze, learn correlations and patterns between hparams and metrics.
-- Easy pythonic search to query the runs you want to explore.
-
-### Deep dive into details of each run for easy debugging
-
-- Hyperparameters, metrics, images, distributions, audio, text - all available at hand on an intuitive UI to understand the performance of your model.
-- Easily track plots built via your favourite visualisation tools, like plotly and matplotlib.
-- Analyze system resource usage to effectively utilize computational resources.
-
-### Have all relevant information organised and accessible for easy governance
-
-- Centralized dashboard to holistically view all your runs, their hparams and results.
-- Use SDK to query/access all your runs and tracked metadata.
-- You own your data - Aim is open source and self hosted.
 
 # Demos
 
@@ -363,7 +377,12 @@ _See documentation [here](https://aimstack.readthedocs.io/en/latest/quick_start/
 
 # Comparisons to familiar tools
 
-### Tensorboard
+<details>
+<summary>
+  <strong>TensorBoard</strong>
+</summary>
+
+</br>
 **Training run comparison**
 
 Order of magnitude faster training run comparison with Aim
@@ -380,7 +399,14 @@ Order of magnitude faster training run comparison with Aim
 - Embedding projector.
 - Neural network visualization.
 
-### MLFlow
+</details>
+
+<details>
+<summary>
+  <strong>MLflow</strong>
+</summary>
+
+</br>
 MLFlow is an end-to-end ML Lifecycle tool.
 Aim is focused on training tracking.
 The main differences of Aim and MLflow are around the UI scalability and run comparison features.
@@ -395,26 +421,78 @@ The main differences of Aim and MLflow are around the UI scalability and run com
 - Aim UI can handle several thousands of metrics at the same time smoothly with 1000s of steps. It may get shaky when you explore 1000s of metrics with 10000s of steps each. But we are constantly optimizing!
 - MLflow UI becomes slow to use when there are a few hundreds of runs.
 
-### Weights and Biases
+</details>
+
+<details>
+<summary>
+  <strong>Weights and Biases</strong>
+</summary>
+
+</br>
 
 Hosted vs self-hosted
 - Weights and Biases is a hosted closed-source MLOps platform.
 - Aim is self-hosted, free and open-source experiment tracking tool.
 
+</details>
+
 # Roadmap
 
-## Detailed Sprints
+## Detailed Milestones
 
-:sparkle: The [Aim product roadmap](https://github.com/orgs/aimhubio/projects/3)
+The [Aim product roadmap](https://github.com/orgs/aimhubio/projects/3) :sparkle: 
 
 - The `Backlog` contains the issues we are going to choose from and prioritize weekly
 - The issues are mainly prioritized by the highly-requested features
 
 ## High-level roadmap
 
-The high-level features we are going to work on the next few months
+The high-level features we are going to work on the next few months:
 
-### Done
+**In Progress**
+
+- [ ] Aim SDK low-level interface (Start: _Aug 22 2022_, )
+- [ ] Dashboards – customizable layouts with embedded explorers
+
+<details>
+<summary>
+  <strong>Next-up</strong>
+</summary>
+
+**Aim UI**
+
+- Runs management
+    - Runs explorer – query and visualize runs data(images, audio, distributions, ...) in a central dashboard
+- Explorers
+    - Text Explorer
+    - Distributions Explorer
+- Cloud storage support – store runs blob(e.g. images) data on the cloud
+- Artifact storage – store files, model checkpoints, and beyond
+
+**SDK and Storage**
+
+- Scalability
+    - Smooth UI and SDK experience with over 10.000 runs
+- Runs management
+    - CLI interfaces
+        - Reporting - runs summary and run details in a CLI compatible format
+        - Manipulations – copy, move, delete runs, params and sequences
+
+**Integrations**
+
+- ML Frameworks:
+    - Shortlist: scikit-learn
+- Resource management tools
+    - Shortlist: Kubeflow, Slurm
+- Workflow orchestration tools
+
+</details>
+
+<details>
+<summary>
+  <strong>Done</strong>
+</summary>
+
   - [x] Live updates (Shipped: _Oct 18 2021_)
   - [x] Images tracking and visualization (Start: _Oct 18 2021_, Shipped: _Nov 19 2021_)
   - [x] Distributions tracking and visualization (Start: _Nov 10 2021_, Shipped: _Dec 3 2021_)
@@ -450,50 +528,48 @@ The high-level features we are going to work on the next few months
   - [x] Integration with Optuna (Start: _Oct 2 2022_, Shipped: _Nov 26 2022_)
   - [x] Audios Explorer (Start: _Oct 30 2022_, Shipped: _Nov 26 2022_)
   - [x] Experiment page (Start: _Nov 9 2022_, Shipped: _Nov 26 2022_)
+  - [x] HuggingFace datasets (Start: _Dec 29 2022_, _Feb 3 2023_)
 
-### In Progress
-  - [ ] Aim SDK low-level interface (Start: _Aug 22 2022_, )
-  - [ ] HuggingFace datasets (Start: _Dec 29 2022_, )
+</details>
 
-### To Do
+# Community
 
-**Aim UI**
+## Aim README badge
 
-- Runs management
-    - Runs explorer – query and visualize runs data(images, audio, distributions, ...) in a central dashboard
-- Explorers
-    - Text Explorer
-    - Distributions Explorer
-- Dashboards – customizable layouts with embedded explorers
+[![Aim](https://img.shields.io/badge/powered%20by-Aim-%231473E6)](https://github.com/aimhubio/aim)
 
-**SDK and Storage**
+## Cite Aim in your papers
 
-- Scalability
-    - Smooth UI and SDK experience with over 10.000 runs
-- Runs management
-    - CLI interfaces
-        - Reporting - runs summary and run details in a CLI compatible format
-        - Manipulations – copy, move, delete runs, params and sequences
+```bibtex
+@software{Arakelyan_Aim_2020,
+  author = {Arakelyan, Gor and Soghomonyan, Gevorg and {The Aim team}},
+  doi = {10.5281/zenodo.6536395},
+  license = {Apache-2.0},
+  month = {6},
+  title = {{Aim}},
+  url = {https://github.com/aimhubio/aim},
+  version = {3.9.3},
+  year = {2020}
+}
+```
 
-**Integrations**
+## Contribution
 
-- ML Frameworks:
-    - Shortlist: MONAI, SpaCy, Raytune
-- Resource management tools
-    - Shortlist: Kubeflow, Slurm
-- Workflow orchestration tools
-- Others: Hydra, Google MLMD, Streamlit, ...
+<a href="https://github.com/aimhubio/aim/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=aimhubio/aim" />
+</a>
 
-### On hold
+Made with [contrib.rocks](https://contrib.rocks).
 
-- scikit-learn integration
-- Cloud storage support – store runs blob(e.g. images) data on the cloud (Start: _Mar 21 2022_)
-- Artifact storage – store files, model checkpoints, and beyond (Start: _Mar 21 2022_)
-
-## Community
-
-### If you have questions
+## If you have questions
 
 1. [Read the docs](https://aimstack.readthedocs.io/en/latest/)
 2. [Open a feature request or report a bug](https://github.com/aimhubio/aim/issues)
 3. [Join Discord community server](https://community.aimstack.io/)
+
+
+
+
+
+
+
