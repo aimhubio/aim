@@ -48,7 +48,7 @@ class DeeplakeDataset(CustomObject):
             "commit_id": ds.commit_id,
             "branch": ds.branch,
             "has_head_changes": ds.has_head_changes,
-            "info": ds.info,  # Info might contain keys such as "description" and "title"
+            "info": dict(ds.info),  # Info might contain keys such as "description" and "title"
             "num_samples": len(ds),
             "tensors": {group: self._tensor_meta(tensor) for group, tensor in ds.tensors.items()},
             "size_approx": ds.size_approx(),
@@ -66,5 +66,5 @@ class DeeplakeDataset(CustomObject):
             if meta.sample_compression
             else ("chunk_compression" if meta.chunk_compression else None),
             "compression_format": meta.sample_compression or meta.chunk_compression,
-            "info": tensor.info,
+            "info": dict(tensor.info),
         }
