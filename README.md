@@ -87,6 +87,7 @@
 <h3 align="center">
   <a href="#about"><b>About</b></a> &bull;
   <a href="#demos"><b>Demos</b></a> &bull;
+  <a href="#ecosystem"><b>Ecosystem</b></a> &bull;
   <a href="#quick-start"><b>Quick Start</b></a> &bull;
   <a href="https://github.com/aimhubio/aim/tree/main/examples"><b>Examples</b></a> &bull;
   <a href="https://aimstack.readthedocs.io/en/latest/"><b>Documentation</b></a> &bull;
@@ -122,6 +123,11 @@ Aim's mission is to democratize AI dev tools.
 |:---:|:---:|
 | <a href="http://play.aimstack.io:10004/runs/d9e89aa7875e44b2ba85612a/audios"> <img width="800px" src="https://user-images.githubusercontent.com/13848158/154340778-dbe19620-2f27-4298-b0cb-caf3904760f1.jpg"> </a> | <a href="http://play.aimstack.io:10003/runs/7f083da898624a2c98e0f363/distributions"> <img width="800px" src="https://user-images.githubusercontent.com/13848158/154340785-a7e4d9fd-d048-4207-8cd1-c4edff9cca6a.jpg"> </a> |
 | Training logs of Microsoft's "FastSpeech 2: Fast and High-Quality End-to-End Text to Speech". | Simple MNIST training logs. |
+
+# Ecosystem
+
+- Aimflow
+- Aim-spaCy
 
 # Quick Start
 
