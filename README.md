@@ -89,7 +89,7 @@
   <a href="#-quick-start"><b>Quick Start</b></a> &bull;
   <a href="https://github.com/aimhubio/aim/tree/main/examples"><b>Examples</b></a> &bull;
   <a href="https://aimstack.readthedocs.io/en/latest/"><b>Documentation</b></a> &bull;
-  <a href="#-roadmap"><b>Roadmap</b></a> &bull;
+  <a href="#--roadmap"><b>Roadmap</b></a> &bull;
   <a href="#-community"><b>Community</b></a>
 </h3>  
 
