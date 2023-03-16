@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://user-images.githubusercontent.com/13848158/154338760-edfe1885-06f3-4e02-87fe-4b13a403516b.png">
+  <img src="https://user-images.githubusercontent.com/13848158/225618891-5f43d1a5-a995-46bc-9bcd-63e53326e4b2.png">
   <h3>An easy-to-use & supercharged open-source experiment tracker</h3>
   Aim logs your training runs, enables a beautiful UI to compare them and an API to query them programmatically.
 </div>
@@ -129,7 +129,6 @@ Aim's mission is to democratize AI dev tools.
 |:---:|:---:|
 | ![aimlflow](https://user-images.githubusercontent.com/13848158/225610225-17543ab0-1966-44bd-a631-b1f187cac9ca.png) | ![Aim-spaCy](https://user-images.githubusercontent.com/13848158/225609972-cd97b87f-5974-4daa-9303-443bc8b059df.png) |
 | Exploring MLflow experiments with a powerful UI | Aim-spaCy is an Aim-based spaCy experiment tracker. Its mission is to help AI researchers compare their spaCy metadata dramatically faster at scale. |
-| [github.com/aimhubio/aimlflow](https://github.com/aimhubio/aimlflow) | [github.com/aimhubio/aim-spacy](https://github.com/aimhubio/aim-spacy) |
 
 # 🏁 Quick start
 
