@@ -538,6 +538,10 @@ The high-level features we are going to work on the next few months:
 
 [![Aim](https://img.shields.io/badge/powered%20by-Aim-%231473E6)](https://github.com/aimhubio/aim)
 
+```
+[![Aim](https://img.shields.io/badge/powered%20by-Aim-%231473E6)](https://github.com/aimhubio/aim)
+```
+
 ## Cite Aim in your papers
 
 ```bibtex
