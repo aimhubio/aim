@@ -2,6 +2,7 @@
 torch
 tensorflow
 hub
+deeplake
 fastapi>=0.87.0
 httpx
 pandas
