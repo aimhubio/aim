@@ -4,7 +4,7 @@ from tests.base import TestBase
 from tests.utils import is_package_installed
 
 
-class TestHubDatasetIntegration(TestBase):
+class TestDeeplakeDatasetIntegration(TestBase):
     @pytest.mark.skipif(not is_package_installed('deeplake'), reason="'deeplake' is not installed. skipping.")
     def test_dataset_as_run_param(self):
         import deeplake
