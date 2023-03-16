@@ -2,7 +2,7 @@ from aim.storage.object import CustomObject
 import deeplake
 import warnings
 import logging
-
+from deeplake.util.exceptions import ReadOnlyModeError
 
 logger = logging.getLogger(__name__)
 
@@ -15,6 +15,17 @@ class UncommittedDatasetWarning(UserWarning):
 class DeeplakeDataset(CustomObject):
     """
     Track Activeloop Deeplake Dataset with versioning.
+
+    :param auto_commit: If dataset head node and uncommitted dataset changes are present an auto_commit
+        will trigger a dataset commit `autocommit on aim run` to enable reproducibility of the run,
+        defaults to ``True``.
+
+    :param auto_save_view: Triggers a save of a view if dataset is an unsaved view to enable reproducibility of the run,
+        defaults to ``True``.
+        It is required that the view was not created on a dataset head with changes.
+
+    :raises TypeError: if the dataset is not a deeplake.Dataset
+    :raises ValueError: if the dataset is a view and has uncommitted changes on its head.
 
     .. code-block:: python
 
@@ -32,10 +43,15 @@ class DeeplakeDataset(CustomObject):
     """
     AIM_NAME = 'deeplake.dataset'
 
-    def __init__(self, dataset: deeplake.Dataset, auto_commit: bool = True):
+    def __init__(self, dataset: deeplake.Dataset, auto_commit: bool = True, auto_save_view: bool = True):
         super().__init__()
         if not isinstance(dataset, deeplake.Dataset):
-            raise TypeError("dataset must be of type `deeplake.Dataset`")
+            raise TypeError("dataset must be of type ``deeplake.Dataset``")
+        if dataset.is_view and dataset.has_head_changes:
+            # there is nothing to trace back data to this run.
+            raise ValueError("dataset is a view on a head of uncommitted changes. "
+                             "Consider committing dataset changes before creating a view and logging runs "
+                             "to enable traceability.")
         if dataset.has_head_changes:
             if auto_commit:
                 commit_id = dataset.commit(message="autocommit on aim run")
@@ -47,6 +63,18 @@ class DeeplakeDataset(CustomObject):
                     UncommittedDatasetWarning,
                     stacklevel=2,
                 )
+        if dataset.is_view:
+            self.view_info = dataset._get_view_info()
+            view_id = self.view_info.get('id', None)
+            if auto_save_view:
+                try:
+                    vds_path = dataset.save_view(message="auto_save_view on aim run.", id=view_id, optimize=False)
+                    logger.info(f'autosave view on run: dataset {dataset.path} with id {view_id} saved to {vds_path}.')
+                except (NotImplementedError, ReadOnlyModeError) as e:
+                    # views of in-memory datasets and read-only datasets cannot be saved. but keep the view id.
+                    logger.info(f'{str(e)} {dataset.path} with commit id {commit_id}.')
+                    pass
+
         self.storage['dataset'] = {
             'source': 'deeplake',
             'meta': self._get_ds_meta(dataset)
