@@ -96,7 +96,7 @@
 
 ---
 
-# About
+# ℹ️ About
 
 Aim is an open-source, self-hosted ML experiment tracking tool. It's good at tracking lots (10000s) of training runs and it allows you to compare them with a performant and beautiful UI.
 
@@ -111,7 +111,7 @@ Aim's mission is to democratize AI dev tools.
 | <ul><li>System info and resource usage tracking</li><li>Get notified on training run progress</li><li>Log messages and configure notifications</li><li>Configure custom callbacks</li></ul> | <ul><li>Deep dive into details of each run for easy debugging</li><li>Centralized dashboard for holistic view</li><li>Group runs with experiments and tags</li></ul> |
 
 
-# Demos
+# 🎬 Demos
 
 | Machine translation | lightweight-GAN |
 |:---:|:---:|
@@ -123,12 +123,12 @@ Aim's mission is to democratize AI dev tools.
 | <a href="http://play.aimstack.io:10004/runs/d9e89aa7875e44b2ba85612a/audios"> <img width="800px" src="https://user-images.githubusercontent.com/13848158/154340778-dbe19620-2f27-4298-b0cb-caf3904760f1.jpg"> </a> | <a href="http://play.aimstack.io:10003/runs/7f083da898624a2c98e0f363/distributions"> <img width="800px" src="https://user-images.githubusercontent.com/13848158/154340785-a7e4d9fd-d048-4207-8cd1-c4edff9cca6a.jpg"> </a> |
 | Training logs of Microsoft's "FastSpeech 2: Fast and High-Quality End-to-End Text to Speech". | Simple MNIST training logs. |
 
-# Ecosystem
+# 🌍 Ecosystem
 
 - Aimflow
 - Aim-spaCy
 
-# Quick Start
+# 🏁 Quick Start
 
 Follow the steps below to get started with Aim.
 
@@ -243,7 +243,7 @@ See how to set up a remote tracking server in the docs https://aimstack.readthed
 - Host Aim on kubernetes https://aimstack.readthedocs.io/en/latest/using/k8s_deployment.html
 
 
-# Comparisons to familiar tools
+# 🆚 Comparisons to familiar tools
 
 <details>
 <summary>
@@ -304,7 +304,7 @@ Hosted vs self-hosted
 
 </details>
 
-# Roadmap
+# 🛣️ Roadmap
 
 ## Detailed Milestones
 
@@ -400,7 +400,7 @@ The high-level features we are going to work on the next few months:
 
 </details>
 
-# Community
+# 👥 Community
 
 ## Aim README badge
 
