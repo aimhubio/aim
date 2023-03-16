@@ -84,8 +84,8 @@
 
 <h3 align="center">
   <a href="#%E2%84%B9%EF%B8%8F-about"><b>About</b></a> &bull;
-  <a href="#%F0%9F%8E%AC-demos"><b>Demos</b></a> &bull;
-  <a href="#%F0%9F%8C%8D-ecosystem"><b>Ecosystem</b></a> &bull;
+  <a href="#-demos"><b>Demos</b></a> &bull;
+  <a href="#-ecosystem"><b>Ecosystem</b></a> &bull;
   <a href="#quick-start"><b>Quick Start</b></a> &bull;
   <a href="https://github.com/aimhubio/aim/tree/main/examples"><b>Examples</b></a> &bull;
   <a href="https://aimstack.readthedocs.io/en/latest/"><b>Documentation</b></a> &bull;
