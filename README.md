@@ -114,7 +114,7 @@ Additionally, its SDK enables programmatic access to tracked metadata — perfec
 |:--|:--|
 | <ul><li>ML experiments and any metadata tracking</li><li>Integration with popular ML frameworks</li><li>Easy migration from other experiment trackers</li></ul> | <ul><li>Metadata visualization via Aim Explorers</li><li>Grouping and aggregation</li><li>Querying using Python expressions</li></ul> |
 | **Conduct Effective Trainings ⚡** | **Orgenize Your Experiments 🗂️** |
-| <ul><li>System info and resource usage tracking</li><li>Training run progress notifications</li><li>Logging and configurable notifications</li></ul> | <ul><li>Detailed run information for easy debugging</li><li>Centralized dashboard for holistic view</li><li>Runs grouping with tags and experiments</li></ul> |
+| <ul><li>System info and resource usage tracking</li><li>Real-time alerting on training progress</li><li>Logging and configurable notifications</li></ul> | <ul><li>Detailed run information for easy debugging</li><li>Centralized dashboard for holistic view</li><li>Runs grouping with tags and experiments</li></ul> |
 
 # 🎬 Demos
 
