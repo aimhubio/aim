@@ -1,6 +1,10 @@
 from aim.storage.object import CustomObject
 import deeplake
 import warnings
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 class UncommittedDatasetWarning(UserWarning):
@@ -28,15 +32,21 @@ class DeeplakeDataset(CustomObject):
     """
     AIM_NAME = 'deeplake.dataset'
 
-    def __init__(self, dataset: deeplake.Dataset):
+    def __init__(self, dataset: deeplake.Dataset, auto_commit: bool = True):
         super().__init__()
-        if dataset.commit_id is None and dataset.has_head_changes:
-            warnings.warn(
-                f"Deeplake Dataset {dataset.path} has head changes but no commit yet."
-                "Consider committing dataset changes before logging runs to enable full traceability.",
-                UncommittedDatasetWarning,
-                stacklevel=2,
-            )
+        if not isinstance(dataset, deeplake.Dataset):
+            raise TypeError("dataset must be of type `deeplake.Dataset`")
+        if dataset.has_head_changes:
+            if auto_commit:
+                commit_id = dataset.commit(message="autocommit on aim run")
+                logger.info(f'autocommit on run: dataset {dataset.path} with commit id {commit_id}.')
+            else:
+                warnings.warn(
+                    f"Deeplake Dataset {dataset.path} has uncommitted head changes. "
+                    "Consider committing dataset changes before logging runs to enable full traceability.",
+                    UncommittedDatasetWarning,
+                    stacklevel=2,
+                )
         self.storage['dataset'] = {
             'source': 'deeplake',
             'meta': self._get_ds_meta(dataset)
