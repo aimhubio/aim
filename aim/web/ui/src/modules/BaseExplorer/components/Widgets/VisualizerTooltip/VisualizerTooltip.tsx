@@ -16,7 +16,7 @@ import { IVisualizerTooltipProps } from './index';
 function VisualizerTooltip(props: IVisualizerTooltipProps) {
   const {
     tooltipContentHeader: TooltipContentHeader,
-    containerNode,
+    boxContainer,
     engine,
     engine: { useStore, pipeline },
     visualizationName,
@@ -61,8 +61,9 @@ function VisualizerTooltip(props: IVisualizerTooltipProps) {
   );
 
   const containerRect = React.useMemo(
-    () => containerNode.getBoundingClientRect(),
-    [containerNode],
+    () => boxContainer.current.getBoundingClientRect(),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [boxContainer.current],
   );
 
   /**
@@ -81,7 +82,7 @@ function VisualizerTooltip(props: IVisualizerTooltipProps) {
     <ErrorBoundary>
       <VisualizationTooltip
         key={visualizationName + '-visualizerTooltip'}
-        containerNode={containerNode}
+        containerNode={boxContainer.current}
         elementRect={elementRect}
         open={!zoom?.active && tooltip?.display}
         forceOpen={focusedState.active}

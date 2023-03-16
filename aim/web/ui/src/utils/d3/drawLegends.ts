@@ -1,15 +1,16 @@
 import * as d3 from 'd3';
 import _ from 'lodash-es';
 
-import { GroupNameEnum } from 'config/grouping/GroupingPopovers';
-
 import {
-  LegendColumnDataType,
   LegendsDataType,
-} from 'types/services/models/metrics/metricsAppModel';
+  LegendColumnDataType,
+} from 'components/VisualizationLegends';
+
+import { GroupNameEnum } from 'config/grouping/GroupingPopovers';
 
 import changeDasharraySize from '../changeDasharraySize';
 import shortenRunPropLabel from '../shortenRunPropLabel';
+import { GroupType } from '../../modules/core/pipeline';
 
 interface DrawLegendsArgs {
   data?: LegendsDataType;
@@ -17,7 +18,6 @@ interface DrawLegendsArgs {
   readOnly?: boolean;
 }
 interface GroupLegendProp {
-  value: string;
   title: string;
   label: {
     key: string;
@@ -59,91 +59,165 @@ const config = {
   defaultColor: '#484f56',
 };
 
-const groupLegendProps: Record<string, GroupLegendProp> = {
-  [GroupNameEnum.COLOR]: {
-    value: 'color',
-    title: 'Colors',
-    label: {
-      key: '',
-      element: 'line',
-      setAttr: <T extends SVGLineElement>(
-        cell: LegendColumnDataType,
-        element: d3.Selection<T, unknown, null, undefined>,
-        cellIndex: number,
-      ) => {
-        const y =
-          config.cellTitle.height +
-          config.cellTitle.margin +
-          cellIndex * config.cell.height;
+const getGroupLegendProps: Record<string, (title?: string) => GroupLegendProp> =
+  {
+    [GroupNameEnum.CHART]: (title = 'Charts') => ({
+      title,
+      label: {
+        key: '#',
+        element: 'text',
+        setAttr: <T extends SVGTextElement>(
+          cell: LegendColumnDataType,
+          element: d3.Selection<T, unknown, null, undefined>,
+          cellIndex: number,
+        ) => {
+          const y =
+            config.cellTitle.height +
+            config.cellTitle.margin +
+            cellIndex * config.cell.height;
 
-        element
-          ?.attr('stroke', cell.color || config.defaultColor)
-          .attr('stroke-dasharray', 'none')
-          .attr('stroke-width', 2)
-          .attr('x1', 0)
-          .attr('x2', config.label.width)
-          .attr('y1', y - 4)
-          .attr('y2', y - 4);
+          element
+            ?.attr('y', y)
+            .attr('fill', '#484f56')
+            .style('outline', '1px solid #dee6f3')
+            .style('border-radius', '1px')
+            .style('padding', '2px')
+            .style('white-space', 'pre')
+            .text(` ${(cell.chartIndex || 0) + 1} `)
+            .style('font-family', config.label.fontFamily);
+        },
       },
-    },
-  },
-  [GroupNameEnum.STROKE]: {
-    value: 'dasharray',
-    title: 'Stroke styles',
-    label: {
-      key: '',
-      element: 'line',
-      setAttr: <T extends SVGLineElement>(
-        cell: LegendColumnDataType,
-        element: d3.Selection<T, unknown, null, undefined>,
-        cellIndex: number,
-      ) => {
-        const y =
-          config.cellTitle.height +
-          config.cellTitle.margin +
-          cellIndex * config.cell.height;
+    }),
+    [GroupType.COLOR]: (title = 'Colors') => ({
+      title,
+      label: {
+        key: '',
+        element: 'line',
+        setAttr: <T extends SVGLineElement>(
+          cell: LegendColumnDataType,
+          element: d3.Selection<T, unknown, null, undefined>,
+          cellIndex: number,
+        ) => {
+          const y =
+            config.cellTitle.height +
+            config.cellTitle.margin +
+            cellIndex * config.cell.height;
 
-        element
-          ?.attr('stroke', config.defaultColor)
-          .attr('stroke-dasharray', changeDasharraySize(cell.dasharray, 3 / 5))
-          .attr('stroke-width', 2)
-          .attr('x1', 0)
-          .attr('x2', config.label.width)
-          .attr('y1', y - 4)
-          .attr('y2', y - 4)
-          .attr('font-family', config.cell.fontFamily);
+          element
+            ?.attr('stroke', cell.color || config.defaultColor)
+            .attr('stroke-dasharray', 'none')
+            .attr('stroke-width', 2)
+            .attr('x1', 0)
+            .attr('x2', config.label.width)
+            .attr('y1', y - 4)
+            .attr('y2', y - 4);
+        },
       },
-    },
-  },
-  [GroupNameEnum.CHART]: {
-    value: 'chartIndex',
-    title: 'Charts',
-    label: {
-      key: '#',
-      element: 'text',
-      setAttr: <T extends SVGTextElement>(
-        cell: LegendColumnDataType,
-        element: d3.Selection<T, unknown, null, undefined>,
-        cellIndex: number,
-      ) => {
-        const y =
-          config.cellTitle.height +
-          config.cellTitle.margin +
-          cellIndex * config.cell.height;
+    }),
+    [GroupType.STROKE]: (title = 'Stroke styles') => ({
+      title,
+      label: {
+        key: '',
+        element: 'line',
+        setAttr: <T extends SVGLineElement>(
+          cell: LegendColumnDataType,
+          element: d3.Selection<T, unknown, null, undefined>,
+          cellIndex: number,
+        ) => {
+          const y =
+            config.cellTitle.height +
+            config.cellTitle.margin +
+            cellIndex * config.cell.height;
 
-        element
-          ?.attr('y', y)
-          .attr('fill', '#484f56')
-          .style('outline', '1px solid #dee6f3')
-          .style('border-radius', '1px')
-          .style('padding', '2px')
-          .style('white-space', 'pre')
-          .text(` ${(cell.chartIndex || 0) + 1} `)
-          .style('font-family', config.label.fontFamily);
+          element
+            ?.attr('stroke', config.defaultColor)
+            .attr(
+              'stroke-dasharray',
+              changeDasharraySize(cell.dasharray, 3 / 5),
+            )
+            .attr('stroke-width', 2)
+            .attr('x1', 0)
+            .attr('x2', config.label.width)
+            .attr('y1', y - 4)
+            .attr('y2', y - 4)
+            .attr('font-family', config.cell.fontFamily);
+        },
       },
-    },
-  },
-};
+    }),
+    [GroupType.ROW]: (title = 'Rows') => ({
+      title,
+      label: {
+        key: '#',
+        element: 'text',
+        setAttr: <T extends SVGTextElement>(
+          cell: LegendColumnDataType,
+          element: d3.Selection<T, unknown, null, undefined>,
+          cellIndex: number,
+        ) => {
+          const y =
+            config.cellTitle.height +
+            config.cellTitle.margin +
+            cellIndex * config.cell.height;
+
+          element
+            ?.attr('y', y)
+            .attr('fill', '#484f56')
+            .style('outline', '1px solid #dee6f3')
+            .style('border-radius', '1px')
+            .style('padding', '2px')
+            .style('white-space', 'pre')
+            .text(` ${(cell.order || 0) + 1} `)
+            .style('font-family', config.label.fontFamily);
+        },
+      },
+    }),
+    [GroupType.COLUMN]: (title = 'Columns') => ({
+      title,
+      label: {
+        key: '#',
+        element: 'text',
+        setAttr: <T extends SVGTextElement>(
+          cell: LegendColumnDataType,
+          element: d3.Selection<T, unknown, null, undefined>,
+          cellIndex: number,
+        ) => {
+          const y =
+            config.cellTitle.height +
+            config.cellTitle.margin +
+            cellIndex * config.cell.height;
+
+          element
+            ?.attr('y', y)
+            .attr('fill', '#484f56')
+            .style('outline', '1px solid #dee6f3')
+            .style('border-radius', '1px')
+            .style('padding', '2px')
+            .style('white-space', 'pre')
+            .text(` ${(cell.order || 0) + 1} `)
+            .style('font-family', config.label.fontFamily);
+        },
+      },
+    }),
+    default: (title: string = '') => ({
+      title,
+      label: {
+        key: '',
+        element: 'text',
+        setAttr: <T extends SVGTextElement>(
+          cell: LegendColumnDataType,
+          element: d3.Selection<T, unknown, null, undefined>,
+          cellIndex: number,
+        ) => {
+          const y =
+            config.cellTitle.height +
+            config.cellTitle.margin +
+            cellIndex * config.cell.height;
+
+          element?.attr('y', y);
+        },
+      },
+    }),
+  };
 
 function drawLegends({
   data = {},
@@ -232,7 +306,8 @@ function drawLegend(
     .attr('id', `Legend-group-${legendName}`)
     .attr('transform', `translate(${0}, ${currentGroupHeight})`);
 
-  const groupLegendProp = groupLegendProps[legendName];
+  const cb = getGroupLegendProps[legendName] || getGroupLegendProps.default;
+  const groupLegendProp = cb();
 
   // group title
   groupElement

@@ -9,11 +9,8 @@ import { IBoxVirtualizerProps, IBoxVirtualizerGridWindow } from './';
 import './BoxVirtualizer.scss';
 
 function BoxVirtualizer(props: IBoxVirtualizerProps<AimFlatObjectBase>) {
-  const { data = [], widgetRenderer = null } = props;
-  const container: React.MutableRefObject<HTMLDivElement> =
-    React.useRef<HTMLDivElement>(document.createElement('div'));
-  const grid: React.MutableRefObject<HTMLDivElement> =
-    React.useRef<HTMLDivElement>(document.createElement('div'));
+  const { data = [], container } = props;
+  const grid = React.useRef<HTMLDivElement>(document.createElement('div'));
   const rafIDRef = React.useRef<number>();
 
   const [gridWindow, setGridWindow] = React.useState<IBoxVirtualizerGridWindow>(
@@ -25,14 +22,17 @@ function BoxVirtualizer(props: IBoxVirtualizerProps<AimFlatObjectBase>) {
     },
   );
 
-  const onScroll = React.useCallback(({ target }: any) => {
-    setGridWindow({
-      left: target.scrollLeft,
-      top: target.scrollTop,
-      width: container.current.offsetWidth,
-      height: container.current.offsetHeight,
-    });
-  }, []);
+  const onScroll = React.useCallback(
+    ({ target }: any) => {
+      setGridWindow({
+        left: target.scrollLeft,
+        top: target.scrollTop,
+        width: container.current.offsetWidth,
+        height: container.current.offsetHeight,
+      });
+    },
+    [container],
+  );
 
   // Filter column group values based on their position intersection with the viewport
   const columnsAxisItems = props.axisData?.columns?.filter(
@@ -55,7 +55,7 @@ function BoxVirtualizer(props: IBoxVirtualizerProps<AimFlatObjectBase>) {
       width: container.current.offsetWidth,
       height: container.current.offsetHeight,
     });
-  }, []);
+  }, [container]);
 
   const resizeObserverCallback: ResizeObserverCallback = React.useCallback(
     (entries: ResizeObserverEntry[]) => {
@@ -70,7 +70,7 @@ function BoxVirtualizer(props: IBoxVirtualizerProps<AimFlatObjectBase>) {
         });
       }
     },
-    [setGridWindow],
+    [container],
   );
 
   const observerReturnCallback = React.useCallback(() => {
@@ -158,12 +158,6 @@ function BoxVirtualizer(props: IBoxVirtualizerProps<AimFlatObjectBase>) {
           {Object.entries(groupedByPosition).map(props.itemsRenderer)}
         </div>
       </div>
-      {widgetRenderer
-        ? widgetRenderer({
-            containerNode: container.current,
-            gridNode: grid.current,
-          })
-        : null}
     </div>
   );
 }

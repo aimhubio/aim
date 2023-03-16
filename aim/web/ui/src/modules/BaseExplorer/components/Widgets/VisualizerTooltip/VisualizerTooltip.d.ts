@@ -1,13 +1,8 @@
 import React from 'react';
 
-import {
-  IBaseComponentProps,
-  IWidgetComponentProps,
-} from 'modules/BaseExplorer/types';
+import { IWidgetComponentProps } from 'modules/BaseExplorer/types';
 
-export interface IVisualizerTooltipProps
-  extends IWidgetComponentProps,
-    IBaseComponentProps {
+export interface IVisualizerTooltipProps extends IWidgetComponentProps {
   visualizationName: string;
   tooltipContentHeader?: React.ReactComponentElement;
 }
