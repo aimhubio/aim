@@ -128,7 +128,7 @@ Aim's mission is to democratize AI dev tools.
 - Aimflow
 - Aim-spaCy
 
-# 🏁 Quick Start
+# 🏁 Quick start
 
 Follow the steps below to get started with Aim.
 
@@ -306,7 +306,7 @@ Hosted vs self-hosted
 
 # 🛣️ Roadmap
 
-## Detailed Milestones
+## Detailed milestones
 
 The [Aim product roadmap](https://github.com/orgs/aimhubio/projects/3) :sparkle: 
 
@@ -404,6 +404,8 @@ The high-level features we are going to work on the next few months:
 
 ## Aim README badge
 
+Add Aim badge to your README, if you've enjoyed using Aim in your work:
+
 [![Aim](https://img.shields.io/badge/powered%20by-Aim-%231473E6)](https://github.com/aimhubio/aim)
 
 ```
@@ -411,6 +413,8 @@ The high-level features we are going to work on the next few months:
 ```
 
 ## Cite Aim in your papers
+
+In case you've found Aim helpful in your research journey, we'd be thrilled if you could acknowledge Aim's contribution:
 
 ```bibtex
 @software{Arakelyan_Aim_2020,
@@ -425,7 +429,12 @@ The high-level features we are going to work on the next few months:
 }
 ```
 
-## Contribution
+## Contributing to Aim
+
+Considering contibuting to Aim? 
+To get started, please take a moment to read the [CONTRIBUTING.md](https://github.com/aimhubio/aim/blob/main/CONTRIBUTING.md) guide. 
+
+Join Aim contributors by submitting your first pull request. Happy coding! 😊
 
 <a href="https://github.com/aimhubio/aim/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=aimhubio/aim" />
@@ -433,7 +442,7 @@ The high-level features we are going to work on the next few months:
 
 Made with [contrib.rocks](https://contrib.rocks).
 
-## If you have questions
+## More questions?
 
 1. [Read the docs](https://aimstack.readthedocs.io/en/latest/)
 2. [Open a feature request or report a bug](https://github.com/aimhubio/aim/issues)
