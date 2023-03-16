@@ -33,7 +33,7 @@
 </br>
 
 <div align="center">
-  <sub><strong>INTEGRATIONS WITH:</strong></sub>
+  <sub><strong>INTEGRATES WITH:</strong></sub>
   <br/>
   <br/>
   <img src="https://user-images.githubusercontent.com/13848158/155354389-d0301620-77ea-4629-a743-f7aa249e14b5.png" height="50" />
@@ -61,21 +61,18 @@
   <sub><strong>TRUSTED BY ML TEAMS FROM:</strong></sub>  
   <br/>
   <br/>
-  <img src="https://user-images.githubusercontent.com/13848158/225590335-2dd44bdc-ac6a-4617-86fc-5657496a8ea8.png" height="50" />
-  <img src="https://user-images.githubusercontent.com/13848158/225590314-0c3f5f60-d723-40cd-8c71-5f8bc1751d10.png" height="50" />
-  <img src="https://user-images.githubusercontent.com/13848158/225590332-32002ee8-fcc7-4c87-b3fa-ce6a798f93f5.png" height="50" />
-  <img src="https://user-images.githubusercontent.com/13848158/225592558-d6b0fca4-544b-418c-aa1b-8709f6c1ec20.png" height="50" />
-  <img src="https://user-images.githubusercontent.com/13848158/225590324-08aacf15-3bef-465f-8f4b-9e8c9dda79ce.png" height="50" />
-  <img src="https://user-images.githubusercontent.com/13848158/225590343-d8386217-5c07-4c7b-81aa-4f1ec4f6d85b.png" height="50" />
-  <img src="https://user-images.githubusercontent.com/13848158/225590347-f57c4f8f-bd38-44a9-8416-1d00bae4ed74.png" height="50" />
+  <img src="https://user-images.githubusercontent.com/13848158/225659764-b6131fd6-0b82-4d40-8a53-7c83938801fe.png" height="50" />
+  <img src="https://user-images.githubusercontent.com/13848158/225659750-a41b340a-c3bb-4d00-8f11-96cf269d4807.png" height="50" />
+  <img src="https://user-images.githubusercontent.com/13848158/225659761-e0de63ef-85fa-4fe5-a7b3-3ee9f7a17dac.png" height="50" />
+  <img src="https://user-images.githubusercontent.com/13848158/225659740-4a7862f5-f4bd-4d02-9b10-7c4a7a4d5524.png" height="50" />
+  <img src="https://user-images.githubusercontent.com/13848158/225659757-6e4bbb48-5823-4a42-801b-cf1eb56edce2.png" height="50" />
+  <img src="https://user-images.githubusercontent.com/13848158/225659767-4758379d-2d0b-47b8-b925-c65f290eea2b.png" height="50" />
+  <img src="https://user-images.githubusercontent.com/13848158/225659771-80fea9c8-8433-467c-be8d-ec1ffa6696cb.png" height="50" />
 </div>
 
 <br/>
 
 <div align="center">
-  <sub><strong>ENTERPRISE SUPPORT:</strong></sub>  
-  <br/>
-  <br/>
   <p>
     AimStack offers enterprise support that's beyond core Aim.
     </br>
@@ -86,9 +83,9 @@
 ---
 
 <h3 align="center">
-  <a href="#about"><b>About</b></a> &bull;
-  <a href="#demos"><b>Demos</b></a> &bull;
-  <a href="#ecosystem"><b>Ecosystem</b></a> &bull;
+  <a href="#%E2%84%B9%EF%B8%8F-about"><b>About</b></a> &bull;
+  <a href="#%F0%9F%8E%AC-demos"><b>Demos</b></a> &bull;
+  <a href="#%F0%9F%8C%8D-ecosystem"><b>Ecosystem</b></a> &bull;
   <a href="#quick-start"><b>Quick Start</b></a> &bull;
   <a href="https://github.com/aimhubio/aim/tree/main/examples"><b>Examples</b></a> &bull;
   <a href="https://aimstack.readthedocs.io/en/latest/"><b>Documentation</b></a> &bull;
@@ -111,7 +108,6 @@ Aim's mission is to democratize AI dev tools.
 | <ul><li>Track your ML experiments and any type of metadata</li><li>Integrations with the most of popular deep learning frameworks</li><li>Migrate from other experiment trackers with one command</li></ul> | <ul><li>Visualize and compare any metadata at scale via Aim Explorers</li><li>Group and aggregate metadata</li><li>Query metadata via python expressions</li></ul> |
 | **Conduct effective trainings** | **Organize your experimentation** |
 | <ul><li>System info and resource usage tracking</li><li>Get notified on training run progress</li><li>Log messages and configure notifications</li><li>Configure custom callbacks</li></ul> | <ul><li>Deep dive into details of each run for easy debugging</li><li>Centralized dashboard for holistic view</li><li>Group runs with experiments and tags</li></ul> |
-
 
 # 🎬 Demos
 
