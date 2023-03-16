@@ -125,8 +125,11 @@ Aim's mission is to democratize AI dev tools.
 
 # 🌍 Ecosystem
 
-- Aimflow
-- Aim-spaCy
+| [aimlflow](https://github.com/aimhubio/aimlflow) | [Aim-spaCy](https://github.com/aimhubio/aim-spacy) |
+|:---:|:---:|
+| ![aimlflow](https://user-images.githubusercontent.com/13848158/225610225-17543ab0-1966-44bd-a631-b1f187cac9ca.png) | ![Aim-spaCy](https://user-images.githubusercontent.com/13848158/225609972-cd97b87f-5974-4daa-9303-443bc8b059df.png) |
+| Exploring MLflow experiments with a powerful UI | Aim-spaCy is an Aim-based spaCy experiment tracker. Its mission is to help AI researchers compare their spaCy metadata dramatically faster at scale. |
+| [github.com/aimhubio/aimlflow](https://github.com/aimhubio/aimlflow) | [github.com/aimhubio/aim-spacy](https://github.com/aimhubio/aim-spacy) |
 
 # 🏁 Quick start
 
