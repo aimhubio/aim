@@ -57,13 +57,13 @@
 
 <br/>
 
+
 <div align="center">
   <sub><strong>TRUSTED BY ML TEAMS FROM:</strong></sub>  
   <br/>
   <br/>
   <img src="https://user-images.githubusercontent.com/13848158/225659764-b6131fd6-0b82-4d40-8a53-7c83938801fe.png" height="50" />
   <img src="https://user-images.githubusercontent.com/13848158/225659750-a41b340a-c3bb-4d00-8f11-96cf269d4807.png" height="50" />
-  <img src="https://user-images.githubusercontent.com/13848158/225698320-cfccd12b-1f91-4d44-8749-a36715f83a80.png" height="50" />
   <img src="https://user-images.githubusercontent.com/13848158/225659761-e0de63ef-85fa-4fe5-a7b3-3ee9f7a17dac.png" height="50" />
   <img src="https://user-images.githubusercontent.com/13848158/225659740-4a7862f5-f4bd-4d02-9b10-7c4a7a4d5524.png" height="50" />
   <img src="https://user-images.githubusercontent.com/13848158/225659757-6e4bbb48-5823-4a42-801b-cf1eb56edce2.png" height="50" />
@@ -73,13 +73,9 @@
 
 <br/>
 
-<div align="center">
-  <p>
-    AimStack offers enterprise support that's beyond core Aim.
-    </br>
-    Contact via "hello@aimstack.io" e-mail.
-  </p>
-</div>
+<p align="center">
+  AimStack offers enterprise support that's beyond core Aim. Contact via <a href="mailto:hello@aimstack.io">hello@aimstack.io</a> e-mail.
+</p>
 
 ---
 
@@ -97,17 +93,28 @@
 
 # ℹ️ About
 
-Aim is an open-source, self-hosted ML experiment tracking tool. It's good at tracking lots (10000s) of training runs and it allows you to compare them with a performant and beautiful UI.
+Aim is an open-source, self-hosted ML experiment tracking tool designed to handle 10.000s of training runs.
 
-You can use not only the great Aim UI but also its SDK to query your runs' metadata programmatically. That's especially useful for automations and additional analysis on a Jupyter Notebook.
+Aim provides a performant and beautiful UI for exploring and comparing runs.
+Additionally, its SDK enables programmatic access to tracked metadata — perfect for automations and Jupyter Notebook analysis.
 
-Aim's mission is to democratize AI dev tools.
+<p align="center">
+  <strong>Aim's mission is to democratize AI dev tools 🎯 </strong>
+</p>
 
-| Log any metadata across your ML pipeline | Visualize and compare metadata via UI |
-|:---|:---|
-| <ul><li>Track your ML experiments and any type of metadata</li><li>Integrations with the most of popular deep learning frameworks</li><li>Migrate from other experiment trackers with one command</li></ul> | <ul><li>Visualize and compare any metadata at scale via Aim Explorers</li><li>Group and aggregate metadata</li><li>Query metadata via python expressions</li></ul> |
-| **Conduct effective trainings** | **Organize your experimentation** |
-| <ul><li>System info and resource usage tracking</li><li>Get notified on training run progress</li><li>Log messages and configure notifications</li><li>Configure custom callbacks</li></ul> | <ul><li>Deep dive into details of each run for easy debugging</li><li>Centralized dashboard for holistic view</li><li>Group runs with experiments and tags</li></ul> |
+<div align="center">
+  <img src="https://user-images.githubusercontent.com/13848158/154340778-dbe19620-2f27-4298-b0cb-caf3904760f1.jpg" height="150" />
+  <img src="https://user-images.githubusercontent.com/13848158/154340778-dbe19620-2f27-4298-b0cb-caf3904760f1.jpg" height="150" />
+  <img src="https://user-images.githubusercontent.com/13848158/154340778-dbe19620-2f27-4298-b0cb-caf3904760f1.jpg" height="150" />
+</div>
+
+</br>
+
+| Log Metadata Across Your ML Pipeline 💾 | Visualize & Compare Metadata via UI 📊 |
+|:--|:--|
+| <ul><li>ML experiments and any metadata tracking</li><li>Integration with popular ML frameworks</li><li>Easy migration from other experiment trackers</li></ul> | <ul><li>Metadata visualization via Aim Explorers</li><li>Grouping and aggregation</li><li>Querying using Python expressions</li></ul> |
+| **Conduct Effective Trainings ⚡** | **Orgenize Your Experiments 🗂️** |
+| <ul><li>System info and resource usage tracking</li><li>Training run progress notifications</li><li>Logging and configurable notifications</li></ul> | <ul><li>Detailed run information for easy debugging</li><li>Centralized dashboard for holistic view</li><li>Runs grouping with tags and experiments</li></ul> |
 
 # 🎬 Demos
 
@@ -126,7 +133,7 @@ Aim's mission is to democratize AI dev tools.
 | [aimlflow](https://github.com/aimhubio/aimlflow) | [Aim-spaCy](https://github.com/aimhubio/aim-spacy) |
 |:---:|:---:|
 | ![aimlflow](https://user-images.githubusercontent.com/13848158/225610225-17543ab0-1966-44bd-a631-b1f187cac9ca.png) | ![Aim-spaCy](https://user-images.githubusercontent.com/13848158/225609972-cd97b87f-5974-4daa-9303-443bc8b059df.png) |
-| Exploring MLflow experiments with a powerful UI | Aim-spaCy is an Aim-based spaCy experiment tracker. Its mission is to help AI researchers compare their spaCy metadata dramatically faster at scale. |
+| Exploring MLflow experiments with a powerful UI | an Aim-based spaCy experiment tracker |
 
 # 🏁 Quick start
 
@@ -185,7 +192,7 @@ Aim has builtin callbacks for mosth of the frameworks.
 
 <details>
 <summary>
-list of supported frameworks
+The list of the supported frameworks
 </summary>
 
 Integration with Pytorch Ignite
@@ -247,7 +254,7 @@ See how to set up a remote tracking server in the docs https://aimstack.readthed
 
 <details>
 <summary>
-  <strong>TensorBoard</strong>
+  <strong>TensorBoard vs Aim</strong>
 </summary>
 
 </br>
@@ -271,7 +278,7 @@ Order of magnitude faster training run comparison with Aim
 
 <details>
 <summary>
-  <strong>MLflow</strong>
+  <strong>MLflow vs Aim</strong>
 </summary>
 
 </br>
@@ -293,7 +300,7 @@ The main differences of Aim and MLflow are around the UI scalability and run com
 
 <details>
 <summary>
-  <strong>Weights and Biases</strong>
+  <strong>Weights and Biases vs Aim</strong>
 </summary>
 
 </br>
