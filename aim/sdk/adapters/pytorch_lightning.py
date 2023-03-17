@@ -35,7 +35,6 @@ class AimLogger(Logger):
     def __init__(self,
                  repo: Optional[str] = None,
                  experiment: Optional[str] = None,
-                 run_name: Optional[str] = None,
                  train_metric_prefix: Optional[str] = 'train_',
                  val_metric_prefix: Optional[str] = 'val_',
                  test_metric_prefix: Optional[str] = 'test_',
@@ -43,6 +42,7 @@ class AimLogger(Logger):
                  = DEFAULT_SYSTEM_TRACKING_INT,
                  log_system_params: Optional[bool] = True,
                  capture_terminal_logs: Optional[bool] = True,
+                 run_name: Optional[str] = None,
                  run_hash: Optional[str] = None,
                  ):
         super().__init__()
@@ -83,7 +83,8 @@ class AimLogger(Logger):
                     system_tracking_interval=self._system_tracking_interval,
                     capture_terminal_logs=self._capture_terminal_logs
                 )
-                self._run.name = self._run_name
+                if self._run_name is not None:
+                    self._run.name = self._run_name
             else:
                 self._run = Run(
                     repo=self._repo_path,
