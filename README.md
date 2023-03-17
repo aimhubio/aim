@@ -36,39 +36,38 @@
   <sub><strong>SEAMLESSLY INTEGRATES WITH:</strong></sub>
   <br/>
   <br/>
-  <img src="https://user-images.githubusercontent.com/13848158/155354389-d0301620-77ea-4629-a743-f7aa249e14b5.png" height="50" />
-  <img src="https://user-images.githubusercontent.com/13848158/155354496-b39d7b1c-63ef-40f0-9e59-c08d2c5e337c.png" height="50" />
-  <img src="https://user-images.githubusercontent.com/13848158/155354380-3755c741-6960-42ca-b93e-84a8791f088c.png" height="50" />
-  <img src="https://user-images.githubusercontent.com/13848158/155354342-7df0ef5e-63d2-4df7-b9f1-d2fc0e95f53f.png" height="50" />
-  <img src="https://user-images.githubusercontent.com/13848158/155354392-afbff3de-c845-4d86-855d-53df569f91d1.png" height="50" />
-  <img src="https://user-images.githubusercontent.com/13848158/155354355-89210506-e7e5-4d37-b2d6-ad3fda62ef13.png" height="50" />
-  <img src="https://user-images.githubusercontent.com/13848158/155354397-8af8e1d3-4067-405e-9d42-1f131663ed22.png" height="50" />
-  <img src="https://user-images.githubusercontent.com/13848158/155354513-f7486146-3891-4f3f-934f-e58bbf9ce695.png" height="50" />
-  <img src="https://user-images.githubusercontent.com/13848158/155354500-c0471ce6-b2ce-4172-b9e4-07a197256303.png" height="50" />
-  <img src="https://user-images.githubusercontent.com/13848158/155354361-9f911785-008d-4b75-877e-651e026cf47e.png" height="50" />
-  <img src="https://user-images.githubusercontent.com/13848158/155354373-1879ae61-b5d1-41f0-a4f1-04b639b6f05e.png" height="50" />
-  <img src="https://user-images.githubusercontent.com/13848158/155354483-75d9853f-7154-4d95-8190-9ad7a73d6654.png" height="50" />
-  <img src="https://user-images.githubusercontent.com/13848158/155354329-cf7c3352-a72a-478d-82a7-04e3833b03b7.png" height="50" />
-  <img src="https://user-images.githubusercontent.com/13848158/155354349-dcdf3bc3-d7a9-4f34-8258-4824a57f59c7.png" height="50" />
-  <img src="https://user-images.githubusercontent.com/13848158/155354471-518f1814-7a41-4b23-9caf-e516507343f1.png" height="50" />
-  <img src="https://user-images.githubusercontent.com/48801049/165162736-2cc5da39-38aa-4093-874f-e56d0ba9cea2.png" height="50" />
-  <img src="https://user-images.githubusercontent.com/48801049/165074282-36ad18eb-1124-434d-8439-728c22cd7ac7.png" height="50" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354389-d0301620-77ea-4629-a743-f7aa249e14b5.png" height="60" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354496-b39d7b1c-63ef-40f0-9e59-c08d2c5e337c.png" height="60" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354380-3755c741-6960-42ca-b93e-84a8791f088c.png" height="60" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354342-7df0ef5e-63d2-4df7-b9f1-d2fc0e95f53f.png" height="60" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354392-afbff3de-c845-4d86-855d-53df569f91d1.png" height="60" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354355-89210506-e7e5-4d37-b2d6-ad3fda62ef13.png" height="60" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354397-8af8e1d3-4067-405e-9d42-1f131663ed22.png" height="60" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354513-f7486146-3891-4f3f-934f-e58bbf9ce695.png" height="60" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354500-c0471ce6-b2ce-4172-b9e4-07a197256303.png" height="60" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354361-9f911785-008d-4b75-877e-651e026cf47e.png" height="60" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354373-1879ae61-b5d1-41f0-a4f1-04b639b6f05e.png" height="60" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354483-75d9853f-7154-4d95-8190-9ad7a73d6654.png" height="60" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354329-cf7c3352-a72a-478d-82a7-04e3833b03b7.png" height="60" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354349-dcdf3bc3-d7a9-4f34-8258-4824a57f59c7.png" height="60" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354471-518f1814-7a41-4b23-9caf-e516507343f1.png" height="60" />
+  <img src="https://user-images.githubusercontent.com/48801049/165162736-2cc5da39-38aa-4093-874f-e56d0ba9cea2.png" height="60" />
+  <img src="https://user-images.githubusercontent.com/48801049/165074282-36ad18eb-1124-434d-8439-728c22cd7ac7.png" height="60" />
 </div>
 
 <br/>
-
 
 <div align="center">
   <sub><strong>TRUSTED BY ML TEAMS FROM:</strong></sub>  
   <br/>
   <br/>
-  <img src="https://user-images.githubusercontent.com/13848158/225659764-b6131fd6-0b82-4d40-8a53-7c83938801fe.png" height="50" />
-  <img src="https://user-images.githubusercontent.com/13848158/225659750-a41b340a-c3bb-4d00-8f11-96cf269d4807.png" height="50" />
-  <img src="https://user-images.githubusercontent.com/13848158/225659761-e0de63ef-85fa-4fe5-a7b3-3ee9f7a17dac.png" height="50" />
-  <img src="https://user-images.githubusercontent.com/13848158/225659740-4a7862f5-f4bd-4d02-9b10-7c4a7a4d5524.png" height="50" />
-  <img src="https://user-images.githubusercontent.com/13848158/225659757-6e4bbb48-5823-4a42-801b-cf1eb56edce2.png" height="50" />
-  <img src="https://user-images.githubusercontent.com/13848158/225659767-4758379d-2d0b-47b8-b925-c65f290eea2b.png" height="50" />
-  <img src="https://user-images.githubusercontent.com/13848158/225659771-80fea9c8-8433-467c-be8d-ec1ffa6696cb.png" height="50" />
+  <img src="https://user-images.githubusercontent.com/13848158/225659764-b6131fd6-0b82-4d40-8a53-7c83938801fe.png" height="55" />
+  <img src="https://user-images.githubusercontent.com/13848158/225659750-a41b340a-c3bb-4d00-8f11-96cf269d4807.png" height="55" />
+  <img src="https://user-images.githubusercontent.com/13848158/225659761-e0de63ef-85fa-4fe5-a7b3-3ee9f7a17dac.png" height="55" />
+  <img src="https://user-images.githubusercontent.com/13848158/225659740-4a7862f5-f4bd-4d02-9b10-7c4a7a4d5524.png" height="55" />
+  <img src="https://user-images.githubusercontent.com/13848158/225659757-6e4bbb48-5823-4a42-801b-cf1eb56edce2.png" height="55" />
+  <img src="https://user-images.githubusercontent.com/13848158/225659767-4758379d-2d0b-47b8-b925-c65f290eea2b.png" height="55" />
+  <img src="https://user-images.githubusercontent.com/13848158/225659771-80fea9c8-8433-467c-be8d-ec1ffa6696cb.png" height="55" />
 </div>
 
 <br/>
@@ -103,16 +102,16 @@ Additionally, its SDK enables programmatic access to tracked metadata — perfec
 </p>
 
 <div align="center">
-  <img src="https://user-images.githubusercontent.com/13848158/154340778-dbe19620-2f27-4298-b0cb-caf3904760f1.jpg" height="150" />
-  <img src="https://user-images.githubusercontent.com/13848158/154340778-dbe19620-2f27-4298-b0cb-caf3904760f1.jpg" height="150" />
-  <img src="https://user-images.githubusercontent.com/13848158/154340778-dbe19620-2f27-4298-b0cb-caf3904760f1.jpg" height="150" />
+  <img src="https://user-images.githubusercontent.com/13848158/154340778-dbe19620-2f27-4298-b0cb-caf3904760f1.jpg" height="140" />
+  <img src="https://user-images.githubusercontent.com/13848158/154340778-dbe19620-2f27-4298-b0cb-caf3904760f1.jpg" height="140" />
+  <img src="https://user-images.githubusercontent.com/13848158/154340778-dbe19620-2f27-4298-b0cb-caf3904760f1.jpg" height="140" />
 </div>
 
 </br>
 
 | Log Metadata Across Your ML Pipeline 💾 | Visualize & Compare Metadata via UI 📊 |
 |:--|:--|
-| <ul><li>ML experiments and any metadata tracking</li><li>Integration with popular ML frameworks</li><li>Easy migration from other experiment trackers</li></ul> | <ul><li>Metadata visualization via Aim Explorers</li><li>Grouping and aggregation</li><li>***=Querying using Python expressions***</li></ul> |
+| <ul><li>ML experiments and any metadata tracking</li><li>Integration with popular ML frameworks</li><li>Easy migration from other experiment trackers</li></ul> | <ul><li>Metadata visualization via Aim Explorers</li><li>Grouping and aggregation</li><li>Querying using Python expressions</li></ul> |
 | **Run ML Trainings Effectively ⚡** | **Organize Your Experiments 🗂️** |
 | <ul><li>System info and resource usage tracking</li><li>Real-time alerting on training progress</li><li>Logging and configurable notifications</li></ul> | <ul><li>Detailed run information for easy debugging</li><li>Centralized dashboard for holistic view</li><li>Runs grouping with tags and experiments</li></ul> |
 
