@@ -1,0 +1,11 @@
+@use 'src/styles/abstracts' as *;
+
+.TextRendererModePopover {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 25rem;
+  padding: $space-xs;
+  max-height: 20rem;
+}

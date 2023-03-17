@@ -7,7 +7,7 @@ function TextBox(props: any) {
   console.log(props);
   return (
     <div className='TextBox' style={{ color: props.data.style.color }}>
-      <pre>{text}</pre>
+      <pre style={{ whiteSpace: 'normal' }}>{text}</pre>
     </div>
   );
 }

@@ -3,6 +3,7 @@ import React, { memo } from 'react';
 import COLORS from 'config/colors/colors';
 
 import CaptionProperties from 'modules/BaseExplorer/components/Controls/CaptionProperties';
+import TextRendererMode from 'modules/BaseExplorer/components/Controls/TextRendererMode';
 import { GroupingItem } from 'modules/BaseExplorer/components/Grouping';
 import { getDefaultHydration } from 'modules/BaseExplorer';
 import { GroupType, Order } from 'modules/core/pipeline';
@@ -66,7 +67,7 @@ export const getTextDefaultConfig = (): typeof defaultHydration => {
         },
       },
       textRenderer: {
-        component: CaptionProperties,
+        component: TextRendererMode,
         state: {
           initialState: {
             type: 'text',
