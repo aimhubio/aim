@@ -109,11 +109,51 @@ Additionally, its SDK enables programmatic access to tracked metadata — perfec
 
 </br>
 
-| Log Metadata Across Your ML Pipeline 💾 | Visualize & Compare Metadata via UI 📊 |
-|:--|:--|
-| <ul><li>ML experiments and any metadata tracking</li><li>Integration with popular ML frameworks</li><li>Easy migration from other experiment trackers</li></ul> | <ul><li>Metadata visualization via Aim Explorers</li><li>Grouping and aggregation</li><li>Querying using Python expressions</li></ul> |
-| **Run ML Trainings Effectively ⚡** | **Organize Your Experiments 🗂️** |
-| <ul><li>System info and resource usage tracking</li><li>Real-time alerting on training progress</li><li>Logging and configurable notifications</li></ul> | <ul><li>Detailed run information for easy debugging</li><li>Centralized dashboard for holistic view</li><li>Runs grouping with tags and experiments</li></ul> |
+<div align="center">
+  <table>
+    <tbody>
+      <tr>
+        <th>Log Metadata Across Your ML Pipeline 💾</th>
+        <th>Visualize & Compare Metadata via UI 📊</th>
+      </tr>
+      <tr>
+        <td>
+          <ul>
+            <li>ML experiments and any metadata tracking</li>
+            <li>Integration with popular ML frameworks</li>
+            <li>Easy migration from other experiment trackers</li>
+            </ul>
+          </td>
+        <td>
+          <ul>
+            <li>Metadata visualization via Aim Explorers</li>
+            <li>Grouping and aggregation</li>
+            <li>Querying using Python expressions</li>
+          </ul>
+        </td>
+      </tr>
+      <tr>
+        <th>Run ML Trainings Effectively ⚡</th>
+        <th>Organize Your Experiments 🗂️</th>
+      </tr>
+      <tr>
+        <td>
+          <ul>
+            <li>System info and resource usage tracking</li>
+            <li>Real-time alerting on training progress</li>
+            <li>Logging and configurable notifications</li>
+          </ul>
+        </td>
+        <td>
+          <ul>
+            <li>Detailed run information for easy debugging</li>
+            <li>Centralized dashboard for holistic view</li>
+            <li>Runs grouping with tags and experiments</li></ul>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
 # 🎬 Demos
 
