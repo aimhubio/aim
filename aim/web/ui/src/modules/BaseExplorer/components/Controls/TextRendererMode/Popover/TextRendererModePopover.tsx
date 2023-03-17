@@ -14,9 +14,9 @@ function TextRendererModePopover(props: ITextRendererModePopoverProps) {
 
   return (
     <ErrorBoundary>
-      <div className='BoxPropsPopover'>
-        <div className='BoxPropsPopover__section'>
-          <div className='BoxPropsPopover__item'></div>
+      <div className='TextRendererModePopover'>
+        <div className='TextRendererModePopover__section'>
+          <div className='TextRendererModePopover__item'></div>
         </div>
       </div>
     </ErrorBoundary>
