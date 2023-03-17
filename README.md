@@ -221,47 +221,57 @@ aim up
 
 <details>
 <summary>
-Migrate from other tools
+<strong>Migrate from other tools</strong>
 </summary>
 
-- Integration with Pytorch Ignite
-- Integration with Pytorch Lightning
+</br>
+
+lorem ipsum
+
 </details>
 
 <details>
 <summary>
-Integrate Aim into an existing project
+<strong>Integrate Aim into an existing project</strong>
 </summary>
 
-- Integration with Pytorch Ignite
-- Integration with Pytorch Lightning
+</br>
+
+lorem ipsum
+
 </details>
 
 <details>
 <summary>
-Query runs programmatically via SDK
+<strong>Query runs programmatically via SDK</strong>
 </summary>
 
-- Integration with Pytorch Ignite
-- Integration with Pytorch Lightning
+</br>
+
+lorem ipsum
+
 </details>
 
 <details>
 <summary>
-Centralized tracking setup
+<strong>Centralized tracking setup</strong>
 </summary>
 
-- Integration with Pytorch Ignite
-- Integration with Pytorch Lightning
+</br>
+
+lorem ipsum
+
 </details>
 
 <details>
 <summary>
-Deploying Aim
+<strong>Deploying Aim</strong>
 </summary>
 
-- Integration with Pytorch Ignite
-- Integration with Pytorch Lightning
+</br>
+
+lorem ipsum
+
 </details>
 
 Read the full documentation on [aimstack.readthedocs.io](https://aimstack.readthedocs.io) 📖
@@ -299,6 +309,7 @@ Order of magnitude faster training run comparison with Aim
 </summary>
 
 </br>
+
 MLFlow is an end-to-end ML Lifecycle tool.
 Aim is focused on training tracking.
 The main differences of Aim and MLflow are around the UI scalability and run comparison features.
@@ -344,15 +355,18 @@ The [Aim product roadmap](https://github.com/orgs/aimhubio/projects/3) :sparkle:
 
 The high-level features we are going to work on the next few months:
 
-**In Progress**
+**In progress**
 
-- [ ] Aim SDK low-level interface (Start: _Aug 22 2022_, )
+- [ ] Aim SDK low-level interface
 - [ ] Dashboards – customizable layouts with embedded explorers
+- [ ] Ergonomic UI kit
 
 <details>
 <summary>
   <strong>Next-up</strong>
 </summary>
+
+</br>
 
 **Aim UI**
 
@@ -387,6 +401,8 @@ The high-level features we are going to work on the next few months:
 <summary>
   <strong>Done</strong>
 </summary>
+
+</br>
 
   - [x] Live updates (Shipped: _Oct 18 2021_)
   - [x] Images tracking and visualization (Start: _Oct 18 2021_, Shipped: _Nov 19 2021_)
