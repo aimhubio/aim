@@ -50,6 +50,10 @@ const AudiosExplorer = React.lazy(
   () => import(/* webpackChunkName: "audios" */ 'pages/AudiosExplorer'),
 );
 
+const TextExplorer = React.lazy(
+  () => import(/* webpackChunkName: "text" */ 'pages/TextExplorer'),
+);
+
 export interface IRoute {
   path: PathEnum;
   component:
@@ -114,6 +118,15 @@ const routes = {
     displayName: 'ParamsId',
     isExact: true,
     title: pageTitlesEnum.PARAMS_EXPLORER,
+  },
+  TEXT_EXPLORER: {
+    path: PathEnum.Text_Explorer,
+    component: TextExplorer,
+    showInSidebar: true,
+    icon: 'text',
+    displayName: 'Text',
+    isExact: true,
+    title: pageTitlesEnum.TEXT_EXPLORER,
   },
   IMAGE_EXPLORE: {
     path: PathEnum.Images_Explore,

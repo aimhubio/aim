@@ -1,0 +1,9 @@
+@use 'src/styles/abstracts' as *;
+
+.TextBox {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  padding: $space-xs $space-sm;
+  overflow: auto;
+}
