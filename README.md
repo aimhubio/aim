@@ -270,7 +270,23 @@ Aim easily integrates with a wide range of ML frameworks, providing built-in cal
 
 </br>
 
-lorem ipsum
+Aim Python SDK empowers you to query and access any piece of tracked metadata with ease.
+
+```python
+from aim import Repo
+
+my_repo = Repo('/path/to/aim/repo')
+
+query = "metric.name == 'loss'" # Example query
+
+# Get collection of metrics
+for run_metrics_collection in my_repo.query_metrics(query).iter_runs():
+    for metric in run_metrics_collection:
+        # Get run params
+        params = metric.run[...]
+        # Get metric values
+        steps, metric_values = metric.values.sparse_numpy()
+```
 
 </details>
 
@@ -281,7 +297,8 @@ lorem ipsum
 
 </br>
 
-lorem ipsum
+Aim remote tracking server allows running experiments in a multi-host environment and collect tracked data in a centralized location.
+See the docs on how to [set up the remote server](https://aimstack.readthedocs.io/en/latest/using/remote_tracking.html).
 
 </details>
 
