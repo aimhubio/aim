@@ -226,7 +226,13 @@ aim up
 
 </br>
 
-lorem ipsum
+Aim has built-in converters to easily migrate logs from other tools. 
+These migrations cover the most common usage scenarios.
+In case of custom and complex scenarios you can use Aim SDK to implement your own conversion script.
+
+- [TensorBoard logs converter](https://aimstack.readthedocs.io/en/latest/quick_start/convert_data.html#show-tensorboard-logs-in-aim)
+- [MLFlow logs converter](https://aimstack.readthedocs.io/en/latest/quick_start/convert_data.html#show-mlflow-logs-in-aim)
+- [Weights & Biases logs converter](https://aimstack.readthedocs.io/en/latest/quick_start/convert_data.html#show-weights-and-biases-logs-in-aim)
 
 </details>
 
@@ -237,7 +243,23 @@ lorem ipsum
 
 </br>
 
-lorem ipsum
+Aim easily integrates with a wide range of ML frameworks, providing built-in callbacks for most of them.
+
+- [Integration with Pytorch Ignite](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-pytorch-ignite)
+- [Integration with Pytorch Lightning](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-pytorch-lightning)
+- [Integration with Hugging Face](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-hugging-face)
+- [Integration with Keras & tf.Keras](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-keras-tf-keras)
+- [Integration with Keras Tuner](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-keras-tuner)
+- [Integration with XGboost](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-xgboost)
+- [Integration with CatBoost](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-catboost)
+- [Integration with LightGBM](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-lightgbm)
+- [Integration with fastai](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-fastai)
+- [Integration with MXNet](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-mxnet)
+- [Integration with Optuna](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-optuna)
+- [Integration with PaddlePaddle](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-paddlepaddle)
+- [Integration with Stable-Baselines3](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-stable-baselines3)
+- [Integration with Acme](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-acme)
+- [Integration with Prophet](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-prophet)
 
 </details>
 
