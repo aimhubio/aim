@@ -219,81 +219,52 @@ aim up
 
 ## Learn more
 
-### Migrate from other tools
-
-Aim has built-in converters to easily migrate logs from other tools. 
-These migrations cover the most common usage scenarios. 
-In case of custom and complex scenarios you can use Aim SDK to implement your own conversion script.
-
-- [TensorBoard logs converter](https://aimstack.readthedocs.io/en/latest/quick_start/convert_data.html#show-tensorboard-logs-in-aim)
-- [MLFlow logs converter](https://aimstack.readthedocs.io/en/latest/quick_start/convert_data.html#show-mlflow-logs-in-aim)
-- [Weights & Biases logs converter](https://aimstack.readthedocs.io/en/latest/quick_start/convert_data.html#show-weights-and-biases-logs-in-aim)
-
-### Integrate Aim into an existing project
-
-Aim easily integrates with your favourite ML frameworks.
-Aim has builtin callbacks for mosth of the frameworks.
-
 <details>
 <summary>
-The list of the supported frameworks
+Migrate from other tools
 </summary>
 
 - Integration with Pytorch Ignite
 - Integration with Pytorch Lightning
-- Integration with Hugging Face
-- Integration with Keras & tf.Keras
-- Integration with Keras Tuner
-- Integration with XGboost
-- Integration with CatBoost
-- Integration with LightGBM
-- Integration with fastai
-- Integration with MXNet
-- Integration with Optuna
-- Integration with PaddlePaddle
-- Integration with Stable-Baselines3
-- Integration with Acme
-- Integration with Prophet
-
 </details>
-
-
-### Query runs programmatically via SDK
 
 <details>
 <summary>
-Example
+Integrate Aim into an existing project
 </summary>
 
-```python
-from aim import Repo
-
-my_repo = Repo('/path/to/aim/repo')
-
-query = "metric.name == 'loss'" # Example query
-
-# Get collection of metrics
-for run_metrics_collection in my_repo.query_metrics(query).iter_runs():
-    for metric in run_metrics_collection:
-        # Get run params
-        params = metric.run[...]
-        # Get metric values
-        steps, metric_values = metric.values.sparse_numpy()
-```
-
-Learn more [here in the docs](https://aimstack.readthedocs.io/en/latest/using/query_runs.html)
+- Integration with Pytorch Ignite
+- Integration with Pytorch Lightning
 </details>
 
-### Centralized tracking setup
+<details>
+<summary>
+Query runs programmatically via SDK
+</summary>
 
-Aim remote tracking server allows running experiments in a multi-host environment and collect tracked data in a centralized location. 
-See how to set up a remote tracking server in the docs https://aimstack.readthedocs.io/en/latest/using/remote_tracking.html.
+- Integration with Pytorch Ignite
+- Integration with Pytorch Lightning
+</details>
 
-### Deploying Aim
+<details>
+<summary>
+Centralized tracking setup
+</summary>
 
-- Aim docker image
-- Host Aim on kubernetes https://aimstack.readthedocs.io/en/latest/using/k8s_deployment.html
+- Integration with Pytorch Ignite
+- Integration with Pytorch Lightning
+</details>
 
+<details>
+<summary>
+Deploying Aim
+</summary>
+
+- Integration with Pytorch Ignite
+- Integration with Pytorch Lightning
+</details>
+
+Read the full documentation on [aimstack.readthedocs.io](https://aimstack.readthedocs.io) 📖
 
 # 🆚 Comparisons to familiar tools
 
