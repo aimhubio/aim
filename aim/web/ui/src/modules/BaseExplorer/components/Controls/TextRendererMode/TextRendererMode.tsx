@@ -35,7 +35,7 @@ function TextRendererMode(props: ITextRendererModeProps) {
           <Icon
             name='text'
             className={classNames('Control__anchor__icon', {
-              active: opened,
+              active: opened || !textRenderer.isInitial,
             })}
           />
           <Text className='Control__anchor__label'>Text Renderer</Text>

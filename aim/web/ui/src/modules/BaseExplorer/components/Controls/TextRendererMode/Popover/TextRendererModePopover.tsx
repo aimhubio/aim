@@ -29,7 +29,7 @@ function TextRendererModePopover(props: ITextRendererModePopoverProps) {
                 })
               }
             >
-              {key.toUpperCase()}
+              {key}
             </MenuItem>
           ))}
         </div>
