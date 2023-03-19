@@ -4,7 +4,6 @@ import './TextBox.scss';
 
 function TextBox(props: any) {
   const text = props.data.data.data;
-  console.log(props);
   return (
     <div className='TextBox' style={{ color: props.data.style.color }}>
       <pre style={{ whiteSpace: 'normal' }}>{text}</pre>

@@ -6,16 +6,19 @@ import { Icon, Button, Text } from 'components/kit';
 
 import TextRendererModePopover from './Popover';
 
-import { ITextRendererModeProps, ITextRendererModeState } from '.';
+import { ITextRendererModeProps } from '.';
 
 function TextRendererMode(props: ITextRendererModeProps) {
   const {
-    engine: { visualizations, useStore },
+    engine,
+    engine: { useStore },
+    visualizationName,
   } = props;
+  const vizEngine = engine.visualizations[visualizationName];
+  const controls = vizEngine.controls;
+  const textRenderer = useStore(controls.textRenderer.stateSelector);
+  const updateTextRnderer = vizEngine.controls.textRenderer.methods.update;
 
-  console.log(props);
-
-  // const boxProperties: ITextRendererModeState = useStore(vizEngine.box.stateSelector);
   return (
     <ControlPopover
       title='Switch renderer'
@@ -25,8 +28,8 @@ function TextRendererMode(props: ITextRendererModeProps) {
           size='xSmall'
           onClick={onAnchorClick}
           className={classNames('Control__anchor', {
-            active: opened,
-            outlined: !opened,
+            active: opened || !textRenderer.isInitial,
+            outlined: !opened && !textRenderer.isInitial,
           })}
         >
           <Icon
@@ -44,12 +47,10 @@ function TextRendererMode(props: ITextRendererModeProps) {
         </Button>
       )}
       component={
-        () => null
-        // <TextRendererModePopover
-        //   update={vizEngine.box.methods.update}
-        //   reset={vizEngine.box.methods.reset}
-        //   textRenderer={null}
-        // />
+        <TextRendererModePopover
+          update={updateTextRnderer}
+          textRenderer={textRenderer}
+        />
       }
     />
   );
