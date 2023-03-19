@@ -1,4 +1,5 @@
 import * as React from 'react';
+import Editor from 'rich-markdown-editor';
 
 import { Text } from 'components/kit';
 
@@ -24,6 +25,15 @@ function TextBox(props: any) {
       <Text color={props.data.style.color} style={{ whiteSpace: 'normal' }}>
         {text}
       </Text>
+    ),
+    [TEXT_RNDERER_MODES.MARKDOWN]: (
+      <Editor
+        ref={null}
+        value={text}
+        readOnly
+        className='TextBox__Markdown'
+        disableExtensions={['table', 'image', 'container_notice']}
+      />
     ),
     [TEXT_RNDERER_MODES.HTML]: (
       <div dangerouslySetInnerHTML={{ __html: text }} />
