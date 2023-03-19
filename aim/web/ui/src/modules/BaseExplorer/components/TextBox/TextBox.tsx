@@ -1,12 +1,40 @@
 import * as React from 'react';
 
+import { Text } from 'components/kit';
+
+import { TEXT_RNDERER_MODES } from 'pages/TextExplorer/textConfig';
+
 import './TextBox.scss';
 
 function TextBox(props: any) {
-  const text = props.data.data.data;
+  const {
+    engine,
+    engine: { useStore },
+    visualizationName,
+    data,
+  } = props;
+  const vizEngine = engine.visualizations[visualizationName];
+  const controls = vizEngine.controls;
+  const textRenderer = useStore(controls.textRenderer.stateSelector);
+
+  const text = data.data.data;
+
+  const content: Record<string, JSX.Element> = {
+    [TEXT_RNDERER_MODES.TEXT]: (
+      <Text color={props.data.style.color} style={{ whiteSpace: 'normal' }}>
+        {text}
+      </Text>
+    ),
+    [TEXT_RNDERER_MODES.CODE]: (
+      <Text component='pre' color={props.data.style.color}>
+        {text}
+      </Text>
+    ),
+  };
+
   return (
     <div className='TextBox' style={{ color: props.data.style.color }}>
-      <pre style={{ whiteSpace: 'normal' }}>{text}</pre>
+      {content[textRenderer.type]}
     </div>
   );
 }
