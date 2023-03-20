@@ -58,26 +58,37 @@ class DeeplakeDataset(CustomObject):
         if not isinstance(dataset, deeplake.Dataset):
             raise TypeError("dataset must be of type ``deeplake.Dataset``")
 
-        if dataset.is_view and dataset.has_head_changes:
-            if any((auto_commit, auto_save_view)):
-                raise ValueError(
-                    "Dataset is a view on head of uncommitted changes. Commit dataset changes before creating a view. "
-                    "To ignore with limited traceability set both ``auto_commit`` and ``auto_save_view`` to ``False``."
-                )
+        if dataset.has_head_changes:
+            if dataset.is_view:
+                if any((auto_commit, auto_save_view)):
+                    raise ValueError(
+                        "Dataset is a view on head of uncommitted changes. "
+                        "Commit dataset changes before creating a view. "
+                        "To ignore with limited traceability set both"
+                        "``auto_commit`` and ``auto_save_view`` to ``False``."
+                    )
+                else:
+                    warnings.warn(
+                        "There is little to trace back data to this run. "
+                        "Dataset is a view on a head of uncommitted changes. "
+                        "Consider committing dataset changes before creating a view and logging runs "
+                        "to enable traceability.",
+                        ViewOnUncommittedDatasetWarning,
+                        stacklevel=2,
+                    )
             else:
-                warnings.warn(
-                    "There is little to trace back data to this run. "
-                    "Dataset is a view on a head of uncommitted changes. "
-                    "Consider committing dataset changes before creating a view and logging runs "
-                    "to enable traceability.",
-                    ViewOnUncommittedDatasetWarning,
-                    stacklevel=2,
-                )
+                if not auto_commit:
+                    warnings.warn(
+                        f"Deeplake Dataset {dataset.path} has uncommitted head changes. "
+                        "Consider committing dataset changes before logging runs to enable full traceability.",
+                        UncommittedDatasetWarning,
+                        stacklevel=2,
+                    )
 
         self.view_info = None
 
         if dataset.is_view:
-            if auto_save_view:
+            if auto_save_view and not dataset.has_head_changes:
                 self.view_info = dataset._get_view_info()
                 view_id = self.view_info.get('id', None)
                 try:
@@ -88,16 +99,9 @@ class DeeplakeDataset(CustomObject):
                 else:
                     logger.info(f'autosave view on run: dataset {dataset.path} with id {view_id} saved to {vds_path}.')
         else:
-            if dataset.has_head_changes and auto_commit:
+            if auto_commit and dataset.has_head_changes:
                 commit_id = dataset.commit(message="autocommit on aim run")
                 logger.info(f'autocommit on run: dataset {dataset.path} with commit id {commit_id}.')
-            else:
-                warnings.warn(
-                    f"Deeplake Dataset {dataset.path} has uncommitted head changes. "
-                    "Consider committing dataset changes before logging runs to enable full traceability.",
-                    UncommittedDatasetWarning,
-                    stacklevel=2,
-                )
 
         self.storage['dataset'] = {
             'source': 'deeplake',
