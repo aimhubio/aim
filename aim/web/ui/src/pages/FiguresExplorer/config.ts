@@ -37,6 +37,7 @@ export const getFiguresDefaultConfig = (): typeof defaultHydration => {
     ...defaultConfig,
     groupings,
     controls,
+    box: defaultConfig.box,
     getStaticContent: getFiguresExplorerStaticContent,
   };
 };

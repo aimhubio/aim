@@ -168,14 +168,15 @@ export const getMetricsDefaultConfig = (): typeof defaultHydration => {
     };
   });
 
+  const box = produce(defaultConfig.box, (draft: any) => {
+    draft.stacking = false;
+  });
+
   return {
     ...defaultConfig,
     groupings,
     controls,
-    box: {
-      ...defaultConfig.box,
-      stacking: false,
-    },
+    box,
     getStaticContent: getMetricsExplorerStaticContent,
   };
 };
