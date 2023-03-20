@@ -58,7 +58,7 @@ class AimLogger(Logger):
         self._log_system_params = log_system_params
         self._capture_terminal_logs = capture_terminal_logs
 
-        self._run = None        
+        self._run = None
         self._run_hash = run_hash
 
     @staticmethod
