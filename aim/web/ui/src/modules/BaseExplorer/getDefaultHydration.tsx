@@ -24,7 +24,7 @@ const controls: ControlsConfigs = {
     settings: {
       minWidth: 200,
       maxWidth: 800,
-      minHeight: 200,
+      minHeight: 170,
       maxHeight: 800,
       step: 10,
     },
