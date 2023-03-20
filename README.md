@@ -86,7 +86,8 @@
   <a href="#-quick-start"><b>Quick Start</b></a> &bull;
   <a href="https://github.com/aimhubio/aim/tree/main/examples"><b>Examples</b></a> &bull;
   <a href="https://aimstack.readthedocs.io/en/latest/"><b>Documentation</b></a> &bull;
-  <a href="#-community"><b>Community</b></a>
+  <a href="#-community"><b>Community</b></a> &bull;
+  <a href="https://aimstack.io/blog"><b>Blog</b></a>
 </h3>  
 
 ---
@@ -103,9 +104,9 @@ Additionally, its SDK enables programmatic access to tracked metadata — perfec
 </p>
 
 <div align="center">
-  <img src="https://user-images.githubusercontent.com/13848158/154340778-dbe19620-2f27-4298-b0cb-caf3904760f1.jpg" height="140" />
-  <img src="https://user-images.githubusercontent.com/13848158/154340778-dbe19620-2f27-4298-b0cb-caf3904760f1.jpg" height="140" />
-  <img src="https://user-images.githubusercontent.com/13848158/154340778-dbe19620-2f27-4298-b0cb-caf3904760f1.jpg" height="140" />
+  <img src="https://user-images.githubusercontent.com/13848158/226426018-f7c11c9b-78d9-4ee4-b292-df28b3e8eaa6.jpg" height="140" />
+  <img src="https://user-images.githubusercontent.com/13848158/226426005-f7e83923-0f92-44a4-88e4-1735a3d3e119.jpg" height="140" />
+  <img src="https://user-images.githubusercontent.com/13848158/226426015-4f1122d8-c96a-443f-8698-3db942b1972a.jpg" height="140" />
 </div>
 
 </br>
@@ -293,24 +294,27 @@ for run_metrics_collection in my_repo.query_metrics(query).iter_runs():
 
 <details>
 <summary>
-<strong>Centralized tracking setup</strong>
+<strong>Set up a centralized tracking server</strong>
 </summary>
 
 </br>
 
 Aim remote tracking server allows running experiments in a multi-host environment and collect tracked data in a centralized location.
+
 See the docs on how to [set up the remote server](https://aimstack.readthedocs.io/en/latest/using/remote_tracking.html).
 
 </details>
 
 <details>
 <summary>
-<strong>Deploying Aim</strong>
+<strong>Deploy Aim on kubernetes</strong>
 </summary>
 
 </br>
 
-lorem ipsum
+- The official Aim docker image: https://hub.docker.com/r/aimstack/aim
+- A guide on how to deploy Aim on kubernetes: https://aimstack.readthedocs.io/en/latest/using/k8s_deployment.html
+
 
 </details>
 
@@ -400,6 +404,7 @@ The high-level features we are going to work on the next few months:
 - [ ] Aim SDK low-level interface
 - [ ] Dashboards – customizable layouts with embedded explorers
 - [ ] Ergonomic UI kit
+- [ ] Text Explorer
 
 <details>
 <summary>
@@ -413,19 +418,18 @@ The high-level features we are going to work on the next few months:
 - Runs management
     - Runs explorer – query and visualize runs data(images, audio, distributions, ...) in a central dashboard
 - Explorers
-    - Text Explorer
     - Distributions Explorer
-- Cloud storage support – store runs blob(e.g. images) data on the cloud
-- Artifact storage – store files, model checkpoints, and beyond
 
 **SDK and Storage**
 
 - Scalability
     - Smooth UI and SDK experience with over 10.000 runs
 - Runs management
-    - CLI interfaces
+    - CLI commands
         - Reporting - runs summary and run details in a CLI compatible format
         - Manipulations – copy, move, delete runs, params and sequences
+- Cloud storage support – store runs blob(e.g. images) data on the cloud
+- Artifact storage – store files, model checkpoints, and beyond
 
 **Integrations**
 
