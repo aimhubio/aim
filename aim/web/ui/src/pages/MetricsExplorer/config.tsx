@@ -169,7 +169,6 @@ export const getMetricsDefaultConfig = (): typeof defaultHydration => {
   });
 
   const box = produce(defaultConfig.box, (draft: any) => {
-    draft.initialState.gap = 4;
     draft.stacking = false;
   });
 

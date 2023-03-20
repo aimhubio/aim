@@ -36,7 +36,6 @@ export const getAudiosDefaultConfig = (): typeof defaultHydration => {
   const box = produce(defaultConfig.box, (draft: any) => {
     draft.initialState.width = 350;
     draft.initialState.height = 170;
-    draft.initialState.gap = 4;
   });
 
   return {

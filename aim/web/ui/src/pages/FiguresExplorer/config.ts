@@ -33,15 +33,11 @@ export const getFiguresDefaultConfig = (): typeof defaultHydration => {
     };
   });
 
-  const box = produce(defaultConfig.box, (draft: any) => {
-    draft.initialState.gap = 4;
-  });
-
   return {
     ...defaultConfig,
     groupings,
     controls,
-    box,
+    box: defaultConfig.box,
     getStaticContent: getFiguresExplorerStaticContent,
   };
 };
