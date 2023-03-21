@@ -1,5 +1,6 @@
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 
+import { Text } from 'components/kit_v2';
 import RadioComponent, {
   RadioGroup as Group,
 } from 'components/kit_v2/Radio/Radio';
@@ -63,8 +64,12 @@ export default {
 
 const Template: ComponentStory<typeof Group> = (args) => (
   <Group {...args}>
-    <RadioComponent value='1'>First</RadioComponent>
-    <RadioComponent value='2'>Second</RadioComponent>
+    <RadioComponent value='1'>
+      <Text>First</Text>
+    </RadioComponent>
+    <RadioComponent value='2'>
+      <Text>Second</Text>
+    </RadioComponent>
   </Group>
 );
 

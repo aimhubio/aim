@@ -1,232 +1,81 @@
 import React from 'react';
 
-import { Icon } from 'components/kit';
+import { IconX } from '@tabler/icons-react';
 
-import { styled } from 'config/stitches/stitches.config';
+import Icon from 'components/kit_v2/Icon';
 
 import { IInputProps } from './Input.d';
+import {
+  Caption,
+  ClearButtonContainer,
+  Container,
+  InputContainer,
+  InputWrapper,
+  LeftIcon,
+} from './Input.style';
 
-const Container = styled('div', {
-  display: 'flex',
-  fd: 'column',
-});
-
-const LeftIcon = styled(Icon, {
-  position: 'absolute',
-  display: 'flex',
-  ai: 'center',
-  jc: 'center',
-  size: '$sizes$1',
-  color: '$textPrimary50',
-  pointerEvents: 'none',
-  variants: {
-    size: {
-      medium: {
-        left: '$space$4',
-      },
-      large: {
-        left: '$space$5',
-      },
-      xLarge: {
-        left: '$space$6',
-      },
-    },
-    focused: {
-      true: {
-        color: '$textPrimary !important',
-      },
-    },
-    disabled: {
-      true: {
-        color: '$secondary30',
-      },
-    },
-  },
-});
-
-const InputWrapper = styled('div', {
-  position: 'relative',
-  display: 'flex',
-  ai: 'center',
-  '&:hover': {
-    [`& ${LeftIcon}`]: {
-      color: '$secondary100',
-    },
-  },
-  variants: {
-    disabled: {
-      true: {
-        cursor: 'not-allowed',
-        pointerEvents: 'none',
-        color: '$secondary30',
-      },
-    },
-  },
-});
-
-const InputContainer: any = styled('input', {
-  border: 'none',
-  outline: 'none',
-  height: '100%',
-  width: '100%',
-  color: '$textPrimary',
-  bs: '0px 0px 0px 1px $colors$secondary50',
-  br: '$3',
-  fontSize: '$3',
-  p: 0,
-  '&::placeholder': {
-    color: '$textPrimary50',
-  },
-  '&:hover': {
-    bs: '0px 0px 0px 1px $colors$secondary100',
-  },
-  '&:focus': {
-    bs: '0px 0px 0px 1px $colors$primary100',
-  },
-  variants: {
-    leftIcon: { true: {} },
-    size: {
-      medium: {
-        height: '$sizes$3',
-        pl: '$6',
-        pr: '$16',
-      },
-      large: {
-        pl: '$7',
-        pr: '$17',
-        height: '$sizes$5',
-      },
-      xLarge: {
-        pl: '$8',
-        pr: '$18',
-        height: '$sizes$7',
-      },
-    },
-    error: {
-      true: {
-        bs: '0px 0px 0px 1px $colors$error100 !important',
-      },
-    },
-    disabled: {
-      true: {
-        color: '$textPrimary50',
-      },
-    },
-  },
-  compoundVariants: [
-    {
-      leftIcon: true,
-      size: 'medium',
-      css: {
-        pl: '$16',
-      },
-    },
-    {
-      leftIcon: true,
-      size: 'large',
-      css: {
-        pl: '$17',
-      },
-    },
-    {
-      leftIcon: true,
-      size: 'xLarge',
-      css: {
-        pl: '$18',
-      },
-    },
-  ],
-});
-
-const ClearButtonContainer = styled('div', {
-  position: 'absolute',
-  display: 'flex',
-  ai: 'center',
-  jc: 'center',
-  size: '$sizes$1',
-  cursor: 'pointer',
-  '& .Icon__container': {
-    display: 'flex',
-    ai: 'center',
-    jc: 'center',
-    br: '$round',
-    background: '$secondary20',
-    color: '$textPrimary',
-    size: '10px',
-  },
-  variants: {
-    size: {
-      medium: {
-        right: '$4',
-      },
-      large: {
-        right: '$5',
-      },
-      xLarge: {
-        right: '$6',
-      },
-    },
-  },
-});
-
-const Caption = styled('p', {
-  fontSize: '$2',
-  mt: '2px',
-  color: '$textPrimary50',
-  variants: {
-    error: {
-      true: {
-        color: '$error100',
-      },
-    },
-    disabled: {
-      true: {
-        color: '$secondary30',
-      },
-    },
-  },
-});
-
+/**
+ * @description Input component
+ * Input component params
+ * @param {string} value - Value of the input
+ * @param {string} inputSize - Size of the input
+ * @param {string} placeholder - Placeholder of the input
+ * @param {boolean} error - Error state of the input
+ * @param {object} inputElementProps - Props of the input element
+ * @param {string} caption - Caption of the input
+ * @param {string} errorMessage - Error message of the input
+ * @param {string} leftIcon - Left icon of the input
+ * @param {boolean} disabled - Disabled state of the input
+ * @param {function} onChange - On change callback of the input
+ * @returns {React.FunctionComponentElement<React.ReactNode>} - React component
+ * @example
+ * <Input value={value} inputSize="md" placeholder="Placeholder" error={false} inputElementProps={{}} caption="Caption" errorMessage="Error message" leftIcon={IconName} disabled={false} onChange={onChange} />
+ */
 const Input = React.forwardRef<React.ElementRef<typeof Container>, IInputProps>(
   (
     {
-      value,
-      inputSize = 'medium',
+      inputSize = 'md',
       placeholder,
       error,
-      inputElementProps = {},
       caption,
       errorMessage,
       leftIcon,
       disabled,
-      onChange,
+      css = {},
+      ...props
     }: IInputProps,
     forwardedRef,
   ): React.FunctionComponentElement<React.ReactNode> => {
-    const [inputValue, setInputValue] = React.useState<string>(value);
+    const [inputValue, setInputValue] = React.useState<any>(props.value || '');
     const [isFocused, setIsFocused] = React.useState<boolean>(false);
 
     React.useEffect(() => {
-      if (value !== inputValue) {
-        setInputValue(value);
+      if (props.value !== inputValue) {
+        setInputValue(props.value);
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [value]);
+    }, [props.value]);
 
     const handleChange = React.useCallback(
       (event: React.ChangeEvent<HTMLInputElement>) => {
         let { value } = event.target;
         setInputValue(value);
-        onChange(value, event);
+        if (props.onChange) {
+          props.onChange(event);
+        }
       },
-      [onChange],
+      [props],
     );
 
     const handleClear = React.useCallback(() => {
       if (disabled) return;
       setInputValue('');
-      onChange('');
-    }, [disabled, onChange]);
+      if (props.onChange) {
+        props.onChange({
+          target: { value: '' },
+        } as React.ChangeEvent<HTMLInputElement>);
+      }
+    }, [disabled, props]);
 
     const onFocus = React.useCallback(() => {
       setIsFocused(true);
@@ -237,20 +86,20 @@ const Input = React.forwardRef<React.ElementRef<typeof Container>, IInputProps>(
     }, []);
 
     return (
-      <Container ref={forwardedRef}>
+      <Container css={css} ref={forwardedRef}>
         <InputWrapper disabled={disabled}>
           {leftIcon && (
             <LeftIcon
+              size='md'
               className='LeftIcon'
-              size={inputSize}
-              fontSize={12}
-              name={leftIcon}
+              inputSize={inputSize}
+              icon={leftIcon}
               disabled={disabled}
               focused={!!inputValue || isFocused}
             />
           )}
           <InputContainer
-            {...inputElementProps}
+            {...props}
             size={inputSize}
             disabled={disabled}
             placeholder={placeholder}
@@ -266,7 +115,7 @@ const Input = React.forwardRef<React.ElementRef<typeof Container>, IInputProps>(
             onClick={handleClear}
             size={inputSize}
           >
-            <Icon fontSize={4} name='close' />
+            <Icon className='Icon__container' size='md' icon={<IconX />} />
           </ClearButtonContainer>
         </InputWrapper>
         {errorMessage || caption ? (
@@ -279,4 +128,5 @@ const Input = React.forwardRef<React.ElementRef<typeof Container>, IInputProps>(
   },
 );
 
+Input.displayName = 'Input';
 export default React.memo(Input);

@@ -1,6 +1,7 @@
 import React from 'react';
 
 import * as DialogPrimitive from '@radix-ui/react-dialog';
+import { IconX } from '@tabler/icons-react';
 
 import Button from '../Button';
 import Box from '../Box';
@@ -16,29 +17,36 @@ import {
 } from './Dialog.style';
 
 /**
- * Dialog component
- * @param {IDialogProps} props
+ * @description Dialog component is for displaying a dialog with a title, description, and actions
+ * Dialog component params
+ * @param {React.ReactNode} trigger - React children
+ * @param {string} title - Title of the dialog
+ * @param {string} description - Description of the dialog
+ * @param {React.ReactNode} children - React children
+ * @param {boolean} open - Open state of the dialog
+ * @param {React.ReactNode} onConfirm - On confirm callback of the dialog
+ * @param {React.ReactNode} onOpenChange - On open change callback of the dialog
  * @returns {React.FunctionComponentElement<React.ReactNode>}
  * @constructor
  * @example
  * <Dialog
- *  title='Dialog title'
- * description='Dialog description'
- * onConfirm={() => console.log('confirm')}
- * trigger={<Button>Open dialog</Button>}
+ *   title='Dialog title'
+ *   description='Dialog description'
+ *   onConfirm={() => console.log('confirm')}
+ *   trigger={<Button>Open dialog</Button>}
  * />
  */
 function Dialog({
-  onConfirm,
   trigger,
   title,
   description,
   open = false,
   titleIcon,
   children,
+  onConfirm,
   onOpenChange,
   ...props
-}: IDialogProps) {
+}: IDialogProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <DialogPrimitive.Root
       onOpenChange={onOpenChange}
@@ -93,7 +101,7 @@ function Dialog({
               variant='text'
               color='secondary'
               css={{ position: 'absolute', top: 8, right: 8 }}
-              icon='close'
+              icon={<IconX />}
             />
           </DialogPrimitive.Close>
         </DialogContent>
@@ -101,4 +109,6 @@ function Dialog({
     </DialogPrimitive.Root>
   );
 }
+
+Dialog.displayName = 'Dialog';
 export default React.memo(Dialog);

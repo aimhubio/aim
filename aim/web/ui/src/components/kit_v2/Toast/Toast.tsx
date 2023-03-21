@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { ColorPaletteType } from 'config/stitches/stitches.config';
+import { ColorPaletteType } from 'config/stitches/types';
 
 import Button from '../Button';
 import IconButton from '../IconButton';
@@ -101,4 +101,5 @@ const ToastItem = React.forwardRef<typeof ToastRoot, IToastProps>(
   },
 );
 
+ToastItem.displayName = 'ToastItem';
 export default React.memo(ToastItem);

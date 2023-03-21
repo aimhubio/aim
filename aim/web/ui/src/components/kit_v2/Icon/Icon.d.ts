@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { CSS } from 'config/stitches/stitches.config';
+import { CSS } from 'config/stitches/types';
 
 // The interface for the Icon component
 export interface IIconProps
@@ -36,7 +36,7 @@ export interface IIconProps
    * @default undefined
    * @see https://tablericons.com/
    */
-  icon: React.ReactNode | React.Element;
+  icon: React.ReactNode;
   /**
    * @description The color of the Icon.
    * @example

@@ -1,6 +1,6 @@
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 
-import { keyframes, styled } from 'config/stitches/stitches.config';
+import { keyframes, styled } from 'config/stitches';
 
 import Box from '../Box';
 

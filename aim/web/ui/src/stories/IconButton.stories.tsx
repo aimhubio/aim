@@ -1,3 +1,4 @@
+import { IconSearch, IconUpload, IconZoomIn } from '@tabler/icons-react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 
 import IconButton from 'components/kit_v2/IconButton';
@@ -28,18 +29,18 @@ const Template: ComponentStory<typeof IconButton> = (args) => (
 export const Contained = Template.bind({});
 
 Contained.args = {
-  icon: 'search',
+  icon: <IconSearch />,
   variant: 'contained',
 };
 export const Outlined = Template.bind({});
 
 Outlined.args = {
-  icon: 'upload',
+  icon: <IconSearch />,
   variant: 'outlined',
 };
-export const Text = Template.bind({});
+export const Ghost = Template.bind({});
 
-Text.args = {
-  icon: 'zoom-in',
-  variant: 'text',
+Ghost.args = {
+  icon: <IconSearch />,
+  variant: 'ghost',
 };

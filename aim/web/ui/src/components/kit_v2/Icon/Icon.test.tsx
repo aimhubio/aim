@@ -1,4 +1,4 @@
-import { IconDeviceCctvOff } from '@tabler/icons';
+import { IconDeviceCctvOff } from '@tabler/icons-react';
 import { render } from '@testing-library/react';
 
 import Icon from './Icon';

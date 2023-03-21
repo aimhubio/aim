@@ -1,20 +1,20 @@
-import * as Stitches from '@stitches/react';
+import React from 'react';
 
-import { ColorPaletteEnum } from 'config/stitches/stitches.config';
+import { CSS, ColorPaletteType } from 'config/stitches/types';
 
-import { IconName } from '../../kit/Icon';
+import { ButtonVariantType } from '../Button';
 export interface IIconButtonProps
   extends Partial<React.HTMLAttributes<HTMLButtonElement>> {
   /**
    * @description The name of the icon
    * @example 'add'
    */
-  icon: IconName;
+  icon: React.ReactNode;
   /**
    * @description The color of the icon button
    * @example 'primary'
    */
-  color?: ColorPaletteEnum;
+  color?: ColorPaletteType;
   /**
    * @description The size of the icon button
    * @example 'md'
@@ -26,7 +26,7 @@ export interface IIconButtonProps
    * @example 'contained'
    * @default 'contained'
    */
-  variant?: variantType;
+  variant?: ButtonVariantType;
   /**
    * @description The disabled state of the icon button
    * @example false
@@ -38,11 +38,10 @@ export interface IIconButtonProps
    * @example { backgroundColor: 'red' }
    * @default {}
    */
-  css?: Stitches.CSS;
+  css?: CSS;
 }
 
 // IconButton component size types
 type sizeType = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
 // IconButton component variants
-type variantType = 'text' | 'outlined' | 'contained';

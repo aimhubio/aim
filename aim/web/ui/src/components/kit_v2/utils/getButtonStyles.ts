@@ -31,7 +31,7 @@ export function getButtonStyles(
           color: `$${color}120`,
         },
       };
-    case 'text':
+    case 'ghost':
       return {
         bc: 'transparent',
         color: `$${color}${disabled ? 50 : 100}`,
@@ -41,6 +41,14 @@ export function getButtonStyles(
         },
         '&:active': {
           bc: `$${color}20`,
+          color: `$${color}120`,
+        },
+      };
+    case 'static':
+      return {
+        bc: 'transparent',
+        color: `$${color}${disabled ? 50 : 100}`,
+        '&:active': {
           color: `$${color}120`,
         },
       };

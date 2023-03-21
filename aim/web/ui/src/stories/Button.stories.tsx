@@ -1,4 +1,5 @@
 import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { IconSearch } from '@tabler/icons-react';
 
 import Button from 'components/kit_v2/Button';
 
@@ -30,10 +31,18 @@ export const Outlined = Template.bind({});
 Outlined.args = {
   children: 'Outlined Button',
   variant: 'outlined',
+  leftIcon: <IconSearch />,
 };
-export const Text = Template.bind({});
+export const Ghost = Template.bind({});
 
-Text.args = {
-  children: 'Text Button',
-  variant: 'text',
+Ghost.args = {
+  children: 'Ghost Button',
+  variant: 'ghost',
+};
+
+export const Static = Template.bind({});
+
+Static.args = {
+  children: 'Static Button',
+  variant: 'static',
 };

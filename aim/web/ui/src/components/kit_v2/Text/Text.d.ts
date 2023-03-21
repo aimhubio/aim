@@ -1,4 +1,4 @@
-import { CSS } from 'config/stitches/stitches.config';
+import { CSS } from 'config/stitches/types';
 export interface ITextProps
   extends Partial<
     React.HTMLAttributes<
@@ -6,13 +6,15 @@ export interface ITextProps
     >
   > {
   as?: typographyType;
+  mono?: boolean;
   weight?: CSS['fontWeight'];
+  disabled?: boolean;
   size?: CSS['fontSize'];
   color?: CSS['color'];
   css?: CSS;
 }
 
-type typographyType =
+export type typographyType =
   | 'h1'
   | 'h2'
   | 'h3'
@@ -22,4 +24,15 @@ type typographyType =
   | 'span'
   | 'p'
   | 'strong'
-  | 'small';
+  | 'small'
+  | 'b'
+  | 'u'
+  | 'i'
+  | 'em'
+  | 'abbr'
+  | 'cite'
+  | 'del'
+  | 's'
+  | 'samp'
+  | 'sub'
+  | 'sup';

@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import { IconCheck } from '@tabler/icons';
+import { IconCheck } from '@tabler/icons-react';
 
 import {
   Toast as ToastComponent,
@@ -11,7 +11,7 @@ import Button from 'components/kit_v2/Button';
 import { IToastProps } from 'components/kit_v2/Toast/Toast.d';
 
 export default {
-  title: 'Kit/Inputs',
+  title: 'Kit/Feedback',
   component: ToastComponent,
   argTypes: {
     placement: {

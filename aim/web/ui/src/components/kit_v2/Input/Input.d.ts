@@ -1,14 +1,9 @@
 import React from 'react';
 
-import { IconName } from 'components/kit/Icon';
+import { CSS } from 'config/stitches/types';
 
 // The Input component interface.
-export interface IInputProps {
-  /**
-   * The Input value.
-   * @default ''
-   */
-  value: string;
+export interface IInputProps extends React.HTMLProps<HTMLInputElement> {
   /**
    * The Input placeholder.
    * @default ''
@@ -16,21 +11,14 @@ export interface IInputProps {
   placeholder?: string;
   /**
    * The Input size.
-   * @default 'medium'
+   * @default 'md'
    */
-  inputSize?: 'medium' | 'large' | 'xLarge';
+  inputSize?: 'md' | 'lg' | 'xl';
   /**
    * The error state.
    * @default false
    */
   error?: boolean;
-  /**
-   * The onChange event handler.
-   */
-  onChange: (
-    value: string,
-    event?: React.ChangeEvent<HTMLInputElement>,
-  ) => void;
   /**
    * The caption string.
    */
@@ -40,10 +28,6 @@ export interface IInputProps {
    */
   errorMessage?: string;
   /**
-   * The input element props.
-   */
-
-  /**
    * The Input disabled state.
    * @default false
    */
@@ -51,7 +35,11 @@ export interface IInputProps {
   /**
    * The Input left icon.
    */
-  leftIcon?: IconName;
-
-  inputElementProps?: Partial<React.HTMLProps<HTMLInputElement>>;
+  leftIcon?: React.ReactNode;
+  /**
+   * The Input css prop.
+   * @default {}
+   * @example { backgroundColor: 'red' }
+   */
+  css?: CSS;
 }

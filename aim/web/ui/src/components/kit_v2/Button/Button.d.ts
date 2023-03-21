@@ -1,10 +1,6 @@
 import React from 'react';
 
-import type * as Stitches from '@stitches/react';
-
-import { IconName } from 'components/kit/Icon';
-
-import { ColorPaletteEnum } from 'config/stitches/stitches.config';
+import { CSS, ColorPaletteType } from 'config/stitches/types';
 
 // Button component props
 export interface IButtonProps
@@ -13,7 +9,7 @@ export interface IButtonProps
    * @description The color of the button
    * @example 'primary'
    */
-  color?: ColorPaletteEnum;
+  color?: ColorPaletteType;
   /**
    * @description The size of the button
    * @example 'md'
@@ -34,14 +30,14 @@ export interface IButtonProps
   disabled?: boolean;
   /**
    * @description The start icon of the button
-   * @example 'add'
+   * @example <IconX/>
    */
-  leftIcon?: IconName;
+  leftIcon?: React.ReactNode;
   /**
    * @description The end icon of the button
-   * @example 'add'
+   * @example <IconX/>
    */
-  rightIcon?: IconName;
+  rightIcon?: React.ReactNode;
   /**
    * @description The full width state of the button
    * @example false
@@ -57,11 +53,11 @@ export interface IButtonProps
    * @description The css prop of the button
    * @example { backgroundColor: 'red' }
    */
-  css?: Stitches.CSS;
+  css?: CSS;
 }
 
 // Button component size types
 export type ButtonSizeType = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
 // Button component variants
-type ButtonVariantType = 'text' | 'outlined' | 'contained';
+type ButtonVariantType = 'ghost' | 'outlined' | 'contained' | 'static';

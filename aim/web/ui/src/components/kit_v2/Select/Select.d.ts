@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { CSS } from 'config/stitches/stitches.config';
+import { CSS } from 'config/stitches/types';
 
 import { IPopoverProps } from '../Popover/Popover';
 
@@ -87,28 +87,28 @@ type SelectOptionType = {
 };
 
 type SelectSizeType = 'sm' | 'md' | 'lg';
-export interface ISelectRowProps {
+export interface ISelectItemProps {
   /**
-   * @description The data of the row
+   * @description The data of the item
    * @example {items, value, onValueChange, multiple, size}
    * @required
    */
   data: {
-    items: RowItemType[];
+    items: SelectItemType[];
     value: string | string[] | undefined;
     onValueChange: (val: string) => void;
     multiple?: boolean | undefined;
     size: SelectSizeType;
   };
   /**
-   * @description The index of the row
+   * @description The index of the item
    * @example 0
    * @type number
    * @required
    */
   index: number;
   /**
-   * @description The style of the row
+   * @description The style of the item
    * @example { color: 'red' }
    * @type CSS
    * @required
@@ -116,7 +116,7 @@ export interface ISelectRowProps {
   style: React.CSSProperties;
 }
 
-export type RowItemType = {
+export type SelectItemType = {
   value?: string;
   label?: string | React.ReactNode;
   group?: string;

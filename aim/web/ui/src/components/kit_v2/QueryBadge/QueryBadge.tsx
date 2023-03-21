@@ -1,31 +1,13 @@
 import React from 'react';
 
-import { ColorPaletteEnum, styled } from 'config/stitches/stitches.config';
+import { IconEye } from '@tabler/icons-react';
 
 import ButtonGroup from '../ButtonGroup';
 import Button from '../Button';
 import IconButton from '../IconButton';
 
 import { IQueryBadgeProps } from './QueryBadge.d';
-
-const ButtonText = styled('span', {
-  color: '$textPrimary',
-  variants: {
-    color: {
-      primary: {
-        color: '$textPrimary80',
-      },
-      secondary: {
-        color: '$textPrimary',
-      },
-    },
-    disabled: {
-      true: {
-        color: '$textPrimary50',
-      },
-    },
-  },
-});
+import { ButtonText } from './QueryBadge.style';
 
 /**
  * @component QueryBadge
@@ -33,8 +15,10 @@ const ButtonText = styled('span', {
  * @param {string} size - size of the QueryBadge
  * @param {string} color - color of the QueryBadge
  * @param {boolean} disabled - disabled state of the QueryBadge
+ * @returns {React.FunctionComponentElement<React.ReactNode>} - React component
+ * @example
+ * <QueryBadge size="sm" color="primary" disabled={false} />
  */
-
 const QueryBadge = React.forwardRef<
   React.ElementRef<typeof ButtonGroup>,
   IQueryBadgeProps
@@ -53,7 +37,7 @@ const QueryBadge = React.forwardRef<
     return (
       <ButtonGroup
         {...rest}
-        color={color as ColorPaletteEnum}
+        color={color}
         size={size}
         variant={variant}
         disabled={disabled}
@@ -63,12 +47,21 @@ const QueryBadge = React.forwardRef<
           css={color === 'primary' ? { bc: '$primary10' } : {}}
           horizontalSpacing='compact'
         >
-          <ButtonText color={color} disabled={disabled}>
+          <ButtonText
+            mono
+            color={
+              disabled
+                ? '$textPrimary50'
+                : color === 'primary'
+                ? '$textPrimary80'
+                : '$textPrimary'
+            }
+          >
             {children}
           </ButtonText>
         </Button>
         <IconButton
-          icon='eye-show-outline'
+          icon={<IconEye />}
           css={color === 'primary' ? { bc: '$primary10' } : {}}
         />
       </ButtonGroup>
@@ -76,4 +69,5 @@ const QueryBadge = React.forwardRef<
   },
 );
 
+QueryBadge.displayName = 'QueryBadge';
 export default React.memo(QueryBadge);

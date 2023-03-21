@@ -1,24 +1,34 @@
 import React from 'react';
-import { areEqual, FixedSizeList as List } from 'react-window';
-
-import { IconCheck } from '@tabler/icons';
+import { FixedSizeList as List } from 'react-window';
 
 import Popover from '../Popover';
 import Button from '../Button';
-import ListItem from '../ListItem';
-import Icon from '../Icon';
-import { CheckBox } from '../Checkbox/Checkbox';
 import Box from '../Box';
 import Text from '../Text';
 import Input from '../Input';
 
-import { ISelectProps, ISelectRowProps } from './Select.d';
+import { ISelectProps, ISelectItemProps } from './Select.d';
+import SelectItem from './SelectItem';
 
 const sizeDict = {
   sm: 20,
   md: 24,
   lg: 28,
 };
+
+/**
+ * @description Virtualized Select component with search
+ * @param {boolean} multiple - whether multiple select
+ * @param {React.ReactNode} trigger - trigger element
+ * @param {PopoverProps} popoverProps - popover props
+ * @param {string | string[] | undefined } value - selected value
+ * @param {(val: string | string[]) => void} onValueChange - on value change callback
+ * @param {boolean} searchable - whether searchable
+ * @param {ISelectItemProps['data']['items']} options - options
+ * @param {('sm' | 'md' | 'lg')} size - size
+ * @param {number} height - the height of the list
+ * @returns {React.FunctionComponentElement<React.ReactNode>}
+ */
 const Select = ({
   multiple,
   trigger,
@@ -32,11 +42,11 @@ const Select = ({
 }: ISelectProps) => {
   const [search, setSearch] = React.useState('');
 
-  const onSearchChange = React.useCallback((val: string) => {
-    setSearch(val);
+  const onSearchChange = React.useCallback((e) => {
+    setSearch(e.target.value);
   }, []);
 
-  const flattenOptions: ISelectRowProps['data']['items'] | [] =
+  const flattenOptions: ISelectItemProps['data']['items'] | [] =
     React.useMemo(() => {
       if (options.length > 0) {
         return options
@@ -53,9 +63,9 @@ const Select = ({
       }
     }, [options]);
 
-  const searchedOptions: ISelectRowProps['data']['items'] | [] =
+  const searchedOptions: ISelectItemProps['data']['items'] | [] =
     React.useMemo(() => {
-      let data: ISelectRowProps['data']['items'] | any[] = [];
+      let data: ISelectItemProps['data']['items'] | any[] = [];
       if (searchable && options.length > 0) {
         data = options
           ?.map((item) => {
@@ -122,7 +132,7 @@ const Select = ({
     return false;
   }, [search, searchable, searchedOptions, flattenOptions]);
 
-  const data: ISelectRowProps['data'] = React.useMemo(() => {
+  const data: ISelectItemProps['data'] = React.useMemo(() => {
     const items = searchable ? searchedOptions : flattenOptions;
     return {
       items: noResults ? flattenOptions : items,
@@ -177,7 +187,7 @@ const Select = ({
               itemData={data}
               width={'100%'}
             >
-              {Row}
+              {SelectItem}
             </List>
           </Box>
         </>
@@ -186,44 +196,5 @@ const Select = ({
   );
 };
 
-const Row = React.memo(({ data, index, style }: ISelectRowProps) => {
-  const { items, value, onValueChange, multiple, size } = data;
-  const item = items[index];
-  let selected: boolean = false;
-  if (item.value) {
-    selected = value === item.value || value?.indexOf(item.value) !== -1;
-  }
-  const rightNode = multiple ? null : selected ? (
-    <Icon css={{ color: '$primary100' }} icon={<IconCheck />} />
-  ) : null;
-  return (
-    <>
-      {item.group ? (
-        <Text
-          css={{ p: '0 $5', display: 'flex', ai: 'center' }}
-          style={style}
-          weight='600'
-          color='$textPrimary80'
-          key={index}
-        >
-          {item.group}
-        </Text>
-      ) : (
-        <ListItem
-          css={{ ...style, p: '0 $8' }}
-          key={index}
-          size={size}
-          rightNode={rightNode}
-          leftNode={multiple ? <CheckBox checked={selected} /> : null}
-          onClick={() => onValueChange(item.value!)}
-        >
-          <Text css={{ color: selected ? '$primary100' : '$textPrimary' }}>
-            {item.label}
-          </Text>
-        </ListItem>
-      )}
-    </>
-  );
-}, areEqual);
-
+Select.displayName = 'Select';
 export default React.memo(Select);

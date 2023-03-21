@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { CSS } from 'config/stitches/stitches.config';
+import { CSS } from 'config/stitches/types';
 
 /**
  * @description List item component props

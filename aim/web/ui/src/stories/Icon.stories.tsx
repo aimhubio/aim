@@ -1,27 +1,30 @@
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import { IconDeviceComputerCamera } from '@tabler/icons';
+import { IconChartHistogram } from '@tabler/icons-react';
 
 import IconComponent from 'components/kit_v2/Icon';
 
-import { config } from 'config/stitches/stitches.config';
+import { config } from 'config/stitches';
 
 export default {
-  title: 'Kit/Inputs',
+  title: 'Kit/Data Display',
   component: IconComponent,
   argTypes: {
     color: {
       control: 'select',
-      options: Object.keys(config.theme.colors).map((key) => `$${key}`),
+      options: Object.keys((config.theme as { colors: {} }).colors).map(
+        (key) => `$${key}`,
+      ),
     },
   },
 } as ComponentMeta<typeof IconComponent>;
 
 const Template: ComponentStory<typeof IconComponent> = (args) => (
-  <IconComponent {...args} icon={<IconDeviceComputerCamera />} />
+  <IconComponent {...args} icon={<IconChartHistogram />} />
 );
 
 export const Icon = Template.bind({});
 
 Icon.args = {
   size: 'lg',
+  color: '$primary100',
 };

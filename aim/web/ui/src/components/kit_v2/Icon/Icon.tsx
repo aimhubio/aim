@@ -1,47 +1,15 @@
 import React from 'react';
 
-import { Slot } from '@radix-ui/react-slot';
-
-import { styled } from 'config/stitches/stitches.config';
-
 import { IIconProps } from './Icon.d';
-
-const Container: any = styled('div', {
-  display: 'inline-flex',
-  ai: 'center',
-  jc: 'center',
-  size: '$1',
-});
-
-const IconWrapper = styled('i', {
-  display: 'inline-flex',
-  ai: 'center',
-  jc: 'center',
-  variants: {
-    size: {
-      sm: {
-        size: '12px',
-      },
-      md: {
-        size: '16px',
-      },
-      lg: {
-        size: '$1',
-      },
-    },
-  },
-});
-
-const IconSlot = styled(Slot, {
-  width: '100%',
-  height: '100%',
-});
+import { Container, IconSlot, IconWrapper } from './Icon.style';
 
 /**
  * Icon component
- * @param {IIconProps} props
- * @param {React.ReactNode} icon
  * @param {string} size
+ * @param {React.ReactNode} icon
+ * @param {string} color
+ * @param {CSS} css
+ * @param {IIconProps} props
  * @returns {React.FunctionComponentElement<React.ReactNode>}
  * @example
  * <Icon icon={IconName} />
@@ -50,23 +18,23 @@ const IconSlot = styled(Slot, {
  */
 const Icon = React.forwardRef<React.ElementRef<typeof Container>, IIconProps>(
   (
-    { size = 'lg', css, icon, color = '$textPrimary', ...props }: IIconProps,
+    { size = 'lg', css, icon, color, ...props }: IIconProps,
     forwardedRef,
   ): React.FunctionComponentElement<React.ReactNode> => {
-    const Component = icon;
     return (
       <Container
         {...props}
-        ref={forwardedRef}
         data-testid='icon'
         css={{ color, ...css }}
+        ref={forwardedRef}
       >
         <IconWrapper size={size}>
-          <IconSlot>{typeof icon === 'object' ? icon : <Component />}</IconSlot>
+          <IconSlot>{icon}</IconSlot>
         </IconWrapper>
       </Container>
     );
   },
 );
 
+Icon.displayName = 'Icon';
 export default React.memo(Icon);

@@ -1,103 +1,26 @@
 import React from 'react';
 
-import * as CheckboxPrimitive from '@radix-ui/react-checkbox';
-
 import Icon from 'components/kit/Icon';
 
-import { styled } from 'config/stitches/stitches.config';
-
 import { ICheckboxProps } from './Checkbox.d';
+import {
+  IndeterminateIcon,
+  IndicatorWrapper,
+  StyledCheckbox,
+  StyledIndicator,
+} from './Checkbox.style';
 
-const IndeterminateIcon = styled('span', {
-  width: '6px',
-  height: '6px',
-  bc: '$primary100',
-  br: '$1',
-  transition: 'all 0.2s ease-out',
-});
-
-const StyledIndicator = styled(CheckboxPrimitive.Indicator, {
-  display: 'flex',
-  jc: 'center',
-  ai: 'center',
-  height: '100%',
-  width: '100%',
-  color: 'white',
-  transition: 'all 0.2s ease-out',
-});
-
-const IndicatorWrapper = styled('span', {
-  width: '10px',
-  height: '10px',
-  display: 'flex',
-  ai: 'center',
-  jc: 'center',
-  bs: 'inset 0 0 0 1px $colors$secondary100',
-  br: '$2',
-  transition: 'all 0.2s ease-out',
-});
-
-const StyledCheckbox = styled(CheckboxPrimitive.Root, {
-  size: '20px',
-  border: 'unset',
-  bc: 'transparent',
-  borderRadius: '$2',
-  display: 'flex',
-  ai: 'center',
-  jc: 'center',
-  lineHeight: 1,
-  cursor: 'pointer',
-  transition: 'all 0.2s ease-out',
-  '&:hover': {
-    [`& ${IndicatorWrapper}`]: {
-      bs: 'inset 0 0 0 1px $colors$primary100',
-    },
-  },
-  '&:disabled': {
-    pointerEvents: 'none',
-    [`& ${IndicatorWrapper}`]: {
-      bs: 'inset 0 0 0 1px $colors$secondary50 !important',
-    },
-  },
-  '&[data-state=checked]': {
-    '&:hover': {
-      [`& ${IndicatorWrapper}`]: {
-        bc: '$primary110',
-      },
-    },
-    '&:disabled': {
-      [`& ${IndicatorWrapper}`]: {
-        bc: '$secondary50',
-      },
-    },
-    [`& ${IndicatorWrapper}`]: {
-      bc: '$primary100',
-      bs: 'inset 0 0 0 1px transparent',
-      '&:disabled': {
-        bc: '$secondary50 !important',
-      },
-    },
-  },
-  '&[data-state=indeterminate]': {
-    '&:hover': {
-      [`& ${IndicatorWrapper}`]: {
-        bs: 'inset 0 0 0 1px $colors$primary110',
-      },
-      [`& ${IndeterminateIcon}`]: {
-        bc: '$primary110',
-      },
-    },
-    '&:disabled': {
-      [`& ${IndeterminateIcon}`]: {
-        bc: '$secondary50',
-      },
-    },
-    [`& ${IndicatorWrapper}`]: {
-      bs: 'inset 0 0 0 1px $colors$primary100',
-    },
-  },
-});
-
+/**
+ * @description Checkbox component
+ * Checkbox component params
+ * @param {boolean} checked - Checked state of the checkbox
+ * @param {boolean} defaultChecked - Default checked state of the checkbox
+ * @param {boolean} disabled - Disabled state of the checkbox
+ * @returns {React.FunctionComponentElement<React.ReactNode>}
+ * @constructor
+ * @example
+ * <Checkbox checked={true} />
+ */
 export const CheckBox = React.forwardRef<
   React.ElementRef<typeof StyledCheckbox>,
   ICheckboxProps
@@ -105,7 +28,7 @@ export const CheckBox = React.forwardRef<
   (
     { checked, defaultChecked, disabled, ...props }: ICheckboxProps,
     forwardedRef,
-  ) => {
+  ): React.FunctionComponentElement<React.ReactNode> => {
     const [isChecked, setIsChecked] = React.useState<ICheckboxProps['checked']>(
       checked || defaultChecked,
     );
@@ -152,4 +75,5 @@ export const CheckBox = React.forwardRef<
   },
 );
 
+CheckBox.displayName = 'CheckBox';
 export default React.memo(CheckBox);

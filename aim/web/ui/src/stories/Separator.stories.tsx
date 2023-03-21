@@ -4,7 +4,7 @@ import SeparatorComponent from 'components/kit_v2/Separator';
 import Box from 'components/kit_v2/Box';
 import Text from 'components/kit_v2/Text';
 
-import { config } from 'config/stitches/stitches.config';
+import { config } from 'config/stitches';
 
 export default {
   title: 'Kit/Data Display/Separator',
@@ -12,7 +12,9 @@ export default {
   argTypes: {
     color: {
       control: 'select',
-      options: Object.keys(config.theme.colors).map((key) => `$${key}`),
+      options: Object.keys((config.theme as { colors: {} }).colors).map(
+        (key) => `$${key}`,
+      ),
     },
     orientation: {
       control: 'select',
@@ -20,7 +22,9 @@ export default {
     },
     margin: {
       control: 'select',
-      options: Object.keys(config.theme.space).map((key) => `$${key}`),
+      options: Object.keys((config.theme as { space: {} }).space).map(
+        (key) => `$${key}`,
+      ),
     },
   },
 } as ComponentMeta<typeof SeparatorComponent>;

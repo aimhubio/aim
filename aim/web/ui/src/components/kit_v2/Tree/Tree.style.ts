@@ -1,4 +1,4 @@
-import { styled } from 'config/stitches/stitches.config';
+import { styled } from 'config/stitches';
 
 const TreeListWrapper = styled('div', {
   '.ant-tree': {

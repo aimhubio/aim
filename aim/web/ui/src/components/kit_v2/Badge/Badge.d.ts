@@ -1,4 +1,4 @@
-import { ColorPaletteEnum } from 'config/stitches/stitches.config';
+import { CSS, ColorPaletteType } from 'config/stitches/types';
 
 export interface IBadgeProps {
   /**
@@ -9,7 +9,7 @@ export interface IBadgeProps {
    * @description Badge color
    * @default 'primary'
    */
-  color?: ColorPaletteEnum;
+  color?: ColorPaletteType;
   /**
    * @description Badge size
    * @default 'md'
@@ -32,4 +32,9 @@ export interface IBadgeProps {
    * @type boolean
    */
   monospace?: boolean;
+  /**
+   * @description Badge stitches css prop object
+   * @example { backgroundColor: 'red' }
+   */
+  css?: CSS;
 }
