@@ -40,7 +40,9 @@ function getTooltipContent(
       for (let [groupKey, groupsArray] of Object.entries(objectBase.groups)) {
         const groupHash = groupsArray[0];
         const group = foundGroups[groupHash];
-        content.selectedGroupingProps[groupKey] = group.fields;
+        if (group) {
+          content.selectedGroupingProps[groupKey] = group.fields;
+        }
       }
     }
 

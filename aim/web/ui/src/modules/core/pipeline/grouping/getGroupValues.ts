@@ -30,7 +30,11 @@ function getGroups(
   // generate possible groups
   const groups: Record<string, Group> = data.reduce(
     (groups: Group, value: any) => {
-      const groupValue: GroupValue = { ...pickValues(value, fields), type };
+      const pickedValues = pickValues(value, fields);
+      if (Object.keys(pickedValues).length === 0) {
+        return groups;
+      }
+      const groupValue: GroupValue = { ...pickedValues, type };
       const groupKey: string = buildObjectHash(groupValue);
 
       if (!groups.hasOwnProperty(groupKey)) {
