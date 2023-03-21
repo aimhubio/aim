@@ -13,6 +13,7 @@ import ImagesList from './ImagesList';
 import AudiosList from './AudiosList';
 import TextList from './TextList';
 import FiguresList from './FiguresList';
+import Plotly from './Plotly';
 
 export const dataVizElementsMap = {
   LineChart: (props: any) => {
@@ -83,4 +84,5 @@ export const dataVizElementsMap = {
   RunMessages: (props: any) => (
     <RunLogRecords key={props.data} runHash={props.data} inProgress={false} />
   ),
+  Plotly: (props: any) => <Plotly {...props} />,
 };

@@ -588,6 +588,17 @@ class RunMessages(Component):
         self.render()
 
 
+class Plotly(Component):
+    def __init__(self, fig, key=None):
+        component_type = "Plotly"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type)
+
+        self.data = fig.to_json()
+
+        self.render()
+
+
 class Union(Component):
     def __init__(self, components, key=None):
         component_type = "Union"
