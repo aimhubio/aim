@@ -16,8 +16,6 @@ enum PathEnum {
   Figures_Explorer = '/figures',
   Audios_Explorer = '/audios',
   New_Figures_Explorer = '/new-fig',
-  Sandbox = '/sandbox',
-  Notebook = '/notebook',
   Boards = '/boards',
   Board = '/boards/:boardId',
   Board_Edit = '/boards/:boardId/edit',

@@ -13,11 +13,10 @@ import NotificationContainer from 'components/NotificationContainer/Notification
 
 import { PathEnum } from 'config/enums/routesEnum';
 
-import GridCell from 'pages/Sandbox/GridCell';
-
 import usePyodide from 'services/pyodide/usePyodide';
 
 import SaveBoard from './components/SaveBoard';
+import GridCell from './components/GridCell';
 
 import './Board.scss';
 
@@ -300,10 +299,10 @@ state = {}
           </AppBar>
         )}
         <BusyLoaderWrapper isLoading={isLoading} height={'100%'}>
-          <div className='SandboxVisualizer'>
-            <div className='SandboxVisualizer__main'>
+          <div className='BoardVisualizer'>
+            <div className='BoardVisualizer__main'>
               {editMode && (
-                <div className='SandboxVisualizer__main__editor'>
+                <div className='BoardVisualizer__main__editor'>
                   <Editor
                     language='python'
                     height='100%'
@@ -318,25 +317,24 @@ state = {}
                 </div>
               )}
               <div
-                className={classNames('SandboxVisualizer__main__components', {
-                  'SandboxVisualizer__main__components--loading':
+                className={classNames('BoardVisualizer__main__components', {
+                  'BoardVisualizer__main__components--loading':
                     isProcessing === null,
-                  'SandboxVisualizer__main__components--processing':
-                    isProcessing,
-                  'SandboxVisualizer__main__components--fullWidth': !editMode,
+                  'BoardVisualizer__main__components--processing': isProcessing,
+                  'BoardVisualizer__main__components--fullWidth': !editMode,
                 })}
               >
                 {isProcessing !== false && (
-                  <div className='SandboxVisualizer__main__components__spinner'>
+                  <div className='BoardVisualizer__main__components__spinner'>
                     <Spinner />
                   </div>
                 )}
                 <div
                   key={`${isProcessing}`}
-                  className='SandboxVisualizer__main__components__viz'
+                  className='BoardVisualizer__main__components__viz'
                 >
                   {error ? (
-                    <pre className='SandboxVisualizer__main__components__viz__error'>
+                    <pre className='BoardVisualizer__main__components__viz__error'>
                       {error}
                     </pre>
                   ) : (
@@ -346,7 +344,7 @@ state = {}
                 {editMode && (
                   <pre
                     id='console'
-                    className='SandboxVisualizer__main__components__console'
+                    className='BoardVisualizer__main__components__console'
                   />
                 )}
               </div>

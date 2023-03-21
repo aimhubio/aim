@@ -2,7 +2,7 @@ import { noop } from 'lodash-es';
 
 import { getBasePath } from 'config/config';
 
-import { search } from 'pages/Sandbox/search';
+import { search } from 'pages/Board/search';
 
 let pyodideStore: any = {
   current: null,

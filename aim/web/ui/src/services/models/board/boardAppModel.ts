@@ -1,4 +1,4 @@
-import { initialCode } from 'pages/Sandbox/sandboxCode';
+import { initialCode } from 'pages/Board/newBoardCode';
 
 import appsService from 'services/api/apps/appsService';
 

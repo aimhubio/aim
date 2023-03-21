@@ -50,14 +50,6 @@ const AudiosExplorer = React.lazy(
   () => import(/* webpackChunkName: "audios" */ 'pages/AudiosExplorer'),
 );
 
-const Sandbox = React.lazy(
-  () => import(/* webpackChunkName: "sandbox" */ 'pages/Sandbox'),
-);
-
-const Notebook = React.lazy(
-  () => import(/* webpackChunkName: "notebook" */ 'pages/Notebook'),
-);
-
 const Boards = React.lazy(
   () => import(/* webpackChunkName: "boards" */ 'pages/Boards/BoardsContainer'),
 );
@@ -241,22 +233,6 @@ const routes = {
     displayName: 'Experiment',
     isExact: false,
     title: pageTitlesEnum.EXPERIMENT,
-  },
-  SANDBOX: {
-    path: PathEnum.Sandbox,
-    component: Sandbox,
-    showInSidebar: false,
-    displayName: 'Sandbox',
-    isExact: true,
-    title: pageTitlesEnum.SANDBOX,
-  },
-  NOTEBOOK: {
-    path: PathEnum.Notebook,
-    component: Notebook,
-    showInSidebar: false,
-    displayName: 'Notebook',
-    isExact: true,
-    title: pageTitlesEnum.NOTEBOOK,
   },
 };
 

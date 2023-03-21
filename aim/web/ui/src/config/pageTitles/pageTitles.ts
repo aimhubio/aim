@@ -12,8 +12,6 @@ const pageTitles = {
   RUN_DETAIL: '',
   EXPERIMENT: '',
   FIGURES_EXPLORER_NEW: 'New Figures',
-  SANDBOX: 'Sandbox',
-  NOTEBOOK: 'Notebook',
   BOARDS: 'Boards',
   BOARD: '',
 };
