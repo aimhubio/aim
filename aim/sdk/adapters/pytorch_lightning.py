@@ -93,6 +93,7 @@ class AimLogger(Logger):
                     log_system_params=self._log_system_params,
                     capture_terminal_logs=self._capture_terminal_logs,
                 )
+                self._run_hash = self._run.hash
         return self._run
 
     @rank_zero_only
