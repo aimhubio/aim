@@ -10,6 +10,9 @@ from typing import Union, Any, Tuple, Optional, Callable
 from aim.sdk.configs import get_aim_repo_name
 
 from aim.storage.object import CustomObject
+from logging import getLogger
+
+logger = getLogger(__name__)
 
 
 def search_aim_repo(path) -> Tuple[Any, bool]:
@@ -109,21 +112,23 @@ def work_directory(path: str):
         os.chdir(curr)
 
 
-def backup_run(run) -> str:
-    repo_path = run.repo.path
+def backup_run(repo, run_hash) -> str:
+    assert not repo.is_remote_repo
+    repo_path = repo.path
     backups_dir = os.path.join(repo_path, 'bcp')
     if not os.path.exists(backups_dir):
         os.mkdir(backups_dir)
 
-    run_bcp_file = f'bcp/{run.hash}'
+    run_bcp_file = f'bcp/{run_hash}'
     with work_directory(repo_path):
         with tarfile.open(run_bcp_file, 'w:gz') as tar:
             for part in ('meta', 'seqs'):
-                tar.add(os.path.join(part, 'chunks', run.hash))
+                tar.add(os.path.join(part, 'chunks', run_hash))
     return run_bcp_file
 
 
 def restore_run_backup(repo, run_hash):
+    assert not repo.is_remote_repo
     repo_path = repo.path
     backups_dir = os.path.join(repo_path, 'bcp')
 
@@ -136,3 +141,65 @@ def restore_run_backup(repo, run_hash):
             tar.extractall()
         progress_path = pathlib.Path('meta') / 'progress' / run_hash
         progress_path.touch(exist_ok=True)
+
+
+def prune(repo):
+    from tqdm import tqdm
+    from collections.abc import MutableMapping
+
+    def flatten(d, parent_path=None):
+        if parent_path and not isinstance(parent_path, tuple):
+            parent_path = (parent_path, )
+
+        all_paths = set()
+        for k, v in d.items():
+            if k == '__example_type__':
+                continue
+
+            new_path = parent_path + (k,) if parent_path else (k, )
+            all_paths.add(new_path)
+            if isinstance(v, MutableMapping):
+                all_paths.update(flatten(v, new_path))
+
+        return all_paths
+
+    subtrees_to_lookup = ('attrs', 'traces_types', 'contexts', 'traces')
+    repo_meta_tree = repo._get_meta_tree()
+
+    # set of all repo paths that can be left dangling after run deletion
+    repo_paths = set()
+    for key in subtrees_to_lookup:
+        try:
+            repo_paths.update(flatten(repo_meta_tree.collect(key, strict=False), parent_path=(key,)))
+        except KeyError:
+            pass
+
+    run_hashes = repo.list_all_runs()
+    for run_hash in tqdm(run_hashes):
+        # construct unique paths set for each run
+        run_paths = set()
+        run_meta_tree = repo.request_tree('meta', run_hash, from_union=False, read_only=True).subtree('meta')
+        for key in subtrees_to_lookup:
+            try:
+                run_paths.update(flatten(run_meta_tree.collect(key, strict=False), parent_path=(key,)))
+            except KeyError:
+                pass
+
+        # update repo_paths keeping the elements that were not found in run_paths
+        repo_paths.difference_update(run_paths)
+
+        # if no paths are left in repo_paths set, means that we have no orphan paths
+        if not repo_paths:
+            break
+
+    # everything left in the `repo_paths` set is subject to be deleted
+    if not repo_paths:
+        logger.info('No orphan params were found')
+        return
+
+    # acquire index container to delete orphan paths
+    index_tree = repo._get_index_tree('meta', timeout=5).subtree('meta')
+
+    # start deleting with the deepest paths first to bypass the cases when parent path is deleted before the child
+    for path in sorted(repo_paths, key=len, reverse=True):
+        del index_tree[path]
