@@ -9,19 +9,19 @@ export interface IButtonProps
    * @description The color of the button
    * @example 'primary'
    */
-  color?: colorType;
+  color?: ButtonColorType;
   /**
    * @description The size of the button
    * @example 'medium'
    * @default 'medium'
    */
-  size?: sizeType;
+  size?: ButtonSizeType;
   /**
    * @description The variant of the button
    * @example 'contained'
    * @default 'contained'
    */
-  variant?: variantType;
+  variant?: ButtonVariantType;
   /**
    * @description The disabled state of the button
    * @example false
@@ -47,10 +47,15 @@ export interface IButtonProps
 }
 
 // Button component size types
-type sizeType = 'small' | 'medium' | 'large' | 'xLarge';
+export type ButtonSizeType = 'small' | 'medium' | 'large' | 'xLarge';
 
 // Button component variants
-type variantType = 'text' | 'outlined' | 'contained';
+type ButtonVariantType = 'text' | 'outlined' | 'contained';
 
 // Button component color types
-type colorType = 'primary' | 'secondary' | 'success' | 'error' | 'warning';
+type ButtonColorType =
+  | 'primary'
+  | 'secondary'
+  | 'success'
+  | 'error'
+  | 'warning';

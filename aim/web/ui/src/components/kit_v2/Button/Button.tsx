@@ -4,12 +4,12 @@ import { Icon } from 'components/kit';
 
 import { styled } from 'config/stitches/stitches.config';
 
-import { IButtonProps } from './Button.d';
+import { IButtonProps, ButtonColorType, ButtonVariantType } from './Button.d';
 
 // function that returns a object with the styles
 function getStylesFromColor(
-  color: IButtonProps['color'],
-  variant: IButtonProps['variant'],
+  color: ButtonColorType,
+  variant: ButtonVariantType,
   disabled: boolean | undefined,
 ) {
   switch (variant) {
