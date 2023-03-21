@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { CSS } from 'config/stitches/stitches.config';
+
 /**
  * @description List item component props
  */
@@ -43,6 +45,12 @@ export interface IListItemProps
    * @optional true
    */
   rightNode?: React.ReactNode;
+  /**
+   * @description The css of the list item
+   * @example { color: 'red' }
+   * @type CSS
+   */
+  css?: CSS;
 }
 
 export type ListItemSize = 'sm' | 'md' | 'lg';
