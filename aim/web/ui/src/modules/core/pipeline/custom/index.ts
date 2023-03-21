@@ -82,9 +82,9 @@ async function executeQuery(
     params?: RunsSearchQueryParams;
   },
   ignoreCache: boolean = false,
+  queryHash: string,
 ): Promise<any> {
   if (config.cache && !ignoreCache) {
-    const queryHash = buildObjectHash(query);
     const cachedResult = config.cache.get(queryHash);
     if (cachedResult) {
       return cachedResult;
@@ -114,7 +114,6 @@ async function executeQuery(
   try {
     const result = parseStream(data, { progressCallback });
     if (config.cache) {
-      const queryHash = buildObjectHash(query);
       config.cache.set(queryHash, result);
     }
     return result;
@@ -134,17 +133,32 @@ export async function executeCustomPhase({
   createRequest(options.createRequest);
 
   try {
+    const query = {
+      body: options.body,
+      params: options.params,
+    };
+    const queryHash = buildObjectHash(query);
     const queryResult = await executeQuery(
-      {
-        body: options.body,
-        params: options.params,
-      },
+      query,
       options.ignoreCache,
+      queryHash,
     );
-    const processedResult = options.processData(currentResult, queryResult);
+    const processedResult = options.processData(
+      currentResult,
+      queryResult,
+      () => {
+        config.cache?.delete(queryHash);
+      },
+    );
     return Promise.resolve(processedResult);
   } catch (e) {
     throw new AimError(e.message || e, e.detail).getError();
+  }
+}
+
+function clearCache() {
+  if (config.cache) {
+    config.cache.clear();
   }
 }
 
@@ -159,19 +173,8 @@ function createCustomPhase({
     requestProgressCallback,
   });
 
-  const clearCache = () => {
-    if (config.cache) {
-      config.cache.clear();
-    }
-  };
-
-  const execute = useCache
-    ? memoize<CustomPhaseExecutionOptions, Promise<ProcessedData>>(
-        executeCustomPhase,
-      )
-    : executeCustomPhase;
   return {
-    execute,
+    execute: executeCustomPhase,
     clearCache,
   };
 }

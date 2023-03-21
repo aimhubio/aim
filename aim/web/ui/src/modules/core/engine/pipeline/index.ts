@@ -347,6 +347,7 @@ function createPipelineEngine<TStore, TObject>(
       })
       .catch((err) => {
         state.setError(err);
+        state.setCurrentCustomPhaseArgs(null);
         state.changeCurrentPhaseOrStatus(PipelineStatusEnum.Failed);
         if (err && err.message !== 'SyntaxError') {
           notificationsEngine?.error(err.message);
