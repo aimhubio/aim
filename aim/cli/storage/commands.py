@@ -61,9 +61,9 @@ def to_3_11(ctx, hashes, yes):
     if yes:
         confirmed = True
     else:
-        confirmed = click.confirm(f'This command will optimize the metrics data for {len(matched_hashes)} runs from aim '
-                              f'repo located at \'{repo_path}\'. This process might take a while. '
-                              f'Do you want to proceed?')
+        confirmed = click.confirm(f'This command will optimize the metrics data for {len(matched_hashes)} '
+                                  f'runs from aim repo located at \'{repo_path}\'. This process might take a while. '
+                                  f'Do you want to proceed?')
     if not confirmed:
         return
 
@@ -106,7 +106,7 @@ def restore_runs(ctx, hashes, yes):
         confirmed = True
     else:
         confirmed = click.confirm(f'This command will restore {len(matched_hashes)} runs from aim repo '
-                            f'located at \'{repo_path}\'. Do you want to proceed?')
+                                  f'located at \'{repo_path}\'. Do you want to proceed?')
     if not confirmed:
         return
 

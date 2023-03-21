@@ -12,7 +12,7 @@ from aim.utils.tracking import analytics
                                                         file_okay=False,
                                                         dir_okay=True,
                                                         writable=True))
-@click.option('-y', '--yes', is_flag=True, help='Automatically confirm prompt') 
+@click.option('-y', '--yes', is_flag=True, help='Automatically confirm prompt')
 def init(repo, yes):
     """
     Initializes new repository in the --repo directory.
@@ -26,7 +26,7 @@ def init(repo, yes):
             re_init = True
         else:
             re_init = click.confirm('Aim repository is already initialized. '
-                                'Do you want to re-initialize to empty Aim repository?')
+                                    'Do you want to re-initialize to empty Aim repository?')
         if not re_init:
             return
         # Clear old repo
