@@ -15,10 +15,10 @@ const Container = styled('button', {
   width: 'fit-content',
   ai: 'center',
   jc: 'center',
+  lineHeight: 1,
   fontWeight: '$2',
   cursor: 'pointer',
   br: '$3',
-  lineHeight: '1',
   transition: 'all 0.2s ease-in-out',
   fontSize: '$3',
   variants: {
@@ -126,7 +126,7 @@ const RightIcon = styled(IconContainer, {
 
 function Button({
   color = 'primary',
-  size = 'sm',
+  size = 'md',
   variant = 'contained',
   fullWidth = false,
   horizontalSpacing = 'default',
