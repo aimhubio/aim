@@ -55,8 +55,6 @@ function Alignment(props: IAlignmentProps) {
   const updateAxesProps = vizEngine.controls.axesProperties.methods.update;
   const queryable = engine.useStore(engine.instructions.stateSelector);
   const data = engine.useStore(engine.pipeline.dataSelector);
-  const executeCustomPhase: (args: CustomPhaseExecutionArgs) => void =
-    engine.pipeline.executeCustomPhase;
 
   const projectSequenceOptions = getSelectFormOptions(
     queryable.project_sequence_info,
@@ -111,7 +109,7 @@ function Alignment(props: IAlignmentProps) {
 
       const reqBody: IAlignMetricsData = { align_by: metric, runs };
 
-      executeCustomPhase({
+      engine.pipeline.executeCustomPhase({
         createRequest: createAlignMetricsRequest,
         body: reqBody,
         params: { report_progress: true },
@@ -166,6 +164,7 @@ function Alignment(props: IAlignmentProps) {
               metric: '',
             });
 
+            engine.pipeline.resetCustomPhaseArgs();
             clearCache();
 
             return currentResult;
@@ -178,7 +177,7 @@ function Alignment(props: IAlignmentProps) {
         },
       } as CustomPhaseExecutionArgs);
     },
-    [executeCustomPhase, data, engine.notifications, updateAlignment],
+    [engine.pipeline, data, engine.notifications, updateAlignment],
   );
 
   const handleAlignmentChange = React.useCallback(

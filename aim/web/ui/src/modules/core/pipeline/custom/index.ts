@@ -1,4 +1,3 @@
-import { memoize } from 'modules/core/cache';
 import { RunsSearchQueryParams } from 'modules/core/api/runsApi';
 import { buildObjectHash } from 'modules/core/utils/hashing';
 import createInlineCache, { InlineCache } from 'modules/core/cache/inlineCache';
