@@ -7,7 +7,7 @@ import { IBaseComponentProps } from 'modules/BaseExplorer/types';
 
 import './Grouping.scss';
 
-function Grouping(props: Omit<IBaseComponentProps, 'visualizationName'>) {
+function Grouping(props: IBaseComponentProps) {
   const {
     engine: { useStore, groupings },
   } = props;
@@ -35,4 +35,4 @@ function Grouping(props: Omit<IBaseComponentProps, 'visualizationName'>) {
 
 Grouping.displayName = 'Grouping';
 
-export default memo<Omit<IBaseComponentProps, 'visualizationName'>>(Grouping);
+export default memo<IBaseComponentProps>(Grouping);
