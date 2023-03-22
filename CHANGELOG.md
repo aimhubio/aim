@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Enhancements
+- Expose `run_name` and `run_hash` parameters to the `aim.sdk.adapters.pytorch_lightning.AimLogger` adapter (constd)
 
 ### Fixes
 
