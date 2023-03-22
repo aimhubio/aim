@@ -1,4 +1,5 @@
 import * as React from 'react';
+import _ from 'lodash-es';
 
 import { ControlsConfigs } from 'modules/core/engine/visualizations/controls';
 import { GroupingConfigs } from 'modules/core/engine/explorer/groupings';
@@ -48,13 +49,17 @@ const groupings: GroupingConfigs = {
       boxConfig: any,
       iteration: number,
     ) => {
+      const rulerWidth =
+        group[GroupType.ROW] && !_.isEmpty(group[GroupType.ROW].config)
+          ? 200
+          : 0;
       return {
         left:
+          boxConfig.gap +
           (group[GroupType.COLUMN]
-            ? group[GroupType.COLUMN].order *
-                (boxConfig.width + boxConfig.gap) +
-              boxConfig.gap
-            : boxConfig.gap) + (group[GroupType.ROW] ? 200 : 0),
+            ? group[GroupType.COLUMN].order * (boxConfig.width + boxConfig.gap)
+            : 0) +
+          rulerWidth,
       };
     },
     defaultApplications: {
@@ -83,12 +88,17 @@ const groupings: GroupingConfigs = {
       boxConfig: any,
       iteration: number,
     ) => {
+      const rulerHeight =
+        group[GroupType.COLUMN] && !_.isEmpty(group[GroupType.COLUMN].config)
+          ? 30
+          : 0;
       return {
-        top: group[GroupType.ROW]
-          ? group[GroupType.ROW].order * (boxConfig.height + boxConfig.gap) +
-            30 +
-            boxConfig.gap
-          : (group[GroupType.COLUMN] ? 30 : 0) + boxConfig.gap,
+        top:
+          boxConfig.gap +
+          (group[GroupType.ROW]
+            ? group[GroupType.ROW].order * (boxConfig.height + boxConfig.gap)
+            : 0) +
+          rulerHeight,
       };
     },
     defaultApplications: {
