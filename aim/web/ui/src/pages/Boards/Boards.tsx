@@ -3,7 +3,7 @@ import { Link as RouteLink } from 'react-router-dom';
 
 import { Link } from '@material-ui/core';
 
-import { Button, Icon, Text } from 'components/kit';
+import { Button, Text } from 'components/kit';
 import AppBar from 'components/AppBar/AppBar';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
@@ -13,6 +13,8 @@ import Illustration from 'components/Illustration';
 
 import pageTitlesEnum from 'config/pageTitles/pageTitles';
 import { PathEnum } from 'config/enums/routesEnum';
+
+import BoardDelete from './BoardDelete';
 
 import './Boards.scss';
 
@@ -61,15 +63,21 @@ function Boards({
                     <Text size={16} weight={700}>
                       {board.name}
                     </Text>
-                    <Link
-                      to={PathEnum.Board.replace(':boardId', board.id)}
-                      component={RouteLink}
-                      underline='none'
-                    >
-                      <Button variant='outlined' size='small'>
-                        View
-                      </Button>
-                    </Link>
+                    <div>
+                      <Link
+                        to={PathEnum.Board.replace(':boardId', board.id)}
+                        component={RouteLink}
+                        underline='none'
+                      >
+                        <Button variant='outlined' size='small'>
+                          View
+                        </Button>
+                      </Link>
+                      <BoardDelete
+                        board_id={board.id}
+                        onBoardDelete={onBoardDelete}
+                      />
+                    </div>
                   </div>
                   <div className='Boards__list__item__sub'>
                     <Text>{board.description}</Text>

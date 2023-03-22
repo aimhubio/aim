@@ -14,6 +14,7 @@
   }
 
   &__list {
+    height: 100%;
     padding: 4rem 4rem 1.5em;
     display: flex;
     flex-wrap: wrap;
@@ -48,6 +49,10 @@
   justify-content: space-between;
   border-bottom: $border-grey;
   z-index: 1;
+}
+
+.Boards__list__item__header__delete {
+  margin-left: $space-xs;
 }
 
 .Boards__list__item__sub {
