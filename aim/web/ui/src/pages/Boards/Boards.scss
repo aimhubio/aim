@@ -5,6 +5,7 @@
   &__appBar {
     position: fixed;
     width: 100%;
+    z-index: 2;
   }
   &__title {
     margin: 0.5em 0;

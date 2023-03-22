@@ -27,11 +27,15 @@ function getBoardsData() {
       }).then(async (data: any) => {
         try {
           const listData = data
-            .filter((item: any) => item.state.board === true)
+            .filter((item: any) => item.type === 'board')
             .map((item: any) => ({
               ...item,
               ...item.state,
-            }));
+            }))
+            .sort(
+              (a: any, b: any) =>
+                Date.parse(b.updated_at) - Date.parse(a.updated_at),
+            );
           model.setState({
             isLoading: false,
             listData,

@@ -160,7 +160,9 @@ state = {}
   }, [state]);
 
   React.useEffect(() => {
-    setIsProcessing(pyodideIsLoading);
+    if (pyodideIsLoading) {
+      setIsProcessing(pyodideIsLoading);
+    }
   }, [pyodideIsLoading]);
 
   React.useEffect(() => {
@@ -298,7 +300,10 @@ state = {}
             )}
           </AppBar>
         )}
-        <BusyLoaderWrapper isLoading={isLoading} height={'100%'}>
+        <BusyLoaderWrapper
+          isLoading={pyodideIsLoading || isLoading}
+          height={'100%'}
+        >
           <div className='BoardVisualizer'>
             <div className='BoardVisualizer__main'>
               {editMode && (
