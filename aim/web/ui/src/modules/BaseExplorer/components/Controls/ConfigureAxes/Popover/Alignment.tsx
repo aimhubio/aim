@@ -177,13 +177,7 @@ function Alignment(props: IAlignmentProps) {
         },
       } as CustomPhaseExecutionArgs);
     },
-    [
-      engine.pipeline.executeCustomPhase,
-      engine.pipeline.resetCustomPhaseArgs,
-      data,
-      engine.notifications,
-      updateAlignment,
-    ],
+    [engine.pipeline, data, engine.notifications, updateAlignment],
   );
 
   const handleAlignmentChange = React.useCallback(
