@@ -115,13 +115,14 @@ function BoxVirtualizer(props: IBoxVirtualizerProps<AimFlatObjectBase>) {
       }
     }
 
-    const horizontalRulerHeight = 30;
+    const horizontalRulerHeight =
+      columnsAxisItems && columnsAxisItems.length > 0 ? 30 : 0;
 
     return {
       width: rightEdge + itemWidth + props.offset,
       height: bottomEdge + itemHeight + props.offset - horizontalRulerHeight,
     };
-  }, [data, props.offset]);
+  }, [data, props.offset, columnsAxisItems]);
 
   return (
     <div className='BoxVirtualizer'>
@@ -147,7 +148,13 @@ function BoxVirtualizer(props: IBoxVirtualizerProps<AimFlatObjectBase>) {
         {rowsAxisItems && rowsAxisItems.length > 0 && (
           <div
             className='BoxVirtualizer__container__verticalRuler'
-            style={{ height: gridSize.height }}
+            style={{
+              height: gridSize.height,
+              minHeight:
+                columnsAxisItems && columnsAxisItems.length > 0
+                  ? 'calc(100% - 30px)'
+                  : '100%',
+            }}
           >
             {rowsAxisItems.map(props.axisItemRenderer?.rows)}
           </div>

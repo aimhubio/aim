@@ -44,6 +44,7 @@ export interface IPipelineEngine<TObject, TStore> {
     reset: () => void;
     initialize: () => () => void;
     executeCustomPhase: (args: CustomPhaseExecutionArgs) => void;
+    resetCustomPhaseArgs: () => void;
   } & Omit<PipelineStateBridge<TObject, TStore>, 'selectors'> &
     PipelineStateBridge<TObject, TStore>['selectors'];
 }
@@ -129,6 +130,7 @@ function createPipelineEngine<TStore, TObject>(
   ): void {
     const currentGroupings = state.getCurrentGroupings();
 
+    // @TODO add a "customMetric" to the query params dynamically
     const customMetric =
       store.getState().visualizations.vis1.controls.axesProperties?.alignment
         .metric;
@@ -329,6 +331,10 @@ function createPipelineEngine<TStore, TObject>(
     };
   }
 
+  function resetCustomPhaseArgs() {
+    state.setCurrentCustomPhaseArgs(null);
+  }
+
   function executeCustomPhase(args: CustomPhaseExecutionArgs) {
     state.setCurrentCustomPhaseArgs(args);
 
@@ -346,8 +352,8 @@ function createPipelineEngine<TStore, TObject>(
         state.setResult(data, foundGroups, additionalData, queryableData);
       })
       .catch((err) => {
+        resetCustomPhaseArgs();
         state.setError(err);
-        state.setCurrentCustomPhaseArgs(null);
         state.changeCurrentPhaseOrStatus(PipelineStatusEnum.Failed);
         if (err && err.message !== 'SyntaxError') {
           notificationsEngine?.error(err.message);
@@ -368,6 +374,7 @@ function createPipelineEngine<TStore, TObject>(
       reset,
       initialize,
       executeCustomPhase,
+      resetCustomPhaseArgs,
       destroy: () => {
         /**
          * This line creates some bugs right now, use this after creating complete clean-up mechanism for resources

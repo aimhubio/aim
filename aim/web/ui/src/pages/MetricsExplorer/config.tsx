@@ -48,8 +48,8 @@ export const getMetricsDefaultConfig = (): typeof defaultHydration => {
         };
       },
       defaultApplications: {
-        fields: [Order.ASC],
-        orders: ['run.hash'],
+        fields: ['run.hash'],
+        orders: [Order.ASC],
       },
       // @TODO add support for selecting color pallet by 'palletIndex'
       // state: {
