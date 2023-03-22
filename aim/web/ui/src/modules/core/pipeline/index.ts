@@ -56,6 +56,7 @@ export type CustomPhaseExecutionArgs = {
   processData: (
     currentResult: ProcessedData,
     queryResult: any,
+    clearCache: () => void,
   ) => ProcessedData;
   ignoreCache?: boolean;
 };

@@ -116,7 +116,7 @@ function Alignment(props: IAlignmentProps) {
         body: reqBody,
         params: { report_progress: true },
         ignoreCache: false,
-        processData: (currentResult, alignedDataResponse) => {
+        processData: (currentResult, alignedDataResponse, clearCache) => {
           const alignedDataDict: Record<
             string,
             {
@@ -165,6 +165,9 @@ function Alignment(props: IAlignmentProps) {
               type: AlignmentOptionsEnum.STEP,
               metric: '',
             });
+
+            clearCache();
+
             return currentResult;
           }
 
