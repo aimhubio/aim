@@ -14,6 +14,13 @@ import { AimFlatObjectBase } from 'types/core/AimObjects';
 
 import getTextExplorerStaticContent from './getStaticContent';
 
+export enum TEXT_RNDERER_MODES {
+  TEXT = 'text',
+  MARKDOWN = 'markdown',
+  HTML = 'html',
+  CODE = 'code',
+}
+
 export const getTextDefaultConfig = (): typeof defaultHydration => {
   const defaultConfig = getDefaultHydration();
 
