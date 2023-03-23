@@ -17,7 +17,7 @@ const MetricsExplorer = renderer(
   {
     name: 'Metrics Explorer V2',
     sequenceName: SequenceTypesEnum.Metric,
-    basePath: 'metrics_new',
+    basePath: 'metrics_v2',
     persist: true,
     adapter: {
       objectDepth: AimObjectDepths.Sequence,

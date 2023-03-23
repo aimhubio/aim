@@ -11,11 +11,18 @@ import { ILegendsProps } from './index';
 function Legends(props: ILegendsProps) {
   const {
     visualizationName,
-    engine: { useStore, visualizations },
+    engine: { useStore, visualizations, groupings },
   } = props;
   const vizEngine = visualizations[visualizationName];
+  const isGroupingEmpty = useStore(groupings.isEmptySelector);
   const legends = useStore(vizEngine.controls.legends.stateSelector);
   const updateLegends = vizEngine.controls.legends.methods.update;
+
+  React.useEffect(() => {
+    if (isGroupingEmpty && legends.display) {
+      updateLegends({ display: false });
+    }
+  }, [isGroupingEmpty, legends.display, updateLegends]);
 
   return (
     <ErrorBoundary>
@@ -26,8 +33,13 @@ function Legends(props: ILegendsProps) {
             className={classNames('Control__anchor', {
               active: legends.display,
               outlined: legends.isInitial,
+              disabled: isGroupingEmpty,
             })}
-            onClick={() => updateLegends({ display: !legends.display })}
+            onClick={() => {
+              if (!isGroupingEmpty) {
+                updateLegends({ display: !legends.display });
+              }
+            }}
           >
             <Icon
               name='chart-legends'

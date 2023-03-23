@@ -22,7 +22,6 @@ function Metrics(props: IBoxContentProps) {
     engine,
     engine: { useStore },
     data,
-    index,
     id,
     style,
   } = props;
@@ -94,13 +93,17 @@ function Metrics(props: IBoxContentProps) {
     id,
   );
 
+  const chartTitle = {
+    row: `${(data[0]?.groupInfo?.rows?.order || 0) + 1}`,
+    column: `${(data[0]?.groupInfo?.columns?.order || 0) + 1}`,
+  };
+
   return chartData?.length ? (
     <ErrorBoundary>
       <div style={vizStyleRef.current}>
         <LineChart
           ref={chartRef}
           id={id}
-          index={index}
           nameKey={visualizationName}
           data={chartData}
           highlightMode={highlighting.mode}
@@ -113,7 +116,7 @@ function Metrics(props: IBoxContentProps) {
           ignoreOutliers={ignoreOutliers.isApplied}
           zoom={zoom}
           onZoomChange={controls.zoom.methods.update}
-          chartTitle={{ id: id || '' }}
+          chartTitle={chartTitle}
           syncHoverState={syncHoverState}
         />
       </div>

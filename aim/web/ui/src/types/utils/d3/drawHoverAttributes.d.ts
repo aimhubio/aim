@@ -17,7 +17,7 @@ import { IProcessedData } from './processLineChartData';
 export type HoverAttrData = ILine | IPoint;
 
 export interface IDrawHoverAttributesArgs {
-  index: number;
+  index?: number;
   id: string;
   nameKey: string;
   data: HoverAttrData[];

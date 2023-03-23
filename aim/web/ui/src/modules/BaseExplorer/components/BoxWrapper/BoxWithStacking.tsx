@@ -10,6 +10,7 @@ import { AimFlatObjectBase } from 'types/core/AimObjects';
 import CaptionBox from '../CaptionBox';
 import BoxFullViewPopover from '../BoxFullViewPopover';
 import { ICaptionProperties } from '../Controls/CaptionProperties';
+import { IGroupInfo } from '../../types';
 
 import { IBoxWithStackingProps } from './';
 
@@ -34,10 +35,10 @@ function BoxWithStacking(props: IBoxWithStackingProps<AimFlatObjectBase>) {
   const { sync: syncDepthMap, depth } = engine.useStore(depthSelector(boxId));
 
   const currentItem = React.useMemo(() => boxItems[depth], [boxItems, depth]);
-  const groupInfo = React.useMemo(() => {
+  const itemGroupInfo = React.useMemo(() => {
     const currentItemGroups = currentItem?.groups || {};
     const groupTypes = Object.keys(currentItemGroups);
-    const info: Record<string, object> = {};
+    const info: Record<string, IGroupInfo> = {};
     if (!foundGroups || !currentItem) {
       return info;
     }
@@ -103,7 +104,7 @@ function BoxWithStacking(props: IBoxWithStackingProps<AimFlatObjectBase>) {
             data={currentItem}
             engine={engine}
             style={currentItem.style}
-            groupInfo={groupInfo}
+            itemGroupInfo={itemGroupInfo}
             visualizationName={visualizationName}
           />
         )}
@@ -124,7 +125,7 @@ function BoxWithStacking(props: IBoxWithStackingProps<AimFlatObjectBase>) {
       {fullView && (
         <BoxFullViewPopover
           onClose={() => setFullView(false)}
-          groupInfo={groupInfo}
+          itemGroupInfo={itemGroupInfo}
           sequenceName={sequenceName}
           item={currentItem}
         >

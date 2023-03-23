@@ -8,6 +8,7 @@ import { Text } from 'components/kit';
 import { buildObjectHash } from 'modules/core/utils/hashing';
 import { GroupType } from 'modules/core/pipeline';
 import {
+  IGroupInfo,
   IVisualizationProps,
   IWidgetRendererProps,
 } from 'modules/BaseExplorer/types';
@@ -49,7 +50,7 @@ function Visualizer(props: IVisualizationProps) {
   const data = React.useMemo(() => {
     return dataState?.map((d: any, i: number) => {
       const groupTypes = Object.keys(d.groups || {});
-      const groupInfo: Record<string, object> = {};
+      const groupInfo: Record<string, IGroupInfo> = {};
       if (foundGroups) {
         groupTypes.forEach((groupType) => {
           const group = foundGroups[d.groups[groupType]];

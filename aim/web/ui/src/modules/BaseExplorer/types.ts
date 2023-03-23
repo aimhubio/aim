@@ -100,7 +100,14 @@ export interface IBoxContentProps extends IBaseComponentProps {
   index?: number;
   id?: string;
   visualizationName: string;
-  groupInfo?: Record<string, object>;
+  itemGroupInfo?: Record<string, IGroupInfo>;
+}
+
+export interface IGroupInfo {
+  key: string;
+  config: Record<string, any>;
+  items_count_in_group: number;
+  order: number;
 }
 
 export interface IOptionalExplorerConfig {}

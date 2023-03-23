@@ -35,8 +35,8 @@ function useDepthMap({
   state,
   deps = [],
   groupItemCb,
-}: IUseDepthMapProps<AimFlatObjectBase<any>>): UseDepthMap {
-  const groupItem: GroupItemCb<AimFlatObjectBase<any>> = React.useCallback(
+}: IUseDepthMapProps<AimFlatObjectBase>): UseDepthMap {
+  const groupItem: GroupItemCb<AimFlatObjectBase> = React.useCallback(
     (item) => {
       if (groupItemCb) {
         return groupItemCb(item);

@@ -35,7 +35,7 @@ const LineChart = React.forwardRef(function LineChart(
 ): React.FunctionComponentElement<React.ReactNode> {
   const {
     data,
-    index = 0,
+    index,
     id = `${index}`,
     nameKey = '',
     aggregatedData,
@@ -116,6 +116,7 @@ const LineChart = React.forwardRef(function LineChart(
   function draw() {
     drawArea({
       index,
+      id,
       nameKey,
       visBoxRef,
       plotBoxRef,
@@ -159,7 +160,7 @@ const LineChart = React.forwardRef(function LineChart(
     });
 
     drawLines({
-      index,
+      id,
       processedData,
       nameKey,
       linesNodeRef,

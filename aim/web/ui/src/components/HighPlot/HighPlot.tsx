@@ -26,7 +26,7 @@ const HighPlot = React.forwardRef(function HighPlot(
   ref,
 ): React.FunctionComponentElement<React.ReactNode> {
   const {
-    index = 0,
+    index,
     id = `${index}`,
     nameKey = '',
     curveInterpolation,
@@ -91,6 +91,7 @@ const HighPlot = React.forwardRef(function HighPlot(
   function draw() {
     drawArea({
       index,
+      id,
       nameKey,
       visBoxRef,
       plotBoxRef,

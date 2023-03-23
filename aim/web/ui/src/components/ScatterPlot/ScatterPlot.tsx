@@ -26,7 +26,7 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
   ref,
 ): React.FunctionComponentElement<React.ReactNode> {
   const {
-    index = 0,
+    index,
     id = `${index}`,
     nameKey = '',
     data: { dimensions, data },
@@ -83,6 +83,7 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
   function draw() {
     drawArea({
       index,
+      id,
       nameKey,
       visBoxRef,
       plotBoxRef,

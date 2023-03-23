@@ -482,7 +482,7 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
       .join('circle')
       .attr('class', 'HoverCircle')
       .attr('id', (d: INearestCircle) => `Circle-${d.key}`)
-      .attr('clip-path', `url(#${nameKey}-circles-rect-clip-${index})`)
+      .attr('clip-path', `url(#${nameKey}-circles-rect-clip-${id})`)
       .attr('cx', (d: INearestCircle) => d.x.toFixed(2))
       .attr('cy', (d: INearestCircle) => d.y.toFixed(2))
       .attr('r', CircleEnum.Radius)
@@ -502,7 +502,7 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
       .data(activeRuns)
       .join('circle')
       .attr('id', (d: IProcessedData) => `inProgressLineIndicator-${d.key}`)
-      .attr('clip-path', `url(#${nameKey}-circles-rect-clip-${index})`)
+      .attr('clip-path', `url(#${nameKey}-circles-rect-clip-${id})`)
       .attr('class', 'inProgressLineIndicator')
       .style('stroke', (d: IProcessedData) => d.color)
       .style('fill', (d: IProcessedData) => d.color)
@@ -622,7 +622,7 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
       xPos,
       yPos,
       inProgress: !!circle.inProgress,
-      chartIndex: index,
+      chartIndex: index || 0,
       visId: id,
       pointRect,
       rect,
