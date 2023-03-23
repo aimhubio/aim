@@ -3,9 +3,13 @@
 ## Unreleased
 
 ### Enhancements
+- Expose `run_name` and `run_hash` parameters to the `aim.sdk.adapters.pytorch_lightning.AimLogger` adapter (constd)
 
 ### Fixes
 
+- Add support for Path type to the repo attribute of the Run class(emekaokoli19)
+- Add support for jax>0.4.0 (n-gao)
+- Add -y option to Aim CLI commands(emekaokoli19)
 - Safe force-acquire index lock using meta-locks (alberttorosyan:)
 
 ## 3.16.2 Mar 3, 2023

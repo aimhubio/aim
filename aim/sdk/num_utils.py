@@ -67,7 +67,11 @@ def is_jax_device_array(inst):
     """
     Check whether `inst` is instance of jax device array
     """
-    return inst_has_typename(inst, ['jaxlib', 'xla_extension', 'DeviceArray'])
+    if inst_has_typename(inst, ['jaxlib', 'xla_extension', 'Array']):
+        return True
+    if inst_has_typename(inst, ['jaxlib', 'xla_extension', 'DeviceArray']):
+        return True
+    return False
 
 
 def is_numpy_array(inst):

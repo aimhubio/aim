@@ -1,6 +1,7 @@
 import logging
 from typing import Dict, Optional, Union
 from typing import TYPE_CHECKING
+import pathlib
 
 from aim.storage.hashing import hash_auto
 from aim.storage.treeview import TreeView
@@ -25,7 +26,7 @@ class BaseRun:
         return object.__new__(cls)
 
     def __init__(self, run_hash: Optional[str] = None,
-                 repo: Optional[Union[str, 'Repo']] = None,
+                 repo: Optional[Union[str, 'Repo', pathlib.Path]] = None,
                  read_only: bool = False,
                  force_resume: bool = False):
         self._hash = None
