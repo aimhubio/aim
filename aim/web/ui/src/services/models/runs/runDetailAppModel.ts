@@ -19,7 +19,7 @@ import {
   decodePathsVals,
   iterFoldTree,
 } from 'utils/encoder/streamEncoding';
-import { filterSingleRunMetricsData } from 'utils/filterMetricData';
+import { filterSingleRunMetricsData } from 'utils/app/filterMetricData';
 
 import createModel from '../model';
 

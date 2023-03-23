@@ -14,10 +14,11 @@ import {
 
 import { ChartTypeEnum } from 'utils/d3';
 
+import ResizingFallback from '../ResizingFallback';
+
 import ChartPopover from './ChartPopover';
 import ChartGrid from './ChartGrid';
 import ChartLegends from './ChartLegends';
-import ChartPanelResizingFallback from './ChartPanelResizingFallback';
 
 import './ChartPanel.scss';
 
@@ -47,11 +48,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
     ) {
       const { pointRect } = activePointRef.current;
 
-      setActivePointRect({
-        ...pointRect,
-        top: pointRect.top - gridRef.current.scrollTop,
-        left: pointRect.left - gridRef.current.scrollLeft,
-      });
+      setActivePointRect({ ...pointRect });
     } else {
       setActivePointRect(null);
     }
@@ -59,18 +56,14 @@ const ChartPanel = React.forwardRef(function ChartPanel(
 
   const syncHoverState = React.useCallback(
     (args: ISyncHoverStateArgs): void => {
-      const { activePoint, focusedStateActive = false, dataSelector } = args;
+      const { activePoint, focusedState, dataSelector } = args;
       // on MouseHover
       activePointRef.current = activePoint;
       if (activePoint !== null) {
         chartRefs.forEach((chartRef, index) => {
-          chartRef.current?.setFocusedState?.({
-            active: focusedStateActive,
-            key: activePoint.key,
-            xValue: activePoint.xValue,
-            yValue: activePoint.yValue,
-            chartIndex: activePoint.chartIndex,
-          });
+          if (focusedState) {
+            chartRef.current?.setFocusedState?.(focusedState);
+          }
           if (index === activePoint.chartIndex) {
             return;
           }
@@ -88,7 +81,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
         });
 
         if (props.onActivePointChange) {
-          props.onActivePointChange(activePoint, focusedStateActive);
+          props.onActivePointChange(activePoint, focusedState?.active);
         }
         if (activePoint.pointRect !== null) {
           setActiveElemPos();
@@ -108,12 +101,6 @@ const ChartPanel = React.forwardRef(function ChartPanel(
     [chartRefs, setActiveElemPos, props.chartType, props.onActivePointChange],
   );
 
-  const onScroll = React.useCallback((): void => {
-    if (activePointRect) {
-      setActiveElemPos();
-    }
-  }, [activePointRect, setActiveElemPos]);
-
   const displayLegends = React.useMemo(
     (): boolean => !!props.legends?.display && !_.isEmpty(props.legendsData),
     [props.legends?.display, props.legendsData],
@@ -126,6 +113,14 @@ const ChartPanel = React.forwardRef(function ChartPanel(
   const onLegendsResizeEnd = React.useCallback((): void => {
     setLegendsResizing(false);
   }, []);
+
+  const onChartMount = React.useCallback(() => {
+    if (props.focusedState) {
+      chartRefs.forEach((chartRef) => {
+        chartRef.current?.setFocusedState?.(props.focusedState);
+      });
+    }
+  }, [props.focusedState, chartRefs]);
 
   React.useImperativeHandle(ref, () => ({
     setActiveLineAndCircle: (
@@ -157,20 +152,11 @@ const ChartPanel = React.forwardRef(function ChartPanel(
     legendsResizing,
   ]);
 
-  React.useEffect(() => {
-    const debouncedScroll = _.debounce(onScroll, 100);
-    const gridNode = gridRef.current;
-    gridNode?.addEventListener('scroll', debouncedScroll);
-    return () => {
-      gridNode?.removeEventListener('scroll', debouncedScroll);
-    };
-  }, [onScroll]);
-
   return (
     <ErrorBoundary>
       <div className='ChartPanel__container'>
         {props.panelResizing ? (
-          <ChartPanelResizingFallback />
+          <ResizingFallback />
         ) : (
           <>
             <ErrorBoundary>
@@ -190,7 +176,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
                   <SplitPaneItem
                     ref={gridRef}
                     className='ChartPanel__grid'
-                    resizingFallback={<ChartPanelResizingFallback />}
+                    resizingFallback={<ResizingFallback />}
                   >
                     <ChartGrid
                       data={props.data}
@@ -199,10 +185,12 @@ const ChartPanel = React.forwardRef(function ChartPanel(
                       chartType={props.chartType}
                       syncHoverState={syncHoverState}
                       resizeMode={props.resizeMode}
+                      onMount={onChartMount}
                       chartPanelOffsetHeight={props.chartPanelOffsetHeight}
                     />
                     <ErrorBoundary>
                       <ChartPopover
+                        key={'popover-' + props.chartType}
                         containerNode={gridRef.current}
                         activePointRect={activePointRect}
                         onRunsTagsChange={props.onRunsTagsChange}
@@ -210,14 +198,14 @@ const ChartPanel = React.forwardRef(function ChartPanel(
                           props.resizeMode !== ResizeModeEnum.MaxHeight &&
                           props.data.length > 0 &&
                           !props.zoom?.active &&
-                          (props.tooltip?.display || props.focusedState.active)
+                          !!props.tooltip?.display
                         }
+                        forceOpen={!!props.focusedState?.active}
                         chartType={props.chartType}
                         tooltipContent={props?.tooltip?.content || {}}
                         tooltipAppearance={props?.tooltip?.appearance}
                         focusedState={props.focusedState}
                         alignmentConfig={props.alignmentConfig}
-                        reCreatePopover={props.focusedState.active}
                         selectOptions={props.selectOptions}
                         onChangeTooltip={props.onChangeTooltip}
                       />

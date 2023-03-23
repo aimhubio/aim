@@ -151,7 +151,7 @@ import {
   decodePathsVals,
   iterFoldTree,
 } from 'utils/encoder/streamEncoding';
-import { filterMetricsData } from 'utils/filterMetricData';
+import { filterMetricsData } from 'utils/app/filterMetricData';
 import { formatValue } from 'utils/formatValue';
 import getClosestValue from 'utils/getClosestValue';
 import getObjectPaths from 'utils/getObjectPaths';
@@ -1075,9 +1075,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 values: metricValues,
                 steps,
                 epochs,
-                timestamps: timestamps.map((timestamp) =>
-                  Math.round(timestamp * 1000),
-                ),
+                timestamps,
                 xValues: [...steps],
                 yValues: processedValues,
               },
@@ -1533,7 +1531,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 ...metric,
                 groupKey: metricsCollection.key,
                 color: metricsCollection.color ?? metric.color,
-                dasharray: metricsCollection.dasharray ?? metric.color,
+                dasharray: metricsCollection.dasharray ?? metric.dasharray,
                 chartIndex: metricsCollection.chartIndex,
                 selectors: [
                   metric.key,
@@ -1677,6 +1675,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   xValue: activePoint.xValue,
                   yValue: activePoint.yValue,
                   chartIndex: activePoint.chartIndex,
+                  visId: activePoint.visId || `${activePoint.chartIndex}`,
                 },
               },
             };
@@ -4213,6 +4212,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 xValue: activePoint.xValue,
                 yValue: activePoint.yValue,
                 chartIndex: activePoint.chartIndex,
+                visId: activePoint.visId || `${activePoint.chartIndex}`,
               },
             },
           };

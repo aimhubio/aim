@@ -456,7 +456,7 @@ export async function* decodePathsVals(
  *  iterFoldTree
  * Receives generic T type to indicate the returned data type
  * @param stream
- * @param progressCallback - the callback to send streaming progress
+ * @param options - the callback functions to send streaming progress
  */
 export async function parseStream<T extends Array>(
   stream: ReadableStream,

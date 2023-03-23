@@ -8,7 +8,7 @@ import { IDrawAxesArgs } from './drawAxes';
 import { IProcessedAggrData, IProcessedData } from './processLineChartData';
 
 export interface IDrawLinesArgs {
-  index: number;
+  id: string;
   nameKey: string;
   linesRef: React.MutableRefObject<>;
   linesNodeRef: React.MutableRefObject<>;

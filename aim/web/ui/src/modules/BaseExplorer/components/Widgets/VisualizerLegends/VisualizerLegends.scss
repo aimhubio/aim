@@ -1,0 +1,9 @@
+.VisualizerLegends {
+  position: relative;
+  z-index: 5;
+  &__container {
+    height: 100%;
+    width: 100%;
+  }
+}
+
