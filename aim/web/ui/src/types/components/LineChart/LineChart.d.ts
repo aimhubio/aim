@@ -31,6 +31,7 @@ export interface ILine {
   selectors?: string[];
   groupKey?: string;
   run?: IRun;
+  chartIndex?: number;
 }
 
 export interface ILineChartProps {
