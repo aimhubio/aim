@@ -3,6 +3,7 @@
 ## 3.17.4 
 
 - Fix metric values inconsistency with steps (mihran113)
+- Safe force-acquire index lock using meta-locks (alberttorosyan)
 
 ## 3.17.3 Apr 6, 2023
 
