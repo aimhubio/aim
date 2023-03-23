@@ -7,7 +7,7 @@
 - Implement Metrics explorer v2 via Base explorer (KaroMourad)
 - Add navigation link to Experiment page from the Run page (roubkar)
 - Add navigation to explorers from the Run page (roubkar)
-
+- Implement Metrics Explorer v2 via Base Explorer (KaroMourad)
 - Add Text Explorer to filter and compare text (roubkar)
 
 ### Fixes
