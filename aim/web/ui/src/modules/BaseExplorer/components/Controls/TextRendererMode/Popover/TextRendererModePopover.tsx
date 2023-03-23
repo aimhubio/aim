@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import { MenuItem } from '@material-ui/core';
 
+import { Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { TEXT_RNDERER_MODES } from 'pages/TextExplorer/textConfig';
@@ -28,7 +29,7 @@ function TextRendererModePopover(props: ITextRendererModePopoverProps) {
                 })
               }
             >
-              {key}
+              <Text>{key}</Text>
             </MenuItem>
           ))}
         </div>

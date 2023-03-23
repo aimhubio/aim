@@ -4,13 +4,17 @@ import COLORS from 'config/colors/colors';
 
 import CaptionProperties from 'modules/BaseExplorer/components/Controls/CaptionProperties';
 import TextRendererMode from 'modules/BaseExplorer/components/Controls/TextRendererMode';
+import Legends from 'modules/BaseExplorer/components/Controls/Legends';
 import { GroupingItem } from 'modules/BaseExplorer/components/Grouping';
 import { getDefaultHydration } from 'modules/BaseExplorer';
 import { GroupType, Order } from 'modules/core/pipeline';
 import { defaultHydration } from 'modules/BaseExplorer/getDefaultHydration';
 import { IBaseComponentProps } from 'modules/BaseExplorer/types';
+import { PersistenceTypesEnum } from 'modules/core/engine/types';
 
 import { AimFlatObjectBase } from 'types/core/AimObjects';
+
+import { LegendsModeEnum } from 'utils/d3';
 
 import getTextExplorerStaticContent from './getStaticContent';
 
@@ -80,6 +84,16 @@ export const getTextDefaultConfig = (): typeof defaultHydration => {
             type: 'text',
           },
           persist: 'url',
+        },
+      },
+      legends: {
+        component: Legends,
+        state: {
+          initialState: {
+            display: false,
+            mode: LegendsModeEnum.PINNED,
+          },
+          persist: PersistenceTypesEnum.Url,
         },
       },
     },

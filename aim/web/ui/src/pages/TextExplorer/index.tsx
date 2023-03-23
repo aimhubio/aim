@@ -2,6 +2,7 @@ import type { FunctionComponent } from 'react';
 
 import renderer from 'modules/BaseExplorer';
 import TextBox from 'modules/BaseExplorer/components/TextBox/TextBox';
+import { VisualizerLegends } from 'modules/BaseExplorer/components/Widgets';
 
 import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
 
@@ -24,9 +25,14 @@ const TextExplorer = renderer(
         component: defaultConfig.Visualizer as FunctionComponent,
         controls: defaultConfig.controls,
         box: {
+          ...defaultConfig.box,
           component: TextBox,
-          hasDepthSlider: defaultConfig.box.hasDepthSlider,
           initialState: defaultConfig.box.initialState,
+        },
+        widgets: {
+          legends: {
+            component: VisualizerLegends,
+          },
         },
       },
     },
