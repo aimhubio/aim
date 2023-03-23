@@ -37,7 +37,7 @@ def memoize_async(func):
         if key not in memoize_cache[func.__name__]:
             memoize_cache[func.__name__][key] = await func(*args, **kwargs)
 
-        return deep_copy(memoize_cache[func.__name__][key])
+        return memoize_cache[func.__name__][key]
 
     return wrapper
 
@@ -52,7 +52,7 @@ def memoize(func):
         if key not in memoize_cache[func.__name__]:
             memoize_cache[func.__name__][key] = func(*args, **kwargs)
 
-        return deep_copy(memoize_cache[func.__name__][key])
+        return memoize_cache[func.__name__][key]
 
     return wrapper
 
@@ -181,10 +181,11 @@ def apply_group_value_pattern(value, list):
 
 
 @memoize
-def group(name, data, options):
+def group(name, data, options, key=None):
     group_map = {}
     grouped_data = []
-    for item in data:
+    items = deep_copy(data)
+    for item in items:
         group_values = []
         if callable(options):
             val = options(item)
@@ -358,7 +359,7 @@ class Component(Element):
         render_to_layout(component_data)
 
     def group(self, prop, value=[]):
-        group_map, group_data = group(prop, self.data, value)
+        group_map, group_data = group(prop, self.data, value, self.key)
 
         items = []
         for i, item in enumerate(self.data):
@@ -400,8 +401,8 @@ class LineChart(Component):
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type)
 
-        color_map, color_data = group("color", data, color)
-        stroke_map, stroke_data = group("stroke_style", data, stroke_style)
+        color_map, color_data = group("color", data, color, component_key)
+        stroke_map, stroke_data = group("stroke_style", data, stroke_style, component_key)
         lines = []
         for i, item in enumerate(data):
             color_val = apply_group_value_pattern(
@@ -504,13 +505,13 @@ class TextsList(Component):
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type)
 
-        color_map, color_data = group("text_color", data, color)
+        color_map, color_data = group("color", data, color, component_key)
 
         texts = []
 
         for i, item in enumerate(data):
             color_val = apply_group_value_pattern(
-                color_map[color_data[i]["text_color"]]["order"], colors
+                color_map[color_data[i]["color"]]["order"], colors
             )
             text = item
             text["key"] = i
