@@ -7,6 +7,7 @@ const pageTitles = {
   SCATTERS_EXPLORER: 'Scatters Explorer',
   FIGURES_EXPLORER: 'Figures Explorer',
   AUDIOS_EXPLORER: 'Audios Explorer',
+  TEXT_EXPLORER: 'Text Explorer',
   BOOKMARKS: 'Bookmarks',
   TAGS: 'Tags',
   RUN_DETAIL: '',

@@ -134,6 +134,7 @@ export const EXPLORE_SELECTED_RUNS_CONFIG: Record<string, AppNameEnum[]> = {
     AppNameEnum.IMAGES,
     AppNameEnum.FIGURES,
     AppNameEnum.AUDIOS,
+    AppNameEnum.TEXT,
   ],
   [AppNameEnum.METRICS]: [
     AppNameEnum.RUNS,
@@ -141,6 +142,7 @@ export const EXPLORE_SELECTED_RUNS_CONFIG: Record<string, AppNameEnum[]> = {
     AppNameEnum.IMAGES,
     AppNameEnum.FIGURES,
     AppNameEnum.AUDIOS,
+    AppNameEnum.TEXT,
   ],
   [AppNameEnum.PARAMS]: [
     AppNameEnum.RUNS,
@@ -148,6 +150,7 @@ export const EXPLORE_SELECTED_RUNS_CONFIG: Record<string, AppNameEnum[]> = {
     AppNameEnum.IMAGES,
     AppNameEnum.FIGURES,
     AppNameEnum.AUDIOS,
+    AppNameEnum.TEXT,
   ],
   [AppNameEnum.SCATTERS]: [
     AppNameEnum.RUNS,
@@ -155,6 +158,7 @@ export const EXPLORE_SELECTED_RUNS_CONFIG: Record<string, AppNameEnum[]> = {
     AppNameEnum.IMAGES,
     AppNameEnum.FIGURES,
     AppNameEnum.AUDIOS,
+    AppNameEnum.TEXT,
   ],
   [AppNameEnum.IMAGES]: [
     AppNameEnum.RUNS,
@@ -162,6 +166,7 @@ export const EXPLORE_SELECTED_RUNS_CONFIG: Record<string, AppNameEnum[]> = {
     AppNameEnum.IMAGES,
     AppNameEnum.FIGURES,
     AppNameEnum.AUDIOS,
+    AppNameEnum.TEXT,
   ],
   dashboard: [
     AppNameEnum.RUNS,
@@ -169,6 +174,7 @@ export const EXPLORE_SELECTED_RUNS_CONFIG: Record<string, AppNameEnum[]> = {
     AppNameEnum.IMAGES,
     AppNameEnum.FIGURES,
     AppNameEnum.AUDIOS,
+    AppNameEnum.TEXT,
   ],
   experiment: [
     AppNameEnum.RUNS,
@@ -176,6 +182,7 @@ export const EXPLORE_SELECTED_RUNS_CONFIG: Record<string, AppNameEnum[]> = {
     AppNameEnum.IMAGES,
     AppNameEnum.FIGURES,
     AppNameEnum.AUDIOS,
+    AppNameEnum.TEXT,
   ],
   run: [
     AppNameEnum.RUNS,
