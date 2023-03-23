@@ -43,6 +43,7 @@ function CompareSelectedRunsPopover({
         const baseExplorers: string[] = [
           AppNameEnum.FIGURES,
           AppNameEnum.AUDIOS,
+          AppNameEnum.TEXT,
         ];
 
         if (baseExplorers.indexOf(value) !== -1) {
@@ -69,7 +70,6 @@ function CompareSelectedRunsPopover({
           });
           url = `/${value}?select=${searchQuery}`;
         }
-
         analytics.trackEvent(
           ANALYTICS_EVENT_KEYS[appName]?.table?.compareSelectedRuns,
         );

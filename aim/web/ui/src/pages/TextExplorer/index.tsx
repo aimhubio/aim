@@ -13,7 +13,7 @@ const TextExplorer = renderer(
   {
     name: 'Text Explorer',
     sequenceName: SequenceTypesEnum.Texts,
-    basePath: 'texts',
+    basePath: 'text',
     persist: true,
     adapter: {
       objectDepth: AimObjectDepths.Index,
