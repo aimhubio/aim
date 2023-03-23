@@ -117,12 +117,12 @@ const Params = ({
   const [isProgressBarVisible, setIsProgressBarVisible] =
     React.useState<boolean>(false);
   const chartProps: any[] = React.useMemo(() => {
-    return (highPlotData || []).map((chartData: any, index: number) => ({
+    return (highPlotData || []).map((chartData: any) => ({
       curveInterpolation,
       isVisibleColorIndicator,
       onAxisBrushExtentChange,
       brushExtents,
-      chartTitle: chartTitleData[index],
+      chartTitle: chartTitleData[chartData[0].chartIndex],
     }));
   }, [
     highPlotData,
