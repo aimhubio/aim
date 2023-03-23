@@ -1,0 +1,14 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<IconButton icon="search" /> Renders Correctly 1`] = `
+<DocumentFragment>
+  <button
+    class="AimUi-c-sFyLx AimUi-c-sFyLx-fDXBFo-size-sm AimUi-c-sFyLx-ihtltCK-css"
+    data-testid="icon-button"
+  >
+    <i
+      class="Icon__container icon-search "
+    />
+  </button>
+</DocumentFragment>
+`;
