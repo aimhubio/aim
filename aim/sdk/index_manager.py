@@ -169,7 +169,6 @@ class RepoIndexManager:
             index = self.repo._get_index_tree('meta', 0).view(())
             meta_tree = self.repo.request_tree(
                 'meta', run_hash, read_only=True, from_union=False, no_cache=True).subtree('meta')
-            time.sleep(10)
             meta_run_tree = meta_tree.subtree('chunks').subtree(run_hash)
             meta_run_tree.finalize(index=index)
             if meta_run_tree['end_time'] is None:
