@@ -4,12 +4,14 @@ import { GroupType } from 'modules/core/pipeline';
 import { GroupingConfigs } from 'modules/core/engine/explorer/groupings';
 import { ControlsConfigs } from 'modules/core/engine/visualizations/controls';
 import { CustomStates } from 'modules/core/utils/store';
-import { VisualizationsConfig } from 'modules/core/engine/visualizations';
+import {
+  VisualizationsConfig,
+  WidgetsConfig,
+} from 'modules/core/engine/visualizations';
 import { EngineNew } from 'modules/core/engine/explorer-engine';
 import { PipelineStatusEnum } from 'modules/core/engine/types';
 
 import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
-import { AimFlatObjectBase } from 'types/core/AimObjects';
 
 export interface IEngineStates {
   [key: string]: {
@@ -59,7 +61,7 @@ export interface IUIComponents {
   queryForm: React.FunctionComponent<IQueryFormProps>;
   grouping: React.FunctionComponent<IGroupingProps>;
   visualizations: React.FunctionComponent<IVisualizationProps>[];
-  box: React.FunctionComponent<IBoxProps>;
+  box: React.FunctionComponent<IBoxContentProps>;
   controls: React.FunctionComponent<IControlsProps>;
 }
 
@@ -81,26 +83,37 @@ export interface IVisualizationsProps extends IBaseComponentProps {
 }
 
 export interface IVisualizationProps extends IBaseComponentProps {
-  box?: React.FunctionComponent<IBoxProps>;
-  hasDepthSlider: boolean;
-  panelRenderer: () => React.ReactNode;
+  box?: React.FunctionComponent<IBoxContentProps>;
+  boxStacking: boolean;
+  topPanelRenderer: () => React.ReactNode;
+  bottomPanelRenderer: () => React.ReactNode;
   name: string;
+  widgets?: WidgetsConfig;
 }
 
 export interface IProgressBarProps extends IBaseComponentProps {}
 
-export interface IBoxProps extends IBaseComponentProps {
+export interface IBoxContentProps extends IBaseComponentProps {
   data: any;
-  items: AimFlatObjectBase[];
   style?: React.CSSProperties;
   isFullView?: boolean;
+  index?: number;
+  id?: string;
   visualizationName: string;
+  itemGroupInfo?: Record<string, IGroupInfo>;
+}
+
+export interface IGroupInfo {
+  key: string;
+  config: Record<string, any>;
+  items_count_in_group: number;
+  order: number;
 }
 
 export interface IOptionalExplorerConfig {}
 export interface IExplorerBarProps extends IBaseComponentProps {
   explorerName: string;
-  documentationLink: string;
+  documentationLink?: string;
 }
 export interface IExplorerNotificationProps extends IBaseComponentProps {}
 
@@ -108,6 +121,15 @@ export interface IBaseComponentProps {
   engine: any;
   // dataSelector: () => any;
 }
+
+export interface IWidgetRendererProps {
+  boxContainer: React.MutableRefObject<HTMLDivElement>;
+  vizContainer: React.MutableRefObject<HTMLDivElement>;
+}
+
+export interface IWidgetComponentProps
+  extends IWidgetRendererProps,
+    IBaseComponentProps {}
 
 export declare interface ExplorerEngineConfiguration {
   /**

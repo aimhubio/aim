@@ -15,4 +15,5 @@ export interface IChartGridProps {
   readOnly?: boolean;
   syncHoverState?: (args: ISyncHoverStateArgs) => void;
   resizeMode?: ResizeModeEnum;
+  onMount?: () => void;
 }

@@ -75,6 +75,8 @@ function getPipelineEngine(
     {},
   );
 
+  // const defaultControls = config.controls || {};
+
   const pipelineOptions: Omit<PipelineOptions, 'callbacks'> = {
     sequenceName: config.sequenceName,
     adapter: {
@@ -85,6 +87,9 @@ function getPipelineEngine(
       useCache,
     },
     query: {
+      useCache,
+    },
+    custom: {
       useCache,
     },
     persist: config.persist,

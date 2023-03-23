@@ -2,6 +2,7 @@ export type InlineCache = {
   get: (key: any) => any;
   set: (key: any, value: any) => void;
   clear: () => void;
+  delete: (key: any) => void;
 };
 
 /**
@@ -31,6 +32,9 @@ function createInlineCache(cacheSize?: number): InlineCache {
     },
     clear: function () {
       cache.clear();
+    },
+    delete: function (key: any) {
+      cache.delete(key);
     },
   };
 }

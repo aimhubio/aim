@@ -1,20 +1,23 @@
-import React, { memo } from 'react';
+import * as React from 'react';
+import _ from 'lodash-es';
 
 import { ControlsConfigs } from 'modules/core/engine/visualizations/controls';
 import { GroupingConfigs } from 'modules/core/engine/explorer/groupings';
-import { GroupType, Order } from 'modules/core/pipeline';
+import { GroupType } from 'modules/core/pipeline';
+import Grouping, {
+  GroupingItem,
+} from 'modules/BaseExplorer/components/Grouping';
+import { BoxProperties } from 'modules/BaseExplorer/components/Controls';
+import FullVewPopover from 'modules/BaseExplorer/components/BoxFullViewPopover';
+import Visualizer from 'modules/BaseExplorer/components/Visualizer';
+import BoxWrapper from 'modules/BaseExplorer/components/BoxWrapper';
+import { AdvancedQueryForm } from 'modules/BaseExplorer/components/QueryForm';
+import Controls from 'modules/BaseExplorer/components/Controls';
+import getBaseExplorerStaticContent from 'modules/BaseExplorer/utils/getBaseExplorerStaticContent';
 
 import { AimFlatObjectBase } from 'types/core/AimObjects';
 
-import { BoxProperties, CaptionProperties } from './components/Controls';
-import FullVewPopover from './components/BoxFullViewPopover';
-import Visualizer from './components/Visualizer';
-import BoxWrapper from './components/BoxWrapper';
-import { AdvancedQueryForm } from './components/QueryForm';
-import Controls from './components/Controls';
-import Grouping, { GroupingItem } from './components/Grouping';
 import { IBaseComponentProps } from './types';
-import getBaseExplorerStaticContent from './utils/getBaseExplorerStaticContent';
 
 const controls: ControlsConfigs = {
   boxProperties: {
@@ -22,7 +25,7 @@ const controls: ControlsConfigs = {
     settings: {
       minWidth: 200,
       maxWidth: 800,
-      minHeight: 200,
+      minHeight: 170,
       maxHeight: 800,
       step: 10,
     },
@@ -32,24 +35,13 @@ const controls: ControlsConfigs = {
       initialState: {},
     },
   },
-  captionProperties: {
-    component: CaptionProperties,
-    state: {
-      initialState: {
-        displayBoxCaption: true,
-        selectedFields: ['run.name', 'figures.name', 'figures.context'],
-      },
-      persist: 'url',
-    },
-  },
 };
 
 const groupings: GroupingConfigs = {
   [GroupType.COLUMN]: {
-    component: memo((props: IBaseComponentProps) => (
+    component: React.memo((props: IBaseComponentProps) => (
       <GroupingItem groupName='columns' iconName='group-column' {...props} />
     )),
-
     // @ts-ignore
     styleApplier: (
       object: AimFlatObjectBase<any>,
@@ -57,18 +49,22 @@ const groupings: GroupingConfigs = {
       boxConfig: any,
       iteration: number,
     ) => {
+      const rulerWidth =
+        group[GroupType.ROW] && !_.isEmpty(group[GroupType.ROW].config)
+          ? 200
+          : 0;
       return {
         left:
+          boxConfig.gap +
           (group[GroupType.COLUMN]
-            ? group[GroupType.COLUMN].order *
-                (boxConfig.width + boxConfig.gap) +
-              boxConfig.gap
-            : boxConfig.gap) + (group[GroupType.ROW] ? 200 : 0),
+            ? group[GroupType.COLUMN].order * (boxConfig.width + boxConfig.gap)
+            : 0) +
+          rulerWidth,
       };
     },
     defaultApplications: {
-      fields: ['run.hash', 'figures.name'],
-      orders: [Order.ASC, Order.ASC],
+      fields: [],
+      orders: [],
     },
     // state: {
     //   // observable state, to listen on base visualizer
@@ -82,7 +78,7 @@ const groupings: GroupingConfigs = {
     // },
   },
   [GroupType.ROW]: {
-    component: memo((props: IBaseComponentProps) => (
+    component: React.memo((props: IBaseComponentProps) => (
       <GroupingItem groupName='rows' iconName='image-group' {...props} />
     )),
     // @ts-ignore
@@ -92,17 +88,22 @@ const groupings: GroupingConfigs = {
       boxConfig: any,
       iteration: number,
     ) => {
+      const rulerHeight =
+        group[GroupType.COLUMN] && !_.isEmpty(group[GroupType.COLUMN].config)
+          ? 30
+          : 0;
       return {
-        top: group[GroupType.ROW]
-          ? group[GroupType.ROW].order * (boxConfig.height + boxConfig.gap) +
-            30 +
-            boxConfig.gap
-          : (group[GroupType.COLUMN] ? 30 : 0) + boxConfig.gap,
+        top:
+          boxConfig.gap +
+          (group[GroupType.ROW]
+            ? group[GroupType.ROW].order * (boxConfig.height + boxConfig.gap)
+            : 0) +
+          rulerHeight,
       };
     },
     defaultApplications: {
-      fields: ['record.step'],
-      orders: [Order.DESC],
+      fields: [],
+      orders: [],
     },
     // state: {
     //   // observable state, to listen on base visualizer
@@ -133,13 +134,15 @@ export const defaultHydration = {
       height: 400,
       gap: 0,
     },
-    hasDepthSlider: true,
+    stacking: true,
   },
   controls,
   groupings,
-  customStates: {
+  states: {
     depthMap: {
-      initialState: {},
+      initialState: {
+        sync: true,
+      },
     },
   },
   getStaticContent: getBaseExplorerStaticContent,

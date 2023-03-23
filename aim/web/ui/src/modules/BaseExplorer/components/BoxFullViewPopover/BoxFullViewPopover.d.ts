@@ -1,11 +1,13 @@
 import React from 'react';
 
-import { AimFlatObjectBase } from 'modules/BaseExplorerCore/pipeline/adapter/processor';
+import { AimFlatObjectBase } from 'types/core/AimObjects';
+
+import { IGroupInfo } from '../../types';
 
 export interface IBoxFullViewPopoverProps {
   onClose: () => void;
-  item: AimFlatObjectBase<any>;
+  item: AimFlatObjectBase;
   children: React.ReactNode;
   sequenceName: string;
-  groupInfo: Record<any, any>;
+  itemGroupInfo: Record<string, IGroupInfo>;
 }

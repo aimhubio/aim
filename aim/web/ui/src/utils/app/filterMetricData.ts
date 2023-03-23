@@ -1,7 +1,7 @@
 import { IRunBatch } from 'pages/RunDetail/types';
 
-import { IMetricTrace } from 'types/services/models/metrics/runModel';
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
+import { SequenceFullView } from 'types/core/AimObjects';
 
 import { AlignmentOptionsEnum, ScaleEnum } from 'utils/d3';
 import { float64FromUint8 } from 'utils/helper';
@@ -45,20 +45,16 @@ function getInvalidIndices<T = number[]>(
 }
 
 export function filterMetricsData(
-  trace: IMetricTrace,
-  alignmentType: AlignmentOptionsEnum,
+  sequence: SequenceFullView,
+  alignmentType: AlignmentOptionsEnum = AlignmentOptionsEnum.STEP,
   axesScaleType?: IAxesScaleState,
 ) {
-  const values = float64FromUint8(trace.values.blob);
-  const steps = float64FromUint8(trace.iters.blob);
-  const epochs = float64FromUint8(trace.epochs.blob);
-  const timestamps = float64FromUint8(trace.timestamps.blob);
-  const x_axis_iters = float64FromUint8(
-    trace.x_axis_iters?.blob || new Uint8Array(),
-  );
-  const x_axis_values = float64FromUint8(
-    trace.x_axis_values?.blob || new Uint8Array(),
-  );
+  const values = float64FromUint8(sequence.values?.blob);
+  const steps = float64FromUint8(sequence.iters?.blob);
+  const epochs = float64FromUint8(sequence.epochs?.blob);
+  const timestamps = float64FromUint8(sequence.timestamps?.blob);
+  const x_axis_iters = float64FromUint8(sequence.x_axis_iters?.blob);
+  const x_axis_values = float64FromUint8(sequence.x_axis_values?.blob);
 
   const { xAxis, yAxis } = axesScaleType || {};
 
@@ -101,7 +97,7 @@ export function filterMetricsData(
     timestamps: getFilteredMetricValues({
       data: timestamps,
       invalidIndicesArray: [invalidIndices.timestamps, invalidIndices.values],
-    }),
+    }).map((timestamp: number) => Math.round(timestamp * 1000)),
     x_axis_values: getFilteredMetricValues({
       data: x_axis_values,
       invalidIndicesArray: [
