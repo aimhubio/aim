@@ -25,6 +25,9 @@ function TextBox(props: any) {
         {text}
       </Text>
     ),
+    [TEXT_RNDERER_MODES.HTML]: (
+      <div dangerouslySetInnerHTML={{ __html: text }} />
+    ),
     [TEXT_RNDERER_MODES.CODE]: (
       <Text component='pre' color={props.data.style.color}>
         {text}
