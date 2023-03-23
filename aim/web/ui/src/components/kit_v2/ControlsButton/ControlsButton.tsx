@@ -2,8 +2,6 @@ import React from 'react';
 
 import { IconCaretDown, IconCaretUp } from '@tabler/icons-react';
 
-import { IconName } from 'components/kit/Icon';
-
 import { IControlsButtonProps } from './ControlsButton.d';
 import {
   AppliedCount,
@@ -72,9 +70,7 @@ const ControlsButton = React.forwardRef<
               e.preventDefault();
               rightIcon?.onClick();
             }}
-            // disabled={disabled}
             icon={rightIcon?.icon}
-            // variant='text'
             color='secondary'
           />
         ) : null}

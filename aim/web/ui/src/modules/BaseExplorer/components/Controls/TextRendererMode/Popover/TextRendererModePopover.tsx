@@ -1,5 +1,4 @@
 import * as React from 'react';
-import _ from 'lodash-es';
 
 import { MenuItem } from '@material-ui/core';
 
