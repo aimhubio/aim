@@ -6,8 +6,12 @@
   display: flex;
   padding: $space-xs $space-sm;
   overflow: auto;
-}
 
-.TextRendererModePopover__section {
-  width: 100%;
+
+  .TextBox__Markdown {
+    justify-content: flex-start;
+    > div {
+      color: inherit;
+    }
+  }
 }
