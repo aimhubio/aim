@@ -6,6 +6,8 @@
 
 ### Fixes
 
+- Safe force-acquire index lock using meta-locks (alberttorosyan:)
+
 ## 3.16.2 Mar 3, 2023
 
 - Add exception-free mode to Aim (alberttorosyan)
