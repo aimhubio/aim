@@ -17,7 +17,7 @@
 - Add -y option to Aim CLI commands(emekaokoli19)
 - Fix issue with toggling lines visibility during live update (roubkar)
 - Fix the issue when HF model doesn't have `num_labels` attribute (mihran113)
-- Fix scroll issue in Run page Texts tab table cell (roubkar)
+- Fix table cell scrolling issue in the Texts tab of the Run page (roubkar)
 
 ## 3.16.2 Mar 3, 2023
 
