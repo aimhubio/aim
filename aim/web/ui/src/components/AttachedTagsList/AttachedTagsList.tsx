@@ -7,7 +7,7 @@ import { Box, Tooltip } from '@material-ui/core';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import { Button, Icon, Badge, Text } from 'components/kit';
 import SelectTag from 'components/SelectTag/SelectTag';
-import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import ErrorBoundary from 'components/ErrorBoundary';
 
 import runsService from 'services/api/runs/runsService';
 
@@ -118,6 +118,7 @@ function AttachedTagsList({
           })}
         >
           {!inlineAttachedTagsList && renderTagsBadges()}
+
           <ControlPopover
             title='Tags'
             titleClassName='AttachedTagsList__ControlPopover__title'

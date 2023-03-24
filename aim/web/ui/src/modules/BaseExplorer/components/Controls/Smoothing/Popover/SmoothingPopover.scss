@@ -1,0 +1,19 @@
+@use 'src/styles/abstracts' as *;
+
+.SmoothingPopover {
+  width: 24.5rem;
+  padding: $space-xs;
+  &__divider {
+    margin: $space-xs 0;
+  }
+  &__subtitle {
+    text-transform: uppercase;
+    padding: $space-xs $space-xs;
+  }
+  &__toggleButton {
+    padding: 0 $space-xs;
+  }
+  &__Slider {
+    margin: 0 $space-xs;
+  }
+}

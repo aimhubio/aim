@@ -46,7 +46,7 @@ function ToggleButton({
   return (
     <Container>
       <Button
-        variant={selected === leftValue ? 'contained' : 'text'}
+        variant={selected === leftValue ? 'contained' : 'ghost'}
         css={{ borderRadius: '3px 0 0 3px' }}
         data-value={leftValue}
         onClick={handleToggle}
@@ -56,7 +56,7 @@ function ToggleButton({
         {leftLabel}
       </Button>
       <Button
-        variant={selected === rightValue ? 'contained' : 'text'}
+        variant={selected === rightValue ? 'contained' : 'ghost'}
         css={{ borderRadius: '0 3px 3px 0' }}
         data-value={rightValue}
         onClick={handleToggle}

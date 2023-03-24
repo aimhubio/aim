@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width='100%' height='100%'>
+  <defs>
+    <pattern
+        id='polka-dots'
+        x='0'
+        y='0'
+        width='12'
+        height='12'
+        patternUnits='userSpaceOnUse'
+    >
+      <circle fill='#cecece' cx='6' cy='6' r='1' />
+    </pattern>
+  </defs>
+  <rect
+      x='0'
+      y='0'
+      width='100%'
+      height='100%'
+      fill='url(#polka-dots)'
+  />
+</svg>

@@ -1,4 +1,4 @@
-import { IconSearch, IconUpload, IconZoomIn } from '@tabler/icons-react';
+import { IconSearch } from '@tabler/icons-react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 
 import IconButton from 'components/kit_v2/IconButton';

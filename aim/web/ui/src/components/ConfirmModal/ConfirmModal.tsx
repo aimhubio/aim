@@ -3,7 +3,7 @@ import React from 'react';
 import { Dialog } from '@material-ui/core';
 
 import { Button, Text, Icon } from 'components/kit';
-import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import ErrorBoundary from 'components/ErrorBoundary';
 
 import { IConfirmModalProps } from 'types/components/ConfirmModal/ConfirmModal';
 

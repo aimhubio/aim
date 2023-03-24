@@ -151,7 +151,7 @@ import {
   decodePathsVals,
   iterFoldTree,
 } from 'utils/encoder/streamEncoding';
-import { filterMetricsData } from 'utils/filterMetricData';
+import { filterMetricsData } from 'utils/app/filterMetricData';
 import { formatValue } from 'utils/formatValue';
 import getClosestValue from 'utils/getClosestValue';
 import getObjectPaths from 'utils/getObjectPaths';
@@ -1075,9 +1075,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 values: metricValues,
                 steps,
                 epochs,
-                timestamps: timestamps.map((timestamp) =>
-                  Math.round(timestamp * 1000),
-                ),
+                timestamps,
                 xValues: [...steps],
                 yValues: processedValues,
               },
@@ -1114,24 +1112,30 @@ function createAppModel(appConfig: IAppInitialConfig) {
       const uniqContexts = _.uniq(contexts).sort();
       const uniqProps = _.uniq(runProps).sort();
 
-      const mappedData =
-        data?.reduce((acc: any, item: any) => {
-          acc[item.hash] = { runHash: item.hash, ...item.props };
-          return acc;
-        }, {}) || {};
+      const mappedData: Record<string, any> = {};
+
+      for (let metric of metrics) {
+        mappedData[metric.run.hash] = {
+          runHash: metric.run.hash,
+          ...metric.run.props,
+          ...metric,
+        };
+      }
+
+      let selected: Record<string, any> = {};
+
       if (selectedRows && !_.isEmpty(selectedRows)) {
-        selectedRows = Object.keys(selectedRows).reduce(
-          (acc: any, key: string) => {
-            const slicedKey = key.slice(0, key.indexOf('/'));
-            acc[key] = {
-              selectKey: key,
+        for (let rowKey in selectedRows) {
+          const slicedKey = rowKey.slice(0, rowKey.indexOf('/'));
+          if (mappedData[slicedKey])
+            selected[rowKey] = {
+              selectKey: rowKey,
               ...mappedData[slicedKey],
             };
-            return acc;
-          },
-          {},
-        );
+        }
       }
+
+      selectedRows = selected;
 
       return {
         data: processedData,
@@ -1533,7 +1537,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 ...metric,
                 groupKey: metricsCollection.key,
                 color: metricsCollection.color ?? metric.color,
-                dasharray: metricsCollection.dasharray ?? metric.color,
+                dasharray: metricsCollection.dasharray ?? metric.dasharray,
                 chartIndex: metricsCollection.chartIndex,
                 selectors: [
                   metric.key,
@@ -1677,6 +1681,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   xValue: activePoint.xValue,
                   yValue: activePoint.yValue,
                   chartIndex: activePoint.chartIndex,
+                  visId: activePoint.visId || `${activePoint.chartIndex}`,
                 },
               },
             };
@@ -4149,24 +4154,31 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const uniqParams = _.uniq(params).sort();
         const uniqHighLevelParams = _.uniq(highLevelParams).sort();
 
-        const mappedData =
-          data?.reduce((acc: any, item: any) => {
-            acc[item.hash] = { runHash: item.hash, ...item.props };
-            return acc;
-          }, {}) || {};
+        const mappedData: Record<string, any> = {};
+
+        for (let run of runs) {
+          mappedData[run.run.hash] = {
+            runHash: run.run.hash,
+            ...run.run.props,
+            ...run,
+          };
+        }
+
+        let selected: Record<string, any> = {};
+
         if (selectedRows && !_.isEmpty(selectedRows)) {
-          selectedRows = Object.keys(selectedRows).reduce(
-            (acc: any, key: string) => {
-              const slicedKey = key.slice(0, key.indexOf('/'));
-              acc[key] = {
-                selectKey: key,
+          for (let rowKey in selectedRows) {
+            const slicedKey = rowKey.slice(0, rowKey.indexOf('/'));
+            if (mappedData[slicedKey])
+              selected[rowKey] = {
+                selectKey: rowKey,
                 ...mappedData[slicedKey],
               };
-              return acc;
-            },
-            {},
-          );
+          }
         }
+
+        selectedRows = selected;
+
         return {
           data: processedData,
           runProps: uniqProps,
@@ -4213,6 +4225,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 xValue: activePoint.xValue,
                 yValue: activePoint.yValue,
                 chartIndex: activePoint.chartIndex,
+                visId: activePoint.visId || `${activePoint.chartIndex}`,
               },
             },
           };
@@ -5462,23 +5475,27 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const uniqParams = _.uniq(params).sort();
         const uniqHighLevelParams = _.uniq(highLevelParams).sort();
 
-        const mappedData =
-          data?.reduce((acc: any, item: any) => {
-            acc[item.hash] = { runHash: item.hash, ...item.props };
-            return acc;
-          }, {}) || {};
+        const mappedData: Record<string, any> = {};
+
+        for (let run of runs) {
+          mappedData[run.run.hash] = {
+            runHash: run.run.hash,
+            ...run.run.props,
+            ...run,
+          };
+        }
+
+        let selected: Record<string, any> = {};
+
         if (selectedRows && !_.isEmpty(selectedRows)) {
-          selectedRows = Object.keys(selectedRows).reduce(
-            (acc: any, key: string) => {
-              const slicedKey = key.slice(0, key.indexOf('/'));
-              acc[key] = {
-                selectKey: key,
+          for (let rowKey in selectedRows) {
+            const slicedKey = rowKey.slice(0, rowKey.indexOf('/'));
+            if (mappedData[slicedKey])
+              selected[rowKey] = {
+                selectKey: rowKey,
                 ...mappedData[slicedKey],
               };
-              return acc;
-            },
-            {},
-          );
+          }
         }
 
         return {

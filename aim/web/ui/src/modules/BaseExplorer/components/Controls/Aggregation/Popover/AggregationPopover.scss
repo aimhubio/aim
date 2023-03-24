@@ -1,0 +1,12 @@
+@use 'src/styles/abstracts' as *;
+
+.AggregationPopover {
+  padding: $space-xs;
+  &__divider {
+    margin: $space-xs 0;
+  }
+  &__subtitle {
+    padding-block: $space-xs;
+    text-transform: uppercase;
+  }
+}

@@ -7,17 +7,19 @@ import { IBaseComponentProps } from 'modules/BaseExplorer/types';
 
 import './Grouping.scss';
 
-function Grouping(props: Omit<IBaseComponentProps, 'visualizationName'>) {
-  const engine = props.engine;
-  const currentValues = engine.useStore(engine.groupings.currentValuesSelector);
+function Grouping(props: IBaseComponentProps) {
+  const {
+    engine: { useStore, groupings },
+  } = props;
+  const currentValues = useStore(groupings.currentValuesSelector);
 
   const groupingItems = React.useMemo(() => {
     return Object.keys(currentValues).map((key: string) => {
-      const Component = engine.groupings[key].component;
+      const Component = groupings[key].component;
+      Component.displayName = `Grouping_${key}`;
       return <Component key={key} {...props} />;
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [currentValues, groupings, props]);
 
   return (
     <ErrorBoundary>
@@ -31,4 +33,6 @@ function Grouping(props: Omit<IBaseComponentProps, 'visualizationName'>) {
   );
 }
 
-export default memo<Omit<IBaseComponentProps, 'visualizationName'>>(Grouping);
+Grouping.displayName = 'Grouping';
+
+export default memo<IBaseComponentProps>(Grouping);

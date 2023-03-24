@@ -87,7 +87,7 @@ function Dialog({
           </Box>
           <DialogActions>
             <DialogPrimitive.Close asChild>
-              <Button css={{ mr: '$5' }} variant='text' color='secondary'>
+              <Button css={{ mr: '$5' }} variant='ghost' color='secondary'>
                 Cancel
               </Button>
             </DialogPrimitive.Close>
@@ -98,7 +98,7 @@ function Dialog({
           <DialogPrimitive.Close asChild>
             <IconButton
               size='xs'
-              variant='text'
+              variant='ghost'
               color='secondary'
               css={{ position: 'absolute', top: 8, right: 8 }}
               icon={<IconX />}

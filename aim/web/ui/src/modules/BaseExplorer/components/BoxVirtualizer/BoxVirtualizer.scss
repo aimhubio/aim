@@ -5,12 +5,13 @@
   width: 100%;
   height: 100%;
   overflow: hidden;
+  background: $grey-bg;
 }
 
 .BoxVirtualizer__placeholder {
   position: absolute;
-  top: 0px;
-  left: 0px;
+  top: 0;
+  left: 0;
   width: 200px;
   height: 30px;
   background-color: #fff;
@@ -33,7 +34,7 @@
 
 .BoxVirtualizer__container__horizontalRuler {
   position: sticky;
-  top: 0px;
+  top: 0;
   height: 30px;
   min-width: 100%;
   border-bottom: $border-dark;
@@ -43,9 +44,9 @@
 
 .BoxVirtualizer__container__verticalRuler {
   position: sticky;
-  left: 0px;
+  left: 0;
   width: 200px;
-  min-height: calc(100% - 30px);
+  min-height: 100%;
   border-right: $border-dark;
   background-color: #fff;
   z-index: 2;
