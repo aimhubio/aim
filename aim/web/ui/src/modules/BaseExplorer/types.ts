@@ -95,13 +95,13 @@ export interface IVisualizationProps extends IBaseComponentProps {
 
 export interface IProgressBarProps extends IBaseComponentProps {}
 
-export interface IBoxContentProps extends IBaseComponentProps {
+export interface IBoxContentProps extends Partial<IBaseComponentProps> {
   data: any;
   style?: React.CSSProperties;
   isFullView?: boolean;
   index?: number;
   id?: string;
-  visualizationName: string;
+  visualizationName?: string;
   itemGroupInfo?: Record<string, IGroupInfo>;
 }
 

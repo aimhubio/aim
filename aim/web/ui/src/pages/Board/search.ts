@@ -11,7 +11,7 @@ import { RunSearchRunView } from 'types/core/AimObjects';
 
 import { parseStream } from 'utils/encoder/streamEncoding';
 import { AlignmentOptionsEnum } from 'utils/d3';
-import { filterMetricsData } from 'utils/filterMetricData';
+import { filterMetricsData } from 'utils/app/filterMetricData';
 
 const seachRequests = {
   [SequenceTypesEnum.Metric]: createSearchRunsRequest(SequenceTypesEnum.Metric),
