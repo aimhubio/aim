@@ -1,0 +1,18 @@
+@use 'src/styles/abstracts' as *;
+
+.SelectedGroupingFields {
+  &__container {
+    padding: $space-xs $space-unit;
+    display: flex;
+    flex-direction: column;
+    max-height: inherit;
+    &__groupKey {
+      margin-top: $space-xs;
+      text-transform: capitalize;
+    }
+    &__value {
+      margin-top: $space-xxxs;
+      word-break: break-word;
+    }
+  }
+}

@@ -1,7 +1,9 @@
 import * as React from 'react';
 import Plot from 'react-plotly.js';
 
-function Figures(props: any) {
+import { IBoxContentProps } from 'modules/BaseExplorer/types';
+
+function Figures(props: IBoxContentProps) {
   let [data, setData] = React.useState<any>(null);
   let [scale, setScale] = React.useState<number | null | undefined>(
     !!props.style ? undefined : null,

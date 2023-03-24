@@ -4,12 +4,20 @@
 
 ### Enhancements
 - Expose `run_name` and `run_hash` parameters to the `aim.sdk.adapters.pytorch_lightning.AimLogger` adapter (constd)
+- Implement Metrics explorer v2 via Base explorer (KaroMourad)
+- Add navigation link to Experiment page from the Run page (roubkar)
+- Add navigation to explorers from the Run page (roubkar)
+- Implement Metrics Explorer v2 via Base Explorer (KaroMourad)
+- Add Text Explorer to filter and compare text (roubkar)
+- Add groundwork for the UI kit v2 for improved usability (arsengit)
 
 ### Fixes
 
 - Add support for Path type to the repo attribute of the Run class(emekaokoli19)
 - Add support for jax>0.4.0 (n-gao)
 - Add -y option to Aim CLI commands(emekaokoli19)
+- Fix issue with toggling lines visibility during live update (roubkar)
+- Fix the issue when HF model doesn't have `num_labels` attribute (mihran113)
 
 ## 3.16.2 Mar 3, 2023
 

@@ -39,13 +39,12 @@ export function storageDataToFlatList(
   const queryable_data = collectQueryableData(runs[0]);
 
   runs.forEach((item) => {
-    // @ts-ignore
     params = params.concat(getObjectPaths(item.params, 'run', '.'));
     let collectedDataByDepth: Omit<AimFlatObjectBase, 'data'> = {};
     let objectHashCreator: ObjectHashCreator = {
       runHash: item.hash,
     };
-    /** depth 0 */ // Container
+    /** ️⬇⬇⬇ depth 0 ⬇⬇⬇ */ // Container
     let run = {
       ..._.omit(item.props, ['experiment, creation_time']),
       hash: item.hash,
@@ -75,11 +74,11 @@ export function storageDataToFlatList(
       objectList.push(object);
       return;
     }
-    /** depth 0 */
+    /** ⬆⬆⬆ depth 0 ⬆⬆⬆ */
     if (objectDepth > 0) {
       // for readability
-      item.traces.forEach((trace: any) => {
-        /** depth 1 */ // Sequence
+      item.traces.forEach((trace: any, traceIndex: number) => {
+        /** ⬇⬇⬇ depth 1 ⬇⬇⬇ */ // Sequence
         const trace_context = {
           [sequenceName]: {
             name: trace.name,
@@ -108,16 +107,16 @@ export function storageDataToFlatList(
           const object: AimFlatObjectBase = {
             key: buildObjectHash(objectHashCreator),
             ...collectedDataByDepth,
-            data: depthInterceptor(trace).data,
+            data: depthInterceptor(trace, traceIndex).data,
           };
           objectList.push(object);
           return;
         }
-        /** depth 1 */
+        /** ⬆⬆⬆ depth 1 ⬆⬆⬆  */
         if (objectDepth > 1) {
           // for readability
           trace.values.forEach((sequence: any, stepIndex: number) => {
-            /** depth 2 */ // STEP
+            /** ⬇⬇⬇ depth 2 ⬇⬇⬇ */ // STEP
             let record_data: Record = {
               step: trace.iters[stepIndex],
             };
@@ -143,8 +142,9 @@ export function storageDataToFlatList(
               objectList.push(object);
               return;
             }
+            /** ⬆⬆⬆ depth 2 ⬆⬆⬆  */
             sequence.forEach((rec: any) => {
-              /** depth 3 */ // INDEX
+              /** ⬇⬇⬇ depth 3 ⬇⬇⬇ */ // INDEX
               record_data = {
                 ...record_data,
                 index: rec.index,

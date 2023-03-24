@@ -22,6 +22,12 @@ export interface IPopoverProps {
     @default: false
     */
   defaultOpen?: boolean;
+  /**
+   * title for popover
+   * @default: undefined
+   * @optional
+   */
+  title?: string | React.ReactNode;
 }
 
 export interface PopperProps extends Partial<PopperContentProps> {

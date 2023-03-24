@@ -294,13 +294,15 @@ function MediaPanel({
                   {tooltipType && (
                     <ErrorBoundary>
                       <ChartPopover
+                        key={'popover-' + tooltipType}
                         containerNode={containerRef.current}
                         activePointRect={activePointRect}
                         open={
                           resizeMode !== ResizeModeEnum.MaxHeight &&
                           !panelResizing &&
-                          (tooltip?.display || focusedState?.active)
+                          !!tooltip?.display
                         }
+                        forceOpen={!!focusedState?.active}
                         chartType={tooltipType}
                         tooltipContent={tooltip?.content || {}}
                         tooltipAppearance={tooltip?.appearance}

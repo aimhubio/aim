@@ -13,7 +13,7 @@ import areaGenerator from './areaGenerator';
 
 function drawLines(args: IDrawLinesArgs): void {
   const {
-    index,
+    id,
     nameKey,
     xScale,
     yScale,
@@ -47,7 +47,7 @@ function drawLines(args: IDrawLinesArgs): void {
       .join('path')
       .attr('class', `Line ${aggregationConfig?.isApplied ? 'aggregated' : ''}`)
       .attr('id', (d: IProcessedData) => `Line-${d.key}`)
-      .attr('clip-path', `url(#${nameKey}-lines-rect-clip-${index})`)
+      .attr('clip-path', `url(#${nameKey}-lines-rect-clip-${id})`)
       .attr('groupKey', (d: IProcessedData) => d.groupKey)
       .attr(
         'data-selector',
@@ -79,7 +79,7 @@ function drawLines(args: IDrawLinesArgs): void {
       .join('path')
       .attr('class', 'AggrArea')
       .attr('id', (d: IProcessedAggrData) => `AggrArea-${d.key}`)
-      .attr('clip-path', `url(#${nameKey}-lines-rect-clip-${index})`)
+      .attr('clip-path', `url(#${nameKey}-lines-rect-clip-${id})`)
       .attr('fill', (d: IProcessedAggrData) => d.color)
       .attr('fill-opacity', '0.3')
       .data(data.map((d: IProcessedAggrData) => d?.area || []))
@@ -105,7 +105,7 @@ function drawLines(args: IDrawLinesArgs): void {
       .join('path')
       .attr('class', 'AggrLine')
       .attr('id', (d: IProcessedAggrData) => `AggrLine-${d.key}`)
-      .attr('clip-path', `url(#${nameKey}-lines-rect-clip-${index})`)
+      .attr('clip-path', `url(#${nameKey}-lines-rect-clip-${id})`)
       .style('fill', 'none')
       .style('stroke', (d: IProcessedAggrData) => d.color)
       .style('stroke-dasharray', (d: IProcessedAggrData) => d.dasharray)

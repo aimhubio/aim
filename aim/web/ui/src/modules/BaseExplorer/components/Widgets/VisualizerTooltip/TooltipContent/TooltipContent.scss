@@ -1,0 +1,36 @@
+@use 'src/styles/abstracts' as *;
+
+.TooltipContent {
+  position: relative;
+  max-height: inherit;
+  font-size: $text-sm;
+  line-height: 15px;
+  color: $pico-80;
+  background-color: transparent;
+
+  &__container {
+    overflow: hidden;
+    max-height: inherit;
+    .PinnedSection {
+      overflow: hidden;
+      max-height: inherit;
+      display: flex;
+      padding: $space-xxxxxs;
+      & > div {
+        overflow-y: auto;
+        width: 14.375rem;
+        display: flex;
+        flex-direction: column;
+      }
+      & > .MuiDivider-vertical {
+        height: auto;
+      }
+    }
+    .UnpinnedSection {
+      max-height: inherit;
+      overflow: auto;
+      max-width: 20rem;
+      padding: $space-xxxxxs;
+    }
+  }
+}

@@ -12,6 +12,7 @@ import {
 import { IAxisScale } from 'types/utils/d3/getAxisScale';
 import { IUpdateFocusedChartArgs } from 'types/components/LineChart/LineChart';
 import { IProcessedData } from 'types/utils/d3/processLineChartData';
+import { IFocusedState } from 'types/services/models/metrics/metricsAppModel';
 
 import { AggregationAreaMethods } from 'utils/aggregateGroupData';
 import getRoundedValue from 'utils/roundValue';
@@ -20,11 +21,12 @@ import { formatValueByAlignment } from '../formatByAlignment';
 
 import { getDimensionValue } from './getDimensionValue';
 
-import { CircleEnum, ScaleEnum, HighlightEnum } from './index';
+import { CircleEnum, HighlightEnum, ScaleEnum } from './index';
 
 function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
   const {
     index,
+    id,
     nameKey,
     data,
     processedData = [],
@@ -58,7 +60,6 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
     return;
   }
 
-  const chartRect: DOMRect = visAreaRef.current?.getBoundingClientRect() || {};
   let rafID = 0;
 
   const { margin, width, height } = visBoxRef.current;
@@ -340,8 +341,9 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
   }
 
   function drawVerticalAxisLine(x: number): void {
-    if (drawAxisLines.y) {
+    if (drawAxisLines.y && plotBoxRef.current) {
       const { height, width } = plotBoxRef.current;
+
       const boundedHoverLineX = x < 0 ? 0 : x > width ? width : x;
 
       const axisLineData: IAxisLineData = {
@@ -480,7 +482,7 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
       .join('circle')
       .attr('class', 'HoverCircle')
       .attr('id', (d: INearestCircle) => `Circle-${d.key}`)
-      .attr('clip-path', `url(#${nameKey}-circles-rect-clip-${index})`)
+      .attr('clip-path', `url(#${nameKey}-circles-rect-clip-${id})`)
       .attr('cx', (d: INearestCircle) => d.x.toFixed(2))
       .attr('cy', (d: INearestCircle) => d.y.toFixed(2))
       .attr('r', CircleEnum.Radius)
@@ -500,7 +502,7 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
       .data(activeRuns)
       .join('circle')
       .attr('id', (d: IProcessedData) => `inProgressLineIndicator-${d.key}`)
-      .attr('clip-path', `url(#${nameKey}-circles-rect-clip-${index})`)
+      .attr('clip-path', `url(#${nameKey}-circles-rect-clip-${id})`)
       .attr('class', 'inProgressLineIndicator')
       .style('stroke', (d: IProcessedData) => d.color)
       .style('fill', (d: IProcessedData) => d.color)
@@ -597,6 +599,22 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
     const yPos = circle.y;
     const { boundedX, boundedY } = getBoundedPosition(xPos, yPos);
 
+    const chartRect: DOMRect =
+      visAreaRef.current?.getBoundingClientRect() || {};
+
+    const rect = {
+      top: +(margin.top + boundedY - CircleEnum.ActiveRadius).toFixed(2),
+      bottom: +(margin.top + boundedY + CircleEnum.ActiveRadius).toFixed(2),
+      left: +(margin.left + boundedX - CircleEnum.ActiveRadius).toFixed(2),
+      right: +(margin.left + boundedX + CircleEnum.ActiveRadius).toFixed(2),
+    };
+    // @TODO - remove "pointRect" after refactoring (removing old metrics explorer)
+    const pointRect = {
+      top: +(chartRect.top + rect.top).toFixed(2),
+      bottom: +(chartRect.top + rect.bottom).toFixed(2),
+      left: +(chartRect.left + rect.left).toFixed(2),
+      right: +(chartRect.left + rect.right).toFixed(2),
+    };
     return {
       key: circle.key,
       xValue,
@@ -604,14 +622,10 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
       xPos,
       yPos,
       inProgress: !!circle.inProgress,
-      chartIndex: index,
-      pointRect: {
-        top: chartRect.top + margin.top + boundedY - CircleEnum.ActiveRadius,
-        bottom: chartRect.top + margin.top + boundedY + CircleEnum.ActiveRadius,
-        left: chartRect.left + margin.left + boundedX - CircleEnum.ActiveRadius,
-        right:
-          chartRect.left + margin.left + boundedX + CircleEnum.ActiveRadius,
-      },
+      chartIndex: index || 0,
+      visId: id,
+      pointRect,
+      rect,
     };
   }
 
@@ -635,6 +649,7 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
       mouseX,
       attrRef.current.xScale,
     );
+
     drawXAxisLabel(newXValue);
     attrRef.current.currentXValue = newXValue;
     attrRef.current.dataSelector = dataSelector;
@@ -712,14 +727,8 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
   }
 
   function updateFocusedChart(args: IUpdateFocusedChartArgs = {}): void {
-    const {
-      xScale,
-      yScale,
-      focusedState,
-      activePoint,
-      currentXValue,
-      dataSelector,
-    } = attrRef.current;
+    const { xScale, yScale, focusedState, activePoint, dataSelector } =
+      attrRef.current;
 
     const {
       mousePos,
@@ -730,7 +739,7 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
     let mousePosition: [number, number] | [] = [];
     if (mousePos) {
       mousePosition = mousePos;
-    } else if (focusedState?.active && focusedState.chartIndex === index) {
+    } else if (focusedState?.active && focusedState.visId === id) {
       mousePosition = [
         xScale(focusedState.xValue),
         yScale(focusedState.yValue),
@@ -748,32 +757,47 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
         if (focusedStateActive) {
           drawFocusedCircle(activePoint.key, activePoint.inProgress);
         }
-        safeSyncHoverState({ activePoint, focusedStateActive, dataSelector });
+        const focusedState = getFocusedState(activePoint, focusedStateActive);
+        attrRef.current.focusedState = focusedState;
+
+        safeSyncHoverState({ activePoint, focusedState, dataSelector });
       }
     } else {
-      const xValue = currentXValue ?? xScale.domain()[1];
-      const mouseX = xScale(xValue);
-
-      const nearestCircles = getNearestCircles(mouseX);
-      clearHorizontalAxisLine();
-      clearYAxisLabel();
-
-      if (focusedStateActive) {
-        setLinesHighlightMode();
-        setCirclesHighlightMode();
-      }
-
-      drawVerticalAxisLine(mouseX);
-      drawCircles(nearestCircles);
-
-      const newXValue = getInvertedValue(
-        axesScaleType.xAxis,
-        mouseX,
-        attrRef.current.xScale,
-      );
-      drawXAxisLabel(newXValue);
-      attrRef.current.currentXValue = newXValue;
+      drawInitialAttributes();
     }
+  }
+
+  function drawInitialAttributes() {
+    const {
+      xScale,
+      focusedState,
+      currentXValue = xScale.domain()[1],
+    } = attrRef.current;
+
+    const xValue = focusedState?.active ? focusedState.xValue : currentXValue;
+    const mouseX = xScale(xValue);
+
+    if (isNaN(xValue) || isNaN(mouseX)) return;
+
+    const nearestCircles = getNearestCircles(mouseX);
+    clearHorizontalAxisLine();
+    clearYAxisLabel();
+
+    if (focusedState?.active) {
+      setLinesHighlightMode();
+      setCirclesHighlightMode();
+    }
+
+    drawVerticalAxisLine(mouseX);
+    drawCircles(nearestCircles);
+
+    const newXValue = getInvertedValue(
+      axesScaleType.xAxis,
+      mouseX,
+      attrRef.current.xScale,
+    );
+    drawXAxisLabel(newXValue);
+    attrRef.current.currentXValue = newXValue;
   }
 
   function setActiveLineAndCircle(
@@ -799,7 +823,10 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
         if (focusedStateActive) {
           drawFocusedCircle(activePoint.key, activePoint.inProgress);
         }
-        safeSyncHoverState({ activePoint, focusedStateActive, dataSelector });
+        const focusedState = getFocusedState(activePoint, focusedStateActive);
+        attrRef.current.focusedState = focusedState;
+
+        safeSyncHoverState({ activePoint, focusedState, dataSelector });
       }
     }
   }
@@ -818,7 +845,7 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
   }
 
   function handlePointClick(this: SVGElement, event: MouseEvent): void {
-    if (attrRef.current.focusedState?.chartIndex !== index) {
+    if (attrRef.current.focusedState?.visId !== id) {
       safeSyncHoverState({ activePoint: null });
     }
     const mousePos = d3.pointer(event);
@@ -827,26 +854,42 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
     if (closestCircle) {
       const nearestCircles = getNearestCircles(closestCircle.x);
       let activePoint = drawAttributes(closestCircle, nearestCircles, true);
+      const focusedState = getFocusedState(activePoint, true);
+      attrRef.current.focusedState = focusedState;
+
       drawFocusedCircle(activePoint.key, activePoint.inProgress);
       safeSyncHoverState({
         activePoint,
-        focusedStateActive: true,
+        focusedState,
         dataSelector: attrRef.current.dataSelector,
       });
     }
   }
 
+  function getFocusedState(
+    activePoint: IActivePoint,
+    focusedStateActive: boolean = false,
+  ): IFocusedState {
+    return {
+      active: focusedStateActive,
+      key: activePoint.key,
+      xValue: activePoint.xValue,
+      yValue: activePoint.yValue,
+      chartIndex: activePoint.chartIndex,
+      visId: activePoint.visId,
+    };
+  }
+
   function handleLineClick(this: SVGElement, event: MouseEvent): void {
-    if (attrRef.current.focusedState?.chartIndex !== index) {
+    if (attrRef.current.focusedState?.visId !== id) {
       safeSyncHoverState({ activePoint: null });
     }
     const mousePos = d3.pointer(event);
-
     updateFocusedChart({ mousePos, focusedStateActive: false, force: true });
   }
 
   function handleLeaveFocusedPoint(event: MouseEvent): void {
-    if (attrRef.current.focusedState?.chartIndex !== index) {
+    if (attrRef.current.focusedState?.visId !== id) {
       safeSyncHoverState({ activePoint: null });
     }
     const mousePos = d3.pointer(event);
@@ -924,8 +967,10 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
   // call on every render
   setScaledValues(data);
   drawActiveRunsIndicators(processedData);
-  if (attrRef.current.focusedState) {
+  if (attrRef.current.focusedState?.key) {
     updateFocusedChart({ force: true });
+  } else {
+    drawInitialAttributes();
   }
 }
 export default drawHoverAttributes;
