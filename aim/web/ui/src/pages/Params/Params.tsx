@@ -122,7 +122,7 @@ const Params = ({
       isVisibleColorIndicator,
       onAxisBrushExtentChange,
       brushExtents,
-      chartTitle: chartTitleData[chartData[0].chartIndex],
+      chartTitle: chartTitleData[chartData.data[0]?.chartIndex],
     }));
   }, [
     highPlotData,
