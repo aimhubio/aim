@@ -54,10 +54,10 @@ function Metrics(
       ignoreOutliers: props.ignoreOutliers,
       highlightMode: props.highlightMode,
       aggregatedData: props.aggregatedData?.filter(
-        (data) => data.chartIndex === chartData[0].chartIndex,
+        (data) => data.chartIndex === chartData[0]?.chartIndex,
       ),
       zoom: props.zoom,
-      chartTitle: props.chartTitleData[chartData[0].chartIndex!],
+      chartTitle: props.chartTitleData[chartData[0]?.chartIndex!],
       aggregationConfig: props.aggregationConfig,
       alignmentConfig: props.alignmentConfig,
       onZoomChange: props.onZoomChange,
