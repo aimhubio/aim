@@ -1,7 +1,7 @@
 # Changelog
 
-## 3.17.1
-- Fix the UI crashing issue when opening the Metrics, Params, or Scatters Explorers (KaroMourad)
+## 3.17.1 Mar 24, 2023
+- Avoid explorer crashing when accessing empty chart values (KaroMourad)
 
 ## 3.17.0 Mar 24, 2023
 
