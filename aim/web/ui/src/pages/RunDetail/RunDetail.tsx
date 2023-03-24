@@ -27,10 +27,14 @@ import Spinner from 'components/kit/Spinner';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 import { DATE_WITH_SECONDS } from 'config/dates/dates';
+import { PathEnum } from 'config/enums/routesEnum';
+
+import CompareSelectedRunsPopover from 'pages/Metrics/components/Table/CompareSelectedRunsPopover';
 
 import runDetailAppModel from 'services/models/runs/runDetailAppModel';
 import * as analytics from 'services/analytics';
 import notesModel from 'services/models/notes/notesModel';
+import { AppNameEnum } from 'services/models/explorer';
 
 import { setDocumentTitle } from 'utils/document/documentTitle';
 import { processDurationTime } from 'utils/processDurationTime';
@@ -300,16 +304,26 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
                               } / ${runData?.runInfo?.name || ''}`}
                             >
                               <div className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__container'>
+                                <Link
+                                  to={PathEnum.Experiment.replace(
+                                    ':experimentId',
+                                    runData?.runInfo?.experiment?.id,
+                                  )}
+                                  className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__experimentName'
+                                >
+                                  <Text tint={100} size={16} weight={600}>
+                                    {runData?.runInfo?.experiment?.name ||
+                                      'default'}
+                                  </Text>
+                                </Link>
                                 <Text
                                   tint={100}
                                   size={16}
                                   weight={600}
-                                  className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__title'
+                                  className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__runName'
                                 >
-                                  {`${
-                                    runData?.runInfo?.experiment?.name ||
-                                    'default'
-                                  } / ${runData?.runInfo?.name || ''}`}
+                                  {' '}
+                                  / {runData?.runInfo?.name || ''}
                                 </Text>
                               </div>
                             </Tooltip>
@@ -395,6 +409,13 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
                     />
                   )}
                 </div>
+              </div>
+              <div className='RunDetail__runDetailContainer__appBarContainer__appBarBox__explore'>
+                <CompareSelectedRunsPopover
+                  appName={'run' as AppNameEnum} // @TODO: change to AppNameEnum.RUN
+                  query={`run.hash == "${runHash}"`}
+                  buttonText={'Explore'}
+                />
               </div>
               <div className='RunDetail__runDetailContainer__appBarContainer__appBarBox__actionContainer'>
                 <NavLink to={`${url}/settings`}>

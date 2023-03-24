@@ -22,6 +22,7 @@ export enum AppNameEnum {
   SCATTERS = 'scatters',
   FIGURES = 'figures',
   AUDIOS = 'audios',
+  TEXT = 'text',
 }
 
 /**

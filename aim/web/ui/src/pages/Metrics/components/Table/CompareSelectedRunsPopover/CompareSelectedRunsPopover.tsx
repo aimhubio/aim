@@ -26,6 +26,7 @@ function CompareSelectedRunsPopover({
   appName,
   query,
   disabled = false,
+  buttonText,
 }: ICompareSelectedRunsPopoverProps): React.FunctionComponentElement<React.ReactNode> {
   const history = useHistory();
 
@@ -43,6 +44,7 @@ function CompareSelectedRunsPopover({
         const baseExplorers: string[] = [
           AppNameEnum.FIGURES,
           AppNameEnum.AUDIOS,
+          AppNameEnum.TEXT,
         ];
 
         if (baseExplorers.indexOf(value) !== -1) {
@@ -69,7 +71,6 @@ function CompareSelectedRunsPopover({
           });
           url = `/${value}?select=${searchQuery}`;
         }
-
         analytics.trackEvent(
           ANALYTICS_EVENT_KEYS[appName]?.table?.compareSelectedRuns,
         );
@@ -108,7 +109,7 @@ function CompareSelectedRunsPopover({
           >
             <Icon fontSize={18} name='compare' />
             <Text size={14} tint={disabled ? 50 : 100}>
-              Compare
+              {buttonText ?? 'Compare'}
             </Text>
           </Button>
         )}
@@ -129,7 +130,7 @@ function CompareSelectedRunsPopover({
                   >
                     {item}
                   </Text>
-                  <Tooltip title='Compare in new tab'>
+                  <Tooltip title={`${buttonText ?? 'Compare'} in a new tab`}>
                     <div>
                       <Icon
                         box

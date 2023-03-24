@@ -365,4 +365,5 @@ export const ANALYTICS_EVENT_KEYS = {
   },
   figures: {} as any,
   audios: {} as any,
+  text: {} as any,
 };

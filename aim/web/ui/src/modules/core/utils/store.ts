@@ -1,4 +1,4 @@
-import { get as getValue, set as setValue } from 'lodash-es';
+import { get as getValue, omit, set as setValue } from 'lodash-es';
 import produce, { Draft } from 'immer';
 
 import { buildObjectHash } from 'modules/core/utils/hashing';
@@ -30,11 +30,10 @@ export function createSliceState<T, Store = any>(
   ): SliceMethods<T> => {
     function update(newState: Partial<T>) {
       const prevState = getValue(get(), name);
-      const updatedState = {
-        ...prevState,
-        ...newState,
-        isInitial: initialStateHash === buildObjectHash(newState),
-      };
+      const updatedState = { ...prevState, ...newState };
+      updatedState.isInitial =
+        initialStateHash === buildObjectHash(omit(updatedState, 'isInitial'));
+
       set(
         produce<T>((draft_state: Draft<T>) => {
           // @ts-ignore

@@ -15,30 +15,26 @@ import {
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
 import { Badge, Icon, Text, ToggleButton } from 'components/kit';
-import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import ErrorBoundary from 'components/ErrorBoundary';
 
 import { Order } from 'modules/core/pipeline';
+import { SelectOption } from 'modules/BaseExplorer/components/Controls/CaptionProperties';
 
-import { IGroupingSelectOption } from 'types/services/models/metrics/metricsAppModel';
-
-import { SelectOption } from '../../Controls/CaptionProperties';
-
-import { IGroupingPopoverProps } from './GroupingPopover.d';
+import { IGroupingPopoverProps, IGroupingSelectOption } from './';
 
 import './GroupingPopover.scss';
 
-function GroupingPopover({
-  groupName,
-  advancedComponent,
-  inputLabel,
-  ...props
-}: IGroupingPopoverProps): React.FunctionComponentElement<React.ReactNode> {
-  const { engine } = props;
+function GroupingPopover(props: IGroupingPopoverProps) {
+  const {
+    groupName,
+    advancedComponent,
+    inputLabel,
+    engine: { useStore, pipeline, groupings },
+  } = props;
   const [searchValue, setSearchValue] = React.useState('');
-  const availableModifiers = engine.useStore(
-    engine.pipeline.additionalDataSelector,
-  );
-  const currentValues = engine.useStore(engine.groupings.currentValuesSelector);
+
+  const availableModifiers = useStore(pipeline.additionalDataSelector);
+  const currentValues = useStore(groupings.currentValuesSelector);
 
   const handleSelect = React.useCallback(
     (values: IGroupingSelectOption[], order?: Order[]) => {
@@ -57,17 +53,11 @@ function GroupingPopover({
           orders: [],
         },
       );
-      engine.groupings.update({
-        ...currentValues,
-        [groupName]: { fields, orders },
-      });
 
-      engine.pipeline.group({
-        ...currentValues,
-        [groupName]: { fields, orders },
-      });
+      groupings.update({ ...currentValues, [groupName]: { fields, orders } });
+      pipeline.group({ ...currentValues, [groupName]: { fields, orders } });
     },
-    [engine.groupings, engine.pipeline, currentValues, groupName],
+    [groupings, pipeline, currentValues, groupName],
   );
 
   const onChange = React.useCallback(
@@ -274,5 +264,7 @@ function GroupingPopover({
     </ErrorBoundary>
   );
 }
+
+GroupingPopover.displayName = 'GroupingPopover';
 
 export default GroupingPopover;

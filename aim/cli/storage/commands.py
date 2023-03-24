@@ -47,7 +47,8 @@ def v2to3(ctx, drop_existing, skip_failed_runs, skip_checks):
 @upgrade.command(name='3.11+')
 @click.argument('hashes', nargs=-1, type=str)
 @click.pass_context
-def to_3_11(ctx, hashes):
+@click.option('-y', '--yes', is_flag=True, help='Automatically confirm prompt')
+def to_3_11(ctx, hashes, yes):
     """Optimize Runs Metrics data for read access."""
     if len(hashes) == 0:
         click.echo('Please specify at least one Run to update.')
@@ -57,9 +58,12 @@ def to_3_11(ctx, hashes):
 
     matched_hashes = match_runs(repo_path, hashes)
     remaining_runs = []
-    confirmed = click.confirm(f'This command will optimize the metrics data for {len(matched_hashes)} runs from aim '
-                              f'repo located at \'{repo_path}\'. This process might take a while. '
-                              f'Do you want to proceed?')
+    if yes:
+        confirmed = True
+    else:
+        confirmed = click.confirm(f'This command will optimize the metrics data for {len(matched_hashes)} '
+                                  f'runs from aim repo located at \'{repo_path}\'. This process might take a while. '
+                                  f'Do you want to proceed?')
     if not confirmed:
         return
 
@@ -88,7 +92,8 @@ def to_3_11(ctx, hashes):
 @storage.command(name='restore')
 @click.argument('hashes', nargs=-1, type=str)
 @click.pass_context
-def restore_runs(ctx, hashes):
+@click.option('-y', '--yes', is_flag=True, help='Automatically confirm prompt')
+def restore_runs(ctx, hashes, yes):
     """Rollback Runs data for given run hashes to the previous metric format. """
     if len(hashes) == 0:
         click.echo('Please specify at least one Run to delete.')
@@ -97,8 +102,11 @@ def restore_runs(ctx, hashes):
     repo = Repo.from_path(repo_path)
 
     matched_hashes = match_runs(repo_path, hashes, lookup_dir='bcp')
-    confirmed = click.confirm(f'This command will restore {len(matched_hashes)} runs from aim repo '
-                              f'located at \'{repo_path}\'. Do you want to proceed?')
+    if yes:
+        confirmed = True
+    else:
+        confirmed = click.confirm(f'This command will restore {len(matched_hashes)} runs from aim repo '
+                                  f'located at \'{repo_path}\'. Do you want to proceed?')
     if not confirmed:
         return
 

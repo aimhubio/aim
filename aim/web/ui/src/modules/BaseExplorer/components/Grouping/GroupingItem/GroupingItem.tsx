@@ -24,14 +24,13 @@ function GroupingItem({
   title,
   ...props
 }: IGroupingItemProps): React.FunctionComponentElement<React.ReactNode> {
-  const { engine } = props;
-  const availableModifiers = engine.useStore(
-    engine.pipeline.additionalDataSelector,
-  );
-  const currentValues = engine.useStore(engine.groupings.currentValuesSelector);
+  const {
+    engine: { useStore, pipeline, groupings },
+  } = props;
+  const availableModifiers = useStore(pipeline.additionalDataSelector);
+  const currentValues = useStore(groupings.currentValuesSelector);
   const isDisabled =
-    engine.useStore(engine.pipeline.statusSelector) ===
-    PipelineStatusEnum.Executing;
+    useStore(pipeline.statusSelector) === PipelineStatusEnum.Executing;
 
   return (
     <ErrorBoundary>
@@ -83,5 +82,7 @@ function GroupingItem({
     </ErrorBoundary>
   );
 }
+
+GroupingItem.displayName = 'GroupingItem';
 
 export default React.memo<IGroupingItemProps>(GroupingItem);

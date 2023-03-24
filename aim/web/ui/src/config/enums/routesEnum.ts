@@ -15,10 +15,12 @@ enum PathEnum {
   Images_Explore_Id = '/images/:appId',
   Figures_Explorer = '/figures',
   Audios_Explorer = '/audios',
+  Text_Explorer = '/text',
   New_Figures_Explorer = '/new-fig',
   Boards = '/boards',
   Board = '/boards/:boardId',
   Board_Edit = '/boards/:boardId/edit',
+  Metrics_Explorer = '/metrics_v2',
 }
 
 export { PathEnum };

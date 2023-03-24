@@ -5,11 +5,13 @@ import {
   RunsSearchQueryParams,
 } from 'modules/core/api/runsApi';
 import createPipeline, {
+  CustomPhaseExecutionArgs,
   GroupType,
   Order,
   PipelineExecutionOptions,
   PipelineOptions,
   PipelinePhasesEnum,
+  PipelineResult,
 } from 'modules/core/pipeline';
 import getUrlSearchParam from 'modules/core/utils/getUrlSearchParam';
 import getUpdatedUrl from 'modules/core/utils/getUpdatedUrl';
@@ -42,6 +44,8 @@ export interface IPipelineEngine<TObject, TStore> {
     destroy: () => void;
     reset: () => void;
     initialize: () => () => void;
+    executeCustomPhase: (args: CustomPhaseExecutionArgs) => void;
+    resetCustomPhaseArgs: () => void;
   } & Omit<PipelineStateBridge<TObject, TStore>, 'selectors'> &
     PipelineStateBridge<TObject, TStore>['selectors'];
 }
@@ -127,7 +131,17 @@ function createPipelineEngine<TStore, TObject>(
   ): void {
     const currentGroupings = state.getCurrentGroupings();
 
-    state.setCurrentQuery(params);
+    // @TODO add a "customMetric" to the query params dynamically
+    const customMetric =
+      store.getState().visualizations.vis1.controls.axesProperties?.alignment
+        .metric;
+
+    const queryParams = {
+      ...params,
+      ...(customMetric ? { x_axis: customMetric } : {}),
+    };
+
+    state.setCurrentQuery(queryParams);
     state.setError(null);
 
     if (!isInternal && pipelineOptions.persist) {
@@ -162,10 +176,11 @@ function createPipelineEngine<TStore, TObject>(
     pipeline
       .execute({
         query: {
-          params,
+          params: queryParams,
           ignoreCache: true,
         },
         group: groupOptions,
+        custom: state.getCurrentCustomPhaseArgs(),
       })
       .then((res) => {
         // collect result
@@ -252,6 +267,7 @@ function createPipelineEngine<TStore, TObject>(
           params: state.getCurrentQuery(),
         },
         group: normalizeGroupConfig(config),
+        custom: state.getCurrentCustomPhaseArgs(),
       })
       .then((res) => {
         const { data, additionalData, foundGroups } = res;
@@ -316,6 +332,36 @@ function createPipelineEngine<TStore, TObject>(
     };
   }
 
+  function resetCustomPhaseArgs() {
+    state.setCurrentCustomPhaseArgs(null);
+  }
+
+  function executeCustomPhase(args: CustomPhaseExecutionArgs) {
+    state.setCurrentCustomPhaseArgs(args);
+
+    pipeline
+      .execute({
+        query: {
+          params: state.getCurrentQuery(),
+        },
+        group: normalizeGroupConfig(state.getCurrentGroupings()),
+        custom: args,
+      })
+      .then((res: PipelineResult) => {
+        const { data, foundGroups, additionalData, queryableData } = res;
+        // save to state
+        state.setResult(data, foundGroups, additionalData, queryableData);
+      })
+      .catch((err) => {
+        resetCustomPhaseArgs();
+        state.setError(err);
+        state.changeCurrentPhaseOrStatus(PipelineStatusEnum.Failed);
+        if (err && err.message !== 'SyntaxError') {
+          notificationsEngine?.error(err.message);
+        }
+      });
+  }
+
   return {
     state: {
       pipeline: state.initialState,
@@ -328,6 +374,8 @@ function createPipelineEngine<TStore, TObject>(
       group,
       reset,
       initialize,
+      executeCustomPhase,
+      resetCustomPhaseArgs,
       destroy: () => {
         /**
          * This line creates some bugs right now, use this after creating complete clean-up mechanism for resources
