@@ -63,7 +63,7 @@ class Object:
         self.methods = methods
         self.items = []
 
-    @memoize_async
+    # @memoize_async
     async def query(self, query=""):
         data = await search(self.type, query)
         data = create_proxy(data.to_py())

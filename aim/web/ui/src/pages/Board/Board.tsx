@@ -41,7 +41,12 @@ function Board({
   onNotificationDelete,
   saveBoard,
 }: any): React.FunctionComponentElement<React.ReactNode> {
-  const { pyodide, namespace, isLoading: pyodideIsLoading } = usePyodide();
+  const {
+    pyodide,
+    namespace,
+    isLoading: pyodideIsLoading,
+    exec,
+  } = usePyodide();
 
   const editorValue = React.useRef(data.code);
   const [result, setResult] = React.useState([]);
@@ -123,22 +128,20 @@ state = {}
     }
   }, [pyodide, execute]);
 
-  const runParsedCode = React.useCallback(() => {
+  const runParsedCode = React.useCallback(async () => {
     if (pyodide !== null) {
       try {
         let vizMapResetCode = `viz_map_keys = {}
 `;
         pyodide?.runPython(vizMapResetCode, { globals: namespace });
-        pyodide
-          ?.runPythonAsync(execCode, { globals: namespace })
-          .then(() => {
-            setError(null);
-            setIsProcessing(false);
-          })
-          .catch((ex: Error) => {
-            setError(ex.message);
-            setIsProcessing(false);
-          });
+        try {
+          await exec(execCode);
+          setError(null);
+          setIsProcessing(false);
+        } catch (ex: any) {
+          setError(ex.message);
+          setIsProcessing(false);
+        }
       } catch (ex: unknown) {
         // eslint-disable-next-line no-console
         console.log(ex);

@@ -4,6 +4,7 @@ import pyodideStore, { loadPyodideInstance } from './pyodide';
 
 function usePyodide() {
   let [isLoading, setIsLoading] = React.useState(pyodideStore.isLoading);
+  let [isRunning, setIsRunning] = React.useState(pyodideStore.isRunning);
   let [pyodide, setPyodide] = React.useState(pyodideStore.current);
   let namespace = React.useRef(pyodideStore.namespace);
 
@@ -27,8 +28,11 @@ function usePyodide() {
 
   return {
     isLoading,
+    isRunning,
     pyodide,
     namespace: namespace.current,
+    exec: pyodideStore.exec,
+    format: pyodideStore.format,
   };
 }
 

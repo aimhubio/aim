@@ -65,6 +65,11 @@ const Board = React.lazy(
   () => import(/* webpackChunkName: "board" */ 'pages/Board/BoardContainer'),
 );
 
+const Reports = React.lazy(
+  () =>
+    import(/* webpackChunkName: "reports" */ 'pages/Reports/ReportsContainer'),
+);
+
 export interface IRoute {
   path: PathEnum;
   component:
@@ -111,6 +116,14 @@ const routes = {
     displayName: 'Board',
     isExact: true,
     title: pageTitlesEnum.BOARD,
+  },
+  REPORTS: {
+    path: PathEnum.Reports,
+    component: Reports,
+    showInSidebar: false,
+    displayName: 'Reports',
+    isExact: true,
+    title: pageTitlesEnum.REPORTS,
   },
   RUNS: {
     path: PathEnum.Runs,

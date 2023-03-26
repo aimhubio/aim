@@ -16,6 +16,7 @@ const pageTitles = {
   BOARDS: 'Boards',
   BOARD: '',
   METRICS_EXPLORER_V2: 'Metrics Explorer v2',
+  REPORTS: 'Reports',
 };
 
 export default pageTitles;
