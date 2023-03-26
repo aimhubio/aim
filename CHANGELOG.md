@@ -1,6 +1,9 @@
 # Changelog
 
-## Unreleased
+## 3.17.1 Mar 24, 2023
+- Avoid explorer crashing when accessing empty chart values (KaroMourad)
+
+## 3.17.0 Mar 24, 2023
 
 ### Enhancements
 - Expose `run_name` and `run_hash` parameters to the `aim.sdk.adapters.pytorch_lightning.AimLogger` adapter (constd)
@@ -12,9 +15,9 @@
 
 ### Fixes
 
-- Add support for Path type to the repo attribute of the Run class(emekaokoli19)
+- Add support for Path type to the repo attribute of the Run class (emekaokoli19)
 - Add support for jax>0.4.0 (n-gao)
-- Add -y option to Aim CLI commands(emekaokoli19)
+- Add -y option to Aim CLI commands (emekaokoli19)
 - Fix issue with toggling lines visibility during live update (roubkar)
 - Fix the issue when HF model doesn't have `num_labels` attribute (mihran113)
 - Fix table cell scrolling issue in the Texts tab of the Run page (roubkar)
