@@ -195,8 +195,11 @@ function MediaPanel({
   function addUriToList(blobUrl: string) {
     if (!blobsURIModel.getState()[blobUrl]) {
       if (!blobUriArray.current.includes(blobUrl)) {
+        console.log("test log")
         blobUriArray.current.push(blobUrl);
         getBatch();
+      } else {
+        console.log("getBatch not started, test log")
       }
     }
   }
