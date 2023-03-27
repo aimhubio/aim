@@ -85,12 +85,13 @@ class Client:
 
         # open a channel with router
         if ssl_certfile:
-            self._call_credentials = grpc.access_token_call_credentials(bearer_token)
             with open(ssl_certfile, 'rb') as f:
                 root_certificates = grpc.ssl_channel_credentials(f.read())
-            root_certificates = grpc.composite_channel_credentials(
-                root_certificates, self._call_credentials
-            )
+            if bearer_token:
+                self._call_credentials = grpc.access_token_call_credentials(bearer_token)
+                root_certificates = grpc.composite_channel_credentials(
+                    root_certificates, self._call_credentials
+                )
             self._remote_router_channel = grpc.secure_channel(self.remote_path, root_certificates, options=options)
         else:
             self._remote_router_channel = grpc.insecure_channel(self.remote_path, options=options)
