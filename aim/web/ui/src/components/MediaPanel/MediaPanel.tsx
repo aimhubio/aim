@@ -194,8 +194,10 @@ function MediaPanel({
 
   function addUriToList(blobUrl: string) {
     if (!blobsURIModel.getState()[blobUrl]) {
-      blobUriArray.current.push(blobUrl);
-      getBatch();
+      if (!blobUriArray.current.includes(blobUrl)) {
+        blobUriArray.current.push(blobUrl);
+        getBatch();
+      }
     }
   }
 
