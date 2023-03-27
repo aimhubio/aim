@@ -19,6 +19,7 @@ import Highlighting from 'modules/BaseExplorer/components/Controls/Highlighting'
 import Zoom from 'modules/BaseExplorer/components/Controls/Zoom';
 import ConfigureTooltip from 'modules/BaseExplorer/components/Controls/ConfigureTooltip';
 import Legends from 'modules/BaseExplorer/components/Controls/Legends';
+import CustomWidgetControl from 'modules/BaseExplorer/components/Controls/CustomWidgetControl';
 
 import { AimFlatObjectBase } from 'types/core/AimObjects';
 
@@ -151,6 +152,16 @@ export const getMetricsDefaultConfig = (): typeof defaultHydration => {
         initialState: {
           display: CONTROLS_DEFAULT_CONFIG.metrics.legends.display,
           mode: CONTROLS_DEFAULT_CONFIG.metrics.legends.mode,
+        },
+        persist: PersistenceTypesEnum.Url,
+      },
+    };
+    draft.customWidget = {
+      component: CustomWidgetControl,
+      state: {
+        initialState: {
+          display: false,
+          code: '',
         },
         persist: PersistenceTypesEnum.Url,
       },

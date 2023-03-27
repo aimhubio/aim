@@ -92,11 +92,11 @@ function Board({
         const packagesList = packagesListProxy.toJs();
         packagesListProxy.destroy();
 
-        for await (const lib of packagesList) {
-          await pyodide?.loadPackage('micropip');
-          const micropip = pyodide?.pyimport('micropip');
-          await micropip.install(lib);
-        }
+        // for await (const lib of packagesList) {
+        //   await pyodide?.loadPackage('micropip');
+        //   const micropip = pyodide?.pyimport('micropip');
+        //   await micropip.install(lib);
+        // }
 
         await pyodide?.loadPackagesFromImports(code);
 

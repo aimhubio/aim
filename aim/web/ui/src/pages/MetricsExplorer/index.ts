@@ -4,6 +4,7 @@ import { PersistenceTypesEnum } from 'modules/core/engine/types';
 import {
   VisualizerTooltip,
   VisualizerLegends,
+  CustomWidget,
 } from 'modules/BaseExplorer/components/Widgets';
 
 import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
@@ -40,6 +41,9 @@ const MetricsExplorer = renderer(
           },
           legends: {
             component: VisualizerLegends,
+          },
+          widget: {
+            component: CustomWidget,
           },
         },
       },
