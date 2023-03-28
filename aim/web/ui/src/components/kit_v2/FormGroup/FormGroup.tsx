@@ -29,16 +29,14 @@ function FormGroup({
               return (
                 <FormGroupRow key={id}>
                   {row.content && (
-                    <FormGroupContent flex='1 100%'>
-                      {row.content}
-                    </FormGroupContent>
+                    <FormGroupContent>{row.content}</FormGroupContent>
                   )}
                   {row.control && (
                     <FormGroupControl>{row.control}</FormGroupControl>
                   )}
                   {row.actions?.map((action, id: number) => {
                     return (
-                      <FormGroupActions display='flex' key={id}>
+                      <FormGroupActions key={id}>
                         <Box>{action.component}</Box>
                       </FormGroupActions>
                     );

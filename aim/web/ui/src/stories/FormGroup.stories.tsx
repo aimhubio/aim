@@ -1,9 +1,19 @@
 import React from 'react';
 
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import { IconX } from '@tabler/icons-react';
+import { IconRotate2 } from '@tabler/icons-react';
 
-import { Button, IconButton, Box, Text, Select } from 'components/kit_v2';
+import {
+  Button,
+  IconButton,
+  Box,
+  Text,
+  Select,
+  ControlsButton,
+  Popover,
+  ToggleButton,
+  Input,
+} from 'components/kit_v2';
 import FormGroupComponent from 'components/kit_v2/FormGroup/FormGroup';
 import { IFormGroupProps } from 'components/kit_v2/FormGroup/FormGroup.d';
 
@@ -13,137 +23,157 @@ export default {
   argTypes: {},
 } as ComponentMeta<typeof FormGroupComponent>;
 const Template: ComponentStory<typeof FormGroupComponent> = (args) => {
-  const [multipleValues, setMultipleValues] = React.useState<string[]>([]);
+  const [alignment, setAlignment] = React.useState<string>('');
 
-  const handleChange = React.useCallback(
-    (val: string) => {
-      if (multipleValues.indexOf(val) === -1) {
-        setMultipleValues([...multipleValues, val]);
-      } else {
-        const filteredValues = multipleValues.filter((v) => v !== val);
-        setMultipleValues(filteredValues);
-      }
-    },
-    [multipleValues],
-  );
+  const handleChangeSelect = React.useCallback((val: string) => {
+    setAlignment(val);
+  }, []);
 
   const data: IFormGroupProps['data'] = [
     {
       sectionFields: [
         {
-          content: <Text as='span'>Row item 1</Text>,
+          content: <Text>X-axis alignment</Text>,
           control: (
             <Select
-              trigger={<Button>Select Values</Button>}
-              multiple
-              searchable
-              value={multipleValues}
-              onValueChange={handleChange}
+              trigger={<Button>Select</Button>}
+              // searchable
+              popoverProps={{
+                onOpenAutoFocus: (e: any) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                },
+              }}
+              onValueChange={handleChangeSelect}
+              value={alignment}
               options={[
                 {
-                  group: 'Group 1',
                   options: [
-                    { label: 'Option 1', value: 'option-1' },
+                    { label: 'Step', value: 'step' },
                     {
-                      label: 'Option 2',
-                      value: 'option-2',
+                      label: 'Epoch',
+                      value: 'epoch',
                     },
                     {
-                      label: 'Option 3',
-                      value: 'option-3',
+                      label: 'Relative time',
+                      value: 'relative-time',
                     },
                     {
-                      label: 'Option 4',
-                      value: 'option-4',
-                    },
-                    {
-                      label: 'Option 5',
-                      value: 'option-5',
-                    },
-                    { label: 'Option 6', value: 'option-6' },
-                    { label: 'Option 7', value: 'option-7' },
-                  ],
-                },
-                {
-                  group: 'Group 2',
-                  options: [
-                    { label: 'Option 1', value: 'option2-1' },
-                    {
-                      label: 'Option 2',
-                      value: 'option2-2',
-                    },
-                    {
-                      label: 'Option 3',
-                      value: 'option2-3',
+                      label: 'Absolute time',
+                      value: 'absolute-time',
                     },
                   ],
                 },
                 {
-                  group: 'Group 3',
+                  group: 'Metric',
                   options: [
-                    { label: 'Option 1', value: 'option3-1' },
-                    {
-                      label: 'Option 2',
-                      value: 'option3-2',
-                    },
-                    {
-                      label: 'Option 3',
-                      value: 'option3-3',
-                    },
-                  ],
-                },
-                {
-                  group: 'Group 4',
-                  options: [
-                    { label: 'Option 1', value: 'option4-1' },
-                    {
-                      label: 'Option 2',
-                      value: 'option4-2',
-                    },
-                    {
-                      label: 'Option 3',
-                      value: 'option4-3',
-                    },
+                    { label: 'Loss', value: 'loss' },
+                    { label: 'Accuracy', value: 'accuracy' },
+                    { label: 'bleu', value: 'bleu' },
                   ],
                 },
               ]}
             />
           ),
         },
+      ],
+    },
+    {
+      sectionFields: [
         {
-          content: (
-            <Box>
-              {multipleValues.map((value, id) => {
-                return (
-                  <Box key={id} display='flex' ai='center' gap='$2'>
-                    <Text as='span'>{value}</Text>
-                    <IconButton
-                      onClick={() => {
-                        handleChange(value);
-                      }}
-                      variant='ghost'
-                      icon={<IconX />}
-                    />
-                  </Box>
-                );
-              })}
+          content: <Text>Y-axis range</Text>,
+          control: (
+            <Box display='flex'>
+              <Input
+                min='0'
+                type='number'
+                css={{ width: '90px', mr: '$5' }}
+                placeholder='Min'
+              />
+              <Input type='number' css={{ width: '90px' }} placeholder='Max' />
             </Box>
           ),
-        },
-        {
-          content: <span>Row item 1</span>,
-          control: <Button>button</Button>,
           actions: [
             {
-              component: <IconButton variant='ghost' icon={<IconX />} />,
+              component: (
+                <IconButton
+                  color='secondary'
+                  size='lg'
+                  icon={<IconRotate2 />}
+                  variant='static'
+                />
+              ),
+            },
+          ],
+        },
+        {
+          content: <Text>X-axis range</Text>,
+          control: (
+            <Box display='flex'>
+              <Input css={{ width: '90px', mr: '$5' }} placeholder='Min' />
+              <Input css={{ width: '90px' }} placeholder='Max' />
+            </Box>
+          ),
+          actions: [
+            {
+              component: (
+                <IconButton
+                  color='secondary'
+                  size='lg'
+                  icon={<IconRotate2 />}
+                  variant='static'
+                />
+              ),
             },
           ],
         },
       ],
     },
+    {
+      sectionFields: [
+        {
+          content: <Text>X-axis scale</Text>,
+          control: (
+            <ToggleButton
+              value='linear'
+              onChange={() => {}}
+              leftLabel='Linear'
+              leftValue='linear'
+              rightLabel='Log'
+              rightValue='log'
+            />
+          ),
+        },
+        {
+          content: <Text>Y-axis scale</Text>,
+          control: (
+            <ToggleButton
+              value='linear'
+              onChange={() => {}}
+              leftLabel='Linear'
+              leftValue='linear'
+              rightLabel='Log'
+              rightValue='log'
+            />
+          ),
+        },
+      ],
+    },
   ];
-
-  return <FormGroupComponent data={data} />;
+  return (
+    <Popover
+      popperProps={{
+        css: {
+          padding: '0',
+        },
+      }}
+      title='Axes properties'
+      trigger={({ open }) => (
+        <ControlsButton open={open}>Axes properties</ControlsButton>
+      )}
+      content={<FormGroupComponent data={data} />}
+    />
+  );
 };
 
 export const FormGroup = Template.bind({});

@@ -34,17 +34,20 @@ const Trigger = styled('button', {
     leftIcon: { true: {} },
     size: {
       md: {
+        minHeight: '$3',
         height: '$3',
         pl: '$5',
         pr: '$4',
       },
       lg: {
-        height: '$5',
+        minHeight: '$5',
+        height: '$3',
         pl: '$6',
         pr: '$5',
       },
       xl: {
-        height: '$7',
+        minHeight: '$7',
+        height: '$3',
         pl: '$7',
         pr: '$6',
       },

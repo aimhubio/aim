@@ -13,7 +13,7 @@ const FormGroupSection = styled(Box, {
   display: 'flex',
   fd: 'column',
   p: '$7',
-  gap: '2px',
+  gap: '4px',
   borderBottom: '1px solid $border10',
   '&:last-child': {
     borderBottom: 'none',
@@ -28,6 +28,7 @@ const FormGroupActions = styled(Box, {
 });
 
 const FormGroupControl = styled(Box, {
+  ml: '$5',
   minWidth: 'fit-content',
 });
 
