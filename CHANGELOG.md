@@ -1,6 +1,11 @@
 # Changelog
 
+## 3.17.2 Mar 28, 2023
+
+- Fix explorer crashing issue caused by adding a `displayName` property in Grouping component (KaroMourad)
+
 ## 3.17.1 Mar 24, 2023
+
 - Avoid explorer crashing when accessing empty chart values (KaroMourad)
 
 ## 3.17.0 Mar 24, 2023
