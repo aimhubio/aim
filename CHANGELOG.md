@@ -1,6 +1,6 @@
 # Changelog
 
-- Fix failing a search query on Base Explorers (KaroMourad)
+- Fix explorer crashing issue caused by adding a `displayName` property in Grouping component (KaroMourad)
 
 ## 3.17.1 Mar 24, 2023
 - Avoid explorer crashing when accessing empty chart values (KaroMourad)
