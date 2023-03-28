@@ -45,6 +45,11 @@ export type RunsSearchQueryParams = {
 
   exclude_params?: boolean;
   exclude_traces?: boolean;
+
+  /**
+   * This parameter is used to align metrics by custom metric
+   */
+  x_axis?: string;
 };
 
 /**
@@ -62,4 +67,19 @@ export interface IRunProgressObject {
   matched: number;
   checked: number;
   trackedRuns: number;
+}
+
+/**
+ * Request body type for custom metric alignment
+ */
+export interface IAlignMetricsData {
+  align_by: string;
+  runs: {
+    run_id: string;
+    traces: {
+      context: { [key: string]: unknown };
+      name: string;
+      slice: number[];
+    }[];
+  }[];
 }

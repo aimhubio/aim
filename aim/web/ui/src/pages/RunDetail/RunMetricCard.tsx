@@ -9,7 +9,6 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import COLORS from 'config/colors/colors';
 
 import contextToString from 'utils/contextToString';
-import { CurveEnum, ScaleEnum, HighlightEnum } from 'utils/d3';
 import { isSystemMetric } from 'utils/isSystemMetric';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 
@@ -76,13 +75,6 @@ function RunMetricCard({
                   },
                 ]}
                 index={index}
-                axesScaleType={{
-                  xAxis: ScaleEnum.Linear,
-                  yAxis: ScaleEnum.Linear,
-                }}
-                ignoreOutliers={false}
-                highlightMode={HighlightEnum.Off}
-                curveInterpolation={CurveEnum.Linear}
               />
             </ErrorBoundary>
           ) : (

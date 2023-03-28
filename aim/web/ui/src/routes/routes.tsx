@@ -49,6 +49,13 @@ const FiguresExplore = React.lazy(
 const AudiosExplorer = React.lazy(
   () => import(/* webpackChunkName: "audios" */ 'pages/AudiosExplorer'),
 );
+const MetricsExplorer = React.lazy(
+  () => import(/* webpackChunkName: "metrics_v2" */ 'pages/MetricsExplorer'),
+);
+
+const TextExplorer = React.lazy(
+  () => import(/* webpackChunkName: "text" */ 'pages/TextExplorer'),
+);
 
 export interface IRoute {
   path: PathEnum;
@@ -114,6 +121,15 @@ const routes = {
     displayName: 'ParamsId',
     isExact: true,
     title: pageTitlesEnum.PARAMS_EXPLORER,
+  },
+  TEXT_EXPLORER: {
+    path: PathEnum.Text_Explorer,
+    component: TextExplorer,
+    showInSidebar: true,
+    icon: 'text',
+    displayName: 'Text',
+    isExact: true,
+    title: pageTitlesEnum.TEXT_EXPLORER,
   },
   IMAGE_EXPLORE: {
     path: PathEnum.Images_Explore,
@@ -200,6 +216,15 @@ const routes = {
     displayName: 'Experiment',
     isExact: false,
     title: pageTitlesEnum.EXPERIMENT,
+  },
+  METRICS_EXPLORER: {
+    path: PathEnum.Metrics_Explorer,
+    component: MetricsExplorer,
+    showInSidebar: false,
+    icon: 'metrics',
+    displayName: 'Metrics_v2',
+    isExact: true,
+    title: pageTitlesEnum.METRICS_EXPLORER_V2,
   },
 };
 

@@ -6,6 +6,7 @@ import { ILine, IAttributesRef } from 'types/components/LineChart/LineChart';
 import {
   IAggregationConfig,
   IAlignmentConfig,
+  IFocusedState,
 } from 'types/services/models/metrics/metricsAppModel';
 
 import { ScaleEnum, HighlightEnum } from 'utils/d3';
@@ -16,7 +17,8 @@ import { IProcessedData } from './processLineChartData';
 export type HoverAttrData = ILine | IPoint;
 
 export interface IDrawHoverAttributesArgs {
-  index: number;
+  index?: number;
+  id: string;
   nameKey: string;
   data: HoverAttrData[];
   processedData?: IProcessedData[];
@@ -43,7 +45,7 @@ export interface IDrawHoverAttributesArgs {
 export interface ISyncHoverStateArgs {
   activePoint: IActivePoint | null;
   dataSelector?: string;
-  focusedStateActive?: boolean;
+  focusedState?: IFocusedState;
 }
 
 export type IAxisLineData = { x1: number; y1: number; x2: number; y2: number };
@@ -75,11 +77,22 @@ export interface IActivePoint {
   xPos: number;
   yPos: number;
   chartIndex: number;
+  visId: string;
   inProgress?: boolean;
-  pointRect: {
-    top: number;
-    bottom: number;
-    left: number;
-    right: number;
-  } | null;
+  pointRect: IActivePointRect | null;
+  rect: IActiveElementRect;
+}
+
+export interface IActivePointRect {
+  top: number;
+  bottom: number;
+  left: number;
+  right: number;
+}
+
+export interface IActiveElementRect {
+  top: number;
+  bottom: number;
+  left: number;
+  right: number;
 }

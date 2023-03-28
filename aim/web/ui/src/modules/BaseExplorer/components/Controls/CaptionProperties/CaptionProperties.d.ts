@@ -1,4 +1,5 @@
 import { IBaseComponentProps } from 'modules/BaseExplorer/types';
+
 export interface ICaptionPropertiesProps extends IBaseComponentProps {
   visualizationName: string;
 }

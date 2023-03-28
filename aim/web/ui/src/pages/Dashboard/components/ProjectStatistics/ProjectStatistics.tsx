@@ -62,9 +62,10 @@ const statisticsInitialMap: Record<string, IProjectStatistic> = {
     icon: 'text',
     count: 0,
     iconBgColor: '#E149A0',
-    navLink: '',
+    navLink: routes.TEXT_EXPLORER.path,
     badge: {
-      value: 'Explorer coming soon',
+      value: 'New',
+      style: { backgroundColor: '#1473e6', color: '#fff' },
     },
   },
   [SequenceTypesEnum.Distributions]: {

@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Separator /> Renders Correctly 1`] = `
+<DocumentFragment>
+  <div
+    class="aim-ui-c-gzAwqY aim-ui-c-gzAwqY-ifXICFP-css Separator"
+    data-orientation="horizontal"
+    data-testid="separator"
+    role="separator"
+  />
+</DocumentFragment>
+`;

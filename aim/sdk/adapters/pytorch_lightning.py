@@ -40,11 +40,15 @@ class AimLogger(Logger):
                  test_metric_prefix: Optional[str] = 'test_',
                  system_tracking_interval: Optional[int]
                  = DEFAULT_SYSTEM_TRACKING_INT,
-                 log_system_params: bool = True,
+                 log_system_params: Optional[bool] = True,
+                 capture_terminal_logs: Optional[bool] = True,
+                 run_name: Optional[str] = None,
+                 run_hash: Optional[str] = None,
                  ):
         super().__init__()
 
         self._experiment_name = experiment
+        self._run_name = run_name
         self._repo_path = repo
 
         self._train_metric_prefix = train_metric_prefix
@@ -52,9 +56,10 @@ class AimLogger(Logger):
         self._test_metric_prefix = test_metric_prefix
         self._system_tracking_interval = system_tracking_interval
         self._log_system_params = log_system_params
+        self._capture_terminal_logs = capture_terminal_logs
 
         self._run = None
-        self._run_hash = None
+        self._run_hash = run_hash
 
     @staticmethod
     def _convert_params(params: Union[Dict[str, Any], Namespace]) -> Dict[str, Any]:
@@ -76,13 +81,17 @@ class AimLogger(Logger):
                     self._run_hash,
                     repo=self._repo_path,
                     system_tracking_interval=self._system_tracking_interval,
+                    capture_terminal_logs=self._capture_terminal_logs
                 )
+                if self._run_name is not None:
+                    self._run.name = self._run_name
             else:
                 self._run = Run(
                     repo=self._repo_path,
                     experiment=self._experiment_name,
                     system_tracking_interval=self._system_tracking_interval,
                     log_system_params=self._log_system_params,
+                    capture_terminal_logs=self._capture_terminal_logs,
                 )
                 self._run_hash = self._run.hash
         return self._run

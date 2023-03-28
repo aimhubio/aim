@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Tooltip content="Tooltip">Hover</Tooltip> Renders Correctly 1`] = `<DocumentFragment />`;

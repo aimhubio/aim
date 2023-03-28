@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { FunctionComponent } from 'react';
 
 import { PipelineStatusEnum } from 'modules/core/engine/types';
 import { IVisualizationsProps } from 'modules/BaseExplorer/types';
 import VisualizerPanel from 'modules/BaseExplorer/components/VisualizerPanel';
+import VisualizerRangePanel from 'modules/BaseExplorer/components/RangePanel';
 
 import ProgressBar from '../ProgressBar';
 
@@ -24,17 +24,16 @@ function Visualizations(props: IVisualizationsProps) {
     () =>
       Object.keys(visualizers).map((name: string, index: number) => {
         const visualizer = visualizers[name];
-        const Viz = visualizer.component as FunctionComponent;
+        const VisualizerComponent = visualizer.component;
 
-        return (
-          <Viz
-            key={Viz.displayName || name}
-            // @ts-ignore
+        return VisualizerComponent ? (
+          <VisualizerComponent
+            key={VisualizerComponent.displayName || name}
             engine={engine}
             name={name}
             box={visualizer.box.component}
-            hasDepthSlider={visualizer.box.hasDepthSlider}
-            panelRenderer={() => (
+            boxStacking={visualizer.box.stacking}
+            topPanelRenderer={() => (
               <VisualizerPanel
                 engine={engine}
                 controls={visualizer.controlsContainer}
@@ -42,8 +41,10 @@ function Visualizations(props: IVisualizationsProps) {
                 visualizationName={name}
               />
             )}
+            bottomPanelRenderer={() => <VisualizerRangePanel engine={engine} />}
+            widgets={visualizer.widgets}
           />
-        );
+        ) : null;
       }),
     [components, engine, visualizers],
   );

@@ -11,8 +11,9 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { PathEnum } from 'config/enums/routesEnum';
 
+import { TooltipAppearanceEnum } from 'modules/BaseExplorer/components/Controls/ConfigureTooltip';
+
 import { IPopoverContentProps } from 'types/components/ChartPanel/PopoverContent';
-import { TooltipAppearance } from 'types/services/models/metrics/metricsAppModel.d';
 
 import contextToString from 'utils/contextToString';
 import {
@@ -35,7 +36,7 @@ const PopoverContent = React.forwardRef(function PopoverContent(
 ): React.FunctionComponentElement<React.ReactNode> {
   const {
     tooltipContent,
-    tooltipAppearance = TooltipAppearance.Auto,
+    tooltipAppearance = TooltipAppearanceEnum.Auto,
     focusedState,
     chartType,
     alignmentConfig,
@@ -53,8 +54,8 @@ const PopoverContent = React.forwardRef(function PopoverContent(
 
   const isPopoverPinned = React.useMemo(
     () =>
-      tooltipAppearance === TooltipAppearance.Top ||
-      tooltipAppearance === TooltipAppearance.Bottom,
+      tooltipAppearance === TooltipAppearanceEnum.Top ||
+      tooltipAppearance === TooltipAppearanceEnum.Bottom,
     [tooltipAppearance],
   );
 
@@ -196,14 +197,14 @@ const PopoverContent = React.forwardRef(function PopoverContent(
             <div>
               <Button
                 onClick={() =>
-                  onChangeTooltip({ appearance: TooltipAppearance.Top })
+                  onChangeTooltip({ appearance: TooltipAppearanceEnum.Top })
                 }
                 withOnlyIcon
                 size='xSmall'
                 className={classNames(
                   'PopoverContent__actionButtons__actionButton',
                   {
-                    active: tooltipAppearance === TooltipAppearance.Top,
+                    active: tooltipAppearance === TooltipAppearanceEnum.Top,
                   },
                 )}
               >
@@ -219,14 +220,14 @@ const PopoverContent = React.forwardRef(function PopoverContent(
             <div>
               <Button
                 onClick={() =>
-                  onChangeTooltip({ appearance: TooltipAppearance.Auto })
+                  onChangeTooltip({ appearance: TooltipAppearanceEnum.Auto })
                 }
                 withOnlyIcon
                 size='xSmall'
                 className={classNames(
                   'PopoverContent__actionButtons__actionButton',
                   {
-                    active: tooltipAppearance === TooltipAppearance.Auto,
+                    active: tooltipAppearance === TooltipAppearanceEnum.Auto,
                   },
                 )}
               >
@@ -241,15 +242,15 @@ const PopoverContent = React.forwardRef(function PopoverContent(
           <Tooltip title='Pin to bottom'>
             <div>
               <Button
-                onClick={() =>
-                  onChangeTooltip({ appearance: TooltipAppearance.Bottom })
-                }
+                onClick={() => {
+                  onChangeTooltip({ appearance: TooltipAppearanceEnum.Bottom });
+                }}
                 withOnlyIcon
                 size='xSmall'
                 className={classNames(
                   'PopoverContent__actionButtons__actionButton',
                   {
-                    active: tooltipAppearance === TooltipAppearance.Bottom,
+                    active: tooltipAppearance === TooltipAppearanceEnum.Bottom,
                   },
                 )}
               >
@@ -264,7 +265,7 @@ const PopoverContent = React.forwardRef(function PopoverContent(
         </div>
       );
     }
-    return <></>;
+    return null;
   }
 
   function renderTags(): React.ReactNode {
