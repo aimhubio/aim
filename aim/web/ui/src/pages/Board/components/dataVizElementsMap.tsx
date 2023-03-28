@@ -3,6 +3,7 @@ import * as _ from 'lodash-es';
 
 import ChartPanel from 'components/ChartPanel/ChartPanel';
 import DictVisualizer from 'components/kit/DictVisualizer';
+import Slider from 'components/kit_v2/Slider/Slider';
 
 import RunLogRecords from 'pages/RunDetail/RunLogRecords';
 
@@ -85,4 +86,19 @@ export const dataVizElementsMap = {
     <RunLogRecords key={props.data} runHash={props.data} inProgress={false} />
   ),
   Plotly: (props: any) => <Plotly {...props} />,
+  Slider: (props: any) => {
+    const onChange = React.useCallback(
+      _.debounce(props.callbacks?.on_change, 100),
+      [],
+    );
+    return (
+      <Slider
+        min={props.options.min}
+        max={props.options.max}
+        value={[props.options.value]}
+        step={0.01}
+        onValueChange={onChange}
+      />
+    );
+  },
 };

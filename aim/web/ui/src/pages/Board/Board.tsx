@@ -59,8 +59,8 @@ function Board({
 
     window.clearTimeout(timerId.current);
     timerId.current = window.setTimeout(() => {
-      setResult(layout.filter((item: any) => item.element !== 'block'));
       setBlocks(layout.filter((item: any) => item.element === 'block'));
+      setResult(layout.filter((item: any) => item.element !== 'block'));
     }, 50);
   };
 

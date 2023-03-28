@@ -600,6 +600,36 @@ class Plotly(Component):
         self.render()
 
 
+class Slider(Component):
+    def __init__(self, min, max, value, key=None):
+        component_type = "Slider"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type)
+
+        self.data = value
+
+        self.options = {
+            "min": min,
+            "max": max,
+            "value": self.value
+        }
+
+        self.callbacks = {
+            "on_change": self.on_change
+        }
+
+        self.render()
+
+    @property
+    def value(self):
+        return self.state["value"][0] if "value" in self.state else self.data
+
+    async def on_change(self, val):
+        self.set_state({
+            "value": val
+        })
+
+
 class Union(Component):
     def __init__(self, components, key=None):
         component_type = "Union"
