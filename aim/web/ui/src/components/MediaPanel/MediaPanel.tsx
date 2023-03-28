@@ -210,10 +210,10 @@ function MediaPanel({
     }
     timeoutID.current = window.setTimeout(() => {
       if (!_.isEmpty(blobUriArray.current)) {
-        requestRef.current = getBlobsData(blobUriArray.current);
-        requestRef.current.call().then(() => {
-          blobUriArray.current = [];
-        });
+        const copiedUriArray = Object.assign([], blobUriArray.current);
+        blobUriArray.current = [];
+        requestRef.current = getBlobsData(copiedUriArray);
+        requestRef.current.call();
       }
     }, BATCH_SEND_DELAY);
   }, BATCH_SEND_DELAY);
