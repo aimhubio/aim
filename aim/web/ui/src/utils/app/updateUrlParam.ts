@@ -1,3 +1,5 @@
+import { PathEnum } from 'config/enums/routesEnum';
+
 import getUrlWithParam from 'utils/getUrlWithParam';
 import { setItem } from 'utils/storage';
 
@@ -32,7 +34,7 @@ export default function updateUrlParam({
       fullURL = fullURL.replace((window as any).API_BASE_PATH, '');
     }
 
-    if (fullURL.startsWith(`/explorers/${appName}?`)) {
+    if (fullURL.startsWith(`/${PathEnum.Explorers}/${appName}?`)) {
       setItem(`${appName}Url`, fullURL);
     }
   }

@@ -10,7 +10,8 @@ const RunDetail = React.lazy(
   () => import(/* webpackChunkName: "run" */ 'pages/RunDetail/RunDetail'),
 );
 const Experiment = React.lazy(
-  () => import(/* webpackChunkName: "run" */ 'pages/Experiment/Experiment'),
+  () =>
+    import(/* webpackChunkName: "experiment" */ 'pages/Experiment/Experiment'),
 );
 const Metrics = React.lazy(
   () =>

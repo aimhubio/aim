@@ -10,6 +10,7 @@ import { IconName } from 'components/kit/Icon';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
+import { PathEnum } from 'config/enums/routesEnum';
 
 import * as analytics from 'services/analytics';
 
@@ -80,7 +81,7 @@ function BookmarkCard({
             </div>
 
             <div className='BookmarkCard__actionButtonsBox'>
-              <NavLink to={`/${type}/${app_id}`}>
+              <NavLink to={`/${PathEnum.Explorers}/${type}/${app_id}`}>
                 <Button
                   variant='outlined'
                   onClick={() =>
