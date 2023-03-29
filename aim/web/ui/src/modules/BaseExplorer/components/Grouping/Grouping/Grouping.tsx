@@ -16,7 +16,9 @@ function Grouping(props: IBaseComponentProps) {
   const groupingItems = React.useMemo(() => {
     return Object.keys(currentValues).map((key: string) => {
       const Component = groupings[key].component;
-      Component.displayName = `Grouping_${key}`;
+      if (__DEV__) {
+        Component.displayName = 'GroupingComponent';
+      }
       return <Component key={key} {...props} />;
     });
   }, [currentValues, groupings, props]);
