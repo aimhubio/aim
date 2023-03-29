@@ -8,7 +8,7 @@ import Table from 'components/Table/Table';
 
 import { RowHeightSize } from 'config/table/tableConfigs';
 
-import CompareSelectedRunsPopover from 'pages/Metrics/components/Table/CompareSelectedRunsPopover';
+import CompareSelectedRunsPopover from 'pages/Explorers/Metrics/components/Table/CompareSelectedRunsPopover';
 
 import { AppNameEnum } from 'services/models/explorer';
 

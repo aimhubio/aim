@@ -19,7 +19,7 @@ import { GroupNameEnum } from 'config/grouping/GroupingPopovers';
 import {
   getImagesExploreTableColumns,
   imagesExploreTableRowRenderer,
-} from 'pages/ImagesExplore/components/ImagesExploreTableGrid/ImagesExploreTableGrid';
+} from 'pages/Explorers/ImagesExplore/components/ImagesExploreTableGrid/ImagesExploreTableGrid';
 
 import * as analytics from 'services/analytics';
 import imagesExploreService from 'services/api/imagesExplore/imagesExploreService';

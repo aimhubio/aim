@@ -29,8 +29,8 @@ import {
 } from 'config/illustrationConfig/illustrationConfig';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
-import SelectForm from 'pages/ImagesExplore/components/SelectForm/SelectForm';
-import Controls from 'pages/ImagesExplore/components/Controls/Controls';
+import SelectForm from 'pages/Explorers/ImagesExplore/components/SelectForm/SelectForm';
+import Controls from 'pages/Explorers/ImagesExplore/components/Controls/Controls';
 
 import imagesExploreAppModel from 'services/models/imagesExplore/imagesExploreAppModel';
 import * as analytics from 'services/analytics';

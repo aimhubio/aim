@@ -14,10 +14,15 @@ const Experiment = React.lazy(
 );
 const Metrics = React.lazy(
   () =>
-    import(/* webpackChunkName: "metrics" */ 'pages/Metrics/MetricsContainer'),
+    import(
+      /* webpackChunkName: "metrics" */ 'pages/Explorers/Metrics/MetricsContainer'
+    ),
 );
 const Params = React.lazy(
-  () => import(/* webpackChunkName: "params" */ 'pages/Params/ParamsContainer'),
+  () =>
+    import(
+      /* webpackChunkName: "params" */ 'pages/Explorers/Params/ParamsContainer'
+    ),
 );
 const Bookmarks = React.lazy(
   () =>
@@ -31,32 +36,43 @@ const Dashboard = React.lazy(
 const TagsContainer = React.lazy(
   () => import(/* webpackChunkName: "tags" */ 'pages/Tags/TagsContainer'),
 );
+
 const Scatters = React.lazy(
   () =>
     import(
-      /* webpackChunkName: "scatters" */ 'pages/Scatters/ScattersContainer'
+      /* webpackChunkName: "scatters" */ 'pages/Explorers/Scatters/ScattersContainer'
     ),
 );
+
 const ImagesExplore = React.lazy(
   () =>
     import(
-      /* webpackChunkName: "images" */ 'pages/ImagesExplore/ImagesExplore'
+      /* webpackChunkName: "images" */ 'pages/Explorers/ImagesExplore/ImagesExplore'
     ),
 );
 const FiguresExplore = React.lazy(
-  () => import(/* webpackChunkName: "figures" */ 'pages/FiguresExplorer'),
+  () =>
+    import(/* webpackChunkName: "figures" */ 'pages/Explorers/FiguresExplorer'),
 );
 const AudiosExplorer = React.lazy(
-  () => import(/* webpackChunkName: "audios" */ 'pages/AudiosExplorer'),
+  () =>
+    import(/* webpackChunkName: "audios" */ 'pages/Explorers/AudiosExplorer'),
 );
+
 const MetricsExplorer = React.lazy(
-  () => import(/* webpackChunkName: "metrics_v2" */ 'pages/MetricsExplorer'),
+  () =>
+    import(
+      /* webpackChunkName: "metrics_v2" */ 'pages/Explorers/MetricsExplorer'
+    ),
 );
 
 const TextExplorer = React.lazy(
-  () => import(/* webpackChunkName: "text" */ 'pages/TextExplorer'),
+  () => import(/* webpackChunkName: "text" */ 'pages/Explorers/TextExplorer'),
 );
 
+const Explorers = React.lazy(
+  () => import(/* webpackChunkName: "explorers" */ 'pages/Explorers'),
+);
 export interface IRoute {
   path: PathEnum;
   component:
@@ -67,9 +83,88 @@ export interface IRoute {
   showInSidebar: boolean;
   displayName: string | null;
   icon?: string | null;
+  isExact?: boolean;
+  title: string;
 }
 
-const routes = {
+export const explorersRoutes: { [key: string]: IRoute } = {
+  METRICS: {
+    path: PathEnum.Metrics,
+    component: Metrics,
+    showInSidebar: false,
+    displayName: 'Metrics',
+    icon: 'metrics',
+    isExact: true,
+    title: pageTitlesEnum.METRICS_EXPLORER,
+  },
+  PARAMS: {
+    path: PathEnum.Params,
+    component: Params,
+    showInSidebar: false,
+    displayName: 'Params',
+    icon: 'params',
+    isExact: true,
+    title: pageTitlesEnum.PARAMS_EXPLORER,
+  },
+  TEXT_EXPLORER: {
+    path: PathEnum.Text_Explorer,
+    component: TextExplorer,
+    showInSidebar: false,
+    icon: 'text',
+    displayName: 'Text',
+    isExact: true,
+    title: pageTitlesEnum.TEXT_EXPLORER,
+  },
+  IMAGE_EXPLORE: {
+    path: PathEnum.Images_Explore,
+    component: ImagesExplore,
+    showInSidebar: false,
+    displayName: 'Images',
+    icon: 'images',
+    isExact: true,
+    title: pageTitlesEnum.IMAGES_EXPLORER,
+  },
+
+  FIGURES_EXPLORER: {
+    path: PathEnum.Figures_Explorer,
+    component: FiguresExplore,
+    showInSidebar: false,
+    icon: 'figures',
+    displayName: 'Figures',
+    isExact: true,
+    title: pageTitlesEnum.FIGURES_EXPLORER,
+  },
+  AUDIOS_EXPLORER: {
+    path: PathEnum.Audios_Explorer,
+    component: AudiosExplorer,
+    showInSidebar: false,
+    icon: 'audios',
+    displayName: 'Audios',
+    isExact: true,
+    title: pageTitlesEnum.AUDIOS_EXPLORER,
+  },
+  SCATTERS: {
+    path: PathEnum.Scatters,
+    component: Scatters,
+    showInSidebar: false,
+    displayName: 'Scatters',
+    icon: 'scatterplot',
+    isExact: true,
+    title: pageTitlesEnum.SCATTERS_EXPLORER,
+  },
+
+  METRICS_EXPLORER: {
+    path: PathEnum.Metrics_Explorer,
+    component: MetricsExplorer,
+    showInSidebar: false,
+    icon: 'metrics',
+    displayName: 'Metrics_v2',
+    isExact: true,
+    title: pageTitlesEnum.METRICS_EXPLORER_V2,
+  },
+};
+
+const routes: { [key: string]: any } = {
   DASHBOARD: {
     path: PathEnum.Dashboard,
     component: Dashboard,
@@ -88,15 +183,17 @@ const routes = {
     isExact: true,
     title: pageTitlesEnum.RUNS_EXPLORER,
   },
-  METRICS: {
-    path: PathEnum.Metrics,
-    component: Metrics,
+  EXPLORERS: {
+    path: PathEnum.Explorers,
+    component: Explorers,
     showInSidebar: true,
-    displayName: 'Metrics',
-    icon: 'metrics',
+    displayName: 'Explorers',
+    icon: 'dashboard',
     isExact: true,
-    title: pageTitlesEnum.METRICS_EXPLORER,
+    title: pageTitlesEnum.DASHBOARD,
   },
+  ...explorersRoutes,
+
   METRICS_ID: {
     path: PathEnum.Metrics_Id,
     component: Metrics,
@@ -104,15 +201,6 @@ const routes = {
     displayName: 'MetricsId',
     isExact: true,
     title: pageTitlesEnum.METRICS_EXPLORER,
-  },
-  PARAMS: {
-    path: PathEnum.Params,
-    component: Params,
-    showInSidebar: true,
-    displayName: 'Params',
-    icon: 'params',
-    isExact: true,
-    title: pageTitlesEnum.PARAMS_EXPLORER,
   },
   PARAMS_ID: {
     path: PathEnum.Params_Id,
@@ -122,24 +210,6 @@ const routes = {
     isExact: true,
     title: pageTitlesEnum.PARAMS_EXPLORER,
   },
-  TEXT_EXPLORER: {
-    path: PathEnum.Text_Explorer,
-    component: TextExplorer,
-    showInSidebar: true,
-    icon: 'text',
-    displayName: 'Text',
-    isExact: true,
-    title: pageTitlesEnum.TEXT_EXPLORER,
-  },
-  IMAGE_EXPLORE: {
-    path: PathEnum.Images_Explore,
-    component: ImagesExplore,
-    showInSidebar: true,
-    displayName: 'Images',
-    icon: 'images',
-    isExact: true,
-    title: pageTitlesEnum.IMAGES_EXPLORER,
-  },
   IMAGE_EXPLORE_ID: {
     path: PathEnum.Images_Explore_Id,
     component: ImagesExplore,
@@ -147,33 +217,6 @@ const routes = {
     displayName: 'ImagesId',
     isExact: true,
     title: pageTitlesEnum.IMAGES_EXPLORER,
-  },
-  FIGURES_EXPLORER: {
-    path: PathEnum.Figures_Explorer,
-    component: FiguresExplore,
-    showInSidebar: true,
-    icon: 'figures',
-    displayName: 'Figures',
-    isExact: true,
-    title: pageTitlesEnum.FIGURES_EXPLORER,
-  },
-  AUDIOS_EXPLORER: {
-    path: PathEnum.Audios_Explorer,
-    component: AudiosExplorer,
-    showInSidebar: true,
-    icon: 'audios',
-    displayName: 'Audios',
-    isExact: true,
-    title: pageTitlesEnum.AUDIOS_EXPLORER,
-  },
-  SCATTERS: {
-    path: PathEnum.Scatters,
-    component: Scatters,
-    showInSidebar: true,
-    displayName: 'Scatters',
-    icon: 'scatterplot',
-    isExact: true,
-    title: pageTitlesEnum.SCATTERS_EXPLORER,
   },
   SCATTERS_EXPLORE_ID: {
     path: PathEnum.Scatters_Id,

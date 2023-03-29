@@ -4,7 +4,7 @@ import _ from 'lodash-es';
 import DataList from 'components/kit/DataList';
 import { Text } from 'components/kit';
 
-import CompareSelectedRunsPopover from 'pages/Metrics/components/Table/CompareSelectedRunsPopover';
+import CompareSelectedRunsPopover from 'pages/Explorers/Metrics/components/Table/CompareSelectedRunsPopover';
 
 import { AppNameEnum } from 'services/models/explorer';
 

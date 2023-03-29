@@ -5,7 +5,7 @@ import { MenuItem } from '@material-ui/core';
 import { Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
-import { TEXT_RNDERER_MODES } from 'pages/TextExplorer/textConfig';
+import { TEXT_RNDERER_MODES } from 'pages/Explorers/TextExplorer/textConfig';
 
 import { ITextRendererModePopoverProps } from '.';
 

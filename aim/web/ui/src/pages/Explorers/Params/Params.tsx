@@ -27,7 +27,7 @@ import {
   Request_Illustrations,
 } from 'config/illustrationConfig/illustrationConfig';
 
-import AppBar from 'pages/Metrics/components/MetricsBar/MetricsBar';
+import AppBar from 'pages/Explorers/Metrics/components/MetricsBar/MetricsBar';
 
 import { AppNameEnum } from 'services/models/explorer';
 

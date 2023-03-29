@@ -25,9 +25,9 @@ import {
   Request_Illustrations,
 } from 'config/illustrationConfig/illustrationConfig';
 
-import AppBar from 'pages/Metrics/components/MetricsBar/MetricsBar';
-import Controls from 'pages/Scatters/components/Controls/Controls';
-import SelectForm from 'pages/Scatters/components/SelectForm/SelectForm';
+import AppBar from 'pages/Explorers/Metrics/components/MetricsBar/MetricsBar';
+import Controls from 'pages/Explorers/Scatters/components/Controls/Controls';
+import SelectForm from 'pages/Explorers/Scatters/components/SelectForm/SelectForm';
 
 import { AppNameEnum } from 'services/models/explorer';
 

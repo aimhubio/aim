@@ -12,7 +12,7 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { CONTROLS_DEFAULT_CONFIG } from 'config/controls/controlsDefaultConfig';
 
-import SortPopover from 'pages/Metrics/components/Table/SortPopover/SortPopover';
+import SortPopover from 'pages/Explorers/Metrics/components/Table/SortPopover/SortPopover';
 
 import { IControlProps } from 'types/pages/imagesExplore/components/Controls/Controls';
 
