@@ -3,7 +3,7 @@ import * as _ from 'lodash-es';
 
 import ChartPanel from 'components/ChartPanel/ChartPanel';
 import DictVisualizer from 'components/kit/DictVisualizer';
-import Slider from 'components/kit_v2/Slider/Slider';
+import { Slider, Input } from 'components/kit_v2';
 
 import RunLogRecords from 'pages/RunDetail/RunLogRecords';
 
@@ -100,5 +100,11 @@ export const dataVizElementsMap = {
         onValueChange={onChange}
       />
     );
+  },
+  TextInput: (props: any) => {
+    const onChange = React.useCallback(({ target }) => {
+      props.callbacks?.on_change(target.value);
+    }, []);
+    return <Input value={props.options.value} onChange={onChange} />;
   },
 };

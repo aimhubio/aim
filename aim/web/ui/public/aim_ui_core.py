@@ -626,6 +626,34 @@ class Slider(Component):
 
     async def on_change(self, val):
         self.set_state({
+            "value": val.to_py()
+        })
+
+
+class TextInput(Component):
+    def __init__(self, value, key=None):
+        component_type = "TextInput"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type)
+
+        self.data = value
+
+        self.options = {
+            "value": self.value
+        }
+
+        self.callbacks = {
+            "on_change": self.on_change
+        }
+
+        self.render()
+
+    @property
+    def value(self):
+        return self.state["value"] if "value" in self.state else self.data
+
+    async def on_change(self, val):
+        self.set_state({
             "value": val
         })
 
