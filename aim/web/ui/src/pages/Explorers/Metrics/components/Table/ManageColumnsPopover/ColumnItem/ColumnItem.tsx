@@ -12,7 +12,7 @@ import { TABLE_DEFAULT_CONFIG } from 'config/table/tableConfigs';
 
 import shortenRunPropLabel from 'utils/shortenRunPropLabel';
 
-import { IColumnItemProps } from './ColumnItem';
+import { IColumnItemProps } from './ColumnItem.d';
 
 import './ColumnItem.scss';
 

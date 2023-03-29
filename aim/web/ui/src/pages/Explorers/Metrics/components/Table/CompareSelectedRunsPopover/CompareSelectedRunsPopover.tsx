@@ -10,6 +10,7 @@ import { IconName } from 'components/kit/Icon';
 
 import { EXPLORE_SELECTED_RUNS_CONFIG } from 'config/table/tableConfigs';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
+import { PathEnum } from 'config/enums/routesEnum';
 
 import getUpdatedUrl from 'modules/core/utils/getUpdatedUrl';
 
@@ -18,7 +19,7 @@ import * as analytics from 'services/analytics';
 
 import { encode } from 'utils/encoder/encoder';
 
-import { ICompareSelectedRunsPopoverProps } from '.';
+import { ICompareSelectedRunsPopoverProps } from './CompareSelectedRunsPopover.d';
 
 import './CompareSelectedRunsPopover.scss';
 
@@ -39,7 +40,8 @@ function CompareSelectedRunsPopover({
       e.stopPropagation();
       e.preventDefault();
       if (value) {
-        let url = '';
+        let baseUrl = value === 'runs' ? '' : PathEnum.Explorers;
+        let url;
 
         const baseExplorers: string[] = [
           AppNameEnum.FIGURES,
@@ -61,7 +63,7 @@ function CompareSelectedRunsPopover({
                 isApplyButtonDisabled: true,
               },
             }),
-            `/${value}`,
+            `${baseUrl}/${value}`,
           );
         } else {
           const searchQuery = encode({
@@ -69,7 +71,7 @@ function CompareSelectedRunsPopover({
             advancedMode: true,
             advancedQuery: query,
           });
-          url = `/${value}?select=${searchQuery}`;
+          url = `${baseUrl}/${value}?select=${searchQuery}`;
         }
         analytics.trackEvent(
           ANALYTICS_EVENT_KEYS[appName]?.table?.compareSelectedRuns,

@@ -24,7 +24,7 @@ export default function updateUrlParam({
   const isExistBasePath = (window as any).API_BASE_PATH !== '{{ base_path }}';
 
   const appId: string =
-    window.location.pathname.split('/')[isExistBasePath ? 3 : 2];
+    window.location.pathname.split('/')[isExistBasePath ? 4 : 3];
   if (!appId) {
     let fullURL = url;
 
@@ -32,7 +32,7 @@ export default function updateUrlParam({
       fullURL = fullURL.replace((window as any).API_BASE_PATH, '');
     }
 
-    if (fullURL.startsWith(`/${appName}?`)) {
+    if (fullURL.startsWith(`/explorers/${appName}?`)) {
       setItem(`${appName}Url`, fullURL);
     }
   }
