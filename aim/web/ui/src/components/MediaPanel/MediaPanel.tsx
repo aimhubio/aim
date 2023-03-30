@@ -226,16 +226,17 @@ function MediaPanel({
         ];
         requestRef.current = getBlobsData(processingBlobUriArray);
         requestRef.current.call().then(() => {
-          console.log('successed');
-        }).catch((err: any) => {
-          console.log(err);
-          console.log('not successed');
-          console.log(processedBlobUriArray.current);
-          processedBlobUriArray.current = processedBlobUriArray.current.filter(
-            (uri: string) => !processingBlobUriArray.includes(uri),
-          );
-          console.log(processedBlobUriArray.current);
-        });
+            console.log('successed');
+          })
+          .catch((err: any) => {
+            console.log(err);
+            console.log('not successed');
+            console.log(processedBlobUriArray.current);
+            processedBlobUriArray.current = processedBlobUriArray.current.filter(
+                (uri: string) => !processingBlobUriArray.includes(uri),
+              );
+            console.log(processedBlobUriArray.current);
+          });
       }
     }, BATCH_SEND_DELAY);
   }, BATCH_SEND_DELAY);
