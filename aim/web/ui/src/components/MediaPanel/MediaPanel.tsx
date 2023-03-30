@@ -219,7 +219,7 @@ function MediaPanel({
         processedBlobUriArray.current = [
           ...new Set([
             ...processedBlobUriArray.current,
-            ...processingBlobUriArray
+            ...processingBlobUriArray,
           ]),
         ];
         requestRef.current = getBlobsData(processingBlobUriArray);
