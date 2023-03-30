@@ -3,7 +3,7 @@ import * as _ from 'lodash-es';
 
 import ChartPanel from 'components/ChartPanel/ChartPanel';
 import DictVisualizer from 'components/kit/DictVisualizer';
-import { Slider, Input } from 'components/kit_v2';
+import { Slider, Input, Text } from 'components/kit_v2';
 
 import RunLogRecords from 'pages/RunDetail/RunLogRecords';
 
@@ -62,7 +62,7 @@ export const dataVizElementsMap = {
   Figures: (props: any) => <FiguresList key={Date.now()} data={props.data} />,
   Images: (props: any) => <ImagesList key={Date.now()} data={props.data} />,
   Audios: (props: any) => <AudiosList key={Date.now()} data={props.data} />,
-  Text: (props: any) => <TextList key={Date.now()} data={props.data} />,
+  Texts: (props: any) => <TextList key={Date.now()} data={props.data} />,
   JSON: (props: any) => (
     <div
       style={{
@@ -82,6 +82,7 @@ export const dataVizElementsMap = {
       dangerouslySetInnerHTML={{ __html: props.data }}
     />
   ),
+  Text: (props: any) => <Text>{props.data}</Text>,
   RunMessages: (props: any) => (
     <RunLogRecords key={props.data} runHash={props.data} inProgress={false} />
   ),

@@ -90,6 +90,8 @@
   flex-direction: column;
   overflow: auto;
   background-color: #fff;
+  gap: $space-xxs;;
+  padding: $space-xxs;
 }
 
 .BoardVisualizer__main__components__viz__error {

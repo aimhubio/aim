@@ -225,34 +225,8 @@ state = {}
       }
 
       return (
-        <div
-          key={i}
-          style={{
-            position: 'relative',
-            display: 'flex',
-            flex: 1,
-            gap: 5,
-            maxHeight: '100vh',
-            overflow: 'hidden',
-          }}
-        >
-          <div
-            key={i}
-            style={{
-              position: 'relative',
-              display: 'flex',
-              flex: 1,
-              backgroundColor: '#d2d4dc',
-              boxShadow: '0 0 0 1px #b5b9c5',
-              gap: 5,
-              background: '#fff',
-              backgroundImage: 'radial-gradient(#b5b9c5 1px, transparent 0)',
-              backgroundSize: '10px 10px',
-              overflow: 'hidden',
-            }}
-          >
-            <GridCell viz={element} />
-          </div>
+        <div key={i}>
+          <GridCell viz={element} />
         </div>
       );
     });

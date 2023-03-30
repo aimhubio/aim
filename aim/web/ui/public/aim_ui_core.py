@@ -501,7 +501,7 @@ class AudiosList(Component):
 
 class TextsList(Component):
     def __init__(self, data, color=[], key=None):
-        component_type = "Text"
+        component_type = "Texts"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type)
 
@@ -656,6 +656,17 @@ class TextInput(Component):
         self.set_state({
             "value": val
         })
+
+
+class Text(Component):
+    def __init__(self, data, key=None):
+        component_type = "Text"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type)
+
+        self.data = data
+
+        self.render()
 
 
 class Union(Component):

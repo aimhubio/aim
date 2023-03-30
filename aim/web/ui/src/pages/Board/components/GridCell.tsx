@@ -28,28 +28,9 @@ function GridCell(props: any) {
   }, [stackMap]);
 
   return (
-    <div
-      style={{
-        position: 'relative',
-        flex: 1,
-        backgroundColor: '#d2d4dc',
-        boxShadow: '0 0 0 1px #b5b9c5',
-        maxWidth: props.maxWidth,
-        background: '#fff',
-        backgroundImage: 'radial-gradient(#b5b9c5 1px, transparent 0)',
-        backgroundSize: '10px 10px',
-        overflow: 'hidden',
-      }}
-    >
+    <div>
       {props.viz.no_facet !== false ? (
-        <div
-          style={{
-            width: '100%',
-            height: '100%',
-            backgroundColor: '#fff',
-            overflow: 'auto',
-          }}
-        >
+        <div>
           {Array.isArray(props.viz.data) ? (
             Object.values(_.groupBy(props.viz.data, 'type')).map((vals, i) => {
               const Component =
@@ -62,35 +43,10 @@ function GridCell(props: any) {
                 ...props.viz,
                 data: vals,
               };
-              return (
-                <div
-                  key={`${i}-${vals[0].type}`}
-                  style={{
-                    minWidth: 'calc(100% - 10px)',
-                    minHeight: 'calc(100% - 10px)',
-                    height: 'calc(100% - 10px)',
-                    padding: '5px',
-                    margin: '5px',
-                    border: '1px solid #d2d4dc',
-                  }}
-                >
-                  <Component {...compProps} />
-                </div>
-              );
+              return <Component key={`${i}-${vals[0].type}`} {...compProps} />;
             })
           ) : (
-            <div
-              style={{
-                minWidth: 'calc(100% - 10px)',
-                minHeight: 'calc(100% - 10px)',
-                height: 'calc(100% - 10px)',
-                padding: '5px',
-                margin: '5px',
-                border: '1px solid #d2d4dc',
-              }}
-            >
-              <Component {...props.viz} />
-            </div>
+            <Component {...props.viz} />
           )}
         </div>
       ) : (
