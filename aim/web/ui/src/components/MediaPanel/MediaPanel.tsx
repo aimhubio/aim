@@ -55,6 +55,7 @@ function MediaPanel({
   const [encodedDataKey, setEncodedDataKey] = React.useState<string>('');
   const [encodedSortFieldsDictKey, setEncodedSortFieldsDictKey] =
     React.useState<string>('');
+  let processedBlobUriArray = React.useRef<string[]>([]);
   let blobUriArray = React.useRef<string[]>([]);
   let timeoutID = React.useRef(0);
   const containerRef = React.useRef<HTMLDivElement>(null);
@@ -193,15 +194,18 @@ function MediaPanel({
   );
 
   function addUriToList(blobUrl: string) {
-    if (!blobsURIModel.getState()[blobUrl]) {
-      if (!blobUriArray.current.includes(blobUrl)) {
-        console.log('test log');
-        blobUriArray.current.push(blobUrl);
-        getBatch();
-      } else {
-        console.log('getBatch not started, test log');
-      }
+    if (blobsURIModel.getState()[blobUrl]) {
+      return
     }
+    if (blobUriArray.current.includes(blobUrl)) {
+      return
+    }
+    if (processedBlobUriArray.current.includes(blobUrl)) {
+      return
+    }
+
+    blobUriArray.current.push(blobUrl);
+    getBatch();
   }
 
   const getBatch = throttle(() => {
@@ -210,10 +214,18 @@ function MediaPanel({
     }
     timeoutID.current = window.setTimeout(() => {
       if (!_.isEmpty(blobUriArray.current)) {
-        const copiedUriArray = Object.assign([], blobUriArray.current);
+        const processingBlobUriArray = Object.assign([], blobUriArray.current);
         blobUriArray.current = [];
-        requestRef.current = getBlobsData(copiedUriArray);
-        requestRef.current.call();
+        processedBlobUriArray.current = [...new Set([
+          ...processedBlobUriArray, 
+          ...processingBlobUriArray
+        ])]
+        requestRef.current = getBlobsData(processingBlobUriArray);
+        requestRef.current.call().catch(() => {
+          processedBlobUriArray.current = processedBlobUriArray.current.filter(
+            (uri:string) => !processingBlobUriArray.includes(uri)
+          )
+        });
       }
     }, BATCH_SEND_DELAY);
   }, BATCH_SEND_DELAY);
