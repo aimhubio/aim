@@ -5,10 +5,13 @@ import { LayoutContainer } from 'config/stitches/foundations/layout';
 
 const ExplorersContainer = styled(LayoutContainer, {
   p: '$11',
-  gap: '$5',
+  gap: '$8',
   display: 'flex',
   ai: 'center',
   fw: 'wrap',
+  '.StatisticsCard': {
+    minWidth: '200px',
+  },
 });
 
 const ExplorerCard = styled(Box, {
@@ -16,9 +19,5 @@ const ExplorerCard = styled(Box, {
   borderRadius: '$3',
   p: '$5',
   minWidth: '300px',
-  '& > a': {
-    textDecoration: 'none',
-    color: 'inherit',
-  },
 });
 export { ExplorersContainer, ExplorerCard };

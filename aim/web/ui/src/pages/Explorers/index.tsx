@@ -1,19 +1,29 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
 
 import { Box, Text } from 'components/kit_v2';
-import { Icon } from 'components/kit';
-import { IconName } from 'components/kit/Icon';
+import StatisticsCard from 'components/StatisticsCard';
 
 import { PathEnum } from 'config/enums/routesEnum';
 
-import { IRoute, explorersRoutes } from 'routes/routes';
+import { useProjectStatistics } from 'pages/Dashboard/components/ProjectStatistics';
 
 import { getItem } from 'utils/storage';
 
-import { ExplorerCard, ExplorersContainer } from './Explorers.style';
+import { ExplorersContainer } from './Explorers.style';
 
+/**
+ * Explorers page
+ * @returns {React.FunctionComponentElement<React.ReactNode>}
+ */
 function Explorers(): React.FunctionComponentElement<React.ReactNode> {
+  const {
+    hoveredState,
+    statisticsMap,
+    projectParamsStore,
+    onMouseOver,
+    onMouseLeave,
+  } = useProjectStatistics();
+
   function getPathFromStorage(route: PathEnum): PathEnum | string {
     const path = getItem(`${route.split('/')[2]}Url`) ?? '';
     if (path !== '' && path.startsWith(route)) {
@@ -21,30 +31,40 @@ function Explorers(): React.FunctionComponentElement<React.ReactNode> {
     }
     return route;
   }
-
   return (
     <Box>
       <Text
         css={{ p: '$5 $11', borderBottom: '1px solid $secondary30' }}
-        size='$10'
+        size='$4'
         as='h1'
+        weight='$3'
+        textTransform='uppercase'
       >
         Explorers
       </Text>
       <ExplorersContainer>
-        {Object.values(explorersRoutes).map((route: IRoute, index: number) => {
-          const { path, displayName, icon } = route;
-          return (
-            <ExplorerCard key={index}>
-              <NavLink to={() => getPathFromStorage(path)} exact={true}>
-                <Box ai='center' display='flex'>
-                  <Icon fontSize={24} name={icon as IconName} />
-                  <Text css={{ ml: '$5' }}>{displayName}</Text>
-                </Box>
-              </NavLink>
-            </ExplorerCard>
-          );
-        })}
+        {Object.values(statisticsMap).map(
+          ({ label, icon, count, iconBgColor, navLink, badge }) => (
+            <StatisticsCard
+              key={label}
+              badge={badge}
+              label={label}
+              icon={icon}
+              count={count}
+              navLink={getPathFromStorage(navLink as PathEnum)}
+              iconBgColor={iconBgColor}
+              onMouseOver={onMouseOver}
+              onMouseLeave={onMouseLeave}
+              highlighted={
+                !!navLink &&
+                hoveredState.source === 'card' &&
+                hoveredState.id === label
+              }
+              outlined={hoveredState.id === label}
+              isLoading={projectParamsStore.loading}
+            />
+          ),
+        )}
       </ExplorersContainer>
     </Box>
   );

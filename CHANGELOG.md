@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased 
+
+### Enhancements
+- Relocated Aim Explorers to `Explorers` page for an improved user experience (arsengit)
+
 ## 3.17.2 Mar 28, 2023
 
 - Fix explorer crashing issue caused by adding a `displayName` property in Grouping component (KaroMourad)
