@@ -195,13 +195,13 @@ function MediaPanel({
 
   function addUriToList(blobUrl: string) {
     if (blobsURIModel.getState()[blobUrl]) {
-      return
+      return;
     }
     if (blobUriArray.current.includes(blobUrl)) {
-      return
+      return;
     }
     if (processedBlobUriArray.current.includes(blobUrl)) {
-      return
+      return;
     }
 
     blobUriArray.current.push(blobUrl);
@@ -216,15 +216,17 @@ function MediaPanel({
       if (!_.isEmpty(blobUriArray.current)) {
         const processingBlobUriArray = Object.assign([], blobUriArray.current);
         blobUriArray.current = [];
-        processedBlobUriArray.current = [...new Set([
-          ...processedBlobUriArray, 
-          ...processingBlobUriArray
-        ])]
+        processedBlobUriArray.current = [
+          ...new Set([
+            ...processedBlobUriArray,
+            ...processingBlobUriArray
+          ]
+        )];
         requestRef.current = getBlobsData(processingBlobUriArray);
         requestRef.current.call().catch(() => {
           processedBlobUriArray.current = processedBlobUriArray.current.filter(
-            (uri:string) => !processingBlobUriArray.includes(uri)
-          )
+            (uri: string) => !processingBlobUriArray.includes(uri)
+          );
         });
       }
     }, BATCH_SEND_DELAY);
