@@ -136,6 +136,7 @@ function createBlobURISystemEngine(
           .catch((ex) => {
             if (ex.name === 'AbortError') {
               // Abort Error
+              console.log('abort occur: ', ex);
             } else {
               // eslint-disable-next-line no-console
               console.log('Unhandled error: ', ex);
