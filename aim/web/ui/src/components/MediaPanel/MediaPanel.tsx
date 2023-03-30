@@ -217,11 +217,8 @@ function MediaPanel({
         const processingBlobUriArray = Object.assign([], blobUriArray.current);
         blobUriArray.current = [];
         processedBlobUriArray.current = [
-          ...new Set([
-            ...processedBlobUriArray,
-            ...processingBlobUriArray
-          ]
-        )];
+          ...new Set([...processedBlobUriArray, ...processingBlobUriArray])
+        ];
         requestRef.current = getBlobsData(processingBlobUriArray);
         requestRef.current.call().catch(() => {
           processedBlobUriArray.current = processedBlobUriArray.current.filter(
