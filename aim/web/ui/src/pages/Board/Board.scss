@@ -91,7 +91,7 @@
   overflow: auto;
   background-color: #fff;
   gap: $space-xxs;;
-  padding: $space-xxs;
+  padding: $space-sm $space-lg;
 }
 
 .BoardVisualizer__main__components__viz__error {

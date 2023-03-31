@@ -3,7 +3,7 @@ import * as _ from 'lodash-es';
 
 import ChartPanel from 'components/ChartPanel/ChartPanel';
 import DictVisualizer from 'components/kit/DictVisualizer';
-import { Slider, Input, Text } from 'components/kit_v2';
+import { Slider, Input, Text, Select } from 'components/kit_v2';
 
 import RunLogRecords from 'pages/RunDetail/RunLogRecords';
 
@@ -16,7 +16,7 @@ import TextList from './TextList';
 import FiguresList from './FiguresList';
 import Plotly from './Plotly';
 
-export const dataVizElementsMap = {
+export const dataVizElementsMap: any = {
   LineChart: (props: any) => {
     const onActivePointChange = React.useCallback(
       _.debounce(props.callbacks?.on_active_point_change, 100),
@@ -83,6 +83,26 @@ export const dataVizElementsMap = {
     />
   ),
   Text: (props: any) => <Text>{props.data}</Text>,
+  Select: (props: any) => {
+    let multi = Array.isArray(props.options.values);
+    return (
+      <Select
+        multiple={multi}
+        searchable
+        value={multi ? props.options.values : props.options.value}
+        options={[
+          {
+            group: '',
+            options: props.options.options.map((opt: string) => ({
+              value: opt,
+              label: opt,
+            })),
+          },
+        ]}
+        onValueChange={(key: string) => props.callbacks?.on_change?.(key)}
+      />
+    );
+  },
   RunMessages: (props: any) => (
     <RunLogRecords key={props.data} runHash={props.data} inProgress={false} />
   ),

@@ -35,9 +35,9 @@ function GridCell(props: any) {
             Object.values(_.groupBy(props.viz.data, 'type')).map((vals, i) => {
               const Component =
                 dataVizElementsMap[
-                  (typeof props.viz.type === 'function'
+                  typeof props.viz.type === 'function'
                     ? props.viz.type(vals[0].type)
-                    : props.viz.type) as 'LineChart'
+                    : props.viz.type
                 ];
               const compProps = {
                 ...props.viz,
