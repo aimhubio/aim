@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.17.3 Mar 31, 2023
+
+- Fix performance issue when accessing the Image tab in Run page, especially when there are a large number of images (asynclee)
+
 ## 3.17.2 Mar 28, 2023
 
 - Fix explorer crashing issue caused by adding a `displayName` property in Grouping component (KaroMourad)
