@@ -197,8 +197,6 @@ function MediaPanel({
     if (blobsURIModel.getState()[blobUrl]) {
       return;
     }
-    console.log(blobUriArray.current);
-    console.log(processedBlobUriArray.current);
     if (blobUriArray.current.includes(blobUrl)) {
       return;
     }
@@ -225,21 +223,11 @@ function MediaPanel({
           ]),
         ];
         requestRef.current = getBlobsData(processingBlobUriArray);
-        requestRef.current
-          .call()
-          .then(() => {
-            console.log('successed');
-          })
-          .catch((err: any) => {
-            console.log(err);
-            console.log('not successed');
-            console.log(processedBlobUriArray.current);
-            processedBlobUriArray.current =
-              processedBlobUriArray.current.filter(
-                (uri: string) => !processingBlobUriArray.includes(uri),
-              );
-            console.log(processedBlobUriArray.current);
-          });
+        requestRef.current.call().catch((err: any) => {
+          processedBlobUriArray.current = processedBlobUriArray.current.filter(
+            (uri: string) => !processingBlobUriArray.includes(uri),
+          );
+        });
       }
     }, BATCH_SEND_DELAY);
   }, BATCH_SEND_DELAY);
