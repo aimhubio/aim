@@ -7,6 +7,7 @@
           <a href="https://community.aimstack.io/">Join Aim discord community</a>
           <img width="20px" src="https://user-images.githubusercontent.com/13848158/226759622-063b725d-8b3e-4c75-80c7-11fb04b7adf5.png">
         </td>
+        <td>Aim 4.0 - COMING SOON!</td>
       </tr>
     </tbody>
   </table>
