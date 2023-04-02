@@ -81,12 +81,7 @@ function Board({
         const code = editorValue.current
           .replaceAll('from aim', '# from aim')
           .replaceAll('import aim', '# import aim')
-          .replaceAll('= Metric.query', '= await Metric.query')
-          .replaceAll('= Images.query', '= await Images.query')
-          .replaceAll('= Audios.query', '= await Audios.query')
-          .replaceAll('= Figures.query', '= await Figures.query')
-          .replaceAll('= Texts.query', '= await Texts.query')
-          .replaceAll('= Distributions.query', '= await Distributions.query');
+          .replaceAll('= Repo.filter', '= await Repo.filter');
 
         const packagesListProxy = pyodide?.pyodide_py.code.find_imports(code);
         const packagesList = packagesListProxy.toJs();

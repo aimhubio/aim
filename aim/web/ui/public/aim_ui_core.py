@@ -57,59 +57,22 @@ def memoize(func):
     return wrapper
 
 
-class Object:
-    def __init__(self, type, methods={}):
-        self.type = type
-        self.methods = methods
-        self.items = []
-
+class Repo:
+    @classmethod
     @memoize_async
-    async def query(self, query=""):
-        data = await search(self.type, query)
+    async def filter(self, type, query=""):
+        data = await search(type, query)
         data = create_proxy(data.to_py())
         items = []
         i = 0
         for item in data:
             d = item
-            d["type"] = self.type
+            d["type"] = type
             d["key"] = i
             i = i + 1
             items.append(d)
-        self.items = items
         data.destroy()
         return items
-
-
-class MetricObject(Object):
-    def dataframe(self, key):
-        import pandas as pd
-
-        metric = self.items[key]
-
-        df_source = {
-            "run.hash": [],
-            "metric.name": [],
-            "metric.context": [],
-            "step": [],
-            "value": [],
-        }
-
-        for i, s in enumerate(metric["steps"]):
-            df_source["run.hash"].append(metric["run"]["hash"])
-            df_source["metric.name"].append(metric["name"])
-            df_source["metric.context"].append(str(metric["context"]))
-            df_source["step"].append(metric["steps"][i])
-            df_source["value"].append(metric["values"][i])
-
-        return pd.DataFrame(df_source)
-
-
-Metric = MetricObject("metric")
-Images = Object("images")
-Figures = Object("figures")
-Audios = Object("audios")
-Texts = Object("texts")
-Distributions = Object("distributions")
 
 
 ####################
