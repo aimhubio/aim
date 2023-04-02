@@ -552,6 +552,17 @@ class RunMessages(Component):
         self.render()
 
 
+class RunNotes(Component):
+    def __init__(self, run_hash, key=None):
+        component_type = "RunNotes"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type)
+
+        self.data = run_hash
+
+        self.render()
+
+
 class Plotly(Component):
     def __init__(self, fig, key=None):
         component_type = "Plotly"

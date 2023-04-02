@@ -6,6 +6,7 @@ import LineChart from 'components/LineChart/LineChart';
 import { Slider, Input, Text, Select } from 'components/kit_v2';
 
 import RunLogRecords from 'pages/RunDetail/RunLogRecords';
+import RunDetailNotesTab from 'pages/RunDetail/RunDetailNotesTab/RunDetailNotesTab';
 
 import { ILineChartRef } from 'types/components/LineChart/LineChart';
 
@@ -108,6 +109,11 @@ export const dataVizElementsMap: any = {
   RunMessages: (props: any) => (
     <div style={{ flex: 1 }}>
       <RunLogRecords key={props.data} runHash={props.data} inProgress={false} />
+    </div>
+  ),
+  RunNotes: (props: any) => (
+    <div style={{ flex: 1 }}>
+      <RunDetailNotesTab key={props.data} runHash={props.data} />
     </div>
   ),
   Plotly: (props: any) => (
