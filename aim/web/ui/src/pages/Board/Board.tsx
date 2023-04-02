@@ -5,7 +5,7 @@ import { Link as RouteLink } from 'react-router-dom';
 import { Link } from '@material-ui/core';
 import Editor from '@monaco-editor/react';
 
-import { Button, Icon, Spinner, Text } from 'components/kit';
+import { Button, Icon, Spinner } from 'components/kit';
 import AppBar from 'components/AppBar/AppBar';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
@@ -93,18 +93,22 @@ function Board({
         packagesListProxy.destroy();
 
         for await (const lib of packagesList) {
-          await pyodide?.loadPackage('micropip');
-          const micropip = pyodide?.pyimport('micropip');
-          await micropip.install(lib);
+          if (lib !== 'js') {
+            await pyodide?.loadPackage('micropip');
+            try {
+              const micropip = pyodide?.pyimport('micropip');
+              await micropip.install(lib);
+            } catch (ex) {
+              // eslint-disable-next-line no-console
+              console.log(ex);
+            }
+          }
         }
 
         await pyodide?.loadPackagesFromImports(code);
 
-        let resetCode = `memoize_cache = {}
-current_layout = []
-state = {}
-`;
-        pyodide?.runPython(resetCode, { globals: namespace });
+        let resetLayoutCode = 'current_layout = []';
+        pyodide?.runPython(resetLayoutCode, { globals: namespace });
 
         setState(undefined);
         setResult([]);
@@ -126,9 +130,12 @@ state = {}
   const runParsedCode = React.useCallback(() => {
     if (pyodide !== null) {
       try {
-        let vizMapResetCode = `viz_map_keys = {}
+        let resetCode = `viz_map_keys = {}
+block_context = {
+  "current": 0,
+}
 `;
-        pyodide?.runPython(vizMapResetCode, { globals: namespace });
+        pyodide?.runPython(resetCode, { globals: namespace });
         pyodide
           ?.runPythonAsync(execCode, { globals: namespace })
           .then(() => {

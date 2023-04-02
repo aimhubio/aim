@@ -1,13 +1,13 @@
 import * as React from 'react';
 import * as _ from 'lodash-es';
 
-import ChartPanel from 'components/ChartPanel/ChartPanel';
 import DictVisualizer from 'components/kit/DictVisualizer';
+import LineChart from 'components/LineChart/LineChart';
 import { Slider, Input, Text, Select } from 'components/kit_v2';
 
 import RunLogRecords from 'pages/RunDetail/RunLogRecords';
 
-import { ChartTypeEnum, CurveEnum, ScaleEnum, HighlightEnum } from 'utils/d3';
+import { ILineChartRef } from 'types/components/LineChart/LineChart';
 
 import DataTable from './DataTable';
 import ImagesList from './ImagesList';
@@ -22,33 +22,35 @@ export const dataVizElementsMap: any = {
       _.debounce(props.callbacks?.on_active_point_change, 100),
       [],
     );
+    const chartRef = React.useRef<ILineChartRef>(null);
+    const focusedStateRef = React.useRef<any>({});
+
+    const syncHoverState = React.useCallback(
+      ({ activePoint, focusedState: currentFocusedState }) => {
+        if (activePoint) {
+          if (currentFocusedState?.active) {
+            /** on focus point */
+
+            onActivePointChange(activePoint, true);
+          } else {
+            /** on mouse over */
+
+            onActivePointChange(activePoint, false);
+          }
+        } else {
+          /** on mouse leave */
+        }
+      },
+      [],
+    );
 
     return (
-      <ChartPanel
-        selectOptions={[]}
-        chartType={ChartTypeEnum.LineChart}
-        data={[props.data]}
-        focusedState={{
-          key: null,
-          active: false,
-        }}
-        tooltip={{}}
-        zoom={{}}
-        onActivePointChange={onActivePointChange}
-        onChangeTooltip={() => null}
-        chartProps={[
-          {
-            axesScaleType: {
-              xAxis: ScaleEnum.Linear,
-              yAxis: ScaleEnum.Linear,
-            },
-            ignoreOutliers: false,
-            highlightMode: HighlightEnum.Off,
-            curveInterpolation: CurveEnum.Linear,
-          },
-        ]}
-        onRunsTagsChange={() => null}
-        controls={null}
+      <LineChart
+        ref={chartRef}
+        id={'0'}
+        nameKey={'board'}
+        data={props.data}
+        syncHoverState={syncHoverState}
       />
     );
   },
@@ -104,7 +106,9 @@ export const dataVizElementsMap: any = {
     );
   },
   RunMessages: (props: any) => (
-    <RunLogRecords key={props.data} runHash={props.data} inProgress={false} />
+    <div style={{ flex: 1 }}>
+      <RunLogRecords key={props.data} runHash={props.data} inProgress={false} />
+    </div>
   ),
   Plotly: (props: any) => (
     <div
@@ -112,6 +116,7 @@ export const dataVizElementsMap: any = {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
+        boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.1)',
       }}
     >
       <Plotly {...props} />

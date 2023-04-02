@@ -28,7 +28,7 @@ function GridCell(props: any) {
   }, [stackMap]);
 
   return props.viz.no_facet !== false ? (
-    <div>
+    <>
       {Array.isArray(props.viz.data) ? (
         Object.values(_.groupBy(props.viz.data, 'type')).map((vals, i) => {
           const Component =
@@ -46,7 +46,7 @@ function GridCell(props: any) {
       ) : (
         <Component {...props.viz} />
       )}
-    </div>
+    </>
   ) : (
     <GroupedBox
       viz={props.viz}
