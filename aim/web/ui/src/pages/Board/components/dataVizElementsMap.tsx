@@ -106,7 +106,17 @@ export const dataVizElementsMap: any = {
   RunMessages: (props: any) => (
     <RunLogRecords key={props.data} runHash={props.data} inProgress={false} />
   ),
-  Plotly: (props: any) => <Plotly {...props} />,
+  Plotly: (props: any) => (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
+      <Plotly {...props} />
+    </div>
+  ),
   Slider: (props: any) => {
     const onChange = React.useCallback(
       _.debounce(props.callbacks?.on_change, 100),

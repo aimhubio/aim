@@ -90,7 +90,7 @@
   flex-direction: column;
   overflow: auto;
   background-color: #fff;
-  gap: $space-xxs;;
+  gap: $space-xxs;
   padding: $space-sm $space-lg;
 }
 
@@ -98,6 +98,22 @@
   @include monospaceFontFamily();
   padding: $space-xs $space-sm;
   color: $error-color;
+}
+
+.block--row {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  justify-content: center;
+  gap: $space-xxs;
+}
+
+.block--column {
+  display: inline-flex;
+  flex-direction: column;
+  flex: 1;
+  justify-content: center;
+  gap: $space-xxs;
 }
 
 .BoardVisualizer__main__components__console {

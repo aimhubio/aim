@@ -27,35 +27,31 @@ function GridCell(props: any) {
     setStackValue(sliderValues[0]);
   }, [stackMap]);
 
-  return (
+  return props.viz.no_facet !== false ? (
     <div>
-      {props.viz.no_facet !== false ? (
-        <div>
-          {Array.isArray(props.viz.data) ? (
-            Object.values(_.groupBy(props.viz.data, 'type')).map((vals, i) => {
-              const Component =
-                dataVizElementsMap[
-                  typeof props.viz.type === 'function'
-                    ? props.viz.type(vals[0].type)
-                    : props.viz.type
-                ];
-              const compProps = {
-                ...props.viz,
-                data: vals,
-              };
-              return <Component key={`${i}-${vals[0].type}`} {...compProps} />;
-            })
-          ) : (
-            <Component {...props.viz} />
-          )}
-        </div>
+      {Array.isArray(props.viz.data) ? (
+        Object.values(_.groupBy(props.viz.data, 'type')).map((vals, i) => {
+          const Component =
+            dataVizElementsMap[
+              typeof props.viz.type === 'function'
+                ? props.viz.type(vals[0].type)
+                : props.viz.type
+            ];
+          const compProps = {
+            ...props.viz,
+            data: vals,
+          };
+          return <Component key={`${i}-${vals[0].type}`} {...compProps} />;
+        })
       ) : (
-        <GroupedBox
-          viz={props.viz}
-          stack={{ stackMap, stackValue, update: setStackValue }}
-        />
+        <Component {...props.viz} />
       )}
     </div>
+  ) : (
+    <GroupedBox
+      viz={props.viz}
+      stack={{ stackMap, stackValue, update: setStackValue }}
+    />
   );
 }
 

@@ -23,11 +23,13 @@ export async function loadPyodideInstance(cb?: Function) {
         if (terminal) {
           terminal.innerHTML! += `<p>${args.join(', ')}</p>`;
           terminal.scrollTop = terminal.scrollHeight;
+        } else {
+          console.log(...args);
         }
       });
     },
     stderr: (...args: any[]) => {
-      console.log('err', args);
+      console.log(...args);
     },
   });
 

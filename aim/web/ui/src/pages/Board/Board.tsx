@@ -210,25 +210,13 @@ state = {}
     return Object.values(elements).map((element: any, i: number) => {
       if (element.type === 'row' || element.type === 'column') {
         return (
-          <div
-            key={element.type + i}
-            className={`block--${element.type}`}
-            style={{
-              display: 'flex',
-              flexDirection: element.type === 'column' ? 'column' : 'row',
-              flex: element.type === 'column' ? 0 : 1,
-            }}
-          >
+          <div key={element.type + i} className={`block--${element.type}`}>
             {renderTree(tree, tree[element.id].elements)}
           </div>
         );
       }
 
-      return (
-        <div key={i}>
-          <GridCell viz={element} />
-        </div>
-      );
+      return <GridCell key={i} viz={element} />;
     });
   }
 
