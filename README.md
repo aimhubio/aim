@@ -7,7 +7,7 @@
           <a href="https://community.aimstack.io/">Join Aim discord community</a>
           <img width="20px" src="https://user-images.githubusercontent.com/13848158/226759622-063b725d-8b3e-4c75-80c7-11fb04b7adf5.png">
         </td>
-        <td><a href="#-aim-4.0">Aim 4.0 - COMING SOON!</a></td>
+        <td><a href="#-aim-40">🔮 Aim 4.0 - COMING SOON!!</a></td>
       </tr>
     </tbody>
   </table>
@@ -103,7 +103,7 @@
   <a href="https://aimstack.readthedocs.io/en/latest/"><b>Documentation</b></a> &bull;
   <a href="#-community"><b>Community</b></a> &bull;
   <a href="https://aimstack.io/blog"><b>Blog</b></a> &bull;
-  <a href="#-aim-4.0"><b>COMING SOON</b></a>
+  <a href="#-aim-40"><b>COMING SOON</b></a>
 </h3>  
 
 ---
@@ -175,12 +175,17 @@ Additionally, its SDK enables programmatic access to tracked metadata — perfec
 </div>
 
 # 🔮 Aim 4.0
-Aim 4.0 is the ultimate metadata library to track all your interactions with your models - including experiments, prompts etc.
-Remote first, scalable & capable of storing and querying 100,000s of metadata sequences.
-The Aim experiment tracker is not just one-off experiment tracker. 
-It's built on top of the metadata library that Aim is. Now you can also do prompt engineering on Aim.
-Stay tuned for more here...
+**Aim 4.0 is coming soon!!**
 
+A major iteration of Aim as the ultimate metadata library to track all your interactions with your models - including experiments, prompts etc.
+
+- Remote first
+- Scalable 
+- Capable of storing and querying 100,000s of metadata sequences.
+
+The Aim experiment tracker is not just one-off experiment tracker.
+It's built on top of the metadata library that Aim is. Now you can also do prompt engineering on Aim.
+Stay tuned for more...
 
 # 🎬 Demos
 
