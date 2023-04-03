@@ -16,9 +16,10 @@
 <div align="center">
   <img src="https://user-images.githubusercontent.com/13848158/225620298-9f9293e9-a138-41fd-bd77-21d53d0490b7.png">
   <h3>
-    An easy-to-use & supercharged open-source experiment tracker
+    An easy-to-use & supercharged open-source AI metadata tracker. 
   </h3>
-  Aim logs your training runs and any AI Metadata, enables a beautiful UI to compare, observe them and an API to query them programmatically.
+  
+  Aim logs all your AI metadata(**experiments**, **prompts**, etc), enables a UI to compare & observe them and and SDK to query them programmatically.
 </div>
 
 <br/>
@@ -103,7 +104,7 @@
   <a href="https://aimstack.readthedocs.io/en/latest/"><b>Documentation</b></a> &bull;
   <a href="#-community"><b>Community</b></a> &bull;
   <a href="https://aimstack.io/blog"><b>Blog</b></a> &bull;
-  <a href="#-aim-40"><b>COMING SOON</b></a>
+  <a href="#-aim-40"><b>COMING SOON!!</b></a>
 </h3>  
 
 ---
