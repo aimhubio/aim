@@ -409,19 +409,20 @@ class LineChart(Component):
 
     async def on_active_point_change(self, val, is_active):
         data = create_proxy(val.to_py())
-        point = dict(data)
-        data.destroy()
-        item = self.data[point["key"]]
+        item = self.data[data["key"]]
+
         if is_active:
             self.set_state({
                 "focused_line": item,
-                "focused_point": point,
+                "focused_point": data,
             })
         else:
             self.set_state({
                 "active_line": item,
-                "active_point": point,
+                "active_point": data,
             })
+
+        data.destroy()
 
 
 class ImagesList(Component):
