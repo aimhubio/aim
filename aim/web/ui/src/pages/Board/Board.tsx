@@ -249,6 +249,15 @@ block_context = {
                   getEditorValue={() => editorValue.current}
                   initialState={data}
                 />
+                <Link
+                  to={PathEnum.Board.replace(':boardId', data.id)}
+                  component={RouteLink}
+                  underline='none'
+                >
+                  <Button variant='outlined' size='small'>
+                    Cancel
+                  </Button>
+                </Link>
               </div>
             ) : (
               <Link

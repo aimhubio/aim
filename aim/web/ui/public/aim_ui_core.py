@@ -408,21 +408,22 @@ class LineChart(Component):
         return self.state["focused_point"] if "focused_point" in self.state else None
 
     async def on_active_point_change(self, val, is_active):
-        data = create_proxy(val.to_py())
-        item = self.data[data["key"]]
+        if val != None:
+            data = create_proxy(val.to_py())
+            item = self.data[data["key"]]
 
-        if is_active:
-            self.set_state({
-                "focused_line": item,
-                "focused_point": data,
-            })
-        else:
-            self.set_state({
-                "active_line": item,
-                "active_point": data,
-            })
+            if is_active:
+                self.set_state({
+                    "focused_line": item,
+                    "focused_point": data,
+                })
+            else:
+                self.set_state({
+                    "active_line": item,
+                    "active_point": data,
+                })
 
-        data.destroy()
+            data.destroy()
 
 
 class ImagesList(Component):

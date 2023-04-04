@@ -24,12 +24,11 @@ export const dataVizElementsMap: any = {
       [],
     );
     const chartRef = React.useRef<ILineChartRef>(null);
-    const focusedStateRef = React.useRef<any>({});
 
     const syncHoverState = React.useCallback(
-      ({ activePoint, focusedState: currentFocusedState }) => {
+      ({ activePoint, focusedState }) => {
         if (activePoint) {
-          if (currentFocusedState?.active) {
+          if (focusedState?.active) {
             /** on focus point */
 
             onActivePointChange(activePoint, true);
@@ -40,6 +39,8 @@ export const dataVizElementsMap: any = {
           }
         } else {
           /** on mouse leave */
+
+          onActivePointChange(activePoint, false);
         }
       },
       [],
