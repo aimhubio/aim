@@ -43,7 +43,7 @@ export async function loadPyodideInstance(cb?: Function) {
       });
     },
     stderr: (...args: any[]) => {
-      console.log('err', args);
+      console.log(...args);
     },
   });
 

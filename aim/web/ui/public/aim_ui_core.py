@@ -57,59 +57,22 @@ def memoize(func):
     return wrapper
 
 
-class Object:
-    def __init__(self, type, methods={}):
-        self.type = type
-        self.methods = methods
-        self.items = []
-
-    # @memoize_async
-    async def query(self, query=""):
-        data = await search(self.type, query)
+class Repo:
+    @classmethod
+    @memoize_async
+    async def filter(self, type, query=""):
+        data = await search(type, query)
         data = create_proxy(data.to_py())
         items = []
         i = 0
         for item in data:
             d = item
-            d["type"] = self.type
+            d["type"] = type
             d["key"] = i
             i = i + 1
             items.append(d)
-        self.items = items
         data.destroy()
         return items
-
-
-class MetricObject(Object):
-    def dataframe(self, key):
-        import pandas as pd
-
-        metric = self.items[key]
-
-        df_source = {
-            "run.hash": [],
-            "metric.name": [],
-            "metric.context": [],
-            "step": [],
-            "value": [],
-        }
-
-        for i, s in enumerate(metric["steps"]):
-            df_source["run.hash"].append(metric["run"]["hash"])
-            df_source["metric.name"].append(metric["name"])
-            df_source["metric.context"].append(str(metric["context"]))
-            df_source["step"].append(metric["steps"][i])
-            df_source["value"].append(metric["values"][i])
-
-        return pd.DataFrame(df_source)
-
-
-Metric = MetricObject("metric")
-Images = Object("images")
-Figures = Object("figures")
-Audios = Object("audios")
-Texts = Object("texts")
-Distributions = Object("distributions")
 
 
 ####################
@@ -445,20 +408,22 @@ class LineChart(Component):
         return self.state["focused_point"] if "focused_point" in self.state else None
 
     async def on_active_point_change(self, val, is_active):
-        data = create_proxy(val.to_py())
-        point = dict(data)
-        data.destroy()
-        item = self.data[point["key"]]
-        if is_active:
-            self.set_state({
-                "focused_line": item,
-                "focused_point": point,
-            })
-        else:
-            self.set_state({
-                "active_line": item,
-                "active_point": point,
-            })
+        if val != None:
+            data = create_proxy(val.to_py())
+            item = self.data[data["key"]]
+
+            if is_active:
+                self.set_state({
+                    "focused_line": item,
+                    "focused_point": data,
+                })
+            else:
+                self.set_state({
+                    "active_line": item,
+                    "active_point": data,
+                })
+
+            data.destroy()
 
 
 class ImagesList(Component):
@@ -501,7 +466,7 @@ class AudiosList(Component):
 
 class TextsList(Component):
     def __init__(self, data, color=[], key=None):
-        component_type = "Text"
+        component_type = "Texts"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type)
 
@@ -589,6 +554,17 @@ class RunMessages(Component):
         self.render()
 
 
+class RunNotes(Component):
+    def __init__(self, run_hash, key=None):
+        component_type = "RunNotes"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type)
+
+        self.data = run_hash
+
+        self.render()
+
+
 class Plotly(Component):
     def __init__(self, fig, key=None):
         component_type = "Plotly"
@@ -596,6 +572,119 @@ class Plotly(Component):
         super().__init__(component_key, component_type)
 
         self.data = fig.to_json()
+
+        self.render()
+
+
+class Slider(Component):
+    def __init__(self, min, max, value, key=None):
+        component_type = "Slider"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type)
+
+        self.data = value
+
+        self.options = {
+            "min": min,
+            "max": max,
+            "value": self.value
+        }
+
+        self.callbacks = {
+            "on_change": self.on_change
+        }
+
+        self.render()
+
+    @property
+    def value(self):
+        return self.state["value"][0] if "value" in self.state else self.data
+
+    async def on_change(self, val):
+        self.set_state({
+            "value": val.to_py()
+        })
+
+
+class TextInput(Component):
+    def __init__(self, value, key=None):
+        component_type = "TextInput"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type)
+
+        self.data = value
+
+        self.options = {
+            "value": self.value
+        }
+
+        self.callbacks = {
+            "on_change": self.on_change
+        }
+
+        self.render()
+
+    @property
+    def value(self):
+        return self.state["value"] if "value" in self.state else self.data
+
+    async def on_change(self, val):
+        self.set_state({
+            "value": val
+        })
+
+
+class Select(Component):
+    def __init__(self, value=None, values=None, options=[], key=None):
+        component_type = "Select"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type)
+
+        self.data = value or values
+
+        self.options = {
+            "value": self.value,
+            "values": self.values,
+            "options": options
+        }
+
+        self.callbacks = {
+            "on_change": self.on_change
+        }
+
+        self.render()
+
+    @property
+    def value(self):
+        return self.state["value"] if "value" in self.state else self.data
+
+    @property
+    def values(self):
+        return self.state["values"] if "values" in self.state else self.data
+
+    async def on_change(self, key):
+        if type(self.values) is list:
+            if key in self.values:
+                values = list(filter(lambda item: item != key, self.values))
+            else:
+                values = self.values + [key]
+
+            self.set_state({
+                "values": values
+            })
+        else:
+            self.set_state({
+                "value": key
+            })
+
+
+class Text(Component):
+    def __init__(self, data, key=None):
+        component_type = "Text"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type)
+
+        self.data = data
 
         self.render()
 

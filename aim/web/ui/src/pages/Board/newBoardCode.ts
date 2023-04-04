@@ -1,7 +1,7 @@
 export const initialCode = `#####
 # Filter data with a query condition 
 # Example
-metrics = Metric.query('metric.name == "loss"')
+metrics = Repo.filter('metric', 'metric.name == "loss"')
 #####
 
 #####

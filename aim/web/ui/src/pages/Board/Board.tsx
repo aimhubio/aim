@@ -5,7 +5,7 @@ import { Link as RouteLink } from 'react-router-dom';
 import { Link } from '@material-ui/core';
 import Editor from '@monaco-editor/react';
 
-import { Button, Icon, Spinner, Text } from 'components/kit';
+import { Button, Icon, Spinner } from 'components/kit';
 import AppBar from 'components/AppBar/AppBar';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
@@ -64,8 +64,8 @@ function Board({
 
     window.clearTimeout(timerId.current);
     timerId.current = window.setTimeout(() => {
-      setResult(layout.filter((item: any) => item.element !== 'block'));
       setBlocks(layout.filter((item: any) => item.element === 'block'));
+      setResult(layout.filter((item: any) => item.element !== 'block'));
     }, 50);
   };
 
@@ -86,30 +86,29 @@ function Board({
         const code = editorValue.current
           .replaceAll('from aim', '# from aim')
           .replaceAll('import aim', '# import aim')
-          .replaceAll('= Metric.query', '= await Metric.query')
-          .replaceAll('= Images.query', '= await Images.query')
-          .replaceAll('= Audios.query', '= await Audios.query')
-          .replaceAll('= Figures.query', '= await Figures.query')
-          .replaceAll('= Texts.query', '= await Texts.query')
-          .replaceAll('= Distributions.query', '= await Distributions.query');
+          .replaceAll('= Repo.filter', '= await Repo.filter');
 
         const packagesListProxy = pyodide?.pyodide_py.code.find_imports(code);
         const packagesList = packagesListProxy.toJs();
         packagesListProxy.destroy();
 
         for await (const lib of packagesList) {
-          await pyodide?.loadPackage('micropip');
-          const micropip = pyodide?.pyimport('micropip');
-          await micropip.install(lib);
+          if (lib !== 'js') {
+            await pyodide?.loadPackage('micropip');
+            try {
+              const micropip = pyodide?.pyimport('micropip');
+              await micropip.install(lib);
+            } catch (ex) {
+              // eslint-disable-next-line no-console
+              console.log(ex);
+            }
+          }
         }
 
         await pyodide?.loadPackagesFromImports(code);
 
-        let resetCode = `memoize_cache = {}
-current_layout = []
-state = {}
-`;
-        pyodide?.runPython(resetCode, { globals: namespace });
+        let resetLayoutCode = 'current_layout = []';
+        pyodide?.runPython(resetLayoutCode, { globals: namespace });
 
         setState(undefined);
         setResult([]);
@@ -131,17 +130,22 @@ state = {}
   const runParsedCode = React.useCallback(async () => {
     if (pyodide !== null) {
       try {
-        let vizMapResetCode = `viz_map_keys = {}
+        let resetCode = `viz_map_keys = {}
+block_context = {
+  "current": 0,
+}
 `;
-        pyodide?.runPython(vizMapResetCode, { globals: namespace });
-        try {
-          await exec(execCode);
-          setError(null);
-          setIsProcessing(false);
-        } catch (ex: any) {
-          setError(ex.message);
-          setIsProcessing(false);
-        }
+        pyodide?.runPython(resetCode, { globals: namespace });
+        pyodide
+          ?.runPythonAsync(execCode, { globals: namespace })
+          .then(() => {
+            setError(null);
+            setIsProcessing(false);
+          })
+          .catch((ex: Error) => {
+            setError(ex.message);
+            setIsProcessing(false);
+          });
       } catch (ex: unknown) {
         // eslint-disable-next-line no-console
         console.log(ex);
@@ -213,51 +217,13 @@ state = {}
     return Object.values(elements).map((element: any, i: number) => {
       if (element.type === 'row' || element.type === 'column') {
         return (
-          <div
-            key={element.type + i}
-            className={`block--${element.type}`}
-            style={{
-              display: 'flex',
-              flexDirection: element.type === 'column' ? 'column' : 'row',
-              flex: element.type === 'column' ? 0 : 1,
-            }}
-          >
+          <div key={element.type + i} className={`block--${element.type}`}>
             {renderTree(tree, tree[element.id].elements)}
           </div>
         );
       }
 
-      return (
-        <div
-          key={i}
-          style={{
-            position: 'relative',
-            display: 'flex',
-            flex: 1,
-            gap: 5,
-            maxHeight: '100vh',
-            overflow: 'hidden',
-          }}
-        >
-          <div
-            key={i}
-            style={{
-              position: 'relative',
-              display: 'flex',
-              flex: 1,
-              backgroundColor: '#d2d4dc',
-              boxShadow: '0 0 0 1px #b5b9c5',
-              gap: 5,
-              background: '#fff',
-              backgroundImage: 'radial-gradient(#b5b9c5 1px, transparent 0)',
-              backgroundSize: '10px 10px',
-              overflow: 'hidden',
-            }}
-          >
-            <GridCell viz={element} />
-          </div>
-        </div>
-      );
+      return <GridCell key={i} viz={element} />;
     });
   }
 
@@ -288,6 +254,15 @@ state = {}
                   getEditorValue={() => editorValue.current}
                   initialState={data}
                 />
+                <Link
+                  to={PathEnum.Board.replace(':boardId', data.id)}
+                  component={RouteLink}
+                  underline='none'
+                >
+                  <Button variant='outlined' size='small'>
+                    Cancel
+                  </Button>
+                </Link>
               </div>
             ) : (
               <Link

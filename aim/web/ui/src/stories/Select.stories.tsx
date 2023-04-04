@@ -32,7 +32,6 @@ const Template: ComponentStory<typeof SelectComponent> = (args) => {
       {...args}
       onValueChange={handleChange}
       value={args.multiple ? multipleValues : singleValue}
-      trigger={<Button>Open Select</Button>}
     />
   );
 };
