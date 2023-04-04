@@ -30,6 +30,7 @@ const Box = React.forwardRef<typeof StyledBox, IBoxProps>(
       const layoutKeys = [
         'display',
         'flex',
+        'gap',
         'fd',
         'fw',
         'ai',

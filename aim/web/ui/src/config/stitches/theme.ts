@@ -131,6 +131,8 @@ export const lightTheme: ConfigType.Theme = {
     // mark colors
     mark: '#fffac1',
     // border colors
+    border10: '#EFF0F2',
+    border20: '#DEE0E4',
     border30: '#CED1D7',
   },
   fonts: {
