@@ -101,7 +101,7 @@ class AimLogger(BaseLogger):
                     step: Optional[int] = None):
         for k, v in metrics.items():
             name = k
-            context = self._context
+            context = {}
             if self._train_metric_prefix \
                     and name.startswith(self._train_metric_prefix):
                 name = name[len(self._train_metric_prefix):]
@@ -114,6 +114,7 @@ class AimLogger(BaseLogger):
                     and name.startswith(self._val_metric_prefix):
                 name = name[len(self._val_metric_prefix):]
                 context['subset'] = 'val'
+            context.update(self._context)
             self.experiment.track(v, step=step, name=name, context=context)
 
     @property
