@@ -41,10 +41,10 @@ class AimLogger(BaseLogger):
                  train_metric_prefix: Optional[str] = 'train_',
                  val_metric_prefix: Optional[str] = 'val_',
                  test_metric_prefix: Optional[str] = 'test_',
-                 system_tracking_interval: Optional[int]
-                 = DEFAULT_SYSTEM_TRACKING_INT,
+                 system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT,
                  log_system_params: Optional[bool] = True,
                  capture_terminal_logs: Optional[bool] = True,
+                 context: Optional[Dict[str, Any]] = {},
                  ):
         super().__init__()
 
@@ -57,6 +57,7 @@ class AimLogger(BaseLogger):
         self._system_tracking_interval = system_tracking_interval
         self._log_system_params = log_system_params
         self._capture_terminal_logs = capture_terminal_logs
+        self._context = context
 
         self._run = None
         self._run_hash = None
@@ -100,7 +101,7 @@ class AimLogger(BaseLogger):
                     step: Optional[int] = None):
         for k, v in metrics.items():
             name = k
-            context = {}
+            context = self._context
             if self._train_metric_prefix \
                     and name.startswith(self._train_metric_prefix):
                 name = name[len(self._train_metric_prefix):]
