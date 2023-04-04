@@ -47,13 +47,15 @@ export const dataVizElementsMap: any = {
     );
 
     return (
-      <LineChart
-        ref={chartRef}
-        id={'0'}
-        nameKey={'board'}
-        data={props.data}
-        syncHoverState={syncHoverState}
-      />
+      <div className='VizComponentContainer'>
+        <LineChart
+          ref={chartRef}
+          id={'0'}
+          nameKey={'board'}
+          data={props.data}
+          syncHoverState={syncHoverState}
+        />
+      </div>
     );
   },
   DataFrame: (props: any) => (
@@ -68,15 +70,7 @@ export const dataVizElementsMap: any = {
   Audios: (props: any) => <AudiosList key={Date.now()} data={props.data} />,
   Texts: (props: any) => <TextList key={Date.now()} data={props.data} />,
   JSON: (props: any) => (
-    <div
-      style={{
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-    >
+    <div className='VizComponentContainer'>
       <DictVisualizer src={props.data} />
     </div>
   ),
@@ -94,6 +88,11 @@ export const dataVizElementsMap: any = {
         multiple={multi}
         searchable
         value={multi ? props.options.values : props.options.value}
+        popoverProps={{
+          popperProps: {
+            align: 'start',
+          },
+        }}
         options={[
           {
             group: '',
@@ -118,14 +117,7 @@ export const dataVizElementsMap: any = {
     </div>
   ),
   Plotly: (props: any) => (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.1)',
-      }}
-    >
+    <div className='VizComponentContainer'>
       <Plotly {...props} />
     </div>
   ),

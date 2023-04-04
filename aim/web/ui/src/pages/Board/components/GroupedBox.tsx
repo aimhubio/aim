@@ -292,7 +292,6 @@ function GroupedBox(props: any) {
                       height: 'calc(100% - 10px)',
                       padding: '5px',
                       margin: '5px',
-                      border: '1px solid #d2d4dc',
                       flex: 1,
                     }}
                   >

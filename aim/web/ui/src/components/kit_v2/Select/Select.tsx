@@ -1,7 +1,7 @@
 import React from 'react';
 import { FixedSizeList as List } from 'react-window';
 
-import { IconCaretRight, IconCaretUp } from '@tabler/icons-react';
+import { IconCaretDown, IconCaretUp } from '@tabler/icons-react';
 
 import Popover from '../Popover';
 import Button from '../Button';
@@ -169,7 +169,7 @@ const Select = ({
   return (
     <Popover
       {...popoverProps}
-      popperProps={{ css: { p: '$5 0' } }}
+      popperProps={{ css: { p: '$5 0' }, ...popoverProps.popperProps }}
       trigger={({ open }) =>
         trigger || multiple ? (
           <Button size={size}>Select</Button>
@@ -177,7 +177,7 @@ const Select = ({
           <Button
             variant='outlined'
             color='secondary'
-            rightIcon={open ? <IconCaretUp /> : <IconCaretRight />}
+            rightIcon={open ? <IconCaretUp /> : <IconCaretDown />}
           >
             <Text>{triggerPlaceholder}</Text>
           </Button>
