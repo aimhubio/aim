@@ -1,5 +1,6 @@
 import * as React from 'react';
 import ReactMarkdown from 'react-markdown';
+import classNames from 'classnames';
 
 import Editor from '@monaco-editor/react';
 
@@ -7,8 +8,11 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import AppBar from 'components/AppBar/AppBar';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import CodeBlock from 'components/CodeBlock/CodeBlock';
+import { Spinner } from 'components/kit';
 
 import Board from 'pages/Board/Board';
+
+import usePyodide from 'services/pyodide/usePyodide';
 
 import './Reports.scss';
 
@@ -19,22 +23,31 @@ const markdownComponentsOverride = {
     }
     const match = /language-(\w+)/.exec(className || '');
 
-    return match?.[1] === 'aim' && children ? (
-      <div style={{ height: 450 }}>
-        <Board
-          key={children[0]}
-          data={{ code: children[0] }}
-          previewMode
-          editMode={false}
-        />
-      </div>
-    ) : (
-      <CodeBlock code={children[0].trim()} />
-    );
+    if (match?.[1].startsWith('aim') && children?.[0]?.trim()) {
+      let height: string | number = match[1].split('_')[1];
+      if (height === undefined || height == '') {
+        height = 450;
+      } else {
+        height = +height;
+      }
+      return (
+        <div style={{ height, display: height === 0 ? 'none' : undefined }}>
+          <Board
+            key={children[0]}
+            data={{ code: children[0] }}
+            editMode={false}
+            previewMode
+          />
+        </div>
+      );
+    }
+
+    return <CodeBlock code={children[0].trim()} />;
   },
 };
 
 function ReportsContainer() {
+  const { isLoading: pyodideIsLoading } = usePyodide();
   let [value, setValue] = React.useState('');
 
   return (
@@ -57,11 +70,28 @@ function ReportsContainer() {
                   }}
                 />
               </div>
-              <div className='ReportVisualizer__main__components'>
-                <div className='ReportVisualizer__main__components__viz'>
-                  <ReactMarkdown components={markdownComponentsOverride}>
-                    {value}
-                  </ReactMarkdown>
+              <div
+                className={classNames('ReportVisualizer__main__components', {
+                  'ReportVisualizer__main__components--loading':
+                    pyodideIsLoading === null,
+                  'ReportVisualizer__main__components--processing':
+                    pyodideIsLoading,
+                })}
+              >
+                {pyodideIsLoading !== false && (
+                  <div className='ReportVisualizer__main__components__spinner'>
+                    <Spinner />
+                  </div>
+                )}
+                <div
+                  key={`${pyodideIsLoading}`}
+                  className='ReportVisualizer__main__components__viz'
+                >
+                  {!pyodideIsLoading && (
+                    <ReactMarkdown components={markdownComponentsOverride}>
+                      {value}
+                    </ReactMarkdown>
+                  )}
                 </div>
               </div>
             </div>

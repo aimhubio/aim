@@ -9,19 +9,6 @@ let pyodideStore: any = {
   isLoading: null,
   namespace: null,
   isRunnning: false,
-  exec: noop,
-  queue: [],
-  format: function formatter(data: any): any {
-    if (data instanceof Map) {
-      return Object.fromEntries(
-        Array.from(data.entries(), ([k, v]) => [k, formatter(data)]),
-      );
-    } else if (data instanceof Array) {
-      return data.map(formatter);
-    } else {
-      return data;
-    }
-  },
 };
 
 (window as any).search = search;
@@ -57,25 +44,6 @@ export async function loadPyodideInstance(cb?: Function) {
     await (await fetch(`${getBasePath()}/static-files/aim_ui_core.py`)).text(),
     { globals: pyodideStore.namespace },
   );
-
-  pyodideStore.exec = async (code: string) => {
-    if (pyodideStore.isRunnning) {
-      pyodideStore.queue.unshift(code);
-    } else {
-      pyodideStore.isRunnning = true;
-      await pyodideStore.current.runPythonAsync(code, {
-        globals: pyodideStore.current.toPy(
-          cloneDeep(pyodideStore.namespace.toJs()),
-        ),
-      });
-      console.log(pyodideStore.queue);
-      pyodideStore.isRunnning = false;
-      if (pyodideStore.queue.length > 0) {
-        let nextCode = pyodideStore.queue.pop();
-        await pyodideStore.exec(nextCode);
-      }
-    }
-  };
 
   pyodideStore.isLoading = false;
 

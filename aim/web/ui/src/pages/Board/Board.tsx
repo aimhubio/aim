@@ -45,7 +45,7 @@ function Board({
     pyodide,
     namespace,
     isLoading: pyodideIsLoading,
-    exec,
+    isRunning: pyodideIsRunning,
   } = usePyodide();
 
   const editorValue = React.useRef(data.code);
@@ -136,16 +136,14 @@ block_context = {
 }
 `;
         pyodide?.runPython(resetCode, { globals: namespace });
-        pyodide
-          ?.runPythonAsync(execCode, { globals: namespace })
-          .then(() => {
-            setError(null);
-            setIsProcessing(false);
-          })
-          .catch((ex: Error) => {
-            setError(ex.message);
-            setIsProcessing(false);
-          });
+        try {
+          await pyodide?.runPythonAsync(execCode, { globals: namespace });
+          setError(null);
+          setIsProcessing(false);
+        } catch (ex: any) {
+          setError(ex.message);
+          setIsProcessing(false);
+        }
       } catch (ex: unknown) {
         // eslint-disable-next-line no-console
         console.log(ex);
