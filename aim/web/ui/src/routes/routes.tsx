@@ -25,12 +25,7 @@ const Params = React.lazy(
       /* webpackChunkName: "params" */ 'pages/Explorers/Params/ParamsContainer'
     ),
 );
-const Bookmarks = React.lazy(
-  () =>
-    import(
-      /* webpackChunkName: "bookmarks" */ 'pages/Bookmarks/BookmarksContainer'
-    ),
-);
+
 const Dashboard = React.lazy(
   () => import(/* webpackChunkName: "dashboard" */ 'pages/Dashboard/Dashboard'),
 );
@@ -227,15 +222,15 @@ const routes: { [key: string]: any } = {
     isExact: true,
     title: pageTitlesEnum.SCATTERS_EXPLORER,
   },
-  BOOKMARKS: {
-    path: PathEnum.Bookmarks,
-    component: Bookmarks,
-    showInSidebar: true,
-    displayName: 'Bookmarks',
-    icon: 'bookmarks',
-    isExact: true,
-    title: pageTitlesEnum.BOOKMARKS,
-  },
+  // BOOKMARKS: {
+  //   path: PathEnum.Bookmarks,
+  //   component: Bookmarks,
+  //   showInSidebar: true,
+  //   displayName: 'Bookmarks',
+  //   icon: 'bookmarks',
+  //   isExact: true,
+  //   title: pageTitlesEnum.BOOKMARKS,
+  // },
   TAGS: {
     path: PathEnum.Tags,
     component: TagsContainer,

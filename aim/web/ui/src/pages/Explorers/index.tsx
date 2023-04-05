@@ -6,6 +6,7 @@ import StatisticsCard from 'components/StatisticsCard';
 import { PathEnum } from 'config/enums/routesEnum';
 
 import { useProjectStatistics } from 'pages/Dashboard/components/ProjectStatistics';
+import BookmarksContainer from 'pages/Bookmarks/BookmarksContainer';
 
 import { getItem } from 'utils/storage';
 
@@ -31,6 +32,7 @@ function Explorers(): React.FunctionComponentElement<React.ReactNode> {
     }
     return route;
   }
+
   return (
     <Box>
       <Text
@@ -66,6 +68,7 @@ function Explorers(): React.FunctionComponentElement<React.ReactNode> {
           ),
         )}
       </ExplorersContainer>
+      <BookmarksContainer />
     </Box>
   );
 }

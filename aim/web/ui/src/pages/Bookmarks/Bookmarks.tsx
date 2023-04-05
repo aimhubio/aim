@@ -25,10 +25,10 @@ function Bookmarks({
   return (
     <ErrorBoundary>
       <section className='Bookmarks'>
-        <AppBar
+        {/* <AppBar
           title={pageTitlesEnum.BOOKMARKS}
           className='Bookmarks__appBar'
-        />
+        /> */}
         <div className='Bookmarks__list container'>
           <BusyLoaderWrapper isLoading={isLoading} height={'100%'}>
             {data?.length > 0 &&

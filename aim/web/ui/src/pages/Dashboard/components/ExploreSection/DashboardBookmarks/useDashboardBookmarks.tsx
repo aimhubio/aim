@@ -1,6 +1,8 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 
+import { PathEnum } from 'config/enums/routesEnum';
+
 import { IResourceState } from 'modules/core/utils/createResource';
 import { IDashboardData } from 'modules/core/api/dashboardsApi';
 
@@ -34,7 +36,7 @@ function useDashboardBookmarks() {
     ) => {
       e.stopPropagation();
       if (dashboard) {
-        const path = `${dashboard.app_type}/${dashboard.app_id}`;
+        const path = `${PathEnum.Explorers}/${dashboard.app_type}/${dashboard.app_id}`;
         if (newTab) {
           window.open(path, '_blank');
           window.focus();
