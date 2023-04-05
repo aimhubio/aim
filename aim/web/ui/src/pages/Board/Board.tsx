@@ -129,6 +129,7 @@ function Board({
 block_context = {
   "current": 0,
 }
+current_layout = []
 `;
         pyodide?.runPython(resetCode, { globals: namespace });
         pyodide
