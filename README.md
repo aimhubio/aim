@@ -182,7 +182,8 @@ A major iteration of Aim as the ultimate metadata library to track all your inte
 
 - Remote first
 - Scalable 
-- Capable of storing and querying 100,000s of metadata sequences.
+- Capable of storing and querying 100,000s of metadata sequences
+- Custom UI dashboards and reports
 
 The Aim experiment tracker is not just one-off experiment tracker.
 It's built on top of the metadata library that Aim is. Now you can also do prompt engineering on Aim.
