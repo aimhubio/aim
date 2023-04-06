@@ -19,7 +19,7 @@
     An easy-to-use & supercharged open-source AI metadata tracker. 
   </h3>
   
-  Aim logs all your AI metadata(**experiments**, **prompts**, etc), enables a UI to compare & observe them and and SDK to query them programmatically.
+  Aim logs all your AI metadata(**experiments**, **prompts**, etc), enables a UI to compare & observe them and SDK to query them programmatically.
 </div>
 
 <br/>
