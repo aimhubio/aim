@@ -77,12 +77,11 @@ const Slider = React.memo(
         <SliderTrack className='SliderTrack'>
           <SliderRange className='SliderRange' />
         </SliderTrack>
-        {sliderValue.map((value: number) => (
-          <SliderThumb className='SliderThumb' key={value}>
+        {sliderValue.map((value: number, index) => (
+          <SliderThumb className='SliderThumb' key={index}>
             <SliderLabel className='SliderLabel'>{value}</SliderLabel>
           </SliderThumb>
         ))}
-
         {marks.length > 0 &&
           marks.map((mark) => {
             return (
@@ -108,4 +107,4 @@ const Slider = React.memo(
 );
 
 Slider.displayName = 'Slider';
-export default React.memo(Slider);
+export default Slider;
