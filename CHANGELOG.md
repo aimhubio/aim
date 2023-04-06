@@ -1,6 +1,10 @@
 # Changelog
 
+
+## 3.17.3 Apr 6, 2023
+
 - Fix the community popup overflowing issue (KaroMourad)
+- Optimize images blobs URI loading performance (asynclee)
 
 ## 3.17.2 Mar 28, 2023
 
