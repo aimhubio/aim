@@ -129,11 +129,9 @@ function Board({
 block_context = {
   "current": 0,
 }
-current_layout = []
 `;
-        pyodide?.runPython(resetCode, { globals: namespace });
         pyodide
-          ?.runPythonAsync(execCode, { globals: namespace })
+          ?.runPythonAsync(resetCode + execCode, { globals: namespace })
           .then(() => {
             setError(null);
             setIsProcessing(false);
