@@ -15,13 +15,28 @@
   </table>
 </div>
 
+<br />
+
 <div align="center">
   <img src="https://user-images.githubusercontent.com/13848158/225620298-9f9293e9-a138-41fd-bd77-21d53d0490b7.png">
   <h3>
     An easy-to-use & supercharged open-source AI metadata tracker. 
   </h3>
   
-  Aim logs all your AI metadata(**experiments**, **prompts**, etc), enables a UI to compare & observe them and SDK to query them programmatically.
+  Aim logs all your AI metadata, enables a UI to observe/compare them, and an SDK to query them programmatically.
+  
+  <table>
+    <tbody>
+      <tr>
+        <td colspan="2"><p align="center">Learn more:</p></td>
+      </tr>
+      <tr>
+        <td>Experiment tracking with Aim</td>
+        <td>Prompt engineering with Aim</td>
+      </tr>
+    </tbody>
+  </table>
+  
 </div>
 
 <br/>
