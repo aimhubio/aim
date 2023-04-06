@@ -7,7 +7,9 @@
           <a href="https://community.aimstack.io/">Join Aim discord community</a>
           <img width="20px" src="https://user-images.githubusercontent.com/13848158/226759622-063b725d-8b3e-4c75-80c7-11fb04b7adf5.png">
         </td>
-        <td><a href="#-aim-40">🔮 Aim 4.0 - COMING SOON!!</a></td>
+      </tr>
+      <tr>
+        <td colspan="2"><p align="center"><a href="#-aim-40">🔮 Aim 4.0 - COMING SOON!!</a></p></td>
       </tr>
     </tbody>
   </table>
@@ -96,7 +98,7 @@
 ---
 
 <h3 align="center">
-  <a href="#-about"><b>About</b></a> &bull;
+  <a href="#ℹ️-about"><b>About</b></a> &bull;
   <a href="#-demos"><b>Demos</b></a> &bull;
   <a href="#-ecosystem"><b>Ecosystem</b></a> &bull;
   <a href="#-quick-start"><b>Quick Start</b></a> &bull;
