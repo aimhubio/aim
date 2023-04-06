@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased 
+
+### fixes
+-  Convert NaNs and Infs in responses to strings (n-gao)
+
 ## 3.17.2 Mar 28, 2023
 
 - Fix explorer crashing issue caused by adding a `displayName` property in Grouping component (KaroMourad)
