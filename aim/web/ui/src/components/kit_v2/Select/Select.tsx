@@ -1,6 +1,8 @@
 import React from 'react';
 import { FixedSizeList as List } from 'react-window';
 
+import { IconCaretRight, IconCaretUp } from '@tabler/icons-react';
+
 import Popover from '../Popover';
 import Button from '../Button';
 import Box from '../Box';
@@ -41,7 +43,6 @@ const Select = ({
   height = 256,
 }: ISelectProps) => {
   const [search, setSearch] = React.useState('');
-
   const onSearchChange = React.useCallback((e) => {
     setSearch(e.target.value);
   }, []);
@@ -152,11 +153,36 @@ const Select = ({
     value,
   ]);
 
+  const triggerPlaceholder = React.useMemo(() => {
+    if (multiple) {
+      return 'Select';
+    }
+    if (value) {
+      const selected = flattenOptions?.find((item) => item.value === value);
+      if (selected) {
+        return selected.label as string;
+      }
+    }
+    return 'Select';
+  }, [flattenOptions, multiple, value]);
+
   return (
     <Popover
       {...popoverProps}
       popperProps={{ css: { p: '$5 0' } }}
-      trigger={({ open }) => trigger || <Button size={size}>Select</Button>}
+      trigger={({ open }) =>
+        trigger || multiple ? (
+          <Button size={size}>Select</Button>
+        ) : (
+          <Button
+            variant='outlined'
+            color='secondary'
+            rightIcon={open ? <IconCaretUp /> : <IconCaretRight />}
+          >
+            <Text>{triggerPlaceholder}</Text>
+          </Button>
+        )
+      }
       content={
         <>
           {searchable ? (

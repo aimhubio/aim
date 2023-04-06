@@ -45,7 +45,7 @@ const IconButton = React.forwardRef<
         disabled={disabled}
         ref={forwardedRef}
       >
-        <Icon className='Icon' size={size === 'xl' ? 'md' : 'sm'} icon={icon} />
+        <Icon className='Icon' size={size === 'xl' ? 'lg' : 'md'} icon={icon} />
       </Container>
     );
   },
