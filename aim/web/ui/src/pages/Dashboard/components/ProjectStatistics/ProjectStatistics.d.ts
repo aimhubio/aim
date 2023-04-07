@@ -9,4 +9,5 @@ export interface IProjectStatistic {
   icon?: IconName;
   navLink?: string;
   badge?: { value: string; style?: React.CSSProperties };
+  description?: string;
 }

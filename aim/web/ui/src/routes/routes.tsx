@@ -81,6 +81,14 @@ export interface IRoute {
   icon?: string | null;
   isExact?: boolean;
   title: string;
+  color?: string;
+  status?: RouteStatusEnum;
+  description?: string;
+}
+
+export enum RouteStatusEnum {
+  NEW = 'new',
+  COMING_SOON = 'coming-soon',
 }
 
 export const explorersRoutes: { [key: string]: IRoute } = {
@@ -89,18 +97,24 @@ export const explorersRoutes: { [key: string]: IRoute } = {
     component: Metrics,
     showInSidebar: false,
     displayName: 'Metrics',
+    description:
+      'The Metrics Explorer allows you to search, group and compare your metrics',
     icon: 'metrics',
     isExact: true,
     title: pageTitlesEnum.METRICS_EXPLORER,
+    color: '$purple',
   },
   PARAMS: {
     path: PathEnum.Params,
     component: Params,
     showInSidebar: false,
     displayName: 'Params',
+    description:
+      'Params explorer helps you to represent high dimensional data as a multi-dimensional visualization',
     icon: 'params',
     isExact: true,
     title: pageTitlesEnum.PARAMS_EXPLORER,
+    color: '$red',
   },
   TEXT_EXPLORER: {
     path: PathEnum.Text_Explorer,
@@ -108,27 +122,35 @@ export const explorersRoutes: { [key: string]: IRoute } = {
     showInSidebar: false,
     icon: 'text',
     displayName: 'Text',
+    description:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.',
     isExact: true,
     title: pageTitlesEnum.TEXT_EXPLORER,
+    color: '$pink',
   },
   IMAGE_EXPLORE: {
     path: PathEnum.Images_Explore,
     component: ImagesExplore,
     showInSidebar: false,
     displayName: 'Images',
+    description:
+      'Track intermediate images search easily by using select form functional compare them on the Images Explorer by using reach controls panel',
     icon: 'images',
     isExact: true,
     title: pageTitlesEnum.IMAGES_EXPLORER,
+    color: '$orange',
   },
-
   FIGURES_EXPLORER: {
     path: PathEnum.Figures_Explorer,
     component: FiguresExplore,
     showInSidebar: false,
     icon: 'figures',
     displayName: 'Figures',
+    description:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.',
     isExact: true,
     title: pageTitlesEnum.FIGURES_EXPLORER,
+    color: '$yellow',
   },
   AUDIOS_EXPLORER: {
     path: PathEnum.Audios_Explorer,
@@ -136,27 +158,36 @@ export const explorersRoutes: { [key: string]: IRoute } = {
     showInSidebar: false,
     icon: 'audios',
     displayName: 'Audios',
+    description:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.',
     isExact: true,
     title: pageTitlesEnum.AUDIOS_EXPLORER,
+    color: '$green',
   },
   SCATTERS: {
     path: PathEnum.Scatters,
     component: Scatters,
     showInSidebar: false,
     displayName: 'Scatters',
+    description:
+      'Scatter explorer gives ability to visualize correlations between metric last value data with hyper-parameter',
     icon: 'scatterplot',
     isExact: true,
     title: pageTitlesEnum.SCATTERS_EXPLORER,
+    color: '$primary',
   },
-
   METRICS_EXPLORER: {
     path: PathEnum.Metrics_Explorer,
     component: MetricsExplorer,
     showInSidebar: false,
     icon: 'metrics',
-    displayName: 'Metrics_v2',
+    displayName: 'Metrics v2',
+    description:
+      'The Metrics Explorer allows you to search, group and compare your metrics',
     isExact: true,
     title: pageTitlesEnum.METRICS_EXPLORER_V2,
+    status: RouteStatusEnum.NEW,
+    color: '$purple',
   },
 };
 

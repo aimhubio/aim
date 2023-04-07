@@ -13,6 +13,7 @@ export interface ITextProps
   color?: CSS['color'];
   truncate?: boolean;
   textTransform?: CSS['textTransform'];
+  lineHeight?: CSS['lineHeight'];
   css?: CSS;
 }
 

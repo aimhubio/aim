@@ -11,12 +11,9 @@ function hexToRgbA(hex: string, opacity: number): string {
     ];
   }
   const tmpHex = +('0x' + hexCode.join(''));
-  return (
-    'rgba(' +
-      [(tmpHex >> 16) & 255, (tmpHex >> 8) & 255, tmpHex & 255].join(',') +
-      ',' +
-      opacity || 1 + ')'
-  );
+  return `rgba(${[(tmpHex >> 16) & 255, (tmpHex >> 8) & 255, tmpHex & 255].join(
+    ',',
+  )},${opacity || 1})`;
 }
 
 export default hexToRgbA;
