@@ -29,7 +29,7 @@ function getColors({
 }
 
 const BadgeContainer = styled('div', {
-  width: 'fit-content',
+  minWidth: 'fit-content',
   display: 'inline-flex',
   ai: 'center',
   br: '$3',

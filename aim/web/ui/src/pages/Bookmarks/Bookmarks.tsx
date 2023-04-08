@@ -15,8 +15,10 @@ import { IllustrationsEnum } from 'config/illustrationConfig/illustrationConfig'
 import { IBookmarksProps } from 'types/pages/bookmarks/Bookmarks';
 
 import BookmarkCard from './components/BookmarkCard/BookmarkCard';
-
-import './Bookmarks.scss';
+import {
+  BookmarksContainerStyled,
+  BookmarksListContainer,
+} from './Bookmarks.style';
 
 function Bookmarks({
   data,
@@ -27,7 +29,7 @@ function Bookmarks({
 }: IBookmarksProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <ErrorBoundary>
-      <Box p='$5 $13 0'>
+      <BookmarksContainerStyled>
         <Text size='$9' as='h1' weight='$3'>
           Bookmarks
         </Text>
@@ -35,9 +37,13 @@ function Bookmarks({
           Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
           eiusmod tempor incididunt.
         </Text>
-        <Box>
-          <Input placeholder='Search...' leftIcon={<IconSearch />} />
-          <Box>
+        <Box display='flex' ai='center'>
+          <Input
+            css={{ flex: '1', mr: '$10' }}
+            placeholder='Search...'
+            leftIcon={<IconSearch />}
+          />
+          <Box display='flex' ai='center'>
             <Text>Filter by</Text>
             <Select
               onValueChange={(value) => {}}
@@ -69,7 +75,7 @@ function Bookmarks({
             />
           </Box>
         </Box>
-        <Box mt='$5'>
+        <BookmarksListContainer>
           <BusyLoaderWrapper isLoading={isLoading} height={'100%'}>
             {data?.length > 0 &&
               data.map((bookmark) => (
@@ -88,8 +94,8 @@ function Bookmarks({
               title={'No Bookmarks Yet'}
             />
           ) : null}
-        </Box>
-      </Box>
+        </BookmarksListContainer>
+      </BookmarksContainerStyled>
       {notifyData?.length > 0 && (
         <NotificationContainer
           handleClose={onNotificationDelete}

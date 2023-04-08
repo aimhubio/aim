@@ -1,11 +1,9 @@
 import React from 'react';
 
 import { Box, Separator, Text } from 'components/kit_v2';
-import StatisticsCard from 'components/StatisticsCard';
 
 import { PathEnum } from 'config/enums/routesEnum';
 
-import { useProjectStatistics } from 'pages/Dashboard/components/ProjectStatistics';
 import BookmarksContainer from 'pages/Bookmarks/BookmarksContainer';
 
 import { getItem } from 'utils/storage';
@@ -28,10 +26,9 @@ function Explorers(): React.FunctionComponentElement<React.ReactNode> {
     return route;
   }
 
-  console.log('explorers', explorers);
   return (
     <Box display='flex'>
-      <Box p='$5 $13 0'>
+      <Box p='$5 $13 $13'>
         <Text size='$9' as='h1' weight='$3'>
           Explorers
         </Text>

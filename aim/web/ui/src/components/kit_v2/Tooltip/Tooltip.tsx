@@ -28,7 +28,7 @@ import { ITooltipProps } from './Tooltip.d';
  */
 function Tooltip({
   content,
-  delayDuration = 700,
+  delayDuration = 500,
   disableHoverableContent = false,
   skipDelayDuration = 300,
   contentProps = {},

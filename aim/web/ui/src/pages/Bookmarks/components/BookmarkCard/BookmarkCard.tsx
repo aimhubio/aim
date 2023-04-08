@@ -1,13 +1,21 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 
-import { Tooltip } from '@material-ui/core';
+import { IconTrash } from '@tabler/icons-react';
 
 import ConfirmModal from 'components/ConfirmModal/ConfirmModal';
 import CodeBlock from 'components/CodeBlock/CodeBlock';
-import { Button, Icon, Badge, Text } from 'components/kit';
+import { Icon } from 'components/kit';
 import { IconName } from 'components/kit/Icon';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import {
+  Badge,
+  Box,
+  Button,
+  IconButton,
+  Text,
+  Tooltip,
+} from 'components/kit_v2';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 import { PathEnum } from 'config/enums/routesEnum';
@@ -16,7 +24,7 @@ import * as analytics from 'services/analytics';
 
 import { IBookmarkCardProps } from 'types/pages/bookmarks/components/BookmarkCard';
 
-import './BookmarkCard.scss';
+import { BookmarkCardContainer, CodeBlockWrapper } from './BookmarkCard.style';
 
 export const BookmarkIconType: {
   [key: string]: { name: IconName; tooltipTitle: string };
@@ -56,84 +64,75 @@ function BookmarkCard({
 
   return (
     <ErrorBoundary>
-      <div className='BookmarkCard'>
-        <div className='BookmarkCard__top'>
-          <div className='BookmarkCard__titleBox__section'>
-            <div className='BookmarkCard__titleBox__section__container'>
-              <Tooltip
-                title={BookmarkIconType[type].tooltipTitle}
-                placement='top'
-              >
-                <div className='BookmarkCard__titleBox__section__container__iconBox'>
-                  <Icon name={BookmarkIconType[type].name} fontSize={16} />
-                </div>
-              </Tooltip>
-
-              <Text
-                size={18}
-                weight={600}
-                component='h3'
-                tint={100}
-                className='BookmarkCard__titleBox__section__container__title'
-              >
-                {name}
-              </Text>
+      <BookmarkCardContainer>
+        <Box display='flex' ai='center'>
+          <Tooltip content={BookmarkIconType[type].tooltipTitle}>
+            <div>
+              <Icon box name={BookmarkIconType[type].name} />
             </div>
-
-            <div className='BookmarkCard__actionButtonsBox'>
-              <NavLink to={`/${PathEnum.Explorers}/${type}/${app_id}`}>
-                <Button
-                  variant='outlined'
-                  onClick={() =>
-                    analytics.trackEvent(ANALYTICS_EVENT_KEYS.bookmarks.view)
-                  }
-                >
-                  View Bookmark
-                </Button>
-              </NavLink>
-              <span className='BookmarkCard__delete'>
-                <Button
-                  color='secondary'
-                  withOnlyIcon
-                  onClick={handleOpenModal}
-                >
-                  <Icon name='delete' />
-                </Button>
-              </span>
-            </div>
-          </div>
-          <Text
-            size={12}
-            weight={400}
-            tint={100}
-            component='p'
-            className='BookmarkCard__description'
-          >
-            {description}
-          </Text>
-        </div>
-        {tags.length && !select.advancedMode ? (
-          <div className='BookmarkCard__selected__metrics ScrollBar__hidden'>
-            {tags.map((tag, index) => {
-              return (
-                <Badge
-                  size='large'
-                  key={`${tag.label}-${index}`}
-                  label={tag.label}
-                />
-              );
-            })}
-          </div>
-        ) : null}
+          </Tooltip>
+          <Tooltip content={name}>
+            <Text
+              truncate
+              css={{ ml: '$4', flex: '1' }}
+              size='$6'
+              weight='$3'
+              as='h3'
+            >
+              {name}
+            </Text>
+          </Tooltip>
+          <NavLink to={`${PathEnum.Explorers}/${type}/${app_id}`}>
+            <Button
+              variant='outlined'
+              onClick={() =>
+                analytics.trackEvent(ANALYTICS_EVENT_KEYS.bookmarks.view)
+              }
+            >
+              View Bookmark
+            </Button>
+          </NavLink>
+          <Box as='span' ml='$3'>
+            <IconButton
+              size='sm'
+              variant='ghost'
+              icon={<IconTrash />}
+              color='secondary'
+              onClick={handleOpenModal}
+            />
+          </Box>
+        </Box>
+        <Text
+          css={{ mt: '$5', wordBreak: 'break-all' }}
+          as='p'
+          color='#45484D'
+          weight='$1'
+        >
+          {description}
+        </Text>
         {(!select.advancedMode && select.query) ||
         (select.advancedMode && select.advancedQuery) ? (
-          <div className='BookmarkCard__bottom'>
-            <div className='BookmarkCard__run__expression'>
-              <CodeBlock
-                code={select.advancedMode ? select.advancedQuery : select.query}
-              />
-            </div>
-          </div>
+          <CodeBlockWrapper css={{ mt: '$7' }}>
+            <CodeBlock
+              code={select.advancedMode ? select.advancedQuery : select.query}
+            />
+          </CodeBlockWrapper>
+        ) : null}
+        {tags.length && !select.advancedMode ? (
+          <Box
+            css={{
+              mt: '$7',
+              display: 'flex',
+              gap: '$5',
+              overflowX: 'auto',
+              p: '1px',
+            }}
+            className='ScrollBar__hidden'
+          >
+            {tags.map((tag, index) => {
+              return <Badge key={`${tag.label}-${index}`} label={tag.label} />;
+            })}
+          </Box>
         ) : null}
         <ConfirmModal
           open={openModal}
@@ -145,7 +144,7 @@ function BookmarkCard({
           statusType='error'
           confirmBtnText='Delete'
         />
-      </div>
+      </BookmarkCardContainer>
     </ErrorBoundary>
   );
 }
