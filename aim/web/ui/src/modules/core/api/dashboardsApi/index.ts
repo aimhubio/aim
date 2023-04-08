@@ -64,7 +64,7 @@ async function updateDashboard(
  * @returns {Promise<IDashboardData>}
  */
 async function deleteDashboard(id: string): Promise<any> {
-  return api.makeAPIDeleteRequest(`/${id}`);
+  return api.makeAPIDeleteRequest(`${id}`);
 }
 
 export {

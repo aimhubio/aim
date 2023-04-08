@@ -1,5 +1,4 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
 
 import { IconTrash } from '@tabler/icons-react';
 
@@ -22,9 +21,13 @@ import { PathEnum } from 'config/enums/routesEnum';
 
 import * as analytics from 'services/analytics';
 
-import { IBookmarkCardProps } from 'types/pages/bookmarks/components/BookmarkCard';
-
-import { BookmarkCardContainer, CodeBlockWrapper } from './BookmarkCard.style';
+import { IBookmarkCardProps } from './BookmarkCard.d';
+import {
+  BookmarkCardContainer,
+  BookmarkLinkStyled,
+  CodeBlockWrapper,
+} from './BookmarkCard.style';
+import { useBookmarkCard } from './useBookmarkCard';
 
 export const BookmarkIconType: {
   [key: string]: { name: IconName; tooltipTitle: string };
@@ -41,27 +44,17 @@ function BookmarkCard({
   id,
   app_id,
   description,
-  onBookmarkDelete,
   select,
   type,
+  onBookmarkDelete,
 }: IBookmarkCardProps): React.FunctionComponentElement<React.ReactNode> {
-  const [openModal, setOpenModal] = React.useState<boolean>(false);
-
-  function handleOpenModal(): void {
-    setOpenModal(true);
-  }
-  function handleCloseModal(): void {
-    setOpenModal(false);
-  }
-
-  function handleBookmarkDelete(): void {
-    onBookmarkDelete(id);
-  }
-
-  const tags: { label: string }[] = React.useMemo(() => {
-    return select?.options?.map((val: any) => ({ label: val.label })) || [];
-  }, [select]);
-
+  const {
+    tags,
+    handleOpenModal,
+    handleCloseModal,
+    openModal,
+    handleBookmarkDelete,
+  } = useBookmarkCard({ id, select, onBookmarkDelete });
   return (
     <ErrorBoundary>
       <BookmarkCardContainer>
@@ -82,7 +75,7 @@ function BookmarkCard({
               {name}
             </Text>
           </Tooltip>
-          <NavLink to={`${PathEnum.Explorers}/${type}/${app_id}`}>
+          <BookmarkLinkStyled to={`${PathEnum.Explorers}/${type}/${app_id}`}>
             <Button
               variant='outlined'
               onClick={() =>
@@ -91,7 +84,7 @@ function BookmarkCard({
             >
               View Bookmark
             </Button>
-          </NavLink>
+          </BookmarkLinkStyled>
           <Box as='span' ml='$3'>
             <IconButton
               size='sm'
@@ -114,7 +107,7 @@ function BookmarkCard({
         (select.advancedMode && select.advancedQuery) ? (
           <CodeBlockWrapper css={{ mt: '$7' }}>
             <CodeBlock
-              code={select.advancedMode ? select.advancedQuery : select.query}
+              code={select.advancedMode ? select.advancedQuery! : select.query!}
             />
           </CodeBlockWrapper>
         ) : null}

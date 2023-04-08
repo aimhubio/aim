@@ -7,7 +7,9 @@ import {
 
 import appsService from 'services/api/apps/appsService';
 
-const useBookmarksStore = create<any, any>((set, get) => ({
+import { IBookmarksStore } from './Bookmarks.d';
+
+const useBookmarksStore = create<IBookmarksStore>((set, get) => ({
   bookmarks: [],
   isLoading: false,
   getBookmarks: async () => {
@@ -26,16 +28,13 @@ const useBookmarksStore = create<any, any>((set, get) => ({
   },
   onBookmarkDelete: async (id: string) => {
     try {
-      set({ isLoading: true });
       await deleteDashboard(id);
       const bookmarks = get().bookmarks;
       const newBookmarks = [...bookmarks].filter(
         (bookmark: any) => bookmark.id !== id,
       );
       set({ bookmarks: newBookmarks, isLoading: false });
-    } catch (err) {
-      set({ isLoading: false });
-    }
+    } catch (err) {}
   },
   destroy: () => {},
 }));

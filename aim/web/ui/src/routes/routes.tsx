@@ -253,15 +253,6 @@ const routes: { [key: string]: any } = {
     isExact: true,
     title: pageTitlesEnum.SCATTERS_EXPLORER,
   },
-  // BOOKMARKS: {
-  //   path: PathEnum.Bookmarks,
-  //   component: Bookmarks,
-  //   showInSidebar: true,
-  //   displayName: 'Bookmarks',
-  //   icon: 'bookmarks',
-  //   isExact: true,
-  //   title: pageTitlesEnum.BOOKMARKS,
-  // },
   TAGS: {
     path: PathEnum.Tags,
     component: TagsContainer,

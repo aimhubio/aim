@@ -6,6 +6,7 @@ import { styled } from 'config/stitches';
 
 const ExplorerCardContainer = styled(NavLink, {
   width: '316px',
+  minWidth: '316px',
   height: 110,
   borderRadius: 3,
   p: '$8 $8 0',

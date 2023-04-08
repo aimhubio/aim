@@ -4,13 +4,12 @@ import { Box, Separator, Text } from 'components/kit_v2';
 
 import { PathEnum } from 'config/enums/routesEnum';
 
-import BookmarksContainer from 'pages/Bookmarks/BookmarksContainer';
-
 import { getItem } from 'utils/storage';
 
 import { ExplorersContainer } from './Explorers.style';
 import useExplorers from './useExplorers';
 import ExplorerCard from './components/ExplorerCard';
+import Bookmarks from './Bookmarks/Bookmarks';
 
 /**
  * Explorers page
@@ -28,7 +27,13 @@ function Explorers(): React.FunctionComponentElement<React.ReactNode> {
 
   return (
     <Box display='flex'>
-      <Box p='$5 $13 $13'>
+      <Box
+        height='100vh'
+        css={{ overflow: 'auto' }}
+        display='flex'
+        fd='column'
+        p='$5 $13 $13'
+      >
         <Text size='$9' as='h1' weight='$3'>
           Explorers
         </Text>
@@ -78,7 +83,7 @@ function Explorers(): React.FunctionComponentElement<React.ReactNode> {
         </Box>
       </Box>
       <Separator orientation='vertical' />
-      <BookmarksContainer />
+      <Bookmarks />
     </Box>
   );
 }
