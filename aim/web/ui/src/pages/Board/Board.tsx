@@ -28,7 +28,6 @@ function Board({
   notifyData,
   onNotificationDelete,
   saveBoard,
-  boardId,
 }: any): React.FunctionComponentElement<React.ReactNode> {
   const {
     pyodide,
@@ -36,6 +35,8 @@ function Board({
     isLoading: pyodideIsLoading,
     model: pyodideModel,
   } = usePyodide();
+
+  const boardId = data.id;
 
   const editorValue = React.useRef(data.code);
   const [result, setResult] = React.useState([]);
@@ -159,7 +160,7 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
       window.clearTimeout(timerId.current);
       subscription.unsubscribe();
     };
-  }, []);
+  }, [boardId]);
 
   function constructTree(elems: any, tree: any) {
     for (let i = 0; i < elems.length; i++) {
@@ -240,7 +241,7 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
                   initialState={data}
                 />
                 <Link
-                  to={PathEnum.Board.replace(':boardId', data.id)}
+                  to={PathEnum.Board.replace(':boardId', boardId)}
                   component={RouteLink}
                   underline='none'
                 >
@@ -251,7 +252,7 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
               </div>
             ) : (
               <Link
-                to={PathEnum.Board_Edit.replace(':boardId', data.id)}
+                to={PathEnum.Board_Edit.replace(':boardId', boardId)}
                 component={RouteLink}
                 underline='none'
               >
