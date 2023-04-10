@@ -1,9 +1,11 @@
-import React, { memo } from 'react';
+import React from 'react';
 
-import { Text } from 'components/kit';
-import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import ErrorBoundary from 'components/ErrorBoundary';
 
 import { IBaseComponentProps } from 'modules/BaseExplorer/types';
+
+import FacetGrouping from '../FacetGrouping/FacetGrouping';
+import { GroupType } from '../../../../core/pipeline';
 
 import './Grouping.scss';
 
@@ -13,23 +15,34 @@ function Grouping(props: IBaseComponentProps) {
   } = props;
   const currentValues = useStore(groupings.currentValuesSelector);
 
-  const groupingItems = React.useMemo(() => {
-    return Object.keys(currentValues).map((key: string) => {
-      const Component = groupings[key].component;
-      if (__DEV__) {
-        Component.displayName = 'GroupingComponent';
+  const { facetGroupings, restGroupings } = React.useMemo(() => {
+    const facet: React.ReactNodeArray = [];
+    const rest: React.ReactNodeArray = [];
+    Object.keys(currentValues).forEach((key: string) => {
+      const Component = groupings[key]?.component;
+      if (Component) {
+        if (__DEV__) {
+          Component.displayName = 'GroupingComponent';
+        }
+        if (
+          [GroupType.GRID, GroupType.ROW, GroupType.COLUMN].indexOf(
+            key as GroupType,
+          ) !== -1
+        ) {
+          facet.push(<Component key={key} {...props} />);
+        } else {
+          rest.push(<Component key={key} {...props} />);
+        }
       }
-      return <Component key={key} {...props} />;
     });
+    return { facetGroupings: facet, restGroupings: rest };
   }, [currentValues, groupings, props]);
 
   return (
     <ErrorBoundary>
       <div className='BaseGrouping'>
-        <Text size={12} weight={500} className='BaseGrouping__title'>
-          Group by:
-        </Text>
-        <div className='BaseGrouping__content'>{groupingItems}</div>
+        <FacetGrouping items={facetGroupings} />
+        <div className='BaseGrouping__content'>{restGroupings}</div>
       </div>
     </ErrorBoundary>
   );
@@ -37,4 +50,4 @@ function Grouping(props: IBaseComponentProps) {
 
 Grouping.displayName = 'Grouping';
 
-export default memo<IBaseComponentProps>(Grouping);
+export default React.memo<IBaseComponentProps>(Grouping);

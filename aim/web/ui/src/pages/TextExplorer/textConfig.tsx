@@ -11,8 +11,7 @@ import { GroupType, Order } from 'modules/core/pipeline';
 import { defaultHydration } from 'modules/BaseExplorer/getDefaultHydration';
 import { IBaseComponentProps } from 'modules/BaseExplorer/types';
 import { PersistenceTypesEnum } from 'modules/core/engine/types';
-
-import { AimFlatObjectBase } from 'types/core/AimObjects';
+import { StyleApplierCallbackArgs } from 'modules/core/engine/explorer/groupings';
 
 import { LegendsModeEnum } from 'utils/d3';
 
@@ -45,17 +44,11 @@ export const getTextDefaultConfig = (): typeof defaultHydration => {
           <GroupingItem groupName='color' iconName='coloring' {...props} />
         )),
 
-        // @ts-ignore
-        styleApplier: (
-          object: AimFlatObjectBase<any>,
-          group: any,
-          boxConfig: any,
-          iteration: number,
-        ) => {
+        styleApplier: ({ groupInfo }: StyleApplierCallbackArgs<any>) => {
           return {
             color:
-              group[GroupType.COLOR]?.order !== undefined
-                ? COLORS[0][group[GroupType.COLOR].order % COLORS[0].length]
+              groupInfo[GroupType.COLOR]?.order !== undefined
+                ? COLORS[0][groupInfo[GroupType.COLOR].order % COLORS[0].length]
                 : null,
           };
         },

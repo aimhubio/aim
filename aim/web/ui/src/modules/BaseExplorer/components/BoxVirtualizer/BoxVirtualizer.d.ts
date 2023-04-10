@@ -10,6 +10,7 @@ export interface IBoxVirtualizerProps<T> {
     boxIndex: number,
   ) => React.ReactNode;
   widgetRenderer?: (props: IWidgetRendererProps) => React.ReactNode;
+  groupByPositionCb: (item: T) => string;
   offset: number;
   axisData?: {
     columns?: any;

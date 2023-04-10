@@ -36,20 +36,8 @@ function useDepthMap({
   deps = [],
   groupItemCb,
 }: IUseDepthMapProps<AimFlatObjectBase>): UseDepthMap {
-  const groupItem: GroupItemCb<AimFlatObjectBase> = React.useCallback(
-    (item) => {
-      if (groupItemCb) {
-        return groupItemCb(item);
-      }
-      const rowId = item.groups?.rows ? item.groups.rows[0] : '';
-      const columnId = item.groups?.columns ? item.groups.columns[0] : '';
-      return `${rowId}--${columnId}`;
-    },
-    [groupItemCb],
-  );
-
   const generateMapBy = React.useCallback((value: number = 0) => {
-    const grouped = _.groupBy(data, groupItem);
+    const grouped = _.groupBy(data, groupItemCb);
     const newDepthMap: Record<string, number> = {};
     for (let [groupId, items] of Object.entries(grouped)) {
       const maxValue = items.length - 1;

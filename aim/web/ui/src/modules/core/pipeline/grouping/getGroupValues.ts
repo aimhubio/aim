@@ -28,30 +28,27 @@ function getGroups(
   type: string,
 ): Record<string, Group> {
   // generate possible groups
-  const groups: Record<string, Group> = data.reduce(
-    (groups: Group, value: any) => {
-      const pickedValues = pickValues(value, fields);
-      if (Object.keys(pickedValues).length === 0) {
-        return groups;
-      }
-      const groupValue: GroupValue = { ...pickedValues, type };
-      const groupKey: string = buildObjectHash(groupValue);
-
-      if (!groups.hasOwnProperty(groupKey)) {
-        groups[groupKey] = {
-          key: groupKey,
-          fields: _.omit(groupValue, 'type'),
-          items: [],
-          type,
-        };
-      }
-
-      groups[groupKey].items.push(value);
-
+  const groups = data.reduce((groups: Record<string, Group>, value: any) => {
+    const pickedValues = pickValues(value, fields);
+    if (Object.keys(pickedValues).length === 0) {
       return groups;
-    },
-    {},
-  );
+    }
+    const groupValue: GroupValue = { ...pickedValues, type };
+    const groupKey: string = buildObjectHash(groupValue);
+
+    if (!groups.hasOwnProperty(groupKey)) {
+      groups[groupKey] = {
+        key: groupKey,
+        fields: _.omit(groupValue, 'type'),
+        items_count_in_group: 0,
+        type,
+      };
+    }
+
+    groups[groupKey].items_count_in_group++;
+
+    return groups;
+  }, {});
 
   const groupsList = Object.values(groups);
 

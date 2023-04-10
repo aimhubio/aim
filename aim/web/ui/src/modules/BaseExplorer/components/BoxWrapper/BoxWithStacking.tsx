@@ -50,7 +50,7 @@ function BoxWithStacking(props: IBoxWithStackingProps<AimFlatObjectBase>) {
         info[groupType] = {
           key: group.key,
           config: group.fields,
-          items_count_in_group: group.items.length,
+          items_count_in_group: group.items_count_in_group,
           order: group.order,
         };
       }

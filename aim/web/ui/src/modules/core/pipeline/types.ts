@@ -16,6 +16,7 @@ export enum Order {
 export enum GroupType {
   ROW = 'rows',
   COLUMN = 'columns',
+  GRID = 'grid',
   COLOR = 'color',
   STROKE = 'stroke',
 }

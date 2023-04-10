@@ -1,17 +1,24 @@
 import { isEmpty, omit } from 'lodash-es';
 
 import browserHistory from 'modules/core/services/browserHistory';
-import { Order } from 'modules/core/pipeline';
+import { GroupType, Order } from 'modules/core/pipeline';
 import { createSliceState } from 'modules/core/utils/store';
 import getUrlSearchParam from 'modules/core/utils/getUrlSearchParam';
 
+import { PersistenceTypesEnum } from '../../types';
+
 import createGroupingsSlice from './state';
 
-type StyleApplierCallback<S> = (
-  object: any,
-  group: Array<string>,
-  state: S,
-) => { [key: string]: unknown };
+export interface StyleApplierCallbackArgs<S extends object> {
+  object: any;
+  groupInfo: Record<GroupType, any>;
+  boxConfig: any;
+  state: S;
+}
+
+export type StyleApplierCallback<S extends object> = (
+  args: StyleApplierCallbackArgs<S>,
+) => Record<string, unknown>;
 
 export type GroupingConfig<State extends object, Settings> = {
   /**
@@ -25,6 +32,7 @@ export type GroupingConfig<State extends object, Settings> = {
    */
   state?: {
     initialState: State;
+    persist?: PersistenceTypesEnum;
   };
   /**
    * Static settings, i.e.
@@ -117,7 +125,8 @@ function createGroupingsEngine(
       const methods = elem.methods(store.setState, store.getState);
       slicesResetMethods.push(methods.reset);
       acc[name] = {
-        ...elem,
+        ...omit(elem, ['styleApplier']),
+        ...methods,
         methods,
       };
       return acc;

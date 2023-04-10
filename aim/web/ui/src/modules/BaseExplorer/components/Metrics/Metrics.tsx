@@ -25,6 +25,7 @@ function Metrics(props: IBoxContentProps) {
     id,
     style,
   } = props;
+
   const vizEngine = engine.visualizations[visualizationName];
   const controls = vizEngine.controls;
   const chartRef = React.useRef<ILineChartRef>(null);
@@ -92,11 +93,18 @@ function Metrics(props: IBoxContentProps) {
     updateActiveElement,
     id,
   );
-
-  const chartTitle = {
-    row: `${(data[0]?.groupInfo?.rows?.order || 0) + 1}`,
-    column: `${(data[0]?.groupInfo?.columns?.order || 0) + 1}`,
-  };
+  // const chartTitleDict = {
+  //   [GroupType.GRID]: {
+  //     index: `${(data[0]?.groupInfo?.[GroupType.GRID]?.order || 0) + 1}`,
+  //   },
+  //   [GroupType.ROW]: {
+  //     row: `${(data[0]?.groupInfo?.[GroupType.ROW]?.order || 0) + 1}`,
+  //   },
+  //   [GroupType.COLUMN]: {
+  //     column: `${(data[0]?.groupInfo?.[GroupType.COLUMN]?.order || 0) + 1}`,
+  //   },
+  // };
+  //
 
   return chartData?.length ? (
     <ErrorBoundary>
@@ -116,7 +124,7 @@ function Metrics(props: IBoxContentProps) {
           ignoreOutliers={ignoreOutliers.isApplied}
           zoom={zoom}
           onZoomChange={controls.zoom.methods.update}
-          chartTitle={chartTitle}
+          // chartTitle={chartTitle}
           syncHoverState={syncHoverState}
         />
       </div>

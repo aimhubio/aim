@@ -38,7 +38,7 @@ export type QueryStateBridge<TStore> = {
 
 /*
  * Currently designed for default QueryForm component state
- * Later its possible to add custom configuration of query if will be required for custom explorer usage
+ * Later it's possible to add custom configuration of query if will be required for custom explorer usage
  */
 const queryFormInitialState: QueryFormState = {
   simpleInput: '',

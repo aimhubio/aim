@@ -72,7 +72,7 @@ export function createSliceState<T, Store = any>(
 }
 
 export function createStateSlices<T>(states: CustomStates<T> = {}) {
-  const createdStates: { [key: string]: PreCreatedStateSlice } = {};
+  const createdStates: Record<string, PreCreatedStateSlice> = {};
 
   Object.keys(states).forEach((name: string) => {
     // @TODO check reserved keys, is properties are valid and throw exception

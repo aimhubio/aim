@@ -2,6 +2,8 @@ import { omit } from 'lodash-es';
 
 import { Order } from 'modules/core/pipeline';
 
+import { StatePersistOption } from '../../types';
+
 type StyleApplierCallback<S> = (
   object: any,
   group: Array<string>,
@@ -20,6 +22,7 @@ export type GroupingConfig<State extends object, Settings> = {
    */
   state?: {
     initialState: State;
+    persist?: StatePersistOption;
   };
   /**
    * Static settings, i.e.
@@ -47,9 +50,6 @@ export type GroupingConfig<State extends object, Settings> = {
    * @return {{ [key: string]: unknown }} - the return ed value will be spread inside object's styles property
    */
   styleApplier: StyleApplierCallback<State>;
-
-  // variant: 'structured' | 'joined'
-  axisComponent?: Function;
 };
 
 function getCurrentValues(

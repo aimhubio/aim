@@ -128,8 +128,6 @@ function createPipelineEngine<TStore, TObject>(
     params: RunsSearchQueryParams,
     isInternal: boolean = false,
   ): void {
-    const currentGroupings = state.getCurrentGroupings();
-
     // @TODO add a "customMetric" to the query params dynamically
     const customMetric =
       store.getState().visualizations.vis1.controls.axesProperties?.alignment
@@ -165,12 +163,6 @@ function createPipelineEngine<TStore, TObject>(
       }
     }
 
-    const groupOptions = Object.keys(currentGroupings).map((key: string) => ({
-      type: key as GroupType,
-      fields: currentGroupings[key].fields,
-      orders: currentGroupings[key].orders,
-    }));
-
     // @TODO complete response typings
     pipeline
       .execute({
@@ -178,7 +170,7 @@ function createPipelineEngine<TStore, TObject>(
           params: queryParams,
           ignoreCache: true,
         },
-        group: groupOptions,
+        group: normalizeGroupConfig(state.getCurrentGroupings()),
         custom: state.getCurrentCustomPhaseArgs(),
       })
       .then((res) => {
@@ -245,7 +237,7 @@ function createPipelineEngine<TStore, TObject>(
    * @example
    *     pipeline.engine.group(config)
    * @param {CurrentGrouping} config
-   * @param {boolean} isInternal - indicates called internally or from UI, if isInternal doesnt need to update current query
+   * @param {boolean} isInternal - indicates called internally or from UI, if isInternal doesn't need to update current query
    */
   function group(config: CurrentGrouping, isInternal: boolean = false): void {
     state.setCurrentGroupings(config);
