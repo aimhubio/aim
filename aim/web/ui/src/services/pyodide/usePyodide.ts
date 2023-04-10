@@ -29,6 +29,7 @@ function usePyodide() {
     isLoading,
     pyodide,
     namespace: namespace.current,
+    model: pyodideStore.model,
   };
 }
 
