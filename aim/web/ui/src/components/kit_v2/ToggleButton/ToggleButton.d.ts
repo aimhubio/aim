@@ -9,14 +9,14 @@ export interface IToggleButtonProps {
    * @example
    * <ToggleButton size="sm" />
    */
-  size: IButtonProps['size'];
+  size?: IButtonProps['size'];
   /**
    * The color of the button.
    * @default 'primary'
    * @example
    * <ToggleButton color="secondary" />
    */
-  color: ColorPaletteType;
+  color?: ColorPaletteType;
   /**
    * The change callback.
    * @example

@@ -6,6 +6,7 @@ const Container: any = styled('button', {
   all: 'unset',
   display: 'inline-flex',
   width: 'fit-content',
+  minWidth: 'fit-content',
   ai: 'center',
   jc: 'center',
   lineHeight: 1,

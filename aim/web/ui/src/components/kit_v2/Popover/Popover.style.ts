@@ -23,13 +23,13 @@ const slideLeftAndFade = keyframes({
 });
 
 const StyledContent = styled(PopoverPrimitive.Content, {
-  borderRadius: 4,
-  padding: 20,
-  width: 260,
+  br: '5px',
+  padding: '$7',
+  width: 340,
   zIndex: '$popover',
   backgroundColor: 'white',
-  boxShadow:
-    'hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px',
+  border: '1px solid rgba(90, 102, 122, 0.2)',
+  boxShadow: '0 2px 4px -4px rgba(54, 61, 73, 0.25)',
   '@media (prefers-reduced-motion: no-preference)': {
     animationDuration: '400ms',
     animationTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)',
@@ -47,4 +47,11 @@ const StyledContent = styled(PopoverPrimitive.Content, {
   },
 });
 
-export { StyledContent };
+const PopoverTitleStyled = styled('div', {
+  background: '#F7F7F8',
+  borderRadius: '5px 5px 0 0',
+  p: '$5 $7',
+  borderBottom: '1px solid $border20',
+});
+
+export { StyledContent, PopoverTitleStyled };
