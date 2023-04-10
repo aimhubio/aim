@@ -31,6 +31,8 @@ function toObject(x: any): any {
 
 (window as any).search = search;
 
+let layoutUpdateTimer: number;
+
 (window as any).updateLayout = (elements: any, boardId: undefined | string) => {
   let layout = toObject(elements.toJs());
   elements.destroy();
@@ -51,10 +53,13 @@ function toObject(x: any): any {
     }
   }
 
-  pyodideStore.model.emit(boardId, {
-    blocks,
-    components,
-  });
+  window.clearTimeout(layoutUpdateTimer);
+  layoutUpdateTimer = window.setTimeout(() => {
+    pyodideStore.model.emit(boardId, {
+      blocks,
+      components,
+    });
+  }, 50);
 };
 
 (window as any).setState = (update: any, boardId: undefined | string) => {
