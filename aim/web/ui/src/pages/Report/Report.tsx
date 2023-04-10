@@ -107,25 +107,28 @@ function Report({
         <BusyLoaderWrapper isLoading={false} height={'100%'}>
           <div className='ReportVisualizer'>
             <div className='ReportVisualizer__main'>
-              <div className='ReportVisualizer__main__editor'>
-                <Editor
-                  language='markdown'
-                  height='100%'
-                  value={value}
-                  onChange={(v) => setValue(v!)}
-                  loading={<span />}
-                  options={{
-                    tabSize: 4,
-                    useTabStops: true,
-                  }}
-                />
-              </div>
+              {editMode && (
+                <div className='ReportVisualizer__main__editor'>
+                  <Editor
+                    language='markdown'
+                    height='100%'
+                    value={value}
+                    onChange={(v) => setValue(v!)}
+                    loading={<span />}
+                    options={{
+                      tabSize: 4,
+                      useTabStops: true,
+                    }}
+                  />
+                </div>
+              )}
               <div
                 className={classNames('ReportVisualizer__main__components', {
                   'ReportVisualizer__main__components--loading':
                     pyodideIsLoading === null,
                   'ReportVisualizer__main__components--processing':
                     pyodideIsLoading,
+                  'ReportVisualizer__main__components--fullWidth': !editMode,
                 })}
               >
                 {pyodideIsLoading !== false && (
