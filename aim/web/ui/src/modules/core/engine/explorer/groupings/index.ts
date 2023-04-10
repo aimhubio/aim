@@ -47,14 +47,11 @@ export type GroupingConfig<State extends object, Settings> = {
   /**
    * styleApplier aimed to calculate visual properties for the object by calculating group
    * @param object
-   * @param group - applied group - for now its a array implemented LinkedList with only root ['hash1']
+   * @param group - applied group - for now it's an array implemented LinkedList with only root ['hash1']
    * @param state -
    * @return {{ [key: string]: unknown }} - the return ed value will be spread inside object's styles property
    */
   styleApplier: StyleApplierCallback<State>;
-
-  // variant: 'structured' | 'joined'
-  axisComponent?: Function;
 };
 
 function createGrouping(config: GroupingConfig<unknown & object, any>) {
@@ -62,7 +59,6 @@ function createGrouping(config: GroupingConfig<unknown & object, any>) {
     name,
     component,
     styleApplier,
-    axisComponent,
     state = { initialState: {} },
     settings = {},
     defaultApplications = null,
@@ -77,7 +73,6 @@ function createGrouping(config: GroupingConfig<unknown & object, any>) {
     settings,
     component,
     styleApplier,
-    axisComponent,
     observableState,
     defaultApplications,
   };
@@ -104,9 +99,11 @@ function createGroupingsEngine(
     });
   });
 
-  const styleAppliers = Object.keys(config || {}).map((key: string) => {
-    return config?.[key].styleApplier;
-  });
+  const styleAppliers = Object.keys(groupingSliceConfig || {}).map(
+    (key: string) => {
+      return groupingSliceConfig?.[key].styleApplier;
+    },
+  );
 
   const state = createGroupingsSlice(groupingSliceConfig);
 
@@ -115,13 +112,13 @@ function createGroupingsEngine(
   const slicesResetMethods: Function[] = [];
 
   const slices = Object.keys(state.slices).reduce(
-    (acc: { [key: string]: object }, name: string) => {
+    (acc: Record<string, object>, name: string) => {
       const elem = state.slices[name];
       const methods = elem.methods(store.setState, store.getState);
-      slicesResetMethods.push(methods);
+      slicesResetMethods.push(methods.reset);
       acc[name] = {
-        ...omit(elem, ['styleApplier']),
-        ...elem.methods(store.setState, store.getState),
+        ...elem,
+        methods,
       };
       return acc;
     },
