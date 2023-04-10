@@ -2,101 +2,79 @@
 
 .Reports {
   height: 100%;
-  overflow: hidden;
   &__appBar {
+    position: fixed;
     width: 100%;
+    z-index: 2;
   }
-}
-
-.ReportVisualizer {
-  width: 100%;
-  height: calc(100vh - 40px);
-  max-width: 100%;
-  overflow: hidden;
-}
-
-.ReportVisualizer__main {
-  width: 100%;
-  max-width: 100%;
-  height: 100%;
-  position: relative;
-  display: flex;
-  overflow: hidden;
-}
-
-.ReportVisualizer__main__editor {
-  height: 100%;
-  position: relative;
-  flex: 0.6;
-  border-right: $border-dark;
-  display: flex;
-  flex-direction: column;
-  background-color: #fff;
-
-  .monaco-editor-background, .monaco-editor .margin {
-    background-color: #fff;
+  &__title {
+    margin: 0.5em 0;
+    padding: 0;
+    color: $primary-color;
   }
-}
 
-.ReportVisualizer__main__editor__code {
-  flex: 0.8;
-}
-
-.ReportVisualizer__main__components {
-  position: relative;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  width: 60%;
-  overflow: auto;
-
-  &--fullWidth {
-    width: 100%;
-  }
-}
-
-.ReportVisualizer__main__components--loading {
-  align-items: center;
-  justify-content: center;
-}
-
-.ReportVisualizer__main__components--processing {
-  & > *:not(.ReportVisualizer__main__components__spinner) {
-    filter: blur(5px);
-  }
-}
-
-.ReportVisualizer__main__components__spinner {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.ReportVisualizer__main__components__viz {
-  position: relative;
-  width: 100%;
-  max-width: 100%;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: auto;
-  gap: $space-sm;
-  padding: $space-lg;
-
-  .Board {
+  &__list {
     height: 100%;
-  }
-
-  > * {
+    padding: 4rem 4rem 1.5em;
+    display: flex;
+    flex-wrap: wrap;
+    gap: $space-sm;
   }
 }
 
-.ReportVisualizer__main__components__viz__error {
-  @include monospaceFontFamily();
-  padding: $space-xs $space-sm;
-  color: $error-color;
+.Reports__list__item {
+  min-width: 350px;
+  height: 300px;
+  flex: 1 0 30%;
+  border-radius: $border-radius-main;
+  border: $border-grey;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  overflow: auto;
+}
+
+.Reports__list__item--new {
+  overflow: hidden;
+  .Reports__list__item__preview {
+    background: #fff;
+  }
+}
+
+.Reports__list__item__header {
+  position: sticky;
+  top: 0;
+  background: #fff;
+  padding: $space-xxs $space-sm;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: $border-grey;
+  z-index: 1;
+}
+
+.Reports__list__item__header__delete {
+  margin-left: $space-xs;
+}
+
+.Reports__list__item__sub {
+  display: none;
+}
+
+.Reports__list__item__preview {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  background: #f2f3f4;
+  color: $blue;
+  min-height: calc(100% - 41px);
+
+  .Illustration__container__img {
+    transform: scale(0.8);
+    transform-origin: top;
+  }
+
+  .CodeBlock {
+    border-radius: 0;
+    height: 100%;
+    width: 100%;
+  }
 }

@@ -348,6 +348,9 @@ export const ANALYTICS_EVENT_KEYS = {
   boards: {
     pageView: '[BoardsPage] Page view',
   },
+  reports: {
+    pageView: '[ReportsPage] Page view',
+  },
   dashboard: {
     pageView: '[DashboardPage] Page view',
     activityCellClick: '[DashboardPage] Click on Activity cell',
