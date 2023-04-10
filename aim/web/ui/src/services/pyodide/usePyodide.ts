@@ -31,6 +31,7 @@ function usePyodide() {
     isRunning,
     pyodide,
     namespace: namespace.current,
+    model: pyodideStore.model,
   };
 }
 

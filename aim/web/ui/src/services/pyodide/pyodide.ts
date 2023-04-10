@@ -1,18 +1,69 @@
-import { noop, cloneDeep } from 'lodash-es';
+import { debounce } from 'lodash-es';
 
 import { getBasePath } from 'config/config';
 
 import { search } from 'pages/Board/search';
 
+import createModel from 'services/models/model';
+
 let pyodideStore: any = {
   current: null,
   isLoading: null,
   namespace: null,
-  isRunnning: false,
+  model: createModel({
+    blocks: {},
+    components: {},
+    state: {},
+  }),
 };
 
+function toObject(x: any): any {
+  if (x instanceof Map) {
+    return Object.fromEntries(
+      Array.from(x.entries(), ([k, v]) => [k, toObject(v)]),
+    );
+  } else if (x instanceof Array) {
+    return x.map(toObject);
+  } else {
+    return x;
+  }
+}
+
 (window as any).search = search;
-(window as any).updateLayout = noop;
+
+(window as any).updateLayout = (elements: any, boardId: undefined | string) => {
+  let layout = toObject(elements.toJs());
+  elements.destroy();
+
+  let blocks: Record<string, any[]> = {};
+  let components: Record<string, any[]> = {};
+
+  for (let item of layout) {
+    let boardId = item.board_id;
+    if (!blocks.hasOwnProperty(boardId)) {
+      blocks[boardId] = [];
+      components[boardId] = [];
+    }
+    if (item.element === 'block') {
+      blocks[boardId].push(item);
+    } else {
+      components[boardId].push(item);
+    }
+  }
+
+  pyodideStore.model.emit(boardId, {
+    blocks,
+    components,
+  });
+};
+
+(window as any).setState = (update: any, boardId: undefined | string) => {
+  let stateUpdate = update.toJs();
+  update.destroy();
+  let state = toObject(stateUpdate);
+
+  pyodideStore.model.emit(boardId, { state: state[boardId as string] });
+};
 
 export async function loadPyodideInstance(cb?: Function) {
   pyodideStore.current = null;
