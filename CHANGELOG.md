@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased 
+
+### fixes
+-  Convert NaNs and Infs in responses to strings (n-gao)
 
 ## 3.17.3 Apr 6, 2023
 
