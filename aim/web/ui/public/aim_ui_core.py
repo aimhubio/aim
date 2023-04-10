@@ -218,7 +218,7 @@ current_layout = []
 state = {}
 
 
-def set_state(update):
+def set_state(update, board_id):
     from js import setState
 
     if board_id not in state:
@@ -245,7 +245,7 @@ def render_to_layout(data):
     if is_found == False:
         current_layout.append(data)
 
-    updateLayout(current_layout, board_id)
+    updateLayout(current_layout, data["board_id"])
 
 
 class Element:
@@ -278,7 +278,8 @@ class Block(Element):
             "element": 'block',
             "block_context": self.block_context,
             "key": self.key,
-            "parent_block": self.parent_block
+            "parent_block": self.parent_block,
+            "board_id": self.board_id
         }
 
         render_to_layout(block_data)
@@ -309,7 +310,7 @@ class Component(Element):
     def set_state(self, value):
         set_state({
             self.key: value
-        })
+        }, self.board_id)
 
     def render(self):
         component_data = {
@@ -319,7 +320,8 @@ class Component(Element):
             "callbacks": self.callbacks,
             "options": self.options,
             "parent_block": self.parent_block,
-            "no_facet": self.no_facet
+            "no_facet": self.no_facet,
+            "board_id": self.board_id
         }
 
         component_data.update(self.state)

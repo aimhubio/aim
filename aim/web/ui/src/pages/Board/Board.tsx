@@ -28,7 +28,7 @@ function Board({
   notifyData,
   onNotificationDelete,
   saveBoard,
-  boardId,
+  id: boardId,
 }: any): React.FunctionComponentElement<React.ReactNode> {
   const {
     pyodide,
@@ -104,19 +104,17 @@ block_context = {
 }
 board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
 `;
-        pyodide
-          ?.runPythonAsync(resetCode + execCode, { globals: namespace })
-          .then(() => {
-            setError(null);
-            setIsProcessing(false);
-          })
-          .catch((ex: Error) => {
-            setError(ex.message);
-            setIsProcessing(false);
-          });
-      } catch (ex: unknown) {
+        await pyodide?.runPythonAsync(resetCode + execCode, {
+          globals: namespace,
+        });
+
+        setError(null);
+        setIsProcessing(false);
+      } catch (ex: any) {
         // eslint-disable-next-line no-console
         console.log(ex);
+
+        setError(ex.message);
         setIsProcessing(false);
       }
     }

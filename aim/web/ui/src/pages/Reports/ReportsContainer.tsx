@@ -30,10 +30,12 @@ const markdownComponentsOverride = {
       } else {
         height = +height;
       }
+
       return (
         <div style={{ height, display: height === 0 ? 'none' : undefined }}>
           <Board
             key={children[0]}
+            id={node.position.start.line}
             data={{ code: children[0] }}
             editMode={false}
             previewMode
