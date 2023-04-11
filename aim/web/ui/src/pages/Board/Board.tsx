@@ -96,7 +96,7 @@ function Board({
     }
   }, [pyodide, execute]);
 
-  const runParsedCode = React.useCallback(() => {
+  const runParsedCode = React.useCallback(async () => {
     if (pyodide !== null) {
       try {
         let resetCode = `viz_map_keys = {}
@@ -105,17 +105,21 @@ block_context = {
 }
 board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
 `;
-        pyodide
-          ?.runPythonAsync(resetCode + execCode, { globals: namespace })
-          .then(() => {
-            setError(null);
-            setIsProcessing(false);
-          })
-          .catch((ex: Error) => {
-            setError(ex.message);
-            setIsProcessing(false);
+        const code =
+          resetCode +
+          execCode.replace(/Repo.filter(\((.|\n)*?\))/g, (match: string) => {
+            return `${match}
+board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
+`;
           });
-      } catch (ex: unknown) {
+
+        await pyodide?.runPythonAsync(code, {
+          globals: namespace,
+        });
+
+        setError(null);
+        setIsProcessing(false);
+      } catch (ex: any) {
         // eslint-disable-next-line no-console
         console.log(ex);
         setIsProcessing(false);
@@ -124,7 +128,7 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
   }, [pyodide, execCode, namespace, executionCount]);
 
   React.useEffect(() => {
-    if (execCode) {
+    if (executionCount > 0) {
       runParsedCode();
     }
   }, [executionCount]);
