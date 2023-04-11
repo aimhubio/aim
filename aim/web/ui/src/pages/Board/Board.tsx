@@ -105,7 +105,15 @@ block_context = {
 }
 board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
 `;
-        await pyodide?.runPythonAsync(resetCode + execCode, {
+        const code =
+          resetCode +
+          execCode.replace(/Repo.filter(\((.|\n)*?\))/g, (match: string) => {
+            return `${match}
+board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
+`;
+          });
+
+        await pyodide?.runPythonAsync(code, {
           globals: namespace,
         });
 
@@ -114,15 +122,13 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
       } catch (ex: any) {
         // eslint-disable-next-line no-console
         console.log(ex);
-
-        setError(ex.message);
         setIsProcessing(false);
       }
     }
   }, [pyodide, execCode, namespace, executionCount]);
 
   React.useEffect(() => {
-    if (execCode) {
+    if (executionCount > 0) {
       runParsedCode();
     }
   }, [executionCount]);

@@ -9,6 +9,7 @@ import createModel from 'services/models/model';
 let pyodideStore: any = {
   current: null,
   isLoading: null,
+  isRunning: null,
   namespace: null,
   model: createModel({
     blocks: {},
@@ -32,6 +33,7 @@ function toObject(x: any): any {
 (window as any).search = search;
 
 let layoutUpdateTimer: number;
+let prevBoardId: undefined | string;
 
 (window as any).updateLayout = (elements: any, boardId: undefined | string) => {
   let layout = toObject(elements.toJs());
@@ -53,7 +55,12 @@ let layoutUpdateTimer: number;
     }
   }
 
-  window.clearTimeout(layoutUpdateTimer);
+  if (prevBoardId === boardId) {
+    window.clearTimeout(layoutUpdateTimer);
+  }
+
+  prevBoardId = boardId;
+
   layoutUpdateTimer = window.setTimeout(() => {
     pyodideStore.model.emit(boardId, {
       blocks,

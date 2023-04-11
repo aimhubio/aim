@@ -10,10 +10,12 @@ function usePyodide() {
 
   React.useEffect(() => {
     if (pyodide === null && isLoading === null) {
+      pyodideStore.isLoading = true;
       setIsLoading(true);
       loadPyodideInstance(() => {
         namespace.current = pyodideStore.namespace;
         setPyodide(pyodideStore.current);
+        pyodideStore.isLoading = false;
         setIsLoading(false);
       });
     }
