@@ -3,31 +3,42 @@ import * as React from 'react';
 import pyodideStore, { loadPyodideInstance } from './pyodide';
 
 function usePyodide() {
-  let [isLoading, setIsLoading] = React.useState(pyodideStore.isLoading);
-  let [pyodide, setPyodide] = React.useState(pyodideStore.current);
   let namespace = React.useRef(pyodideStore.namespace);
+  let [state, setState] = React.useState({
+    pyodide: pyodideStore.current,
+    isLoading: pyodideStore.isLoading,
+  });
 
   const loadPyodide = React.useCallback(() => {
-    if (pyodide === null && isLoading === null) {
-      setIsLoading(true);
+    if (state.pyodide === null && state.isLoading === null) {
+      setState((s) => ({
+        ...s,
+        isLoading: true,
+      }));
       loadPyodideInstance(() => {
         namespace.current = pyodideStore.namespace;
-        setPyodide(pyodideStore.current);
-        setIsLoading(false);
+
+        setState({
+          pyodide: pyodideStore.current,
+          isLoading: false,
+        });
       });
     }
 
-    if (pyodide !== null) {
-      pyodide._api.fatal_error = async (err: unknown) => {
+    if (state.pyodide !== null) {
+      state.pyodide._api.fatal_error = async (err: unknown) => {
         console.log('---- fatal error ----', err);
-        setPyodide(null);
+        setState((s) => ({
+          ...s,
+          pyodide: null,
+        }));
       };
     }
-  }, [pyodide, isLoading]);
+  }, [state.pyodide, state.isLoading]);
 
   return {
-    isLoading,
-    pyodide,
+    isLoading: state.isLoading,
+    pyodide: state.pyodide,
     namespace: namespace.current,
     model: pyodideStore.model,
     loadPyodide,
