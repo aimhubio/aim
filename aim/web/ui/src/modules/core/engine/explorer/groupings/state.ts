@@ -109,8 +109,6 @@ function createGroupingsSlice(slices: Record<string, any>) {
   };
   const subSlices: Record<string, any> = {};
 
-  const stateSelector = (state: any) => state.groupings.state;
-
   Object.keys(slices).forEach((name) => {
     const slice = slices[name];
     const defaultValues = getCurrentValues(slice.defaultApplications);
@@ -198,7 +196,8 @@ function createGroupingsSlice(slices: Record<string, any>) {
 
   return {
     initialState,
-    stateSelector,
+    stateSelector: (state: any) =>
+      omit(state.groupings, 'currentValues', 'isEmpty'),
     generateMethods,
     slices: subSlices,
     currentValuesSelector: (state: any) => state.groupings.currentValues,

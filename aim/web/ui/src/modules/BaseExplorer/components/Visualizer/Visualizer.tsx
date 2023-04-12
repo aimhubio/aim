@@ -39,7 +39,7 @@ function Visualizer(props: IVisualizationProps) {
   const foundGroups = useStore(pipeline.foundGroupsSelector);
   const dataState = useStore(pipeline.dataSelector);
 
-  const gridGroupingState = useStore(groupings[GroupType.GRID]?.stateSelector);
+  const groupingStates = useStore(groupings.stateSelector);
 
   const vizEngine = visualizations[name];
   const boxConfig = useStore(vizEngine.box.stateSelector);
@@ -83,10 +83,6 @@ function Visualizer(props: IVisualizationProps) {
         return style;
       }
 
-      const state = {
-        [GroupType.GRID]: gridGroupingState,
-      };
-
       return {
         ...d,
         groupInfo,
@@ -94,7 +90,7 @@ function Visualizer(props: IVisualizationProps) {
         style: {
           width: boxConfig.width,
           height: boxConfig.height,
-          ...applyStyles(d, groupInfo, state),
+          ...applyStyles(d, groupInfo, groupingStates),
         },
       };
     });
@@ -103,7 +99,7 @@ function Visualizer(props: IVisualizationProps) {
     foundGroups,
     boxConfig,
     groupings.styleAppliers,
-    gridGroupingState,
+    groupingStates,
   ]);
 
   // FOR ROWS

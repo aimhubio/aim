@@ -3,9 +3,9 @@ import React from 'react';
 import ErrorBoundary from 'components/ErrorBoundary';
 
 import { IBaseComponentProps } from 'modules/BaseExplorer/types';
+import { GroupType } from 'modules/core/pipeline';
 
 import FacetGrouping from '../FacetGrouping/FacetGrouping';
-import { GroupType } from '../../../../core/pipeline';
 
 import './Grouping.scss';
 
