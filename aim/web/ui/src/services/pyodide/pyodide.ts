@@ -80,6 +80,7 @@ let prevBoardId: undefined | string;
 export async function loadPyodideInstance(cb?: Function) {
   pyodideStore.current = null;
   pyodideStore.namespace = null;
+  pyodideStore.isLoading = true;
   pyodideStore.current = await (window as any).loadPyodide({
     stdout: (...args: any[]) => {
       window.requestAnimationFrame(() => {
@@ -101,8 +102,6 @@ export async function loadPyodideInstance(cb?: Function) {
 
   pyodideStore.namespace = namespace;
 
-  await pyodideStore.current.loadPackage('pandas');
-
   await pyodideStore.current.runPythonAsync(
     await (await fetch(`${getBasePath()}/static-files/aim_ui_core.py`)).text(),
     { globals: pyodideStore.namespace },
@@ -112,6 +111,21 @@ export async function loadPyodideInstance(cb?: Function) {
 
   if (cb) {
     cb();
+  }
+}
+
+export async function loadPandas() {
+  await pyodideStore.current.loadPackage('pandas');
+}
+
+export async function loadPlotly() {
+  await pyodideStore.current.loadPackage('micropip');
+  try {
+    const micropip = pyodideStore.current.pyimport('micropip');
+    await micropip.install('plotly');
+  } catch (ex) {
+    // eslint-disable-next-line no-console
+    console.log(ex);
   }
 }
 
