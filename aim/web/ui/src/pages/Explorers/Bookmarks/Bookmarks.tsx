@@ -24,7 +24,10 @@ function Bookmarks(): React.FunctionComponentElement<React.ReactNode> {
   const [filterValue, setFilterValue] = React.useState<string>('all');
 
   React.useEffect(() => {
-    getBookmarks();
+    console.log(bookmarks);
+    if (bookmarks.length === 0) {
+      getBookmarks();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -54,17 +57,17 @@ function Bookmarks(): React.FunctionComponentElement<React.ReactNode> {
     <ErrorBoundary>
       <BusyLoaderWrapper isLoading={isLoading} height={'100%'}>
         <BookmarksContainerStyled>
-          <Text size='$9' as='h1' weight='$3'>
+          <Text weight='$3' as='h3' size='$6'>
             Bookmarks
           </Text>
-          <Text css={{ mt: '$10', mb: '$16' }} as='p'>
+          <Text css={{ mt: '$5', mb: '$13' }} as='p'>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
             eiusmod tempor incididunt.
           </Text>
           <Box display='flex' ai='center'>
             <Input
               placeholder='Search...'
-              css={{ flex: '1', mr: '$13' }}
+              css={{ maxWidth: '394px', width: '100%', mr: '$13' }}
               value={searchValue}
               onChange={handleSearchChange}
               leftIcon={<IconSearch />}
