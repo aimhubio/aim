@@ -7,14 +7,12 @@ function usePyodide() {
   let [pyodide, setPyodide] = React.useState(pyodideStore.current);
   let namespace = React.useRef(pyodideStore.namespace);
 
-  React.useEffect(() => {
+  const loadPyodide = React.useCallback(() => {
     if (pyodide === null && isLoading === null) {
-      pyodideStore.isLoading = true;
       setIsLoading(true);
       loadPyodideInstance(() => {
         namespace.current = pyodideStore.namespace;
         setPyodide(pyodideStore.current);
-        pyodideStore.isLoading = false;
         setIsLoading(false);
       });
     }
@@ -32,6 +30,7 @@ function usePyodide() {
     pyodide,
     namespace: namespace.current,
     model: pyodideStore.model,
+    loadPyodide,
   };
 }
 
