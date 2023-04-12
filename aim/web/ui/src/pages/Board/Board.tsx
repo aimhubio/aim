@@ -20,6 +20,57 @@ import GridCell from './components/GridCell';
 
 import './Board.scss';
 
+function constructTree(elems: any, tree: any) {
+  for (let i = 0; i < elems.length; i++) {
+    let elem = elems[i];
+    if (elem.element === 'block') {
+      if (!elem.parent_block) {
+        tree.root.elements[elem.block_context.id] = {
+          ...elem.block_context,
+          elements: {},
+        };
+      } else {
+        if (!tree.hasOwnProperty(elem.parent_block.id)) {
+          tree[elem.parent_block.id] = {
+            id: elem.parent_block.id,
+            elements: {},
+          };
+        }
+        tree[elem.parent_block.id].elements[elem.block_context.id] = {
+          ...elem.block_context,
+          elements: {},
+        };
+      }
+      tree[elem.block_context.id] = {
+        ...elem.block_context,
+        elements: {},
+      };
+    } else {
+      if (!elem.parent_block) {
+        tree.root.elements[elem.key] = elem;
+      } else {
+        tree[elem.parent_block.id].elements[elem.key] = elem;
+      }
+    }
+  }
+
+  return tree;
+}
+
+function renderTree(tree: any, elements: any) {
+  return Object.values(elements).map((element: any, i: number) => {
+    if (element.type === 'row' || element.type === 'column') {
+      return (
+        <div key={element.type + i} className={`block--${element.type}`}>
+          {renderTree(tree, tree[element.id].elements)}
+        </div>
+      );
+    }
+
+    return <GridCell key={i} viz={element} />;
+  });
+}
+
 function Board({
   data,
   isLoading,
@@ -39,20 +90,28 @@ function Board({
   const boardId = data.id;
 
   const editorValue = React.useRef(data.code);
-  const [result, setResult] = React.useState([]);
-  const [blocks, setBlocks] = React.useState<any[]>([]);
-  const [isProcessing, setIsProcessing] = React.useState<boolean | null>(null);
-  const [error, setError] = React.useState<string | null>(null);
-  const [execCode, setExecCode] = React.useState('');
-  const [stateUpdateCount, setStateUpdateCount] = React.useState<any>(0);
-  const [executionCount, setExecutionCount] = React.useState<number>(0);
   const timerId = React.useRef(0);
+
+  const [state, setState] = React.useState<any>({
+    layout: {
+      blocks: [],
+      components: [],
+    },
+    isProcessing: null,
+    error: null,
+    execCode: '',
+    stateUpdateCount: 0,
+    executionCount: 0,
+  });
 
   const execute = React.useCallback(async () => {
     if (pyodide !== null) {
       try {
         window.clearTimeout(timerId.current);
-        setIsProcessing(true);
+        setState((s: any) => ({
+          ...s,
+          isProcessing: true,
+        }));
         const code = editorValue.current
           .replaceAll('from aim', '# from aim')
           .replaceAll('import aim', '# import aim')
@@ -80,9 +139,15 @@ function Board({
         let resetLayoutCode = 'current_layout = []';
         pyodide?.runPython(resetLayoutCode, { globals: namespace });
 
-        setResult([]);
-        setExecCode(code);
-        setExecutionCount((eC) => eC + 1);
+        setState((s: any) => ({
+          ...s,
+          layout: {
+            blocks: [],
+            components: [],
+          },
+          execCode: code,
+          executionCount: s.executionCount + 1,
+        }));
       } catch (ex) {
         // eslint-disable-next-line no-console
         console.log(ex);
@@ -107,41 +172,54 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
 `;
         const code =
           resetCode +
-          execCode.replace(/Repo.filter(\((.|\n)*?\))/g, (match: string) => {
-            return `${match}
+          state.execCode.replace(
+            /Repo.filter(\((.|\n)*?\))/g,
+            (match: string) => {
+              return `${match}
 board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
 `;
-          });
+            },
+          );
 
         await pyodide?.runPythonAsync(code, {
           globals: namespace,
         });
 
-        setError(null);
-        setIsProcessing(false);
+        setState((s: any) => ({
+          ...s,
+          error: null,
+          isProcessing: false,
+        }));
       } catch (ex: any) {
         // eslint-disable-next-line no-console
         console.log(ex);
-        setIsProcessing(false);
+        setState((s: any) => ({
+          ...s,
+          error: ex.message,
+          isProcessing: false,
+        }));
       }
     }
-  }, [pyodide, execCode, namespace, executionCount]);
+  }, [pyodide, namespace, state.execCode, state.executionCount]);
 
   React.useEffect(() => {
-    if (executionCount > 0) {
+    if (state.executionCount > 0) {
       runParsedCode();
     }
-  }, [executionCount]);
+  }, [state.executionCount]);
 
   React.useEffect(() => {
-    if (stateUpdateCount > 0) {
+    if (state.stateUpdateCount > 0) {
       runParsedCode();
     }
-  }, [stateUpdateCount]);
+  }, [state.stateUpdateCount]);
 
   React.useEffect(() => {
     if (pyodideIsLoading) {
-      setIsProcessing(pyodideIsLoading);
+      setState((s: any) => ({
+        ...s,
+        isProcessing: true,
+      }));
     }
   }, [pyodideIsLoading]);
 
@@ -149,14 +227,20 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
     let subscription = pyodideModel.subscribe(
       boardId,
       ({ blocks, components, state }: any) => {
-        if (blocks) {
-          setBlocks(blocks[boardId]);
-        }
         if (components) {
-          setResult(components[boardId]);
+          setState((s: any) => ({
+            ...s,
+            layout: {
+              blocks: blocks[boardId] ?? [],
+              components: components[boardId],
+            },
+          }));
         }
         if (state) {
-          setStateUpdateCount((sUC: number) => sUC + 1);
+          setState((s: any) => ({
+            ...s,
+            stateUpdateCount: s.stateUpdateCount + 1,
+          }));
         }
       },
     );
@@ -166,63 +250,15 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
     };
   }, [boardId]);
 
-  function constructTree(elems: any, tree: any) {
-    for (let i = 0; i < elems.length; i++) {
-      let elem = elems[i];
-      if (elem.element === 'block') {
-        if (!elem.parent_block) {
-          tree.root.elements[elem.block_context.id] = {
-            ...elem.block_context,
-            elements: {},
-          };
-        } else {
-          if (!tree.hasOwnProperty(elem.parent_block.id)) {
-            tree[elem.parent_block.id] = {
-              id: elem.parent_block.id,
-              elements: {},
-            };
-          }
-          tree[elem.parent_block.id].elements[elem.block_context.id] = {
-            ...elem.block_context,
-            elements: {},
-          };
-        }
-        tree[elem.block_context.id] = {
-          ...elem.block_context,
-          elements: {},
-        };
-      } else {
-        if (!elem.parent_block) {
-          tree.root.elements[elem.key] = elem;
-        } else {
-          tree[elem.parent_block.id].elements[elem.key] = elem;
-        }
-      }
-    }
-
-    return tree;
-  }
-
-  function renderTree(tree: any, elements: any) {
-    return Object.values(elements).map((element: any, i: number) => {
-      if (element.type === 'row' || element.type === 'column') {
-        return (
-          <div key={element.type + i} className={`block--${element.type}`}>
-            {renderTree(tree, tree[element.id].elements)}
-          </div>
-        );
-      }
-
-      return <GridCell key={i} viz={element} />;
-    });
-  }
-
-  const tree = constructTree(blocks.concat(result), {
-    root: {
-      id: 0,
-      elements: {},
+  const tree = constructTree(
+    state.layout.blocks.concat(state.layout.components),
+    {
+      root: {
+        id: 0,
+        elements: {},
+      },
     },
-  });
+  );
 
   return (
     <ErrorBoundary>
@@ -292,23 +328,24 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
               <div
                 className={classNames('BoardVisualizer__main__components', {
                   'BoardVisualizer__main__components--loading':
-                    isProcessing === null,
-                  'BoardVisualizer__main__components--processing': isProcessing,
+                    state.isProcessing === null,
+                  'BoardVisualizer__main__components--processing':
+                    state.isProcessing,
                   'BoardVisualizer__main__components--fullWidth': !editMode,
                 })}
               >
-                {isProcessing !== false && (
+                {state.isProcessing !== false && (
                   <div className='BoardVisualizer__main__components__spinner'>
                     <Spinner />
                   </div>
                 )}
                 <div
-                  key={`${isProcessing}`}
+                  key={`${state.isProcessing}`}
                   className='BoardVisualizer__main__components__viz'
                 >
-                  {error ? (
+                  {state.error ? (
                     <pre className='BoardVisualizer__main__components__viz__error'>
-                      {error}
+                      {state.error}
                     </pre>
                   ) : (
                     renderTree(tree, tree.root.elements)
