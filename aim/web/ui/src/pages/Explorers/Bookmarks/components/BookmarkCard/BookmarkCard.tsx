@@ -2,7 +2,6 @@ import React from 'react';
 
 import { IconTrash } from '@tabler/icons-react';
 
-import ConfirmModal from 'components/ConfirmModal/ConfirmModal';
 import CodeBlock from 'components/CodeBlock/CodeBlock';
 import { Icon } from 'components/kit';
 import { IconName } from 'components/kit/Icon';
@@ -11,6 +10,7 @@ import {
   Badge,
   Box,
   Button,
+  Dialog,
   IconButton,
   Text,
   Tooltip,
@@ -27,7 +27,6 @@ import {
   BookmarkLinkStyled,
   CodeBlockWrapper,
 } from './BookmarkCard.style';
-import { useBookmarkCard } from './useBookmarkCard';
 
 export const BookmarkIconType: {
   [key: string]: { name: IconName; tooltipTitle: string };
@@ -48,13 +47,13 @@ function BookmarkCard({
   type,
   onBookmarkDelete,
 }: IBookmarkCardProps): React.FunctionComponentElement<React.ReactNode> {
-  const {
-    tags,
-    handleOpenModal,
-    handleCloseModal,
-    openModal,
-    handleBookmarkDelete,
-  } = useBookmarkCard({ id, select, onBookmarkDelete });
+  function handleBookmarkDelete(): void {
+    onBookmarkDelete(id);
+  }
+  const tags: { label: string }[] = React.useMemo(() => {
+    return select?.options?.map((val: any) => ({ label: val.label })) || [];
+  }, [select]);
+
   return (
     <ErrorBoundary>
       <BookmarkCardContainer>
@@ -86,12 +85,19 @@ function BookmarkCard({
             </Button>
           </BookmarkLinkStyled>
           <Box as='span' ml='$3'>
-            <IconButton
-              size='sm'
-              variant='ghost'
-              icon={<IconTrash />}
-              color='secondary'
-              onClick={handleOpenModal}
+            <Dialog
+              titleIcon={<IconTrash />}
+              title='Delete bookmarks'
+              description='Are you sure you want to delete this bookmark?'
+              onConfirm={handleBookmarkDelete}
+              trigger={
+                <IconButton
+                  size='md'
+                  variant='ghost'
+                  color='secondary'
+                  icon={<IconTrash />}
+                />
+              }
             />
           </Box>
         </Box>
@@ -127,16 +133,6 @@ function BookmarkCard({
             })}
           </Box>
         ) : null}
-        <ConfirmModal
-          open={openModal}
-          onCancel={handleCloseModal}
-          onSubmit={handleBookmarkDelete}
-          text='Are you sure you want to delete this bookmark?'
-          icon={<Icon name='delete' />}
-          title='Delete bookmark'
-          statusType='error'
-          confirmBtnText='Delete'
-        />
       </BookmarkCardContainer>
     </ErrorBoundary>
   );

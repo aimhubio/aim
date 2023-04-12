@@ -9,6 +9,12 @@ import appsService from 'services/api/apps/appsService';
 
 import { IBookmarksStore } from './Bookmarks.d';
 
+/**
+ * @description bookmarks store is zustand store for bookmarks data
+ * @returns {object} bookmarks, isLoading, getBookmarks, onBookmarkDelete, destroy
+ * @example
+ * const { bookmarks, isLoading, getBookmarks, onBookmarkDelete, destroy } = useBookmarksStore();
+ */
 const useBookmarksStore = create<IBookmarksStore>((set, get) => ({
   bookmarks: [],
   isLoading: false,
@@ -36,7 +42,9 @@ const useBookmarksStore = create<IBookmarksStore>((set, get) => ({
       set({ bookmarks: newBookmarks, isLoading: false });
     } catch (err) {}
   },
-  destroy: () => {},
+  destroy: () => {
+    set({ bookmarks: [], isLoading: false });
+  },
 }));
 
 export default useBookmarksStore;

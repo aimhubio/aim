@@ -14,48 +14,27 @@ import {
   BookmarksContainerStyled,
   BookmarksListContainer,
 } from './Bookmarks.style';
-import useBookmarksStore from './BookmarksStore';
+import useBookmarks from './useBookmarks';
 
+/**
+ * @description - Bookmarks component renders list of the saved bookmarks for the user
+ * @returns {React.FunctionComponentElement<React.ReactNode>}
+ */
 function Bookmarks(): React.FunctionComponentElement<React.ReactNode> {
-  const { bookmarks, isLoading } = useBookmarksStore();
-  const getBookmarks = useBookmarksStore((state) => state.getBookmarks);
-  const onBookmarkDelete = useBookmarksStore((state) => state.onBookmarkDelete);
-  const [searchValue, setSearchValue] = React.useState<string>('');
-  const [filterValue, setFilterValue] = React.useState<string>('all');
-
-  React.useEffect(() => {
-    console.log(bookmarks);
-    if (bookmarks.length === 0) {
-      getBookmarks();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>): void {
-    const { value } = e.target;
-    setSearchValue(value);
-  }
-  function handleFilterChange(val: string): void {
-    setFilterValue(val);
-  }
-
-  const filteredBookmarks = React.useMemo(() => {
-    const bookmarksList =
-      filterValue === 'all' || filterValue === ''
-        ? bookmarks
-        : bookmarks.filter((bookmark: any) => bookmark.type === filterValue);
-    if (searchValue === '') {
-      return bookmarksList;
-    }
-
-    return bookmarksList.filter((bookmark: any) => {
-      return bookmark.name.toLowerCase().includes(searchValue.toLowerCase());
-    });
-  }, [bookmarks, searchValue, filterValue]);
+  const {
+    bookmarks,
+    filteredBookmarks,
+    isLoading,
+    searchValue,
+    filterValue,
+    handleSearchChange,
+    handleFilterChange,
+    onBookmarkDelete,
+  } = useBookmarks();
 
   return (
     <ErrorBoundary>
-      <BusyLoaderWrapper isLoading={isLoading} height={'100%'}>
+      <BusyLoaderWrapper isLoading={isLoading} height={'100vh'}>
         <BookmarksContainerStyled>
           <Text weight='$3' as='h3' size='$6'>
             Bookmarks
@@ -102,15 +81,23 @@ function Bookmarks(): React.FunctionComponentElement<React.ReactNode> {
             </Box>
           </Box>
           <BookmarksListContainer>
-            {bookmarks?.length > 0 &&
-              filteredBookmarks.map((bookmark: any) => (
-                <BookmarkCard
-                  key={bookmark.id}
-                  onBookmarkDelete={onBookmarkDelete}
-                  {...bookmark}
-                />
-              ))}
-
+            {bookmarks?.length > 0 ? (
+              filteredBookmarks.length > 0 ? (
+                filteredBookmarks.map((bookmark) => (
+                  <BookmarkCard
+                    key={bookmark.id}
+                    onBookmarkDelete={onBookmarkDelete}
+                    {...bookmark}
+                  />
+                ))
+              ) : (
+                <Box p='$13' css={{ textAlign: 'center' }}>
+                  <Text css={{ textAlign: 'center' }} size='$5'>
+                    No bookmarks found for the search query...
+                  </Text>
+                </Box>
+              )
+            ) : null}
             {!isLoading && bookmarks?.length === 0 ? (
               <IllustrationBlock
                 size='xLarge'

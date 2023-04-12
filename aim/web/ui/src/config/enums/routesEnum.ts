@@ -7,7 +7,7 @@ enum PathEnum {
   Params = '/explorers/params',
   Params_Id = '/explorers/params/:appId',
   Tags = '/tags',
-  Bookmarks = '/bookmarks',
+  Bookmarks = '/explorers/bookmarks',
   Run_Detail = '/runs/:runHash',
   Experiment = '/experiments/:experimentId',
   Scatters = '/explorers/scatters',

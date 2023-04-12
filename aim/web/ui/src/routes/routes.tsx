@@ -69,6 +69,11 @@ const TextExplorer = React.lazy(
 const Explorers = React.lazy(
   () => import(/* webpackChunkName: "explorers" */ 'pages/Explorers'),
 );
+
+const Bookmarks = React.lazy(
+  () => import(/* webpackChunkName: "bookmarks" */ 'pages/Explorers/Bookmarks'),
+);
+
 export interface IRoute {
   path: PathEnum;
   component:
@@ -252,6 +257,15 @@ const routes: { [key: string]: any } = {
     displayName: 'ScatterId',
     isExact: true,
     title: pageTitlesEnum.SCATTERS_EXPLORER,
+  },
+  BOOKMARKS: {
+    path: PathEnum.Bookmarks,
+    component: Bookmarks,
+    showInSidebar: false,
+    displayName: 'Bookmarks',
+    icon: 'bookmarks',
+    isExact: true,
+    title: pageTitlesEnum.BOOKMARKS,
   },
   TAGS: {
     path: PathEnum.Tags,
