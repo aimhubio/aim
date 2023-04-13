@@ -26,5 +26,11 @@ Tabs.args = {
       value: 'tab2',
       content: 'Tab2Content',
     },
+    {
+      label: 'Tab 3',
+      value: 'tab3',
+      content: 'Tab3Content',
+      disabled: true,
+    },
   ],
 };
