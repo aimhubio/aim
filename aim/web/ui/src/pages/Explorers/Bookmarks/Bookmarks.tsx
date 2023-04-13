@@ -6,8 +6,10 @@ import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import { Box, Input, Select, Text } from 'components/kit_v2';
+import Breadcrumb from 'components/kit_v2/Breadcrumb';
 
 import { IllustrationsEnum } from 'config/illustrationConfig/illustrationConfig';
+import { TopBar } from 'config/stitches/foundations/layout';
 
 import BookmarkCard from './components/BookmarkCard/BookmarkCard';
 import {
@@ -34,15 +36,11 @@ function Bookmarks(): React.FunctionComponentElement<React.ReactNode> {
 
   return (
     <ErrorBoundary>
+      <TopBar>
+        <Breadcrumb />
+      </TopBar>
       <BusyLoaderWrapper isLoading={isLoading} height={'100vh'}>
         <BookmarksContainerStyled>
-          <Text weight='$3' as='h3' size='$6'>
-            Bookmarks
-          </Text>
-          <Text css={{ mt: '$5', mb: '$13' }} as='p'>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt.
-          </Text>
           <Box display='flex' ai='center'>
             <Input
               placeholder='Search...'
@@ -91,11 +89,26 @@ function Bookmarks(): React.FunctionComponentElement<React.ReactNode> {
                   />
                 ))
               ) : (
-                <Box p='$13' css={{ textAlign: 'center' }}>
-                  <Text css={{ textAlign: 'center' }} size='$5'>
-                    No bookmarks found for the search query...
-                  </Text>
-                </Box>
+                <>
+                  <Box
+                    p='$13'
+                    css={{
+                      textAlign: 'center',
+                      borderBottom: '1px solid $border30',
+                    }}
+                  >
+                    <Text css={{ textAlign: 'center' }} size='$4'>
+                      No search results
+                    </Text>
+                  </Box>
+                  {bookmarks.map((bookmark) => (
+                    <BookmarkCard
+                      key={bookmark.id}
+                      onBookmarkDelete={onBookmarkDelete}
+                      {...bookmark}
+                    />
+                  ))}
+                </>
               )
             ) : null}
             {!isLoading && bookmarks?.length === 0 ? (

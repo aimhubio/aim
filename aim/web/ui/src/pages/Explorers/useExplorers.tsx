@@ -5,17 +5,9 @@ import { useProjectStatistics } from 'pages/Dashboard/components/ProjectStatisti
 import { explorersRoutes } from 'routes/routes';
 
 import { IExplorerCardProps } from './components/ExplorerCard';
-import useBookmarksStore from './Bookmarks/BookmarksStore';
 
 export default function useExplorers() {
   const { statisticsMap, projectParamsStore } = useProjectStatistics();
-  const destroyBookmarks = useBookmarksStore((state) => state.destroy);
-
-  React.useEffect(() => {
-    return () => {
-      destroyBookmarks();
-    };
-  }, []);
 
   const explorers = React.useMemo(() => {
     const routes: { [key: string]: IExplorerCardProps } = {};

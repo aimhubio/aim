@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { IconChartDots, IconFlag3, IconTable } from '@tabler/icons-react';
+
 import { PathEnum } from 'config/enums/routesEnum';
 import pageTitlesEnum from 'config/pageTitles/pageTitles';
 
@@ -83,7 +85,7 @@ export interface IRoute {
     | any;
   showInSidebar: boolean;
   displayName: string | null;
-  icon?: string | null;
+  icon?: React.ReactNode | string | null;
   isExact?: boolean;
   title: string;
   color?: string;
@@ -211,7 +213,7 @@ const routes: { [key: string]: any } = {
     component: Runs,
     showInSidebar: true,
     displayName: 'Runs',
-    icon: 'runs',
+    icon: <IconTable color='#9D257F' />,
     isExact: true,
     title: pageTitlesEnum.RUNS_EXPLORER,
   },
@@ -220,7 +222,7 @@ const routes: { [key: string]: any } = {
     component: Explorers,
     showInSidebar: true,
     displayName: 'Explorers',
-    icon: 'dashboard',
+    icon: <IconChartDots color='#1473E6' />,
     isExact: true,
     title: pageTitlesEnum.DASHBOARD,
   },
@@ -272,7 +274,7 @@ const routes: { [key: string]: any } = {
     component: TagsContainer,
     showInSidebar: true,
     displayName: 'Tags',
-    icon: 'tags',
+    icon: <IconFlag3 color='#2A6218' />,
     isExact: true,
     title: pageTitlesEnum.TAGS,
   },

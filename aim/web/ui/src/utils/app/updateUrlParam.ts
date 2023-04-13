@@ -29,12 +29,10 @@ export default function updateUrlParam({
     window.location.pathname.split('/')[isExistBasePath ? 4 : 3];
   if (!appId) {
     let fullURL = url;
-
     if (isExistBasePath) {
       fullURL = fullURL.replace((window as any).API_BASE_PATH, '');
     }
-
-    if (fullURL.startsWith(`/${PathEnum.Explorers}/${appName}?`)) {
+    if (fullURL.startsWith(`${PathEnum.Explorers}/${appName}?`)) {
       setItem(`${appName}Url`, fullURL);
     }
   }

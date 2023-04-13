@@ -14,7 +14,7 @@ const BookmarkCardContainer = styled(Box, {
 });
 
 const BookmarkLinkStyled = styled(NavLink, {
-  textDecoration: 'none',
+  color: '#1473E6',
 });
 const CodeBlockWrapper = styled('div', {
   '& pre': {

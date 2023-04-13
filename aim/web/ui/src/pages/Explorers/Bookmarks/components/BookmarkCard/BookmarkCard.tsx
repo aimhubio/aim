@@ -1,4 +1,5 @@
 import React from 'react';
+import { NavLink } from 'react-router-dom';
 
 import { IconTrash } from '@tabler/icons-react';
 
@@ -58,32 +59,32 @@ function BookmarkCard({
     <ErrorBoundary>
       <BookmarkCardContainer>
         <Box display='flex' ai='center'>
-          <Tooltip content={BookmarkIconType[type].tooltipTitle}>
-            <div>
-              <Icon box name={BookmarkIconType[type].name} />
-            </div>
-          </Tooltip>
-          <Tooltip content={name}>
-            <Text
-              truncate
-              css={{ ml: '$4', flex: '1' }}
-              size='$6'
-              weight='$3'
-              as='h3'
-            >
-              {name}
-            </Text>
-          </Tooltip>
-          <BookmarkLinkStyled to={`${PathEnum.Explorers}/${type}/${app_id}`}>
-            <Button
-              variant='outlined'
-              onClick={() =>
-                analytics.trackEvent(ANALYTICS_EVENT_KEYS.bookmarks.view)
-              }
-            >
-              View Bookmark
-            </Button>
-          </BookmarkLinkStyled>
+          <Box display='flex' flex='1 100%'>
+            <Tooltip content={BookmarkIconType[type].tooltipTitle}>
+              <div>
+                <Icon color='#1473E6' box name={BookmarkIconType[type].name} />
+              </div>
+            </Tooltip>
+            <Tooltip content={name}>
+              <BookmarkLinkStyled
+                onClick={() =>
+                  analytics.trackEvent(ANALYTICS_EVENT_KEYS.bookmarks.view)
+                }
+                to={`${PathEnum.Explorers}/${type}/${app_id}`}
+              >
+                <Text
+                  truncate
+                  css={{ ml: '$4', flex: '1' }}
+                  size='$6'
+                  weight='$3'
+                  as='h3'
+                  color='$primary'
+                >
+                  {name}
+                </Text>
+              </BookmarkLinkStyled>
+            </Tooltip>
+          </Box>
           <Box as='span' ml='$3'>
             <Dialog
               titleIcon={<IconTrash />}

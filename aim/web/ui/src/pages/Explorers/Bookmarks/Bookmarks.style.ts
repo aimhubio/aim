@@ -8,9 +8,9 @@ const BookmarksContainerStyled = styled(LayoutContainer, {
   py: '$13',
 });
 const BookmarksListContainer = styled('div', {
-  mt: '$10',
+  mt: '$9',
   bs: '0 0 0 1px $colors$secondary30',
-  br: '$5',
+  br: '$3',
 });
 
 export { BookmarksListContainer, BookmarksContainerStyled };

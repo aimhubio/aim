@@ -31,6 +31,7 @@ function Tooltip({
   delayDuration = 500,
   disableHoverableContent = false,
   skipDelayDuration = 300,
+  hasArrow = false,
   contentProps = {},
   children,
   ...props
@@ -50,7 +51,7 @@ function Tooltip({
             {...contentProps}
           >
             {content}
-            <TooltipArrow />
+            {hasArrow && <TooltipArrow />}
           </TooltipContent>
         </TooltipPrimitive.Portal>
       </TooltipPrimitive.Root>

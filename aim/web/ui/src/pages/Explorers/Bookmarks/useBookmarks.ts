@@ -22,15 +22,17 @@ function useBookmarks(): {
 } {
   const { bookmarks, isLoading } = useBookmarksStore();
   const getBookmarks = useBookmarksStore((state) => state.getBookmarks);
+  const destroy = useBookmarksStore((state) => state.destroy);
   const onBookmarkDelete = useBookmarksStore((state) => state.onBookmarkDelete);
   const [searchValue, setSearchValue] = React.useState<string>('');
   const [filterValue, setFilterValue] = React.useState<string>('all');
 
   React.useEffect(() => {
-    if (bookmarks.length === 0) {
-      getBookmarks();
-    }
+    getBookmarks();
     // eslint-disable-next-line react-hooks/exhaustive-deps
+    return () => {
+      destroy();
+    };
   }, []);
 
   function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>): void {

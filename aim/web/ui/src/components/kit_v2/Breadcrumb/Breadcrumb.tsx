@@ -1,7 +1,10 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
 
-import routes from 'routes/routes';
+import routes, { IRoute } from 'routes/routes';
+
+import Text from '../Text';
+import Box from '../Box';
 
 import { BreadcrumbItem } from './Breadcrumb.style';
 
@@ -14,26 +17,36 @@ function Breadcrumb(): React.FunctionComponentElement<React.ReactNode> {
   const pathnames = location.pathname.split('/').filter((x: string) => x);
 
   return (
-    <div className='breadcrumbs'>
-      <BreadcrumbItem to='/' activeClassName='active'>
-        Home
-      </BreadcrumbItem>
-      {pathnames.length > 0 && <span className='separator'> / </span>}
-      {pathnames?.map((value: string, index: number) => {
-        const route = Object.values(routes).find((r) => r.path === `/${value}`);
+    <Box display='flex' ai='center'>
+      {pathnames?.map((v: string, index: number) => {
+        const currentPath = `/${pathnames.slice(0, index + 1).join('/')}`;
+        const route = Object.values(routes).find(
+          (r: IRoute) => r.path === currentPath,
+        );
+
         if (!route) return null;
         const isLast = index === pathnames.length - 1;
-        const to = `/${pathnames.slice(0, index + 1).join('/')}`;
+        const to = currentPath;
         return (
           <React.Fragment key={route.path}>
-            <BreadcrumbItem to={to} activeClassName='active'>
+            <BreadcrumbItem
+              to={to}
+              isActive={(m, location) => {
+                return location.pathname === route.path;
+              }}
+            >
               {route.displayName}
             </BreadcrumbItem>
-            {!isLast && <span className='separator'> / </span>}
+            {!isLast && (
+              <Text size='$3' css={{ mx: '$2' }} color='$textPrimary50'>
+                {' '}
+                /{' '}
+              </Text>
+            )}
           </React.Fragment>
         );
       })}
-    </div>
+    </Box>
   );
 }
 
