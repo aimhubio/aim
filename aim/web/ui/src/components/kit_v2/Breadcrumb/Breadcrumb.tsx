@@ -23,14 +23,13 @@ function Breadcrumb(): React.FunctionComponentElement<React.ReactNode> {
         const route = Object.values(routes).find(
           (r: IRoute) => r.path === currentPath,
         );
-
         if (!route) return null;
         const isLast = index === pathnames.length - 1;
-        const to = currentPath;
+
         return (
           <React.Fragment key={route.path}>
             <BreadcrumbItem
-              to={to}
+              to={currentPath}
               isActive={(m, location) => {
                 return location.pathname === route.path;
               }}
@@ -50,4 +49,5 @@ function Breadcrumb(): React.FunctionComponentElement<React.ReactNode> {
   );
 }
 
+Breadcrumb.displayName = 'BreadCrumb';
 export default React.memo(Breadcrumb);
