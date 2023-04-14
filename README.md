@@ -24,15 +24,15 @@
   </h3>
   
   Aim logs all your AI metadata, enables a UI to observe/compare them, and an SDK to query them programmatically.
-  
+    
   <table>
     <tbody>
       <tr>
         <td colspan="2"><p align="center">Learn more:</p></td>
       </tr>
       <tr>
-        <td>Experiment tracking with Aim</td>
-        <td>Prompt engineering with Aim</td>
+        <td><a href="#experiment-tracking-with-aim">Experiment tracking with Aim</a></td>
+        <td><a href="#ai-systems-and-agents-tracing-with-Aim">AI agents tracing with Aim</a></td>
       </tr>
     </tbody>
   </table>
@@ -129,9 +129,8 @@
 # ℹ️ About
 
 Aim is an open-source, self-hosted AI Metadata tracking tool designed to handle 100,000s of tracked metadata sequences.
-Two most famous AI metadata applications are: experiment tracking and prompt engineering.
 
-Aim provides a performant and beautiful UI for exploring and comparing training runs, prompt sessions.
+Aim provides a performant and beautiful UI for exploring and comparing metadata such as training runs or agents executions.
 Additionally, its SDK enables programmatic access to tracked metadata — perfect for automations and Jupyter Notebook analysis.
 
 <p align="center">
@@ -146,7 +145,38 @@ Additionally, its SDK enables programmatic access to tracked metadata — perfec
 
 </br>
 
-<div align="center">
+### AI systems and agents tracing with Aim
+
+<div align="left">
+  <table>
+    <tbody>
+      <tr>
+        <th>Log Inputs, Outputs and Actions of Executions 🤖</th>
+        <th>Visualize & Compare Executions Steps via UI 🔍</th>
+      </tr>
+      <tr>
+        <td>
+          <ul>
+            <li>Track all the inputs, outputs of LLMs and tools</li>
+            <li>Capture terminal output of executions</li>
+            <li>Get notified on executions progresss, errors and successful finish</li>
+            </ul>
+          </td>
+        <td>
+          <ul>
+            <li>Deep dive into single execution steps</li>
+            <li>Compare executions side-by-side</li>
+            <li>View previous exectutions terminal outputs</li>
+          </ul>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+### Experiment tracking with Aim
+
+<div align="left">
   <table>
     <tbody>
       <tr>
