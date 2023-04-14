@@ -2,6 +2,8 @@
 
 ## Unreleased 
 
+### Enhancements
+- Add functionality for custom context in the PyTorch Ignite (tmynn)
 ### fixes
 -  Convert NaNs and Infs in responses to strings (n-gao)
 
