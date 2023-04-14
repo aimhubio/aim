@@ -153,7 +153,7 @@ Additionally, its SDK enables programmatic access to tracked metadata — perfec
           <ul>
             <li>Track all the inputs, outputs of LLMs and tools</li>
             <li>Capture terminal output of executions</li>
-            <li>Get notified on executions progresss, errors and successful finish</li>
+            <li>Get notified on executions progress and finish</li>
             </ul>
           </td>
         <td>
