@@ -33,10 +33,10 @@ function GroupingPopover(props: IGroupingPopoverProps) {
     engine: { useStore, pipeline, groupings },
   } = props;
   const [searchValue, setSearchValue] = React.useState('');
-  const gridGroupingState = useStore(groupings[GroupType.GRID]?.stateSelector);
 
   const availableModifiers = useStore(pipeline.additionalDataSelector);
   const currentValues = useStore(groupings.currentValuesSelector);
+  const groupingStates = useStore(groupings.stateSelector);
 
   const getFacetGroupingValues = React.useCallback(
     (
@@ -61,12 +61,14 @@ function GroupingPopover(props: IGroupingPopoverProps) {
     (values: IGroupingSelectOption[], order?: Order[]) => {
       const { fields, orders } = values.reduce(
         (acc: any, item: IGroupingSelectOption, index: number) => {
-          acc.fields.push(item.value);
-          acc.orders.push(
-            order?.[index] ??
-              currentValues[groupName].orders[index] ??
-              Order.ASC,
-          );
+          if (item) {
+            acc.fields.push(item.value);
+            acc.orders.push(
+              order?.[index] ??
+                currentValues[groupName].orders[index] ??
+                Order.ASC,
+            );
+          }
           return acc;
         },
         {
@@ -94,6 +96,15 @@ function GroupingPopover(props: IGroupingPopoverProps) {
       pipeline.group(groupingValues);
     },
     [groupings, pipeline, currentValues, groupName, getFacetGroupingValues],
+  );
+
+  const onChangeColumnCount = React.useCallback(
+    ({ target }) => {
+      groupings[GroupType.GRID]?.methods.update({
+        maxColumnCount: parseInt(target.value),
+      });
+    },
+    [groupings],
   );
 
   const onChange = React.useCallback(
@@ -169,12 +180,8 @@ function GroupingPopover(props: IGroupingPopoverProps) {
                 type='number'
                 min={1}
                 disabled={values.length === 0}
-                value={gridGroupingState.maxColumnCount}
-                onChange={(e: any) => {
-                  groupings[GroupType.GRID]?.methods.update({
-                    maxColumnCount: parseInt(e.target.value),
-                  });
-                }}
+                value={groupingStates[GroupType.GRID].maxColumnCount}
+                onChange={onChangeColumnCount}
               />
             </div>
           )}
@@ -198,7 +205,7 @@ function GroupingPopover(props: IGroupingPopoverProps) {
               groupBy={(option) => option.group}
               getOptionLabel={(option) => option.label}
               getOptionSelected={(option, value) =>
-                option.value === value.value
+                option?.value === value.value
               }
               renderInput={(params: any) => (
                 <TextField

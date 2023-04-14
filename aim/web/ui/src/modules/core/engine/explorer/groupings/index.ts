@@ -4,8 +4,13 @@ import browserHistory from 'modules/core/services/browserHistory';
 import { GroupType, Order } from 'modules/core/pipeline';
 import { createSliceState } from 'modules/core/utils/store';
 import getUrlSearchParam from 'modules/core/utils/getUrlSearchParam';
+import setStatePersistence from 'modules/core/utils/setStatePersistence';
 
-import { PersistenceTypesEnum } from '../../types';
+import {
+  PersistenceTypesEnum,
+  StatePersistOption,
+  StoreSliceMethods,
+} from '../../types';
 
 import createGroupingsSlice from './state';
 
@@ -117,57 +122,113 @@ function createGroupingsEngine(
 
   const methods = state.generateMethods(store.setState, store.getState);
 
-  const slicesResetMethods: Function[] = [];
+  const stateResetMethods: Function[] = [];
+  const initializers: Function[] = [];
+
+  initializers.push(
+    createInitializer(
+      'groupings',
+      methods.update,
+      methods.reset,
+      PersistenceTypesEnum.Url,
+    ),
+  );
 
   const slices = Object.keys(state.slices).reduce(
-    (acc: Record<string, object>, name: string) => {
+    (acc: Record<string, any>, name: string) => {
       const elem = state.slices[name];
-      const methods = elem.methods(store.setState, store.getState);
-      slicesResetMethods.push(methods.reset);
+      const originalMethods = elem.methods(store.setState, store.getState);
+      stateResetMethods.push(originalMethods.reset);
+
+      const persistenceKey = ['gr', name].join('-');
+      const persistenceType = config[name].state?.persist;
+      const overrideMethods = setStatePersistence(
+        persistenceKey,
+        persistenceType as PersistenceTypesEnum,
+        originalMethods,
+      );
+
       acc[name] = {
         ...omit(elem, ['styleApplier']),
-        ...methods,
-        methods,
+        ...overrideMethods,
+        methods: overrideMethods,
       };
+
+      initializers.push(
+        createInitializer(
+          persistenceKey,
+          originalMethods.update,
+          originalMethods.reset,
+          persistenceType,
+        ),
+      );
       return acc;
     },
     {},
   );
 
-  function update(groupValues: GroupValues) {
-    methods.update(groupValues);
-  }
+  /**
+   * Initialize grouping states
+   * @param {String} key - key to identify in storage
+   * @param {Function} update - state update method
+   * @param {Function} reset - state reset method
+   * @param {PersistenceTypesEnum} persist @optional - persistence type
+   */
+  function createInitializer(
+    key: string,
+    update: StoreSliceMethods['update'],
+    reset: StoreSliceMethods['reset'],
+    persist?: StatePersistOption,
+  ) {
+    return (): Function => {
+      if (persist === PersistenceTypesEnum.Url) {
+        const stateFromStorage = getUrlSearchParam(key) || {};
 
-  function resetSlices() {
-    slicesResetMethods.forEach((func) => {
-      func();
-    });
-  }
-
-  function initialize() {
-    if (persist) {
-      const stateFromStorage = getUrlSearchParam('groupings') || {};
-
-      // update state
-      if (!isEmpty(stateFromStorage)) {
-        methods.update(stateFromStorage);
-      }
-      const removeGroupingListener =
-        browserHistory.listenSearchParam<GroupValues>(
-          'groupings',
-          (data: GroupValues | null) => {
+        // update state
+        if (!isEmpty(stateFromStorage)) {
+          update(stateFromStorage);
+        }
+        const removeListener = browserHistory.listenSearchParam(
+          key,
+          (data: unknown) => {
             // update state
             if (!isEmpty(data)) {
-              methods.update(data as GroupValues);
+              update(data);
             } else {
-              methods.reset();
+              reset();
             }
           },
           ['PUSH'],
         );
 
+        return () => {
+          removeListener();
+        };
+      }
+      return () => {};
+    };
+  }
+
+  function update(groupValues: GroupValues) {
+    methods.update(groupValues);
+  }
+
+  function resetState() {
+    stateResetMethods.forEach((func) => func());
+  }
+
+  function initialize() {
+    if (persist) {
+      const finalizers: Function[] = [];
+      // call initializers
+      initializers.forEach((init) => {
+        const finalizer = init();
+        finalizers.push(finalizer);
+      });
+
       return () => {
-        removeGroupingListener();
+        // call finalizers
+        finalizers.forEach((finalizer) => finalizer());
       };
     }
 
@@ -181,7 +242,7 @@ function createGroupingsEngine(
       reset: methods.reset,
       update,
       ...slices,
-      resetSlices,
+      resetState,
       styleAppliers,
       initialize,
     },

@@ -174,7 +174,6 @@ export const defaultHydration = {
       initialState: {
         sync: true,
       },
-      // persist: PersistenceTypesEnum.Url,
     },
   },
   getStaticContent: getBaseExplorerStaticContent,

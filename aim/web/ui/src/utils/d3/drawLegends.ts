@@ -8,9 +8,10 @@ import {
 
 import { GroupNameEnum } from 'config/grouping/GroupingPopovers';
 
+import { GroupType } from 'modules/core/pipeline';
+
 import changeDasharraySize from '../changeDasharraySize';
 import shortenRunPropLabel from '../shortenRunPropLabel';
-import { GroupType } from '../../modules/core/pipeline';
 
 interface DrawLegendsArgs {
   data?: LegendsDataType;

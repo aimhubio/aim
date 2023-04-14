@@ -67,14 +67,6 @@ function getPipelineEngine(
 ) {
   const useCache = config.enablePipelineCache;
 
-  const defaultGroupings = Object.keys(config.groupings || {}).reduce(
-    (acc: Record<string, unknown>, key: string) => {
-      acc[key] = config.groupings?.[key].defaultApplications;
-      return acc;
-    },
-    {},
-  );
-
   // const defaultControls = config.controls || {};
 
   const pipelineOptions: Omit<PipelineOptions, 'callbacks'> = {
@@ -98,7 +90,7 @@ function getPipelineEngine(
   const pipeline = createPipelineEngine<object, AimFlatObjectBase>(
     { setState: set, getState: get },
     pipelineOptions,
-    defaultGroupings,
+    config.groupings,
     notificationsEngine,
   );
 

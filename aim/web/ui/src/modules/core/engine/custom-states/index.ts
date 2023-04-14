@@ -7,13 +7,13 @@ import {
 } from 'modules/core/utils/store';
 import getUrlSearchParam from 'modules/core/utils/getUrlSearchParam';
 import browserHistory from 'modules/core/services/browserHistory';
+import setStatePersistence from 'modules/core/utils/setStatePersistence';
 
 import {
   PersistenceTypesEnum,
   StatePersistOption,
   StoreSliceMethods,
 } from '../types';
-import setStatePersistence from '../../utils/setStatePersistence';
 
 export type CustomStatesEngine = {
   [key: string]: Omit<PreCreatedStateSlice, 'methods'> & StoreSliceMethods;

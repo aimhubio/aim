@@ -52,10 +52,18 @@ export interface IPipelineEngine<TObject, TStore> {
 function createPipelineEngine<TStore, TObject>(
   store: any,
   options: Omit<PipelineOptions, 'callbacks'>,
-  defaultGroupings?: any,
+  groupingConfig: any,
   notificationsEngine?: INotificationsEngine<TStore>['engine'],
 ): IPipelineEngine<TObject, TStore> {
   const initialState = getInitialState<TObject>();
+
+  const defaultGroupings = Object.keys(groupingConfig || {}).reduce(
+    (acc: CurrentGrouping, key: string) => {
+      acc[key] = groupingConfig?.[key].defaultApplications;
+      return acc;
+    },
+    {},
+  );
 
   if (defaultGroupings) {
     initialState.currentGroupings = defaultGroupings;
