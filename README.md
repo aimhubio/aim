@@ -24,18 +24,12 @@
   </h3>
   
   Aim logs all your AI metadata, enables a UI to observe/compare them, and an SDK to query them programmatically.
-    
-  <table>
-    <tbody>
-      <tr>
-        <td colspan="2"><p align="center">Learn more:</p></td>
-      </tr>
-      <tr>
-        <td><a href="#experiment-tracking-with-aim">Experiment tracking with Aim</a></td>
-        <td><a href="#ai-systems-and-agents-tracing-with-Aim">AI agents tracing with Aim</a></td>
-      </tr>
-    </tbody>
-  </table>
+  
+  <p align="center">
+    <strong>Learn more:</strong> </br>
+    <a href="#experiment-tracking-with-aim">Experiment tracking with Aim</a> </br>
+    <a href="#ai-systems-and-agents-tracing-with-Aim">AI agents tracing with Aim</a>
+  </p>
   
 </div>
 
