@@ -5,7 +5,7 @@ import { MenuItem } from '@material-ui/core';
 import { Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
-import { TEXT_RNDERER_MODES } from 'pages/TextExplorer/textConfig';
+import { TEXT_RENDERER_MODES } from 'pages/TextExplorer/textConfig';
 
 import { ITextRendererModePopoverProps } from '.';
 
@@ -18,7 +18,7 @@ function TextRendererModePopover(props: ITextRendererModePopoverProps) {
     <ErrorBoundary>
       <div className='TextRendererModePopover'>
         <div className='TextRendererModePopover__section'>
-          {Object.keys(TEXT_RNDERER_MODES).map((key) => (
+          {Object.keys(TEXT_RENDERER_MODES).map((key) => (
             <MenuItem
               key={key}
               property='line'

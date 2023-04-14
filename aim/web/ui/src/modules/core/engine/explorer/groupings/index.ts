@@ -56,6 +56,7 @@ export type GroupingConfig<State extends object, Settings> = {
     fields: Array<string>;
     // conditions: [{ condition: '>', value: 1 }]
     orders: Array<Order>;
+    isApplied: boolean;
   };
   /**
    * styleApplier aimed to calculate visual properties for the object by calculating group
@@ -96,7 +97,10 @@ export type GroupingConfigs = Record<
   Omit<GroupingConfig<unknown & object, any>, 'name'>
 >;
 
-type GroupValues = Record<string, { orders: Order[]; fields: string[] }>;
+type GroupValues = Record<
+  string,
+  { orders: Order[]; fields: string[]; isApplied: boolean }
+>;
 
 function createGroupingsEngine(
   config: GroupingConfigs,

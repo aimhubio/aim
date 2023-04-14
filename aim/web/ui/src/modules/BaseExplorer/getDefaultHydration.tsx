@@ -40,10 +40,20 @@ const controls: ControlsConfigs = {
   },
 };
 
+/**
+ * facet groupings: COLUMN and ROW conflict with GRID grouping and should not be used together, so
+ * we need to make sure that only one of them is applied at a time (and GRID isn't applied by default),
+ * if you want to change default applications, you can do it in the specific explorer config
+ */
 const groupings: GroupingConfigs = {
   [GroupType.COLUMN]: {
     component: React.memo((props: IBaseComponentProps) => (
-      <GroupingItem groupName='columns' iconName='group-column' {...props} />
+      <GroupingItem
+        facet={true}
+        groupName='columns'
+        iconName='group-column'
+        {...props}
+      />
     )),
     styleApplier: ({ groupInfo, boxConfig }: StyleApplierCallbackArgs<any>) => {
       const rulerWidth =
@@ -63,6 +73,7 @@ const groupings: GroupingConfigs = {
     defaultApplications: {
       fields: [],
       orders: [],
+      isApplied: true,
     },
     // state: {
     //   // observable state, to listen on base visualizer
@@ -77,7 +88,12 @@ const groupings: GroupingConfigs = {
   },
   [GroupType.ROW]: {
     component: React.memo((props: IBaseComponentProps) => (
-      <GroupingItem groupName='rows' iconName='image-group' {...props} />
+      <GroupingItem
+        facet={true}
+        groupName='rows'
+        iconName='image-group'
+        {...props}
+      />
     )),
     styleApplier: ({ groupInfo, boxConfig }: StyleApplierCallbackArgs<any>) => {
       const rulerHeight =
@@ -98,6 +114,7 @@ const groupings: GroupingConfigs = {
     defaultApplications: {
       fields: [],
       orders: [],
+      isApplied: true,
     },
     // state: {
     //   // observable state, to listen on base visualizer
@@ -112,7 +129,12 @@ const groupings: GroupingConfigs = {
   },
   [GroupType.GRID]: {
     component: React.memo((props: IBaseComponentProps) => (
-      <GroupingItem groupName='grid' iconName='image-group' {...props} />
+      <GroupingItem
+        facet={true}
+        groupName='grid'
+        iconName='image-group'
+        {...props}
+      />
     )),
     styleApplier: ({
       groupInfo,
@@ -139,6 +161,7 @@ const groupings: GroupingConfigs = {
     defaultApplications: {
       fields: [],
       orders: [],
+      isApplied: false,
     },
     state: {
       initialState: {

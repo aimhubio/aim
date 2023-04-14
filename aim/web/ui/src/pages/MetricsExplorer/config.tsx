@@ -33,8 +33,8 @@ export const getMetricsDefaultConfig = (): typeof defaultHydration => {
     draft[GroupType.ROW].defaultApplications.orders = [Order.ASC];
     draft[GroupType.ROW].defaultApplications.fields = ['metric.context.subset'];
 
-    // draft[GroupType.GRID].defaultApplications.orders = [Order.ASC];
-    // draft[GroupType.GRID].defaultApplications.fields = ['metric.name'];
+    draft[GroupType.GRID].defaultApplications.orders = [Order.ASC];
+    draft[GroupType.GRID].defaultApplications.fields = ['metric.name'];
 
     draft[GroupType.COLOR] = {
       component: React.memo((props: IBaseComponentProps) => (
@@ -51,6 +51,7 @@ export const getMetricsDefaultConfig = (): typeof defaultHydration => {
       defaultApplications: {
         fields: ['run.hash'],
         orders: [Order.ASC],
+        isApplied: true,
       },
       // @TODO add support for selecting color pallet by 'palletIndex'
       // state: {
@@ -75,6 +76,7 @@ export const getMetricsDefaultConfig = (): typeof defaultHydration => {
       defaultApplications: {
         fields: [],
         orders: [],
+        isApplied: true,
       },
     };
   });

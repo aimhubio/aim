@@ -58,6 +58,8 @@ export function grouping({
 
   try {
     grouping?.forEach((g: BettaGroupOption) => {
+      if (!g.isApplied) return;
+
       const { foundGroups, data } = group(d, g);
       d = data;
       fg = {
