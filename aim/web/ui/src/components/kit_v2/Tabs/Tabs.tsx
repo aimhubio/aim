@@ -25,7 +25,12 @@ const Tabs = ({
   >
     <TabList className='TabList'>
       {tabs.map((tab, index: number) => (
-        <TabTrigger key={index} value={tab.value}>
+        <TabTrigger
+          data-testid={tab.value}
+          disabled={tab.disabled}
+          key={index}
+          value={tab.value}
+        >
           {tab.label}
         </TabTrigger>
       ))}
