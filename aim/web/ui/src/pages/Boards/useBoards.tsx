@@ -25,10 +25,14 @@ function useBoards() {
   }
 
   const filteredBoards = React.useMemo(() => {
-    // return bookmarksList.filter((bookmark) => {
-    //   return bookmark.name.toLowerCase().includes(searchValue.toLowerCase());
-    // });
-  }, [searchValue]);
+    if (!searchValue) {
+      return boardsData?.listData;
+    }
+
+    return boardsData?.listData?.filter((board: any) => {
+      return board.name.toLowerCase().includes(searchValue.toLowerCase());
+    });
+  }, [boardsData?.listData, searchValue]);
 
   return {
     searchValue,

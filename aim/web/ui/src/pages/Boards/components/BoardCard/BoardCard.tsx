@@ -2,9 +2,10 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 
 import {
+  IconCheck,
   IconDotsVertical,
   IconEdit,
-  IconShare2,
+  IconLink,
   IconTrash,
 } from '@tabler/icons-react';
 import { IconCalendarEvent } from '@tabler/icons-react';
@@ -38,7 +39,7 @@ function BoardCard({
   ...props
 }: any) {
   return (
-    <BoardCardContainer key={id} className='Boards__list__item'>
+    <BoardCardContainer key={id}>
       <BoardCardHeader>
         <BoardCardLink to={PathEnum.Board.replace(':boardId', id)}>
           <Text as='h3' size='$5' weight='$4' color='$primary100'>
@@ -49,7 +50,7 @@ function BoardCard({
           popperProps={{
             align: 'end',
             css: {
-              width: '87px',
+              width: '98px',
               p: '$5 0',
             },
           }}
@@ -71,8 +72,12 @@ function BoardCard({
                   Edit
                 </ListItem>
               </NavLink>
-              <ListItem leftNode={<Icon size='md' icon={<IconShare2 />} />}>
-                Share
+              <ListItem
+                leftNode={
+                  <Icon size='md' icon={false ? <IconCheck /> : <IconLink />} />
+                }
+              >
+                Copy Url
               </ListItem>
               <Separator />
               <Dialog
@@ -107,7 +112,7 @@ function BoardCard({
           color='$secondary100'
           icon={<IconCalendarEvent />}
         />
-        <Text size={11} color='$secondary100' weight='$2'>
+        <Text color='$secondary100' weight='$2'>
           {new Date(created_at).toLocaleString()}
         </Text>
       </Box>

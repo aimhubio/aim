@@ -25,7 +25,8 @@ function Boards(): React.FunctionComponentElement<React.ReactNode> {
     filteredBoards,
     handleSearchChange,
     onNotificationDelete,
-  }: any = useBoards();
+  } = useBoards();
+
   return (
     <ErrorBoundary>
       <TopBar>
