@@ -1,42 +1,47 @@
 import React from 'react';
-import { Link as RouteLink } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
-import { Link } from '@material-ui/core';
 import { IconPlus } from '@tabler/icons-react';
 
-import AppBar from 'components/AppBar/AppBar';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
-import Illustration from 'components/Illustration';
-import { Box, Button, Input } from 'components/kit_v2';
+import { Box, Button, Input, Text } from 'components/kit_v2';
 
-import pageTitlesEnum from 'config/pageTitles/pageTitles';
 import { PathEnum } from 'config/enums/routesEnum';
+import { TopBar } from 'config/stitches/foundations/layout';
 
 import { BoardsContainer, BoardsCardWrapper } from './Boards.style';
 import BoardCard from './components/BoardCard/BoardCard';
+import useBoards from './useBoards';
 
-function Boards({
-  data,
-  onBoardDelete,
-  isLoading,
-  notifyData,
-  onNotificationDelete,
-}: any): React.FunctionComponentElement<React.ReactNode> {
+function Boards(): React.FunctionComponentElement<React.ReactNode> {
+  const {
+    data,
+    isLoading,
+    notifyData,
+    searchValue,
+    onBoardDelete,
+    filteredBoards,
+    handleSearchChange,
+    onNotificationDelete,
+  }: any = useBoards();
   return (
     <ErrorBoundary>
-      <AppBar title={pageTitlesEnum.BOARDS} className='Boards__appBar' />
+      <TopBar>
+        <Text weight='$3'>BOARDS</Text>
+      </TopBar>
       <BoardsContainer>
         <Box display='flex' ai='center'>
           <Box flex={1}>
-            <Input css={{ width: 380 }} placeholder='Search' />
+            <Input
+              value={searchValue}
+              onChange={handleSearchChange}
+              css={{ width: 380 }}
+              placeholder='Search'
+            />
           </Box>
-          <Link
-            to={PathEnum.Board.replace(':boardId', 'new')}
-            component={RouteLink}
-            underline='none'
-          >
+          <NavLink to={PathEnum.Board.replace(':boardId', 'new')}>
             <Button
               size='lg'
               leftIcon={<IconPlus color='white' />}
@@ -44,7 +49,7 @@ function Boards({
             >
               New
             </Button>
-          </Link>
+          </NavLink>
         </Box>
         <BusyLoaderWrapper isLoading={isLoading} height={'100%'}>
           <BoardsCardWrapper>

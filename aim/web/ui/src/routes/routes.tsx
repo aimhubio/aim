@@ -58,7 +58,7 @@ const TextExplorer = React.lazy(
 );
 
 const Boards = React.lazy(
-  () => import(/* webpackChunkName: "boards" */ 'pages/Boards/BoardsContainer'),
+  () => import(/* webpackChunkName: "boards" */ 'pages/Boards/Boards'),
 );
 
 const Board = React.lazy(

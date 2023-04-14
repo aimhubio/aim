@@ -1,11 +1,12 @@
 import { styled } from 'config/stitches';
+import { LayoutContainer } from 'config/stitches/foundations/layout';
 
-const BoardsContainer = styled('section', {
-  maxWidth: '1326px',
-  p: '$13',
+const BoardsContainer = styled(LayoutContainer, {
+  py: '$13',
 });
 
 const BoardsCardWrapper = styled('div', {
+  mt: '$9',
   display: 'flex',
   flexWrap: 'wrap',
   gap: '$13',

@@ -1,4 +1,5 @@
 import React from 'react';
+import { NavLink } from 'react-router-dom';
 
 import {
   IconDotsVertical,
@@ -10,7 +11,6 @@ import { IconCalendarEvent } from '@tabler/icons-react';
 
 import {
   Box,
-  Button,
   Dialog,
   Icon,
   IconButton,
@@ -21,8 +21,6 @@ import {
 } from 'components/kit_v2';
 
 import { PathEnum } from 'config/enums/routesEnum';
-
-import BoardDelete from 'pages/Boards/BoardDelete';
 
 import {
   BoardCardContainer,
@@ -65,15 +63,20 @@ function BoardCard({
           }
           content={
             <Box display='flex' fd='column' gap='$4'>
-              <ListItem leftNode={<Icon size='md' icon={<IconEdit />} />}>
-                Edit
-              </ListItem>
+              <NavLink
+                style={{ textDecoration: 'none' }}
+                to={`${PathEnum.Boards}/${id}/edit`}
+              >
+                <ListItem leftNode={<Icon size='md' icon={<IconEdit />} />}>
+                  Edit
+                </ListItem>
+              </NavLink>
               <ListItem leftNode={<Icon size='md' icon={<IconShare2 />} />}>
                 Share
               </ListItem>
               <Separator />
               <Dialog
-                title={`Delete board ${name}?`}
+                title='Delete board'
                 titleIcon={<IconTrash />}
                 onConfirm={() => onBoardDelete(id)}
                 description='Are you sure you want to delete this board?'
