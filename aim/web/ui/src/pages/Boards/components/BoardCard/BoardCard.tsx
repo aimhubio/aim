@@ -50,8 +50,8 @@ function BoardCard({
           popperProps={{
             align: 'end',
             css: {
-              width: '98px',
-              p: '$5 0',
+              width: '108px',
+              p: '$4 0',
             },
           }}
           trigger={
@@ -63,23 +63,32 @@ function BoardCard({
             />
           }
           content={
-            <Box display='flex' fd='column' gap='$4'>
-              <NavLink
-                style={{ textDecoration: 'none' }}
-                to={`${PathEnum.Boards}/${id}/edit`}
-              >
-                <ListItem leftNode={<Icon size='md' icon={<IconEdit />} />}>
-                  Edit
+            <Box display='flex' fd='column'>
+              <Box p='0 $4'>
+                <NavLink
+                  style={{ textDecoration: 'none' }}
+                  to={`${PathEnum.Boards}/${id}/edit`}
+                >
+                  <ListItem
+                    size='lg'
+                    leftNode={<Icon size='md' icon={<IconEdit />} />}
+                  >
+                    Edit
+                  </ListItem>
+                </NavLink>
+                <ListItem
+                  size='lg'
+                  leftNode={
+                    <Icon
+                      size='md'
+                      icon={false ? <IconCheck /> : <IconLink />}
+                    />
+                  }
+                >
+                  Copy Url
                 </ListItem>
-              </NavLink>
-              <ListItem
-                leftNode={
-                  <Icon size='md' icon={false ? <IconCheck /> : <IconLink />} />
-                }
-              >
-                Copy Url
-              </ListItem>
-              <Separator />
+              </Box>
+              <Separator margin={'$4'} />
               <Dialog
                 title='Delete board'
                 titleIcon={<IconTrash />}
@@ -87,7 +96,8 @@ function BoardCard({
                 description='Are you sure you want to delete this board?'
                 trigger={
                   <ListItem
-                    css={{ color: '$danger100' }}
+                    size='lg'
+                    css={{ color: '$danger100', mx: '$4' }}
                     leftNode={
                       <Icon color='$danger100' size='md' icon={<IconTrash />} />
                     }
