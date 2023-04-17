@@ -1,95 +1,71 @@
 import React from 'react';
-import { Link as RouteLink } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
-import { Link } from '@material-ui/core';
+import { IconPlus } from '@tabler/icons-react';
 
-import { Button, Text } from 'components/kit';
-import AppBar from 'components/AppBar/AppBar';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
-import CodeBlock from 'components/CodeBlock/CodeBlock';
-import Illustration from 'components/Illustration';
+import { Box, Button, Input, Text } from 'components/kit_v2';
 
-import pageTitlesEnum from 'config/pageTitles/pageTitles';
 import { PathEnum } from 'config/enums/routesEnum';
+import { TopBar } from 'config/stitches/foundations/layout';
 
-import BoardDelete from './BoardDelete';
+import { BoardsContainer, BoardsCardWrapper } from './Boards.style';
+import BoardCard from './components/BoardCard/BoardCard';
+import useBoards from './useBoards';
 
-import './Boards.scss';
+function Boards(): React.FunctionComponentElement<React.ReactNode> {
+  const {
+    data,
+    isLoading,
+    notifyData,
+    searchValue,
+    onBoardDelete,
+    filteredBoards,
+    handleSearchChange,
+    onNotificationDelete,
+  } = useBoards();
 
-function Boards({
-  data,
-  onBoardDelete,
-  isLoading,
-  notifyData,
-  onNotificationDelete,
-}: any): React.FunctionComponentElement<React.ReactNode> {
   return (
     <ErrorBoundary>
-      <section className='Boards'>
-        <AppBar title={pageTitlesEnum.BOARDS} className='Boards__appBar' />
-        <div className='Boards__list'>
-          <BusyLoaderWrapper isLoading={isLoading} height={'100%'}>
-            <div
-              key='new'
-              className='Boards__list__item Boards__list__item--new'
+      <TopBar>
+        <Text weight='$3'>BOARDS</Text>
+      </TopBar>
+      <BoardsContainer>
+        <Box display='flex' ai='center'>
+          <Box flex={1}>
+            <Input
+              inputSize='lg'
+              value={searchValue}
+              onChange={handleSearchChange}
+              css={{ width: 380 }}
+              placeholder='Search'
+            />
+          </Box>
+          <NavLink to={PathEnum.Board.replace(':boardId', 'new')}>
+            <Button
+              size='lg'
+              leftIcon={<IconPlus color='white' />}
+              color='success'
             >
-              <div className='Boards__list__item__header'>
-                <Text size={16} weight={700}>
-                  New board
-                </Text>
-                <Link
-                  to={PathEnum.Board.replace(':boardId', 'new')}
-                  component={RouteLink}
-                  underline='none'
-                >
-                  <Button variant='outlined' size='small'>
-                    Create
-                  </Button>
-                </Link>
-              </div>
-              <div className='Boards__list__item__sub'>
-                <Text>Create custom board</Text>
-              </div>
-              <div className='Boards__list__item__preview'>
-                <Illustration />
-              </div>
-            </div>
+              New
+            </Button>
+          </NavLink>
+        </Box>
+        <BusyLoaderWrapper isLoading={isLoading} height={'100%'}>
+          <BoardsCardWrapper>
             {data?.length > 0 &&
               data.map((board: any) => (
-                <div key={board.id} className='Boards__list__item'>
-                  <div className='Boards__list__item__header'>
-                    <Text size={16} weight={700}>
-                      {board.name}
-                    </Text>
-                    <div>
-                      <Link
-                        to={PathEnum.Board.replace(':boardId', board.id)}
-                        component={RouteLink}
-                        underline='none'
-                      >
-                        <Button variant='outlined' size='small'>
-                          View
-                        </Button>
-                      </Link>
-                      <BoardDelete
-                        board_id={board.id}
-                        onBoardDelete={onBoardDelete}
-                      />
-                    </div>
-                  </div>
-                  <div className='Boards__list__item__sub'>
-                    <Text>{board.description}</Text>
-                  </div>
-                  <div className='Boards__list__item__preview'>
-                    <CodeBlock code={board.code} hideCopyIcon />
-                  </div>
-                </div>
+                <BoardCard
+                  key={board.id}
+                  onBoardDelete={onBoardDelete}
+                  {...board}
+                />
               ))}
-          </BusyLoaderWrapper>
-        </div>
-      </section>
+          </BoardsCardWrapper>
+        </BusyLoaderWrapper>
+      </BoardsContainer>
       {notifyData?.length > 0 && (
         <NotificationContainer
           handleClose={onNotificationDelete}
