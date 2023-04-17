@@ -80,7 +80,7 @@ export const lightTheme: ConfigType.Theme = {
     green50: '#EBFDE7',
     green70: '#D7FCCF',
     green80: '#C3FBB7',
-    green100: '#8FF77F',
+    green100: '#6cd75c',
     green110: '#5FF34D',
     green120: '#00FF00',
     // yellow colors

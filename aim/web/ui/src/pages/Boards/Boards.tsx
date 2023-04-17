@@ -36,6 +36,7 @@ function Boards(): React.FunctionComponentElement<React.ReactNode> {
         <Box display='flex' ai='center'>
           <Box flex={1}>
             <Input
+              inputSize='lg'
               value={searchValue}
               onChange={handleSearchChange}
               css={{ width: 380 }}
