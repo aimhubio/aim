@@ -20,7 +20,6 @@ from aim.ext.transport.config import (
     AIM_RT_MAX_MESSAGE_SIZE,
     AIM_RT_DEFAULT_MAX_MESSAGE_SIZE,
     AIM_CLIENT_QUEUE_MAX_MEMORY,
-    AIM_RT_BEARER_TOKEN,
 )
 from aim.storage.treeutils import encode_tree, decode_tree
 
@@ -77,7 +76,6 @@ class Client:
 
         ssl_certfile = os.getenv(AIM_CLIENT_SSL_CERTIFICATES_FILE)
         msg_max_size = int(os.getenv(AIM_RT_MAX_MESSAGE_SIZE, AIM_RT_DEFAULT_MAX_MESSAGE_SIZE))
-        bearer_token = os.getenv(AIM_RT_BEARER_TOKEN)
         options = [
             ('grpc.max_send_message_length', msg_max_size),
             ('grpc.max_receive_message_length', msg_max_size)
@@ -87,11 +85,6 @@ class Client:
         if ssl_certfile:
             with open(ssl_certfile, 'rb') as f:
                 root_certificates = grpc.ssl_channel_credentials(f.read())
-            if bearer_token:
-                self._call_credentials = grpc.access_token_call_credentials(bearer_token)
-                root_certificates = grpc.composite_channel_credentials(
-                    root_certificates, self._call_credentials
-                )
             self._remote_router_channel = grpc.secure_channel(self.remote_path, root_certificates, options=options)
         else:
             self._remote_router_channel = grpc.insecure_channel(self.remote_path, options=options)

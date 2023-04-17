@@ -83,8 +83,8 @@ function DictVisualizer(props: IDictVisualizerProps) {
         <AutoSizer>
           {({ width, height }) => (
             <List
-              width={width}
-              height={height}
+              width={width || 0}
+              height={height || 0}
               itemCount={rows.length}
               itemSize={ROW_SIZE}
             >

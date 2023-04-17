@@ -39,6 +39,13 @@ const statisticsInitialMap: Record<string, IProjectStatistic> = {
     iconBgColor: '#18AB6D',
     navLink: routes.FIGURES_EXPLORER.path,
   },
+  // [SequenceTypesEnum.Geometries]: {
+  //   label: 'Geometries',
+  //   icon: 'figures',
+  //   count: 0,
+  //   iconBgColor: '#18AB6D',
+  //   navLink: routes.GEOMETRIES_EXPLORER.path,
+  // },
   [SequenceTypesEnum.Images]: {
     label: 'Images',
     icon: 'images',

@@ -55,7 +55,6 @@ function MediaPanel({
   const [encodedDataKey, setEncodedDataKey] = React.useState<string>('');
   const [encodedSortFieldsDictKey, setEncodedSortFieldsDictKey] =
     React.useState<string>('');
-  let processedBlobUriArray = React.useRef<string[]>([]);
   let blobUriArray = React.useRef<string[]>([]);
   let timeoutID = React.useRef(0);
   const containerRef = React.useRef<HTMLDivElement>(null);
@@ -194,18 +193,10 @@ function MediaPanel({
   );
 
   function addUriToList(blobUrl: string) {
-    if (blobsURIModel.getState()[blobUrl]) {
-      return;
+    if (!blobsURIModel.getState()[blobUrl]) {
+      blobUriArray.current.push(blobUrl);
+      getBatch();
     }
-    if (blobUriArray.current.includes(blobUrl)) {
-      return;
-    }
-    if (processedBlobUriArray.current.includes(blobUrl)) {
-      return;
-    }
-
-    blobUriArray.current.push(blobUrl);
-    getBatch();
   }
 
   const getBatch = throttle(() => {
@@ -214,19 +205,9 @@ function MediaPanel({
     }
     timeoutID.current = window.setTimeout(() => {
       if (!_.isEmpty(blobUriArray.current)) {
-        const processingBlobUriArray = Object.assign([], blobUriArray.current);
-        blobUriArray.current = [];
-        processedBlobUriArray.current = [
-          ...new Set([
-            ...processedBlobUriArray.current,
-            ...processingBlobUriArray,
-          ]),
-        ];
-        requestRef.current = getBlobsData(processingBlobUriArray);
-        requestRef.current.call().catch((err: any) => {
-          processedBlobUriArray.current = processedBlobUriArray.current.filter(
-            (uri: string) => !processingBlobUriArray.includes(uri),
-          );
+        requestRef.current = getBlobsData(blobUriArray.current);
+        requestRef.current.call().then(() => {
+          blobUriArray.current = [];
         });
       }
     }, BATCH_SEND_DELAY);
