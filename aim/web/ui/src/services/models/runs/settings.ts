@@ -7,6 +7,7 @@ import {
   processTextsData,
   processPlotlyData,
   processAudiosData,
+  processGeometriesData,
 } from './util';
 
 type InputItem = {
@@ -179,6 +180,37 @@ const settings: Record<string, SettingItem> = {
         defaultValue: -1,
         tooltip: 'Training step. To see figures tracked in the step.',
         title: 'Step',
+      },
+    },
+  },
+  geometries: {
+    dataProcessor: processGeometriesData,
+    sliders: {
+      record_range: {
+        defaultValue: [0, 50],
+        tooltip: 'Training step. Increments every time track() is called',
+        title: 'Steps',
+        sliderType: 'range',
+        infoPropertyName: 'step',
+      },
+      index_range: {
+        defaultValue: [0, 50],
+        tooltip: 'Index in the list of geometries passed to track() call',
+        title: 'Indices',
+        sliderType: 'range',
+        infoPropertyName: 'index',
+      },
+    },
+    inputs: {
+      record_density: {
+        defaultValue: 50,
+        title: 'Steps count',
+        tooltip: 'Number of steps to display',
+      },
+      index_density: {
+        defaultValue: 5,
+        title: 'Indices count',
+        tooltip: 'Number of geometries per step',
       },
     },
   },

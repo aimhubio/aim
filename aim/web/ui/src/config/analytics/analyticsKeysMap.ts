@@ -325,6 +325,11 @@ export const ANALYTICS_EVENT_KEYS = {
         clickApplyButton: '[RunDetail] [Figures] Click apply button',
         changeContext: '[RunDetail] [Figures] Change context',
       },
+      geometries: {
+        tabView: '[RunDetail] [Geometries] Tab view',
+        clickApplyButton: '[RunDetail] [Geometries] Click apply button',
+        changeContext: '[RunDetail] [Geometries] Change context',
+      },
       settings: {
         tabView: '[RunDetail] [Settings] Tab view',
         deleteRun: '[RunDetail] [Settings] Delete run',
@@ -361,6 +366,7 @@ export const ANALYTICS_EVENT_KEYS = {
     docs: '[Sidebar] Click on docs link',
   },
   figures: {} as any,
+  geometries: {} as any,
   audios: {} as any,
   text: {} as any,
 };

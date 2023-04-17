@@ -4,7 +4,7 @@ from fastapi import HTTPException, Header
 from pydantic import BaseModel
 from starlette.responses import StreamingResponse
 
-from aim import Images, Texts, Distributions, Audios, Figures
+from aim import Images, Texts, Distributions, Audios, Figures, Geometries
 from aim.sdk.sequence import Sequence
 from aim.sdk.sequence_collection import QuerySequenceCollection
 from aim.sdk.types import QueryReportMode
@@ -15,8 +15,10 @@ from aim.web.api.runs.pydantic_models import (
     ImageList,
     TextList,
     AudioList,
+    GeometryList,
     DistributionInfo,
     FigureInfo,
+    GeometryInfo,
     ObjectSearchRunView,
     ObjectSequenceBaseView,
 )
@@ -165,3 +167,8 @@ class FigureApiConfig(CustomObjectApiConfig):
     resolve_blobs = True
     dump_record_fn = lambda x: x.data  # noqa E731
     model = FigureInfo
+
+class GeometryApiConfig(CustomObjectApiConfig):
+    sequence_type = Geometries
+    resolve_blobs = False
+    model = GeometryList
