@@ -7,7 +7,8 @@ from aim.web.api.runs.object_views import (
     TextApiConfig,
     DistributionApiConfig,
     AudioApiConfig,
-    FigureApiConfig
+    FigureApiConfig,
+    GeometryApiConfig
 )
 from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
 from typing import Optional, Tuple
@@ -16,7 +17,6 @@ from aim.sdk.types import QueryReportMode
 from aim.web.api.runs.utils import (
     checked_query,
     collect_requested_metric_traces,
-    convert_nan_and_inf_to_str,
     custom_aligned_metrics_streamer,
     get_project_repo,
     get_run_or_404,
@@ -153,8 +153,6 @@ async def run_params_api(run_id: str,
         'traces': run.collect_sequence_info(sequence, skip_last_value=True),
         'props': get_run_props(run)
     }
-    # Convert NaN and Inf to strings
-    response = convert_nan_and_inf_to_str(response)
 
     response['props'].update({
         'notes': len(run.props.notes_obj)
@@ -384,3 +382,4 @@ def add_api_routes():
     DistributionApiConfig.register_endpoints(runs_router)
     AudioApiConfig.register_endpoints(runs_router)
     FigureApiConfig.register_endpoints(runs_router)
+    GeometryApiConfig.register_endpoints(runs_router)

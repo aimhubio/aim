@@ -36,6 +36,12 @@ const PlotlyVisualizer = React.lazy(
   () =>
     import(/* webpackChunkName: "PlotlyVisualizer" */ '../PlotlyVisualizer'),
 );
+const GeometriesVisualizer = React.lazy(
+  () =>
+    import(
+      /* webpackChunkName: "GeometriesVisualizer" */ '../GeometriesVisualizer'
+    ),
+);
 const AudiosVisualizer = React.lazy(
   () =>
     import(/* webpackChunkName: "AudiosVisualizer" */ '../AudiosVisualizer'),
@@ -48,6 +54,7 @@ const traceTypeVisualization = {
   videos: () => null, // @TODO add tracking event keys in analyticsKeysMap object
   texts: TextsVisualizer,
   figures: PlotlyVisualizer,
+  geometries: GeometriesVisualizer,
 };
 
 function TraceVisualizationContainer({
