@@ -13,6 +13,7 @@ export interface IIllustrationBlockProps {
     | 'params'
     | 'image'
     | 'audio'
+    | 'geometry'
     | 'scatters'
     | 'figures'
     | 'bookmarks'
