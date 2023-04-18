@@ -111,7 +111,7 @@ const routes = {
   PARAMS: {
     path: PathEnum.Params,
     component: Params,
-    showInSidebar: false,
+    showInSidebar: true,
     displayName: 'Params',
     icon: 'params',
     isExact: true,
@@ -128,7 +128,7 @@ const routes = {
   TEXT_EXPLORER: {
     path: PathEnum.Text_Explorer,
     component: TextExplorer,
-    showInSidebar: false,
+    showInSidebar: true,
     icon: 'text',
     displayName: 'Text',
     isExact: true,
@@ -172,7 +172,7 @@ const routes = {
   AUDIOS_EXPLORER: {
     path: PathEnum.Audios_Explorer,
     component: AudiosExplorer,
-    showInSidebar: false,
+    showInSidebar: true,
     icon: 'audios',
     displayName: 'Audios',
     isExact: true,

@@ -1,6 +1,6 @@
 {
   "name": "ui_v2",
-  "version": "3.17.2",
+  "version": "3.17.3",
   "private": true,
   "dependencies": {
     "@aksel/structjs": "^1.0.0",
@@ -20,6 +20,7 @@
     "@radix-ui/react-slider": "^1.1.0",
     "@radix-ui/react-slot": "^1.0.1",
     "@radix-ui/react-switch": "^1.0.1",
+    "@radix-ui/react-tabs": "^1.0.3",
     "@radix-ui/react-toast": "^1.1.2",
     "@radix-ui/react-tooltip": "^1.0.3",
     "@react-three/drei": "^9.64.0",
