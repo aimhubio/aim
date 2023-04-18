@@ -5,7 +5,6 @@ import ButtonGroup from './ButtonGroup';
 import Checkbox from './Checkbox';
 import ControlsButton from './ControlsButton';
 import Dialog from './Dialog';
-import FormGroup from './FormGroup';
 import Icon from './Icon';
 import IconButton from './IconButton';
 import Input from './Input';
@@ -22,7 +21,6 @@ import { Toast, ToastProvider } from './Toast';
 import Tooltip from './Tooltip';
 import Tree from './Tree';
 import ToggleButton from './ToggleButton';
-import Tabs from './Tabs';
 
 export {
   Badge,
@@ -49,6 +47,4 @@ export {
   Tooltip,
   Tree,
   ToggleButton,
-  FormGroup,
-  Tabs,
 };
