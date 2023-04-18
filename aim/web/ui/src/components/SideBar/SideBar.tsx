@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { IconFileText } from '@tabler/icons-react';
+import { IconBrandGithub, IconFileText } from '@tabler/icons-react';
 
 import logoImg from 'assets/logo.svg';
 import { ReactComponent as DiscordIcon } from 'assets/icons/discord.svg';
@@ -12,7 +12,7 @@ import { Text, Icon, Box, Tooltip, Separator } from 'components/kit_v2';
 import { PathEnum } from 'config/enums/routesEnum';
 import { AIM_VERSION } from 'config/config';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
-import { DOCUMENTATIONS } from 'config/references';
+import { DOCUMENTATIONS, GITHUB_URL } from 'config/references';
 
 import routes, { IRoute } from 'routes/routes';
 
@@ -86,6 +86,21 @@ function SideBar(): React.FunctionComponentElement<React.ReactNode> {
           orientation='horizontal'
         />
         <SidebarBottom>
+          <Tooltip
+            content='Aim Github'
+            contentProps={{
+              side: 'right',
+            }}
+          >
+            <SidebarBottomAnchor
+              target='_blank'
+              href={GITHUB_URL}
+              rel='noreferrer'
+              onClick={() => trackEvent(ANALYTICS_EVENT_KEYS.sidebar.github)}
+            >
+              <Icon color='$textPrimary80' icon={<IconBrandGithub />} />
+            </SidebarBottomAnchor>
+          </Tooltip>
           <CommunityPopup>
             <Tooltip
               content='Community Discord'
@@ -99,7 +114,7 @@ function SideBar(): React.FunctionComponentElement<React.ReactNode> {
                 rel='noreferrer'
                 onClick={() => trackEvent(ANALYTICS_EVENT_KEYS.sidebar.discord)}
               >
-                <Icon icon={<DiscordIcon />} />
+                <Icon color='$textPrimary80' icon={<DiscordIcon />} />
               </SidebarBottomAnchor>
             </Tooltip>
           </CommunityPopup>
@@ -115,7 +130,7 @@ function SideBar(): React.FunctionComponentElement<React.ReactNode> {
               rel='noreferrer'
               onClick={() => trackEvent(ANALYTICS_EVENT_KEYS.sidebar.docs)}
             >
-              <Icon color='#9D9EA1' icon={<IconFileText />} />
+              <Icon color='$textPrimary80' icon={<IconFileText />} />
             </SidebarBottomAnchor>
           </Tooltip>
           <Text css={{ textAlign: 'center' }} color='secondary'>

@@ -28,7 +28,6 @@ function ExplorerCard({
       to={path}
       css={{
         backgroundColor: `${color}10`,
-        transition: 'all 0.18s ease-out',
         '&:hover': { bs: `0 0 0 1px inset $colors${color}100` },
       }}
     >

@@ -177,7 +177,7 @@ function DictVisualizerRow(props: IDictVisualizerRowProps) {
       {row.copyContent && (
         <CopyToClipBoard
           className='DictVisualizer__row__copy'
-          iconSize='xxSmall'
+          iconSize='xs'
           copyContent={row.copyContent}
         />
       )}

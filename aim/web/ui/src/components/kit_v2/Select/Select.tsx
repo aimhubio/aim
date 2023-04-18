@@ -169,8 +169,10 @@ const Select = ({
 
   return (
     <Popover
-      {...popoverProps}
-      popperProps={{ css: { p: '$5 0' } }}
+      popperProps={{
+        ...popoverProps,
+        css: { p: '$5 0', ...popoverProps.css },
+      }}
       trigger={({ open }) =>
         trigger || multiple ? (
           <Button size={size} {...triggerProps}>

@@ -38,7 +38,7 @@ function Explorers(): React.FunctionComponentElement<React.ReactNode> {
         <Breadcrumb />
         <NavLink to={PathEnum.Bookmarks}>
           <Button
-            leftIcon={<IconBookmark />}
+            leftIcon={<IconBookmark color='#161717' />}
             horizontalSpacing='compact'
             size='xs'
             variant='ghost'
@@ -54,7 +54,7 @@ function Explorers(): React.FunctionComponentElement<React.ReactNode> {
             <Text css={{ mb: '$5' }} weight='$3' as='h3' size='$6'>
               Prompt engineering
             </Text>
-            <Text color='#45484D'>
+            <Text>
               Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
               eiusmod tempor incididunt.
             </Text>
@@ -71,11 +71,11 @@ function Explorers(): React.FunctionComponentElement<React.ReactNode> {
               )}
             </ExplorerCardsWrapper>
           </Box>
-          <Box>
-            <Text css={{ mt: '$12', mb: '$5' }} weight='$3' as='h3' size='$6'>
+          <Box mt='$17'>
+            <Text css={{ mb: '$5' }} weight='$3' as='h3' size='$6'>
               Experiment tracking
             </Text>
-            <Text color='#45484D'>
+            <Text>
               Explorers will help you to compare 1000s of AI experiments with a
               few clicks. Explorers are the main tools that Aim is built around.
             </Text>

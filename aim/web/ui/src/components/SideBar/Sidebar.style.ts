@@ -42,6 +42,9 @@ const SidebarLink = styled(NavLink, {
   textDecoration: 'none',
   '&.active': {
     display: 'block',
+    span: {
+      color: '$textPrimary',
+    },
     '&:before': {
       content: '',
       position: 'absolute',

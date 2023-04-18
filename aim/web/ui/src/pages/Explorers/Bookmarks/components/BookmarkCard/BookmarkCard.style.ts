@@ -9,7 +9,7 @@ const BookmarkCardContainer = styled(Box, {
   display: 'flex',
   fd: 'column',
   p: '$13',
-  borderBottom: '1px solid $secondary30',
+  bs: 'inset 0 -1px 0 0 #B5C4D3',
   '&:last-child': { borderBottom: 'none' },
 });
 

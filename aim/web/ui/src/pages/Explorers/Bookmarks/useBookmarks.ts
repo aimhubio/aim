@@ -29,10 +29,10 @@ function useBookmarks(): {
 
   React.useEffect(() => {
     getBookmarks();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     return () => {
       destroy();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>): void {

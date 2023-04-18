@@ -1,5 +1,4 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
 
 import { IconTrash } from '@tabler/icons-react';
 
@@ -10,7 +9,6 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import {
   Badge,
   Box,
-  Button,
   Dialog,
   IconButton,
   Text,
@@ -48,6 +46,7 @@ function BookmarkCard({
   type,
   onBookmarkDelete,
 }: IBookmarkCardProps): React.FunctionComponentElement<React.ReactNode> {
+  const [onDeleteHover, setOnDeleteHover] = React.useState(false);
   function handleBookmarkDelete(): void {
     onBookmarkDelete(id);
   }
@@ -93,21 +92,18 @@ function BookmarkCard({
               onConfirm={handleBookmarkDelete}
               trigger={
                 <IconButton
+                  onMouseEnter={() => setOnDeleteHover(true)}
+                  onMouseLeave={() => setOnDeleteHover(false)}
                   size='md'
                   variant='ghost'
-                  color='secondary'
+                  color={onDeleteHover ? 'danger' : 'secondary'}
                   icon={<IconTrash />}
                 />
               }
             />
           </Box>
         </Box>
-        <Text
-          css={{ mt: '$5', wordBreak: 'break-all' }}
-          as='p'
-          color='#45484D'
-          weight='$1'
-        >
+        <Text css={{ mt: '$5', wordBreak: 'break-all' }} as='p'>
           {description}
         </Text>
         {(!select.advancedMode && select.query) ||

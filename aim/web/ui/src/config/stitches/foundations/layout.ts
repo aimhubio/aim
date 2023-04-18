@@ -6,9 +6,9 @@ import { styled } from '..';
  * @description The LayoutContainer component is the main container for the app. It centers the content and adds some padding to the left and right.
  */
 const LayoutContainer = styled(Box, {
-  maxWidth: '1326px',
+  maxWidth: '1358px',
   m: '0 auto', // Centers the container horizontally
-  p: '0 $13', // Adds some padding to the left and right of the container
+  p: '0 $9', // Adds some padding to the left and right of the container
 });
 
 /**

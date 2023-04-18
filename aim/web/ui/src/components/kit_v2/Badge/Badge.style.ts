@@ -20,7 +20,7 @@ function getColors({
   }
   return {
     bc: 'white',
-    bs: '0 0 0 1px $colors$secondary50',
+    bs: 'inset 0 0 0 1px $colors$secondary50',
     color: disabled ? '$textPrimary50' : '$textPrimary',
     '&:hover': {
       bc: '$colors$secondary10',

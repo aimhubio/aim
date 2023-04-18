@@ -16,7 +16,7 @@ const ExplorerCardsWrapper = styled(Box, {
   display: 'flex',
   ai: 'center',
   fw: 'wrap',
-  mt: '$13',
+  mt: '$9',
 });
 
 export { ExplorerCardsWrapper, ExplorersContentContainer };

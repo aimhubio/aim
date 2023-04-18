@@ -5,13 +5,14 @@ import { Text } from 'components/kit_v2';
 import { styled } from 'config/stitches';
 
 const ExplorerCardContainer = styled(NavLink, {
-  width: '316px',
-  minWidth: '316px',
-  height: 110,
+  width: '426px',
+  minWidth: '426px',
+  height: '118px',
   borderRadius: 3,
   p: '$8 $8 0',
   textDecoration: 'none',
   position: 'relative',
+  transition: 'all 0.18s ease-out',
 });
 
 const ExplorerCardBadge = styled(Text, {
@@ -23,7 +24,7 @@ const ExplorerCardBadge = styled(Text, {
   padding: '$1 $3',
   br: '3px',
   backgroundColor: 'white',
-  bs: '0 1px 2px 0 #00000029',
+  bs: 'inset 0 1px 2px 0 #00000029',
   userSelect: 'none',
 });
 

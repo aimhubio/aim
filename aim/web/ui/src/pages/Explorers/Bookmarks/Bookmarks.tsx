@@ -15,6 +15,7 @@ import BookmarkCard from './components/BookmarkCard/BookmarkCard';
 import {
   BookmarksContainerStyled,
   BookmarksListContainer,
+  BookmarksNoResultsContainer,
 } from './Bookmarks.style';
 import useBookmarks from './useBookmarks';
 
@@ -43,6 +44,7 @@ function Bookmarks(): React.FunctionComponentElement<React.ReactNode> {
         <BookmarksContainerStyled>
           <Box display='flex' ai='center'>
             <Input
+              inputSize='lg'
               placeholder='Search...'
               css={{ maxWidth: '394px', width: '100%', mr: '$13' }}
               value={searchValue}
@@ -52,7 +54,13 @@ function Bookmarks(): React.FunctionComponentElement<React.ReactNode> {
             <Box display='flex' ai='center'>
               <Text css={{ mr: '$5' }}>Filter by</Text>
               <Select
-                triggerProps={{ css: { width: '125px' } }}
+                popoverProps={{
+                  side: 'bottom',
+                  align: 'start',
+                  css: { p: '$4', width: '120px' },
+                }}
+                size='lg'
+                triggerProps={{ css: { width: '88px' }, size: 'lg' }}
                 onValueChange={handleFilterChange}
                 value={filterValue}
                 options={[
@@ -90,17 +98,11 @@ function Bookmarks(): React.FunctionComponentElement<React.ReactNode> {
                 ))
               ) : (
                 <>
-                  <Box
-                    p='$13'
-                    css={{
-                      textAlign: 'center',
-                      borderBottom: '1px solid $border30',
-                    }}
-                  >
+                  <BookmarksNoResultsContainer>
                     <Text css={{ textAlign: 'center' }} size='$4'>
                       No search results
                     </Text>
-                  </Box>
+                  </BookmarksNoResultsContainer>
                   {bookmarks.map((bookmark) => (
                     <BookmarkCard
                       key={bookmark.id}
