@@ -14,10 +14,17 @@
   &__Paper {
     background-color: #1d2253;
     width: 75.6px;
+    overflow: hidden;
   }
   &__List {
     flex: 1 100%;
     padding: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    &__container {
+      overflow: hidden auto;
+    }
     &__item {
       display: flex;
       flex-direction: column;

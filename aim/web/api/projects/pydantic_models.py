@@ -17,7 +17,6 @@ class ProjectParamsOut(BaseModel):
     figures: Optional[Dict[str, list]] = None
     distributions: Optional[Dict[str, list]] = None
     audios: Optional[Dict[str, list]] = None
-    geometries: Optional[Dict[str, list]] = None
 
 
 class ProjectActivityApiOut(BaseModel):

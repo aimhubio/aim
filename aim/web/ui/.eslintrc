@@ -16,13 +16,6 @@
     "prettier"
   ],
   "rules": {
-    "react/no-unknown-property": ["off", { "ignore": ["object","position"] }],
-    "react/prop-types": [
-      "off",
-      {
-        "ignore": ["object","position"]
-      }
-    ],
     "prettier/prettier": "error",
     "react/no-unescaped-entities": 0,
     "no-console": "warn",

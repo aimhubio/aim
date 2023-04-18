@@ -105,5 +105,3 @@ export interface IDistributionVisualizerProps extends ITraceVisualizerProps {}
 export interface ITextsVisualizerProps extends ITraceVisualizerProps {}
 
 export interface IPlotlyVisualizerProps extends ITraceVisualizerProps {}
-
-export interface IGeometriesVisualizerProps extends ITraceVisualizerProps {}
