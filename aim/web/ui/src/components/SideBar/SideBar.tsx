@@ -37,7 +37,7 @@ function SideBar(): React.FunctionComponentElement<React.ReactNode> {
     <ErrorBoundary>
       <div className='Sidebar'>
         <Drawer
-          PaperProps={{ className: 'Sidebar__Paper ScrollBar__hidden' }}
+          PaperProps={{ className: 'Sidebar__Paper' }}
           variant='permanent'
           anchor='left'
         >
@@ -51,34 +51,36 @@ function SideBar(): React.FunctionComponentElement<React.ReactNode> {
                 <img src={logoImg} alt='logo' />
               </li>
             </NavLink>
-            {Object.values(routes).map((route: IRoute, index: number) => {
-              const { showInSidebar, path, displayName, icon } = route;
-              return (
-                showInSidebar && (
-                  <NavLink
-                    key={index}
-                    to={() => getPathFromStorage(path)}
-                    exact={true}
-                    isActive={(m, location) =>
-                      location.pathname.split('/')[1] === path.split('/')[1]
-                    }
-                    activeClassName={'Sidebar__NavLink--active'}
-                    className='Sidebar__NavLink'
-                  >
-                    <li className='Sidebar__List__item'>
-                      <Icon
-                        className='Sidebar__List__item--icon'
-                        fontSize={24}
-                        name={icon as IconName}
-                      />
-                      <span className='Sidebar__List__item--text'>
-                        {displayName}
-                      </span>
-                    </li>
-                  </NavLink>
-                )
-              );
-            })}
+            <div className='Sidebar__List__container ScrollBar__hidden'>
+              {Object.values(routes).map((route: IRoute, index: number) => {
+                const { showInSidebar, path, displayName, icon } = route;
+                return (
+                  showInSidebar && (
+                    <NavLink
+                      key={index}
+                      to={() => getPathFromStorage(path)}
+                      exact={true}
+                      isActive={(m, location) =>
+                        location.pathname.split('/')[1] === path.split('/')[1]
+                      }
+                      activeClassName='Sidebar__NavLink--active'
+                      className='Sidebar__NavLink'
+                    >
+                      <li className='Sidebar__List__item'>
+                        <Icon
+                          className='Sidebar__List__item--icon'
+                          fontSize={24}
+                          name={icon as IconName}
+                        />
+                        <span className='Sidebar__List__item--text'>
+                          {displayName}
+                        </span>
+                      </li>
+                    </NavLink>
+                  )
+                );
+              })}
+            </div>
           </ul>
           <div className='Sidebar__bottom'>
             <CommunityPopup>
