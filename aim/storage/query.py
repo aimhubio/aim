@@ -159,7 +159,7 @@ class RestrictedPythonQuery(Query):
 
     __slots__ = ('_checker', 'run_metadata_cache')
 
-    allowed_params = {'run', 'metric', 'images', 'audios', 'distributions', 'figures', 'texts'}
+    allowed_params = {'run', 'metric', 'images', 'audios', 'distributions', 'figures', 'geometries', 'texts'}
 
     def __init__(
         self,

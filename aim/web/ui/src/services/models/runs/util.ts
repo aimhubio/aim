@@ -454,6 +454,63 @@ export function processPlotlyData(data: Partial<IPlotlyData>) {
   };
 }
 
+export function processGeometriesData(
+  data: Partial<ImagesData>,
+  params?: { [key: string]: unknown },
+) {
+  const {
+    record_range_total,
+    iters,
+    values,
+    index_range_total,
+    context,
+    name,
+  } = data;
+  const groupingSelectOptions = params
+    ? getGroupingSelectOptions({
+        params: getObjectPaths(params, params),
+        sequenceName: 'geometries',
+      })
+    : [];
+  let geometriesSetData: any[] = [];
+
+  values?.forEach((stepData: IImageData[], stepIndex: number) => {
+    stepData.forEach((geometry: IImageData) => {
+      const geometryKey = encode({
+        name,
+        traceContext: context,
+        index: geometry.index,
+        step: iters?.[stepIndex],
+        caption: geometry.caption,
+      });
+      const seqKey = encode({
+        name,
+        traceContext: context,
+      });
+      geometriesSetData.push({
+        ...geometry,
+        geometry_name: name,
+        step: iters?.[stepIndex],
+        context: context,
+        key: geometryKey,
+        seqKey: seqKey,
+      });
+    });
+  });
+  const { mediaSetData, orderedMap } = getDataAsMediaSetNestedObject({
+    data: groupData(_.orderBy(geometriesSetData)),
+    groupingSelectOptions,
+    defaultGroupFields: ['step'],
+  });
+  return {
+    geometriesSetData: mediaSetData,
+    orderedMap,
+    record_range: [record_range_total?.[0], (record_range_total?.[1] || 0) - 1],
+    index_range: [index_range_total?.[0], (index_range_total?.[1] || 0) - 1],
+    processedDataType: VisualizationMenuTitles.geometries,
+  };
+}
+
 export const VisualizationMenuTitles = {
   images: 'Images',
   distributions: 'Distributions',
@@ -461,4 +518,5 @@ export const VisualizationMenuTitles = {
   videos: 'Videos',
   texts: 'Texts',
   figures: 'Plotly',
+  geometries: 'Geometries',
 };

@@ -46,6 +46,9 @@ const ImagesExplore = React.lazy(
 const FiguresExplore = React.lazy(
   () => import(/* webpackChunkName: "figures" */ 'pages/FiguresExplorer'),
 );
+const GeometriesExplore = React.lazy(
+  () => import(/* webpackChunkName: "figures" */ 'pages/GeometriesExplorer'),
+);
 const AudiosExplorer = React.lazy(
   () => import(/* webpackChunkName: "audios" */ 'pages/AudiosExplorer'),
 );
@@ -108,7 +111,7 @@ const routes = {
   PARAMS: {
     path: PathEnum.Params,
     component: Params,
-    showInSidebar: true,
+    showInSidebar: false,
     displayName: 'Params',
     icon: 'params',
     isExact: true,
@@ -125,7 +128,7 @@ const routes = {
   TEXT_EXPLORER: {
     path: PathEnum.Text_Explorer,
     component: TextExplorer,
-    showInSidebar: true,
+    showInSidebar: false,
     icon: 'text',
     displayName: 'Text',
     isExact: true,
@@ -157,10 +160,19 @@ const routes = {
     isExact: true,
     title: pageTitlesEnum.FIGURES_EXPLORER,
   },
+  GEOMETRIES_EXPLORER: {
+    path: PathEnum.Geometries_Explorer,
+    component: GeometriesExplore,
+    showInSidebar: false,
+    icon: 'geometries',
+    displayName: 'Geometries',
+    isExact: true,
+    title: pageTitlesEnum.GEOMETRIES_EXPLORER,
+  },
   AUDIOS_EXPLORER: {
     path: PathEnum.Audios_Explorer,
     component: AudiosExplorer,
-    showInSidebar: true,
+    showInSidebar: false,
     icon: 'audios',
     displayName: 'Audios',
     isExact: true,
