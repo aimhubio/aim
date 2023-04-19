@@ -55,18 +55,3 @@ Here is what to expect:
 ![Aim UI on HF Hub Spaces](https://user-images.githubusercontent.com/23078323/232034340-0ba3ebbf-0374-4b14-ba80-1d36162fc994.png)
 
 Filter your runs using Aim’s Pythonic search. You can write pythonic [queries against](https://aimstack.readthedocs.io/en/latest/using/search.html) EVERYTHING you have tracked - metrics, hyperparams etc. Check out some [examples](https://huggingface.co/aimstack) on HF Hub Spaces.
-
-<Tip>
-Note that if your logs are in TensorBoard format, you can easily convert <a href="https://aimstack.readthedocs.io/en/latest/quick_start/convert_data.html#show-tensorboard-logs-in-aim">them to Aim with one command</a> and use the many advanced and high-performant training run comparison features available.
-</Tip>
-
-### More on HF Spaces
-
-- [HF Docker spaces](https://huggingface.co/docs/hub/spaces-sdks-docker)
-- [HF Docker space examples](https://huggingface.co/docs/hub/spaces-sdks-docker-examples)
-
-### Feedback and Support
-
-If you have improvement suggestions or need support, please open an issue on [Aim GitHub repo](https://github.com/aimhubio/aim).
-
-The [Aim community Discord](https://github.com/aimhubio/aim#-community) is also available for community discussions.
