@@ -202,7 +202,7 @@ class Repo:
             path = clean_repo_path(path)
         repo = cls._pool.get(path)
         if repo is None:
-            repo = Repo(path, read_only=read_only, init=init)
+            repo = cls(path, read_only=read_only, init=init)
             cls._pool[path] = repo
         return repo
 
