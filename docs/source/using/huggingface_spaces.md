@@ -12,7 +12,7 @@ In the following sections, you'll learn how to deploy Aim on the Hugging Face Hu
 You can deploy Aim on Spaces with a single click!
 
 <a href="https://huggingface.co/new-space?template=aimstack/aim">
-    <img src="https://huggingface.co/datasets/huggingface/badges/raw/main/deploy-to-spaces-lg.svg" />
+    <img height="50" src="https://user-images.githubusercontent.com/13848158/233115515-5cfe0298-d165-4a32-9d34-381db6e43948.png" />
 </a>
 
 Once you have created the Space, you'll see the `Building` status, and once it becomes `Running,` your Space is ready to go!
