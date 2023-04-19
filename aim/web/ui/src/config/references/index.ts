@@ -136,6 +136,10 @@ const DASHBOARD_PAGE_GUIDES: { name: string; url: string }[] = [
     url: `https://aimstack.readthedocs.io/en/${version}/using/k8s_deployment.html`,
   },
   {
+    name: 'Run Aim UI on Hugging Face Spaces',
+    url: `https://aimstack.readthedocs.io/en/${version}/using/huggingface_spaces.html`,
+  },
+  {
     name: 'Run Aim UI on Jupyter Notebook',
     url: `https://aimstack.readthedocs.io/en/${version}/using/jupyter_notebook_ui.html`,
   },
