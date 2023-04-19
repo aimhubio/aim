@@ -1,3 +1,79 @@
+import os
+import inspect
+
+from typing import Iterator, Tuple, Type, Optional, Any, TypeVar, Union, get_args, get_origin
+
+from aim.sdk.core.object import Object
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from aim.sdk.core.sequence import Sequence
+
+
+def get_typename(type_: Type, inner_type: Optional[Type] = None) -> str:
+    if issubclass(type_, int):
+        return f'{Object.get_typename()}->aim.Number->aim.Int'
+    if issubclass(type_, float):
+        return f'{Object.get_typename()}->aim.Number->aim.Float'
+    if issubclass(type_, str):
+        return f'{Object.get_typename()}->aim.String'
+    if issubclass(type_, Object):
+        return type_.get_full_typename()
+    if issubclass(type_, list):
+        if inner_type:
+            return f'{Object.get_typename()}->aim.List[{get_typename(inner_type)}]'
+        else:
+            return f'{Object.get_typename()}->aim.List[]'
+    return ''
+
+
+def get_object_typename(obj: Any) -> str:
+    return get_typename(type(obj))
+
+
+def get_common_typename(types: Iterator[str]) -> str:
+    return os.path.commonprefix((min(types), max(types))).rstrip('->')
+
+
+def is_subtype(type_: str, base_type: str) -> bool:
+    return type_.startswith(base_type)
+
+
+def is_allowed_type(type_: str, type_list: Tuple[str]) -> bool:
+    for base_type in type_list:
+        if type_.startswith(base_type):
+            return True
+    return False
+
+
+def get_sequence_value_types(seq_type: Type['Sequence']) -> Tuple[str, ...]:
+    if hasattr(seq_type, '__args__'):
+        item_type = get_args(seq_type)[0]
+    elif hasattr(seq_type, '__orig_bases__'):
+        item_type = seq_type.__orig_bases__[0].__args__[0]
+    else:
+        return ()
+
+    if isinstance(item_type, TypeVar):
+        if item_type.__bound__ is not None:
+            item_type = item_type.__bound__
+        elif item_type.__constraints__ != ():
+            item_type = Union[item_type.__constraints__]
+        else:
+            return Object.get_typename(),
+
+    def _get_generic_typename(type_):
+        if hasattr(type_, '__origin__'):
+            return get_typename(type_.__origin__, type_.__args__[0])
+        else:
+            return get_typename(type_)
+
+    if get_origin(item_type) == Union:
+        return tuple(map(_get_generic_typename, item_type.__args__))
+    else:
+        return _get_generic_typename(item_type),
+
+
 def auto_registry(cls):
     @classmethod
     def get_typename_fn(cls_):
@@ -27,3 +103,4 @@ def query_alias(*names: str):
         cls.default_aliases.update(names)
         return cls
     return cls_decorator
+
