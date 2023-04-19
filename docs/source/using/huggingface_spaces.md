@@ -9,15 +9,16 @@ In the following sections, you'll learn how to deploy Aim on the Hugging Face Hu
 
 ### Deploy Aim on Spaces
 
-You can deploy Aim on Spaces with a single click!
-
-<a href="https://huggingface.co/new-space?template=aimstack/aim">
-    <img height="50" src="https://user-images.githubusercontent.com/13848158/233115515-5cfe0298-d165-4a32-9d34-381db6e43948.png" />
-</a>
-
-Once you have created the Space, you'll see the `Building` status, and once it becomes `Running,` your Space is ready to go!
+To get started, simply navigate to the Spaces page on the Hugging Face Hub and click on the “Create new Space” button, or open the page directly by the following link: https://huggingface.co/new-space?template=aimstack/aim
 
 <img src="https://user-images.githubusercontent.com/23078323/231592155-869148a0-9a92-475f-8ebe-34d4deb2abc2.png" alt="Creating an Aim Space" width=800 />
+
+Set up your Aim Space in no time:
+- Choose a name for your Space.
+- Adjust Space hardware and the visibility mode.
+- Submit your Space!
+
+Once you have created the Space, you'll see the `Building` status, and once it becomes `Running,` your Space is ready to go!
 
 Now, when you navigate to your Space's **App** section, you can access the Aim UI.
 
