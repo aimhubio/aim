@@ -75,6 +75,7 @@ function Board({
   data,
   isLoading,
   editMode,
+  newMode,
   previewMode,
   notifyData,
   onNotificationDelete,
@@ -265,7 +266,7 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
       <section className='Board'>
         {!previewMode && (
           <AppBar title={data.name} className='Board__appBar'>
-            {editMode ? (
+            {editMode || newMode ? (
               <div className='Board__appBar__controls'>
                 <Button
                   color='primary'
@@ -281,7 +282,10 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
                   initialState={data}
                 />
                 <Link
-                  to={PathEnum.Board.replace(':boardId', boardId)}
+                  to={PathEnum.Board.replace(
+                    ':boardId',
+                    newMode ? '' : boardId,
+                  )}
                   component={RouteLink}
                   underline='none'
                 >

@@ -53,7 +53,8 @@ function BoardContainer(): React.FunctionComponentElement<React.ReactNode> {
         <Board
           data={boardData?.board!}
           isLoading={boardData?.isLoading!}
-          editMode={params.boardId === 'new' || path === PathEnum.Board_Edit}
+          editMode={path === PathEnum.Board_Edit}
+          newMode={params.boardId === 'new'}
           notifyData={boardData?.notifyData as INotification[]}
           saveBoard={saveBoard}
           onNotificationDelete={boardAppModel.onBoardNotificationDelete}

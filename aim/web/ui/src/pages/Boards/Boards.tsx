@@ -22,7 +22,6 @@ function Boards(): React.FunctionComponentElement<React.ReactNode> {
     notifyData,
     searchValue,
     onBoardDelete,
-    filteredBoards,
     handleSearchChange,
     onNotificationDelete,
   } = useBoards();
