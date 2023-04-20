@@ -6,25 +6,31 @@ import { CSS } from 'config/stitches/types';
 function getColors({
   color,
   disabled,
+  actionable = false,
 }: {
   color: string | undefined;
   disabled: boolean;
+  actionable?: boolean;
 }): CSS {
   if (color) {
     return {
       bc: `$${color}${disabled ? 50 : 70}`,
-      '&:hover': {
-        bc: `$${color}80`,
-      },
+      '&:hover': actionable
+        ? {
+            bc: `$${color}80`,
+          }
+        : {},
     };
   }
   return {
     bc: 'white',
     bs: 'inset 0 0 0 1px $colors$secondary50',
     color: disabled ? '$textPrimary50' : '$textPrimary',
-    '&:hover': {
-      bc: '$colors$secondary10',
-    },
+    '&:hover': actionable
+      ? {
+          bc: '$colors$secondary10',
+        }
+      : {},
   };
 }
 

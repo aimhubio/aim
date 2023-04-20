@@ -13,9 +13,6 @@ const BookmarkCardContainer = styled(Box, {
   '&:last-child': { borderBottom: 'none' },
 });
 
-const BookmarkLinkStyled = styled(NavLink, {
-  color: '#1473E6',
-});
 const CodeBlockWrapper = styled('div', {
   '& pre': {
     maxHeight: '62px',
@@ -26,4 +23,4 @@ const CodeBlockWrapper = styled('div', {
   },
 });
 
-export { BookmarkCardContainer, CodeBlockWrapper, BookmarkLinkStyled };
+export { BookmarkCardContainer, CodeBlockWrapper };

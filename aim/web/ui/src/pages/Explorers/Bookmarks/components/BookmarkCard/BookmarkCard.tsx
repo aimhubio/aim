@@ -11,6 +11,7 @@ import {
   Box,
   Dialog,
   IconButton,
+  Link,
   Text,
   Tooltip,
 } from 'components/kit_v2';
@@ -21,11 +22,7 @@ import { PathEnum } from 'config/enums/routesEnum';
 import * as analytics from 'services/analytics';
 
 import { IBookmarkCardProps } from './BookmarkCard.d';
-import {
-  BookmarkCardContainer,
-  BookmarkLinkStyled,
-  CodeBlockWrapper,
-} from './BookmarkCard.style';
+import { BookmarkCardContainer, CodeBlockWrapper } from './BookmarkCard.style';
 
 export const BookmarkIconType: {
   [key: string]: { name: IconName; tooltipTitle: string };
@@ -64,25 +61,17 @@ function BookmarkCard({
                 <Icon color='#1473E6' box name={BookmarkIconType[type].name} />
               </div>
             </Tooltip>
-            <Tooltip content={name}>
-              <BookmarkLinkStyled
-                onClick={() =>
-                  analytics.trackEvent(ANALYTICS_EVENT_KEYS.bookmarks.view)
-                }
-                to={`${PathEnum.Explorers}/${type}/${app_id}`}
-              >
-                <Text
-                  truncate
-                  css={{ ml: '$4', flex: '1' }}
-                  size='$6'
-                  weight='$3'
-                  as='h3'
-                  color='$primary'
-                >
-                  {name}
-                </Text>
-              </BookmarkLinkStyled>
-            </Tooltip>
+            <Link
+              css={{ ml: '$4', flex: '1' }}
+              fontSize='$6'
+              fontWeight='$3'
+              onClick={() =>
+                analytics.trackEvent(ANALYTICS_EVENT_KEYS.bookmarks.view)
+              }
+              to={`${PathEnum.Explorers}/${type}/${app_id}`}
+            >
+              {name}
+            </Link>
           </Box>
           <Box as='span' ml='$3'>
             <Dialog
