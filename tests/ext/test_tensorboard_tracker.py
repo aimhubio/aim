@@ -65,7 +65,9 @@ class TestTensorboardTracker(TestBase):
                              ],
                              tensor_shape=TensorShapeProto(dim=[TensorShapeProto.Dim(size=3)]))
 
-        image_summary = Summary(value=[Summary.Value(tag='test_image', metadata=smd, tensor=tensor)])
+        image_summary = Summary(
+            value=[Summary.Value(tag='test_image', metadata=smd, tensor=tensor)]
+        )
         event = Event(summary=image_summary)
 
         # When
@@ -109,4 +111,3 @@ class TestTensorboardTracker(TestBase):
         tracked_scalar = queue.get().value
         self.assertTrue(isinstance(tracked_scalar, np.ndarray))
         self.assertTrue(np.allclose(tracked_scalar, scalar_np))
-
