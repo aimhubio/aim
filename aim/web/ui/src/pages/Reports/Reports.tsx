@@ -1,95 +1,93 @@
 import React from 'react';
-import { Link as RouteLink } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
-import { Link } from '@material-ui/core';
+import { IconPlus } from '@tabler/icons-react';
 
-import { Button, Text } from 'components/kit';
-import AppBar from 'components/AppBar/AppBar';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
-import CodeBlock from 'components/CodeBlock/CodeBlock';
-import Illustration from 'components/Illustration';
+import { Box, Button, Input, Text } from 'components/kit_v2';
 
-import pageTitlesEnum from 'config/pageTitles/pageTitles';
 import { PathEnum } from 'config/enums/routesEnum';
+import { TopBar } from 'config/stitches/foundations/layout';
 
-import ReportDelete from './ReportDelete';
+import useReports from './useReports';
+import {
+  ReportsContainer,
+  ReportsListContainer,
+  ReportsNoResultsContainer,
+} from './Reports.style';
+import ReportCard from './ReportCard/ReportCard';
 
-import './Reports.scss';
+function Reports(): React.FunctionComponentElement<React.ReactNode> {
+  const {
+    reports,
+    isLoading,
+    notifyData,
+    searchValue,
+    filteredReports,
+    onReportDelete,
+    handleSearchChange,
+    onNotificationDelete,
+  } = useReports();
 
-function Reports({
-  data,
-  onReportDelete,
-  isLoading,
-  notifyData,
-  onNotificationDelete,
-}: any): React.FunctionComponentElement<React.ReactNode> {
   return (
     <ErrorBoundary>
-      <section className='Reports'>
-        <AppBar title={pageTitlesEnum.REPORTS} className='Reports__appBar' />
-        <div className='Reports__list'>
-          <BusyLoaderWrapper isLoading={isLoading} height={'100%'}>
-            <div
-              key='new'
-              className='Reports__list__item Reports__list__item--new'
+      <TopBar>
+        <Text weight='$3'>Reports</Text>
+      </TopBar>
+      <ReportsContainer>
+        <Box display='flex' ai='center'>
+          <Box flex={1}>
+            <Input
+              inputSize='lg'
+              value={searchValue}
+              onChange={handleSearchChange}
+              css={{ width: 380 }}
+              placeholder='Search'
+            />
+          </Box>
+          <NavLink to={PathEnum.Report.replace(':reportId', 'new')}>
+            <Button
+              size='lg'
+              leftIcon={<IconPlus color='white' />}
+              color='success'
             >
-              <div className='Reports__list__item__header'>
-                <Text size={16} weight={700}>
-                  New report
-                </Text>
-                <Link
-                  to={PathEnum.Report.replace(':reportId', 'new')}
-                  component={RouteLink}
-                  underline='none'
-                >
-                  <Button variant='outlined' size='small'>
-                    Create
-                  </Button>
-                </Link>
-              </div>
-              <div className='Reports__list__item__sub'>
-                <Text>Create custom report</Text>
-              </div>
-              <div className='Reports__list__item__preview'>
-                <Illustration />
-              </div>
-            </div>
-            {data?.length > 0 &&
-              data.map((report: any) => (
-                <div key={report.id} className='Reports__list__item'>
-                  <div className='Reports__list__item__header'>
-                    <Text size={16} weight={700}>
-                      {report.name}
+              New
+            </Button>
+          </NavLink>
+        </Box>
+        <BusyLoaderWrapper isLoading={isLoading} height={'100%'}>
+          <ReportsListContainer>
+            {reports?.length > 0 ? (
+              filteredReports.length > 0 ? (
+                filteredReports.map((report: any) => (
+                  <ReportCard
+                    key={report.id}
+                    onReportDelete={onReportDelete}
+                    {...report}
+                  />
+                ))
+              ) : (
+                <>
+                  <ReportsNoResultsContainer>
+                    <Text css={{ textAlign: 'center' }} size='$4'>
+                      No search results
                     </Text>
-                    <div>
-                      <Link
-                        to={PathEnum.Report.replace(':reportId', report.id)}
-                        component={RouteLink}
-                        underline='none'
-                      >
-                        <Button variant='outlined' size='small'>
-                          View
-                        </Button>
-                      </Link>
-                      <ReportDelete
-                        report_id={report.id}
-                        onReportDelete={onReportDelete}
-                      />
-                    </div>
-                  </div>
-                  <div className='Reports__list__item__sub'>
-                    <Text>{report.description}</Text>
-                  </div>
-                  <div className='Reports__list__item__preview'>
-                    <CodeBlock code={report.code} hideCopyIcon />
-                  </div>
-                </div>
-              ))}
-          </BusyLoaderWrapper>
-        </div>
-      </section>
+                  </ReportsNoResultsContainer>
+                  {reports.map((report: any) => (
+                    <ReportCard
+                      key={report.id}
+                      onReportDelete={onReportDelete}
+                      {...report}
+                    />
+                  ))}
+                </>
+              )
+            ) : null}
+          </ReportsListContainer>
+        </BusyLoaderWrapper>
+      </ReportsContainer>
       {notifyData?.length > 0 && (
         <NotificationContainer
           handleClose={onNotificationDelete}

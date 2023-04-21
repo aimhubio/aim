@@ -66,8 +66,7 @@ const Board = React.lazy(
 );
 
 const Reports = React.lazy(
-  () =>
-    import(/* webpackChunkName: "reports" */ 'pages/Reports/ReportsContainer'),
+  () => import(/* webpackChunkName: "reports" */ 'pages/Reports'),
 );
 
 const Report = React.lazy(
