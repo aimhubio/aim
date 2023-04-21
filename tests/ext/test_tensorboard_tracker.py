@@ -78,6 +78,22 @@ class TestTensorboardTracker(TestBase):
         self.assertTrue(tracked_image.size == original_image.size)
         self.assertTrue(images_same_data(tracked_image, original_image))
 
+    def test__process_tb_scalar_simple_value_event(self):
+        # Given
+        queue = Queue()
+        tracker = TensorboardFolderTracker(tensorboard_event_folder='dummy', queue=queue)
+        scalar_np = np.array(0.32, dtype=np.float32)
+        scalar_summary = scalar('test_scalar', scalar_np, new_style=False)
+        event = Event(summary=scalar_summary)
+
+        # When
+        tracker._process_tb_event(event)
+
+        # Then
+        tracked_scalar = queue.get().value
+        self.assertTrue(isinstance(tracked_scalar, float))
+        self.assertTrue(np.allclose(tracked_scalar, scalar_np))
+
     def test__process_tb_scalar_plugin_event(self):
         # Given
         queue = Queue()
