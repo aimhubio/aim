@@ -2,12 +2,10 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 
 import {
-  IconCheck,
   IconClipboard,
   IconClipboardCheck,
   IconDotsVertical,
   IconEdit,
-  IconLink,
   IconTrash,
 } from '@tabler/icons-react';
 import { IconCalendarEvent } from '@tabler/icons-react';
@@ -42,7 +40,14 @@ function BoardCard({
   onBoardDelete,
   ...props
 }: any) {
-  const { onCopy, copied } = useCopy(id);
+  const getBaseUrl = () => {
+    return `${window.location.protocol}//${window.location.host}`;
+  };
+
+  const baseUrl = getBaseUrl();
+  const fullPath = `${baseUrl}${PathEnum.Boards}/${id}`;
+  const { onCopy, copied } = useCopy(fullPath);
+
   return (
     <BoardCardContainer key={id}>
       <BoardCardHeader>
