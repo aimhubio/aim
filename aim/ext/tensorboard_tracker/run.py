@@ -2,7 +2,6 @@ from typing import Optional, Union
 
 from aim.sdk.run import Run as SdkRun
 from aim.ext.tensorboard_tracker.tracker import TensorboardTracker
-from aim.ext.resource import DEFAULT_SYSTEM_TRACKING_INT
 
 from typing import TYPE_CHECKING
 
