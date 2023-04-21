@@ -6,7 +6,7 @@ from tensorboard.compat.proto.summary_pb2 import SummaryMetadata, Summary
 from tensorboard.compat.proto.tensor_pb2 import TensorProto
 from tensorboard.compat.proto.tensor_shape_pb2 import TensorShapeProto
 from tensorboard.compat.proto.event_pb2 import Event
-from torch.utils.tensorboard.summary import image
+from torch.utils.tensorboard.summary import image, scalar
 
 from aim import Image
 from aim.ext.tensorboard_tracker.tracker import TensorboardFolderTracker
@@ -83,15 +83,7 @@ class TestTensorboardTracker(TestBase):
         queue = Queue()
         tracker = TensorboardFolderTracker(tensorboard_event_folder='dummy', queue=queue)
         scalar_np = np.array(0.32, dtype=np.float32)
-        # Create scalar summary in format of plugin
-        plugin_data = SummaryMetadata.PluginData(plugin_name='scalars')
-        smd = SummaryMetadata(plugin_data=plugin_data, )
-        tensor = TensorProto(dtype='DT_FLOAT',
-                             tensor_content=scalar_np.tobytes(),
-                             tensor_shape=TensorShapeProto(),
-                             )
-
-        scalar_summary = Summary(value=[Summary.Value(tag='test_scalar', metadata=smd, tensor=tensor)])
+        scalar_summary = scalar('test_scalar', scalar_np, new_style=True)
         event = Event(summary=scalar_summary)
 
         # When
