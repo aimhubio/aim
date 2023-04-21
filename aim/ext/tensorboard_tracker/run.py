@@ -17,7 +17,7 @@ class Run(SdkRun):
             repo: Optional[Union[str, 'Repo']] = None,
             experiment: Optional[str] = None,
             force_resume: Optional[bool] = False,
-            system_tracking_interval: Optional[Union[int, float]] = DEFAULT_SYSTEM_TRACKING_INT,
+            system_tracking_interval: Optional[Union[int, float]] = None,
             log_system_params: Optional[bool] = False,
             capture_terminal_logs: Optional[bool] = False,
     ):
