@@ -3,7 +3,7 @@ import * as _ from 'lodash-es';
 
 import DictVisualizer from 'components/kit/DictVisualizer';
 import LineChart from 'components/LineChart/LineChart';
-import { Slider, Input, Text, Select } from 'components/kit_v2';
+import { Slider, Input, Text, Select, Button } from 'components/kit_v2';
 
 import RunLogRecords from 'pages/RunDetail/RunLogRecords';
 import RunDetailNotesTab from 'pages/RunDetail/RunDetailNotesTab/RunDetailNotesTab';
@@ -152,5 +152,15 @@ export const dataVizElementsMap: any = {
       props.callbacks?.on_change(target.value);
     }, []);
     return <Input value={props.options.value} onChange={onChange} />;
+  },
+  Button: (props: any) => {
+    const onClick = React.useCallback((e) => {
+      props.callbacks?.on_click(e);
+    }, []);
+    return (
+      <Button {...props.options} onClick={onClick}>
+        {props.options.label}
+      </Button>
+    );
   },
 };

@@ -720,3 +720,29 @@ class Union(Component):
         self.type = get_viz_for_type
 
         self.render()
+
+
+class Button(Component):
+    def __init__(self, label=None, size=None, variant=None, color=None, key=None):
+        component_type = "Button"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type)
+
+        self.data = ''
+
+        self.options = {
+            "size": size,
+            "variant": variant,
+            "color": color,
+            "label": label | 'button',
+        }
+
+        self.callbacks = {
+            "on_click": self.on_click
+        }
+
+        self.render()
+
+    def on_click(self, event):
+        # You can define the callback behavior here
+        print("Button clicked")
