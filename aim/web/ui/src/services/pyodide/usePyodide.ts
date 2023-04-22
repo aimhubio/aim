@@ -1,46 +1,30 @@
 import * as React from 'react';
 
-import pyodideStore, { loadPyodideInstance } from './pyodide';
+import { loadPyodideInstance } from './pyodide';
+import pyodideEngine, { usePyodideEngine } from './store';
 
 function usePyodide() {
-  let namespace = React.useRef(pyodideStore.namespace);
-  let [state, setState] = React.useState({
-    pyodide: pyodideStore.current,
-    isLoading: pyodideStore.isLoading,
-  });
+  const namespace = usePyodideEngine(pyodideEngine.pyodideNamespaceSelector);
+  const pyodide = usePyodideEngine(pyodideEngine.pyodideCurrentSelector);
+  const isLoading = usePyodideEngine(pyodideEngine.pyodideIsLoadingSelector);
 
   const loadPyodide = React.useCallback(() => {
-    if (state.pyodide === null && state.isLoading === null) {
-      setState((s) => ({
-        ...s,
-        isLoading: true,
-      }));
-      loadPyodideInstance(() => {
-        namespace.current = pyodideStore.namespace;
-
-        setState({
-          pyodide: pyodideStore.current,
-          isLoading: false,
-        });
-      });
-    }
-
-    if (state.pyodide !== null) {
-      state.pyodide._api.fatal_error = async (err: unknown) => {
+    if (pyodide !== null) {
+      pyodide._api.fatal_error = async (err: unknown) => {
         console.log('---- fatal error ----', err);
-        setState((s) => ({
-          ...s,
-          pyodide: null,
-        }));
+        pyodideEngine.setPyodideCurrent(null);
       };
     }
-  }, [state.pyodide, state.isLoading]);
+
+    if (pyodide === null && isLoading === null) {
+      loadPyodideInstance();
+    }
+  }, [pyodide, isLoading]);
 
   return {
-    isLoading: state.isLoading,
-    pyodide: state.pyodide,
-    namespace: namespace.current,
-    model: pyodideStore.model,
+    namespace,
+    isLoading,
+    pyodide,
     loadPyodide,
   };
 }

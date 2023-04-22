@@ -15,61 +15,12 @@ import { PathEnum } from 'config/enums/routesEnum';
 
 import usePyodide from 'services/pyodide/usePyodide';
 
+import pyodideEngine from '../../services/pyodide/store';
+
 import SaveBoard from './components/SaveBoard';
 import GridCell from './components/GridCell';
 
 import './Board.scss';
-
-function constructTree(elems: any, tree: any) {
-  for (let i = 0; i < elems.length; i++) {
-    let elem = elems[i];
-    if (elem.element === 'block') {
-      if (!elem.parent_block) {
-        tree.root.elements[elem.block_context.id] = {
-          ...elem.block_context,
-          elements: {},
-        };
-      } else {
-        if (!tree.hasOwnProperty(elem.parent_block.id)) {
-          tree[elem.parent_block.id] = {
-            id: elem.parent_block.id,
-            elements: {},
-          };
-        }
-        tree[elem.parent_block.id].elements[elem.block_context.id] = {
-          ...elem.block_context,
-          elements: {},
-        };
-      }
-      tree[elem.block_context.id] = {
-        ...elem.block_context,
-        elements: {},
-      };
-    } else {
-      if (!elem.parent_block) {
-        tree.root.elements[elem.key] = elem;
-      } else {
-        tree[elem.parent_block.id].elements[elem.key] = elem;
-      }
-    }
-  }
-
-  return tree;
-}
-
-function renderTree(tree: any, elements: any) {
-  return Object.values(elements).map((element: any, i: number) => {
-    if (element.type === 'row' || element.type === 'column') {
-      return (
-        <div key={element.type + i} className={`block--${element.type}`}>
-          {renderTree(tree, tree[element.id].elements)}
-        </div>
-      );
-    }
-
-    return <GridCell key={i} viz={element} />;
-  });
-}
 
 function Board({
   data,
@@ -81,12 +32,7 @@ function Board({
   onNotificationDelete,
   saveBoard,
 }: any): React.FunctionComponentElement<React.ReactNode> {
-  const {
-    pyodide,
-    namespace,
-    isLoading: pyodideIsLoading,
-    model: pyodideModel,
-  } = usePyodide();
+  const { isLoading: pyodideIsLoading, pyodide, namespace } = usePyodide();
 
   const boardId = data.id;
 
@@ -101,12 +47,12 @@ function Board({
     isProcessing: null,
     error: null,
     execCode: '',
-    stateUpdateCount: 0,
-    executionCount: 0,
+    stateUpdateCount: 0, // @TODO[optimize perf]: remove, use fired event instead
+    executionCount: 0, // @TODO[optimize perf]: remove, use fired event instead
   });
 
   const execute = React.useCallback(async () => {
-    if (pyodide !== null) {
+    if (pyodide !== null && pyodideIsLoading === false) {
       try {
         window.clearTimeout(timerId.current);
         setState((s: any) => ({
@@ -154,16 +100,10 @@ function Board({
         console.log(ex);
       }
     }
-  }, [pyodide, editorValue]);
-
-  React.useEffect(() => {
-    if (pyodide !== null) {
-      execute();
-    }
-  }, [pyodide, execute]);
+  }, [pyodide, pyodideIsLoading, editorValue, namespace]);
 
   const runParsedCode = React.useCallback(async () => {
-    if (pyodide !== null) {
+    if (pyodide !== null && pyodideIsLoading === false) {
       try {
         let resetCode = `viz_map_keys = {}
 block_context = {
@@ -182,9 +122,7 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
             },
           );
 
-        await pyodide?.runPythonAsync(code, {
-          globals: namespace,
-        });
+        await pyodide?.runPythonAsync(code, { globals: namespace });
 
         setState((s: any) => ({
           ...s,
@@ -201,19 +139,25 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
         }));
       }
     }
-  }, [pyodide, namespace, state.execCode, state.executionCount]);
+  }, [pyodide, pyodideIsLoading, boardId, state.execCode, namespace]);
 
   React.useEffect(() => {
-    if (state.executionCount > 0) {
-      runParsedCode();
+    if (pyodide !== null && pyodideIsLoading === false) {
+      execute();
     }
-  }, [state.executionCount]);
+  }, [pyodide, pyodideIsLoading, execute]);
 
   React.useEffect(() => {
     if (state.stateUpdateCount > 0) {
       runParsedCode();
     }
   }, [state.stateUpdateCount]);
+
+  React.useEffect(() => {
+    if (state.executionCount > 0) {
+      runParsedCode();
+    }
+  }, [state.executionCount]);
 
   React.useEffect(() => {
     if (pyodideIsLoading) {
@@ -225,9 +169,9 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
   }, [pyodideIsLoading]);
 
   React.useEffect(() => {
-    let subscription = pyodideModel.subscribe(
+    const unsubscribe = pyodideEngine.events.on(
       boardId,
-      ({ blocks, components, state }: any) => {
+      ({ blocks, components, state }) => {
         if (components) {
           setState((s: any) => ({
             ...s,
@@ -247,7 +191,7 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
     );
     return () => {
       window.clearTimeout(timerId.current);
-      subscription.unsubscribe();
+      unsubscribe();
     };
   }, [boardId]);
 
@@ -314,7 +258,7 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
         >
           <div className='BoardVisualizer'>
             <div className='BoardVisualizer__main'>
-              {editMode && (
+              {(editMode || newMode) && (
                 <div className='BoardVisualizer__main__editor'>
                   <Editor
                     language='python'
@@ -335,7 +279,8 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
                     state.isProcessing === null,
                   'BoardVisualizer__main__components--processing':
                     state.isProcessing,
-                  'BoardVisualizer__main__components--fullWidth': !editMode,
+                  'BoardVisualizer__main__components--fullWidth':
+                    !editMode && !newMode,
                 })}
               >
                 {state.isProcessing !== false && (
@@ -355,7 +300,7 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
                     renderTree(tree, tree.root.elements)
                   )}
                 </div>
-                {editMode && (
+                {(editMode || newMode) && (
                   <pre
                     id='console'
                     className='BoardVisualizer__main__components__console'
@@ -377,3 +322,54 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
 }
 
 export default Board;
+
+function constructTree(elems: any, tree: any) {
+  for (let i = 0; i < elems.length; i++) {
+    let elem = elems[i];
+    if (elem.element === 'block') {
+      if (!elem.parent_block) {
+        tree.root.elements[elem.block_context.id] = {
+          ...elem.block_context,
+          elements: {},
+        };
+      } else {
+        if (!tree.hasOwnProperty(elem.parent_block.id)) {
+          tree[elem.parent_block.id] = {
+            id: elem.parent_block.id,
+            elements: {},
+          };
+        }
+        tree[elem.parent_block.id].elements[elem.block_context.id] = {
+          ...elem.block_context,
+          elements: {},
+        };
+      }
+      tree[elem.block_context.id] = {
+        ...elem.block_context,
+        elements: {},
+      };
+    } else {
+      if (!elem.parent_block) {
+        tree.root.elements[elem.key] = elem;
+      } else {
+        tree[elem.parent_block.id].elements[elem.key] = elem;
+      }
+    }
+  }
+
+  return tree;
+}
+
+function renderTree(tree: any, elements: any) {
+  return Object.values(elements).map((element: any, i: number) => {
+    if (element.type === 'row' || element.type === 'column') {
+      return (
+        <div key={element.type + i} className={`block--${element.type}`}>
+          {renderTree(tree, tree[element.id].elements)}
+        </div>
+      );
+    }
+
+    return <GridCell key={i} viz={element} />;
+  });
+}
