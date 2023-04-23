@@ -2,13 +2,13 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 
 import {
-  IconCheck,
+  IconCalendarEvent,
+  IconClipboard,
+  IconClipboardCheck,
   IconDotsVertical,
   IconEdit,
-  IconLink,
   IconTrash,
 } from '@tabler/icons-react';
-import { IconCalendarEvent } from '@tabler/icons-react';
 
 import {
   Box,
@@ -22,6 +22,8 @@ import {
 } from 'components/kit_v2';
 
 import { PathEnum } from 'config/enums/routesEnum';
+
+import { useCopy } from 'hooks/useCopy';
 
 import {
   BoardCardContainer,
@@ -38,6 +40,14 @@ function BoardCard({
   onBoardDelete,
   ...props
 }: any) {
+  const getBaseUrl = () => {
+    return `${window.location.protocol}//${window.location.host}`;
+  };
+
+  const baseUrl = getBaseUrl();
+  const fullPath = `${baseUrl}${PathEnum.Boards}/${id}`;
+  const { onCopy, copied } = useCopy(fullPath);
+
   return (
     <BoardCardContainer key={id}>
       <BoardCardHeader>
@@ -78,14 +88,15 @@ function BoardCard({
                 </NavLink>
                 <ListItem
                   size='lg'
+                  onClick={onCopy}
                   leftNode={
                     <Icon
                       size='md'
-                      icon={false ? <IconCheck /> : <IconLink />}
+                      icon={copied ? <IconClipboardCheck /> : <IconClipboard />}
                     />
                   }
                 >
-                  Copy Url
+                  {copied ? 'Copied' : 'Copy Url'}
                 </ListItem>
               </Box>
               <Separator margin={'$4'} />
