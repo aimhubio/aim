@@ -5,7 +5,8 @@
 ### Enhancements
 - Add functionality for custom context in the PyTorch Ignite (tmynn)
 ### fixes
--  Convert NaNs and Infs in responses to strings (n-gao)
+- Convert NaNs and Infs in responses to strings (n-gao)
+- Import `Image` and `Audio` for `TensorboardFolderTracker` (alansaul)
 
 ## 3.17.3 Apr 6, 2023
 
