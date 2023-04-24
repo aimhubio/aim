@@ -16,9 +16,9 @@ import PageWrapper from 'pages/PageWrapper';
 
 import routes from 'routes/routes';
 
-import usePyodide from 'services/pyodide/usePyodide';
-
 import { inIframe } from 'utils/helper';
+
+import usePyodide from './services/pyodide/usePyodide';
 
 import './App.scss';
 
