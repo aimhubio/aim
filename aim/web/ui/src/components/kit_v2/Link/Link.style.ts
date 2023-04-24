@@ -4,8 +4,15 @@ import { styled, css } from 'config/stitches';
 
 const StyledLink = css({
   textDecoration: 'none',
-  '&:hover': {
-    textDecoration: 'underline',
+  variants: {
+    underline: {
+      true: {
+        '&:hover': {
+          textDecoration: 'underline',
+        },
+      },
+      false: {},
+    },
   },
 });
 const StyledAnchor = styled('a', StyledLink);

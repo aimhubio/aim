@@ -20,6 +20,8 @@ import usePyodide from 'services/pyodide/usePyodide';
 
 import { inIframe } from 'utils/helper';
 
+import usePyodide from './services/pyodide/usePyodide';
+
 import './App.scss';
 
 const basePath = getBasePath(false);

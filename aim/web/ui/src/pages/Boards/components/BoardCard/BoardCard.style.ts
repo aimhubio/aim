@@ -1,6 +1,4 @@
-import { NavLink } from 'react-router-dom';
-
-import { Box } from 'components/kit_v2';
+import { Box, Link } from 'components/kit_v2';
 
 import { styled } from 'config/stitches';
 
@@ -19,10 +17,4 @@ const BoardCardHeader = styled('div', {
   ai: 'center',
 });
 
-const BoardCardLink = styled(NavLink, {
-  flex: 1,
-  textDecoration: 'none',
-  color: 'unset',
-});
-
-export { BoardCardContainer, BoardCardHeader, BoardCardLink };
+export { BoardCardContainer, BoardCardHeader };

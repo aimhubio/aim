@@ -11,7 +11,7 @@ function GridCell(props: any) {
     const stackValues: any = {};
     const data = props.viz.data;
 
-    for (let i = 0; i < data.length; i++) {
+    for (let i = 0; i < data?.length; i++) {
       stackValues[data[i].stack] = data[i].stack_val;
     }
     return stackValues;
