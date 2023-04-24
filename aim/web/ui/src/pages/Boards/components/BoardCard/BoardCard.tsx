@@ -15,6 +15,7 @@ import {
   Dialog,
   Icon,
   IconButton,
+  Link,
   ListItem,
   Popover,
   Separator,
@@ -25,11 +26,7 @@ import { PathEnum } from 'config/enums/routesEnum';
 
 import { useCopy } from 'hooks/useCopy';
 
-import {
-  BoardCardContainer,
-  BoardCardHeader,
-  BoardCardLink,
-} from './BoardCard.style';
+import { BoardCardContainer, BoardCardHeader } from './BoardCard.style';
 
 function BoardCard({
   code,
@@ -51,11 +48,13 @@ function BoardCard({
   return (
     <BoardCardContainer key={id}>
       <BoardCardHeader>
-        <BoardCardLink to={PathEnum.Board.replace(':boardId', id)}>
-          <Text as='h3' size='$5' weight='$4' color='$primary100'>
-            {name}
-          </Text>
-        </BoardCardLink>
+        <Link
+          css={{ flex: 1 }}
+          fontWeight='$4'
+          to={PathEnum.Board.replace(':boardId', id)}
+        >
+          {name}
+        </Link>
         <Popover
           popperProps={{
             align: 'end',
