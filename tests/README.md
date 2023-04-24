@@ -5,7 +5,7 @@ Be able to test the correctness of the
  - `aim engine`
  - `aim sdk`
  - `aim ql`
- - extensions
+ - `extensions`
 
 ### Folder Structure
 
