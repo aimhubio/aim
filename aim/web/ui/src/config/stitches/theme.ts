@@ -53,9 +53,10 @@ export const lightTheme: ConfigType.Theme = {
     warning110: '#E6A90F',
     warning120: '#D89F0E',
     // text colors
-    textPrimary: '#161717',
-    textPrimary50: '#8A8B8B',
-    textPrimary80: '#454545',
+    textPrimary: '#1F2227',
+    textPrimary50: '#86888B',
+    textPrimary80: '#45484D',
+    textPrimary100: '#1F2227',
     // blue colors
     blue10: '#E8F1FD',
     blue20: '#D0E3FA',
@@ -80,9 +81,9 @@ export const lightTheme: ConfigType.Theme = {
     green50: '#EBFDE7',
     green70: '#D7FCCF',
     green80: '#C3FBB7',
-    green100: '#8FF77F',
-    green110: '#5FF34D',
-    green120: '#00FF00',
+    green100: '#1A8917',
+    green110: '#157612',
+    green120: '#10640E',
     // yellow colors
     yellow10: '#FEF7E8',
     yellow20: '#FAEECF',

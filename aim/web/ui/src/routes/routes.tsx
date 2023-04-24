@@ -130,7 +130,7 @@ export const explorersRoutes: { [key: string]: IRoute } = {
     icon: 'text',
     displayName: 'Text',
     description:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.',
+      'Text Explorer offers tracking and visualization of text inputs and outputs in NLP experiments, optimizing model performance with ease.',
     isExact: true,
     title: pageTitlesEnum.TEXT_EXPLORER,
     color: '$pink',
@@ -141,7 +141,7 @@ export const explorersRoutes: { [key: string]: IRoute } = {
     showInSidebar: false,
     displayName: 'Images',
     description:
-      'Track intermediate images search easily by using select form functional compare them on the Images Explorer by using reach controls panel',
+      'Image Explorer allows effortless tracking and exploration of images during training and evaluation, enhancing model analysis.',
     icon: 'images',
     isExact: true,
     title: pageTitlesEnum.IMAGES_EXPLORER,
@@ -154,7 +154,7 @@ export const explorersRoutes: { [key: string]: IRoute } = {
     icon: 'figures',
     displayName: 'Figures',
     description:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.',
+      "Figures Explorer enables easy comparison of thousands of Plotly figures using Aim's powerful exploration capabilities.",
     isExact: true,
     title: pageTitlesEnum.FIGURES_EXPLORER,
     color: '$yellow',
@@ -166,7 +166,7 @@ export const explorersRoutes: { [key: string]: IRoute } = {
     icon: 'audios',
     displayName: 'Audios',
     description:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.',
+      'Audio Explorer enables tracking and analysis of audio files in speech-to-text or other audio-based experiments, covering input, output, and ground truth.',
     isExact: true,
     title: pageTitlesEnum.AUDIOS_EXPLORER,
     color: '$green',

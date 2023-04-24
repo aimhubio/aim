@@ -57,8 +57,8 @@ function ExplorerCard({
             <Icon color='white' name={icon as IconName} />
           </Box>
         )}
-        <Text color='#1F2227' css={{ ml: '$5' }} size='$5' weight='$3'>
-          {displayName} ({isLoading ? '--' : count})
+        <Text css={{ ml: '$5' }} size='$5' weight='$3'>
+          {displayName} {isLoading ? '(--)' : count ? `(${count})` : null}
         </Text>
       </Box>
       <Text as='p'>{description || ''}</Text>

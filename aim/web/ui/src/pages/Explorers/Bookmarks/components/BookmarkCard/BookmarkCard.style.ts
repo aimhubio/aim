@@ -1,5 +1,3 @@
-import { NavLink } from 'react-router-dom';
-
 import { Box } from 'components/kit_v2';
 
 import { styled } from 'config/stitches';

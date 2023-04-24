@@ -20,7 +20,7 @@ const TabContent = styled(TabPrimitive.Content, {});
 
 const TabTrigger = styled(TabPrimitive.Trigger, {
   position: 'relative',
-  color: '#45484D',
+  color: '$textPrimary80',
   background: 'transparent',
   border: 'none',
   cursor: 'pointer',

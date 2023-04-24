@@ -1,3 +1,5 @@
+import { NavLink } from 'react-router-dom';
+
 import { Box } from 'components/kit_v2';
 
 import { styled } from 'config/stitches';
@@ -19,4 +21,12 @@ const ExplorerCardsWrapper = styled(Box, {
   mt: '$9',
 });
 
-export { ExplorerCardsWrapper, ExplorersContentContainer };
+const ExplorerBookmarkLink = styled(NavLink, {
+  textDecoration: 'none',
+});
+
+export {
+  ExplorerCardsWrapper,
+  ExplorersContentContainer,
+  ExplorerBookmarkLink,
+};

@@ -1,5 +1,4 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
 
 import { IconBookmark } from '@tabler/icons-react';
 
@@ -12,6 +11,7 @@ import { TopBar } from 'config/stitches/foundations/layout';
 import { getItem } from 'utils/storage';
 
 import {
+  ExplorerBookmarkLink,
   ExplorerCardsWrapper,
   ExplorersContentContainer,
 } from './Explorers.style';
@@ -36,7 +36,7 @@ function Explorers(): React.FunctionComponentElement<React.ReactNode> {
     <Box display='flex' fd='column'>
       <TopBar jc='space-between'>
         <Breadcrumb />
-        <NavLink to={PathEnum.Bookmarks}>
+        <ExplorerBookmarkLink to={PathEnum.Bookmarks}>
           <Button
             leftIcon={<IconBookmark color='#161717' />}
             horizontalSpacing='compact'
@@ -46,7 +46,7 @@ function Explorers(): React.FunctionComponentElement<React.ReactNode> {
           >
             <Text>Bookmarks</Text>
           </Button>
-        </NavLink>
+        </ExplorerBookmarkLink>
       </TopBar>
       <ExplorersContentContainer>
         <Box display='flex' fd='column'>
@@ -54,10 +54,7 @@ function Explorers(): React.FunctionComponentElement<React.ReactNode> {
             <Text css={{ mb: '$5' }} weight='$3' as='h3' size='$6'>
               Prompt engineering
             </Text>
-            <Text>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt.
-            </Text>
+            <Text>Explore and compare your prompts and generated outputs</Text>
             <ExplorerCardsWrapper>
               {Object.values(explorers.promptExplorers).map(
                 (item, index: number) => (
@@ -77,7 +74,7 @@ function Explorers(): React.FunctionComponentElement<React.ReactNode> {
             </Text>
             <Text>
               Explorers will help you to compare 1000s of AI experiments with a
-              few clicks. Explorers are the main tools that Aim is built around.
+              few clicks. Explorers are the main tools that Aim is built around
             </Text>
             <ExplorerCardsWrapper>
               {Object.values(explorers.aimExplorers).map(
