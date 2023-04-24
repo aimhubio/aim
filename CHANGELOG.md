@@ -4,6 +4,7 @@
 
 ### Enhancements
 - Add functionality for custom context in the PyTorch Ignite (tmynn)
+- Extend `aim.ext.tensorboard_tracker.run.Run` to allow stdout logging and system stats and parameter logging (alansaul)
 ### fixes
 -  Convert NaNs and Infs in responses to strings (n-gao)
 
