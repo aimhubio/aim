@@ -23,6 +23,7 @@ import Tooltip from './Tooltip';
 import Tree from './Tree';
 import ToggleButton from './ToggleButton';
 import Tabs from './Tabs';
+import Link from './Link';
 
 export {
   Badge,
@@ -51,4 +52,5 @@ export {
   ToggleButton,
   FormGroup,
   Tabs,
+  Link,
 };

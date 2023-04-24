@@ -6,7 +6,7 @@ import { getMonacoConfig } from 'config/monacoConfig/monacoConfig';
 
 function useCodeHighlighter(language: string = 'python') {
   const monaco = useMonaco();
-  const preRef = React.useRef<HTMLPreElement>(null);
+  const preRef = React.useRef<HTMLPreElement | any>(null);
 
   const monacoConfig: Record<string | number | symbol, any> =
     React.useMemo(() => {

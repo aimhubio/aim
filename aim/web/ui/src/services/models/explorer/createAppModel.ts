@@ -20,11 +20,11 @@ import { GroupNameEnum } from 'config/grouping/GroupingPopovers';
 import {
   getMetricsTableColumns,
   metricsTableRowRenderer,
-} from 'pages/Metrics/components/MetricsTableGrid/MetricsTableGrid';
+} from 'pages/Explorers/Metrics/components/MetricsTableGrid/MetricsTableGrid';
 import {
   getParamsTableColumns,
   paramsTableRowRenderer,
-} from 'pages/Params/components/ParamsTableGrid/ParamsTableGrid';
+} from 'pages/Explorers/Params/components/ParamsTableGrid/ParamsTableGrid';
 import {
   getRunsTableColumns,
   runsTableRowRenderer,

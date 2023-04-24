@@ -1,9 +1,10 @@
 import React from 'react';
 
 import { Tooltip } from '@material-ui/core';
+import { IconClipboard, IconClipboardCheck } from '@tabler/icons-react';
 
-import { Button, Icon } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import { IconButton } from 'components/kit_v2';
 
 import { useCopy } from 'hooks/useCopy';
 
@@ -14,7 +15,7 @@ function CopyToClipboard({
   showSuccessDelay = 1500,
   className = '',
   copyContent = null,
-  iconSize = 'medium',
+  iconSize = 'md',
 }: ICopyToClipBoardProps): React.FunctionComponentElement<ICopyToClipBoardProps> {
   const { onCopy, copied, setCopied } = useCopy(copyContent ?? contentRef);
 
@@ -31,9 +32,13 @@ function CopyToClipboard({
     <ErrorBoundary>
       <Tooltip title={copied ? 'Copied!' : 'Copy to clipboard'}>
         <span className={className} onClick={onCopy}>
-          <Button withOnlyIcon color='secondary' size={iconSize}>
-            {copied ? <Icon name='check' /> : <Icon name='copy' />}
-          </Button>
+          <IconButton
+            icon={copied ? <IconClipboardCheck /> : <IconClipboard />}
+            css={copied ? { transition: 'unset' } : {}}
+            color={copied ? 'success' : 'secondary'}
+            size={iconSize}
+            variant={copied ? 'static' : 'ghost'}
+          />
         </span>
       </Tooltip>
     </ErrorBoundary>

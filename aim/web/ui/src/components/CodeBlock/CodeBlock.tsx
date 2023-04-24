@@ -7,7 +7,11 @@ import useCodeHighlighter from 'hooks/useCodeHighlighter';
 
 import { ICodeBlockProps } from 'types/components/CodeBlock/CodeBlock';
 
-import './CodeBlock.scss';
+import {
+  CodeBlockContainer,
+  CodeBlockPre,
+  CopyToClipboardButton,
+} from './CodeBlock.style';
 
 function CodeBlock({
   code = '',
@@ -18,21 +22,21 @@ function CodeBlock({
 
   return (
     <ErrorBoundary>
-      <div className={`CodeBlock ${className} `}>
-        <pre
+      <CodeBlockContainer className={`CodeBlock ${className} `}>
+        <CodeBlockPre
+          as='pre'
           className='ScrollBar__hidden'
           data-lang={language}
           ref={elementRef}
         >
           {code}
-        </pre>
+        </CodeBlockPre>
         <ErrorBoundary>
-          <CopyToClipBoard
-            className='CodeBlock__copy__button'
-            contentRef={elementRef}
-          />
+          <CopyToClipboardButton>
+            <CopyToClipBoard contentRef={elementRef} />
+          </CopyToClipboardButton>
         </ErrorBoundary>
-      </div>
+      </CodeBlockContainer>
     </ErrorBoundary>
   );
 }
