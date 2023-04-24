@@ -15,7 +15,7 @@ from typing import TYPE_CHECKING, Any
 from aim import Distribution
 
 if TYPE_CHECKING:
-    from aim import Audio, Image, Distribution
+    from aim import Audio, Image
 
 
 def _decode_histogram(value):
