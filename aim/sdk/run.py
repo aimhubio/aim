@@ -335,7 +335,7 @@ class BasicRun(BaseRun, StructuredRunMixin):
     def idx_to_ctx(self, idx: int) -> Context:
         return self._tracker.idx_to_ctx(idx)
 
-    @noexcept
+    @noexcept()
     def __setitem__(self, key: str, val: Any):
         """Set Run top-level meta-parameter.
 
@@ -366,7 +366,7 @@ class BasicRun(BaseRun, StructuredRunMixin):
         """
         return self._collect(key)
 
-    @noexcept
+    @noexcept()
     def set(self, key, val: Any, strict: bool = True):
         self.meta_run_attrs_tree.set(key, val, strict)
         self.meta_attrs_tree.set(key, val, strict)
@@ -388,7 +388,7 @@ class BasicRun(BaseRun, StructuredRunMixin):
         del self.meta_attrs_tree[key]
         del self.meta_run_attrs_tree[key]
 
-    @noexcept
+    @noexcept()
     def track(
         self,
         value,
@@ -816,7 +816,7 @@ class Run(BasicRun):
             git info, environment variables, etc.
     """
 
-    @noexcept
+    @noexcept()
     def __init__(self, run_hash: Optional[str] = None, *,
                  repo: Optional[Union[str, 'Repo', pathlib.Path]] = None,
                  read_only: bool = False,

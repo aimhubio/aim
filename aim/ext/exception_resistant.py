@@ -61,12 +61,21 @@ def set_exception_callback(callback: callable):
     _SafeModeConfig.exception_callback = callback
 
 
-def noexcept(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        try:
-            return func(*args, **kwargs)
-        except Exception as e:
-            _SafeModeConfig.exception_callback(e, func)
-
-    return wrapper
+def noexcept(silent: bool = False):
+    def inner(func):
+        if not silent:
+            @wraps(func)
+            def wrapper(*args, **kwargs):
+                try:
+                    return func(*args, **kwargs)
+                except Exception as e:
+                    _SafeModeConfig.exception_callback(e, func)
+        else:
+            @wraps(func)
+            def wrapper(*args, **kwargs):
+                try:
+                    return func(*args, **kwargs)
+                except Exception:
+                    pass
+        return wrapper
+    return inner

@@ -7,6 +7,8 @@ import contextlib
 
 import segment.analytics as sa
 
+from aim.ext.exception_resistant import noexcept
+
 logger = logging.getLogger(__name__)
 
 aim_profile_path = os.path.expanduser('~/.aim_profile')
@@ -15,6 +17,7 @@ aim_profile_path = os.path.expanduser('~/.aim_profile')
 class Analytics:
     SEGMENT_WRITE_KEY = 'RrVqLHHD6WDXoFBkodO9KidodTtU92XO'
 
+    @noexcept(silent=True)
     def __init__(self):
         self.dev_mode = False
         self.initialized = False
@@ -89,6 +92,7 @@ class Analytics:
         return self._profile['telemetry']['warning-shown']
 
     @contextlib.contextmanager
+    @noexcept(silent=True)
     def _autocommit(self):
         yield
         with open(aim_profile_path, 'w+') as fh:
