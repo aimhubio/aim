@@ -22,9 +22,8 @@ class TestTensorboardRun(TestBase):
         del run
 
         # Then
-        runs = self.repo.query_runs(f'run.hash == "{run_hash}"')
-        first_run = list(runs.iter_runs())[0]
-        self.assertIsNone(first_run.dataframe())
+        tracked_run = self.repo.get_run(run_hash)
+        self.assertIsNone(tracked_run.metrics().dataframe())
 
     def test_tensorboard_tracker_run__system_stats_captured(self):
         # Given
@@ -39,9 +38,8 @@ class TestTensorboardRun(TestBase):
         del run
 
         # Then
-        metrics = self.repo.query_metrics(f'run.hash == "{run_hash}"')
-        first_run = list(metrics.iter_runs())[0]
-        metrics_recorded = set(first_run.dataframe()['metric.name'].unique())
+        tracked_run = self.repo.get_run(run_hash)
+        metrics_recorded = set(tracked_run.metrics().dataframe()['metric.name'].unique())
         self.assertTrue("__system__cpu" in metrics_recorded)
 
     def test_tensorboard_tracker_run__terminal_capture(self):
@@ -59,9 +57,8 @@ class TestTensorboardRun(TestBase):
         del run
 
         # Then
-        runs = self.repo.query_runs(f'run.hash == "{run_hash}"')
-        first_run = list(runs.iter_runs())[0]
-        terminal_logs = first_run.run.get_terminal_logs()
+        tracked_run = self.repo.get_run(run_hash)
+        terminal_logs = tracked_run.get_terminal_logs()
         log_found = False
         for log_item in terminal_logs.data.values():
             log_line = log_item[0][0]
@@ -84,7 +81,6 @@ class TestTensorboardRun(TestBase):
         del run
 
         # Then
-        runs = self.repo.query_runs(f'run.hash == "{run_hash}"')
-        first_run = list(runs.iter_runs())[0]
-        system_params = first_run.run.get('__system_params')
+        tracked_run = self.repo.get_run(run_hash)
+        system_params = tracked_run.get('__system_params')
         self.assertIsNotNone(system_params)
