@@ -4,6 +4,7 @@
 
 ### Enhancements
 
+- Add the ability to create Reports (roubkar, arsengit)
 - Add the ability to create custom UI boards (roubkar, arsengit, KaroMourad)
 - Relocate aim explorers to `Explorers` page (arsengit)
 - Add functionality for custom context in the PyTorch Ignite (tmynn)
