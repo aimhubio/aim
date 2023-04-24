@@ -100,9 +100,7 @@ export const dataVizElementsMap: any = {
         searchable
         value={multi ? props.options.values : props.options.value}
         popoverProps={{
-          popperProps: {
-            align: 'start',
-          },
+          align: 'start',
         }}
         options={[
           {
