@@ -728,8 +728,6 @@ class Button(Component):
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type)
 
-        self.data = ''
-
         self.options = {
             "size": size,
             "variant": variant,
@@ -746,3 +744,31 @@ class Button(Component):
     def on_click(self, event):
         # You can define the callback behavior here
         print("Button clicked")
+
+
+class Switch(Component):
+    def __init__(self, checked=None, size=None, defaultChecked=None, disabled=None, key=None):
+        component_type = "Switch"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type)
+
+        self.data = checked
+
+        self.options = {
+            "size": size,
+            "defaultChecked": defaultChecked,
+            "disabled": disabled,
+        }
+
+        self.callbacks = {
+            "on_change": self.on_change
+        }
+
+        self.render()
+
+    async def on_change(self, val):
+        # You can define the callback behavior here
+        self.set_state({
+            "data": val
+        })
+        print("Switch" + str(val))

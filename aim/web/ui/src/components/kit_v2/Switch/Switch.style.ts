@@ -57,6 +57,7 @@ const SwitchStyled = styled(SwitchPrimitive.Root, {
     size: {
       sm: {
         height: 12,
+        minHeight: 12,
         width: '$3',
         '&:active': {
           [`& ${ThumbStyled}`]: { width: 10 },
@@ -69,6 +70,7 @@ const SwitchStyled = styled(SwitchPrimitive.Root, {
       },
       md: {
         height: 16,
+        minHeight: 16,
         width: '$7',
         '&:active': {
           [`& ${ThumbStyled}`]: { width: 14 },
@@ -81,6 +83,7 @@ const SwitchStyled = styled(SwitchPrimitive.Root, {
       },
       lg: {
         height: '$1',
+        minHeight: '$1',
         width: '$10',
         '&:active': {
           [`& ${ThumbStyled}`]: { width: 18 },
