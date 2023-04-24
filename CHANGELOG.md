@@ -4,6 +4,7 @@
 
 ### Enhancements
 - Add functionality for custom context in the PyTorch Ignite (tmynn)
+- Relocate aim explorers to `Explorers` page (arsengit)
 ### fixes
 -  Convert NaNs and Infs in responses to strings (n-gao)
 

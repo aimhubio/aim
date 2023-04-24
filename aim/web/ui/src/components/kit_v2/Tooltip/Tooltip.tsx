@@ -28,13 +28,27 @@ import { ITooltipProps } from './Tooltip.d';
  */
 function Tooltip({
   content,
-  delayDuration = 700,
+  delayDuration = 500,
   disableHoverableContent = false,
   skipDelayDuration = 300,
+  hasArrow = false,
   contentProps = {},
   children,
   ...props
 }: ITooltipProps): React.FunctionComponentElement<React.ReactNode> {
+  const ref = React.useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => {
+    if (ref.current) {
+      const parent: any = ref.current.parentNode;
+      if (parent) {
+        parent.style!.zIndex = 10;
+      }
+    }
+    if (!mounted) {
+      setMounted(true);
+    }
+  }, [mounted]);
   return (
     <TooltipPrimitive.Provider
       delayDuration={delayDuration}
@@ -45,12 +59,13 @@ function Tooltip({
         <TooltipPrimitive.Trigger asChild>{children}</TooltipPrimitive.Trigger>
         <TooltipPrimitive.Portal>
           <TooltipContent
+            ref={ref}
             data-testid='tooltip-content'
             sideOffset={5}
             {...contentProps}
           >
             {content}
-            <TooltipArrow />
+            {hasArrow && <TooltipArrow />}
           </TooltipContent>
         </TooltipPrimitive.Portal>
       </TooltipPrimitive.Root>

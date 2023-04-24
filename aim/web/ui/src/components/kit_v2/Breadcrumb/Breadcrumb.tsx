@@ -6,7 +6,7 @@ import routes, { IRoute } from 'routes/routes';
 import Text from '../Text';
 import Box from '../Box';
 
-import { BreadcrumbItem } from './Breadcrumb.style';
+import { BreadcrumbItem, BreadcrumbLastItem } from './Breadcrumb.style';
 
 /**
  * @description - Breadcrumb component of the kit. It shows the current location in the app and allows to navigate to the parent pages
@@ -28,19 +28,20 @@ function Breadcrumb(): React.FunctionComponentElement<React.ReactNode> {
 
         return (
           <React.Fragment key={route.path}>
-            <BreadcrumbItem
-              to={currentPath}
-              isActive={(m, location) => {
-                return location.pathname === route.path;
-              }}
-            >
-              {route.displayName}
-            </BreadcrumbItem>
-            {!isLast && (
-              <Text size='$3' css={{ mx: '$2' }} color='$textPrimary50'>
-                {' '}
-                /{' '}
-              </Text>
+            {isLast ? (
+              <BreadcrumbLastItem>{route.displayName}</BreadcrumbLastItem>
+            ) : (
+              <BreadcrumbItem
+                to={currentPath}
+                isActive={(m, location) => {
+                  return location.pathname === route.path;
+                }}
+              >
+                {route.displayName}
+                <Text size='$3' css={{ mx: '$2' }} color='$textPrimary50'>
+                  /
+                </Text>
+              </BreadcrumbItem>
             )}
           </React.Fragment>
         );
