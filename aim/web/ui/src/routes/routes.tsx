@@ -1,6 +1,12 @@
 import React from 'react';
 
-import { IconChartDots, IconFlag3, IconTable } from '@tabler/icons-react';
+import {
+  IconChartDots,
+  IconFileAnalytics,
+  IconFlag3,
+  IconLayout2,
+  IconTable,
+} from '@tabler/icons-react';
 
 import { PathEnum } from 'config/enums/routesEnum';
 import pageTitlesEnum from 'config/pageTitles/pageTitles';
@@ -224,12 +230,30 @@ const routes: { [key: string]: any } = {
     isExact: true,
     title: pageTitlesEnum.DASHBOARD,
   },
+  RUNS: {
+    path: PathEnum.Runs,
+    component: Runs,
+    showInSidebar: true,
+    displayName: 'Runs',
+    icon: <IconTable color='#9D257F' />,
+    isExact: true,
+    title: pageTitlesEnum.RUNS_EXPLORER,
+  },
+  EXPLORERS: {
+    path: PathEnum.Explorers,
+    component: Explorers,
+    showInSidebar: true,
+    displayName: 'Explorers',
+    icon: <IconChartDots color='#1473E6' />,
+    isExact: true,
+    title: pageTitlesEnum.DASHBOARD,
+  },
   BOARDS: {
     path: PathEnum.Boards,
     component: Boards,
     showInSidebar: true,
     displayName: 'Boards',
-    icon: 'chart-group',
+    icon: <IconLayout2 color='#2A6218' />,
     isExact: true,
     title: pageTitlesEnum.BOARDS,
   },
@@ -254,7 +278,7 @@ const routes: { [key: string]: any } = {
     component: Reports,
     showInSidebar: true,
     displayName: 'Reports',
-    icon: 'full-docs',
+    icon: <IconFileAnalytics color='#5B329A' />,
     isExact: true,
     title: pageTitlesEnum.REPORTS,
   },
@@ -273,24 +297,6 @@ const routes: { [key: string]: any } = {
     displayName: 'Report',
     isExact: true,
     title: pageTitlesEnum.REPORT,
-  },
-  RUNS: {
-    path: PathEnum.Runs,
-    component: Runs,
-    showInSidebar: true,
-    displayName: 'Runs',
-    icon: <IconTable color='#9D257F' />,
-    isExact: true,
-    title: pageTitlesEnum.RUNS_EXPLORER,
-  },
-  EXPLORERS: {
-    path: PathEnum.Explorers,
-    component: Explorers,
-    showInSidebar: true,
-    displayName: 'Explorers',
-    icon: <IconChartDots color='#1473E6' />,
-    isExact: true,
-    title: pageTitlesEnum.DASHBOARD,
   },
   ...explorersRoutes,
 
