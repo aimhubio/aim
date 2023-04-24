@@ -359,6 +359,7 @@ export const ANALYTICS_EVENT_KEYS = {
   sidebar: {
     discord: '[Sidebar] Click on discord community link',
     docs: '[Sidebar] Click on docs link',
+    github: '[Sidebar] Click on github link',
   },
   figures: {} as any,
   audios: {} as any,

@@ -3,6 +3,7 @@ import React from 'react';
 import { CSS } from 'config/stitches/types';
 
 import { IPopoverProps } from '../Popover/Popover';
+import { IButtonProps } from '../Button';
 
 // The interface of the Select
 
@@ -79,6 +80,14 @@ export interface ISelectProps {
    * @default false
    */
   searchable?: boolean;
+  /**
+   * @description the trigger props of the select
+   * @example { size: 'sm' }
+   * @type IButtonProps
+   * @default undefined
+   * @optional
+   */
+  triggerProps?: IButtonProps;
 }
 
 type SelectOptionType = {
