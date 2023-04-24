@@ -1,5 +1,6 @@
 const pageTitles = {
   DASHBOARD: '',
+  EXPLORERS: 'Explorers',
   RUNS_EXPLORER: 'Runs Explorer',
   METRICS_EXPLORER: 'Metrics Explorer',
   PARAMS_EXPLORER: 'Params Explorer',

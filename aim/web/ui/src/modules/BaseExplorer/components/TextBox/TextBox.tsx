@@ -3,7 +3,7 @@ import Editor from 'rich-markdown-editor';
 
 import { Text } from 'components/kit';
 
-import { TEXT_RNDERER_MODES } from 'pages/TextExplorer/textConfig';
+import { TEXT_RNDERER_MODES } from 'pages/Explorers/TextExplorer/textConfig';
 
 import './TextBox.scss';
 

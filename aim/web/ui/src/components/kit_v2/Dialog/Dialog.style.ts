@@ -18,8 +18,8 @@ const DialogOverlay = styled(DialogPrimitive.Overlay, {
   bc: 'hsla(206, 22%, 7%, 0.5)',
   position: 'fixed',
   inset: 0,
+  zIndex: 11,
   animation: `${overlayShow} 150ms cubic-bezier(0.16, 1, 0.3, 1)`,
-  zIndex: 10,
 });
 
 const DialogContent = styled(DialogPrimitive.Content, {
@@ -35,8 +35,8 @@ const DialogContent = styled(DialogPrimitive.Content, {
   maxHeight: '85vh',
   p: '$9',
   animation: `${contentShow} 150ms cubic-bezier(0.16, 1, 0.3, 1)`,
+  zIndex: 12,
   '&:focus': { outline: 'none' },
-  zIndex: 11,
 });
 
 const DialogTitle = styled(DialogPrimitive.Title, {

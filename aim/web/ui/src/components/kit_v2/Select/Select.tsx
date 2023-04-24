@@ -34,6 +34,7 @@ const sizeDict = {
 const Select = ({
   multiple,
   trigger,
+  triggerProps,
   popoverProps,
   value,
   onValueChange,
@@ -168,18 +169,23 @@ const Select = ({
 
   return (
     <Popover
-      {...popoverProps}
-      popperProps={{ css: { p: '$5 0' }, ...popoverProps.popperProps }}
+      popperProps={{
+        ...popoverProps,
+        css: { p: '$5 0', ...popoverProps.css },
+      }}
       trigger={({ open }) =>
         trigger || multiple ? (
-          <Button size={size}>Select</Button>
+          <Button size={size} {...triggerProps}>
+            Select
+          </Button>
         ) : (
           <Button
             variant='outlined'
             color='secondary'
             rightIcon={open ? <IconCaretUp /> : <IconCaretDown />}
+            {...triggerProps}
           >
-            <Text>{triggerPlaceholder}</Text>
+            <Text css={{ flex: '1' }}>{triggerPlaceholder}</Text>
           </Button>
         )
       }
