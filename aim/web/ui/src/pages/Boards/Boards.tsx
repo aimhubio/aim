@@ -18,6 +18,7 @@ import useBoards from './useBoards';
 function Boards(): React.FunctionComponentElement<React.ReactNode> {
   const {
     data,
+    filteredBoards,
     isLoading,
     notifyData,
     searchValue,
@@ -55,7 +56,7 @@ function Boards(): React.FunctionComponentElement<React.ReactNode> {
         <BusyLoaderWrapper isLoading={isLoading} height={'100%'}>
           <BoardsCardWrapper>
             {data?.length > 0 &&
-              data.map((board: any) => (
+              filteredBoards.map((board: any) => (
                 <BoardCard
                   key={board.id}
                   onBoardDelete={onBoardDelete}

@@ -7,11 +7,15 @@
           <a href="https://community.aimstack.io/">Join Aim discord community</a>
           <img width="20px" src="https://user-images.githubusercontent.com/13848158/226759622-063b725d-8b3e-4c75-80c7-11fb04b7adf5.png">
         </td>
-        <td><a href="#-aim-40">🔮 Aim 4.0 - COMING SOON!!</a></td>
+      </tr>
+      <tr>
+        <td colspan="2"><p align="center"><a href="#-aim-40">🔮 Aim 4.0 - COMING SOON!!</a></p></td>
       </tr>
     </tbody>
   </table>
 </div>
+
+<br />
 
 <div align="center">
   <img src="https://user-images.githubusercontent.com/13848158/225620298-9f9293e9-a138-41fd-bd77-21d53d0490b7.png">
@@ -19,7 +23,14 @@
     An easy-to-use & supercharged open-source AI metadata tracker. 
   </h3>
   
-  Aim logs all your AI metadata(**experiments**, **prompts**, etc), enables a UI to compare & observe them and SDK to query them programmatically.
+  Aim logs all your AI metadata, enables a UI to observe/compare them, and an SDK to query them programmatically.
+  
+  <p align="center">
+    <strong>Learn more:</strong> </br>
+    <a href="#experiment-tracking-with-aim">Experiment tracking with Aim</a> </br>
+    <a href="#ai-systems-and-agents-tracing-with-Aim">AI agents tracing with Aim</a>
+  </p>
+  
 </div>
 
 <br/>
@@ -96,7 +107,7 @@
 ---
 
 <h3 align="center">
-  <a href="#-about"><b>About</b></a> &bull;
+  <a href="#ℹ️-about"><b>About</b></a> &bull;
   <a href="#-demos"><b>Demos</b></a> &bull;
   <a href="#-ecosystem"><b>Ecosystem</b></a> &bull;
   <a href="#-quick-start"><b>Quick Start</b></a> &bull;
@@ -112,9 +123,8 @@
 # ℹ️ About
 
 Aim is an open-source, self-hosted AI Metadata tracking tool designed to handle 100,000s of tracked metadata sequences.
-Two most famous AI metadata applications are: experiment tracking and prompt engineering.
 
-Aim provides a performant and beautiful UI for exploring and comparing training runs, prompt sessions.
+Aim provides a performant and beautiful UI for exploring and comparing metadata such as training runs or agents executions.
 Additionally, its SDK enables programmatic access to tracked metadata — perfect for automations and Jupyter Notebook analysis.
 
 <p align="center">
@@ -129,7 +139,38 @@ Additionally, its SDK enables programmatic access to tracked metadata — perfec
 
 </br>
 
-<div align="center">
+### AI systems and agents tracing with Aim
+
+<div align="left">
+  <table>
+    <tbody>
+      <tr>
+        <th>Log Inputs, Outputs and Actions of Executions 🤖</th>
+        <th>Visualize & Compare Executions Steps via UI 🔍</th>
+      </tr>
+      <tr>
+        <td>
+          <ul>
+            <li>Track all the inputs, outputs of LLMs and tools</li>
+            <li>Capture terminal output of executions</li>
+            <li>Get notified on executions progress and finish</li>
+            </ul>
+          </td>
+        <td>
+          <ul>
+            <li>Deep dive into single execution steps</li>
+            <li>Compare executions side-by-side</li>
+            <li>View previous exectutions terminal outputs</li>
+          </ul>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+### Experiment tracking with Aim
+
+<div align="left">
   <table>
     <tbody>
       <tr>

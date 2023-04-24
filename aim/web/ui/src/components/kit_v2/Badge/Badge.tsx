@@ -39,7 +39,14 @@ const Badge = React.forwardRef<
         <BadgeContainer
           {...rest}
           size={size}
-          css={{ ...css, ...getColors({ color, disabled }) }}
+          css={{
+            ...css,
+            ...getColors({
+              color,
+              disabled,
+              actionable: !!onDelete,
+            }),
+          }}
           role='button'
           font={monospace ? 'mono' : 'default'}
           rightIcon={!!onDelete}
