@@ -14,6 +14,8 @@ const pageTitles = {
   RUN_DETAIL: '',
   EXPERIMENT: '',
   FIGURES_EXPLORER_NEW: 'New Figures',
+  BOARDS: 'Boards',
+  BOARD: '',
   METRICS_EXPLORER_V2: 'Metrics Explorer v2',
 };
 

@@ -8,6 +8,7 @@ const SliderRoot = styled(SliderPrimitive.Root, {
   ai: 'center',
   userSelect: 'none',
   touchAction: 'none',
+  cursor: 'pointer',
   zIndex: '$1',
   '&[data-orientation="horizontal"]': {
     height: 10,

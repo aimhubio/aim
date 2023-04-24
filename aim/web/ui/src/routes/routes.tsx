@@ -1,6 +1,11 @@
 import React from 'react';
 
-import { IconChartDots, IconFlag3, IconTable } from '@tabler/icons-react';
+import {
+  IconChartDots,
+  IconFlag3,
+  IconLayout2,
+  IconTable,
+} from '@tabler/icons-react';
 
 import { PathEnum } from 'config/enums/routesEnum';
 import pageTitlesEnum from 'config/pageTitles/pageTitles';
@@ -74,6 +79,14 @@ const Explorers = React.lazy(
 
 const Bookmarks = React.lazy(
   () => import(/* webpackChunkName: "bookmarks" */ 'pages/Explorers/Bookmarks'),
+);
+
+const Boards = React.lazy(
+  () => import(/* webpackChunkName: "boards" */ 'pages/Boards/Boards'),
+);
+
+const Board = React.lazy(
+  () => import(/* webpackChunkName: "board" */ 'pages/Board/BoardContainer'),
 );
 
 export interface IRoute {
@@ -225,6 +238,31 @@ const routes: { [key: string]: any } = {
     icon: <IconChartDots color='#1473E6' />,
     isExact: true,
     title: pageTitlesEnum.DASHBOARD,
+  },
+  BOARDS: {
+    path: PathEnum.Boards,
+    component: Boards,
+    showInSidebar: true,
+    displayName: 'Boards',
+    icon: <IconLayout2 color='#2A6218' />,
+    isExact: true,
+    title: pageTitlesEnum.BOARDS,
+  },
+  BOARD: {
+    path: PathEnum.Board,
+    component: Board,
+    showInSidebar: false,
+    displayName: 'Board',
+    isExact: true,
+    title: pageTitlesEnum.BOARD,
+  },
+  BOARD_EDIT: {
+    path: PathEnum.Board_Edit,
+    component: Board,
+    showInSidebar: false,
+    displayName: 'Board',
+    isExact: true,
+    title: pageTitlesEnum.BOARD,
   },
   ...explorersRoutes,
 

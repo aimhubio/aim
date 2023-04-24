@@ -220,11 +220,13 @@ const ChartPanel = React.forwardRef(function ChartPanel(
                 </SplitPane>
               </div>
             </ErrorBoundary>
-            <ErrorBoundary>
-              <div className='ChartPanel__controls ScrollBar__hidden'>
-                {props.controls}
-              </div>
-            </ErrorBoundary>
+            {props.controls && (
+              <ErrorBoundary>
+                <div className='ChartPanel__controls ScrollBar__hidden'>
+                  {props.controls}
+                </div>
+              </ErrorBoundary>
+            )}
           </>
         )}
       </div>
