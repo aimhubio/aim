@@ -15,7 +15,62 @@ from typing import TYPE_CHECKING, Any
 from aim import Distribution
 
 if TYPE_CHECKING:
-    from aim import Audio, Image
+    from aim import Audio, Image, Distribution
+
+
+def _decode_histogram(value):
+    """
+    From the tensorflow histogram representation (not plugin), create an aim Distribution
+
+    :param value: value with `histo` property
+    :return: aim Distribution
+    """
+    bin_counts = list(value.histo.bucket)
+    bucket_limits = list(value.histo.bucket_limit)
+
+    if (len(bin_counts) <= 2) or (len(bucket_limits) < 2) or (bucket_limits[0] == bucket_limits[-1]):
+        return None
+
+    # This is a bit weird. It seems the histogram counts is padded by 0 as tensorboard only stores
+    # the right limits? This needs further checking
+    # See thttps://github.com/pytorch/pytorch/blob/7d2a18da0b3427fcbe44b461a0aa508194535885/torch/utils/tensorboard/summary.py#L390
+    bin_counts = bin_counts[1:]
+
+    bin_range = (bucket_limits[0], bucket_limits[-1])
+    track_val = Distribution(hist=bin_counts, bin_range=bin_range)
+    return track_val
+
+
+def _decode_histogram_from_plugin(value):
+    """
+    Convert from tensorflow histogram plugin representation of the data as a tensor back into
+    a `aim` `Distribution`
+
+    Representation of histogram given by tf summary is obtained from here:
+    https://github.com/tensorflow/tensorboard/blob/master/tensorboard/plugins/histogram/summary_v2.py
+
+    :param value: value with a tensor that contains three columns, left_edge, right_edge,
+                  bin_values
+    :return: aim Distribution
+    """
+    left_right_bins = tensor_util.make_ndarray(value.tensor)
+    if left_right_bins is None:
+        return None
+
+    left_edge = left_right_bins[:, 0]
+    right_edge = left_right_bins[:, 1]
+    bin_counts = left_right_bins[:, 2]
+
+    bin_range = (left_edge[0], right_edge[-1])
+
+    is_empty = False
+    is_empty |= (left_right_bins.shape[0] == 0)
+    is_empty |= (bin_range[0] == bin_range[1])
+    if is_empty:
+        return None
+
+    track_val = Distribution(hist=bin_counts, bin_range=bin_range)
+    return track_val
 
 
 def _decode_histogram(value):
