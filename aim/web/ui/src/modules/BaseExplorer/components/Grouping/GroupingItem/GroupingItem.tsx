@@ -23,7 +23,6 @@ function GroupingItem({
   inputLabel,
   advancedComponent,
   title,
-  facet = false,
   ...props
 }: IGroupingItemProps): React.FunctionComponentElement<React.ReactNode> {
   const {
@@ -114,7 +113,7 @@ function GroupingItem({
                   fontSize={6}
                 />
               </Button>
-              {facet && (
+              {groupings[groupName].settings.facet && (
                 <ToggleButton
                   title='Toggle grouping'
                   id='disable-grouping'

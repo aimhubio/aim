@@ -7,9 +7,7 @@ import {
   StyleApplierCallbackArgs,
 } from 'modules/core/engine/explorer/groupings';
 import { GroupType } from 'modules/core/pipeline';
-import Grouping, {
-  GroupingItem,
-} from 'modules/BaseExplorer/components/Grouping';
+import Grouping from 'modules/BaseExplorer/components/Grouping';
 import { BoxProperties } from 'modules/BaseExplorer/components/Controls';
 import FullVewPopover from 'modules/BaseExplorer/components/BoxFullViewPopover';
 import Visualizer from 'modules/BaseExplorer/components/Visualizer';
@@ -21,6 +19,7 @@ import getBaseExplorerStaticContent from 'modules/BaseExplorer/utils/getBaseExpl
 import { PersistenceTypesEnum } from '../core/engine/types';
 
 import { IBaseComponentProps } from './types';
+import FacetGroupingItem from './components/Grouping/FacetGroupingItem/FacetGroupingItem';
 
 const controls: ControlsConfigs = {
   boxProperties: {
@@ -48,8 +47,7 @@ const controls: ControlsConfigs = {
 const groupings: GroupingConfigs = {
   [GroupType.COLUMN]: {
     component: React.memo((props: IBaseComponentProps) => (
-      <GroupingItem
-        facet={true}
+      <FacetGroupingItem
         groupName='columns'
         iconName='group-column'
         {...props}
@@ -81,19 +79,14 @@ const groupings: GroupingConfigs = {
     //     rowLength: 4,
     //   },
     // },
-    // settings: {
-    //   // settings to pass to component, to use, alter it can be color scales values for color grouping
-    //   maxRowsLength: 10,
-    // },
+    settings: {
+      // settings to pass to component, to use, alter it can be color scales values for color grouping
+      facet: true,
+    },
   },
   [GroupType.ROW]: {
     component: React.memo((props: IBaseComponentProps) => (
-      <GroupingItem
-        facet={true}
-        groupName='rows'
-        iconName='image-group'
-        {...props}
-      />
+      <FacetGroupingItem groupName='rows' iconName='image-group' {...props} />
     )),
     styleApplier: ({ groupInfo, boxConfig }: StyleApplierCallbackArgs<any>) => {
       const rulerHeight =
@@ -122,19 +115,14 @@ const groupings: GroupingConfigs = {
     //     rowLength: 4,
     //   },
     // },
-    // settings: {
-    //   // settings to pass to component, to use, alter it can be color scales values for color grouping
-    //   maxRowsLength: 10,
-    // },
+    settings: {
+      // settings to pass to component, to use, alter it can be color scales values for color grouping
+      facet: true,
+    },
   },
   [GroupType.GRID]: {
     component: React.memo((props: IBaseComponentProps) => (
-      <GroupingItem
-        facet={true}
-        groupName='grid'
-        iconName='image-group'
-        {...props}
-      />
+      <FacetGroupingItem groupName='grid' iconName='image-group' {...props} />
     )),
     styleApplier: ({
       groupInfo,
@@ -168,6 +156,10 @@ const groupings: GroupingConfigs = {
         maxColumnCount: 3,
       },
       persist: PersistenceTypesEnum.Url,
+    },
+    settings: {
+      // settings to pass to component, to use, alter it can be color scales values for color grouping
+      facet: true,
     },
   },
 };

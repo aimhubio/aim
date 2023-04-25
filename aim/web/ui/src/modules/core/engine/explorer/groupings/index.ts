@@ -127,6 +127,7 @@ function createGroupingsEngine(
   const methods = state.generateMethods(store.setState, store.getState);
 
   const stateResetMethods: Function[] = [];
+  const facetStateResetMethods: Function[] = [];
   const initializers: Function[] = [];
 
   initializers.push(
@@ -143,6 +144,9 @@ function createGroupingsEngine(
       const elem = state.slices[name];
       const originalMethods = elem.methods(store.setState, store.getState);
       stateResetMethods.push(originalMethods.reset);
+      if (elem.settings.facet) {
+        facetStateResetMethods.push(originalMethods.reset);
+      }
 
       const persistenceKey = ['gr', name].join('-');
       const persistenceType = config[name].state?.persist;
@@ -221,6 +225,10 @@ function createGroupingsEngine(
     stateResetMethods.forEach((func) => func());
   }
 
+  function resetFacetState() {
+    facetStateResetMethods.forEach((func) => func());
+  }
+
   function initialize() {
     if (persist) {
       const finalizers: Function[] = [];
@@ -247,6 +255,7 @@ function createGroupingsEngine(
       update,
       ...slices,
       resetState,
+      resetFacetState,
       styleAppliers,
       initialize,
     },

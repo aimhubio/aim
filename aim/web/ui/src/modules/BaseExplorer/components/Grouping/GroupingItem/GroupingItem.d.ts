@@ -10,5 +10,4 @@ export interface IGroupingItemProps extends IBaseComponentProps {
   title?: string;
   advancedComponent?: React.FunctionComponentElement<React.ReactNode> | null;
   iconName: IconName;
-  facet?: boolean;
 }

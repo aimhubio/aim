@@ -55,14 +55,14 @@ const Box = React.forwardRef<typeof StyledBox, IBoxProps>(
         .reduce((obj, [key, value]) => {
           obj[key] = value;
           return obj;
-        }, {} as { [key: string]: any });
+        }, {} as Record<string, any>);
 
       const restProps = Object.entries(props)
         .filter(([key]) => !layoutKeys.includes(key))
         .reduce((obj, [key, value]) => {
           obj[key] = value;
           return obj;
-        }, {} as { [key: string]: any });
+        }, {} as Record<string, any>);
       return { layoutProps, restProps };
     }, [props]);
 

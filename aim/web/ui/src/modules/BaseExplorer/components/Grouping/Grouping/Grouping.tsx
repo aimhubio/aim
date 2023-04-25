@@ -3,9 +3,8 @@ import React from 'react';
 import ErrorBoundary from 'components/ErrorBoundary';
 
 import { IBaseComponentProps } from 'modules/BaseExplorer/types';
-import { GroupType } from 'modules/core/pipeline';
 
-import FacetGrouping from '../FacetGrouping/FacetGrouping';
+import FacetGrouping from '../FacetGrouping';
 
 import './Grouping.scss';
 
@@ -16,33 +15,43 @@ function Grouping(props: IBaseComponentProps) {
   const currentValues = useStore(groupings.currentValuesSelector);
 
   const { facetGroupings, restGroupings } = React.useMemo(() => {
-    const facet: React.ReactNodeArray = [];
-    const rest: React.ReactNodeArray = [];
+    const facet: Record<string, any> = {};
+    const rest: Record<string, any> = {};
     Object.keys(currentValues).forEach((key: string) => {
-      const Component = groupings[key]?.component;
-      if (Component) {
-        if (__DEV__) {
-          Component.displayName = 'GroupingComponent';
-        }
-        if (
-          [GroupType.GRID, GroupType.ROW, GroupType.COLUMN].indexOf(
-            key as GroupType,
-          ) !== -1
-        ) {
-          facet.push(<Component key={key} {...props} />);
+      const grouping = groupings[key];
+      if (grouping.component) {
+        if (grouping.settings.facet) {
+          facet[key] = grouping;
         } else {
-          rest.push(<Component key={key} {...props} />);
+          rest[key] = grouping;
         }
       }
     });
     return { facetGroupings: facet, restGroupings: rest };
-  }, [currentValues, groupings, props]);
+  }, [currentValues, groupings]);
+
+  const renderGrouping = React.useCallback(
+    ([key, grouping]: [string, any]) => {
+      const { component: Component } = grouping;
+      if (__DEV__) {
+        Component.displayName = 'GroupingComponent';
+      }
+      return <Component key={key} {...props} />;
+    },
+    [props],
+  );
 
   return (
     <ErrorBoundary>
       <div className='BaseGrouping'>
-        <FacetGrouping items={facetGroupings} />
-        <div className='BaseGrouping__content'>{restGroupings}</div>
+        <div className='BaseGrouping__content'>
+          <FacetGrouping
+            {...props}
+            facetGroupings={facetGroupings}
+            renderGrouping={renderGrouping}
+          />
+          {Object.entries(restGroupings).map(renderGrouping)}
+        </div>
       </div>
     </ErrorBoundary>
   );
