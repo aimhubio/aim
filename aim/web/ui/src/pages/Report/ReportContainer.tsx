@@ -57,7 +57,8 @@ function ReportContainer(): React.FunctionComponentElement<React.ReactNode> {
         <Report
           data={reportData?.report!}
           isLoading={reportData?.isLoading!}
-          editMode={params.reportId === 'new' || path === PathEnum.Report_Edit}
+          editMode={path === PathEnum.Report_Edit}
+          newMode={params.reportId === 'new'}
           notifyData={reportData?.notifyData as INotification[]}
           saveReport={saveReport}
           onNotificationDelete={reportAppModel.onReportNotificationDelete}

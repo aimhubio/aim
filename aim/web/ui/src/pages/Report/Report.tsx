@@ -58,6 +58,7 @@ function Report({
   data,
   isLoading,
   editMode,
+  newMode,
   previewMode,
   notifyData,
   onNotificationDelete,
@@ -73,7 +74,7 @@ function Report({
       <section className='Report'>
         {!previewMode && (
           <AppBar title={data.name} className='Report__appBar'>
-            {editMode ? (
+            {editMode || newMode ? (
               <div className='Report__appBar__controls'>
                 <SaveReport
                   saveReport={saveReport}
@@ -81,7 +82,10 @@ function Report({
                   initialState={data}
                 />
                 <Link
-                  to={PathEnum.Report.replace(':reportId', reportId)}
+                  to={PathEnum.Report.replace(
+                    ':reportId',
+                    newMode ? '' : reportId,
+                  )}
                   component={RouteLink}
                   underline='none'
                 >
@@ -104,10 +108,10 @@ function Report({
             )}
           </AppBar>
         )}
-        <BusyLoaderWrapper isLoading={false} height={'100%'}>
+        <BusyLoaderWrapper isLoading={isLoading} height={'100%'}>
           <div className='ReportVisualizer'>
             <div className='ReportVisualizer__main'>
-              {editMode && (
+              {(editMode || newMode) && (
                 <div className='ReportVisualizer__main__editor'>
                   <Editor
                     language='markdown'
@@ -128,7 +132,8 @@ function Report({
                     pyodideIsLoading === null,
                   'ReportVisualizer__main__components--processing':
                     pyodideIsLoading,
-                  'ReportVisualizer__main__components--fullWidth': !editMode,
+                  'ReportVisualizer__main__components--fullWidth':
+                    !editMode || !newMode,
                 })}
               >
                 {pyodideIsLoading !== false && (
