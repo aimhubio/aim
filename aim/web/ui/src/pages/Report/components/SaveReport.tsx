@@ -10,7 +10,7 @@ import {
 
 import { Button } from 'components/kit';
 
-function SaveBoard(props: any) {
+function SaveReport(props: any) {
   let [opened, setOpened] = React.useState(false);
   const [state, setState] = React.useState(props.initialState);
   const [hasError, setHasError] = React.useState(false);
@@ -20,7 +20,7 @@ function SaveBoard(props: any) {
   async function onSubmit() {
     if (state.name) {
       setIsProcessing(true);
-      await props.saveBoard({
+      await props.saveReport({
         ...state,
         code: props.getEditorValue(),
       });
@@ -67,13 +67,13 @@ function SaveBoard(props: any) {
           onClose={handleClose}
           aria-labelledby='form-dialog-title'
         >
-          <DialogTitle id='form-dialog-title'>Save Board</DialogTitle>
+          <DialogTitle id='form-dialog-title'>Save Report</DialogTitle>
           <DialogContent>
             <TextField
               autoFocus
               id='name'
               value={state.name}
-              label='Board Name'
+              label='Report Name'
               onChange={handleInputChange}
               type='text'
               variant='outlined'
@@ -86,7 +86,7 @@ function SaveBoard(props: any) {
               id='description'
               value={state.description}
               onChange={handleInputChange}
-              label='Board Description'
+              label='Report Description'
               type='text'
               variant='outlined'
               margin='dense'
@@ -107,4 +107,4 @@ function SaveBoard(props: any) {
   );
 }
 
-export default SaveBoard;
+export default SaveReport;

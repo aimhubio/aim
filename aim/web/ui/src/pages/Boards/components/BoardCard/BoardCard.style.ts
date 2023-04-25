@@ -1,4 +1,4 @@
-import { Box, Link } from 'components/kit_v2';
+import { Box } from 'components/kit_v2';
 
 import { styled } from 'config/stitches';
 
