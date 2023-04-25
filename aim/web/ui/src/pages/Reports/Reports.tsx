@@ -6,7 +6,7 @@ import { IconPlus } from '@tabler/icons-react';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
-import { Box, Button, Input, Text } from 'components/kit_v2';
+import { Box, Button, Input, Link, Text } from 'components/kit_v2';
 
 import { PathEnum } from 'config/enums/routesEnum';
 import { TopBar } from 'config/stitches/foundations/layout';
@@ -47,7 +47,10 @@ function Reports(): React.FunctionComponentElement<React.ReactNode> {
               placeholder='Search'
             />
           </Box>
-          <NavLink to={PathEnum.Report.replace(':reportId', 'new')}>
+          <Link
+            underline={false}
+            to={PathEnum.Report.replace(':reportId', 'new')}
+          >
             <Button
               size='lg'
               leftIcon={<IconPlus color='white' />}
@@ -55,7 +58,7 @@ function Reports(): React.FunctionComponentElement<React.ReactNode> {
             >
               New
             </Button>
-          </NavLink>
+          </Link>
         </Box>
         <BusyLoaderWrapper isLoading={isLoading} height={'100%'}>
           <ReportsListContainer>
