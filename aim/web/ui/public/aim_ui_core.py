@@ -732,7 +732,7 @@ class Button(Component):
             "size": size,
             "variant": variant,
             "color": color,
-            "label": label | 'button',
+            "label": label,
         }
 
         self.callbacks = {
@@ -772,3 +772,30 @@ class Switch(Component):
             "data": val
         })
         print("Switch" + str(val))
+
+
+class Checkbox(Component):
+    def __init__(self, checked=None, defaultChecked=None, disabled=None, key=None):
+        component_type = "Checkbox"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type)
+
+        self.data = checked or defaultChecked
+
+        self.options = {
+            "defaultChecked": defaultChecked,
+            "disabled": disabled,
+        }
+
+        self.callbacks = {
+            "on_change": self.on_change
+        }
+
+        self.render()
+
+    async def on_change(self, val):
+        # You can define the callback behavior here
+        self.set_state({
+            "data": val
+        })
+        print("Checked " + str(val))

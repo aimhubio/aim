@@ -4,6 +4,7 @@ import * as _ from 'lodash-es';
 import DictVisualizer from 'components/kit/DictVisualizer';
 import LineChart from 'components/LineChart/LineChart';
 import { Slider, Input, Text, Select, Button, Switch } from 'components/kit_v2';
+import { Checkbox } from 'components/kit_v2/Checkbox/Checkbox';
 
 import RunLogRecords from 'pages/RunDetail/RunLogRecords';
 import RunDetailNotesTab from 'pages/RunDetail/RunDetailNotesTab/RunDetailNotesTab';
@@ -152,12 +153,13 @@ export const dataVizElementsMap: any = {
     return <Input value={props.options.value} onChange={onChange} />;
   },
   Button: (props: any) => {
+    const { label, ...rest } = props.options;
     const onClick = React.useCallback((e) => {
       props.callbacks?.on_click(e);
     }, []);
     return (
-      <Button {...props.options} onClick={onClick}>
-        {props.options.label}
+      <Button {...rest} onClick={onClick}>
+        {label || 'Button'}
       </Button>
     );
   },
@@ -178,6 +180,29 @@ export const dataVizElementsMap: any = {
 
     return (
       <Switch {...props.options} checked={checked} onCheckedChange={onChange} />
+    );
+  },
+  Checkbox: (props: any) => {
+    const [checked, setChecked] = React.useState(props.data);
+
+    React.useEffect(() => {
+      if (props.data !== checked) {
+        setChecked(props.data);
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [props.data]);
+
+    const onChange = React.useCallback((checked) => {
+      setChecked(checked);
+      props.callbacks?.on_change(checked);
+    }, []);
+
+    return (
+      <Checkbox
+        {...props.options}
+        checked={checked}
+        onCheckedChange={onChange}
+      />
     );
   },
 };
