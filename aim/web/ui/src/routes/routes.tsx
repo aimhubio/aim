@@ -246,7 +246,7 @@ const routes: { [key: string]: any } = {
     displayName: 'Explorers',
     icon: <IconChartDots color='#1473E6' />,
     isExact: true,
-    title: pageTitlesEnum.DASHBOARD,
+    title: pageTitlesEnum.EXPLORERS,
   },
   BOARDS: {
     path: PathEnum.Boards,

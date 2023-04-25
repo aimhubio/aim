@@ -11,14 +11,14 @@ const pageTitles = {
   TEXT_EXPLORER: 'Text Explorer',
   BOOKMARKS: 'Bookmarks',
   TAGS: 'Tags',
-  RUN_DETAIL: '',
-  EXPERIMENT: '',
+  RUN_DETAIL: 'Run',
+  EXPERIMENT: 'Experiment',
   FIGURES_EXPLORER_NEW: 'New Figures',
   BOARDS: 'Boards',
-  BOARD: '',
+  BOARD: 'Board',
   METRICS_EXPLORER_V2: 'Metrics Explorer v2',
   REPORTS: 'Reports',
-  REPORT: '',
+  REPORT: 'Report',
 };
 
 export default pageTitles;
