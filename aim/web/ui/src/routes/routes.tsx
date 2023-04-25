@@ -2,6 +2,7 @@ import React from 'react';
 
 import {
   IconChartDots,
+  IconFileAnalytics,
   IconFlag3,
   IconLayout2,
   IconTable,
@@ -87,6 +88,14 @@ const Boards = React.lazy(
 
 const Board = React.lazy(
   () => import(/* webpackChunkName: "board" */ 'pages/Board/BoardContainer'),
+);
+
+const Reports = React.lazy(
+  () => import(/* webpackChunkName: "reports" */ 'pages/Reports'),
+);
+
+const Report = React.lazy(
+  () => import(/* webpackChunkName: "report" */ 'pages/Report/ReportContainer'),
 );
 
 export interface IRoute {
@@ -237,7 +246,7 @@ const routes: { [key: string]: any } = {
     displayName: 'Explorers',
     icon: <IconChartDots color='#1473E6' />,
     isExact: true,
-    title: pageTitlesEnum.DASHBOARD,
+    title: pageTitlesEnum.EXPLORERS,
   },
   BOARDS: {
     path: PathEnum.Boards,
@@ -263,6 +272,31 @@ const routes: { [key: string]: any } = {
     displayName: 'Board',
     isExact: true,
     title: pageTitlesEnum.BOARD,
+  },
+  REPORTS: {
+    path: PathEnum.Reports,
+    component: Reports,
+    showInSidebar: true,
+    displayName: 'Reports',
+    icon: <IconFileAnalytics color='#5B329A' />,
+    isExact: true,
+    title: pageTitlesEnum.REPORTS,
+  },
+  REPORT: {
+    path: PathEnum.Report,
+    component: Report,
+    showInSidebar: false,
+    displayName: 'Report',
+    isExact: true,
+    title: pageTitlesEnum.REPORT,
+  },
+  REPORT_EDIT: {
+    path: PathEnum.Report_Edit,
+    component: Report,
+    showInSidebar: false,
+    displayName: 'Report',
+    isExact: true,
+    title: pageTitlesEnum.REPORT,
   },
   ...explorersRoutes,
 

@@ -2,10 +2,12 @@ import { styled } from 'config/stitches';
 import { LayoutContainer } from 'config/stitches/foundations/layout';
 
 const BookmarksContainerStyled = styled(LayoutContainer, {
-  overflow: 'auto',
-  height: '100vh',
-  minWidth: '648px',
+  $$space: '$space$15',
   py: '$13',
+  height: 'calc(100vh - $$space)',
+  overflowY: 'auto',
+  overflow: 'auto',
+  minWidth: '648px',
 });
 const BookmarksListContainer = styled('div', {
   mt: '$9',

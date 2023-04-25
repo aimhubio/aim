@@ -728,6 +728,8 @@ class Button(Component):
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type)
 
+        self.data = ''
+
         self.options = {
             "size": size,
             "variant": variant,
