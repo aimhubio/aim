@@ -2,7 +2,10 @@ import { styled } from 'config/stitches';
 import { LayoutContainer } from 'config/stitches/foundations/layout';
 
 const ReportsContainer = styled(LayoutContainer, {
-  py: '$13',
+  $$space: '$space$13',
+  py: '$$space',
+  height: 'calc(100vh - $$space)',
+  overflowY: 'auto',
 });
 
 const ReportsCardWrapper = styled('div', {

@@ -1,5 +1,3 @@
-import { NavLink } from 'react-router-dom';
-
 import { Box } from 'components/kit_v2';
 
 import { styled } from 'config/stitches';
@@ -18,10 +16,4 @@ const ReportCardHeader = styled('div', {
   ai: 'center',
 });
 
-const ReportCardLink = styled(NavLink, {
-  flex: 1,
-  textDecoration: 'none',
-  color: 'unset',
-});
-
-export { ReportCardContainer, ReportCardHeader, ReportCardLink };
+export { ReportCardContainer, ReportCardHeader };

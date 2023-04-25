@@ -15,6 +15,7 @@ import {
   Dialog,
   Icon,
   IconButton,
+  Link,
   ListItem,
   Popover,
   Separator,
@@ -25,11 +26,7 @@ import { PathEnum } from 'config/enums/routesEnum';
 
 import { useCopy } from 'hooks/useCopy';
 
-import {
-  ReportCardContainer,
-  ReportCardHeader,
-  ReportCardLink,
-} from './ReportCard.style';
+import { ReportCardContainer, ReportCardHeader } from './ReportCard.style';
 
 function ReportCard({
   code,
@@ -44,11 +41,13 @@ function ReportCard({
   return (
     <ReportCardContainer key={id}>
       <ReportCardHeader>
-        <ReportCardLink to={PathEnum.Report.replace(':reportId', id)}>
-          <Text as='h3' size='$5' weight='$4' color='$primary100'>
-            {name}
-          </Text>
-        </ReportCardLink>
+        <Link
+          css={{ flex: 1 }}
+          fontWeight='$4'
+          to={PathEnum.Report.replace(':reportId', id)}
+        >
+          {name}
+        </Link>
         <Popover
           popperProps={{
             align: 'end',

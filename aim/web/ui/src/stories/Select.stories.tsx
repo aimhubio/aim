@@ -3,7 +3,6 @@ import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 
 import SelectComponent from 'components/kit_v2/Select/Select';
-import Button from 'components/kit_v2/Button';
 
 export default {
   title: 'Kit/Inputs',
