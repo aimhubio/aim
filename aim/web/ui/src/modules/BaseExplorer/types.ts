@@ -76,6 +76,8 @@ export interface IControlsProps extends IBaseComponentProps {
 export interface IVisualizationsProps extends IBaseComponentProps {
   components: IUIComponents;
   visualizers: VisualizationsConfig;
+  forceRenderVisualizations?: boolean;
+  displayProgress: boolean;
   getStaticContent?: (
     type: StaticContentType,
     defaultContent?: React.ReactNode,
@@ -93,13 +95,13 @@ export interface IVisualizationProps extends IBaseComponentProps {
 
 export interface IProgressBarProps extends IBaseComponentProps {}
 
-export interface IBoxContentProps extends IBaseComponentProps {
+export interface IBoxContentProps extends Partial<IBaseComponentProps> {
   data: any;
   style?: React.CSSProperties;
   isFullView?: boolean;
   index?: number;
   id?: string;
-  visualizationName: string;
+  visualizationName?: string;
   itemGroupInfo?: Record<string, IGroupInfo>;
 }
 
@@ -241,6 +243,21 @@ export declare interface ExplorerConfiguration
    * Explorer level static content
    * @param type
    */
+  readonly states?: CustomStates;
+
+  /**
+   * Do not check for pipeline status and skip rendering the illustrration block
+   * @optional
+   * @default value is false
+   */
+  forceRenderVisualizations?: boolean;
+
+  /**
+   * Check whether to render the progress bar for the search query
+   * @optional
+   * @default value is true
+   */
+  displayProgress?: boolean;
   getStaticContent?: (type: string) => React.ReactNode;
 }
 

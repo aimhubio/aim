@@ -58,7 +58,7 @@ function ExplorerCard({
           </Box>
         )}
         <Text css={{ ml: '$5' }} size='$5' weight='$3'>
-          {displayName} {isLoading ? '(--)' : count ? `(${count})` : null}
+          {displayName} {isLoading ? null : count ? `(${count})` : null}
         </Text>
       </Box>
       <Text as='p'>{description || ''}</Text>
