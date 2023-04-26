@@ -1,4 +1,10 @@
 const ENDPOINTS = {
+  DATA: {
+    BASE: '/objects',
+    GET: '',
+    FETCH: 'search',
+  },
+
   PROJECTS: {
     BASE: '/projects',
     GET: '',
@@ -37,6 +43,7 @@ const ENDPOINTS = {
     UPDATE: '',
     DELETE: '',
   },
+
   RELEASE_NOTES: {
     BASE: 'https://api.github.com/repos/aimhubio/aim/releases',
     GET: '',
