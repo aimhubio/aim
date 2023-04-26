@@ -1,7 +1,6 @@
 import React from 'react';
 
 import { PopperContentProps } from '@radix-ui/react-popover';
-import type { SIDE_OPTIONS, ALIGN_OPTIONS } from '@radix-ui/react-popper';
 
 import { CSS } from 'config/stitches/types';
 
@@ -33,18 +32,10 @@ export interface IPopoverProps {
   title?: string | React.ReactNode;
 }
 
-export interface PopperProps extends Partial<PopperContentProps> {
+export interface PopperProps extends PopperContentProps {
   /**
    * styles for popper
    * @default: {}
    * */
   css?: CSS;
-  /**
-   * popper side SIDE_OPTIONS = ["top", "right", "bottom", "left"]
-   * */
-  side?: typeof SIDE_OPTIONS[number];
-  /**
-   * popper align ALIGN_OPTIONS = ["start", "center", "end"]
-   * */
-  align?: typeof ALIGN_OPTIONS[number];
 }
