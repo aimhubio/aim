@@ -7,7 +7,6 @@ const TabList = styled(TabPrimitive.List, {
     display: 'flex',
   },
   borderBottom: '1px solid $border30',
-  bs: '0 2px 0 $colors$border10',
 });
 
 const TabRoot = styled(TabPrimitive.Root, {

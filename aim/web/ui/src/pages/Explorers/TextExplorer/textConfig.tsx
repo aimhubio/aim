@@ -54,6 +54,7 @@ export const getTextDefaultConfig = (): typeof defaultHydration => {
       defaultApplications: {
         fields: ['run.hash'],
         orders: [Order.ASC],
+        isApplied: true,
       },
     };
   });

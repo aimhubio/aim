@@ -6,10 +6,9 @@ import { Tooltip } from '@material-ui/core';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
-import { Button, Text, Icon, ToggleButton } from 'components/kit';
+import { Button, Text, Icon } from 'components/kit';
 
 import { PipelineStatusEnum } from 'modules/core/engine/types';
-import { GroupType } from 'modules/core/pipeline';
 
 import { GroupingPopover } from '../GroupingPopover';
 
@@ -32,51 +31,6 @@ function GroupingItem({
   const currentValues = useStore(groupings.currentValuesSelector);
   const isDisabled =
     useStore(pipeline.statusSelector) === PipelineStatusEnum.Executing;
-
-  const onToggleApplyingGrouping = React.useCallback(
-    (value) => {
-      const isApplied = value === 'On';
-      let groupingValues = {
-        ...currentValues,
-        [groupName]: {
-          ...currentValues[groupName],
-          isApplied,
-        },
-      };
-      if (isApplied) {
-        switch (groupName) {
-          case GroupType.GRID: {
-            groupingValues = {
-              ...groupingValues,
-              [GroupType.ROW]: {
-                ...groupingValues[GroupType.ROW],
-                isApplied: false,
-              },
-              [GroupType.COLUMN]: {
-                ...groupingValues[GroupType.COLUMN],
-                isApplied: false,
-              },
-            };
-            break;
-          }
-          case GroupType.ROW:
-          case GroupType.COLUMN: {
-            groupingValues = {
-              ...groupingValues,
-              [GroupType.GRID]: {
-                ...groupingValues[GroupType.GRID],
-                isApplied: false,
-              },
-            };
-            break;
-          }
-        }
-      }
-      groupings.update(groupingValues);
-      pipeline.group(groupingValues);
-    },
-    [currentValues, groupName, groupings, pipeline],
-  );
 
   return (
     <ErrorBoundary>
@@ -113,18 +67,6 @@ function GroupingItem({
                   fontSize={6}
                 />
               </Button>
-              {groupings[groupName].settings.facet && (
-                <ToggleButton
-                  title='Toggle grouping'
-                  id='disable-grouping'
-                  value={currentValues[groupName].isApplied ? 'On' : 'Off'}
-                  leftLabel='Off'
-                  rightLabel='On'
-                  leftValue='Off'
-                  rightValue='On'
-                  onChange={onToggleApplyingGrouping}
-                />
-              )}
             </>
           </Tooltip>
         )}

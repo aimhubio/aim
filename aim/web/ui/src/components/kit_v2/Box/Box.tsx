@@ -6,7 +6,13 @@ import { styled } from 'config/stitches';
 
 import { IBoxProps } from './Box.d';
 
-const StyledBox = styled(Slot, {});
+const StyledBox = styled(Slot, {
+  '&[data-disabled=true]': {
+    pointerEvents: 'none',
+    userSelect: 'none',
+    opacity: 0.4,
+  },
+});
 
 /**
  * Polymorphic Box component

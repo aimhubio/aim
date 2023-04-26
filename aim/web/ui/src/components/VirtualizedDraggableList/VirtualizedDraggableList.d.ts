@@ -7,19 +7,23 @@ export interface VirtualizedDraggableListProps {
   items: Item[];
   itemSize?: number;
   width?: number | string;
-  height?: number | string;
+  height?: number;
   itemMarginBottom?: number;
-  onDragEnd?: (result: Item['id'][]) => void;
   isDropDisabled?: boolean;
+  isDragDisabled?: boolean;
   cloneStyle?: CSSStyleDeclaration;
+  onDragEnd?: (result: Item['id'][]) => void;
+  onDragStart?: () => void;
+  onDragUpdate?: () => void;
 }
 
-export interface ItemComponentProps {
+export interface VirtualizeDraggableListItemProps {
   provided: DraggableProvided;
   item: Item;
   style?: {};
   isDragging?: boolean;
   marginBottom?: number;
+  disabled?: boolean;
 }
 
 export interface GetStyleProps {

@@ -1,15 +1,15 @@
 import React from 'react';
 import { DraggingStyle } from 'react-beautiful-dnd';
 
-import type { ItemComponentProps, GetStyleProps } from './';
+import type { VirtualizeDraggableListItemProps, GetStyleProps } from './';
 
-function ItemComponent({
+function VirtualizeDraggableListItem({
   provided,
   item,
   style = {},
   isDragging = false,
   marginBottom = 0,
-}: ItemComponentProps) {
+}: VirtualizeDraggableListItemProps) {
   return (
     <div
       {...provided.draggableProps}
@@ -28,7 +28,7 @@ function ItemComponent({
   );
 }
 
-export default ItemComponent;
+export default VirtualizeDraggableListItem;
 
 function getStyle({
   provided,

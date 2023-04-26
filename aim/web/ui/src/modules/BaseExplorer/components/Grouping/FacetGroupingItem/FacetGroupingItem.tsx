@@ -197,15 +197,14 @@ function FacetGroupingItem({
   const group = currentValues[groupName];
   return (
     <ErrorBoundary>
-      <Box display='flex' p='$7' fd='column'>
+      <Box display='flex' p='$7' fd='column' data-disabled={!group.isApplied}>
         {groupName === GroupType.GRID && (
           <>
             <Box display='flex' jc='space-between' ai='center'>
-              <Text disabled={!group.isApplied}>Max count of column</Text>
+              <Text>Max count of column</Text>
               <Input
                 css={{ width: 90 }}
                 placeholder='Number'
-                disabled={!group.isApplied}
                 type='number'
                 value={groupingState[groupName].maxColumnCount}
                 min={1}
@@ -218,35 +217,35 @@ function FacetGroupingItem({
           </>
         )}
         <Box display='flex' jc='space-between' ai='center' flex={1}>
-          <Text disabled={!group.isApplied}>
-            Arrange items into {groupName} by
-          </Text>
+          <Text>Arrange items into {groupName} by</Text>
           <Select
             multiple
             searchable
-            popoverProps={{ side: 'right', align: 'start' }}
+            popoverProps={{
+              side: 'right',
+              align: 'start',
+              css: { width: 'unset', maxWidth: 300 },
+            }}
             options={allOptions}
             value={appliedOptions.map(({ option }) => option.value)}
             trigger={(open) => (
               <Button
-                disabled={!group.isApplied}
                 size='md'
                 variant='outlined'
                 css={{ '&:hover': {} }}
                 color='secondary'
                 rightIcon={open ? <IconCaretUp /> : <IconCaretRight />}
               >
-                <Text disabled={!group.isApplied}>
-                  {`${group.fields.length} selected field(s)`}
-                </Text>
-                <ClearButtonContainer
-                  size='md'
-                  css={{ ml: '$5', position: 'unset' }}
-                  onClick={onEmptySelectedFields}
-                  disabled={!group.isApplied}
-                >
-                  <Icon className='Icon__container' icon={<IconX />} />
-                </ClearButtonContainer>
+                <Text>{`${group.fields.length || ''} selected field(s)`}</Text>
+                {group.fields.length > 0 && (
+                  <ClearButtonContainer
+                    size='md'
+                    css={{ ml: '$5', position: 'unset' }}
+                    onClick={onEmptySelectedFields}
+                  >
+                    <Icon className='Icon__container' icon={<IconX />} />
+                  </ClearButtonContainer>
+                )}
               </Button>
             )}
             onValueChange={onSelectField}
@@ -254,7 +253,6 @@ function FacetGroupingItem({
         </Box>
         <Box mt='$5'>
           <VirtualizedDraggableList
-            isDropDisabled={!group.isApplied}
             onDragEnd={onChangeSelectedFieldOrder}
             items={appliedOptions.map(({ option, order }) => ({
               id: option.value,
@@ -271,15 +269,15 @@ function FacetGroupingItem({
                       color='#ACB2BC'
                       css={{ mr: '$5' }}
                     />
+
                     <Tooltip content={option.label}>
-                      <Text disabled={!group.isApplied}>
+                      <Text>
                         {shortenRunPropLabel(option.label, 200).shortenValue}
                       </Text>
                     </Tooltip>
                   </Box>
                   <Box display='flex' jc='space-between' ai='center'>
                     <ToggleButton
-                      disabled={!group.isApplied}
                       leftLabel='Asc'
                       rightLabel='Desc'
                       leftValue={Order.ASC}
@@ -296,7 +294,6 @@ function FacetGroupingItem({
                       size='md'
                       css={{ ml: '$5', position: 'unset' }}
                       onClick={() => onRemoveSelectedField(option.value)}
-                      disabled={!group.isApplied}
                     >
                       <Icon className='Icon__container' icon={<IconX />} />
                     </ClearButtonContainer>

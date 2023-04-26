@@ -16,9 +16,8 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 
 import { Badge, Icon, Text, ToggleButton } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary';
-import { Input } from 'components/kit_v2';
 
-import { GroupType, Order } from 'modules/core/pipeline';
+import { Order } from 'modules/core/pipeline';
 import { SelectOption } from 'modules/BaseExplorer/components/Controls/CaptionProperties';
 
 import { IGroupingPopoverProps, IGroupingSelectOption } from './';
@@ -36,7 +35,6 @@ function GroupingPopover(props: IGroupingPopoverProps) {
 
   const availableModifiers = useStore(pipeline.additionalDataSelector);
   const currentValues = useStore(groupings.currentValuesSelector);
-  const groupingStates = useStore(groupings.stateSelector);
 
   const handleSelect = React.useCallback(
     (values: IGroupingSelectOption[], order?: Order[]) => {
@@ -71,15 +69,6 @@ function GroupingPopover(props: IGroupingPopoverProps) {
       pipeline.group(groupingValues);
     },
     [groupings, pipeline, currentValues, groupName],
-  );
-
-  const onChangeColumnCount = React.useCallback(
-    ({ target }) => {
-      groupings[GroupType.GRID]?.methods.update({
-        maxColumnCount: parseInt(target.value),
-      });
-    },
-    [groupings],
   );
 
   const onChange = React.useCallback(
@@ -147,20 +136,6 @@ function GroupingPopover(props: IGroupingPopoverProps) {
     <ErrorBoundary>
       <div className='BaseGroupingPopover'>
         <div className='BaseGroupingPopover__container'>
-          {groupName === GroupType.GRID && (
-            <div>
-              <Text>Maximum column count</Text>
-              <Input
-                type='number'
-                min={1}
-                disabled={
-                  values.length === 0 || !currentValues[groupName].isApplied
-                }
-                value={groupingStates[GroupType.GRID].maxColumnCount}
-                onChange={onChangeColumnCount}
-              />
-            </div>
-          )}
           <div className='BaseGroupingPopover__container__select'>
             <Text
               size={12}
@@ -171,7 +146,6 @@ function GroupingPopover(props: IGroupingPopoverProps) {
               {inputLabel ?? `Select fields for grouping by ${groupName}`}
             </Text>
             <Autocomplete
-              disabled={!currentValues[groupName].isApplied}
               openOnFocus
               size='small'
               multiple

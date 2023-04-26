@@ -49,13 +49,7 @@ function ReportCard({
           {name}
         </Link>
         <Popover
-          popperProps={{
-            align: 'end',
-            css: {
-              width: '108px',
-              p: '$4 0',
-            },
-          }}
+          popperProps={{ align: 'end', css: { width: '108px', p: '$4 0' } }}
           trigger={
             <IconButton
               variant='ghost'

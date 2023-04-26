@@ -1,61 +1,34 @@
 import React from 'react';
-import { DragDropContext, Droppable, DropResult } from 'react-beautiful-dnd';
-import { FixedSizeList } from 'react-window';
+import { DragDropContext, Droppable } from 'react-beautiful-dnd';
+import { VariableSizeList } from 'react-window';
 
-import { ItemComponent, Row } from './';
-import type { Item, VirtualizedDraggableListProps } from './';
+import useVirtualizedDraggableList from './useVirtualizedDraggableList';
+
+import { VirtualizeDraggableListRow, VirtualizeDraggableListItem } from './';
+import type { VirtualizedDraggableListProps } from './';
 
 function VirtualizedDraggableList(props: VirtualizedDraggableListProps) {
   const {
-    itemSize = 24,
-    width = '100%',
-    height = 200,
-    itemMarginBottom = 4,
-    items: itemsProp = [],
-    onDragEnd: onDragEndProp,
-    isDropDisabled = false,
-    cloneStyle = {},
-  } = props;
-  const [items, setItems] = React.useState<Item[]>(itemsProp);
+    items,
+    onDragEnd,
+    onDragStart,
+    onDragUpdate,
+    itemSize,
+    width,
+    height,
+    itemMarginBottom,
+    isDropDisabled,
+    isDragDisabled,
+    cloneStyle,
+  } = useVirtualizedDraggableList(props);
 
-  React.useEffect(() => {
-    setItems(itemsProp);
-  }, [itemsProp]);
-
-  function onDragEnd(result: DropResult) {
-    document.body.style.userSelect = 'unset';
-    document.body.style.pointerEvents = 'unset';
-    document.body.style.cursor = 'unset';
-
-    if (!result.destination) {
-      return;
-    }
-    if (result.source.index === result.destination.index) {
-      return;
-    }
-
-    const newItems = reorder(
-      items,
-      result.source.index,
-      result.destination.index,
-    );
-    if (typeof onDragEndProp === 'function') {
-      const newIds = newItems.map((item) => item.id);
-      onDragEndProp(newIds);
-    }
-    setItems(newItems);
-  }
-
-  function onDragStart() {
-    document.body.style.cursor = 'grab';
-    document.body.style.userSelect = 'none';
-    document.body.style.pointerEvents = 'none';
-  }
-
-  function onDragUpdate() {
-    document.body.style.cursor = 'grabbing';
-  }
-
+  const itemData = React.useMemo(
+    () => ({
+      data: items,
+      disabled: isDragDisabled,
+    }),
+    [items, isDragDisabled],
+  );
   return (
     <DragDropContext
       onDragEnd={onDragEnd}
@@ -68,7 +41,7 @@ function VirtualizedDraggableList(props: VirtualizedDraggableListProps) {
           droppableId='droppable'
           mode='virtual'
           renderClone={(provided, snapshot, rubric) => (
-            <ItemComponent
+            <VirtualizeDraggableListItem
               style={cloneStyle}
               marginBottom={itemMarginBottom}
               provided={provided}
@@ -78,17 +51,17 @@ function VirtualizedDraggableList(props: VirtualizedDraggableListProps) {
           )}
         >
           {(provided) => (
-            <FixedSizeList
-              className={'ScrollBar__hidden'}
-              height={height}
+            <VariableSizeList
+              className='ScrollBar__hidden'
+              height={Math.min(items.length * itemSize, height)}
               itemCount={items.length}
-              itemSize={itemSize}
+              itemSize={() => itemSize}
               width={width}
               outerRef={provided.innerRef}
-              itemData={items}
+              itemData={itemData}
             >
-              {Row}
-            </FixedSizeList>
+              {VirtualizeDraggableListRow}
+            </VariableSizeList>
           )}
         </Droppable>
       </div>
@@ -98,11 +71,3 @@ function VirtualizedDraggableList(props: VirtualizedDraggableListProps) {
 
 VirtualizedDraggableList.displayName = 'VirtualizedDraggableList';
 export default React.memo(VirtualizedDraggableList);
-
-function reorder(list: Item[], startIndex: number, endIndex: number) {
-  const result = Array.from(list);
-  const [removed] = result.splice(startIndex, 1);
-  result.splice(endIndex, 0, removed);
-
-  return result;
-}

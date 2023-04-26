@@ -17,7 +17,7 @@ function CopyToClipboard({
   copyContent = null,
   iconSize = 'md',
 }: ICopyToClipBoardProps): React.FunctionComponentElement<ICopyToClipBoardProps> {
-  const { onCopy, copied, setCopied } = useCopy(copyContent ?? contentRef);
+  const { onCopy, copied } = useCopy(copyContent ?? contentRef);
 
   return (
     <ErrorBoundary>

@@ -13,7 +13,9 @@ import { ITooltipProps } from './Tooltip.d';
  * @param {number} delayDuration - Delay duration
  * @param {boolean} disableHoverableContent - Disable hoverable content
  * @param {number} skipDelayDuration - Skip delay duration
+ * @param hasArrow
  * @param {React.ReactNode} contentProps - Content props
+ * @param props
  * @returns {React.FunctionComponentElement<React.ReactNode>}
  * @constructor
  * @example

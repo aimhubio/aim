@@ -1,7 +1,12 @@
 import React from 'react';
 import _ from 'lodash-es';
 
-import { IconEye, IconEyeOff } from '@tabler/icons-react';
+import {
+  IconDotsVertical,
+  IconEye,
+  IconEyeOff,
+  IconRefresh,
+} from '@tabler/icons-react';
 
 import {
   ControlsButton,
@@ -10,8 +15,9 @@ import {
   Tabs,
   Box,
   Text,
-  Tooltip,
-  Button,
+  ListItem,
+  Icon,
+  Dialog,
 } from 'components/kit_v2';
 import { ITabsProps } from 'components/kit_v2/Tabs';
 
@@ -26,6 +32,7 @@ function FacetGrouping(props: IFacetGroupingProps) {
     engine: { useStore, groupings, pipeline },
   } = props;
   const currentValues = useStore(groupings.currentValuesSelector);
+  const [hasAppliedValues, setHasAppliedValues] = React.useState(false);
 
   const onToggleApplyingGrouping = React.useCallback(
     (groupName: string) => {
@@ -98,23 +105,71 @@ function FacetGrouping(props: IFacetGroupingProps) {
     pipeline.reset();
   }, [groupings, pipeline]);
 
+  React.useEffect(() => {
+    setHasAppliedValues(false);
+    Object.entries(currentValues).forEach(
+      ([key, item]: [key: string, item: any]) => {
+        if (
+          facetGroupings[key]?.settings?.facet &&
+          item?.isApplied &&
+          item?.fields?.length
+        ) {
+          setHasAppliedValues(true);
+        }
+      },
+    );
+  }, [currentValues, facetGroupings]);
+
   return (
     <Popover
       title={
         <Box display='flex' ai='center' jc='space-between'>
           <Text>Configure facet grouping</Text>
-          <Tooltip content='Reset facet groupings state'>
-            <Button size='sm' variant='outlined' onClick={onResetGroupings}>
-              Reset
-            </Button>
-          </Tooltip>
+          <Popover
+            popperProps={{ align: 'end', css: { width: '108px', p: '$4 0' } }}
+            trigger={
+              <IconButton
+                variant='ghost'
+                color='secondary'
+                size='md'
+                icon={<IconDotsVertical />}
+              />
+            }
+            content={
+              <Box display='flex' fd='column'>
+                <Dialog
+                  title='Reset facet groupings to default'
+                  titleIcon={<IconRefresh />}
+                  onConfirm={onResetGroupings}
+                  description='Are you sure you want to reset the facet groupings to its default?'
+                  trigger={
+                    <ListItem
+                      size='lg'
+                      css={{ color: '$danger100', mx: '$4' }}
+                      leftNode={
+                        <Icon
+                          color='$danger100'
+                          size='md'
+                          icon={<IconRefresh />}
+                        />
+                      }
+                    >
+                      Reset
+                    </ListItem>
+                  }
+                />
+              </Box>
+            }
+          />
         </Box>
       }
       popperProps={{ css: { padding: '0', width: '24rem' }, align: 'start' }}
       content={<Tabs tabs={tabs} />}
       trigger={({ open }) => (
         <Box mr='$5'>
-          <ControlsButton open={open}>Facet</ControlsButton>
+          <ControlsButton open={open} hasAppliedValues={hasAppliedValues}>
+            Facet
+          </ControlsButton>
         </Box>
       )}
     />

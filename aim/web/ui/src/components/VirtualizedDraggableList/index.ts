@@ -1,9 +1,9 @@
 import VirtualizedDraggableList from './VirtualizedDraggableList';
-import ItemComponent from './Item';
-import Row from './Row';
+import VirtualizeDraggableListItem from './VirtualizeDraggableListItem';
+import VirtualizeDraggableListRow from './VirtualizeDraggableListRow';
 
 export * from './VirtualizedDraggableList.d';
 
-export { ItemComponent, Row };
+export { VirtualizeDraggableListItem, VirtualizeDraggableListRow };
 
 export default VirtualizedDraggableList;
