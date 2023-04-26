@@ -8,6 +8,7 @@ import createPipeline, {
   CustomPhaseExecutionArgs,
   GroupType,
   Order,
+  PipelineExecutionOptions,
   PipelineOptions,
   PipelinePhasesEnum,
   PipelineResult,

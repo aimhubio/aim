@@ -3,9 +3,14 @@
 ## Unreleased 
 
 ### Enhancements
-- Add functionality for custom context in the PyTorch Ignite (tmynn)
+
+- Add the ability to create Reports (roubkar, arsengit)
+- Add the ability to create custom UI boards (roubkar, arsengit, KaroMourad)
 - Relocate aim explorers to `Explorers` page (arsengit)
-### fixes
+- Add functionality for custom context in the PyTorch Ignite (tmynn)
+
+### Fixes
+
 -  Convert NaNs and Infs in responses to strings (n-gao)
 
 ## 3.17.3 Apr 6, 2023

@@ -10,6 +10,12 @@ enum PathEnum {
   Bookmarks = '/explorers/bookmarks',
   Run_Detail = '/runs/:runHash',
   Experiment = '/experiments/:experimentId',
+  Boards = '/boards',
+  Board = '/boards/:boardId',
+  Board_Edit = '/boards/:boardId/edit',
+  Reports = '/reports',
+  Report = '/reports/:reportId',
+  Report_Edit = '/reports/:reportId/edit',
   Scatters = '/explorers/scatters',
   Scatters_Id = '/explorers/scatters/:appId',
   Images_Explore = '/explorers/images',
@@ -17,7 +23,6 @@ enum PathEnum {
   Figures_Explorer = '/explorers/figures',
   Audios_Explorer = '/explorers/audios',
   Text_Explorer = '/explorers/text',
-  New_Figures_Explorer = '/explorers/new-fig',
   Metrics_Explorer = '/explorers/metrics_v2',
 }
 
