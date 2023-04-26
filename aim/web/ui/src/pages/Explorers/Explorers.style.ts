@@ -6,11 +6,13 @@ import { styled } from 'config/stitches';
 import { LayoutContainer } from 'config/stitches/foundations/layout';
 
 const ExplorersContentContainer = styled(LayoutContainer, {
-  height: '100vh',
+  $$space: '$space$15',
+  py: '$13',
+  height: 'calc(100vh - $$space)',
+  overflowY: 'auto',
   overflow: 'auto',
   display: 'flex',
   fd: 'column',
-  py: '$13',
 });
 
 const ExplorerCardsWrapper = styled(Box, {
@@ -22,6 +24,7 @@ const ExplorerCardsWrapper = styled(Box, {
 });
 
 const ExplorerBookmarkLink = styled(NavLink, {
+  display: 'flex',
   textDecoration: 'none',
 });
 

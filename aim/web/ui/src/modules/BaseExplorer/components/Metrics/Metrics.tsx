@@ -26,7 +26,8 @@ function Metrics(props: IBoxContentProps) {
     style,
   } = props;
 
-  const vizEngine = engine.visualizations[visualizationName];
+  const vizEngine = engine.visualizations[visualizationName!];
+
   const controls = vizEngine.controls;
   const chartRef = React.useRef<ILineChartRef>(null);
   const vizStyleRef = React.useRef({

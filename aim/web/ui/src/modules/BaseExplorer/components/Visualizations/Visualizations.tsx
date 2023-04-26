@@ -15,6 +15,8 @@ function Visualizations(props: IVisualizationsProps) {
     engine: { pipeline, useStore },
     components,
     visualizers,
+    forceRenderVisualizations,
+    displayProgress,
     getStaticContent,
   } = props;
 
@@ -50,7 +52,7 @@ function Visualizations(props: IVisualizationsProps) {
   );
 
   const Content = React.useMemo(() => {
-    if (typeof getStaticContent === 'function') {
+    if (!forceRenderVisualizations && typeof getStaticContent === 'function') {
       return getStaticContent(status) || Visualizations;
     }
     return Visualizations;
@@ -58,7 +60,7 @@ function Visualizations(props: IVisualizationsProps) {
 
   return (
     <div className='Visualizations'>
-      <ProgressBar engine={engine} />
+      {displayProgress && <ProgressBar engine={engine} />}
       {Content}
     </div>
   );

@@ -17,6 +17,7 @@ function CodeBlock({
   code = '',
   className = '',
   language = 'python',
+  hideCopyIcon = false,
 }: ICodeBlockProps): React.FunctionComponentElement<React.ReactNode> {
   const { elementRef } = useCodeHighlighter(language);
 
@@ -32,9 +33,11 @@ function CodeBlock({
           {code}
         </CodeBlockPre>
         <ErrorBoundary>
-          <CopyToClipboardButton>
-            <CopyToClipBoard contentRef={elementRef} />
-          </CopyToClipboardButton>
+          {hideCopyIcon ? null : (
+            <CopyToClipboardButton>
+              <CopyToClipBoard contentRef={elementRef} />
+            </CopyToClipboardButton>
+          )}
         </ErrorBoundary>
       </CodeBlockContainer>
     </ErrorBoundary>
