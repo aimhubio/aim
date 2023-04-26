@@ -22,6 +22,7 @@ const sizeDict = {
  * @description Virtualized Select component with search
  * @param {boolean} multiple - whether multiple select
  * @param {React.ReactNode} trigger - trigger element
+ * @param triggerProps
  * @param {PopoverProps} popoverProps - popover props
  * @param {string | string[] | undefined } value - selected value
  * @param {(val: string | string[]) => void} onValueChange - on value change callback

@@ -224,7 +224,7 @@ function FacetGroupingItem({
             popoverProps={{
               side: 'right',
               align: 'start',
-              css: { width: 'unset', maxWidth: 300 },
+              css: { maxWidth: 300 },
             }}
             options={allOptions}
             value={appliedOptions.map(({ option }) => option.value)}
