@@ -56,6 +56,7 @@ export type GroupingConfig<State extends object, Settings> = {
     fields: Array<string>;
     // conditions: [{ condition: '>', value: 1 }]
     orders: Array<Order>;
+    isApplied: boolean;
   };
   /**
    * styleApplier aimed to calculate visual properties for the object by calculating group
@@ -96,7 +97,10 @@ export type GroupingConfigs = Record<
   Omit<GroupingConfig<unknown & object, any>, 'name'>
 >;
 
-type GroupValues = Record<string, { orders: Order[]; fields: string[] }>;
+type GroupValues = Record<
+  string,
+  { orders: Order[]; fields: string[]; isApplied: boolean }
+>;
 
 function createGroupingsEngine(
   config: GroupingConfigs,
@@ -123,6 +127,7 @@ function createGroupingsEngine(
   const methods = state.generateMethods(store.setState, store.getState);
 
   const stateResetMethods: Function[] = [];
+  const facetStateResetMethods: Function[] = [];
   const initializers: Function[] = [];
 
   initializers.push(
@@ -139,6 +144,9 @@ function createGroupingsEngine(
       const elem = state.slices[name];
       const originalMethods = elem.methods(store.setState, store.getState);
       stateResetMethods.push(originalMethods.reset);
+      if (elem.settings.facet) {
+        facetStateResetMethods.push(originalMethods.reset);
+      }
 
       const persistenceKey = ['gr', name].join('-');
       const persistenceType = config[name].state?.persist;
@@ -217,6 +225,10 @@ function createGroupingsEngine(
     stateResetMethods.forEach((func) => func());
   }
 
+  function resetFacetState() {
+    facetStateResetMethods.forEach((func) => func());
+  }
+
   function initialize() {
     if (persist) {
       const finalizers: Function[] = [];
@@ -243,6 +255,7 @@ function createGroupingsEngine(
       update,
       ...slices,
       resetState,
+      resetFacetState,
       styleAppliers,
       initialize,
     },

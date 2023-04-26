@@ -53,9 +53,10 @@ export interface ISelectProps {
   disabled?: boolean;
   /**
    * @description The trigger of the list item
+   * @example (open: boolean) => <Button>trigger</Button>
    * @example <Button>trigger</Button>
    */
-  trigger?: React.ReactNode;
+  trigger?: React.ReactNode | ((open: boolean) => React.ReactNode);
   /**
    * @description The popper props of the Select component
    * @example sideOffset: 8

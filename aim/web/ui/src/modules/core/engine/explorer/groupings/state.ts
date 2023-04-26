@@ -130,16 +130,26 @@ function createGroupingsSlice(slices: Record<string, any>) {
 
   function generateMethods(set: Function, get: Function) {
     const update = (
-      groupValues: Record<string, { orders: Order[]; fields: string[] }>,
+      groupValues: Record<
+        string,
+        { orders: Order[]; fields: string[]; isApplied: boolean }
+      >,
     ) => {
       const store = get().groupings;
       let isEmpty = true;
       const newValues = Object.keys(groupValues).reduce(
         (
-          acc: Record<string, { orders: Order[]; fields: string[] }>,
+          acc: Record<
+            string,
+            { orders: Order[]; fields: string[]; isApplied: boolean }
+          >,
           name: string,
         ) => {
-          acc[name] = getCurrentValues(groupValues[name]);
+          acc[name] = {
+            ...getCurrentValues(groupValues[name]),
+            isApplied: groupValues[name].isApplied,
+          };
+
           if (acc[name].fields.length > 0) {
             isEmpty = false;
           }

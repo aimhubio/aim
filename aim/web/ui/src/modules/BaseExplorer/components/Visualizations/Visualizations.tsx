@@ -56,7 +56,7 @@ function Visualizations(props: IVisualizationsProps) {
       return getStaticContent(status) || Visualizations;
     }
     return Visualizations;
-  }, [status, Visualizations, getStaticContent]);
+  }, [status, Visualizations, getStaticContent, forceRenderVisualizations]);
 
   return (
     <div className='Visualizations'>

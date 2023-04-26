@@ -32,7 +32,7 @@ const markdownComponentsOverride = {
 
     if (match?.[1].startsWith('aim') && children?.[0]?.trim()) {
       let height: string | number = match[1].split('_')[1];
-      if (height === undefined || height == '') {
+      if (height === undefined || height === '') {
         height = 450;
       } else {
         height = +height;

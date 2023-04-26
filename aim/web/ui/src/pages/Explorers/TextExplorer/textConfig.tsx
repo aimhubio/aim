@@ -1,4 +1,5 @@
 import React, { memo } from 'react';
+import produce from 'immer';
 
 import COLORS from 'config/colors/colors';
 
@@ -17,7 +18,7 @@ import { LegendsModeEnum } from 'utils/d3';
 
 import getTextExplorerStaticContent from './getStaticContent';
 
-export enum TEXT_RNDERER_MODES {
+export enum TEXT_RENDERER_MODES {
   TEXT = 'text',
   MARKDOWN = 'markdown',
   HTML = 'html',
@@ -27,37 +28,40 @@ export enum TEXT_RNDERER_MODES {
 export const getTextDefaultConfig = (): typeof defaultHydration => {
   const defaultConfig = getDefaultHydration();
 
+  const groupings = produce(defaultConfig.groupings, (draft: any) => {
+    draft[GroupType.COLUMN].defaultApplications.orders = [Order.ASC, Order.ASC];
+    draft[GroupType.COLUMN].defaultApplications.fields = [
+      'run.hash',
+      'texts.name',
+    ];
+
+    draft[GroupType.GRID].defaultApplications.orders = [Order.ASC];
+    draft[GroupType.GRID].defaultApplications.fields = ['texts.name'];
+
+    draft[GroupType.COLOR] = {
+      component: memo((props: IBaseComponentProps) => (
+        <GroupingItem groupName='color' iconName='coloring' {...props} />
+      )),
+
+      styleApplier: ({ groupInfo }: StyleApplierCallbackArgs<any>) => {
+        return {
+          color:
+            groupInfo[GroupType.COLOR]?.order !== undefined
+              ? COLORS[0][groupInfo[GroupType.COLOR].order % COLORS[0].length]
+              : null,
+        };
+      },
+      defaultApplications: {
+        fields: ['run.hash'],
+        orders: [Order.ASC],
+        isApplied: true,
+      },
+    };
+  });
+
   return {
     ...defaultConfig,
-    groupings: {
-      ...defaultConfig.groupings,
-      [GroupType.COLUMN]: {
-        ...defaultConfig.groupings[GroupType.COLUMN],
-        defaultApplications: {
-          orders: defaultConfig.groupings[GroupType.COLUMN].defaultApplications
-            ?.orders ?? [Order.ASC, Order.ASC],
-          fields: ['run.hash', 'texts.name'],
-        },
-      },
-      [GroupType.COLOR]: {
-        component: memo((props: IBaseComponentProps) => (
-          <GroupingItem groupName='color' iconName='coloring' {...props} />
-        )),
-
-        styleApplier: ({ groupInfo }: StyleApplierCallbackArgs<any>) => {
-          return {
-            color:
-              groupInfo[GroupType.COLOR]?.order !== undefined
-                ? COLORS[0][groupInfo[GroupType.COLOR].order % COLORS[0].length]
-                : null,
-          };
-        },
-        defaultApplications: {
-          fields: ['run.hash'],
-          orders: [Order.ASC],
-        },
-      },
-    },
+    groupings,
     controls: {
       ...defaultConfig.controls,
       captionProperties: {
@@ -67,7 +71,7 @@ export const getTextDefaultConfig = (): typeof defaultHydration => {
             displayBoxCaption: true,
             selectedFields: ['run.name', 'texts.name', 'texts.context'],
           },
-          persist: 'url',
+          persist: PersistenceTypesEnum.Url,
         },
       },
       textRenderer: {
@@ -76,7 +80,7 @@ export const getTextDefaultConfig = (): typeof defaultHydration => {
           initialState: {
             type: 'text',
           },
-          persist: 'url',
+          persist: PersistenceTypesEnum.Url,
         },
       },
       legends: {

@@ -8,7 +8,6 @@ import createPipeline, {
   CustomPhaseExecutionArgs,
   GroupType,
   Order,
-  PipelineExecutionOptions,
   PipelineOptions,
   PipelinePhasesEnum,
   PipelineResult,
@@ -58,13 +57,10 @@ function createPipelineEngine<TStore, TObject>(
 ): IPipelineEngine<TObject, TStore> {
   const initialState = getInitialState<TObject>();
 
-  const defaultGroupings = Object.keys(groupingConfig || {}).reduce(
-    (acc: CurrentGrouping, key: string) => {
-      acc[key] = groupingConfig?.[key].defaultApplications;
-      return acc;
-    },
-    {},
-  );
+  const defaultGroupings: CurrentGrouping = {};
+  Object.keys(groupingConfig || {}).forEach((key: string) => {
+    defaultGroupings[key] = groupingConfig?.[key].defaultApplications;
+  });
 
   if (defaultGroupings) {
     initialState.currentGroupings = defaultGroupings;
@@ -223,6 +219,7 @@ function createPipelineEngine<TStore, TObject>(
       type: GroupType;
       fields: string[];
       orders: Order[];
+      isApplied: boolean;
     }[] = [];
 
     Object.keys(config).forEach((key: string) => {
@@ -230,10 +227,12 @@ function createPipelineEngine<TStore, TObject>(
         type: GroupType;
         fields: string[];
         orders: Order[];
+        isApplied: boolean;
       } = {
         type: key as GroupType,
         fields: config[key as GroupType].fields,
         orders: config[key as GroupType].orders,
+        isApplied: config[key as GroupType].isApplied,
       };
       config[key as GroupType].fields.length && groupConfig.push(groupConf);
     });

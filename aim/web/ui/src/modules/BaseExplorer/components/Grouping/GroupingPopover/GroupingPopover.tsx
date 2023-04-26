@@ -16,9 +16,8 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 
 import { Badge, Icon, Text, ToggleButton } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary';
-import { Input } from 'components/kit_v2';
 
-import { GroupType, Order } from 'modules/core/pipeline';
+import { Order } from 'modules/core/pipeline';
 import { SelectOption } from 'modules/BaseExplorer/components/Controls/CaptionProperties';
 
 import { IGroupingPopoverProps, IGroupingSelectOption } from './';
@@ -36,26 +35,6 @@ function GroupingPopover(props: IGroupingPopoverProps) {
 
   const availableModifiers = useStore(pipeline.additionalDataSelector);
   const currentValues = useStore(groupings.currentValuesSelector);
-  const groupingStates = useStore(groupings.stateSelector);
-
-  const getFacetGroupingValues = React.useCallback(
-    (
-      values: Record<GroupType, { fields: string[]; orders: Order[] }>,
-      groupName: GroupType,
-    ) => {
-      const groupingValues = { ...values };
-
-      if (groupName === GroupType.GRID) {
-        groupingValues[GroupType.ROW] = { fields: [], orders: [] };
-        groupingValues[GroupType.COLUMN] = { fields: [], orders: [] };
-      } else if ([GroupType.ROW, GroupType.COLUMN].indexOf(groupName) !== -1) {
-        groupingValues[GroupType.GRID] = { fields: [], orders: [] };
-      }
-
-      return groupingValues;
-    },
-    [],
-  );
 
   const handleSelect = React.useCallback(
     (values: IGroupingSelectOption[], order?: Order[]) => {
@@ -77,34 +56,19 @@ function GroupingPopover(props: IGroupingPopoverProps) {
         },
       );
 
-      let groupingValues = {
+      const groupingValues = {
         ...currentValues,
-        [groupName]: { fields, orders },
-      };
-
-      const facetGroupings = getFacetGroupingValues(
-        groupingValues,
-        groupName as GroupType,
-      );
-
-      groupingValues = {
-        ...groupingValues,
-        ...facetGroupings,
+        [groupName]: {
+          ...currentValues[groupName],
+          fields,
+          orders,
+        },
       };
 
       groupings.update(groupingValues);
       pipeline.group(groupingValues);
     },
-    [groupings, pipeline, currentValues, groupName, getFacetGroupingValues],
-  );
-
-  const onChangeColumnCount = React.useCallback(
-    ({ target }) => {
-      groupings[GroupType.GRID]?.methods.update({
-        maxColumnCount: parseInt(target.value),
-      });
-    },
-    [groupings],
+    [groupings, pipeline, currentValues, groupName],
   );
 
   const onChange = React.useCallback(
@@ -113,7 +77,6 @@ function GroupingPopover(props: IGroupingPopoverProps) {
       if (e?.code === 'Backspace' && searchValue.length) {
         return;
       }
-
       handleSelect(values);
     },
     [handleSelect, searchValue.length],
@@ -173,18 +136,6 @@ function GroupingPopover(props: IGroupingPopoverProps) {
     <ErrorBoundary>
       <div className='BaseGroupingPopover'>
         <div className='BaseGroupingPopover__container'>
-          {groupName === GroupType.GRID && (
-            <div>
-              <Text>Maximum column count</Text>
-              <Input
-                type='number'
-                min={1}
-                disabled={values.length === 0}
-                value={groupingStates[GroupType.GRID].maxColumnCount}
-                onChange={onChangeColumnCount}
-              />
-            </div>
-          )}
           <div className='BaseGroupingPopover__container__select'>
             <Text
               size={12}

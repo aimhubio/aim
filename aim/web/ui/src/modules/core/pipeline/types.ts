@@ -32,6 +32,7 @@ export type BettaGroupOption = {
   type: GroupType;
   fields: string[];
   orders: Order[];
+  isApplied: boolean;
 };
 
 export type Group = { [key: string]: any };

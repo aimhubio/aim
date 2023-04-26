@@ -11,6 +11,7 @@ function usePyodide() {
   const loadPyodide = React.useCallback(() => {
     if (pyodide !== null) {
       pyodide._api.fatal_error = async (err: unknown) => {
+        // eslint-disable-next-line no-console
         console.log('---- fatal error ----', err);
         pyodideEngine.setPyodideCurrent(null);
       };

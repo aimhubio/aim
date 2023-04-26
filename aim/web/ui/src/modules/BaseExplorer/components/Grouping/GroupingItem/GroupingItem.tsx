@@ -12,7 +12,7 @@ import { PipelineStatusEnum } from 'modules/core/engine/types';
 
 import { GroupingPopover } from '../GroupingPopover';
 
-import { IGroupingItemProps } from './GroupingItem.d';
+import { IGroupingItemProps } from './';
 
 import './GroupingItem.scss';
 

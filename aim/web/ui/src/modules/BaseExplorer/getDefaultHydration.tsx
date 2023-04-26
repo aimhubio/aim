@@ -7,9 +7,7 @@ import {
   StyleApplierCallbackArgs,
 } from 'modules/core/engine/explorer/groupings';
 import { GroupType } from 'modules/core/pipeline';
-import Grouping, {
-  GroupingItem,
-} from 'modules/BaseExplorer/components/Grouping';
+import Grouping from 'modules/BaseExplorer/components/Grouping';
 import { BoxProperties } from 'modules/BaseExplorer/components/Controls';
 import FullVewPopover from 'modules/BaseExplorer/components/BoxFullViewPopover';
 import Visualizer from 'modules/BaseExplorer/components/Visualizer';
@@ -21,6 +19,7 @@ import getBaseExplorerStaticContent from 'modules/BaseExplorer/utils/getBaseExpl
 import { PersistenceTypesEnum } from '../core/engine/types';
 
 import { IBaseComponentProps } from './types';
+import FacetGroupingItem from './components/Grouping/FacetGroupingItem/FacetGroupingItem';
 
 const controls: ControlsConfigs = {
   boxProperties: {
@@ -40,10 +39,19 @@ const controls: ControlsConfigs = {
   },
 };
 
+/**
+ * facet groupings: COLUMN and ROW conflict with GRID grouping and should not be used together, so
+ * we need to make sure that only one of them is applied at a time (and GRID isn't applied by default),
+ * if you want to change default applications, you can do it in the specific explorer config
+ */
 const groupings: GroupingConfigs = {
   [GroupType.COLUMN]: {
     component: React.memo((props: IBaseComponentProps) => (
-      <GroupingItem groupName='columns' iconName='group-column' {...props} />
+      <FacetGroupingItem
+        groupName='columns'
+        iconName='group-column'
+        {...props}
+      />
     )),
     styleApplier: ({ groupInfo, boxConfig }: StyleApplierCallbackArgs<any>) => {
       const rulerWidth =
@@ -63,6 +71,7 @@ const groupings: GroupingConfigs = {
     defaultApplications: {
       fields: [],
       orders: [],
+      isApplied: true,
     },
     // state: {
     //   // observable state, to listen on base visualizer
@@ -70,14 +79,14 @@ const groupings: GroupingConfigs = {
     //     rowLength: 4,
     //   },
     // },
-    // settings: {
-    //   // settings to pass to component, to use, alter it can be color scales values for color grouping
-    //   maxRowsLength: 10,
-    // },
+    settings: {
+      // settings to pass to component, to use, alter it can be color scales values for color grouping
+      facet: true,
+    },
   },
   [GroupType.ROW]: {
     component: React.memo((props: IBaseComponentProps) => (
-      <GroupingItem groupName='rows' iconName='image-group' {...props} />
+      <FacetGroupingItem groupName='rows' iconName='image-group' {...props} />
     )),
     styleApplier: ({ groupInfo, boxConfig }: StyleApplierCallbackArgs<any>) => {
       const rulerHeight =
@@ -98,6 +107,7 @@ const groupings: GroupingConfigs = {
     defaultApplications: {
       fields: [],
       orders: [],
+      isApplied: true,
     },
     // state: {
     //   // observable state, to listen on base visualizer
@@ -105,14 +115,14 @@ const groupings: GroupingConfigs = {
     //     rowLength: 4,
     //   },
     // },
-    // settings: {
-    //   // settings to pass to component, to use, alter it can be color scales values for color grouping
-    //   maxRowsLength: 10,
-    // },
+    settings: {
+      // settings to pass to component, to use, alter it can be color scales values for color grouping
+      facet: true,
+    },
   },
   [GroupType.GRID]: {
     component: React.memo((props: IBaseComponentProps) => (
-      <GroupingItem groupName='grid' iconName='image-group' {...props} />
+      <FacetGroupingItem groupName='grid' iconName='image-group' {...props} />
     )),
     styleApplier: ({
       groupInfo,
@@ -139,12 +149,17 @@ const groupings: GroupingConfigs = {
     defaultApplications: {
       fields: [],
       orders: [],
+      isApplied: false,
     },
     state: {
       initialState: {
         maxColumnCount: 3,
       },
       persist: PersistenceTypesEnum.Url,
+    },
+    settings: {
+      // settings to pass to component, to use, alter it can be color scales values for color grouping
+      facet: true,
     },
   },
 };
