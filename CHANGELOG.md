@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.17.4 
+
+- Fix metric values inconsistency with steps (mihran113)
 
 ## 3.17.4 
 - Fix the issue with containers left open (mihran113)
