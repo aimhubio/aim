@@ -1,2 +1,24 @@
 [build-system]
 requires = ["setuptools", "cython == 3.0.0a11", "aimrocks == 0.4.0"]
+
+[tool.pytest.ini_options]
+addopts = "--pdbcls=IPython.terminal.debugger:Pdb"
+
+[tool.coverage.run]
+branch = true
+include = ["aim/web/*", "aim/storage/*", "aim/sdk/*"]
+omit = ["aim/web/migrations/*", "aim/storage/migrations/*", "aim/storage/env.py"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "@(abc.)?abstractmethod",
+    "except ImportError:"
+]
+include = ["aim/web/*", "aim/storage/*", "aim/sdk/*"]
+omit = ["aim/web/migrations/*", "aim/storage/migrations/*", "aim/storage/env.py"]

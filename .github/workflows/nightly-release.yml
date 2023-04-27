@@ -47,7 +47,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r requirements.dev.txt
-          python -m pip install -r tests/requirements.txt
+          python -m pip install -r tests/unit_tests/requirements.txt
 
       - name: code style checks
         run: |
@@ -55,7 +55,7 @@ jobs:
 
       - name: unit-tests
         run: |
-          pytest tests || pytest --lf tests
+          pytest tests/unit_tests || pytest --lf tests/unit_tests
 
   trigger-packaging-workflow:
     needs: version-override
