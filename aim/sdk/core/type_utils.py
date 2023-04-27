@@ -1,6 +1,19 @@
 import os
 
-from typing import Iterator, Tuple, Type, Optional, Any, TypeVar, Union, get_args, get_origin
+from typing import Iterator, Tuple, Type, Optional, Any, TypeVar, Union
+
+try:
+    from typing import get_args, get_origin
+except ImportError:
+    # Support for get_args get_origin functions for Python 3.7
+    def get_args(tp):
+        return tp.__args__
+
+    def get_origin(tp):
+        if hasattr(tp, '__origin__'):
+            return tp.__origin__
+        return None
+
 
 from aim.sdk.core.object import Object
 

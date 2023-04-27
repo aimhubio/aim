@@ -6,8 +6,8 @@ from aim.sdk.core.query_utils import ContainerQueryProxy, SequenceQueryProxy
 
 from aim.sdk.core.constants import KeyNames
 
-from aim.sdk.core.interfaces.container import ContainerCollection as ABCContainerCollection
-from aim.sdk.core.interfaces.sequence import SequenceCollection as ABCSequenceCollection
+from aim.sdk.core.interfaces.container import ContainerCollection as ABCContainerCollection, ContainerType
+from aim.sdk.core.interfaces.sequence import SequenceCollection as ABCSequenceCollection, SequenceType
 
 from aim.storage.query import RestrictedPythonQuery
 from aim.storage.context import Context, cached_context
@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from aim.storage.treeview import TreeView
 
 
-class ContainerCollectionBase(ABCContainerCollection):
+class ContainerCollectionBase(ABCContainerCollection[ContainerType]):
     def __init__(self, query_context: Dict):
         self.query_context = query_context
         self.ctype: Type['Container'] = query_context[KeyNames.CONTAINER_TYPE]
@@ -28,7 +28,7 @@ class ContainerCollectionBase(ABCContainerCollection):
     def __iter_meta__(self) -> Iterator[str]:
         ...
 
-    def __iter__(self) -> Iterator['Sequence']:
+    def __iter__(self) -> Iterator['Container']:
         meta_tree = self.query_context['meta_tree']
         storage = self.query_context['storage']
         for hash_ in self.__iter_meta__():
@@ -106,7 +106,7 @@ class ContainerCollection(ContainerCollectionBase['Container']):
         return ContainerLimitCollection(self, n, self.query_context)
 
 
-class SequenceCollectionBase(ABCSequenceCollection):
+class SequenceCollectionBase(ABCSequenceCollection[SequenceType]):
     def __init__(self, query_context: Dict):
         self.query_context = query_context
         self.stype: Type[Sequence] = query_context[KeyNames.SEQUENCE_TYPE]
