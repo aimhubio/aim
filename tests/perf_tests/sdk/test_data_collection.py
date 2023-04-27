@@ -1,12 +1,12 @@
 from parameterized import parameterized
 
-from tests.performance_tests.base import SDKTestBase
-from tests.performance_tests.utils import (
+from tests.perf_tests.base import SDKTestBase
+from tests.perf_tests.utils import (
     get_baseline,
     write_baseline
 )
-from tests.performance_tests.sdk.queries import queries
-from tests.performance_tests.sdk.utils import (
+from tests.perf_tests.sdk.queries import queries
+from tests.perf_tests.sdk.utils import (
     collect_runs_data,
     collect_metrics_data
 )

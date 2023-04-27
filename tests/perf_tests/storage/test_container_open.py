@@ -1,6 +1,6 @@
-from tests.performance_tests.base import StorageTestBase
-from tests.performance_tests.utils import get_baseline, write_baseline
-from tests.performance_tests.storage.utils import (
+from tests.perf_tests.base import StorageTestBase
+from tests.perf_tests.utils import get_baseline, write_baseline
+from tests.perf_tests.storage.utils import (
     collect_sequence_containers,
     open_containers_for_read
 )

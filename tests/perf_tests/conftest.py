@@ -7,7 +7,7 @@ from pathlib import Path
 
 from aim.sdk.configs import AIM_REPO_NAME
 from aim.utils.tracking import analytics
-from tests.performance_tests.utils import get_baseline_filename
+from tests.perf_tests.utils import get_baseline_filename
 
 TEST_REPO_PATHS = {
     'real_life_repo': '.aim_performance_repo_1',

@@ -3,7 +3,7 @@ from aim.sdk.configs import get_aim_repo_name
 from aim.sdk.types import QueryReportMode
 from aim.storage.rockscontainer import RocksContainer
 
-from tests.performance_tests.utils import timing
+from tests.perf_tests.utils import timing
 
 
 @timing(10)

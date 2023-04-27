@@ -2,7 +2,7 @@ import unittest
 import os
 
 from aim.sdk.configs import AIM_REPO_NAME
-from tests.performance_tests.conftest import TEST_REPO_PATHS
+from tests.perf_tests.conftest import TEST_REPO_PATHS
 
 
 class TestBase(unittest.TestCase):
