@@ -92,9 +92,10 @@ class CustomObjectApiConfig:
             repo = get_project_repo()
             query = checked_query(q)
             return cls.sequence_search_fn(repo, query,
-                                          skip_system=skip_system, record_range=record_range,
-                                          index_range=index_range, report_progress=report_progress,
-                                          x_timezone_offset=x_timezone_offset)
+                                          skip_system=skip_system,
+                                          record_range=record_range, record_density=record_density,
+                                          index_range=index_range, index_density=index_density,
+                                          report_progress=report_progress, x_timezone_offset=x_timezone_offset)
 
         # run sequence batch API
         sequence_batch_endpoint = f'/{{run_id}}/{seq_name}/get-batch/'
