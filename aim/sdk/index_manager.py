@@ -11,13 +11,14 @@ from typing import Iterable
 
 
 from aim.sdk.repo import Repo
-from aim.sdk.run_status_watcher import Event, GRACE_PERIOD
+from aim.sdk.run_status_watcher import Event
 
 logger = logging.getLogger(__name__)
 
 
 class RepoIndexManager:
     index_manager_pool = {}
+    INDEXING_GRACE_PERIOD = 10
 
     @classmethod
     def get_index_manager(cls, repo: Repo):
@@ -104,7 +105,7 @@ class RepoIndexManager:
                     self.run_heartbeat_cache[run_hash] = last_heartbeat
                 else:
                     time_passed = time.time() - last_recorded_heartbeat.detected_epoch_time
-                    if last_recorded_heartbeat.next_event_in + GRACE_PERIOD < time_passed:
+                    if last_recorded_heartbeat.next_event_in + RepoIndexManager.INDEXING_GRACE_PERIOD < time_passed:
                         return True
 
     def run_needs_indexing(self, run_hash: str) -> bool:

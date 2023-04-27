@@ -1,6 +1,9 @@
 # Changelog
 
 
+## 3.17.4 
+- Fix the issue with containers left open (mihran113)
+
 ## 3.17.3 Apr 6, 2023
 
 - Fix the community popup overflowing issue (KaroMourad)
