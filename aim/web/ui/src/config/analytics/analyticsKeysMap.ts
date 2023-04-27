@@ -345,6 +345,12 @@ export const ANALYTICS_EVENT_KEYS = {
     pageView: '[BookmarksPage] Page view',
     view: '[BookmarksPage] View bookmark',
   },
+  boards: {
+    pageView: '[BoardsPage] Page view',
+  },
+  reports: {
+    pageView: '[ReportsPage] Page view',
+  },
   dashboard: {
     pageView: '[DashboardPage] Page view',
     activityCellClick: '[DashboardPage] Click on Activity cell',
@@ -359,6 +365,7 @@ export const ANALYTICS_EVENT_KEYS = {
   sidebar: {
     discord: '[Sidebar] Click on discord community link',
     docs: '[Sidebar] Click on docs link',
+    github: '[Sidebar] Click on github link',
   },
   figures: {} as any,
   audios: {} as any,

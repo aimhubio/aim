@@ -1,5 +1,5 @@
-import ColorPopoverAdvanced from 'pages/Metrics/components/ColorPopoverAdvanced/ColorPopoverAdvanced';
-import StrokePopoverAdvanced from 'pages/Metrics/components/StrokePopover/StrokePopoverAdvanced';
+import ColorPopoverAdvanced from 'pages/Explorers/Metrics/components/ColorPopoverAdvanced/ColorPopoverAdvanced';
+import StrokePopoverAdvanced from 'pages/Explorers/Metrics/components/StrokePopover/StrokePopoverAdvanced';
 
 import { IGroupingPopovers } from 'types/pages/components/Grouping/Grouping';
 

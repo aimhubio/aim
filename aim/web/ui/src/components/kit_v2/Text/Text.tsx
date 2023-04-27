@@ -24,6 +24,9 @@ const Text = React.forwardRef<React.ElementRef<typeof StyledSlot>, ITextProps>(
       weight = '$2',
       color = '$textPrimary',
       disabled = false,
+      textTransform,
+      lineHeight,
+      truncate,
       css,
       children,
       ...rest
@@ -33,11 +36,14 @@ const Text = React.forwardRef<React.ElementRef<typeof StyledSlot>, ITextProps>(
     const TagElement = as;
     return (
       <StyledSlot
+        truncate={truncate}
         css={{
           fontSize: size,
           fontWeight: weight,
           color: disabled ? `${color}50` : color,
           fontFamily: mono ? '$mono' : '$inter',
+          textTransform,
+          lineHeight,
           ...css,
         }}
         ref={forwardedRef}
