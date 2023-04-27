@@ -49,6 +49,7 @@ class RepoStatus(Enum):
     UPDATE_REQUIRED = 2
     PATCH_REQUIRED = 3
     UPDATED = 4
+    UNKNOWN = 5
 
 
 def _get_tracking_queue():
@@ -241,6 +242,8 @@ class Repo:
             return RepoStatus.MISSING
         repo_version = cls.get_version(path)
         current_version = DATA_VERSION
+        if repo_version is None:
+            return RepoStatus.UNKNOWN
         if repo_version < current_version:
             if repo_version[0] < current_version[0]:
                 return RepoStatus.UPDATE_REQUIRED
@@ -256,7 +259,7 @@ class Repo:
             with open(version_file_path, 'r') as version_fh:
                 version_tp = version_fh.read().strip().split('.')
                 return tuple(map(int, version_tp))
-        return 0, 0  # old Aim repos
+        return None  # old Aim repos
 
     @classmethod
     def is_remote_path(cls, path: str):

@@ -49,17 +49,22 @@ def server(host, port, workers,
             return
         repo_inst = Repo.from_path(repo_path, init=True)
     elif repo_status == RepoStatus.UPDATE_REQUIRED:
+        # TODO: add version migration handling script(s)
         if yes:
             upgrade_repo = True
         else:
             upgrade_repo = click.confirm(f'\'{repo_path}\' requires upgrade. Do you want to run upgrade automatically?')
         if upgrade_repo:
-            from aim.cli.upgrade.utils import convert_2to3
-            repo_inst = convert_2to3(repo_path, drop_existing=False, skip_failed_runs=False, skip_checks=False)
+            pass
         else:
             click.echo('To upgrade repo please run the following command:')
-            click.secho(f'aim upgrade --repo {repo_path} 2to3', fg='yellow')
+            click.secho(f'aim upgrade --repo {repo_path}', fg='yellow')
             return
+    elif repo_status == RepoStatus.UNKNOWN:
+        click.echo(f'\'{repo_path}\' is not a valid Aim repository. '
+                   f'To initialize repo please run the following command:')
+        click.secho('aim init', fg='yellow')
+        return
     else:
         repo_inst = Repo.from_path(repo_path)
 
