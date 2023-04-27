@@ -15,8 +15,8 @@ def timing(iter_count=5):
 
 
 def get_baseline_filename():
-    from tests import performance_tests
-    performance_tests_path = os.path.dirname(performance_tests.__file__)
+    from tests import perf_tests
+    performance_tests_path = os.path.dirname(perf_tests.__file__)
     baseline_filename = os.path.join(performance_tests_path, 'BASELINE')
     if os.environ.get('AIM_PERFORMANCE_TESTS_BASELINE'):
         # for local performance testing
