@@ -118,11 +118,10 @@ jobs:
 
       - name: Build & Push aim image
         if: matrix.manylinux-version == 'manylinux_2_24_x86_64'
-        working-directory: ./docker
         env:
           AIM_VERSION: ${{ steps.capture-version.outputs.AIM_VERSION }}
           UPDATE_TAG: ${{ inputs.branch || 'latest' }}
-        run: . create-docker-image.sh
+        run: . ./.github/scripts/create-docker-image.sh
 
   macos-dist:
     if: ${{ github.event_name == 'schedule' || github.actor == 'gorarakelyan' || github.actor == 'alberttorosyan' || github.actor == 'roubkar' }}
