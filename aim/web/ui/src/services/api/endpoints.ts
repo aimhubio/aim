@@ -1,8 +1,8 @@
 const ENDPOINTS = {
   DATA: {
-    BASE: '/objects',
+    BASE: '/data',
     GET: '',
-    FETCH: 'search',
+    FETCH: 'fetch',
   },
 
   PROJECTS: {
