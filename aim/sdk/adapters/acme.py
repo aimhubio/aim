@@ -5,6 +5,22 @@ from acme.utils.loggers.base import Logger, LoggingData
 
 
 class AimCallback:
+    """
+    AimCallback callback class.
+
+    Args:
+        repo (:obj:`str`, optional): Aim repository path or Repo object to which Run object is bound.
+            If skipped, default Repo is used.
+        experiment_name (:obj:`str`, optional): Sets Run's `experiment` property. 'default' if not specified.
+            Can be used later to query runs/sequences.
+        system_tracking_interval (:obj:`int`, optional): Sets the tracking interval in seconds for system usage
+            metrics (CPU, Memory, etc.). Set to `None` to disable system metrics tracking.
+        log_system_params (:obj:`bool`, optional): Enable/Disable logging of system params such as installed packages,
+            git info, environment variables, etc.
+        capture_terminal_logs (:obj:`bool`, optional): Enable/Disable terminal stdout logging.
+        args (:obj:`dict`, optional): Arguments to set a run parameters
+    """
+
     def __init__(
         self,
         repo: Optional[str] = None,

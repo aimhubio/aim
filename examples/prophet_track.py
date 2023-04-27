@@ -15,7 +15,7 @@ train = data.iloc[:4000]
 test = data.iloc[4000:]
 
 model = Prophet()
-logger = AimLogger(prophet_model=model, repo=".", experiment="prophet_test")
+logger = AimLogger(prophet_model=model, repo=".", experiment_name="prophet_test")
 model.fit(train)
 
 future = model.make_future_dataframe(periods=1000)

@@ -8,22 +8,36 @@ Prophet = TypeVar("Prophet")
 
 
 class AimLogger:
+    """
+    AimLogger logger class.
+
+    Prophet doesn't have a callback system and isn't trained iteratively.
+    Thus, only the hyperparameters and user-provided metrics are logged.
+
+    Args:
+        repo (:obj:`str`, optional): Aim repository path or Repo object to which Run object is bound.
+            If skipped, default Repo is used.
+        experiment_name (:obj:`str`, optional): Sets Run's `experiment` property. 'default' if not specified.
+            Can be used later to query runs/sequences.
+        system_tracking_interval (:obj:`int`, optional): Sets the tracking interval in seconds for system usage
+            metrics (CPU, Memory, etc.). Set to `None` to disable system metrics tracking.
+        log_system_params (:obj:`bool`, optional): Enable/Disable logging of system params such as installed packages,
+            git info, environment variables, etc.
+        capture_terminal_logs (:obj:`bool`, optional): Enable/Disable terminal stdout logging.
+        prophet_model (:obj: `Any`, optional): An instance of Prophet model.
+    """
+
     def __init__(
         self,
-        prophet_model: Prophet,
         repo: Optional[str] = None,
-        experiment: Optional[str] = None,
+        experiment_name: Optional[str] = None,
         system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT,
         log_system_params: Optional[bool] = True,
         capture_terminal_logs: Optional[bool] = True,
+        prophet_model: Prophet = None,
     ):
-        """
-        AimLogger for Prophet models.
-        Prophet doesn't have a callback system and isn't trained iteratively.
-        Thus, only the hyperparameters and user-provided metrics are logged.
-        """
         self._repo_path = repo
-        self._experiment = experiment
+        self._experiment = experiment_name
         self._system_tracking_interval = system_tracking_interval
         self._log_system_params = log_system_params
         self._capture_terminal_logs = capture_terminal_logs

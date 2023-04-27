@@ -13,7 +13,7 @@ from aim.sdk.acme import AimCallback, AimWriter
 
 
 def make_environment(seed: int) -> dm_env.Environment:
-    environment = dm_suite.load('cartpole', 'balance')
+    environment = dm_suite.load("cartpole", "balance")
 
     # Make the observations be a flat vector of all concatenated features.
     environment = wrappers.ConcatObservationWrapper(environment)
@@ -43,6 +43,7 @@ d4pg_builder = d4pg.D4PGBuilder(d4pg_config)
 
 aim_run = AimCallback(repo=".", experiment_name="acme_test")
 
+
 def logger_factory(
     name: str,
     steps_key: Optional[str] = None,
@@ -57,10 +58,10 @@ experiment_config = experiments.ExperimentConfig(
     network_factory=network_factory,
     logger_factory=logger_factory,
     seed=0,
-    max_num_actor_steps=5000)  # Each episode is 1000 steps.
+    max_num_actor_steps=5000,
+)  # Each episode is 1000 steps.
 
 
 experiments.run_experiment(
-    experiment=experiment_config,
-    eval_every=1000,
-    num_eval_episodes=1)
+    experiment=experiment_config, eval_every=1000, num_eval_episodes=1
+)

@@ -17,13 +17,17 @@ class AimCallback(Callback):
             metrics (CPU, Memory, etc.). Set to `None` to disable system metrics tracking.
         log_system_params (:obj:`bool`, optional): Enable/Disable logging of system params such as installed packages,
             git info, environment variables, etc.
+        capture_terminal_logs (:obj:`bool`, optional): Enable/Disable terminal stdout logging.
     """
 
-    def __init__(self, repo: Optional[str] = None,
-                 experiment_name: Optional[str] = None,
-                 system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT,
-                 log_system_params: Optional[bool] = True,
-                 capture_terminal_logs: Optional[bool] = True,):
+    def __init__(
+        self,
+        repo: Optional[str] = None,
+        experiment_name: Optional[str] = None,
+        system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT,
+        log_system_params: Optional[bool] = True,
+        capture_terminal_logs: Optional[bool] = True,
+    ):
         self.repo = repo
         self.experiment_name = experiment_name
         self.system_tracking_interval = system_tracking_interval
@@ -40,10 +44,10 @@ class AimCallback(Callback):
 
     def on_train_batch_end(self, step, logs=None):
         logs = logs or {}
-        self._track(logs, {'subset': 'train'}, step)
+        self._track(logs, {"subset": "train"}, step)
 
     def on_eval_end(self, logs=None):
-        self._track(logs, {'subset': 'valid'})
+        self._track(logs, {"subset": "valid"})
 
     def _track(self, logs, context, step=None):
         for k, v in logs.items():

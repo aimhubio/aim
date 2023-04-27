@@ -23,9 +23,7 @@ def build_model(hp):
     x = tf.keras.layers.Dense(
         hp.Int("hidden_size", 30, 100, step=10, default=50), activation="relu"
     )(x)
-    x = tf.keras.layers.Dropout(hp.Float("dropout", 0, 0.5, step=0.1, default=0.5))(
-        x
-    )
+    x = tf.keras.layers.Dropout(hp.Float("dropout", 0, 0.5, step=0.1, default=0.5))(x)
     outputs = tf.keras.layers.Dense(10, activation="softmax")(x)
 
     model = tf.keras.Model(inputs, outputs)
@@ -57,7 +55,7 @@ test_ds = test_ds.map(standardize_record).cache().batch(64)
 tuner.search(
     train_ds,
     validation_data=test_ds,
-    callbacks=[AimCallback(tuner=tuner, repo='.', experiment='keras_tuner_test')],
+    callbacks=[AimCallback(repo=".", experiment_name="keras_tuner_test", tuner=tuner)],
 )
 
 best_model = tuner.get_best_models(1)[0]

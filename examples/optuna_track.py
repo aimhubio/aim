@@ -16,7 +16,9 @@ study.optimize(objective, n_trials=10, callbacks=[aim_callback])
 
 
 # Aim logging in multirun mode.
-aim_callback = AimCallback(as_multirun=True, experiment_name="optuna_multy_run_with_decorator")
+aim_callback = AimCallback(
+    as_multirun=True, experiment_name="optuna_multy_run_with_decorator"
+)
 
 
 @aim_callback.track_in_aim()
