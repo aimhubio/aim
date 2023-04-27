@@ -94,6 +94,8 @@ def auto_registry(cls):
     cls.get_typename = get_typename_fn
     cls.get_full_typename = get_full_typename_fn
     cls.registry = {cls.get_typename(): cls}
+    cls.default_aliases = set()
+    cls.object_class = cls.get_typename()
 
     return cls
 
@@ -103,4 +105,3 @@ def query_alias(*names: str):
         cls.default_aliases.update(names)
         return cls
     return cls_decorator
-
