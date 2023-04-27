@@ -1,7 +1,19 @@
 import os
-import inspect
 
-from typing import Iterator, Tuple, Type, Optional, Any, TypeVar, Union, get_args, get_origin
+from typing import Iterator, Tuple, Type, Optional, Any, TypeVar, Union
+
+try:
+    from typing import get_args, get_origin
+except ImportError:
+    # Support for get_args get_origin functions for Python 3.7
+    def get_args(tp):
+        return tp.__args__
+
+    def get_origin(tp):
+        if hasattr(tp, '__origin__'):
+            return tp.__origin__
+        return None
+
 
 from aim.sdk.core.object import Object
 
@@ -94,6 +106,8 @@ def auto_registry(cls):
     cls.get_typename = get_typename_fn
     cls.get_full_typename = get_full_typename_fn
     cls.registry = {cls.get_typename(): cls}
+    cls.default_aliases = set()
+    cls.object_category = cls.get_typename()
 
     return cls
 
@@ -103,4 +117,3 @@ def query_alias(*names: str):
         cls.default_aliases.update(names)
         return cls
     return cls_decorator
-

@@ -7,16 +7,17 @@ from aim.sdk.core.interfaces.container import (
     Container as ABCContainer
 )
 from aim.sdk.core.sequence import Sequence
-from aim.sdk.core.interfaces.sequence import SequenceMap
+from aim.sdk.core.interfaces.sequence import SequenceMap, SequenceCollection
 
 from aim.sdk.core import type_utils
 from aim.sdk.core.utils import generate_hash, utc_timestamp
+from aim.sdk.core.query_utils import ContainerQueryProxy, construct_query_expression
+from aim.sdk.core.collections import ContainerSequenceCollection
 from aim.sdk.core.constants import ContainerOpenMode, KeyNames
 from aim.sdk.core.exceptions import MissingContainerError
 
 from aim.ext.cleanup import AutoClean
 
-from aim.storage.types import SafeNone
 from aim.storage.hashing import hash_auto
 from aim.storage.query import RestrictedPythonQuery
 from aim.storage.context import Context
@@ -86,7 +87,6 @@ class ContainerAutoClean(AutoClean['Container']):
 @type_utils.query_alias('container', 'c')
 @type_utils.auto_registry
 class Container(ABCContainer):
-    default_aliases = set()
     version = '1.0.0'
 
     def __init_subclass__(cls, **kwargs):
@@ -95,7 +95,7 @@ class Container(ABCContainer):
         if typename is not None:  # check for intermediate helper classes
             cls.registry[typename] = cls
 
-    def __init__(self, hash_: Optional[int] = None, /, *,
+    def __init__(self, hash_: Optional[str] = None, *,
                  repo: Optional[Union[str, 'Repo']] = None,
                  mode: Optional[Union[str, ContainerOpenMode]] = ContainerOpenMode.WRITE):
         if isinstance(mode, str):
@@ -133,25 +133,52 @@ class Container(ABCContainer):
             self._heartbeat = self.storage.heartbeat_reporter(self.hash, self._status_reporter)
 
         self._meta_tree: TreeView = self.storage.tree('meta', self.hash, read_only=self._is_readonly)
-        self._tree: TreeView = self._meta_tree.subtree('chunks').subtree(self.hash)
-        self._meta_attrs_tree: TreeView = self._meta_tree.subtree('attrs')
-        self._attrs_tree: TreeView = self._tree.subtree('attrs')
+
+        self.__storage_init__()
 
         if not self._is_readonly:
             if hash_ is None:  # newly create Container
-                container_type = self.get_full_typename()
                 self._tree[KeyNames.INFO_PREFIX, 'creation_time'] = utc_timestamp()
                 self._tree[KeyNames.INFO_PREFIX, 'version'] = self.version
+                self._tree[KeyNames.INFO_PREFIX, KeyNames.OBJECT_CATEGORY] = self.object_category
+                container_type = self.get_full_typename()
                 self._tree[KeyNames.INFO_PREFIX, KeyNames.CONTAINER_TYPE] = container_type
-                self._meta_tree[KeyNames.CONTAINER_TYPES, self.hash] = container_type
+                self._meta_tree[KeyNames.CONTAINER_TYPES_MAP, self.hash] = container_type
+                self._meta_tree[KeyNames.CONTAINERS, self.get_typename()] = 1
                 self[...] = {}
 
             self._tree[KeyNames.INFO_PREFIX, 'end_time'] = None
 
+        self._resources = ContainerAutoClean(self)
+
+    @classmethod
+    def from_storage(cls, storage, meta_tree: 'TreeView', *, hash_: str):
+        self = cls.__new__(cls)
+        self.mode = ContainerOpenMode.READONLY
+        self.storage = storage
+        self.hash = hash_
+
+        self._resources = None
+        self._hash = self._calc_hash()
+        self._lock = None
+        self._status_reporter = None
+        self._heartbeat = None
+        self._meta_tree = meta_tree
+
+        self.__storage_init__()
+
+        self._resources = ContainerAutoClean(self)
+
+        return self
+
+    def __storage_init__(self):
+        self._tree: TreeView = self._meta_tree.subtree('chunks').subtree(self.hash)
+        self._meta_attrs_tree: TreeView = self._meta_tree.subtree('attrs')
+        self._attrs_tree: TreeView = self._tree.subtree('attrs')
+
         self._data_loader: Callable[[], 'TreeView'] = lambda: self._sequence_data_tree
         self.__sequence_data_tree: TreeView = None
         self._sequence_map = ContainerSequenceMap(self, Sequence)
-        self._resources = ContainerAutoClean(self)
 
     @property
     def _is_readonly(self) -> bool:
@@ -182,37 +209,11 @@ class Container(ABCContainer):
 
     def match(self, expr) -> bool:
         query = RestrictedPythonQuery(expr)
-        query_cache = defaultdict(dict)
+        query_cache = {}
         return self._check(query, query_cache)
 
-    class QueryProxy:
-        def __init__(self, cont_obj: 'Container', cache: Dict):
-            self._cache = cache[cont_obj.hash]
-            self._cont_obj = cont_obj
-
-        def __getattr__(self, item):
-            return self[item]  # fallback to __getitem__
-
-        def __getitem__(self, item):
-            from aim.storage.proxy import AimObjectProxy
-
-            def _collect():
-                if item not in self._cache:
-                    try:
-                        res = self._cont_obj._attrs_tree.collect(item)
-                    except Exception:
-                        res = SafeNone()
-                    self._cache[item] = res
-                else:
-                    return self._cache[item]
-
-            return AimObjectProxy(_collect, view=self._cont_obj._attrs_tree.subtree(item), cache=self._cache)
-
-    def _proxy(self, query_cache) -> QueryProxy:
-        return Container.QueryProxy(self, query_cache)
-
     def _check(self, query, query_cache, *, aliases=()) -> bool:
-        proxy = self._proxy(query_cache)
+        proxy = ContainerQueryProxy(self._tree, query_cache)
 
         if isinstance(aliases, str):
             aliases = (aliases,)
@@ -243,33 +244,27 @@ class ContainerSequenceMap(SequenceMap[Sequence]):
 
     def __call__(self,
                  query_: Optional[str] = None,
-                 type_: Union[str, Type[Sequence]] = Sequence, /,
-                 **kwargs) -> 'SequenceCollection':
+                 type_: Union[str, Type[Sequence]] = Sequence,
+                 **kwargs) -> SequenceCollection:
 
-        context = {
+        query_context = {
             'storage': self._container.storage,
+            'var_name': None,
+            'meta_tree': self._container._meta_tree,
+            'query_cache': defaultdict(dict),
             KeyNames.ALLOWED_VALUE_TYPES: type_utils.get_sequence_value_types(type_),
             KeyNames.SEQUENCE_TYPE: type_,
-            'mode': 'READONLY'
+            KeyNames.CONTAINER_TYPE: Container,
         }
 
-        import json
-        import itertools
-        from aim.sdk.core.collections import ContainerSequenceCollection
-
-        query_exprs = (f'(container.{var_} == {json.dumps(value)})' for var_, value in kwargs.items())
-        if query_ is not None:
-            q = ' and '.join(itertools.chain((query_,), query_exprs))
-        else:
-            q = ' and '.join(query_exprs)
-        seq_collection = ContainerSequenceCollection(self._container, context)
+        q = construct_query_expression('container', query_, **kwargs)
+        seq_collection = ContainerSequenceCollection(self._container.hash, query_context)
         return seq_collection.filter(q) if q else seq_collection
 
     def __iter__(self) -> Iterator[Sequence]:
-        for context_idx in self._sequence_tree.keys():
-            context = self._container._meta_tree[KeyNames.CONTEXTS, context_idx]
-            for name in self._sequence_tree.subtree(context_idx).keys():
-                yield self._sequence_cls(self._container, name=name, context=context)
+        for ctx_idx in self._sequence_tree.keys():
+            for name in self._sequence_tree.subtree(ctx_idx).keys():
+                yield self._sequence_cls(self._container, name=name, context=ctx_idx)
 
     def __getitem__(self, item: Union[str, Tuple[str, Dict]]) -> Sequence:
         if isinstance(item, str):
@@ -280,9 +275,9 @@ class ContainerSequenceMap(SequenceMap[Sequence]):
             name = item[0]
             context = {} if item[1] is None else item[1]
 
-        context_idx = Context(context).idx
+        ctx_idx = Context(context).idx
         try:
-            self._sequence_tree.subtree((context_idx, name)).last_key()
+            self._sequence_tree.subtree((ctx_idx, name)).last_key()
             exists = True
         except KeyError:
             exists = False

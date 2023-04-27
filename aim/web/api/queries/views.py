@@ -1,4 +1,3 @@
-from fastapi import Depends, HTTPException, Query, Header
 from fastapi.responses import StreamingResponse
 
 from typing import Optional, Iterable
@@ -67,7 +66,7 @@ def sequence_query_response(repo, query: str, type_: str):
     return StreamingResponse(streamer)
 
 
-@query_router.get('/search/', responses={400: {'model': QuerySyntaxErrorOut}})
+@query_router.get('/fetch/', responses={400: {'model': QuerySyntaxErrorOut}})
 def search_api(type_: str, q: Optional[str]):
     repo = get_project_repo()
     query = checked_query(q)

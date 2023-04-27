@@ -7,7 +7,7 @@ import packaging.version
 try:
     import pytorch_lightning as pl
 
-    if packaging.version.parse(pl.__version__) < packaging.version.parse("1.7"):
+    if packaging.version.parse(pl.__version__) < packaging.version.parse('1.7'):
         from pytorch_lightning.loggers.base import (
             LightningLoggerBase as Logger,
             rank_zero_experiment,
@@ -32,34 +32,55 @@ from aim.ext.resource.configs import DEFAULT_SYSTEM_TRACKING_INT
 
 
 class AimLogger(Logger):
-    def __init__(self,
-                 repo: Optional[str] = None,
-                 experiment: Optional[str] = None,
-                 train_metric_prefix: Optional[str] = 'train_',
-                 val_metric_prefix: Optional[str] = 'val_',
-                 test_metric_prefix: Optional[str] = 'test_',
-                 system_tracking_interval: Optional[int]
-                 = DEFAULT_SYSTEM_TRACKING_INT,
-                 log_system_params: Optional[bool] = True,
-                 capture_terminal_logs: Optional[bool] = True,
-                 run_name: Optional[str] = None,
-                 run_hash: Optional[str] = None,
-                 ):
+    """
+    AimLogger logger class.
+
+    Args:
+        repo (:obj:`str`, optional): Aim repository path or Repo object to which Run object is bound.
+            If skipped, default Repo is used.
+        experiment_name (:obj:`str`, optional): Sets Run's `experiment` property. 'default' if not specified.
+            Can be used later to query runs/sequences.
+        system_tracking_interval (:obj:`int`, optional): Sets the tracking interval in seconds for system usage
+            metrics (CPU, Memory, etc.). Set to `None` to disable system metrics tracking.
+        log_system_params (:obj:`bool`, optional): Enable/Disable logging of system params such as installed packages,
+            git info, environment variables, etc.
+        capture_terminal_logs (:obj:`bool`, optional): Enable/Disable terminal stdout logging.
+        train_metric_prefix (:obj:`str`, optional): Training metric prefix.
+        val_metric_prefix (:obj:`str`, optional): validation metric prefix.
+        test_metric_prefix (:obj:`str`, optional): testing metric prefix.
+        run_name (:obj:`str`, optional): Aim run name, for reusing the specified run.
+        run_hash (:obj:`str`, optional): Aim run hash, for reusing the specified run.
+    """
+
+    def __init__(
+        self,
+        repo: Optional[str] = None,
+        experiment_name: Optional[str] = None,
+        system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT,
+        log_system_params: Optional[bool] = True,
+        capture_terminal_logs: Optional[bool] = True,
+        train_metric_prefix: Optional[str] = 'train_',
+        val_metric_prefix: Optional[str] = 'val_',
+        test_metric_prefix: Optional[str] = 'test_',
+        run_name: Optional[str] = None,
+        run_hash: Optional[str] = None,
+    ):
         super().__init__()
 
-        self._experiment_name = experiment
-        self._run_name = run_name
         self._repo_path = repo
-
-        self._train_metric_prefix = train_metric_prefix
-        self._val_metric_prefix = val_metric_prefix
-        self._test_metric_prefix = test_metric_prefix
+        self._experiment_name = experiment_name
         self._system_tracking_interval = system_tracking_interval
         self._log_system_params = log_system_params
         self._capture_terminal_logs = capture_terminal_logs
 
-        self._run = None
+        self._train_metric_prefix = train_metric_prefix
+        self._val_metric_prefix = val_metric_prefix
+        self._test_metric_prefix = test_metric_prefix
+
+        self._run_name = run_name
         self._run_hash = run_hash
+
+        self._run = None
 
     @staticmethod
     def _convert_params(params: Union[Dict[str, Any], Namespace]) -> Dict[str, Any]:
@@ -81,7 +102,7 @@ class AimLogger(Logger):
                     self._run_hash,
                     repo=self._repo_path,
                     system_tracking_interval=self._system_tracking_interval,
-                    capture_terminal_logs=self._capture_terminal_logs
+                    capture_terminal_logs=self._capture_terminal_logs,
                 )
                 if self._run_name is not None:
                     self._run.name = self._run_name
@@ -114,12 +135,10 @@ class AimLogger(Logger):
             self.experiment.set(('hparams', key), value, strict=False)
 
     @rank_zero_only
-    def log_metrics(self, metrics: Dict[str, float],
-                    step: Optional[int] = None):
-        assert rank_zero_only.rank == 0, \
-            'experiment tried to log from global_rank != 0'
+    def log_metrics(self, metrics: Dict[str, float], step: Optional[int] = None):
+        assert rank_zero_only.rank == 0, 'experiment tried to log from global_rank != 0'
 
-        metric_items: Dict[str: Any] = {k: v for k, v in metrics.items()}
+        metric_items: Dict[str:Any] = {k: v for k, v in metrics.items()}
 
         if 'epoch' in metric_items:
             epoch: int = metric_items.pop('epoch')
@@ -129,16 +148,13 @@ class AimLogger(Logger):
         for k, v in metric_items.items():
             name = k
             context = {}
-            if self._train_metric_prefix \
-                    and name.startswith(self._train_metric_prefix):
+            if self._train_metric_prefix and name.startswith(self._train_metric_prefix):
                 name = name[len(self._train_metric_prefix):]
                 context['subset'] = 'train'
-            elif self._test_metric_prefix \
-                    and name.startswith(self._test_metric_prefix):
+            elif self._test_metric_prefix and name.startswith(self._test_metric_prefix):
                 name = name[len(self._test_metric_prefix):]
                 context['subset'] = 'test'
-            elif self._val_metric_prefix \
-                    and name.startswith(self._val_metric_prefix):
+            elif self._val_metric_prefix and name.startswith(self._val_metric_prefix):
                 name = name[len(self._val_metric_prefix):]
                 context['subset'] = 'val'
             self.experiment.track(v, name=name, step=step, epoch=epoch, context=context)

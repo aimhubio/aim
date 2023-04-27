@@ -85,7 +85,7 @@ def create_app():
     api_app.include_router(projects_router, prefix='/projects')
     api_app.include_router(runs_router, prefix='/runs')
     api_app.include_router(tags_router, prefix='/tags')
-    api_app.include_router(query_router, prefix='/objects')
+    api_app.include_router(query_router, prefix='/data')
 
     base_path = os.environ.get(AIM_UI_BASE_PATH, '')
 

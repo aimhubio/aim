@@ -41,7 +41,8 @@ d4pg_config = d4pg.D4PGConfig(learning_rate=3e-4, sigma=0.2)
 d4pg_builder = d4pg.D4PGBuilder(d4pg_config)
 
 
-aim_run = AimCallback(repo=".", experiment_name="acme_test")
+aim_run = AimCallback(repo='.', experiment_name='acme_test')
+
 
 def logger_factory(
     name: str,
@@ -57,10 +58,10 @@ experiment_config = experiments.ExperimentConfig(
     network_factory=network_factory,
     logger_factory=logger_factory,
     seed=0,
-    max_num_actor_steps=5000)  # Each episode is 1000 steps.
+    max_num_actor_steps=5000,
+)  # Each episode is 1000 steps.
 
 
 experiments.run_experiment(
-    experiment=experiment_config,
-    eval_every=1000,
-    num_eval_episodes=1)
+    experiment=experiment_config, eval_every=1000, num_eval_episodes=1
+)

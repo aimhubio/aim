@@ -66,36 +66,36 @@ class Sequence(object):
             yield k
 
 
-SeqType = TypeVar('SeqType', bound=Sequence)
+SequenceType = TypeVar('SequenceType', bound=Sequence)
 
 
-class SequenceCollection(Iterable[SeqType]):
+class SequenceCollection(Iterable[SequenceType]):
     @abstractmethod
-    def __iter__(self) -> Iterator[SeqType]:
+    def __iter__(self) -> Iterator[SequenceType]:
         ...
 
     @abstractmethod
-    def filter(self, expr: str) -> 'SequenceCollection[SeqType]':
+    def filter(self, expr: str) -> 'SequenceCollection[SequenceType]':
         ...
 
     @abstractmethod
-    def limit(self, n: int) -> 'SequenceCollection[SeqType]':
+    def limit(self, n: int) -> 'SequenceCollection[SequenceType]':
         ...
 
-    def all(self) -> List[SeqType]:
+    def all(self) -> List[SequenceType]:
         return list(iter(self))
 
-    def first(self) -> SeqType:
+    def first(self) -> SequenceType:
         return next(iter(self))
 
 
-class SequenceMap(Iterable[SeqType]):
+class SequenceMap(Iterable[SequenceType]):
     @abstractmethod
-    def __iter__(self) -> Iterator[SeqType]:
+    def __iter__(self) -> Iterator[SequenceType]:
         ...
 
     @abstractmethod
-    def __getitem__(self, item: Union[str, Tuple[str, Dict]]) -> SeqType:
+    def __getitem__(self, item: Union[str, Tuple[str, Dict]]) -> SequenceType:
         ...
 
     @abstractmethod
