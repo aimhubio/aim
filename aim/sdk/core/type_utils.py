@@ -95,7 +95,7 @@ def auto_registry(cls):
     cls.get_full_typename = get_full_typename_fn
     cls.registry = {cls.get_typename(): cls}
     cls.default_aliases = set()
-    cls.object_class = cls.get_typename()
+    cls.object_category = cls.get_typename()
 
     return cls
 
