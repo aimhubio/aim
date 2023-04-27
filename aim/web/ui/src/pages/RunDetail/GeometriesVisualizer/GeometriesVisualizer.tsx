@@ -27,7 +27,7 @@ import { IGeometriesVisualizerProps } from '../types';
 
 import './GeometriesVisualizer.scss';
 
-function buildScene() {
+function buildScene(geometryBlob: any, format: string) {
   // Create Scene and Rendered:
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0xffffff);
@@ -35,8 +35,8 @@ function buildScene() {
   const camera = new THREE.PerspectiveCamera(
     45,
     window.innerWidth / window.innerHeight,
-    0.001,
-    1000,
+    0.00001,
+    100000,
   );
 
   camera.position.set(-1, 1, 1);
@@ -68,67 +68,64 @@ function buildScene() {
   // Axes
   scene.add(new THREE.AxesHelper(20));
 
-  // Load GEO:
-  const geoFileName = '/static-files/bunny.obj';
-
   var loader = Object();
-  if (geoFileName.endsWith('.stl')) {
+  if (format == 'stl') {
     loader = new STLLoader(loadingManager);
-  } else if (geoFileName.endsWith('.obj')) {
+  } else if (format == 'obj') {
     loader = new OBJLoader(loadingManager);
   } else {
     console.log('File Format Not Supported');
   }
 
-  // load a resource
-  loader.load(
-    geoFileName,
-    function (geometry: Any) {
-      console.log(geometry);
+  const geometry = loader.parse(atob(geometryBlob));
 
-      if (geometry instanceof THREE.Group) {
-        geometry.traverse(function (obj) {
-          if (obj instanceof THREE.Mesh) {
-            console.log(obj);
-            var box = new THREE.Box3().setFromObject(obj);
-            obj.size = box.getSize(new THREE.Vector3()); // store car size
+  // OBJ Files:
+  if (geometry instanceof THREE.Group) {
+    geometry.traverse(function (obj) {
+      if (obj instanceof THREE.Mesh) {
+        var box = new THREE.Box3().setFromObject(obj);
+        obj.size = box.getSize(new THREE.Vector3());
 
-            obj.scale.set(
-              1 / obj.size.length(),
-              1 / obj.size.length(),
-              1 / obj.size.length(),
-            );
-            obj.castShadow = true;
-            obj.receiveShadow = true;
-            obj.material = new THREE.MeshStandardMaterial({ color: 0x606060 });
+        obj.scale.set(
+          1 / obj.size.length(),
+          1 / obj.size.length(),
+          1 / obj.size.length(),
+        );
+        obj.castShadow = true;
+        obj.receiveShadow = true;
+        obj.material = new THREE.MeshStandardMaterial({ color: 0x606060 });
+        obj.material.side = THREE.DoubleSide;
 
-            obj.geometry.center();
-            var pivot = new THREE.Group();
-            scene.add(pivot);
-            pivot.add(obj);
-          }
-        });
+        obj.geometry.center();
+        var pivot = new THREE.Group();
+        scene.add(pivot);
+        pivot.add(obj);
       }
+    });
+  }
 
-      if (geometry instanceof THREE.BufferGeometry) {
-        console.log(geometry);
-        var material = new THREE.MeshStandardMaterial({ color: 0x606060 });
-        material.side = THREE.DoubleSide;
-        const mesh = new THREE.Mesh(geometry, material);
-        mesh.geometry.center();
-        scene.add(mesh);
-      }
-    },
-    // called when loading is in progresses
-    function (xhr) {
-      console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
-    },
-    // called when loading has errors
-    function (error) {
-      console.log(error);
-      console.log('An error happened');
-    },
-  );
+  // STL Files:
+  if (geometry instanceof THREE.BufferGeometry) {
+    var material = new THREE.MeshStandardMaterial({ color: 0x606060 });
+    material.side = THREE.DoubleSide;
+    const obj = new THREE.Mesh(geometry, material);
+    obj.geometry.center();
+
+    var box = new THREE.Box3().setFromObject(obj);
+    obj.size = box.getSize(new THREE.Vector3());
+
+    obj.scale.set(
+      1 / obj.size.length(),
+      1 / obj.size.length(),
+      1 / obj.size.length(),
+    );
+    obj.castShadow = true;
+    obj.receiveShadow = true;
+
+    obj.geometry.center();
+
+    scene.add(obj);
+  }
 
   const ambientLight = new THREE.AmbientLight(0xffffff);
   scene.add(ambientLight);
@@ -152,11 +149,6 @@ function buildScene() {
   window.addEventListener('resize', onWindowResize);
 }
 
-function Loader() {
-  const { progress } = useProgress();
-  return <Html center>{progress} % loaded</Html>;
-}
-
 function getGeometriesBlobsData(uris: string[]) {
   const request = geometriesExploreService.getGeometriesByURIs(uris);
   return {
@@ -165,7 +157,6 @@ function getGeometriesBlobsData(uris: string[]) {
       return request
         .call()
         .then(async (stream) => {
-          console.log(stream);
           let bufferPairs = decodeBufferPairs(stream);
           let decodedPairs = decodePathsVals(bufferPairs);
           let objects = iterFoldTree(decodedPairs, 1);
@@ -177,7 +168,6 @@ function getGeometriesBlobsData(uris: string[]) {
           }
         })
         .catch((ex) => {
-          console.log(ex);
           if (ex.name === 'AbortError') {
             // Abort Error
           } else {
@@ -193,31 +183,37 @@ function GeometriesVisualizer(
   props: IGeometriesVisualizerProps,
 ): React.FunctionComponentElement<React.ReactNode> {
   const { data, isLoading } = props;
-  const [geometryBlobs, setGeometryBlobs] = React.useState({});
-  console.log('data?.geometriesSetData', data?.geometriesSetData);
-  console.log(
-    'data?.geometriesSetData[0].blob_uri',
-    data?.geometriesSetData?.[' = 1'],
-  );
-  React.useEffect(() => {
-    blobsURIModel.init();
-  }, []);
+  const [geometryBlob, setGeometryBlob] = React.useState('');
+  const [geometryBlobFormat, setGeometryBlobFormat] = React.useState('');
+  const [loadingScene, setLoadingScene] = React.useState(true);
 
   React.useEffect(() => {
-    setGeometryBlobs(
-      getGeometriesBlobsData([data?.geometriesSetData?.[' = 1'][0].blob_uri]),
-    );
-  }, []);
+    async function fetchData() {
+      let blobURI = data?.geometriesSetData?.[' = 1'][0].blob_uri;
+      setGeometryBlobFormat(data?.geometriesSetData?.[' = 1'][0].format);
+      if (blobURI !== undefined) {
+        let requestRef = getGeometriesBlobsData([blobURI]);
+        await requestRef.call();
+        setGeometryBlob(blobsURIModel.getState()[blobURI]);
+        return () => {
+          requestRef.abort();
+        };
+      }
+    }
+    fetchData();
+  }, [data]);
 
   const canvasRef = React.useRef(null);
   React.useEffect(() => {
-    var canvas = document.querySelector('#geo');
-    console.log('canvas: ', canvas);
-    if (!canvas) {
-      return;
+    if (geometryBlob !== '') {
+      var canvas = document.querySelector('#geo');
+      if (!canvas) {
+        return;
+      }
+      buildScene(geometryBlob, geometryBlobFormat);
+      setLoadingScene(false);
     }
-    buildScene();
-  }, [canvasRef, props]);
+  }, [geometryBlob]);
 
   return (
     <ErrorBoundary>
@@ -230,7 +226,7 @@ function GeometriesVisualizer(
             <IllustrationBlock size='xLarge' title='No Tracked Figures' />
           ) : (
             <div className='GeometriesVisualizer__recordCnt'>
-              <div id='loader'></div>
+              {loadingScene && <div id='loader'></div>}
               <canvas className='webgl' id='geo' ref={canvasRef}></canvas>
             </div>
           )}
