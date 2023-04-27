@@ -95,7 +95,7 @@ class Container(ABCContainer):
         if typename is not None:  # check for intermediate helper classes
             cls.registry[typename] = cls
 
-    def __init__(self, hash_: Optional[str] = None, /, *,
+    def __init__(self, hash_: Optional[str] = None, *,
                  repo: Optional[Union[str, 'Repo']] = None,
                  mode: Optional[Union[str, ContainerOpenMode]] = ContainerOpenMode.WRITE):
         if isinstance(mode, str):
@@ -244,7 +244,7 @@ class ContainerSequenceMap(SequenceMap[Sequence]):
 
     def __call__(self,
                  query_: Optional[str] = None,
-                 type_: Union[str, Type[Sequence]] = Sequence, /,
+                 type_: Union[str, Type[Sequence]] = Sequence,
                  **kwargs) -> SequenceCollection:
 
         query_context = {

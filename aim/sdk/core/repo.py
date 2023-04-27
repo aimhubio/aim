@@ -71,7 +71,7 @@ class Repo(LegacyRepo):
     def storage_engine(self) -> StorageEngine:
         return self._storage_engine
 
-    def _select(self, type_: Union[str, Type] = None, /, **kwargs):
+    def _select(self, type_: Union[str, Type] = None, **kwargs):
         if type_ is None:
             assert len(kwargs) == 1
             (var_name, type_) = kwargs.popitem()
@@ -119,14 +119,14 @@ class Repo(LegacyRepo):
 
     def containers(self,
                    query_: Optional[str] = None,
-                   type_: Union[str, Type[Container]] = Container, /,
+                   type_: Union[str, Type[Container]] = Container,
                    **kwargs) -> ContainerCollection:
         q = construct_query_expression('container', query_, **kwargs)
         return self._select(type_).filter(q) if q else self._select(type_)
 
     def sequences(self,
                   query_: Optional[str] = None,
-                  type_: Union[str, Type[Sequence]] = Sequence, /,
+                  type_: Union[str, Type[Sequence]] = Sequence,
                   **kwargs) -> SequenceCollection:
         q = construct_query_expression('sequence', query_, **kwargs)
         return self._select(type_).filter(q) if q else self._select(type_)

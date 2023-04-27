@@ -83,7 +83,7 @@ class SequenceQueryProxy:
         return AimObjectProxy(safe_collect, view=self._tree.subtree(item))
 
 
-def construct_query_expression(var_prefix: str, query_: Optional[str] = None, /, **kwargs) -> str:
+def construct_query_expression(var_prefix: str, query_: Optional[str] = None, **kwargs) -> str:
     query_exprs = (f'({var_prefix}.{var_} == {json.dumps(value)})' for var_, value in kwargs.items())
     if query_ is not None:
         q = ' and '.join(itertools.chain((query_,), query_exprs))
