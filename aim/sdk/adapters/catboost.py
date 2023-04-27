@@ -30,7 +30,7 @@ class AimLogger:
         system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT,
         log_system_params: Optional[bool] = True,
         capture_terminal_logs: Optional[bool] = True,
-        loss_function: Optional[str] = "Loss",
+        loss_function: Optional[str] = 'Loss',
         log_cout=stdout,
     ):
         super().__init__()
@@ -45,7 +45,7 @@ class AimLogger:
         self._log_cout = log_cout
 
         if log_cout is not None:
-            assert hasattr(log_cout, "write")
+            assert hasattr(log_cout, 'write')
 
     @property
     def experiment(self) -> Run:
@@ -85,7 +85,7 @@ class AimLogger:
         _log = log
         log = log.strip().split()
         if log:
-            if len(log) == 3 and log[1] == "=":
+            if len(log) == 3 and log[1] == '=':
                 run[log[0]] = self._to_number(log[2])
                 return
 
@@ -94,12 +94,12 @@ class AimLogger:
             value_test = None
             value_best = None
 
-            if log[1] == "learn:":
+            if log[1] == 'learn:':
                 value_iter = int(log[0][:-1])
                 value_learn = self._to_number(log[2])
-                if log[3] == "test:":
+                if log[3] == 'test:':
                     value_test = self._to_number(log[4])
-                    if log[5] == "best:":
+                    if log[5] == 'best:':
                         value_best = self._to_number(log[6])
             if any((value_learn, value_test, value_best)):
                 if value_learn:
@@ -107,21 +107,21 @@ class AimLogger:
                         value_learn,
                         name=self._loss_function,
                         step=value_iter,
-                        context={"log": "learn"},
+                        context={'log': 'learn'},
                     )
                 if value_test:
                     run.track(
                         value_test,
                         name=self._loss_function,
                         step=value_iter,
-                        context={"log": "test"},
+                        context={'log': 'test'},
                     )
                 if value_best:
                     run.track(
                         value_best,
                         name=self._loss_function,
                         step=value_iter,
-                        context={"log": "best"},
+                        context={'log': 'best'},
                     )
             else:
                 # Unhandled or junky log

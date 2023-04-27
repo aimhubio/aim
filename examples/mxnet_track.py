@@ -51,7 +51,7 @@ loss_fn = gluon.loss.SoftmaxCrossEntropyLoss()
 learning_rate = 0.04  # You can experiment with your own learning rate here
 num_epochs = 2  # You can run training for more epochs
 trainer = gluon.Trainer(
-    resnet_18_v1.collect_params(), "sgd", {"learning_rate": learning_rate}
+    resnet_18_v1.collect_params(), 'sgd', {'learning_rate': learning_rate}
 )
 
 
@@ -70,15 +70,15 @@ est = estimator.Estimator(
 )
 
 aim_log_handler = AimLoggingHandler(
-    repo=".tmp_mxnet",
-    experiment_name="mxnet_example",
+    repo='.tmp_mxnet',
+    experiment_name='mxnet_example',
     log_interval=1,
     metrics=[train_acc, train_loss, val_acc],
 )
 
 # ignore warnings for nightly test on CI only
 with warnings.catch_warnings():
-    warnings.simplefilter("ignore")
+    warnings.simplefilter('ignore')
     # Magic line
     est.fit(
         train_data=train_data_loader,

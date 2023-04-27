@@ -44,10 +44,10 @@ class AimCallback(Callback):
 
     def on_train_batch_end(self, step, logs=None):
         logs = logs or {}
-        self._track(logs, {"subset": "train"}, step)
+        self._track(logs, {'subset': 'train'}, step)
 
     def on_eval_end(self, logs=None):
-        self._track(logs, {"subset": "valid"})
+        self._track(logs, {'subset': 'valid'})
 
     def _track(self, logs, context, step=None):
         for k, v in logs.items():
@@ -55,7 +55,7 @@ class AimCallback(Callback):
                 if len(v) == 1:
                     v = v[0]
                 else:
-                    raise NotImplementedError(f"number of items in {k} are more than 1")
+                    raise NotImplementedError(f'number of items in {k} are more than 1')
             self._run.track(v, k, step=step, context=context, epoch=self.epoch)
 
     @property

@@ -7,8 +7,8 @@ try:
     from kerastuner.engine.tuner_utils import TunerCallback
 except ImportError:
     raise RuntimeError(
-        "This contrib module requires KerasTuner to be installed. "
-        "Please install it with command: \n pip install keras-tuner"
+        'This contrib module requires KerasTuner to be installed. '
+        'Please install it with command: \n pip install keras-tuner'
     )
 
 
@@ -74,7 +74,7 @@ class AimCallback(TunerCallback):
                     log_system_params=self._log_system_params,
                     capture_terminal_logs=self._capture_terminal_logs,
                 )
-            self._run["trial_id"] = self._current_trial_id
+            self._run['trial_id'] = self._current_trial_id
             self._started_trials.append(self._current_trial_id)
         trial = self.tuner.oracle.get_trial(self._current_trial_id)
         hparams = trial.hyperparameters.values
