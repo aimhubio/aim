@@ -1,5 +1,4 @@
 import os
-import inspect
 
 from typing import Iterator, Tuple, Type, Optional, Any, TypeVar, Union, get_args, get_origin
 
