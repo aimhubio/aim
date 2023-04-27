@@ -2,6 +2,8 @@ import React from 'react';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import { VariableSizeList } from 'react-window';
 
+import { Box } from 'components/kit_v2';
+
 import useVirtualizedDraggableList from './useVirtualizedDraggableList';
 
 import { VirtualizeDraggableListRow, VirtualizeDraggableListItem } from './';
@@ -35,7 +37,7 @@ function VirtualizedDraggableList(props: VirtualizedDraggableListProps) {
       onDragStart={onDragStart}
       onDragUpdate={onDragUpdate}
     >
-      <div className='VirtualizedDraggableList'>
+      <Box width='100%' className='VirtualizedDraggableList'>
         <Droppable
           isDropDisabled={isDropDisabled}
           droppableId='droppable'
@@ -64,7 +66,7 @@ function VirtualizedDraggableList(props: VirtualizedDraggableListProps) {
             </VariableSizeList>
           )}
         </Droppable>
-      </div>
+      </Box>
     </DragDropContext>
   );
 }
