@@ -8,9 +8,10 @@ import {
 
 import { GroupNameEnum } from 'config/grouping/GroupingPopovers';
 
+import { GroupType } from 'modules/core/pipeline';
+
 import changeDasharraySize from '../changeDasharraySize';
 import shortenRunPropLabel from '../shortenRunPropLabel';
-import { GroupType } from '../../modules/core/pipeline';
 
 interface DrawLegendsArgs {
   data?: LegendsDataType;
@@ -84,6 +85,33 @@ const getGroupLegendProps: Record<string, (title?: string) => GroupLegendProp> =
             .style('padding', '2px')
             .style('white-space', 'pre')
             .text(` ${(cell.chartIndex || 0) + 1} `)
+            .style('font-family', config.label.fontFamily);
+        },
+      },
+    }),
+    [GroupType.GRID]: (title = 'Charts') => ({
+      title,
+      label: {
+        key: '#',
+        element: 'text',
+        setAttr: <T extends SVGTextElement>(
+          cell: LegendColumnDataType,
+          element: d3.Selection<T, unknown, null, undefined>,
+          cellIndex: number,
+        ) => {
+          const y =
+            config.cellTitle.height +
+            config.cellTitle.margin +
+            cellIndex * config.cell.height;
+
+          element
+            ?.attr('y', y)
+            .attr('fill', '#484f56')
+            .style('outline', '1px solid #dee6f3')
+            .style('border-radius', '1px')
+            .style('padding', '2px')
+            .style('white-space', 'pre')
+            .text(` ${(cell.order || 0) + 1} `)
             .style('font-family', config.label.fontFamily);
         },
       },

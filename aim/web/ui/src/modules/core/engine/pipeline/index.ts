@@ -8,7 +8,6 @@ import createPipeline, {
   CustomPhaseExecutionArgs,
   GroupType,
   Order,
-  PipelineExecutionOptions,
   PipelineOptions,
   PipelinePhasesEnum,
   PipelineResult,
@@ -53,10 +52,15 @@ export interface IPipelineEngine<TObject, TStore> {
 function createPipelineEngine<TStore, TObject>(
   store: any,
   options: Omit<PipelineOptions, 'callbacks'>,
-  defaultGroupings?: any,
+  groupingConfig: any,
   notificationsEngine?: INotificationsEngine<TStore>['engine'],
 ): IPipelineEngine<TObject, TStore> {
   const initialState = getInitialState<TObject>();
+
+  const defaultGroupings: CurrentGrouping = {};
+  Object.keys(groupingConfig || {}).forEach((key: string) => {
+    defaultGroupings[key] = groupingConfig?.[key].defaultApplications;
+  });
 
   if (defaultGroupings) {
     initialState.currentGroupings = defaultGroupings;
@@ -129,8 +133,6 @@ function createPipelineEngine<TStore, TObject>(
     params: RunsSearchQueryParams,
     isInternal: boolean = false,
   ): void {
-    const currentGroupings = state.getCurrentGroupings();
-
     // @TODO add a "customMetric" to the query params dynamically
     const customMetric =
       store.getState().visualizations.vis1.controls.axesProperties?.alignment
@@ -166,12 +168,6 @@ function createPipelineEngine<TStore, TObject>(
       }
     }
 
-    const groupOptions = Object.keys(currentGroupings).map((key: string) => ({
-      type: key as GroupType,
-      fields: currentGroupings[key].fields,
-      orders: currentGroupings[key].orders,
-    }));
-
     // @TODO complete response typings
     pipeline
       .execute({
@@ -179,7 +175,7 @@ function createPipelineEngine<TStore, TObject>(
           params: queryParams,
           ignoreCache: true,
         },
-        group: groupOptions,
+        group: normalizeGroupConfig(state.getCurrentGroupings()),
         custom: state.getCurrentCustomPhaseArgs(),
       })
       .then((res) => {
@@ -223,6 +219,7 @@ function createPipelineEngine<TStore, TObject>(
       type: GroupType;
       fields: string[];
       orders: Order[];
+      isApplied: boolean;
     }[] = [];
 
     Object.keys(config).forEach((key: string) => {
@@ -230,10 +227,12 @@ function createPipelineEngine<TStore, TObject>(
         type: GroupType;
         fields: string[];
         orders: Order[];
+        isApplied: boolean;
       } = {
         type: key as GroupType,
         fields: config[key as GroupType].fields,
         orders: config[key as GroupType].orders,
+        isApplied: config[key as GroupType].isApplied,
       };
       config[key as GroupType].fields.length && groupConfig.push(groupConf);
     });
@@ -246,7 +245,7 @@ function createPipelineEngine<TStore, TObject>(
    * @example
    *     pipeline.engine.group(config)
    * @param {CurrentGrouping} config
-   * @param {boolean} isInternal - indicates called internally or from UI, if isInternal doesnt need to update current query
+   * @param {boolean} isInternal - indicates called internally or from UI, if isInternal doesn't need to update current query
    */
   function group(config: CurrentGrouping, isInternal: boolean = false): void {
     state.setCurrentGroupings(config);

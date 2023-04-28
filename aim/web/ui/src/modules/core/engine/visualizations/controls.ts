@@ -60,7 +60,7 @@ function createControl(
   };
 }
 
-function createControlsSlice(slices: { [key: string]: any }) {
+function createControlsSlice(slices: Record<string, any>) {
   let initialState: Record<string, any> = {};
   const subSlices: Record<string, any> = {};
 
@@ -86,7 +86,7 @@ function createControlsStateConfig(
   configs: ControlsConfigs = {},
   statePrefix: string,
 ) {
-  const controls: { [key: string]: any } = {};
+  const controls: Record<string, unknown> = {};
 
   Object.keys(configs).forEach((name: string) => {
     controls[name] = createControl(

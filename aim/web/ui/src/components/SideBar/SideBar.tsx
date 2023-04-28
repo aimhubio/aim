@@ -86,12 +86,7 @@ function SideBar(): React.FunctionComponentElement<React.ReactNode> {
           orientation='horizontal'
         />
         <SidebarBottom>
-          <Tooltip
-            content='Aim Github'
-            contentProps={{
-              side: 'right',
-            }}
-          >
+          <Tooltip content='Aim Github' contentProps={{ side: 'right' }}>
             <SidebarBottomAnchor
               target='_blank'
               href={GITHUB_URL}
@@ -104,9 +99,7 @@ function SideBar(): React.FunctionComponentElement<React.ReactNode> {
           <CommunityPopup>
             <Tooltip
               content='Community Discord'
-              contentProps={{
-                side: 'right',
-              }}
+              contentProps={{ side: 'right' }}
             >
               <SidebarBottomAnchor
                 target='_blank'
@@ -118,12 +111,7 @@ function SideBar(): React.FunctionComponentElement<React.ReactNode> {
               </SidebarBottomAnchor>
             </Tooltip>
           </CommunityPopup>
-          <Tooltip
-            content='Docs'
-            contentProps={{
-              side: 'right',
-            }}
-          >
+          <Tooltip content='Docs' contentProps={{ side: 'right' }}>
             <SidebarBottomAnchor
               target='_blank'
               href={DOCUMENTATIONS.MAIN_PAGE}

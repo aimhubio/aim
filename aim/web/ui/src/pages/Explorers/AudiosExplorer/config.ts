@@ -18,6 +18,9 @@ export const getAudiosDefaultConfig = (): typeof defaultHydration => {
     ];
     draft[GroupType.ROW].defaultApplications.orders = [Order.DESC];
     draft[GroupType.ROW].defaultApplications.fields = ['record.step'];
+
+    draft[GroupType.GRID].defaultApplications.orders = [Order.ASC];
+    draft[GroupType.GRID].defaultApplications.fields = ['audios.name'];
   });
 
   const controls = produce(defaultConfig.controls, (draft: any) => {

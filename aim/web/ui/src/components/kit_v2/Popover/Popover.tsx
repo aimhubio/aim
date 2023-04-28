@@ -15,12 +15,13 @@ import { PopoverTitleStyled, StyledContent } from './Popover.style';
  * @param {React.ReactNode} content - React children
  * @param {boolean} defaultOpen - Default open state of the popover
  * @param {PopperProps} popperProps - Popper props
+ * @param {string | React.ReactNode} title - Title of the popover
  * @returns {React.FunctionComponentElement<React.ReactNode>}
  * @constructor
  * @example
  * <Popover
  *  trigger={<Button>Open popover</Button>}
- * content={<Box>Popover content</Box>}
+ *  content={<Box>Popover content</Box>}
  * />
  */
 function Popover({

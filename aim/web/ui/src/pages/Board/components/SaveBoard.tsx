@@ -8,7 +8,7 @@ import {
   TextField,
 } from '@material-ui/core';
 
-import { Button, Text } from 'components/kit';
+import { Button } from 'components/kit';
 
 function SaveBoard(props: any) {
   let [opened, setOpened] = React.useState(false);

@@ -9,8 +9,11 @@ import createQuery, { Query, RequestProgressCallback } from './query';
 import createAdapter, { Adapter } from './adapter';
 import createCustomPhase, { CustomPhase } from './custom';
 // @ts-ignore
-import { BettaGroupOption } from './grouping/types';
-import { PipelinePhasesEnum, StatusChangeCallback } from './types';
+import {
+  BettaGroupOption,
+  PipelinePhasesEnum,
+  StatusChangeCallback,
+} from './types';
 import PipelineError from './PipelineError';
 import { IQueryableData, ProcessedData } from './adapter/types';
 
@@ -84,6 +87,7 @@ export type PipelineResult = {
  * @param query
  * @param adapter
  * @param grouping
+ * @param custom
  * @param callbacks
  */
 function createPipeline({
