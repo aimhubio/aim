@@ -774,3 +774,32 @@ class Switch(Component):
             "data": val
         })
         print("Switch" + str(val))
+
+class TextArea(Component):
+    def __init__(self, value=None, size=None, resize=None, disabled=None, caption=None, key=None):
+        component_type = "TextArea"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type)
+
+        self.data = value
+
+        self.options = {
+            "value": self.value,
+            "size": size,
+            "resize": resize,
+            "disabled": disabled,
+            "caption": caption
+        }
+
+        self.callbacks = {
+            "on_change": self.on_change
+        }
+
+        self.render()
+
+    @property
+    def value(self):
+        return self.state["value"] if "value" in self.state else self.data
+
+    async def on_change(self, value):
+        self.set_state({ "value": value })

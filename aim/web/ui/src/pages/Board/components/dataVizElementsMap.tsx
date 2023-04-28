@@ -4,6 +4,7 @@ import * as _ from 'lodash-es';
 import DictVisualizer from 'components/kit/DictVisualizer';
 import LineChart from 'components/LineChart/LineChart';
 import { Slider, Input, Text, Select, Button, Switch } from 'components/kit_v2';
+import Textarea from 'components/kit_v2/Textarea';
 
 import RunLogRecords from 'pages/RunDetail/RunLogRecords';
 import RunDetailNotesTab from 'pages/RunDetail/RunDetailNotesTab/RunDetailNotesTab';
@@ -178,6 +179,18 @@ export const dataVizElementsMap: any = {
 
     return (
       <Switch {...props.options} checked={checked} onCheckedChange={onChange} />
+    );
+  },
+  TextArea: (props: any) => {
+    const onChange = React.useCallback(({ target }) => {
+      props.callbacks?.on_change(target.value);
+    }, []);
+    return (
+      <Textarea
+        {...props.options}
+        value={props.options.value}
+        onChange={onChange}
+      />
     );
   },
 };
