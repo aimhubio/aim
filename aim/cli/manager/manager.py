@@ -45,7 +45,7 @@ def run_up(args):
         'host': 'http://' + args['--host']
     }
 
-    time.sleep(2)
+    time.sleep(5)
     for line in child_process.stderr:
         # @TODO improve this solution
         #  The child process `aim cli` has an incompatible things inside
