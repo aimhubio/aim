@@ -1,10 +1,12 @@
-import { createSearchRunsRequest } from 'modules/core/api/runsApi';
+import { createFetchDataRequest } from 'modules/core/api/dataFetchApi';
 import {
   DecodingError,
   FetchingError,
 } from 'modules/core/pipeline/query/QueryError';
 import AdapterError from 'modules/core/pipeline/adapter/AdapterError';
 import processor from 'modules/core/pipeline/adapter/processor';
+
+import pyodideEngine from 'services/pyodide/store';
 
 import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
 import { RunSearchRunView } from 'types/core/AimObjects';
@@ -13,20 +15,9 @@ import { parseStream } from 'utils/encoder/streamEncoding';
 import { AlignmentOptionsEnum } from 'utils/d3';
 import { filterMetricsData } from 'utils/app/filterMetricData';
 
-const seachRequests = {
-  [SequenceTypesEnum.Metric]: createSearchRunsRequest(SequenceTypesEnum.Metric),
-  [SequenceTypesEnum.Images]: createSearchRunsRequest(SequenceTypesEnum.Images),
-  [SequenceTypesEnum.Audios]: createSearchRunsRequest(SequenceTypesEnum.Audios),
-  [SequenceTypesEnum.Figures]: createSearchRunsRequest(
-    SequenceTypesEnum.Figures,
-  ),
-  [SequenceTypesEnum.Texts]: createSearchRunsRequest(SequenceTypesEnum.Texts),
-  [SequenceTypesEnum.Distributions]: createSearchRunsRequest(
-    SequenceTypesEnum.Distributions,
-  ),
-};
+const seachRequests = createFetchDataRequest();
 
-const objectDepths = {
+const objectDepths: any = {
   [SequenceTypesEnum.Metric]: AimObjectDepths.Sequence,
   [SequenceTypesEnum.Images]: AimObjectDepths.Index,
   [SequenceTypesEnum.Audios]: AimObjectDepths.Index,
@@ -35,53 +26,78 @@ const objectDepths = {
   [SequenceTypesEnum.Distributions]: AimObjectDepths.Index,
 };
 
-export async function search(sequenceName: SequenceTypesEnum, query: string) {
-  let data: ReadableStream;
-  try {
-    data = (await seachRequests[sequenceName].call({
+const queryResultCacheMap: Record<string, any> = {};
+
+export function search(
+  boardId: string,
+  sequenceName: SequenceTypesEnum,
+  query: string,
+) {
+  const queryKey = `${sequenceName}_${query}`;
+
+  if (queryResultCacheMap.hasOwnProperty(queryKey)) {
+    return queryResultCacheMap[queryKey];
+  }
+
+  const lowerCasedSequenceName = sequenceName.toLowerCase();
+
+  seachRequests
+    .call({
       q: query,
+      type_: sequenceName,
       report_progress: false,
-    })) as ReadableStream; // @TODO write better code to avoid null check
-  } catch (err: any) {
-    throw new FetchingError(err.message || err, err.detail);
-  }
+    })
+    .then((data) => {
+      parseStream<Array<RunSearchRunView>>(data)
+        .then((runs) => {
+          try {
+            let result;
+            let { objectList } = processor(
+              runs,
+              lowerCasedSequenceName as SequenceTypesEnum,
+              objectDepths[lowerCasedSequenceName],
+            );
 
-  try {
-    const runs = await parseStream<Array<RunSearchRunView>>(data);
+            if (lowerCasedSequenceName === SequenceTypesEnum.Metric) {
+              result = objectList.map((item: any) => {
+                const { values, steps, epochs, timestamps } = filterMetricsData(
+                  item.data,
+                  AlignmentOptionsEnum.STEP,
+                );
+                return {
+                  ...item.data,
+                  values: [...values],
+                  steps: [...steps],
+                  epochs: [...epochs],
+                  timestamps: [...timestamps],
+                  run: item.run,
+                  sequence: item.sequence,
+                };
+              });
+            } else {
+              result = objectList;
+            }
 
-    try {
-      let result;
-      let { objectList } = processor(
-        runs,
-        sequenceName,
-        objectDepths[sequenceName],
-      );
+            queryResultCacheMap[queryKey] = result;
 
-      if (sequenceName === SequenceTypesEnum.Metric) {
-        result = objectList.map((item: any) => {
-          const { values, steps, epochs, timestamps } = filterMetricsData(
-            item.data,
-            AlignmentOptionsEnum.STEP,
-          );
-          return {
-            ...item.data,
-            values: [...values],
-            steps: [...steps],
-            epochs: [...epochs],
-            timestamps: [...timestamps],
-            run: item.run,
-            sequence: item.sequence,
-          };
+            pyodideEngine.events.fire(
+              boardId as string,
+              {
+                query: queryKey,
+              },
+              { savePayload: false },
+            );
+          } catch (err: any) {
+            throw new AdapterError(err.message || err, err.detail);
+          }
+        })
+        .catch((err: any) => {
+          throw new DecodingError(err.message || err, err.detail);
         });
-      } else {
-        result = objectList;
-      }
+    })
+    .catch((err: any) => {
+      throw new FetchingError(err.message || err, err.detail);
+    });
 
-      return result;
-    } catch (err: any) {
-      throw new AdapterError(err.message || err, err.detail);
-    }
-  } catch (err: any) {
-    throw new DecodingError(err.message || err, err.detail);
-  }
+  throw 'WAIT_FOR_QUERY_RESULT';
 }
