@@ -188,7 +188,9 @@ function useGroupingPopover(
       {
         sectionFields: [
           {
-            content: <Text>{inputLabel ?? 'Select fields for grouping'}</Text>,
+            content: (
+              <Text>{inputLabel ?? `Group items by ${groupName} with`}</Text>
+            ),
             control: (
               <Select
                 multiple
@@ -204,14 +206,18 @@ function useGroupingPopover(
                     color='secondary'
                     rightIcon={open ? <IconCaretUp /> : <IconCaretDown />}
                   >
-                    <Text>{`${group?.fields?.length} selected field(s)`}</Text>
-                    <ClearButtonContainer
-                      size='md'
-                      css={{ ml: '$5', position: 'unset' }}
-                      onClick={onEmptySelectedFields}
-                    >
-                      <Icon className='Icon__container' icon={<IconX />} />
-                    </ClearButtonContainer>
+                    <Text>{`${
+                      group.fields.length || ''
+                    } selected field(s)`}</Text>
+                    {group.fields.length > 0 && (
+                      <ClearButtonContainer
+                        size='md'
+                        css={{ ml: '$5', position: 'unset' }}
+                        onClick={onEmptySelectedFields}
+                      >
+                        <Icon className='Icon__container' icon={<IconX />} />
+                      </ClearButtonContainer>
+                    )}
                   </Button>
                 )}
                 onValueChange={onSelectField}

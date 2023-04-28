@@ -1,3 +1,5 @@
+import React from 'react';
+
 import ErrorBoundary from 'components/ErrorBoundary';
 import { FormGroup } from 'components/kit_v2';
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash-es';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import { Box, ControlsButton, Tooltip, Popover, Text } from 'components/kit_v2';
@@ -33,7 +34,6 @@ function GroupingItem({
         title={
           <Box display='flex' ai='center' jc='space-between'>
             <Text>{title ?? `Group by ${groupName}`}</Text>
-            <Tooltip content='Reset facet groupings state'></Tooltip>
           </Box>
         }
         popperProps={{ css: { padding: '0', width: '24rem' }, align: 'start' }}
@@ -50,7 +50,7 @@ function GroupingItem({
             disabled={isDisabled}
             open={open}
           >
-            {groupName}
+            {_.capitalize(groupName)}
           </ControlsButton>
         )}
       />
