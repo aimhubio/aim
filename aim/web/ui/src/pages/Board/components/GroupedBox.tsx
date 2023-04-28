@@ -8,7 +8,7 @@ import { Button, Icon, Slider, Text } from 'components/kit';
 
 import { formatValue } from 'utils/formatValue';
 
-import { dataVizElementsMap } from './dataVizElementsMap';
+import VizElementsMap from './VisualizationElements';
 
 function GroupedBox(props: any) {
   const boxSize = {
@@ -271,7 +271,7 @@ function GroupedBox(props: any) {
             >
               {Object.values(_.groupBy(items, 'type')).map((vals, i) => {
                 const Component =
-                  dataVizElementsMap[
+                  VizElementsMap[
                     (typeof props.viz.type === 'function'
                       ? props.viz.type(vals[0].type)
                       : props.viz.type) as 'LineChart'
