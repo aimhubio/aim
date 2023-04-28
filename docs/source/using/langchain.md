@@ -1,13 +1,10 @@
 # LangChain
 
-LangChain is a platform that aims to assist developers in creating powerful applications by combining large language models (LLMs) with other sources of computation or knowledge. While LLMs are transformative technology that enable developers to build applications they previously could not, LangChain recognizes that using LLMs in isolation may not be enough to create truly powerful apps.
-
-LangChain is a promising tool that can help accelerate the development of advanced natural language processing applications in various domains, such as conversational agents, chatbots, sentiment analysis, and language translation.
+LangChain is a library that helps to build powerful applications by integrating LLMs with other computational resources or knowledge sources. Large LLMs are really powerful tools for developers to create better apps, LangChain uses them to chain deterministic components and complete a given task.
 
 With the Text Explorer feature, it is possible to compare multiple executions of LangChain runs side by side, providing a comprehensive and visually appealing comparison:
 
 ![](https://user-images.githubusercontent.com/13848158/227784994-699b24b7-e69b-48f9-9ffa-e6a6142fd719.png)
-
 
 LangChain is a powerful framework designed to facilitate the development of language model-driven applications. To [learn more](https://github.com/hwchase17/langchain) about LangChain, head over to our GitHub page, or check out the official [documentation](https://python.langchain.com/en/latest/index.html).
 
