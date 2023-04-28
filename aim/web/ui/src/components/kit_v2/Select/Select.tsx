@@ -22,6 +22,7 @@ const sizeDict = {
  * @description Virtualized Select component with search
  * @param {boolean} multiple - whether multiple select
  * @param {React.ReactNode} trigger - trigger element
+ * @param triggerProps
  * @param {PopoverProps} popoverProps - popover props
  * @param {string | string[] | undefined } value - selected value
  * @param {(val: string | string[]) => void} onValueChange - on value change callback
@@ -174,20 +175,18 @@ const Select = ({
         css: { p: '$5 0', ...popoverProps.css },
       }}
       trigger={({ open }) =>
-        trigger || multiple ? (
-          <Button size={size} {...triggerProps}>
-            Select
-          </Button>
-        ) : (
-          <Button
-            variant='outlined'
-            color='secondary'
-            rightIcon={open ? <IconCaretUp /> : <IconCaretDown />}
-            {...triggerProps}
-          >
-            <Text css={{ flex: '1' }}>{triggerPlaceholder}</Text>
-          </Button>
-        )
+        typeof trigger === 'function'
+          ? trigger(open)
+          : trigger || (
+              <Button
+                variant='outlined'
+                color='secondary'
+                rightIcon={open ? <IconCaretUp /> : <IconCaretDown />}
+                {...triggerProps}
+              >
+                <Text css={{ flex: '1' }}>{triggerPlaceholder}</Text>
+              </Button>
+            )
       }
       content={
         <>

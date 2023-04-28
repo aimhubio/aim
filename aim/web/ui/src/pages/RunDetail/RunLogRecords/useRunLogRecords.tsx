@@ -1,6 +1,5 @@
 import React from 'react';
 import moment from 'moment';
-import _ from 'lodash-es';
 
 import {
   TIMELINE_DAY_FORMAT,

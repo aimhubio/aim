@@ -1,6 +1,12 @@
 import React, { Suspense } from 'react';
 
-import { TabContent, TabList, TabRoot, TabTrigger } from './Tabs.style';
+import {
+  TabContent,
+  TabList,
+  TabRoot,
+  TabTrigger,
+  TabTriggerWrapper,
+} from './Tabs.style';
 import { ITabsProps } from './Tabs.d';
 
 /**
@@ -25,14 +31,17 @@ const Tabs = ({
   >
     <TabList className='TabList'>
       {tabs.map((tab, index: number) => (
-        <TabTrigger
-          data-testid={tab.value}
-          disabled={tab.disabled}
-          key={index}
-          value={tab.value}
-        >
-          {tab.label}
-        </TabTrigger>
+        <TabTriggerWrapper key={index}>
+          <TabTrigger
+            data-testid={tab.value}
+            disabled={tab.disabled}
+            value={tab.value}
+            className='TabTrigger'
+          >
+            {tab.label}
+          </TabTrigger>
+          {!!tab.labelRightIcon && tab.labelRightIcon}
+        </TabTriggerWrapper>
       ))}
     </TabList>
     <Suspense fallback={<div>Loading...</div>}>

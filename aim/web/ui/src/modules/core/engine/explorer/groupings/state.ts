@@ -2,6 +2,8 @@ import { omit } from 'lodash-es';
 
 import { Order } from 'modules/core/pipeline';
 
+import { StatePersistOption } from '../../types';
+
 type StyleApplierCallback<S> = (
   object: any,
   group: Array<string>,
@@ -20,6 +22,7 @@ export type GroupingConfig<State extends object, Settings> = {
    */
   state?: {
     initialState: State;
+    persist?: StatePersistOption;
   };
   /**
    * Static settings, i.e.
@@ -42,14 +45,11 @@ export type GroupingConfig<State extends object, Settings> = {
   /**
    * styleApplier aimed to calculate visual properties for the object by calculating group
    * @param object
-   * @param group - applied group - for now its a array implemented LinkedList with only root ['hash1']
+   * @param group - applied group - for now it's an array implemented LinkedList with only root ['hash1']
    * @param state -
    * @return {{ [key: string]: unknown }} - the return ed value will be spread inside object's styles property
    */
   styleApplier: StyleApplierCallback<State>;
-
-  // variant: 'structured' | 'joined'
-  axisComponent?: Function;
 };
 
 function getCurrentValues(
@@ -102,47 +102,54 @@ function getCurrentValues(
   };
 }
 
-function createGroupingsSlice(groupings: Record<string, any>) {
+function createGroupingsSlice(slices: Record<string, any>) {
   let initialState: Record<string, any> = {
     currentValues: {},
     isEmpty: true,
   };
   const subSlices: Record<string, any> = {};
 
-  const stateSelector = (state: any) => state.groupings.state;
+  Object.keys(slices).forEach((name) => {
+    const slice = slices[name];
+    const defaultValues = getCurrentValues(slice.defaultApplications);
 
-  Object.keys(groupings).forEach((name) => {
-    const group = groupings[name];
-    const defaultValues = getCurrentValues(group.defaultApplications);
     initialState = {
       ...initialState,
-      [name]: group.observableState.initialState,
+      [name]: slice.observableState.initialState,
       currentValues: {
         ...initialState.currentValues,
         [name]: defaultValues,
       },
+      isEmpty: defaultValues.fields.length === 0,
     };
-    if (defaultValues.fields.length > 0) {
-      initialState.isEmpty = false;
-    }
     subSlices[name] = {
-      ...omit(group, 'observableState'),
-      ...group.observableState,
+      ...omit(slice, 'observableState'),
+      ...slice.observableState,
     };
   });
 
   function generateMethods(set: Function, get: Function) {
     const update = (
-      groupValues: Record<string, { orders: Order[]; fields: string[] }>,
+      groupValues: Record<
+        string,
+        { orders: Order[]; fields: string[]; isApplied: boolean }
+      >,
     ) => {
-      const store = get().groupings.currentValues;
+      const store = get().groupings;
       let isEmpty = true;
       const newValues = Object.keys(groupValues).reduce(
         (
-          acc: Record<string, { orders: Order[]; fields: string[] }>,
+          acc: Record<
+            string,
+            { orders: Order[]; fields: string[]; isApplied: boolean }
+          >,
           name: string,
         ) => {
-          acc[name] = getCurrentValues(groupValues[name]);
+          acc[name] = {
+            ...getCurrentValues(groupValues[name]),
+            isApplied: groupValues[name].isApplied,
+          };
+
           if (acc[name].fields.length > 0) {
             isEmpty = false;
           }
@@ -150,10 +157,11 @@ function createGroupingsSlice(groupings: Record<string, any>) {
         },
         {},
       );
+
       set(
         {
           groupings: {
-            ...store.groupings,
+            ...store,
             currentValues: newValues,
             isEmpty,
           },
@@ -163,14 +171,14 @@ function createGroupingsSlice(groupings: Record<string, any>) {
       );
     };
     const reset = () => {
-      const store = get().groupings.currentValues;
+      const store = get().groupings;
       let isEmpty = true;
-      const newValues = Object.keys(store).reduce(
+      const newValues = Object.keys(store.currentValues).reduce(
         (
           acc: Record<string, { orders: Order[]; fields: string[] }>,
           name: string,
         ) => {
-          acc[name] = groupings[name].defaultApplications;
+          acc[name] = slices[name].defaultApplications;
           if (acc[name].fields.length > 0) {
             isEmpty = false;
           }
@@ -181,7 +189,7 @@ function createGroupingsSlice(groupings: Record<string, any>) {
       set(
         {
           groupings: {
-            ...store.groupings,
+            ...store,
             currentValues: newValues,
             isEmpty,
           },
@@ -198,7 +206,8 @@ function createGroupingsSlice(groupings: Record<string, any>) {
 
   return {
     initialState,
-    stateSelector,
+    stateSelector: (state: any) =>
+      omit(state.groupings, 'currentValues', 'isEmpty'),
     generateMethods,
     slices: subSlices,
     currentValuesSelector: (state: any) => state.groupings.currentValues,
