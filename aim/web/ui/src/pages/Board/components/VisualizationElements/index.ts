@@ -1,23 +1,113 @@
 import React from 'react';
 
-import LineChartVizElement from './LineChartVizElement';
-import DataFrameVizElement from './DataFrameVizElement';
-import FiguresVizElement from './FiguresVizElement';
-import AudiosVizElement from './AudiosVizElement';
-import ImagesVizElement from './ImagesVizElement';
-import TextsVizElement from './TextsVizElement';
-import JSONVizElement from './JSONVizElement';
-import HTMLVizElement from './HTMLVizElement';
-import TextVizElement from './TextVizElement';
-import SelectVizElement from './SelectVizElement';
-import RunMessagesVizElement from './RunMessagesVizElement';
-import RunNotesVizElement from './RunNotesVizElement';
-import PlotlyVizElement from './PlotlyVizElement';
-import SliderVizElement from './SliderVizElement';
-import TextInputVizElement from './TextInputVizElement';
-import ButtonVizElement from './ButtonVizElement';
-import SwitchVizElement from './SwitchVizElement';
-import TextAreaVizElement from './TextAreaVizElement';
+const LineChartVizElement = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "LineChart" */ './LineChartVizElement'
+    ),
+);
+const DataFrameVizElement = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "DataFrame" */ './DataFrameVizElement'
+    ),
+);
+const FiguresVizElement = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "Figures" */ './FiguresVizElement'
+    ),
+);
+const AudiosVizElement = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "Audios" */ './AudiosVizElement'
+    ),
+);
+const ImagesVizElement = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "Images" */ './ImagesVizElement'
+    ),
+);
+const TextsVizElement = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "Texts" */ './TextsVizElement'
+    ),
+);
+const JSONVizElement = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "JSON" */ './JSONVizElement'
+    ),
+);
+const HTMLVizElement = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "HTML" */ './HTMLVizElement'
+    ),
+);
+const TextVizElement = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "Text" */ './TextVizElement'
+    ),
+);
+const SelectVizElement = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "Select" */ './SelectVizElement'
+    ),
+);
+const RunMessagesVizElement = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "RunMessages" */ './RunMessagesVizElement'
+    ),
+);
+const RunNotesVizElement = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "RunNotes" */ './RunNotesVizElement'
+    ),
+);
+const PlotlyVizElement = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "Plotly" */ './PlotlyVizElement'
+    ),
+);
+const SliderVizElement = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "Slider" */ './SliderVizElement'
+    ),
+);
+const TextInputVizElement = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "TextInput" */ './TextInputVizElement'
+    ),
+);
+const ButtonVizElement = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "Button" */ './ButtonVizElement'
+    ),
+);
+const SwitchVizElement = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "Switch" */ './SwitchVizElement'
+    ),
+);
+const TextAreaVizElement = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "TextArea" */ './TextAreaVizElement'
+    ),
+);
 
 export type VizElementKey =
   | 'LineChart'

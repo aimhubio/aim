@@ -40,10 +40,16 @@ function GridCell(props: any) {
             ...props.viz,
             data: vals,
           };
-          return <Component key={`${i}-${vals[0].type}`} {...compProps} />;
+          return (
+            <React.Suspense fallback={null} key={`${i}-${vals[0].type}`}>
+              <Component {...compProps} />
+            </React.Suspense>
+          );
         })
       ) : (
-        <Component {...props.viz} />
+        <React.Suspense fallback={null}>
+          <Component {...props.viz} />
+        </React.Suspense>
       )}
     </>
   ) : (

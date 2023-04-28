@@ -8,7 +8,7 @@ import { Button, Icon, Slider, Text } from 'components/kit';
 
 import { formatValue } from 'utils/formatValue';
 
-import VizElementsMap from './VisualizationElements';
+import VizElementsMap, { VizElementKey } from './VisualizationElements';
 
 function GroupedBox(props: any) {
   const boxSize = {
@@ -274,7 +274,7 @@ function GroupedBox(props: any) {
                   VizElementsMap[
                     (typeof props.viz.type === 'function'
                       ? props.viz.type(vals[0].type)
-                      : props.viz.type) as 'LineChart'
+                      : props.viz.type) as VizElementKey
                   ];
 
                 const compProps = {
@@ -403,7 +403,9 @@ function GroupedBox(props: any) {
                         }px)`,
                       }}
                     >
-                      <Component {...compProps} />
+                      <React.Suspense fallback={null}>
+                        <Component {...compProps} />
+                      </React.Suspense>
                     </div>
                   </div>
                 );
