@@ -4,6 +4,8 @@
 
 ### Enhancements
 
+- Revamp grouping popovers design in Base Explorers (KaroMourad, arsengit)
+- Add the ability to group by `grid` type in Base Explorers (KaroMourad)
 - Add the ability to create Reports (roubkar, arsengit)
 - Add the ability to create custom UI boards (roubkar, arsengit, KaroMourad)
 - Relocate aim explorers to `Explorers` page (arsengit)
