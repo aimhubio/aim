@@ -834,5 +834,7 @@ class TextArea(Component):
     def value(self):
         return self.state["value"] if "value" in self.state else self.data
 
-    async def on_change(self, value):
-        self.set_state({ "value": value })
+    async def on_change(self, val):
+        self.set_state({
+           "value": val
+        })

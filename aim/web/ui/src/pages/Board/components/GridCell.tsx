@@ -1,11 +1,11 @@
 import * as React from 'react';
 import * as _ from 'lodash-es';
 
-import { dataVizElementsMap } from './dataVizElementsMap';
 import GroupedBox from './GroupedBox';
+import VizElementsMap, { VizElementKey } from './VisualizationElements';
 
 function GridCell(props: any) {
-  const Component = dataVizElementsMap[props.viz.type as 'LineChart'];
+  const Component = VizElementsMap[props.viz.type as VizElementKey];
 
   const stackMap = React.useMemo(() => {
     const stackValues: any = {};
@@ -31,20 +31,25 @@ function GridCell(props: any) {
     <>
       {Array.isArray(props.viz.data) ? (
         Object.values(_.groupBy(props.viz.data, 'type')).map((vals, i) => {
-          const Component =
-            dataVizElementsMap[
-              typeof props.viz.type === 'function'
-                ? props.viz.type(vals[0].type)
-                : props.viz.type
-            ];
+          const vizElementKey =
+            typeof props.viz.type === 'function'
+              ? props.viz.type(vals[0].type)
+              : props.viz.type;
+          const Component = VizElementsMap[vizElementKey as VizElementKey];
           const compProps = {
             ...props.viz,
             data: vals,
           };
-          return <Component key={`${i}-${vals[0].type}`} {...compProps} />;
+          return (
+            <React.Suspense fallback={null} key={`${i}-${vals[0].type}`}>
+              <Component {...compProps} />
+            </React.Suspense>
+          );
         })
       ) : (
-        <Component {...props.viz} />
+        <React.Suspense fallback={null}>
+          <Component {...props.viz} />
+        </React.Suspense>
       )}
     </>
   ) : (
