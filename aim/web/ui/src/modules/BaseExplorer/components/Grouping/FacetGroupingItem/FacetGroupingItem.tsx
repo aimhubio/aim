@@ -1,7 +1,7 @@
 import React from 'react';
 
 import {
-  IconCaretRight,
+  IconCaretDown,
   IconCaretUp,
   IconGripVertical,
   IconX,
@@ -234,7 +234,7 @@ function FacetGroupingItem({
                 variant='outlined'
                 css={{ '&:hover': {} }}
                 color='secondary'
-                rightIcon={open ? <IconCaretUp /> : <IconCaretRight />}
+                rightIcon={open ? <IconCaretUp /> : <IconCaretDown />}
               >
                 <Text>{`${group.fields.length || ''} selected field(s)`}</Text>
                 {group.fields.length > 0 && (

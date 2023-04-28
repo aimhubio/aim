@@ -1,12 +1,11 @@
 import React from 'react';
 
 import ErrorBoundary from 'components/ErrorBoundary';
+import { Box } from 'components/kit_v2';
 
 import { IBaseComponentProps } from 'modules/BaseExplorer/types';
 
 import FacetGrouping from '../FacetGrouping';
-
-import './Grouping.scss';
 
 function Grouping(props: IBaseComponentProps) {
   const {
@@ -43,16 +42,16 @@ function Grouping(props: IBaseComponentProps) {
 
   return (
     <ErrorBoundary>
-      <div className='BaseGrouping'>
-        <div className='BaseGrouping__content'>
+      <Box display='flex' ai='center'>
+        <Box gap='$5' display='flex' ai='center' jc='center'>
           <FacetGrouping
             {...props}
             facetGroupings={facetGroupings}
             renderGrouping={renderGrouping}
           />
           {Object.entries(restGroupings).map(renderGrouping)}
-        </div>
-      </div>
+        </Box>
+      </Box>
     </ErrorBoundary>
   );
 }

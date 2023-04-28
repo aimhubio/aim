@@ -166,11 +166,9 @@ function FacetGrouping(props: IFacetGroupingProps) {
       popperProps={{ css: { padding: '0', width: '24rem' }, align: 'start' }}
       content={<Tabs tabs={tabs} />}
       trigger={({ open }) => (
-        <Box mr='$5'>
-          <ControlsButton open={open} hasAppliedValues={hasAppliedValues}>
-            Facet
-          </ControlsButton>
-        </Box>
+        <ControlsButton open={open} hasAppliedValues={hasAppliedValues}>
+          Facet
+        </ControlsButton>
       )}
     />
   );
