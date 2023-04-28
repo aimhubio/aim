@@ -7,7 +7,7 @@ from js import search
 import hashlib
 
 
-memoize_cache = {}
+board_id = None
 
 
 def deep_copy(obj):
@@ -27,19 +27,7 @@ def deep_copy(obj):
         return obj
 
 
-def memoize_async(func):
-    async def wrapper(*args, **kwargs):
-        if func.__name__ not in memoize_cache:
-            memoize_cache[func.__name__] = {}
-
-        key = generate_key(args + tuple(kwargs.items()))
-
-        if key not in memoize_cache[func.__name__]:
-            memoize_cache[func.__name__][key] = await func(*args, **kwargs)
-
-        return memoize_cache[func.__name__][key]
-
-    return wrapper
+memoize_cache = {}
 
 
 def memoize(func):
@@ -57,22 +45,69 @@ def memoize(func):
     return wrapper
 
 
-class Repo:
-    @classmethod
-    @memoize_async
-    async def filter(self, type, query=""):
-        data = await search(type, query)
+query_result_cache = {}
+
+
+def query_filter(type_, query=""):
+    query_key = f'{type_}_{query}'
+
+    if query_key in query_result_cache:
+        return query_result_cache[query_key]
+
+    try:
+        data = search(board_id, type_, query)
         data = create_proxy(data.to_py())
         items = []
         i = 0
         for item in data:
             d = item
-            d["type"] = type
+            d["type"] = type_
             d["key"] = i
             i = i + 1
             items.append(d)
         data.destroy()
+
+        query_result_cache[query_key] = items
+
         return items
+    except:
+        return []
+
+
+class Metric():
+    @classmethod
+    def filter(self, query=""):
+        return query_filter('Metric', query)
+
+
+class Images():
+    @classmethod
+    def filter(self, query=""):
+        return query_filter('Images', query)
+
+
+class Audios():
+    @classmethod
+    def filter(self, query=""):
+        return query_filter('Audios', query)
+
+
+class Texts():
+    @classmethod
+    def filter(self, query=""):
+        return query_filter('Texts', query)
+
+
+class Figures():
+    @classmethod
+    def filter(self, query=""):
+        return query_filter('Figures', query)
+
+
+class Distributions():
+    @classmethod
+    def filter(self, query=""):
+        return query_filter('Distributions', query)
 
 
 ####################
@@ -119,8 +154,6 @@ def generate_key(data):
     content = str(data)
     return hashlib.md5(content.encode()).hexdigest()
 
-
-board_id = None
 
 viz_map_keys = {}
 
@@ -258,12 +291,12 @@ class Element:
 
 
 class Block(Element):
-    def __init__(self, type):
+    def __init__(self, type_):
         super().__init__()
         block_context["current"] += 1
         self.block_context = {
             "id": block_context["current"],
-            "type": type
+            "type": type_
         }
         self.key = generate_key(self.block_context)
 
@@ -296,11 +329,11 @@ class Column(Block):
 
 
 class Component(Element):
-    def __init__(self, key, type):
+    def __init__(self, key, type_):
         super().__init__()
         self.state = {}
         self.key = key
-        self.type = type
+        self.type = type_
         self.data = None
         self.callbacks = {}
         self.options = {}
@@ -528,7 +561,7 @@ class JSON(Component):
         self.render()
 
 
-class Table(Component):
+class DataFrame(Component):
     def __init__(self, data, key=None):
         component_type = "DataFrame"
         component_key = update_viz_map(component_type, key)
