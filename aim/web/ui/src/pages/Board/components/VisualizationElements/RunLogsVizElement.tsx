@@ -2,26 +2,30 @@ import * as React from 'react';
 import _ from 'lodash-es';
 import { useModel } from 'hooks';
 
-import RunLogRecords from 'pages/RunDetail/RunLogRecords';
+import RunLogsTab from 'pages/RunDetail/RunLogsTab';
 
 import runDetailAppModel from 'services/models/runs/runDetailAppModel';
 
-function RunMessagesVizElement(props: any) {
+function RunLogsVizElement(props: any) {
   const runHash = props.data;
 
   const runData = useModel(runDetailAppModel);
+
   return (
     <div
       className='VizComponentContainer'
       style={{ flex: 1, display: 'block' }}
     >
-      <RunLogRecords
+      <RunLogsTab
         key={runHash}
         runHash={runHash}
+        runLogs={runData?.runLogs}
         inProgress={_.isNil(runData?.runInfo?.end_time)}
+        updatedLogsCount={runData?.updatedLogsCount}
+        isRunLogsLoading={runData?.isRunLogsLoading}
       />
     </div>
   );
 }
 
-export default RunMessagesVizElement;
+export default RunLogsVizElement;
