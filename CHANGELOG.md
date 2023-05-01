@@ -3,6 +3,7 @@
 ## 3.17.4 
 
 - Fix metric values inconsistency with steps (mihran113)
+- Enable CLI for remote repos (mihran113)
 
 ## 3.17.3 Apr 6, 2023
 
