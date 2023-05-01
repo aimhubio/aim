@@ -9,6 +9,7 @@ import {
 } from '@tabler/icons-react';
 
 import { PathEnum } from 'config/enums/routesEnum';
+import { ExplorersCatsEnum } from 'config/enums/explorersCatsEnum';
 import pageTitlesEnum from 'config/pageTitles/pageTitles';
 
 const Runs = React.lazy(
@@ -74,6 +75,11 @@ const TextExplorer = React.lazy(
   () => import(/* webpackChunkName: "text" */ 'pages/Explorers/TextExplorer'),
 );
 
+const PromptsExplorer = React.lazy(
+  () =>
+    import(/* webpackChunkName: "text" */ 'pages/Explorers/PromptsExplorer'),
+);
+
 const Explorers = React.lazy(
   () => import(/* webpackChunkName: "explorers" */ 'pages/Explorers'),
 );
@@ -113,6 +119,7 @@ export interface IRoute {
   color?: string;
   status?: RouteStatusEnum;
   description?: string;
+  category?: string;
 }
 
 export enum RouteStatusEnum {
@@ -127,11 +134,12 @@ export const explorersRoutes: { [key: string]: IRoute } = {
     showInSidebar: false,
     displayName: 'Metrics',
     description:
-      'The Metrics Explorer allows you to search, group and compare your metrics',
+      'Metrics Explorer allows to filter, group, aggregate tracked metrics.',
     icon: 'metrics',
     isExact: true,
     title: pageTitlesEnum.METRICS_EXPLORER,
     color: '$purple',
+    category: ExplorersCatsEnum.Trainings,
   },
   PARAMS: {
     path: PathEnum.Params,
@@ -139,11 +147,12 @@ export const explorersRoutes: { [key: string]: IRoute } = {
     showInSidebar: false,
     displayName: 'Params',
     description:
-      'Params explorer helps you to represent high dimensional data as a multi-dimensional visualization',
+      'Params Explorer helps to visualize tracked h-params and metrics results via parallel coordinates plot.',
     icon: 'params',
     isExact: true,
     title: pageTitlesEnum.PARAMS_EXPLORER,
     color: '$red',
+    category: ExplorersCatsEnum.Trainings,
   },
   TEXT_EXPLORER: {
     path: PathEnum.Text_Explorer,
@@ -152,10 +161,24 @@ export const explorersRoutes: { [key: string]: IRoute } = {
     icon: 'text',
     displayName: 'Text',
     description:
-      'Text Explorer offers tracking and visualization of text inputs and outputs in NLP experiments, optimizing model performance with ease.',
+      'Text Explorer offers visualization of text inputs and outputs in NLP-related experiments.',
     isExact: true,
     title: pageTitlesEnum.TEXT_EXPLORER,
     color: '$pink',
+    category: ExplorersCatsEnum.Trainings,
+  },
+  PROMPTS_EXPLORER: {
+    path: PathEnum.Prompts_Explorer,
+    component: PromptsExplorer,
+    showInSidebar: false,
+    icon: 'text',
+    displayName: 'Prompts',
+    description:
+      'Prompts Explorer enables visualization of LLMs prompts and agents actions in AI systems execution.',
+    isExact: true,
+    title: pageTitlesEnum.PROMPTS_EXPLORER,
+    color: '$primary',
+    category: ExplorersCatsEnum.Prompts,
   },
   IMAGE_EXPLORE: {
     path: PathEnum.Images_Explore,
@@ -163,11 +186,12 @@ export const explorersRoutes: { [key: string]: IRoute } = {
     showInSidebar: false,
     displayName: 'Images',
     description:
-      'Image Explorer allows effortless tracking and exploration of images during training and evaluation, enhancing model analysis.',
+      'Images Explorer allows comparison of tracked images during training and evaluation.',
     icon: 'images',
     isExact: true,
     title: pageTitlesEnum.IMAGES_EXPLORER,
     color: '$orange',
+    category: ExplorersCatsEnum.Trainings,
   },
   FIGURES_EXPLORER: {
     path: PathEnum.Figures_Explorer,
@@ -176,10 +200,11 @@ export const explorersRoutes: { [key: string]: IRoute } = {
     icon: 'figures',
     displayName: 'Figures',
     description:
-      "Figures Explorer enables easy comparison of thousands of Plotly figures using Aim's powerful exploration capabilities.",
+      'Figures Explorer enables easy comparison of hundreds of Plotly figures.',
     isExact: true,
     title: pageTitlesEnum.FIGURES_EXPLORER,
     color: '$yellow',
+    category: ExplorersCatsEnum.Trainings,
   },
   AUDIOS_EXPLORER: {
     path: PathEnum.Audios_Explorer,
@@ -188,10 +213,11 @@ export const explorersRoutes: { [key: string]: IRoute } = {
     icon: 'audios',
     displayName: 'Audios',
     description:
-      'Audio Explorer enables tracking and analysis of audio files in speech-to-text or other audio-based experiments, covering input, output, and ground truth.',
+      'Audio Explorer enables analysis of audio objects in speech-to-text or other speech-related tasks.',
     isExact: true,
     title: pageTitlesEnum.AUDIOS_EXPLORER,
     color: '$green',
+    category: ExplorersCatsEnum.Trainings,
   },
   SCATTERS: {
     path: PathEnum.Scatters,
@@ -199,24 +225,26 @@ export const explorersRoutes: { [key: string]: IRoute } = {
     showInSidebar: false,
     displayName: 'Scatters',
     description:
-      'Scatter explorer gives ability to visualize correlations between metric last value data with hyper-parameter',
+      'Scatter Explorer visualizes correlations between metrics results and h-params.',
     icon: 'scatterplot',
     isExact: true,
     title: pageTitlesEnum.SCATTERS_EXPLORER,
     color: '$primary',
+    category: ExplorersCatsEnum.Trainings,
   },
   METRICS_EXPLORER: {
     path: PathEnum.Metrics_Explorer,
     component: MetricsExplorer,
     showInSidebar: false,
     icon: 'metrics',
-    displayName: 'Metrics v2',
+    displayName: 'Metrics [v2]',
     description:
-      'The Metrics Explorer allows you to search, group and compare your metrics',
+      'Explore thousands of tracked metrics with Metrics Explorer v2.',
     isExact: true,
     title: pageTitlesEnum.METRICS_EXPLORER_V2,
     status: RouteStatusEnum.NEW,
     color: '$purple',
+    category: ExplorersCatsEnum.Trainings,
   },
 };
 

@@ -23,6 +23,7 @@ enum PathEnum {
   Figures_Explorer = '/explorers/figures',
   Audios_Explorer = '/explorers/audios',
   Text_Explorer = '/explorers/text',
+  Prompts_Explorer = '/explorers/prompts',
   Metrics_Explorer = '/explorers/metrics_v2',
 }
 
