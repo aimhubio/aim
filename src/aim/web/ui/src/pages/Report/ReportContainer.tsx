@@ -4,11 +4,9 @@ import { useModel } from 'hooks';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
-import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 import { PathEnum } from 'config/enums/routesEnum';
 
 import reportAppModel from 'services/models/report/reportAppModel';
-import * as analytics from 'services/analytics';
 
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 

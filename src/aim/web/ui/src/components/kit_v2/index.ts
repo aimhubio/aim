@@ -24,6 +24,7 @@ import Tree from './Tree';
 import ToggleButton from './ToggleButton';
 import Tabs from './Tabs';
 import Link from './Link';
+import Textarea from './Textarea';
 
 export {
   Badge,
@@ -53,4 +54,5 @@ export {
   FormGroup,
   Tabs,
   Link,
+  Textarea,
 };

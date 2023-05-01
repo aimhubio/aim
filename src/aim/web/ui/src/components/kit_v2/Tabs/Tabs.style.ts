@@ -3,24 +3,33 @@ import * as TabPrimitive from '@radix-ui/react-tabs';
 import { styled } from 'config/stitches';
 
 const TabList = styled(TabPrimitive.List, {
+  '&[data-orientation="horizontal"]': {
+    display: 'flex',
+  },
   borderBottom: '1px solid $border30',
-  bs: '0 2px 0 $colors$border10',
 });
 
 const TabRoot = styled(TabPrimitive.Root, {
   '&[data-orientation="horizontal"]': {
     width: '100%',
     [`${TabList}`]: {
-      padding: '0 $13',
+      padding: '0 $7',
     },
   },
 });
 
 const TabContent = styled(TabPrimitive.Content, {});
 
-const TabTrigger = styled(TabPrimitive.Trigger, {
+const TabTriggerWrapper = styled('div', {
   position: 'relative',
-  color: '$textPrimary80',
+  flex: 1,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+});
+
+const TabTrigger = styled(TabPrimitive.Trigger, {
+  color: '#45484D',
   background: 'transparent',
   border: 'none',
   cursor: 'pointer',
@@ -43,4 +52,4 @@ const TabTrigger = styled(TabPrimitive.Trigger, {
   },
 });
 
-export { TabRoot, TabList, TabContent, TabTrigger };
+export { TabRoot, TabList, TabContent, TabTrigger, TabTriggerWrapper };

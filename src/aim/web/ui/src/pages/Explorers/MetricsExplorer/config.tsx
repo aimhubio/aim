@@ -19,8 +19,7 @@ import Highlighting from 'modules/BaseExplorer/components/Controls/Highlighting'
 import Zoom from 'modules/BaseExplorer/components/Controls/Zoom';
 import ConfigureTooltip from 'modules/BaseExplorer/components/Controls/ConfigureTooltip';
 import Legends from 'modules/BaseExplorer/components/Controls/Legends';
-
-import { AimFlatObjectBase } from 'types/core/AimObjects';
+import { StyleApplierCallbackArgs } from 'modules/core/engine/explorer/groupings';
 
 import getMetricsExplorerStaticContent from './getStaticContent';
 
@@ -34,15 +33,17 @@ export const getMetricsDefaultConfig = (): typeof defaultHydration => {
     draft[GroupType.ROW].defaultApplications.orders = [Order.ASC];
     draft[GroupType.ROW].defaultApplications.fields = ['metric.context.subset'];
 
+    draft[GroupType.GRID].defaultApplications.orders = [Order.ASC];
+    draft[GroupType.GRID].defaultApplications.fields = ['metric.name'];
+
     draft[GroupType.COLOR] = {
       component: React.memo((props: IBaseComponentProps) => (
         <GroupingItem groupName='color' iconName='group-column' {...props} />
       )),
-      // @ts-ignore
-      styleApplier: (object: AimFlatObjectBase<any>, group: any) => {
+      styleApplier: ({ groupInfo }: StyleApplierCallbackArgs<any>) => {
         const palletIndex = 0;
         const pallet = COLORS[palletIndex];
-        const order = group[GroupType.COLOR]?.order || 0;
+        const order = groupInfo[GroupType.COLOR]?.order || 0;
         return {
           color: pallet[order % pallet.length],
         };
@@ -50,6 +51,7 @@ export const getMetricsDefaultConfig = (): typeof defaultHydration => {
       defaultApplications: {
         fields: ['run.hash'],
         orders: [Order.ASC],
+        isApplied: true,
       },
       // @TODO add support for selecting color pallet by 'palletIndex'
       // state: {
@@ -65,9 +67,8 @@ export const getMetricsDefaultConfig = (): typeof defaultHydration => {
       component: React.memo((props: IBaseComponentProps) => (
         <GroupingItem groupName='stroke' iconName='group-column' {...props} />
       )),
-      // @ts-ignore
-      styleApplier: (object: AimFlatObjectBase<any>, group: any) => {
-        const order = group[GroupType.STROKE]?.order || 0;
+      styleApplier: ({ groupInfo }: StyleApplierCallbackArgs<any>) => {
+        const order = groupInfo[GroupType.STROKE]?.order || 0;
         return {
           dasharray: DASH_ARRAYS[order % DASH_ARRAYS.length],
         };
@@ -75,6 +76,7 @@ export const getMetricsDefaultConfig = (): typeof defaultHydration => {
       defaultApplications: {
         fields: [],
         orders: [],
+        isApplied: true,
       },
     };
   });

@@ -73,10 +73,10 @@ export function createState(
     createVisualizationStatePrefix(visualizationName),
   );
 
-  const resetMethods: (() => void)[] = [];
+  const resetMethods: Function[] = [];
 
   const controlsProperties = Object.keys(controlsStateConfig.slices).reduce(
-    (acc: { [key: string]: object }, name: string) => {
+    (acc: Record<string, object>, name: string) => {
       const elem = controlsStateConfig.slices[name];
       const methods = elem.methods(store.setState, store.getState);
       resetMethods.push(methods.reset);

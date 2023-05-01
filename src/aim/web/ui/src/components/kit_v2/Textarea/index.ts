@@ -1,4 +1,4 @@
-import TextArea from './Textarea';
+import Textarea from './Textarea';
 
 export * from './Textarea.d';
-export default TextArea;
+export default Textarea;

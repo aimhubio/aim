@@ -13,6 +13,8 @@ import {
   IWidgetRendererProps,
 } from 'modules/BaseExplorer/types';
 
+import { AimFlatObjectBase } from 'types/core/AimObjects';
+
 import contextToString from 'utils/contextToString';
 
 import BoxVirtualizer from '../BoxVirtualizer';
@@ -37,6 +39,8 @@ function Visualizer(props: IVisualizationProps) {
   const foundGroups = useStore(pipeline.foundGroupsSelector);
   const dataState = useStore(pipeline.dataSelector);
 
+  const groupingStates = useStore(groupings.stateSelector);
+
   const vizEngine = visualizations[name];
   const boxConfig = useStore(vizEngine.box.stateSelector);
 
@@ -58,7 +62,7 @@ function Visualizer(props: IVisualizationProps) {
             groupInfo[groupType] = {
               key: group.key,
               config: group.fields,
-              items_count_in_group: group.items.length,
+              items_count_in_group: group.items_count_in_group,
               order: group.order,
             };
           }
@@ -68,15 +72,14 @@ function Visualizer(props: IVisualizationProps) {
       // calculate styles by position
       // get style applier of box from engine
       // listen to found groups
-      function applyStyles(obj: any, group: any, iteration: number) {
+      function applyStyles(object: any, groupInfo: any, state: object) {
         let style = {};
         groupings.styleAppliers.forEach((applier: any) => {
           style = {
             ...style,
-            ...applier(obj, group, boxConfig, iteration),
+            ...applier({ object, groupInfo, boxConfig, state }),
           };
         });
-
         return style;
       }
 
@@ -87,11 +90,17 @@ function Visualizer(props: IVisualizationProps) {
         style: {
           width: boxConfig.width,
           height: boxConfig.height,
-          ...applyStyles(d, groupInfo, i),
+          ...applyStyles(d, groupInfo, groupingStates),
         },
       };
     });
-  }, [dataState, foundGroups, boxConfig, groupings.styleAppliers]);
+  }, [
+    dataState,
+    foundGroups,
+    boxConfig,
+    groupings.styleAppliers,
+    groupingStates,
+  ]);
 
   // FOR ROWS
   const rowsAxisData = React.useMemo(() => {
@@ -119,7 +128,7 @@ function Visualizer(props: IVisualizationProps) {
               textAlign: 'right',
               textOverflow: 'ellipsis',
               lineHeight: '0.875rem',
-              zIndex: foundGroups[key].order,
+              zIndex: item.order,
             },
           };
         });
@@ -153,7 +162,7 @@ function Visualizer(props: IVisualizationProps) {
               overflow: 'hidden',
               whiteSpace: 'nowrap',
               textOverflow: 'ellipsis',
-              zIndex: foundGroups[key].order,
+              zIndex: item.order,
             },
           };
         });
@@ -181,10 +190,18 @@ function Visualizer(props: IVisualizationProps) {
     [widgets, engine, name],
   );
 
+  const groupByPositionCb = (item: AimFlatObjectBase): string => {
+    const gridId = item.groups?.[GroupType.GRID]?.[0] || '';
+    const rowId = item.groups?.[GroupType.ROW]?.[0] || '';
+    const columnId = item.groups?.[GroupType.COLUMN]?.[0] || '';
+    return [gridId, rowId, columnId].filter(Boolean).join('--');
+  };
+
   const { depthSelector, onDepthMapChange } = useDepthMap({
     data: dataState,
     state: depthMap,
     deps: [dataState, foundGroups],
+    groupItemCb: groupByPositionCb,
   });
 
   return (
@@ -209,6 +226,7 @@ function Visualizer(props: IVisualizationProps) {
                 onDepthMapChange={onDepthMapChange}
               />
             )}
+            groupByPositionCb={groupByPositionCb}
             offset={boxConfig.gap}
             axisData={{
               columns: columnsAxisData,

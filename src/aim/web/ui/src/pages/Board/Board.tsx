@@ -59,10 +59,7 @@ function Board({
           ...s,
           isProcessing: true,
         }));
-        const code = editorValue.current
-          .replaceAll('from aim', '# from aim')
-          .replaceAll('import aim', '# import aim')
-          .replaceAll('= Repo.filter', '= await Repo.filter');
+        const code = editorValue.current;
 
         const packagesListProxy = pyodide?.pyodide_py.code.find_imports(code);
         const packagesList = packagesListProxy.toJs();
@@ -171,7 +168,7 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
   React.useEffect(() => {
     const unsubscribe = pyodideEngine.events.on(
       boardId,
-      ({ blocks, components, state }) => {
+      ({ blocks, components, state, query }) => {
         if (components) {
           setState((s: any) => ({
             ...s,
@@ -181,7 +178,7 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
             },
           }));
         }
-        if (state) {
+        if (state || query) {
           setState((s: any) => ({
             ...s,
             stateUpdateCount: s.stateUpdateCount + 1,

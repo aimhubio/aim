@@ -5,7 +5,6 @@ Explorers are the main tools that Aim is built around.
 
 In this section we will go through the Aim explorers, introduce their features and how to use them.
 
-
 ### Metrics Explorer
 
 #### Overview
@@ -120,7 +119,7 @@ The trend-line calculation methods:
 - Min
 - Max
 
-The area calcualtion methods:
+The area calculation methods:
 - None _(when you'd like to remove the area)_
 - Min/Max
 - Mean +/- Standard Deviation
@@ -326,7 +325,7 @@ Use select form to easily query any image. There are two option to query images 
 
 ###### How to use advanced query mode?
 
-- Click on pencel icon in the right side of select form to show input
+- Click on pencil icon on the right side of select form to show input
 - Type advance [Aim QL](../../using/search.html) query
 - Click on the Search button
 

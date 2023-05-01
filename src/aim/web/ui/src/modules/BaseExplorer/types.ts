@@ -136,7 +136,7 @@ export interface IWidgetComponentProps
 export declare interface ExplorerEngineConfiguration {
   /**
    * @optional
-   * Useful when it need to persist query and grouping states through url
+   * Useful when it needs to persist query and grouping states through url
    */
   persist?: boolean; // TODO later use StatePersistOption;
   /**

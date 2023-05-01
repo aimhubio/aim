@@ -8,7 +8,7 @@ import {
 } from './Textarea.style';
 import { ITextareaProps } from './Textarea.d';
 
-const TextArea = React.forwardRef<
+const Textarea = React.forwardRef<
   React.ElementRef<typeof Container>,
   ITextareaProps
 >(
@@ -71,6 +71,6 @@ const TextArea = React.forwardRef<
   },
 );
 
-TextArea.displayName = 'TextArea';
+Textarea.displayName = 'Textarea';
 
-export default TextArea;
+export default Textarea;
