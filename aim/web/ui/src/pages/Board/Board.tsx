@@ -10,6 +10,8 @@ import AppBar from 'components/AppBar/AppBar';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
+import SplitPane, { SplitPaneItem } from 'components/SplitPane';
+import ResizingFallback from 'components/ResizingFallback';
 
 import { PathEnum } from 'config/enums/routesEnum';
 
@@ -21,7 +23,6 @@ import SaveBoard from './components/SaveBoard';
 import GridCell from './components/GridCell';
 
 import './Board.scss';
-
 function Board({
   data,
   isLoading,
@@ -254,9 +255,15 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
           height={'100%'}
         >
           <div className='BoardVisualizer'>
-            <div className='BoardVisualizer__main'>
+            <SplitPane
+              id='BoardVisualizer'
+              useLocalStorage={true}
+              className='BoardVisualizer__main'
+              sizes={editMode || newMode ? [40, 60] : [100, 0]}
+              minSize={[400, 400]}
+            >
               {(editMode || newMode) && (
-                <div className='BoardVisualizer__main__editor'>
+                <SplitPaneItem className='BoardVisualizer__main__editor'>
                   <Editor
                     language='python'
                     height='100%'
@@ -268,9 +275,10 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
                       useTabStops: true,
                     }}
                   />
-                </div>
+                </SplitPaneItem>
               )}
-              <div
+              <SplitPaneItem
+                resizingFallback={<ResizingFallback />}
                 className={classNames('BoardVisualizer__main__components', {
                   'BoardVisualizer__main__components--loading':
                     state.isProcessing === null,
@@ -303,8 +311,8 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
                     className='BoardVisualizer__main__components__console'
                   />
                 )}
-              </div>
-            </div>
+              </SplitPaneItem>
+            </SplitPane>
           </div>
         </BusyLoaderWrapper>
       </section>
