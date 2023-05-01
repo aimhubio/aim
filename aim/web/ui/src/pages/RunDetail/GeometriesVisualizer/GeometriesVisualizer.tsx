@@ -2,7 +2,6 @@ import React, { memo } from 'react';
 import _ from 'lodash-es';
 import * as THREE from 'three';
 
-import { useProgress, Html } from '@react-three/drei';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader';
 //import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
@@ -27,26 +26,32 @@ import { IGeometriesVisualizerProps } from '../types';
 
 import './GeometriesVisualizer.scss';
 
-function buildScene(geometryBlob: any, format: string) {
+function buildScene(
+  geometryBlob: any,
+  format: string,
+  canvas: HTMLCanvasElement,
+) {
   // Create Scene and Rendered:
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0xffffff);
   //scene.background = new THREE.Color(0x443333);
+  const width = canvas.parentElement?.offsetWidth ?? 0;
+  const height = canvas.parentElement?.offsetHeight ?? 0;
   const camera = new THREE.PerspectiveCamera(
     45,
-    window.innerWidth / window.innerHeight,
+    width / height,
     0.00001,
     100000,
   );
 
   camera.position.set(-1, 1, 1);
   const renderer = new THREE.WebGLRenderer({
-    canvas: document.querySelector('#geo'),
+    canvas: document.querySelector('#geo')!,
     antialias: true,
     alpha: true,
   });
   renderer.setPixelRatio(window.devicePixelRatio);
-  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setSize(width, height);
   renderer.render(scene, camera);
 
   const loadingManager = new THREE.LoadingManager();
@@ -54,7 +59,7 @@ function buildScene(geometryBlob: any, format: string) {
   loadingManager.onLoad = function () {
     console.log('Loading complete!');
     const loadingScreen = document.getElementById('loader');
-    loadingScreen.classList.add('fade-out');
+    loadingScreen?.classList.add('fade-out');
     loadingScreen?.remove();
   };
 
@@ -68,10 +73,10 @@ function buildScene(geometryBlob: any, format: string) {
   // Axes
   scene.add(new THREE.AxesHelper(20));
 
-  var loader = Object();
-  if (format == 'stl') {
+  let loader = Object();
+  if (format === 'stl') {
     loader = new STLLoader(loadingManager);
-  } else if (format == 'obj') {
+  } else if (format === 'obj') {
     loader = new OBJLoader(loadingManager);
   } else {
     console.log('File Format Not Supported');
@@ -80,45 +85,46 @@ function buildScene(geometryBlob: any, format: string) {
   const geometry = loader.parse(atob(geometryBlob));
 
   // OBJ Files:
-  if (geometry instanceof THREE.Group) {
-    geometry.traverse(function (obj) {
-      if (obj instanceof THREE.Mesh) {
-        var box = new THREE.Box3().setFromObject(obj);
-        obj.size = box.getSize(new THREE.Vector3());
+  if (geometry && geometry instanceof THREE.Group) {
+    try {
+      geometry.traverse(function (obj: any) {
+        if (obj instanceof THREE.Mesh) {
+          let box = new THREE.Box3().setFromObject(obj);
+          const size = box.getSize(new THREE.Vector3());
 
-        obj.scale.set(
-          1 / obj.size.length(),
-          1 / obj.size.length(),
-          1 / obj.size.length(),
-        );
-        obj.castShadow = true;
-        obj.receiveShadow = true;
-        obj.material = new THREE.MeshStandardMaterial({ color: 0x606060 });
-        obj.material.side = THREE.DoubleSide;
+          obj.scale.set(
+            1 / size.length(),
+            1 / size.length(),
+            1 / size.length(),
+          );
+          obj.castShadow = true;
+          obj.receiveShadow = true;
+          obj.material = new THREE.MeshStandardMaterial({ color: 0x606060 });
+          obj.material.side = THREE.DoubleSide;
 
-        obj.geometry.center();
-        var pivot = new THREE.Group();
-        scene.add(pivot);
-        pivot.add(obj);
-      }
-    });
+          obj.geometry.center();
+          let pivot = new THREE.Group();
+          scene.add(pivot);
+          pivot.add(obj);
+        }
+      });
+    } catch (ex: any) {
+      // eslint-disable-next-line no-console
+      console.log(ex);
+    }
   }
 
   // STL Files:
   if (geometry instanceof THREE.BufferGeometry) {
-    var material = new THREE.MeshStandardMaterial({ color: 0x606060 });
+    let material = new THREE.MeshStandardMaterial({ color: 0x606060 });
     material.side = THREE.DoubleSide;
     const obj = new THREE.Mesh(geometry, material);
     obj.geometry.center();
 
-    var box = new THREE.Box3().setFromObject(obj);
-    obj.size = box.getSize(new THREE.Vector3());
+    let box = new THREE.Box3().setFromObject(obj);
+    const size = box.getSize(new THREE.Vector3());
 
-    obj.scale.set(
-      1 / obj.size.length(),
-      1 / obj.size.length(),
-      1 / obj.size.length(),
-    );
+    obj.scale.set(1 / size.length(), 1 / size.length(), 1 / size.length());
     obj.castShadow = true;
     obj.receiveShadow = true;
 
@@ -144,7 +150,7 @@ function buildScene(geometryBlob: any, format: string) {
   function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setSize(width, height);
   }
   window.addEventListener('resize', onWindowResize);
 }
@@ -206,11 +212,11 @@ function GeometriesVisualizer(
   const canvasRef = React.useRef(null);
   React.useEffect(() => {
     if (geometryBlob !== '') {
-      var canvas = document.querySelector('#geo');
+      let canvas: HTMLCanvasElement | null = document.querySelector('#geo');
       if (!canvas) {
         return;
       }
-      buildScene(geometryBlob, geometryBlobFormat);
+      buildScene(geometryBlob, geometryBlobFormat, canvas);
       setLoadingScene(false);
     }
   }, [geometryBlob]);
