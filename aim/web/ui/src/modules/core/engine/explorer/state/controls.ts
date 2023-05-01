@@ -56,7 +56,7 @@ function createControl(config: ControlConfig<unknown & object, any>) {
   };
 }
 
-function createControlsSlice(slices: { [key: string]: any }) {
+function createControlsSlice(slices: Record<string, any>) {
   let initialState: Record<string, any> = {};
   const subSlices: Record<string, any> = {};
 

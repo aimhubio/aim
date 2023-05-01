@@ -11,7 +11,7 @@ import ControlPopover from 'components/ControlPopover/ControlPopover';
 import pageTitlesEnum from 'config/pageTitles/pageTitles';
 import { DOCUMENTATIONS } from 'config/references';
 
-import 'pages/Metrics/components/MetricsBar/MetricsBar.scss';
+import 'pages/Explorers/Metrics/components/MetricsBar/MetricsBar.scss';
 
 function RunsBar(props: {
   enabled: boolean;

@@ -29,7 +29,6 @@
    ui/pages/explorers.md
    ui/pages/table.md
    ui/pages/bookmarks.md
-   ui/pages/tags.md
 
 
 .. toctree::
@@ -47,6 +46,7 @@
    using/notifications.md
    using/callbacks.md
    using/k8s_deployment.md
+   using/huggingface_spaces.md
    using/jupyter_notebook_ui.md
    using/sagemaker_notebook_ui.md
    using/integration_guides.md

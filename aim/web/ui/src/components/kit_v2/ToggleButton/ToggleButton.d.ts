@@ -55,4 +55,10 @@ export interface IToggleButtonProps {
    * <ToggleButton leftValue="left" />
    */
   leftValue: string;
+  /**
+   *  The disabled state of the button.
+   *  @example
+   * <ToggleButton disabled={true} />
+   */
+  disabled?: boolean;
 }

@@ -163,10 +163,9 @@ class RestrictedPythonQuery(Query):
 
     def __init__(
         self,
-        query: str
+        query: str,
     ):
-        stripped_query = strip_query(query)
-        expr = query_add_default_expr(stripped_query)
+        expr = self.query_expression(query)
         super().__init__(expr=expr)
         self._checker = compile_checker(expr)
         self.run_metadata_cache = None
@@ -180,9 +179,6 @@ class RestrictedPythonQuery(Query):
         self,
         **params
     ) -> bool:
-        # prevent possible messing with globals
-        assert set(params.keys()).issubset(self.allowed_params)
-
         # TODO enforce immutable
         try:
             namespace = dict(**params, **restricted_globals)
@@ -190,3 +186,13 @@ class RestrictedPythonQuery(Query):
         except BaseException as e:
             logger.warning('query failed, %s', e)
             return False
+
+    @classmethod
+    def query_expression(cls, query: str) -> str:
+        return strip_query(query)
+
+
+class LegacyRestrictedPythonQuery(RestrictedPythonQuery):
+    @classmethod
+    def query_expression(cls, query: str) -> str:
+        return query_add_default_expr(strip_query(query))

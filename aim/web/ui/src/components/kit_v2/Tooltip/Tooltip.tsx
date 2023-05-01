@@ -13,7 +13,9 @@ import { ITooltipProps } from './Tooltip.d';
  * @param {number} delayDuration - Delay duration
  * @param {boolean} disableHoverableContent - Disable hoverable content
  * @param {number} skipDelayDuration - Skip delay duration
+ * @param hasArrow
  * @param {React.ReactNode} contentProps - Content props
+ * @param props
  * @returns {React.FunctionComponentElement<React.ReactNode>}
  * @constructor
  * @example
@@ -28,13 +30,15 @@ import { ITooltipProps } from './Tooltip.d';
  */
 function Tooltip({
   content,
-  delayDuration = 700,
+  delayDuration = 500,
   disableHoverableContent = false,
   skipDelayDuration = 300,
+  hasArrow = false,
   contentProps = {},
   children,
   ...props
 }: ITooltipProps): React.FunctionComponentElement<React.ReactNode> {
+  const ref = React.useRef<HTMLDivElement>(null);
   return (
     <TooltipPrimitive.Provider
       delayDuration={delayDuration}
@@ -45,12 +49,14 @@ function Tooltip({
         <TooltipPrimitive.Trigger asChild>{children}</TooltipPrimitive.Trigger>
         <TooltipPrimitive.Portal>
           <TooltipContent
+            ref={ref}
             data-testid='tooltip-content'
             sideOffset={5}
+            style={{ zIndex: 1000 }}
             {...contentProps}
           >
             {content}
-            <TooltipArrow />
+            {hasArrow && <TooltipArrow />}
           </TooltipContent>
         </TooltipPrimitive.Portal>
       </TooltipPrimitive.Root>

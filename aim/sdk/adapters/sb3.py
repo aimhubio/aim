@@ -17,10 +17,7 @@ class AimOutputFormat(KVWriter):
     Track key/value pairs into Aim run.
     """
 
-    def __init__(
-        self,
-        aim_callback
-    ):
+    def __init__(self, aim_callback):
         self.aim_callback = aim_callback
 
     def write(
@@ -32,7 +29,6 @@ class AimOutputFormat(KVWriter):
         for (key, value), (_, excluded) in zip(
             sorted(key_values.items()), sorted(key_excluded.items())
         ):
-
             if excluded is not None:
                 continue
 
@@ -44,12 +40,14 @@ class AimOutputFormat(KVWriter):
                     else:
                         context = {'tag': tag}
 
-                    self.aim_callback.experiment.track(value, key, step=step, context=context)
+                    self.aim_callback.experiment.track(
+                        value, key, step=step, context=context
+                    )
 
 
 class AimCallback(BaseCallback):
     """
-    AimCallback callback function.
+    AimCallback callback class.
 
     Args:
         repo (:obj:`str`, optional): Aim repository path or Repo object to which Run object is bound.
@@ -60,6 +58,8 @@ class AimCallback(BaseCallback):
             metrics (CPU, Memory, etc.). Set to `None` to disable system metrics tracking.
         log_system_params (:obj:`bool`, optional): Enable/Disable logging of system params such as installed packages,
             git info, environment variables, etc.
+        capture_terminal_logs (:obj:`bool`, optional): Enable/Disable terminal stdout logging.
+        verbose (:obj:`bool`, optional): Enable/Disable verbose
     """
 
     def __init__(
@@ -71,7 +71,6 @@ class AimCallback(BaseCallback):
         capture_terminal_logs: Optional[bool] = True,
         verbose: int = 0,
     ) -> None:
-
         super().__init__(verbose)
 
         self.repo = repo
@@ -83,7 +82,7 @@ class AimCallback(BaseCallback):
         self._run_hash = None
 
     def _init_callback(self) -> None:
-        args = {"algo": type(self.model).__name__}
+        args = {'algo': type(self.model).__name__}
         for key in self.model.__dict__:
             if type(self.model.__dict__[key]) in [float, int, str]:
                 args[key] = self.model.__dict__[key]

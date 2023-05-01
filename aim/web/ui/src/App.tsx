@@ -18,6 +18,8 @@ import routes from 'routes/routes';
 
 import { inIframe } from 'utils/helper';
 
+import usePyodide from './services/pyodide/usePyodide';
+
 import './App.scss';
 
 const basePath = getBasePath(false);
@@ -32,6 +34,8 @@ loader.config({
 });
 
 function App(): React.FunctionComponentElement<React.ReactNode> {
+  const { loadPyodide } = usePyodide();
+
   React.useEffect(() => {
     let timeoutId: number;
     const preloader = document.getElementById('preload-spinner');
@@ -41,6 +45,9 @@ function App(): React.FunctionComponentElement<React.ReactNode> {
         preloader.remove();
       }, 500);
     }
+
+    loadPyodide();
+
     return () => {
       window.clearTimeout(timeoutId);
     };

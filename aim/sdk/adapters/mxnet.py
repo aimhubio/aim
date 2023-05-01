@@ -1,41 +1,59 @@
 import time
 import numpy as np
 from mxnet.gluon.contrib.estimator.utils import _check_metrics
-from mxnet.gluon.contrib.estimator import TrainBegin, TrainEnd, EpochBegin, EpochEnd, BatchBegin, BatchEnd, Estimator
+from mxnet.gluon.contrib.estimator import (
+    TrainBegin,
+    TrainEnd,
+    EpochBegin,
+    EpochEnd,
+    BatchBegin,
+    BatchEnd,
+    Estimator,
+)
 from typing import Optional, Union, Any, List
 from aim.sdk.run import Run
 from aim.ext.resource.configs import DEFAULT_SYSTEM_TRACKING_INT
 
 
-class AimLoggingHandler(TrainBegin, TrainEnd, EpochBegin, EpochEnd, BatchBegin, BatchEnd):
-    """Aim wrapper on top of the Mxnet Basic Logging Handler that applies to every Gluon estimator by default.
-    :py:class:`AimLoggingHandler` logs hyper-parameters, training statistics,
-    and other useful information during training
-    Parameters
-    ----------
-    log_interval: int or str, default 'epoch'
-        Logging interval during training.
-        log_interval='epoch': display metrics every epoch
-        log_interval=integer k: display metrics every interval of k batches
-    metrics : list of EvalMetrics
-        Metrics to be logged, logged at batch end, epoch end, train end.
-    priority : scalar, default np.Inf
-        Priority level of the AimLoggingHandler. Priority level is sorted in
-        ascending order. The lower the number is, the higher priority level the
-        handler is.
+class AimLoggingHandler(
+    TrainBegin, TrainEnd, EpochBegin, EpochEnd, BatchBegin, BatchEnd
+):
+    """
+    AimLoggingHandler logging handler class.
+
+    Args:
+        repo (:obj:`str`, optional): Aim repository path or Repo object to which Run object is bound.
+            If skipped, default Repo is used.
+        experiment_name (:obj:`str`, optional): Sets Run's `experiment` property. 'default' if not specified.
+            Can be used later to query runs/sequences.
+        system_tracking_interval (:obj:`int`, optional): Sets the tracking interval in seconds for system usage
+            metrics (CPU, Memory, etc.). Set to `None` to disable system metrics tracking.
+        log_system_params (:obj:`bool`, optional): Enable/Disable logging of system params such as installed packages,
+            git info, environment variables, etc.
+        capture_terminal_logs (:obj:`bool`, optional): Enable/Disable terminal stdout logging.
+        log_interval: (:obj:`int` or `str`) default: 'epoch': Logging interval during training.
+            log_interval='epoch': display metrics every epoch
+            log_interval=integer k: display metrics every interval of k batches
+        metrics: (:obj:`list`, optional): Metrics to be logged, logged at batch end, epoch end, train end.
+        priority: (:obj:`float`, optional), default np.Inf:  Priority level of the AimLoggingHandler.
+            Priority level is sorted in ascending order.
+            The lower the number is, the higher priority level the handler is.
     """
 
-    def __init__(self, log_interval: Union[int, str] = 'epoch',
-                 repo: Optional[str] = None,
-                 experiment_name: Optional[str] = None,
-                 system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT,
-                 log_system_params: Optional[bool] = True,
-                 capture_terminal_logs: Optional[bool] = True,
-                 metrics: Optional[List[Any]] = None,
-                 priority=np.Inf,):
+    def __init__(
+        self,
+        repo: Optional[str] = None,
+        experiment_name: Optional[str] = None,
+        system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT,
+        log_system_params: Optional[bool] = True,
+        capture_terminal_logs: Optional[bool] = True,
+        log_interval: Union[int, str] = 'epoch',
+        metrics: Optional[List[Any]] = None,
+        priority=np.Inf,
+    ):
         super().__init__()
         if not isinstance(log_interval, int) and log_interval != 'epoch':
-            raise ValueError("log_interval must be either an integer or string 'epoch'")
+            raise ValueError('log_interval must be either an integer or string "epoch"')
 
         self.metrics = _check_metrics(metrics)
         self.batch_index = 0
@@ -61,13 +79,15 @@ class AimLoggingHandler(TrainBegin, TrainEnd, EpochBegin, EpochEnd, BatchBegin, 
         optimizer = trainer.optimizer.__class__.__name__
         lr = trainer.learning_rate
 
-        estimator.logger.info("Training begin: using optimizer %s "
-                              "with current learning rate %.4f ",
-                              optimizer, lr)
+        estimator.logger.info(
+            'Training begin: using optimizer %s ' 'with current learning rate %.4f ',
+            optimizer,
+            lr,
+        )
         if estimator.max_epoch:
-            estimator.logger.info("Train for %d epochs.", estimator.max_epoch)
+            estimator.logger.info('Train for %d epochs.', estimator.max_epoch)
         else:
-            estimator.logger.info("Train for %d batches.", estimator.max_batch)
+            estimator.logger.info('Train for %d batches.', estimator.max_batch)
         # reset all counters
         self.current_epoch = 0
         self.batch_index = 0
@@ -75,19 +95,22 @@ class AimLoggingHandler(TrainBegin, TrainEnd, EpochBegin, EpochEnd, BatchBegin, 
         self.log_interval_time = 0
 
         params = {
-            "arch": estimator.net.name,
-            "loss": estimator.loss.name,
-            "optimizer": optimizer,
-            "lr": lr,
-            "max_epoch": estimator.max_epoch,
-            "max_batch": estimator.max_batch
+            'arch': estimator.net.name,
+            'loss': estimator.loss.name,
+            'optimizer': optimizer,
+            'lr': lr,
+            'max_epoch': estimator.max_epoch,
+            'max_batch': estimator.max_batch,
         }
 
         self.setup(estimator, params)
 
     def train_end(self, estimator: Optional[Estimator], *args, **kwargs):
         train_time = time.time() - self.train_start
-        msg = 'Train finished using total %ds with %d epochs. ' % (train_time, self.current_epoch)
+        msg = 'Train finished using total %ds with %d epochs. ' % (
+            train_time,
+            self.current_epoch,
+        )
         # log every result in train stats including train/validation loss & metrics
         for metric in self.metrics:
             name, value = metric.get()
@@ -102,10 +125,13 @@ class AimLoggingHandler(TrainBegin, TrainEnd, EpochBegin, EpochEnd, BatchBegin, 
                     is_training = True
             self.epoch_start = time.time()
             if is_training:
-                estimator.logger.info("[Epoch %d] Begin, current learning rate: %.4f",
-                                      self.current_epoch, estimator.trainer.learning_rate)
+                estimator.logger.info(
+                    '[Epoch %d] Begin, current learning rate: %.4f',
+                    self.current_epoch,
+                    estimator.trainer.learning_rate,
+                )
             else:
-                estimator.logger.info("Validation Begin")
+                estimator.logger.info('Validation Begin')
 
     def epoch_end(self, estimator: Optional[Estimator], *args, **kwargs):
         if isinstance(self.log_interval, int) or self.log_interval == 'epoch':
@@ -115,9 +141,11 @@ class AimLoggingHandler(TrainBegin, TrainEnd, EpochBegin, EpochEnd, BatchBegin, 
                 name, value = metric.get()
                 msg += '%s: %.4f, ' % (name, value)
 
-                context_name, metric_name = name.split(" ")
+                context_name, metric_name = name.split(' ')
                 context = {'subset': context_name}
-                self._run.track(value, metric_name, step=self.batch_index, context=context)
+                self._run.track(
+                    value, metric_name, step=self.batch_index, context=context
+                )
             estimator.logger.info(msg.rstrip(', '))
         self.current_epoch += 1
         self.batch_index = 0
@@ -141,9 +169,11 @@ class AimLoggingHandler(TrainBegin, TrainEnd, EpochBegin, EpochEnd, BatchBegin, 
                     name, value = metric.get()
                     msg += '%s: %.4f, ' % (name, value)
 
-                    context_name, metric_name = name.split(" ")
+                    context_name, metric_name = name.split(' ')
                     context = {'subset': context_name}
-                    self._run.track(value, metric_name, step=self.batch_index, context=context)
+                    self._run.track(
+                        value, metric_name, step=self.batch_index, context=context
+                    )
                 estimator.logger.info(msg.rstrip(', '))
         self.batch_index += 1
 
