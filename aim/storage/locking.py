@@ -186,7 +186,8 @@ class RefreshLock:
             self._lock.release()
 
     def force_release(self):
-        self._soft_lock_path.unlink(missing_ok=True)
+        if self._soft_lock_path.exists():
+            self._soft_lock_path.unlink()
 
     def owner_id(self):
         try:
