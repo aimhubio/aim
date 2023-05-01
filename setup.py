@@ -9,7 +9,7 @@ from aimrocks import lib_utils
 # TODO This `setup.py` assumes that `Cython` and `aimrocks` are installed.
 # This is okay for now as users are expected to install `aim` from wheels.
 
-version_file = 'aim/VERSION'
+version_file = 'src/aim/VERSION'
 
 with open(version_file) as vf:
     __version__ = vf.read().strip()
@@ -22,9 +22,6 @@ DESCRIPTION = 'A super-easy way to record, search and compare AI experiments.'
 VERSION = __version__
 REQUIRES_PYTHON = '>=3.7.0'
 
-# Get packages
-packages = find_packages(exclude=('tests', 'performance_tests', 'aim.web.ui'))
-
 
 # Get a list of all files in the html directory to include in our module
 def package_files(directory):
@@ -35,9 +32,9 @@ def package_files(directory):
     return paths
 
 
-migration_files = package_files('aim/web/migrations')
-storage_migration_files = package_files('aim/storage/migrations')
-notifier_files = package_files('aim/ext/notifier')
+migration_files = package_files('src/aim/web/migrations')
+storage_migration_files = package_files('src/aim/storage/migrations')
+notifier_files = package_files('src/aim/ext/notifier')
 version_files = ['../aim/VERSION', ]
 
 readme_file = 'README.md'
@@ -51,7 +48,6 @@ SETUP_REQUIRED = [
 # What packages are required for this module to be executed?
 REQUIRED = [
     f'aim-ui=={__version__}',
-    'aimrecords==0.0.7',
     'aimrocks==0.4.0',
     'cachetools>=4.0.0',
     'click>=7.0',
@@ -140,23 +136,23 @@ COMPILE_ARGS = [
     '-fPIC'
 ]
 CYTHON_SCRITPS = [
-    ('aim.storage.hashing.c_hash', 'aim/storage/hashing/c_hash.pyx'),
-    ('aim.storage.hashing.hashing', 'aim/storage/hashing/hashing.py'),
-    ('aim.storage.hashing', 'aim/storage/hashing/__init__.py'),
-    ('aim.storage.encoding.encoding_native', 'aim/storage/encoding/encoding_native.pyx'),
-    ('aim.storage.encoding.encoding', 'aim/storage/encoding/encoding.pyx'),
-    ('aim.storage.encoding', 'aim/storage/encoding/__init__.py'),
-    ('aim.storage.treeutils', 'aim/storage/treeutils.pyx'),
-    ('aim.storage.rockscontainer', 'aim/storage/rockscontainer.pyx'),
-    ('aim.storage.union', 'aim/storage/union.pyx'),
-    ('aim.storage.arrayview', 'aim/storage/arrayview.py'),
-    ('aim.storage.treearrayview', 'aim/storage/treearrayview.py'),
-    ('aim.storage.treeview', 'aim/storage/treeview.py'),
-    ('aim.storage.utils', 'aim/storage/utils.py'),
-    ('aim.storage.container', 'aim/storage/container.py'),
-    ('aim.storage.containertreeview', 'aim/storage/containertreeview.py'),
-    ('aim.storage.inmemorytreeview', 'aim/storage/inmemorytreeview.py'),
-    ('aim.storage.prefixview', 'aim/storage/prefixview.py'),
+    ('aim.storage.hashing.c_hash', 'src/aim/storage/hashing/c_hash.pyx'),
+    ('aim.storage.hashing.hashing', 'src/aim/storage/hashing/hashing.py'),
+    ('aim.storage.hashing', 'src/aim/storage/hashing/__init__.py'),
+    ('aim.storage.encoding.encoding_native', 'src/aim/storage/encoding/encoding_native.pyx'),
+    ('aim.storage.encoding.encoding', 'src/aim/storage/encoding/encoding.pyx'),
+    ('aim.storage.encoding', 'src/aim/storage/encoding/__init__.py'),
+    ('aim.storage.treeutils', 'src/aim/storage/treeutils.pyx'),
+    ('aim.storage.rockscontainer', 'src/aim/storage/rockscontainer.pyx'),
+    ('aim.storage.union', 'src/aim/storage/union.pyx'),
+    ('aim.storage.arrayview', 'src/aim/storage/arrayview.py'),
+    ('aim.storage.treearrayview', 'src/aim/storage/treearrayview.py'),
+    ('aim.storage.treeview', 'src/aim/storage/treeview.py'),
+    ('aim.storage.utils', 'src/aim/storage/utils.py'),
+    ('aim.storage.container', 'src/aim/storage/container.py'),
+    ('aim.storage.containertreeview', 'src/aim/storage/containertreeview.py'),
+    ('aim.storage.inmemorytreeview', 'src/aim/storage/inmemorytreeview.py'),
+    ('aim.storage.prefixview', 'src/aim/storage/prefixview.py'),
 ]
 
 
@@ -193,7 +189,11 @@ setup(
     python_requires=REQUIRES_PYTHON,
     setup_requires=SETUP_REQUIRED,
     install_requires=REQUIRED,
-    packages=packages,
+    packages=(
+        find_packages(where='src', exclude=('web.ui',)) +
+        find_packages(where='pkgs')
+    ),
+    package_dir={'aim': 'src/aim', 'aimstack': 'pkgs/aimstack'},
     package_data={'aim': migration_files + storage_migration_files + notifier_files + version_files},
     include_package_data=True,
     classifiers=[

@@ -23,7 +23,7 @@ jobs:
           git pull --rebase
           git merge main --strategy-option theirs
           git checkout main -- ./aim/VERSION
-          . ./.github/scripts/override-version.sh
+          . ./.github/workflow_files/override-version.sh
           git add ./aim/VERSION
           git commit -m "Update VERSION file"
           git push
@@ -46,7 +46,7 @@ jobs:
       - name: install deps
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -r requirements.txt
+          python -m pip install -r ./.github/workflow_files/requirements.txt
           python -m pip install -r tests/unit_tests/requirements.txt
 
       - name: code style checks

@@ -9,8 +9,8 @@ do
   export PATH=/opt/python/${python_version}/bin:$PATH
   echo "build wheels for ${PYTHON_VERSION}"
   python -m build
-  pip install dist/*${python_version}*.whl
-  pip install git+https://github.com/aimhubio/auditwheel.git@include-exclude
+  python -m pip install dist/*${python_version}*.whl
+  python -m pip install git+https://github.com/aimhubio/auditwheel.git@include-exclude
   export LIB_DIR=`python -c "from aimrocks import lib_utils; print(lib_utils.get_lib_dir())"`
   export LIBS_BUNDLED=`ls ${LIB_DIR}/ \
     | grep .so \

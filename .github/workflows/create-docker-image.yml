@@ -31,4 +31,4 @@ jobs:
       - name: Build & Push aim image
         env:
           AIM_VERSION: ${{ github.event.inputs.pkg_version }}
-        run: . ./.github/scripts/create-docker-image.sh
+        run: . ./.github/workflow_files/create-docker-image.sh
