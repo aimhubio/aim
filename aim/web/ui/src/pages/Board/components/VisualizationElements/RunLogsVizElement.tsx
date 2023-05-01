@@ -11,10 +11,21 @@ function RunLogsVizElement(props: any) {
 
   const runData = useModel(runDetailAppModel);
 
+  React.useEffect(() => {
+    runDetailAppModel.initialize();
+    const runsRequestRef = runDetailAppModel.getRunInfo(runHash);
+
+    runsRequestRef.call();
+
+    return () => {
+      runsRequestRef.abort();
+    };
+  }, [runHash]);
+
   return (
     <div
       className='VizComponentContainer'
-      style={{ flex: 1, display: 'block' }}
+      style={{ flex: 1, display: 'block', minHeight: 500, padding: 0 }}
     >
       <RunLogsTab
         key={runHash}
