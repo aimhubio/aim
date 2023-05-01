@@ -186,4 +186,19 @@
   justify-content: center;
   border: $border-dark;
   padding: $space-xs;
+
+  .RunLogRecords {
+    padding: 0;
+
+    &__contentWrapper {
+      border: none;
+    }
+  }
+
+  .RunDetailLogsTabWrapper {
+    .RunDetailLogsTab {
+      border-left: none;
+      border-right: none;
+    }
+  }
 }

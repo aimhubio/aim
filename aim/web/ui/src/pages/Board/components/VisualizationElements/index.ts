@@ -66,6 +66,12 @@ const RunMessagesVizElement = React.lazy(
       /* webpackPrefetch: true, webpackChunkName: "RunMessages" */ './RunMessagesVizElement'
     ),
 );
+const RunLogsVizElement = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "RunLogs" */ './RunLogsVizElement'
+    ),
+);
 const RunNotesVizElement = React.lazy(
   () =>
     import(
@@ -121,6 +127,7 @@ export type VizElementKey =
   | 'Text'
   | 'Select'
   | 'RunMessages'
+  | 'RunLogs'
   | 'RunNotes'
   | 'Plotly'
   | 'Slider'
@@ -141,6 +148,7 @@ const VizElementsMap: Record<VizElementKey, React.FunctionComponent<any>> = {
   Text: TextVizElement,
   Select: SelectVizElement,
   RunMessages: RunMessagesVizElement,
+  RunLogs: RunLogsVizElement,
   RunNotes: RunNotesVizElement,
   Plotly: PlotlyVizElement,
   Slider: SliderVizElement,
