@@ -35,6 +35,6 @@ exclude = [
     "**/*pb2.py",
     "**/*pb2_grpc.py"
 ]
-
-[tool.flake8.per-file-ignores]
-"__init__.py" = ["F401", "F403"]
+per-file-ignores = [
+    "__init__.py:F401,F403"
+]

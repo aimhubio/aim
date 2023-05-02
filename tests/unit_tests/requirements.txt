@@ -6,5 +6,6 @@ httpx
 pandas
 pytest
 flake8
+Flake8-pyproject
 parameterized==0.8.1
 pytest-cov==2.12.1
