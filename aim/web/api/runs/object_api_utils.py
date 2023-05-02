@@ -175,7 +175,7 @@ class CustomObjectApi:
                         trace_dict['index_range_total'] = self.total_index_range
                     yield collect_streamable_data(encode_tree(trace_dict))
                 del self.trace_cache[key]
-                self.run = None
+            self.run = None
         except asyncio.CancelledError:
             pass
 
