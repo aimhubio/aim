@@ -2,6 +2,7 @@
 
 ## 3.17.4 
 
+- Resolve run messages duplication issue for in progress runs (roubkar)
 - Fix metric values inconsistency with steps (mihran113)
 - Enable CLI for remote repos (mihran113)
 - Safe force-acquire index lock using meta-locks (alberttorosyan, mihran113)
