@@ -33,6 +33,7 @@ class StructuredRunProxy:
         self._hash = hash_
 
         self._resources = RunProxyAutoClean(self)
+        self._resources.hash = self._hash
         self._resources.rpc_client = client
         self._resources.handler = handler
         self._handler = handler
