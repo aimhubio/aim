@@ -8,6 +8,7 @@
 - Safe force-acquire index lock using meta-locks (alberttorosyan, mihran113)
 - Fix the issue with containers left open (mihran113)
 - Fix issue with notebook extension start-up (mihran113)
+- Disable SDK events tracking with Segment API (alberttorosyan)
 
 ## 3.17.3 Apr 6, 2023
 
