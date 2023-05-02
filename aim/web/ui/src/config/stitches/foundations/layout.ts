@@ -23,4 +23,11 @@ const TopBar = styled(Box, {
   p: '0 $9',
 });
 
-export { LayoutContainer, TopBar };
+const textEllipsis = {
+  whiteSpace: 'nowrap',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  width: '100%',
+};
+
+export { LayoutContainer, TopBar, textEllipsis };

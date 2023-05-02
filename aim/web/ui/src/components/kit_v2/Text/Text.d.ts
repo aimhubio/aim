@@ -11,7 +11,7 @@ export interface ITextProps
   disabled?: boolean;
   size?: CSS['fontSize'];
   color?: CSS['color'];
-  truncate?: boolean;
+  ellipsis?: boolean;
   textTransform?: CSS['textTransform'];
   lineHeight?: CSS['lineHeight'];
   css?: CSS;

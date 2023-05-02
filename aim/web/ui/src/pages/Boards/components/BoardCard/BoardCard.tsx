@@ -20,6 +20,7 @@ import {
   Popover,
   Separator,
   Text,
+  Tooltip,
 } from 'components/kit_v2';
 
 import { PathEnum } from 'config/enums/routesEnum';
@@ -51,6 +52,9 @@ function BoardCard({
         <Link
           css={{ flex: 1 }}
           fontWeight='$4'
+          fontSize='$6'
+          ellipsis
+          title={name}
           to={PathEnum.Board.replace(':boardId', id)}
         >
           {name}
