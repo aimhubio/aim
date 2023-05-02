@@ -27,7 +27,7 @@ from aim.sdk.lock_manager import LockManager, RunLock
 
 from aim.storage.locking import SoftFileLock
 from aim.storage.container import Container
-from aim.storage.rockscontainer import RocksContainer, LockableRocksContainer
+from aim.storage.rockscontainer import RocksContainer
 from aim.storage.union import RocksUnionContainer
 from aim.storage.treeviewproxy import ProxyTree
 from aim.storage.lock_proxy import ProxyLock
@@ -299,7 +299,7 @@ class Repo:
         container = self.container_pool.get(container_config)
         if container is None:
             path = os.path.join(self.path, name)
-            container = LockableRocksContainer(path, read_only=False, timeout=timeout)
+            container = RocksContainer(path, read_only=False, timeout=timeout)
             self.container_pool[container_config] = container
 
         return container
