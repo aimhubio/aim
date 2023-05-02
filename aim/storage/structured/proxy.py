@@ -17,7 +17,7 @@ class StructuredRunProxy:
     def __init__(self, client: 'Client',
                  hash_: str,
                  read_only: bool,
-                 created_at: datetime = None):
+                 created_at: 'datetime' = None):
         self._resources: RunProxyAutoClean = None
         self._rpc_client = client
         kwargs = {

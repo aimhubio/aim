@@ -349,7 +349,7 @@ class Repo:
 
         return container_view
 
-    def request_props(self, hash_: str, read_only: bool, created_at: datetime = None):
+    def request_props(self, hash_: str, read_only: bool, created_at: 'datetime' = None):
         if self.is_remote_repo:
             return StructuredRunProxy(self._client, hash_, read_only, created_at)
 
@@ -532,8 +532,9 @@ class Repo:
             (True, []) if all runs were copied successfully,
             (False, :obj:`list`) with list of remaining runs otherwise.
         """
+        from tqdm import tqdm
         remaining_runs = []
-        for run_hash in run_hashes:
+        for run_hash in tqdm(run_hashes):
             try:
                 self._copy_run(run_hash, dest_repo)
             except Exception as e:
@@ -815,57 +816,92 @@ class Repo:
                     shutil.rmtree(seqs_path, ignore_errors=True)
 
     def _copy_run(self, run_hash, dest_repo):
-        source_meta_run_tree = self.request_tree(
-            'meta', run_hash, read_only=True, from_union=True
-        ).subtree('meta').subtree('chunks').subtree(run_hash)
-
         def copy_trees():
             # copy run meta tree
-            dest_meta_run_tree = dest_repo.request_tree(
-                'meta', run_hash, read_only=False, from_union=True
-            ).subtree('meta').subtree('chunks').subtree(run_hash)
-            dest_meta_run_tree[...] = source_meta_run_tree[...]
-            dest_index = dest_repo._get_index_tree('meta', timeout=0).view(())
+            source_meta_tree = self.request_tree(
+                'meta', run_hash, read_only=True, from_union=False, no_cache=True
+            ).subtree('meta')
+            dest_meta_tree = dest_repo.request_tree(
+                'meta', run_hash, read_only=False, from_union=False, no_cache=True
+            ).subtree('meta')
+            dest_meta_run_tree = dest_meta_tree.subtree('chunks').subtree(run_hash)
+            dest_meta_tree[...] = source_meta_tree[...]
+            dest_index = dest_repo._get_index_tree('meta', timeout=10).view(())
             dest_meta_run_tree.finalize(index=dest_index)
 
             # copy run series tree
             source_series_run_tree = self.request_tree(
-                'seqs', run_hash, read_only=True
-            ).subtree(('seqs', 'v2', 'chunks', run_hash))
+                'seqs', run_hash, read_only=True, no_cache=True
+            ).subtree('seqs')
             dest_series_run_tree = dest_repo.request_tree(
-                'seqs', run_hash, read_only=False
-            ).subtree(('seqs', 'v2', 'chunks', run_hash))
-            dest_series_run_tree[...] = source_series_run_tree[...]
+                'seqs', run_hash, read_only=False, no_cache=True
+            ).subtree('seqs')
+
+            # copy v2 sequences
+            source_v2_tree = source_series_run_tree.subtree(('v2', 'chunks', run_hash))
+            dest_v2_tree = dest_series_run_tree.subtree(('v2', 'chunks', run_hash))
+            for ctx_id in source_v2_tree.keys():
+                for metric_name in source_v2_tree.subtree(ctx_id).keys():
+                    source_val_view = source_v2_tree.\
+                        subtree((ctx_id, metric_name)).array('val')
+                    source_step_view = source_v2_tree.\
+                        subtree((ctx_id, metric_name)).array('step', dtype='int64')
+                    source_epoch_view = source_v2_tree.\
+                        subtree((ctx_id, metric_name)).array('epoch', dtype='int64')
+                    source_time_view = source_v2_tree.\
+                        subtree((ctx_id, metric_name)).array('time', dtype='int64')
+
+                    dest_val_view = dest_v2_tree.\
+                        subtree((ctx_id, metric_name)).array('val').allocate()
+                    dest_step_view = dest_v2_tree.\
+                        subtree((ctx_id, metric_name)).array('step', dtype='int64').allocate()
+                    dest_epoch_view = dest_v2_tree.\
+                        subtree((ctx_id, metric_name)).array('epoch', dtype='int64').allocate()
+                    dest_time_view = dest_v2_tree.\
+                        subtree((ctx_id, metric_name)).array('time', dtype='int64').allocate()
+
+                    for key, val in source_val_view.items():
+                        dest_val_view[key] = val
+                        dest_step_view[key] = source_step_view[key]
+                        dest_epoch_view[key] = source_epoch_view[key]
+                        dest_time_view[key] = source_time_view[key]
+
+            # copy v1 sequences
+            source_v1_tree = source_series_run_tree.subtree(('chunks', run_hash))
+            dest_v1_tree = dest_series_run_tree.subtree(('chunks', run_hash))
+            for ctx_id in source_v1_tree.keys():
+                for metric_name in source_v1_tree.\
+                        subtree(ctx_id).keys():
+                    source_val_view = source_v1_tree.\
+                        subtree((ctx_id, metric_name)).array('val')
+                    source_epoch_view = source_v1_tree.\
+                        subtree((ctx_id, metric_name)).array('epoch', dtype='int64')
+                    source_time_view = source_v1_tree.\
+                        subtree((ctx_id, metric_name)).array('time', dtype='int64')
+
+                    dest_val_view = dest_v1_tree.\
+                        subtree((ctx_id, metric_name)).array('val').allocate()
+                    dest_epoch_view = dest_v1_tree.\
+                        subtree((ctx_id, metric_name)).array('epoch', dtype='int64').allocate()
+                    dest_time_view = dest_v1_tree.\
+                        subtree((ctx_id, metric_name)).array('time', dtype='int64').allocate()
+
+                    for key, val in source_val_view.items():
+                        dest_val_view[key] = val
+                        dest_epoch_view[key] = source_epoch_view[key]
+                        dest_time_view[key] = source_time_view[key]
 
         def copy_structured_props():
             source_structured_run = self.structured_db.find_run(run_hash)
             dest_structured_run = dest_repo.request_props(run_hash,
                                                           read_only=False,
                                                           created_at=source_structured_run.created_at)
+            dest_structured_run.name = source_structured_run.name
             dest_structured_run.experiment = source_structured_run.experiment
             dest_structured_run.description = source_structured_run.description
             dest_structured_run.archived = source_structured_run.archived
-            for source_tag in source_structured_run.tags_obj:
-                dest_structured_run.add_tag(source_tag.name)
-
-        def check_metrics_version() -> bool:
-            metric_dtypes = ('float', 'float64', 'int')
-            traces_tree = source_meta_run_tree.get('traces', {})
-
-            v1_metric_found = False
-            for ctx_metadata in traces_tree.values():
-                for seq_metadata in ctx_metadata.values():
-                    if seq_metadata.get('dtype', 'float') in metric_dtypes:
-                        if seq_metadata.get('version', 1) == 1:
-                            v1_metric_found = True
-                            break
-            return v1_metric_found
-
-        if check_metrics_version():
-            logger.warning(f'Cannot copy Run: {run_hash}. Please upgrade repo first '
-                           f'with the following command:')
-            logger.warning(f'aim storage --repo {self.path} upgrade 3.11+ \'*\'')
-            raise RuntimeError
+            for source_tag in source_structured_run.tags:
+                dest_structured_run.add_tag(source_tag)
 
         # check run lock info. in progress runs can't be copied
         if self._lock_manager.get_run_lock_info(run_hash).locked:

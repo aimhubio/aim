@@ -6,8 +6,6 @@ import io
 import zipfile
 from datetime import datetime
 
-from aim.storage.rockscontainer import RocksContainer
-
 if TYPE_CHECKING:
     from aim.sdk.repo import Repo
 
@@ -68,4 +66,3 @@ def upload_repo_runs(buffer: io.BytesIO, bucket_name: str) -> Tuple[bool, str]:
         return True, key
     except Exception as e:
         return False, e
-

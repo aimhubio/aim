@@ -78,7 +78,7 @@ def copy_runs(ctx, destination, hashes):
     source_repo = Repo.from_path(source)
     destination_repo = Repo.from_path(destination)
 
-    matched_hashes = match_runs(source, hashes)
+    matched_hashes = match_runs(source_repo, hashes)
     success, remaining_runs = source_repo.copy_runs(matched_hashes, destination_repo)
     if success:
         click.echo(f'Successfully copied {len(matched_hashes)} runs.')
@@ -156,7 +156,7 @@ def close_runs(ctx, hashes, yes):
     pool = ThreadPool(cpu_count(logical=False))
 
     for _ in tqdm.tqdm(
-            pool.imap_unordered(repo._close_run,  hashes),
+            pool.imap_unordered(repo._close_run, hashes),
             desc='Closing runs',
             total=len(hashes)):
         pass

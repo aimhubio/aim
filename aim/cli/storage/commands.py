@@ -2,11 +2,11 @@ import click
 import os
 from tqdm import tqdm
 
-from aim.cli.runs.utils import list_repo_runs, match_runs
+from aim.cli.runs.utils import match_runs
 from aim.cli.upgrade.utils import convert_2to3
 
 from aim.sdk.maintenance_run import MaintenanceRun as Run
-from aim.sdk.utils import backup_run, restore_run_backup, clean_repo_path
+from aim.sdk.utils import backup_run, restore_run_backup
 from aim.sdk.repo import Repo
 from aim.sdk.index_manager import RepoIndexManager
 
