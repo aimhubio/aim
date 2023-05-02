@@ -1,5 +1,9 @@
 import os
 import logging
+import pathlib
+import threading
+import uuid
+import time
 
 from filelock import BaseFileLock, SoftFileLock, UnixFileLock, has_fcntl
 
@@ -151,22 +155,67 @@ def AutoFileLock(
         return SoftFileLock(f'{lock_file}.softlock', timeout)
 
 
-class DualLock:
-    """ Custom lock that uses both UnixLock and SoftFileLock"""
+class RefreshLock:
+    LOCK_REFRESH_INTERVAL = 10
+    GRACE_PERIOD = 10 * LOCK_REFRESH_INTERVAL
+
+    """ Custom lock that acquires both UnixLock and SoftFileLock and refreshes SoftFileLock periodically."""
     def __init__(self, lock_path: Union[str, os.PathLike], timeout: float = -1):
-        self._lock_path = str(lock_path)
+        self._lock_path = lock_path
         self._lock = UnixFileLock(self._lock_path, timeout)
 
-        self._soft_lock_path = f'{self._lock_path}.softlock'
+        self._soft_lock_path = pathlib.Path(f'{self._lock_path}.softlock')
         self._soft_lock = SoftFileLock(self._soft_lock_path, timeout)
+
+        self._thread = threading.Thread(target=self._refresh_lock, daemon=True)
+        self._running = False
 
     def acquire(self):
         self._lock.acquire()
         self._soft_lock.acquire()
+        with self._soft_lock_path.open('w') as handler:
+            handler.write(str(uuid.uuid4()))
+        self._running = True
+        self._thread.start()
 
     def release(self):
-        self._soft_lock.release()
-        self._lock.release()
+        if self._running:
+            self._running = False
+            self._thread.join()
+            self._soft_lock.release()
+            self._lock.release()
+
+    def force_release(self):
+        if self._soft_lock_path.exists():
+            self._soft_lock_path.unlink()
+
+    def owner_id(self):
+        try:
+            with self._soft_lock_path.open('r') as handler:
+                return handler.read().strip()
+        except FileNotFoundError:
+            return None
+
+    def meta_lock(self):
+        return SoftFileLock(f'{self._soft_lock_path}.meta')
+
+    def last_refresh_time(self):
+        try:
+            return self._soft_lock_path.stat().st_mtime
+        except FileNotFoundError:
+            return None
+
+    def _refresh_lock(self):
+        sleep_interval = 0.1
+        wait_time = 0.0
+        while True:
+            if not self._running:
+                return
+            if wait_time >= self.LOCK_REFRESH_INTERVAL:
+                self._soft_lock_path.touch(exist_ok=True)
+                wait_time = 0.0
+            time.sleep(sleep_interval)
+            wait_time += sleep_interval
 
 
 class NoopLock:
@@ -182,7 +231,7 @@ class NoopLock:
 
 
 class RunLock:
-    """Interface for locking/releaseing Run locks."""
+    """Interface for locking/releasing Run locks."""
     def lock(self, force: bool = False) -> None:
         raise NotImplementedError
 

@@ -3,6 +3,7 @@
 ## 3.17.4 
 
 - Fix metric values inconsistency with steps (mihran113)
+- Safe force-acquire index lock using meta-locks (alberttorosyan, mihran113)
 - Fix the issue with containers left open (mihran113)
 - Fix issue with notebook extension start-up (mihran113)
 
