@@ -557,8 +557,9 @@ class Repo:
             (True, []) if all runs were moved successfully,
             (False, :obj:`list`) with list of remaining runs otherwise.
         """
+        from tqdm import tqdm
         remaining_runs = []
-        for run_hash in run_hashes:
+        for run_hash in tqdm(run_hashes):
             try:
                 self._copy_run(run_hash, dest_repo)
                 self._delete_run(run_hash)

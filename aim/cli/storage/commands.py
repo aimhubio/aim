@@ -14,12 +14,7 @@ from aim.sdk.index_manager import RepoIndexManager
 @click.group()
 @click.option('--repo', required=False,
               default=os.getcwd(),
-              type=click.Path(
-                  exists=True,
-                  file_okay=False,
-                  dir_okay=True,
-                  writable=True
-              ))
+              type=str)
 @click.pass_context
 def storage(ctx, repo):
     """Manage aim repository data & format updates."""
@@ -56,7 +51,7 @@ def to_3_11(ctx, hashes, yes):
     repo_path = ctx.obj['repo']
     repo = Repo.from_path(repo_path)
 
-    matched_hashes = match_runs(repo_path, hashes)
+    matched_hashes = match_runs(repo, hashes)
     remaining_runs = []
     if yes:
         confirmed = True
@@ -101,7 +96,7 @@ def restore_runs(ctx, hashes, yes):
     repo_path = ctx.obj['repo']
     repo = Repo.from_path(repo_path)
 
-    matched_hashes = match_runs(repo_path, hashes, lookup_dir='bcp')
+    matched_hashes = match_runs(repo, hashes, lookup_dir='bcp')
     if yes:
         confirmed = True
     else:

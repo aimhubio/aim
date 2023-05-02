@@ -48,7 +48,7 @@ def remove_runs(ctx, hashes, yes):
     repo_path = ctx.obj['repo']
     repo = Repo.from_path(repo_path)
 
-    matched_hashes = match_runs(repo_path, hashes)
+    matched_hashes = match_runs(repo, hashes)
     if yes:
         confirmed = True
     else:
@@ -101,7 +101,7 @@ def move_runs(ctx, destination, hashes):
     source_repo = Repo.from_path(source)
     destination_repo = Repo.from_path(destination)
 
-    matched_hashes = match_runs(source, hashes)
+    matched_hashes = match_runs(source_repo, hashes)
 
     success, remaining_runs = source_repo.move_runs(matched_hashes, destination_repo)
     if success:
