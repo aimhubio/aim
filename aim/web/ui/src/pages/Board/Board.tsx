@@ -12,6 +12,7 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 import SplitPane, { SplitPaneItem } from 'components/SplitPane';
 import ResizingFallback from 'components/ResizingFallback';
+import RouteLeavingGuard from 'components/RouteLeavingGuard';
 
 import { PathEnum } from 'config/enums/routesEnum';
 
@@ -321,6 +322,9 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
           handleClose={onNotificationDelete}
           data={notifyData}
         />
+      )}
+      {(editMode || newMode) && (
+        <RouteLeavingGuard when={editorValue.current !== data.code} />
       )}
     </ErrorBoundary>
   );

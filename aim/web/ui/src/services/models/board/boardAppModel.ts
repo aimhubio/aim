@@ -73,7 +73,10 @@ async function createBoard(name: string, description: string, code: string) {
       })
       .then((data: any) => {
         model.setState({
-          board: data,
+          board: {
+            ...data,
+            ...data.state,
+          },
         });
       });
 
@@ -109,7 +112,10 @@ async function updateBoard(boardId: string, update: Record<string, unknown>) {
       })
       .then((data: any) => {
         model.setState({
-          board: data,
+          board: {
+            ...data,
+            ...data.state,
+          },
         });
       });
 

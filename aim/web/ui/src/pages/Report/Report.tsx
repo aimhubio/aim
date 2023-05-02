@@ -12,6 +12,7 @@ import AppBar from 'components/AppBar/AppBar';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import CodeBlock from 'components/CodeBlock/CodeBlock';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
+import RouteLeavingGuard from 'components/RouteLeavingGuard';
 
 import { PathEnum } from 'config/enums/routesEnum';
 
@@ -156,6 +157,9 @@ function Report({
           </div>
         </BusyLoaderWrapper>
       </section>
+      {(editMode || newMode) && (
+        <RouteLeavingGuard when={value !== data.code} />
+      )}
       {notifyData?.length > 0 && (
         <NotificationContainer
           handleClose={onNotificationDelete}
