@@ -70,7 +70,7 @@ def query_filter(type_, query=""):
         query_result_cache[query_key] = items
 
         return items
-    except:
+    except: # noqa
         return []
 
 
@@ -121,7 +121,7 @@ def find(obj, element):
     for key in keys:
         try:
             rv = rv[key]
-        except:
+        except: # noqa
             return None
     return rv
 
@@ -159,7 +159,7 @@ viz_map_keys = {}
 
 
 def update_viz_map(viz_type, key=None):
-    if key != None:
+    if key is not None:
         viz_map_keys[key] = key
         return key
     if viz_type in viz_map_keys:
@@ -448,7 +448,7 @@ class LineChart(Component):
         return self.state["focused_point"] if "focused_point" in self.state else None
 
     async def on_active_point_change(self, val, is_active):
-        if val != None:
+        if val is not None:
             data = create_proxy(val.to_py())
             item = self.data[data["key"]]
 
@@ -592,6 +592,7 @@ class RunMessages(Component):
         self.data = run_hash
 
         self.render()
+
 
 class RunLogs(Component):
     def __init__(self, run_hash, key=None):
@@ -818,6 +819,7 @@ class Switch(Component):
         })
         print("Switch" + str(val))
 
+
 class TextArea(Component):
     def __init__(self, value=None, size=None, resize=None, disabled=None, caption=None, key=None):
         component_type = "TextArea"
@@ -846,5 +848,5 @@ class TextArea(Component):
 
     async def on_change(self, val):
         self.set_state({
-           "value": val
+            "value": val
         })
