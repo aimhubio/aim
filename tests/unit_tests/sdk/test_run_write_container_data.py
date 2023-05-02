@@ -1,6 +1,6 @@
 import os
 
-from tests.unit_tests.base import TestBase
+from unit_tests.base import TestBase
 
 from aim.sdk import Run
 from aim.sdk.context import Context

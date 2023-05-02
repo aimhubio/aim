@@ -1,7 +1,7 @@
 import pytest
 
-from tests.unit_tests.base import TestBase
-from tests.unit_tests.utils import is_package_installed
+from unit_tests.base import TestBase
+from unit_tests.utils import is_package_installed
 
 
 class TestHFDatasetsIntegration(TestBase):

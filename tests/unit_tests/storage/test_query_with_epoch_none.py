@@ -1,6 +1,6 @@
 import random
 import numpy as np
-from tests.unit_tests.base import TestBase
+from unit_tests.base import TestBase
 
 from aim.sdk.types import QueryReportMode
 from aim.sdk.repo import Run

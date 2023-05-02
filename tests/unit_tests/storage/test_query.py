@@ -1,7 +1,7 @@
 from parameterized import parameterized
 
-from tests.unit_tests.base import PrefilledDataTestBase
-from tests.unit_tests.utils import full_class_name
+from unit_tests.base import PrefilledDataTestBase
+from unit_tests.utils import full_class_name
 
 from aim.sdk.types import QueryReportMode
 from aim.sdk.query import syntax_error_check

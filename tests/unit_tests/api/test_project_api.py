@@ -1,7 +1,7 @@
 import pytz
 
-from tests.unit_tests.base import PrefilledDataApiTestBase, ApiTestBase
-from tests.unit_tests.utils import generate_image_set
+from unit_tests.base import PrefilledDataApiTestBase, ApiTestBase
+from unit_tests.utils import generate_image_set
 
 from parameterized import parameterized
 import datetime

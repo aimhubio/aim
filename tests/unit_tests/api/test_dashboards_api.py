@@ -1,4 +1,4 @@
-from tests.unit_tests.base import PrefilledDataApiTestBase
+from unit_tests.base import PrefilledDataApiTestBase
 
 
 class TestDashboardAppsApi(PrefilledDataApiTestBase):

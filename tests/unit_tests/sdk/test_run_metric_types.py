@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 
-from tests.unit_tests.base import TestBase
+from unit_tests.base import TestBase
 
 from aim.sdk import Repo, Run
 from aim.sdk.types import QueryReportMode

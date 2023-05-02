@@ -1,7 +1,7 @@
 import unittest
 from fastapi.testclient import TestClient
 
-from tests.unit_tests.utils import truncate_api_db, full_class_name, fill_up_test_data
+from unit_tests.utils import truncate_api_db, full_class_name, fill_up_test_data
 from aim.sdk.repo import Repo
 from aim.sdk.run import Run
 

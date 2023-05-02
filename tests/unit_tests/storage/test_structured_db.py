@@ -1,4 +1,4 @@
-from tests.unit_tests.base import PrefilledDataTestBase
+from unit_tests.base import PrefilledDataTestBase
 
 from aim.sdk.utils import generate_run_hash
 

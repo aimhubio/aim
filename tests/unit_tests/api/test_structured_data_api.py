@@ -1,6 +1,6 @@
 import uuid
 
-from tests.unit_tests.base import PrefilledDataApiTestBase
+from unit_tests.base import PrefilledDataApiTestBase
 
 
 class TestStructuredRunApi(PrefilledDataApiTestBase):

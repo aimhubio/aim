@@ -1,6 +1,6 @@
 import time
 
-from tests.unit_tests.base import TestBase
+from unit_tests.base import TestBase
 
 from aim.sdk.run import Run
 
