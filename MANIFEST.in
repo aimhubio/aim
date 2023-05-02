@@ -1,5 +1,4 @@
-include ../README.md ../LICENSE VERSION
-recursive-include core/storage *.h *.hpp *.cpp *.cxx *.pxd *.pyx
-recursive-include core/storage/migrations *
-recursive-include web/migrations *
-exclude tests
+include README.md LICENSE src/aim/VERSION
+recursive-include src/aim/storage *.h *.hpp *.cpp *.cxx *.pxd *.pyx
+recursive-include src/aim/storage/migrations *
+recursive-include src/aim/web/migrations *
