@@ -57,6 +57,7 @@ def create_app():
     from aim.web.api.dashboards.views import dashboards_router
     from aim.web.api.projects.views import projects_router
     from aim.web.api.views import statics_router
+    from aim.web.api.utils import ResourceCleanupMiddleware
     from aim.web.configs import AIM_UI_BASE_PATH
 
     from aim.web.api.projects.project import Project
@@ -69,6 +70,7 @@ def create_app():
 
     api_app = FastAPI()
     api_app.add_middleware(GZipMiddleware, compresslevel=1)
+    api_app.add_middleware(ResourceCleanupMiddleware)
     api_app.add_exception_handler(HTTPException, http_exception_handler)
     api_app.add_exception_handler(Exception, fallback_exception_handler)
 
