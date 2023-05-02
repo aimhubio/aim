@@ -16,47 +16,47 @@ on:
   workflow_dispatch:
 
 jobs:
-  aim-ui-dist:
-    if: ${{ github.event_name == 'schedule' || github.actor == 'gorarakelyan' || github.actor == 'alberttorosyan' || github.actor == 'roubkar' }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout sources
-        uses: actions/checkout@v2
-        with:
-          ref: ${{ inputs.branch || github.ref }}
-
-      - name: Use node v16
-        uses: actions/setup-node@v2
-        with:
-          node-version: '16'
-
-      - name: Build UI
-        working-directory: ./src/aim/web/ui
-        run: |
-          npm i --legacy-peer-deps
-          CI=false npm run build
-
-      - name: Setup python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.9
-          architecture: x64
-
-      - name: Install dev dependencies
-        run: |
-          python -m pip install -r ./.github/workflow_files/requirements.dev.txt
-
-      - name: Build sdist
-        working-directory: ./src/aim/web/ui
-        run: |
-          python setup.py sdist
-
-      - name: Publish wheel
-        env:
-          PYPI_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-        working-directory: ./src/aim/web/ui
-        run: |
-          python -m twine upload -u __token__ -p "${PYPI_PASSWORD}" dist/*
+#  aim-ui-dist:
+#    if: ${{ github.event_name == 'schedule' || github.actor == 'gorarakelyan' || github.actor == 'alberttorosyan' || github.actor == 'roubkar' }}
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout sources
+#        uses: actions/checkout@v2
+#        with:
+#          ref: ${{ inputs.branch || github.ref }}
+#
+#      - name: Use node v16
+#        uses: actions/setup-node@v2
+#        with:
+#          node-version: '16'
+#
+#      - name: Build UI
+#        working-directory: ./src/aim/web/ui
+#        run: |
+#          npm i --legacy-peer-deps
+#          CI=false npm run build
+#
+#      - name: Setup python
+#        uses: actions/setup-python@v2
+#        with:
+#          python-version: 3.9
+#          architecture: x64
+#
+#      - name: Install dev dependencies
+#        run: |
+#          python -m pip install -r ./.github/workflow_files/requirements.dev.txt
+#
+#      - name: Build sdist
+#        working-directory: ./src/aim/web/ui
+#        run: |
+#          python setup.py sdist
+#
+#      - name: Publish wheel
+#        env:
+#          PYPI_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+#        working-directory: ./src/aim/web/ui
+#        run: |
+#          python -m twine upload -u __token__ -p "${PYPI_PASSWORD}" dist/*
 
   linux-dist:
     if: ${{ github.event_name == 'schedule' || github.actor == 'gorarakelyan' || github.actor == 'alberttorosyan' || github.actor == 'roubkar' }}
@@ -65,7 +65,7 @@ jobs:
       matrix:
         manylinux-version: ['manylinux2014_x86_64', 'manylinux_2_24_x86_64']
     name: Linux wheels build (using Docker) ${{ matrix.manylinux-version }}
-    needs: aim-ui-dist
+#    needs: aim-ui-dist
     steps:
       - name: Install Docker & pull images
         run: |
@@ -144,7 +144,7 @@ jobs:
       AIM_DEP_DIR: /tmp/aim_run/${{ github.run_number }}/${{ matrix.arch }}
       PYTHON: /opt/conda/${{ matrix.arch }}/envs/py${{ matrix.python-version }}/bin/python
 
-    needs: aim-ui-dist
+#    needs: aim-ui-dist
     steps:
       - name: Checkout sources
         uses: actions/checkout@v2
