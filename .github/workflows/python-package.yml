@@ -102,9 +102,9 @@ jobs:
           timeout_minutes: 30
           retry_wait_seconds: 60
           command:
-            docker run \
-            --mount type=bind,source=.,target=/opt/aim \
-            --mount type=bind,source=.github/workflow_files/docker,target=/opt/docker \
+            docker run
+            --mount type=bind,source=${PWD},target=/opt/aim
+            --mount type=bind,source=${PWD}/.github/workflow_files/docker,target=/opt/docker
             quay.io/pypa/${{ matrix.manylinux-version }} bash /opt/docker/build-wheels.sh
 
 
