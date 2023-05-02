@@ -101,10 +101,11 @@ jobs:
           max_attempts: 3
           timeout_minutes: 30
           retry_wait_seconds: 60
-          command: >-
-            docker run --mount type=bind,source=.,target=/opt/aim
-                       --mount type=bind,source=.github/workflow_files/docker,target=/opt/docker
-              quay.io/pypa/${{ matrix.manylinux-version }} bash /opt/docker/build-wheels.sh
+          command:
+            docker run \
+            --mount type=bind,source=.,target=/opt/aim \
+            --mount type=bind,source=.github/workflow_files/docker,target=/opt/docker \
+            quay.io/pypa/${{ matrix.manylinux-version }} bash /opt/docker/build-wheels.sh
 
 
       - name: Publish wheels
