@@ -1,6 +1,6 @@
 from typing import Dict, List, Tuple, Union
 
-from aim.storage.utils import BLOB  # noqa F401
+from aim.core.storage.utils import BLOB  # noqa F401
 
 NoneType = type(None)
 

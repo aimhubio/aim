@@ -9,14 +9,14 @@ from aim.sdk.core.constants import KeyNames
 from aim.sdk.core.interfaces.container import ContainerCollection as ABCContainerCollection, ContainerType
 from aim.sdk.core.interfaces.sequence import SequenceCollection as ABCSequenceCollection, SequenceType
 
-from aim.storage.query import RestrictedPythonQuery
-from aim.storage.context import Context, cached_context
+from aim.core.storage.query import RestrictedPythonQuery
+from aim.core.storage.context import Context, cached_context
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from aim.sdk.core.container import Container
     from aim.sdk.core.sequence import Sequence
-    from aim.storage.treeview import TreeView
+    from aim.core.storage.treeview import TreeView
 
 
 class ContainerCollectionBase(ABCContainerCollection[ContainerType]):

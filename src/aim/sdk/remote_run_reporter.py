@@ -1,6 +1,6 @@
 from aim.ext.transport.remote_resource import RemoteResourceAutoClean
 from aim.ext.transport.message_utils import pack_args
-from aim.storage.treeutils import encode_tree
+from aim.core.storage.treeutils import encode_tree
 from aim.sdk.reporter.file_manager import FileManager
 
 from typing import Optional, TYPE_CHECKING

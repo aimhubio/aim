@@ -11,10 +11,10 @@ from aim.sdk.configs import AIM_ENABLE_TRACKING_THREAD
 from aim.sdk.num_utils import is_number, convert_to_py_number
 from aim.sdk.utils import get_object_typename, check_types_compatibility
 
-from aim.storage.hashing import hash_auto
-from aim.storage.context import Context
-from aim.storage.object import CustomObject
-from aim.storage.types import AimObject
+from aim.core.storage.hashing import hash_auto
+from aim.core.storage.context import Context
+from aim.core.storage.object import CustomObject
+from aim.core.storage.types import AimObject
 
 if TYPE_CHECKING:
     from aim.sdk import Run

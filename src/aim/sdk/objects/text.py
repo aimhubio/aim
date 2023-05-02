@@ -1,5 +1,5 @@
-from aim.storage.object import CustomObject
-from aim.storage.types import BLOB
+from aim.core.storage.object import CustomObject
+from aim.core.storage.types import BLOB
 
 
 @CustomObject.alias('aim.text')

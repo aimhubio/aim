@@ -1,6 +1,6 @@
 from typing import Tuple, Union
 
-from aim.storage.object import CustomObject
+from aim.core.storage.object import CustomObject
 from aim.sdk.sequence import MediaSequenceBase
 from aim.sdk.objects.text import Text
 

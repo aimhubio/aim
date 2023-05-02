@@ -1,4 +1,4 @@
-from aim.storage.object import CustomObject as AimStorageObject
+from aim.core.storage.object import CustomObject as AimStorageObject
 
 
 @AimStorageObject.alias('aim.Object')

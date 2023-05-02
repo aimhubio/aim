@@ -1,17 +1,17 @@
 from typing import Any, Iterator, Tuple, Union
 
-from aim.storage import encoding
-from aim.storage.encoding.encoding_native cimport decode_path
+from aim.core.storage import encoding
+from aim.core.storage.encoding.encoding_native cimport decode_path
 
-from aim.storage.types import AimObject, AimObjectPath
+from aim.core.storage.types import AimObject, AimObjectPath
 
-from aim.storage.types import BLOB
-from aim.storage.utils import ArrayFlag, ObjectFlag, CustomObjectFlagType
+from aim.core.storage.types import BLOB
+from aim.core.storage.utils import ArrayFlag, ObjectFlag, CustomObjectFlagType
 
-from aim.storage.object import CustomObjectBase, CustomObject
-from aim.storage.treeview import TreeView
-from aim.storage.inmemorytreeview import InMemoryTreeView
-from aim.storage.treeutils_non_native import convert_to_native_object
+from aim.core.storage.object import CustomObjectBase, CustomObject
+from aim.core.storage.treeview import TreeView
+from aim.core.storage.inmemorytreeview import InMemoryTreeView
+from aim.core.storage.treeutils_non_native import convert_to_native_object
 
 
 def unfold_tree(

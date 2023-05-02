@@ -8,12 +8,12 @@ from typing import Iterator, Optional, Tuple
 
 from aim.ext.cleanup import AutoClean
 from aim.ext.exception_resistant import exception_resistant
-from aim.storage.locking import SoftFileLock, NoopLock, DualLock
-from aim.storage.types import BLOB
-from aim.storage.container import Container, ContainerKey, ContainerValue, ContainerItemsIterator
-from aim.storage.prefixview import PrefixView
-from aim.storage.containertreeview import ContainerTreeView
-from aim.storage.treeview import TreeView
+from aim.core.storage.locking import SoftFileLock, NoopLock, DualLock
+from aim.core.storage.types import BLOB
+from aim.core.storage.container import Container, ContainerKey, ContainerValue, ContainerItemsIterator
+from aim.core.storage.prefixview import PrefixView
+from aim.core.storage.containertreeview import ContainerTreeView
+from aim.core.storage.treeview import TreeView
 
 
 logger = logging.getLogger(__name__)

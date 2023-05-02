@@ -3,8 +3,8 @@ from typing import Dict, Optional, Union
 from typing import TYPE_CHECKING
 import pathlib
 
-from aim.storage.hashing import hash_auto
-from aim.storage.treeview import TreeView
+from aim.core.storage.hashing import hash_auto
+from aim.core.storage.treeview import TreeView
 from aim.sdk.utils import generate_run_hash
 from aim.sdk.repo_utils import get_repo
 from aim.sdk.errors import MissingRunError

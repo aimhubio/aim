@@ -2,8 +2,8 @@ from copy import deepcopy
 from functools import wraps
 from typing import Iterator, Dict, Optional
 
-from aim.storage.hashing import hash_auto
-from aim.storage.types import AimObject, AimObjectKey
+from aim.core.storage.hashing import hash_auto
+from aim.core.storage.types import AimObject, AimObjectKey
 
 
 class Context:

@@ -6,12 +6,12 @@ from aim.sdk.core.interfaces.sequence import Sequence as ABCSequence
 from aim.sdk.core.query_utils import SequenceQueryProxy, ContainerQueryProxy
 from aim.sdk.core.constants import KeyNames
 
-from aim.storage.context import Context, cached_context
-from aim.storage.query import RestrictedPythonQuery
+from aim.core.storage.context import Context, cached_context
+from aim.core.storage.query import RestrictedPythonQuery
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from aim.storage.treeview import TreeView
+    from aim.core.storage.treeview import TreeView
     from aim.sdk.core.container import Container
 
 

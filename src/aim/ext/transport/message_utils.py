@@ -4,8 +4,8 @@ import json
 from typing import Iterator, Tuple, Union
 
 import aim.ext.transport.proto.remote_tracking_pb2 as rpc_messages
-from aim.storage.object import CustomObject
-from aim.storage.types import BLOB
+from aim.core.storage.object import CustomObject
+from aim.core.storage.types import BLOB
 
 Message = Union[rpc_messages.ResourceRequest, rpc_messages.ResourceResponse]
 

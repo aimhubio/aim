@@ -18,14 +18,14 @@ from aim.sdk.core.exceptions import MissingContainerError
 
 from aim.ext.cleanup import AutoClean
 
-from aim.storage.hashing import hash_auto
-from aim.storage.query import RestrictedPythonQuery
-from aim.storage.context import Context
+from aim.core.storage.hashing import hash_auto
+from aim.core.storage.query import RestrictedPythonQuery
+from aim.core.storage.context import Context
 
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from aim.storage.treeview import TreeView
+    from aim.core.storage.treeview import TreeView
     from aim.sdk.core.repo import Repo
 
 

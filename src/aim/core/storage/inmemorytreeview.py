@@ -1,9 +1,9 @@
 from copy import deepcopy
 
-from aim.storage.types import CustomObjectBase
-from aim.storage.types import AimObject, AimObjectKey, AimObjectPath
-from aim.storage.treearrayview import TreeArrayView
-from aim.storage.treeview import TreeView
+from aim.core.storage.types import CustomObjectBase
+from aim.core.storage.types import AimObject, AimObjectKey, AimObjectPath
+from aim.core.storage.treearrayview import TreeArrayView
+from aim.core.storage.treeview import TreeView
 
 from typing import Any, Iterator, Tuple, Union
 

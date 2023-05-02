@@ -1,4 +1,4 @@
-from aim.storage.object import CustomObject
+from aim.core.storage.object import CustomObject
 import hub
 
 

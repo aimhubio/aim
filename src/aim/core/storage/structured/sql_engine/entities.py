@@ -4,8 +4,8 @@ from typing import Collection, Union, List, Optional
 from sqlalchemy.orm import joinedload
 from sqlalchemy.exc import IntegrityError
 
-from aim.storage.types import SafeNone
-from aim.storage.structured.entities import (
+from aim.core.storage.types import SafeNone
+from aim.core.storage.structured.entities import (
     Run as IRun,
     Experiment as IExperiment,
     Tag as ITag,
@@ -15,7 +15,7 @@ from aim.storage.structured.entities import (
     TagCollection,
     NoteCollection
 )
-from aim.storage.structured.sql_engine.models import (
+from aim.core.storage.structured.sql_engine.models import (
     Run as RunModel,
     RunInfo as RunInfoModel,
     Experiment as ExperimentModel,
@@ -23,8 +23,8 @@ from aim.storage.structured.sql_engine.models import (
     Note as NoteModel,
     NoteAuditLog as NoteAuditLogModel
 )
-from aim.storage.structured.sql_engine.utils import ModelMappedClassMeta, ModelMappedCollection
-from aim.storage.structured.sql_engine.utils import ModelMappedProperty as Property
+from aim.core.storage.structured.sql_engine.utils import ModelMappedClassMeta, ModelMappedCollection
+from aim.core.storage.structured.sql_engine.utils import ModelMappedProperty as Property
 
 
 def timestamp_or_none(dt):

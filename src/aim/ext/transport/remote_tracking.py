@@ -5,7 +5,7 @@ import aim.ext.transport.proto.remote_tracking_pb2_grpc as tracking_pb2_grpc
 import aim.ext.transport.message_utils as utils
 
 from aim.ext.transport.handlers import get_handler
-from aim.storage.treeutils import encode_tree, decode_tree
+from aim.core.storage.treeutils import encode_tree, decode_tree
 
 
 class ResourceTypeRegistry:

@@ -1,14 +1,14 @@
-from aim.storage import encoding as E
-from aim.storage.encoding.encoding import decode
-from aim.storage.object import CustomObject
-from aim.storage.types import AimObject, AimObjectKey, AimObjectPath
-from aim.storage.utils import ArrayFlag, CustomObjectFlagType
-from aim.storage.container import Container
-from aim.storage import treeutils
-from aim.storage.treearrayview import TreeArrayView
+from aim.core.storage import encoding as E
+from aim.core.storage.encoding.encoding import decode
+from aim.core.storage.object import CustomObject
+from aim.core.storage.types import AimObject, AimObjectKey, AimObjectPath
+from aim.core.storage.utils import ArrayFlag, CustomObjectFlagType
+from aim.core.storage.container import Container
+from aim.core.storage import treeutils
+from aim.core.storage.treearrayview import TreeArrayView
 
 from typing import Any, Iterator, Tuple, Union
-from aim.storage.treeview import TreeView
+from aim.core.storage.treeview import TreeView
 
 
 class ContainerTreeView(TreeView):

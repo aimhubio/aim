@@ -22,7 +22,7 @@ from aim.ext.transport.config import (
     AIM_CLIENT_QUEUE_MAX_MEMORY,
     AIM_RT_BEARER_TOKEN,
 )
-from aim.storage.treeutils import encode_tree, decode_tree
+from aim.core.storage.treeutils import encode_tree, decode_tree
 
 
 DEFAULT_RETRY_INTERVAL = 0.1  # 100 ms

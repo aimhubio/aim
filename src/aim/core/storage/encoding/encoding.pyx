@@ -10,24 +10,24 @@ The encodings are implemented `(key, value)` design in mind, so using them to
 stream and store in chunks is easy to manage.
 """
 
-from aim.storage.encoding.encoding_native cimport PATH_SENTINEL_CODE
-from aim.storage.encoding.encoding_native cimport (
+from aim.core.storage.encoding.encoding_native cimport PATH_SENTINEL_CODE
+from aim.core.storage.encoding.encoding_native cimport (
     encode_int64,
     encode_double,
     encode_utf_8_str,
     encode_int64_big_endian,
 )
-from aim.storage.encoding.encoding_native cimport (
+from aim.core.storage.encoding.encoding_native cimport (
     decode_int64,
     decode_double,
     decode_utf_8_str,
 )
-from aim.storage.encoding.encoding_native cimport decode_path  # noqa F401
-from aim.storage.utils import ArrayFlagType, ObjectFlagType, CustomObjectFlagType
-from aim.storage.utils import ArrayFlag, ObjectFlag
-from aim.storage.container import ContainerValue
-from aim.storage.types import AimObjectKey, AimObjectPath
-from aim.storage.types import BLOB
+from aim.core.storage.encoding.encoding_native cimport decode_path  # noqa F401
+from aim.core.storage.utils import ArrayFlagType, ObjectFlagType, CustomObjectFlagType
+from aim.core.storage.utils import ArrayFlag, ObjectFlag
+from aim.core.storage.container import ContainerValue
+from aim.core.storage.types import AimObjectKey, AimObjectPath
+from aim.core.storage.types import BLOB
 
 from typing import Union, Any
 

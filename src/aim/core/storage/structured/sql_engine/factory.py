@@ -1,11 +1,11 @@
-from aim.storage.structured.entities import (
+from aim.core.storage.structured.entities import (
     ObjectFactory,
     Run, Experiment, Tag,
     RunCollection,
     ExperimentCollection,
     TagCollection,
 )
-from aim.storage.structured.sql_engine.entities import (
+from aim.core.storage.structured.sql_engine.entities import (
     ModelMappedRun,
     ModelMappedExperiment,
     ModelMappedTag,

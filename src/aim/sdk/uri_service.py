@@ -2,13 +2,13 @@ from cryptography.fernet import Fernet
 from typing import Iterator, List, Optional, Dict
 from typing import TYPE_CHECKING
 
-from aim.storage.encoding import encode_path, decode_path
-from aim.storage.types import BLOB
+from aim.core.storage.encoding import encode_path, decode_path
+from aim.core.storage.types import BLOB
 from aim.sdk.repo import ContainerConfig
 
 if TYPE_CHECKING:
-    from aim.storage.types import AimObjectPath
-    from aim.storage.prefixview import PrefixView
+    from aim.core.storage.types import AimObjectPath
+    from aim.core.storage.prefixview import PrefixView
     from aim.sdk.repo import Repo
 
 

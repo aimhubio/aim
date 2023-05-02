@@ -4,12 +4,12 @@ import pytz
 from typing import Any, Union
 from typing import TYPE_CHECKING
 
-from aim.storage.context import Context
-from aim.storage.proxy import AimObjectProxy
-from aim.storage.structured.entities import StructuredObject
-from aim.storage.treeview import TreeView
-from aim.storage.types import AimObject, AimObjectKey, AimObjectPath, SafeNone
-from aim.storage.structured.sql_engine.entities import ModelMappedRun
+from aim.core.storage.context import Context
+from aim.core.storage.proxy import AimObjectProxy
+from aim.core.storage.structured.entities import StructuredObject
+from aim.core.storage.treeview import TreeView
+from aim.core.storage.types import AimObject, AimObjectKey, AimObjectPath, SafeNone
+from aim.core.storage.structured.sql_engine.entities import ModelMappedRun
 
 if TYPE_CHECKING:
     from aim.sdk.run import Run

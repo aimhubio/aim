@@ -6,7 +6,7 @@ from aim.web.configs import AIM_ENV_MODE_KEY
 
 
 def create_migration_cmd():
-    from aim import storage
+    from aim.core import storage
     storage_dir = os.path.dirname(storage.__file__)
     if os.getenv(AIM_ENV_MODE_KEY, 'prod') == 'prod':
         migrations_config = os.path.join(storage_dir, 'migrations', 'alembic.ini')

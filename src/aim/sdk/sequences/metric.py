@@ -2,7 +2,7 @@ import datetime
 import json
 
 from aim.sdk.sequence import Sequence
-from aim.storage import treeutils
+from aim.core.storage import treeutils
 
 from typing import Union, Tuple
 from typing import TYPE_CHECKING

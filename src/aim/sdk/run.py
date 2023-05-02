@@ -24,9 +24,9 @@ from aim.sdk.utils import (
 from aim.sdk.types import AimObject
 from aim.sdk.logging import LogRecord, LogRecords
 
-from aim.storage.treeview import TreeView
-from aim.storage.context import Context
-from aim.storage import treeutils
+from aim.core.storage.treeview import TreeView
+from aim.core.storage.context import Context
+from aim.core.storage import treeutils
 
 from aim.ext.resource import ResourceTracker, DEFAULT_SYSTEM_TRACKING_INT
 from aim.ext.cleanup import AutoClean

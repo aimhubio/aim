@@ -12,7 +12,7 @@ from collections import OrderedDict
 
 from aim.sdk.repo import Repo
 from aim.sdk.run import Run
-from aim.storage.locking import AutoFileLock
+from aim.core.storage.locking import AutoFileLock
 from aim.ext.notifier import get_config, get_notifier, Notifier, NotificationSendError
 from aim.ext.notifier.utils import get_working_directory
 from aim.ext.cleanup import AutoClean

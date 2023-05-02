@@ -1,7 +1,7 @@
 from typing import Dict
 
-from aim.storage.types import CustomObjectBase
-from aim.storage.inmemorytreeview import InMemoryTreeView
+from aim.core.storage.types import CustomObjectBase
+from aim.core.storage.inmemorytreeview import InMemoryTreeView
 
 
 class CustomObject(CustomObjectBase):

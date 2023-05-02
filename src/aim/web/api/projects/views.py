@@ -17,7 +17,7 @@ from aim.web.api.projects.pydantic_models import (
 )
 from aim.web.api.utils import object_factory
 from aim.sdk.index_manager import RepoIndexManager
-from aim.storage.locking import AutoFileLock
+from aim.core.storage.locking import AutoFileLock
 from aim.utils.tracking import analytics
 
 projects_router = APIRouter()

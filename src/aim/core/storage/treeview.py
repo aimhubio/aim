@@ -1,9 +1,9 @@
-from aim.storage.types import AimObject, AimObjectKey, AimObjectPath
+from aim.core.storage.types import AimObject, AimObjectKey, AimObjectPath
 
 from typing import TYPE_CHECKING, Any, Iterator, Tuple, Union
 
 if TYPE_CHECKING:
-    from aim.storage.arrayview import ArrayView
+    from aim.core.storage.arrayview import ArrayView
 
 
 class TreeView:

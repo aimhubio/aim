@@ -2,7 +2,7 @@
 # cython: language_level=3
 # distutils: language_level = 3
 
-from aim.storage.hashing cimport c_hash
+from aim.core.storage.hashing cimport c_hash
 
 cpdef Py_hash_t det_hash(double v):
     """Custom hashing function for numeric values.

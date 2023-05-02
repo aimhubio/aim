@@ -12,8 +12,8 @@ from typing import List
 import numpy as np
 
 from aim.sdk.num_utils import inst_has_typename
-from aim.storage.object import CustomObject
-from aim.storage.types import BLOB
+from aim.core.storage.object import CustomObject
+from aim.core.storage.types import BLOB
 
 logger = logging.getLogger(__name__)
 

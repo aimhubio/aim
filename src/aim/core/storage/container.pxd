@@ -1,8 +1,8 @@
 # distutils: language = c++
 # cython: language_level = 3
 
-from aim.storage cimport utils
-from aim.storage.utils cimport interfaces
+from aim.core.storage cimport utils
+from aim.core.storage.utils cimport interfaces
 
 cdef class ContainerItemsIterator(interfaces.Iterator):
     pass

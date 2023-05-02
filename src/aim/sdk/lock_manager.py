@@ -14,7 +14,7 @@ from dateutil.relativedelta import relativedelta
 from filelock import UnixFileLock, SoftFileLock, Timeout
 
 from aim.sdk.errors import RunLockingError
-from aim.storage.locking import RunLock
+from aim.core.storage.locking import RunLock
 
 logger = logging.getLogger(__name__)
 

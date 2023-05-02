@@ -6,7 +6,7 @@ import io
 import zipfile
 from datetime import datetime
 
-from aim.storage.rockscontainer import RocksContainer
+from aim.core.storage.rockscontainer import RocksContainer
 
 
 def list_repo_runs(repo_path: str, lookup_dir: str = None) -> List[str]:

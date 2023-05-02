@@ -1,4 +1,4 @@
-from aim.storage.types import AimObject
+from aim.core.storage.types import AimObject
 
 
 def from_omegaconf_config(obj):

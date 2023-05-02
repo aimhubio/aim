@@ -6,8 +6,8 @@ addopts = ["--pdbcls=IPython.terminal.debugger:Pdb", "-p no:cacheprovider"]
 
 [tool.coverage.run]
 branch = true
-include = ["aim/web/*", "aim/storage/*", "aim/sdk/*"]
-omit = ["aim/web/migrations/*", "aim/storage/migrations/*", "aim/storage/env.py"]
+include = ["aim/web/*", "aim/core/storage/*", "aim/sdk/*"]
+omit = ["aim/web/migrations/*", "aim/core/storage/migrations/*", "aim/core/storage/env.py"]
 
 [tool.coverage.report]
 exclude_lines = [
@@ -20,8 +20,8 @@ exclude_lines = [
     "@(abc.)?abstractmethod",
     "except ImportError:"
 ]
-include = ["aim/web/*", "aim/storage/*", "aim/sdk/*"]
-omit = ["aim/web/migrations/*", "aim/storage/migrations/*", "aim/storage/env.py"]
+include = ["aim/web/*", "aim/core/storage/*", "aim/sdk/*"]
+omit = ["aim/web/migrations/*", "aim/core/storage/migrations/*", "aim/core/storage/env.py"]
 
 [tool.flake8]
 max-line-length = 120

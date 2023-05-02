@@ -1,5 +1,5 @@
-from aim.storage.container import Container, ContainerItemsIterator, ContainerKey, ContainerValue
-from aim.storage.containertreeview import ContainerTreeView
+from aim.core.storage.container import Container, ContainerItemsIterator, ContainerKey, ContainerValue
+from aim.core.storage.containertreeview import ContainerTreeView
 
 from typing import Iterator, Tuple
 

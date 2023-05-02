@@ -15,7 +15,7 @@ from aim.web.api.runs.object_views import (
 
 from aim.sdk.core.container import Container
 from aim.sdk.core.sequence import Sequence
-from aim.storage.treeutils import encode_tree
+from aim.core.storage.treeutils import encode_tree
 
 query_router = APIRouter()
 

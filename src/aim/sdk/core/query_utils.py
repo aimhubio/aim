@@ -3,12 +3,12 @@ import itertools
 
 from typing import Dict, Any, Union, Optional
 
-from aim.storage.proxy import AimObjectProxy
-from aim.storage.types import SafeNone
+from aim.core.storage.proxy import AimObjectProxy
+from aim.core.storage.types import SafeNone
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from aim.storage.treeview import TreeView
+    from aim.core.storage.treeview import TreeView
 
 
 class ContextDictView:

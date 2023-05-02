@@ -9,7 +9,7 @@ from typing import Union, Any, Tuple, Optional, Callable
 
 from aim.sdk.configs import get_aim_repo_name
 
-from aim.storage.object import CustomObject
+from aim.core.storage.object import CustomObject
 
 
 def search_aim_repo(path) -> Tuple[Any, bool]:

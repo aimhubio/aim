@@ -4,8 +4,8 @@ import logging
 from inspect import getframeinfo, currentframe
 from typing import Optional, Union, Tuple
 
-from aim.storage.object import CustomObject
-from aim.storage.hashing import hash_auto
+from aim.core.storage.object import CustomObject
+from aim.core.storage.hashing import hash_auto
 
 from aim.sdk.sequence import Sequence
 

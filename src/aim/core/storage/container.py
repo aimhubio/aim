@@ -2,12 +2,12 @@ from typing import Iterator, Tuple, Union
 
 from typing import TYPE_CHECKING
 
-from aim.storage import utils
-from aim.storage.utils import interfaces
+from aim.core.storage import utils
+from aim.core.storage.utils import interfaces
 
 if TYPE_CHECKING:
-    from aim.storage.treeview import TreeView
-    from aim.storage.types import BLOB
+    from aim.core.storage.treeview import TreeView
+    from aim.core.storage.types import BLOB
 
 ContainerKey = bytes
 ContainerValue = Union[bytes, 'BLOB']

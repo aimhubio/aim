@@ -25,15 +25,15 @@ from aim.sdk.data_version import DATA_VERSION
 from aim.sdk.remote_repo_proxy import RemoteRepoProxy
 from aim.sdk.lock_manager import LockManager, RunLock
 
-from aim.storage.locking import SoftFileLock
-from aim.storage.container import Container
-from aim.storage.rockscontainer import RocksContainer, LockableRocksContainer
-from aim.storage.union import RocksUnionContainer
-from aim.storage.treeviewproxy import ProxyTree
-from aim.storage.lock_proxy import ProxyLock
+from aim.core.storage.locking import SoftFileLock
+from aim.core.storage.container import Container
+from aim.core.storage.rockscontainer import RocksContainer, LockableRocksContainer
+from aim.core.storage.union import RocksUnionContainer
+from aim.core.storage.treeviewproxy import ProxyTree
+from aim.core.storage.lock_proxy import ProxyLock
 
-from aim.storage.structured.db import DB
-from aim.storage.structured.proxy import StructuredRunProxy
+from aim.core.storage.structured.db import DB
+from aim.core.storage.structured.proxy import StructuredRunProxy
 
 logger = logging.getLogger(__name__)
 

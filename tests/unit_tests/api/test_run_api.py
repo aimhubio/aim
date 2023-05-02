@@ -5,7 +5,7 @@ from parameterized import parameterized
 from tests.unit_tests.base import PrefilledDataApiTestBase, ApiTestBase
 from tests.unit_tests.utils import decode_encoded_tree_stream
 
-from aim.storage.treeutils import decode_tree
+from aim.core.storage.treeutils import decode_tree
 from aim.sdk.run import Run
 
 

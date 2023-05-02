@@ -2,7 +2,7 @@ from typing import Any, Dict, Optional, TypeVar
 
 from aim import Run
 from aim.ext.resource import DEFAULT_SYSTEM_TRACKING_INT
-from aim.storage.types import AimObject
+from aim.core.storage.types import AimObject
 
 Prophet = TypeVar('Prophet')
 
