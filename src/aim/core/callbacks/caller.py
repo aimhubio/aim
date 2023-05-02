@@ -4,7 +4,7 @@ import traceback
 from collections import defaultdict
 from typing import Callable, List, Optional, Dict, Any
 
-from aim.sdk.callbacks.helpers import handles_events, get_handler_event_names
+from .helpers import handles_events, get_handler_event_names
 logger = logging.getLogger(__name__)
 
 
