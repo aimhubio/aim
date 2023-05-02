@@ -11,11 +11,11 @@ from typing import TYPE_CHECKING
 
 from fastapi import HTTPException
 
-from aim.core.storage.context import Context
+from aim.sdk.context import Context
 from aim.sdk import Run
 from aim.sdk.sequences.metric import Metric
 from aim.sdk.sequence_collection import SequenceCollection
-from aim.core.storage.query import syntax_error_check
+from aim.sdk.query import syntax_error_check
 from aim.web.configs import AIM_PROGRESS_REPORT_INTERVAL
 from aim.web.api.projects.project import Project
 from aim.web.api.runs.pydantic_models import AlignedRunIn, TraceBase

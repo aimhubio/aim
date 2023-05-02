@@ -7,7 +7,7 @@ from aim.ext.transport.config import AIM_SERVER_MOUNTED_REPO_PATH
 from aim.sdk import Repo
 from aim.sdk.reporter import RunStatusReporter, ScheduledStatusReporter
 from aim.sdk.reporter.file_manager import LocalFileManager
-from aim.ext.cleanup import AutoClean
+from aim.core.cleanup import AutoClean
 
 
 class ResourceRefAutoClean(AutoClean['ResourceRef']):

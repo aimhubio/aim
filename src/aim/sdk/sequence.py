@@ -6,7 +6,7 @@ import logging
 from aim.sdk.tracker import STEP_HASH_FUNCTIONS
 from aim.core.storage.treeview import TreeView
 from aim.core.storage.arrayview import ArrayView
-from aim.core.storage.context import Context
+from aim.sdk.context import Context
 from aim.core.storage.hashing import hash_auto
 
 from typing import TYPE_CHECKING

@@ -18,7 +18,7 @@ from aim.sdk.sequence_collection import SequenceCollection
 from aim.sdk.sequence import Sequence
 
 from aim.core.storage.treeutils import encode_tree
-from aim.core.storage.context import Context
+from aim.sdk.context import Context
 
 if TYPE_CHECKING:
     from aim.sdk.repo import Repo

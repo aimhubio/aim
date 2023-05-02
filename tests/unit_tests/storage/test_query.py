@@ -4,7 +4,7 @@ from tests.unit_tests.base import PrefilledDataTestBase
 from tests.unit_tests.utils import full_class_name
 
 from aim.sdk.types import QueryReportMode
-from aim.core.storage.query import syntax_error_check
+from aim.sdk.query import syntax_error_check
 
 
 class TestQuery(PrefilledDataTestBase):

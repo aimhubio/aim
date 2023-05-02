@@ -9,8 +9,8 @@ from aim.sdk.core.constants import KeyNames
 from aim.sdk.core.interfaces.container import ContainerCollection as ABCContainerCollection, ContainerType
 from aim.sdk.core.interfaces.sequence import SequenceCollection as ABCSequenceCollection, SequenceType
 
-from aim.core.storage.query import RestrictedPythonQuery
-from aim.core.storage.context import Context, cached_context
+from aim.sdk.query import RestrictedPythonQuery
+from aim.sdk.context import Context, cached_context
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:

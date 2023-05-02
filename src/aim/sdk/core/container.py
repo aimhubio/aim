@@ -16,11 +16,11 @@ from aim.sdk.core.collections import ContainerSequenceCollection
 from aim.sdk.core.constants import ContainerOpenMode, KeyNames
 from aim.sdk.core.exceptions import MissingContainerError
 
-from aim.ext.cleanup import AutoClean
+from aim.core.cleanup import AutoClean
 
 from aim.core.storage.hashing import hash_auto
-from aim.core.storage.query import RestrictedPythonQuery
-from aim.core.storage.context import Context
+from aim.sdk.query import RestrictedPythonQuery
+from aim.sdk.context import Context
 
 
 from typing import TYPE_CHECKING

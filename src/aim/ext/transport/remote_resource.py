@@ -1,4 +1,4 @@
-from aim.ext.cleanup import AutoClean
+from aim.core.cleanup import AutoClean
 from aim.ext.transport.client import Client
 
 

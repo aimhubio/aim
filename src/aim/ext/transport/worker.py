@@ -5,7 +5,7 @@ from typing import Optional
 
 import aim.ext.transport.proto.remote_tracking_pb2 as rpc_messages
 import aim.ext.transport.proto.remote_tracking_pb2_grpc as remote_tracking_pb2_grpc
-from aim.ext.cleanup import AutoClean
+from aim.core.cleanup import AutoClean
 
 
 class RemoteWorkerAutoClean(AutoClean['RemoteWorker']):

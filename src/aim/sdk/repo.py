@@ -11,7 +11,7 @@ from weakref import WeakValueDictionary
 
 from aim.ext.sshfs.utils import mount_remote_repo, unmount_remote_repo
 from aim.ext.task_queue.queue import TaskQueue
-from aim.ext.cleanup import AutoClean
+from aim.core.cleanup import AutoClean
 from aim.ext.transport.client import Client
 
 from aim.sdk.configs import get_aim_repo_name, AIM_ENABLE_TRACKING_THREAD

@@ -7,7 +7,7 @@ from tqdm import tqdm
 from aim.sdk.sequence import Sequence
 from aim.sdk.types import QueryReportMode
 from aim.sdk.query_utils import RunView, SequenceView
-from aim.core.storage.query import LegacyRestrictedPythonQuery as RestrictedPythonQuery
+from aim.sdk.query import LegacyRestrictedPythonQuery as RestrictedPythonQuery
 
 
 if TYPE_CHECKING:

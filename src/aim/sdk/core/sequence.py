@@ -6,8 +6,8 @@ from aim.sdk.core.interfaces.sequence import Sequence as ABCSequence
 from aim.sdk.core.query_utils import SequenceQueryProxy, ContainerQueryProxy
 from aim.sdk.core.constants import KeyNames
 
-from aim.core.storage.context import Context, cached_context
-from aim.core.storage.query import RestrictedPythonQuery
+from aim.sdk.context import Context, cached_context
+from aim.sdk.query import RestrictedPythonQuery
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:

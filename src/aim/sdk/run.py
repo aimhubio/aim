@@ -25,11 +25,11 @@ from aim.sdk.types import AimObject
 from aim.sdk.logging import LogRecord, LogRecords
 
 from aim.core.storage.treeview import TreeView
-from aim.core.storage.context import Context
+from aim.sdk.context import Context
 from aim.core.storage import treeutils
 
 from aim.ext.resource import ResourceTracker, DEFAULT_SYSTEM_TRACKING_INT
-from aim.ext.cleanup import AutoClean
+from aim.core.cleanup import AutoClean
 from aim.ext.utils import (
     get_environment_variables,
     get_installed_packages,

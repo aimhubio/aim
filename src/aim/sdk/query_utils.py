@@ -4,7 +4,7 @@ import pytz
 from typing import Any, Union
 from typing import TYPE_CHECKING
 
-from aim.core.storage.context import Context
+from aim.sdk.context import Context
 from aim.core.storage.proxy import AimObjectProxy
 from aim.core.storage.structured.entities import StructuredObject
 from aim.core.storage.treeview import TreeView

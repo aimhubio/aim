@@ -4,7 +4,7 @@ import time
 from typing import Optional
 from concurrent import futures
 
-from aim.ext.cleanup import AutoClean
+from aim.core.cleanup import AutoClean
 
 from aim.ext.transport.config import AIM_RT_MAX_MESSAGE_SIZE, AIM_RT_DEFAULT_MAX_MESSAGE_SIZE
 from aim.ext.transport.handlers import (

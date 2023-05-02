@@ -3,7 +3,7 @@ import logging
 from typing import Union, Optional, TYPE_CHECKING
 
 from aim.sdk.base_run import BaseRun
-from aim.ext.cleanup import AutoClean
+from aim.core.cleanup import AutoClean
 
 if TYPE_CHECKING:
     from aim.sdk import Repo

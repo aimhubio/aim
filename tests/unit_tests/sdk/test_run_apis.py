@@ -3,7 +3,7 @@ import pytest
 from tests.unit_tests.base import TestBase
 
 from aim.sdk import Repo
-from aim.core.storage.context import Context
+from aim.sdk.context import Context
 
 
 class TestRunMetricNumpyTypes(TestBase):
