@@ -294,6 +294,7 @@ function useGroupingPopover(
     allOptions,
     appliedOptions,
     group?.fields?.length,
+    groupName,
     inputLabel,
     onChangeSelectedFieldOrder,
     onChangeSelectedFieldSortingOrder,
