@@ -4,11 +4,9 @@ import { useModel } from 'hooks';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
-import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 import { PathEnum } from 'config/enums/routesEnum';
 
 import boardAppModel from 'services/models/board/boardAppModel';
-import * as analytics from 'services/analytics';
 
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 
@@ -36,7 +34,15 @@ function BoardContainer(): React.FunctionComponentElement<React.ReactNode> {
   const saveBoard = React.useCallback(
     async (data: any) => {
       if (params.boardId === 'new') {
-        await boardAppModel.createBoard(data.name, data.description, data.code);
+        const newBoard = await boardAppModel.createBoard(
+          data.name,
+          data.description,
+          data.code,
+        );
+        if (newBoard) {
+          const url = PathEnum.Board_Edit.replace(':boardId', newBoard.id);
+          window.history.replaceState(null, '', url);
+        }
       } else {
         await boardAppModel.updateBoard(params.boardId, {
           ...boardData.board,
@@ -44,7 +50,7 @@ function BoardContainer(): React.FunctionComponentElement<React.ReactNode> {
         });
       }
     },
-    [params.boardId, boardAppModel, boardData.board],
+    [params.boardId, boardData.board],
   );
 
   return (
