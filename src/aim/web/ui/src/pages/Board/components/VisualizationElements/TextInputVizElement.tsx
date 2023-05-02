@@ -7,7 +7,11 @@ function TextInputVizElement(props: any) {
     props.callbacks?.on_change(target.value);
   }, []);
 
-  return <Input value={props.options.value} onChange={onChange} />;
+  return (
+    <div style={{ flex: 1 }}>
+      <Input value={props.options.value} onChange={onChange} />
+    </div>
+  );
 }
 
 export default TextInputVizElement;

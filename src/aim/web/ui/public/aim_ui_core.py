@@ -593,6 +593,16 @@ class RunMessages(Component):
 
         self.render()
 
+class RunLogs(Component):
+    def __init__(self, run_hash, key=None):
+        component_type = "RunLogs"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type)
+
+        self.data = run_hash
+
+        self.render()
+
 
 class RunNotes(Component):
     def __init__(self, run_hash, key=None):
@@ -767,7 +777,7 @@ class Button(Component):
             "size": size,
             "variant": variant,
             "color": color,
-            "label": label | 'button',
+            "label": label or 'button',
         }
 
         self.callbacks = {
