@@ -12,6 +12,8 @@ import AppBar from 'components/AppBar/AppBar';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import CodeBlock from 'components/CodeBlock/CodeBlock';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
+import SplitPane, { SplitPaneItem } from 'components/SplitPane';
+import ResizingFallback from 'components/ResizingFallback';
 
 import { PathEnum } from 'config/enums/routesEnum';
 
@@ -110,9 +112,15 @@ function Report({
         )}
         <BusyLoaderWrapper isLoading={isLoading} height={'100%'}>
           <div className='ReportVisualizer'>
-            <div className='ReportVisualizer__main'>
-              {(editMode || newMode) && (
-                <div className='ReportVisualizer__main__editor'>
+            <SplitPane
+              id='ReportVisualizer'
+              useLocalStorage={true}
+              className='ReportVisualizer__main'
+              sizes={editMode || newMode ? [40, 60] : [100, 0]}
+              minSize={[400, 400]}
+            >
+              {editMode || newMode ? (
+                <SplitPaneItem className='ReportVisualizer__main__editor'>
                   <Editor
                     language='markdown'
                     height='100%'
@@ -124,9 +132,10 @@ function Report({
                       useTabStops: true,
                     }}
                   />
-                </div>
-              )}
-              <div
+                </SplitPaneItem>
+              ) : null}
+              <SplitPaneItem
+                resizingFallback={<ResizingFallback />}
                 className={classNames('ReportVisualizer__main__components', {
                   'ReportVisualizer__main__components--loading':
                     pyodideIsLoading === null,
@@ -151,8 +160,8 @@ function Report({
                     </ReactMarkdown>
                   )}
                 </div>
-              </div>
-            </div>
+              </SplitPaneItem>
+            </SplitPane>
           </div>
         </BusyLoaderWrapper>
       </section>
