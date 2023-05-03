@@ -9,7 +9,7 @@ def timing(iter_count=5):
             for _ in range(iter_count):
                 f(*args, **kwargs)
             te = time.time()
-            return (te-ts)/iter_count
+            return (te - ts) / iter_count
         return wrapper
     return inner
 

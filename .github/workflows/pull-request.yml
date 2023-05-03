@@ -55,7 +55,9 @@ jobs:
 
       - name: code style checks
         run: |
-          flake8 src/aim
+          flake8 src
+          flake8 pkgs
+          flake8 tests
 
       - name: unit-tests
         run: |

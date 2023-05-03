@@ -18,7 +18,7 @@ class TestRunApi(PrefilledDataApiTestBase):
                                                                'report_progress': False})
         self.assertEqual(200, response.status_code)
 
-        decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_bytes(chunk_size=512*1024)))
+        decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_bytes(chunk_size=512 * 1024)))
         self.assertEqual(1, len(decoded_response))
         for _, run in decoded_response.items():
             self.assertEqual(4, len(run['traces']['metric']))
@@ -61,7 +61,7 @@ class TestRunApi(PrefilledDataApiTestBase):
                                                                   'report_progress': False})
         self.assertEqual(200, response.status_code)
 
-        decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_bytes(chunk_size=512*1024)))
+        decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_bytes(chunk_size=512 * 1024)))
         for run in decoded_response.values():
             for trace in run['traces']:
                 self.assertEqual([0, 0, 50], trace['slice'])
@@ -89,7 +89,7 @@ class TestRunApi(PrefilledDataApiTestBase):
                                                                   'report_progress': False})
         self.assertEqual(200, response.status_code)
 
-        decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_bytes(chunk_size=512*1024)))
+        decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_bytes(chunk_size=512 * 1024)))
         for run in decoded_response.values():
             for trace in run['traces']:
                 self.assertEqual([0, 0, step_count], trace['slice'])
@@ -121,7 +121,7 @@ class TestRunApi(PrefilledDataApiTestBase):
         })
         self.assertEqual(200, response.status_code)
 
-        decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_bytes(chunk_size=512*1024)))
+        decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_bytes(chunk_size=512 * 1024)))
         self.assertEqual(2, len(decoded_response))
         self.assertListEqual(run_hashes, list(decoded_response.keys()))
         self.assertEqual([], decoded_response[run_hashes[1]])
@@ -141,10 +141,14 @@ class TestRunApi(PrefilledDataApiTestBase):
             'align_by': 'accuracy',
             'runs': [{
                 'run_id': run_hashes[0],
-                'traces': [{'name': 'loss', 'slice': [0, 20, 1], 'context': {'is_training': True, 'subset': 'training'}}]
+                'traces': [
+                    {'name': 'loss', 'slice': [0, 20, 1], 'context': {'is_training': True, 'subset': 'training'}}
+                ]
             }, {
                 'run_id': run_hashes[1],
-                'traces': [{'name': 'loss', 'slice': [0, 10, 1], 'context': {'is_training': True, 'subset': 'val'}}]
+                'traces': [
+                    {'name': 'loss', 'slice': [0, 10, 1], 'context': {'is_training': True, 'subset': 'val'}}
+                ]
             }]
         })
         self.assertEqual(200, response.status_code)
@@ -240,4 +244,3 @@ class TestRunInfoApi(ApiTestBase):
 
         self.assertEqual(1, len(run_props['tags']))
         self.assertEqual('Long description for tag', run_props['tags'][0]['description'])
-

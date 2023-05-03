@@ -1,7 +1,5 @@
 import datetime
 import itertools
-import os.path
-import shutil
 import numpy
 from PIL import Image as pil_image
 

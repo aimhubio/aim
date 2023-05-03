@@ -95,7 +95,8 @@ class TestQuery(PrefilledDataTestBase):
 
 class TestQueryDefaultExpression(PrefilledDataTestBase):
     def setUp(self):
-        self.run = next((run for run in self.repo.iter_runs() if run.get('testcase') == full_class_name(self.__class__)))
+        testcase = full_class_name(self.__class__)
+        self.run = next((run for run in self.repo.iter_runs() if run.get('testcase') == testcase))
         self.run.archived = True
         self.run_hash = self.run.hash
 

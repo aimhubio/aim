@@ -8,7 +8,7 @@ import numpy as np
 
 
 class TestImageConstruction(TestBase):
-        # greyscale, dims = (1,2,2)
+    # greyscale, dims = (1,2,2)
     img1 = np.array([[[0, 1], [1, 0]]], np.uint8)
     # greyscale, dims = (2,2)
     img2 = np.array([[0, 1], [1, 0]], np.uint8)
@@ -25,10 +25,11 @@ class TestImageConstruction(TestBase):
         self.assertEqual(Image(torch.tensor(self.img2)), Image(self.img2))
         self.assertEqual(Image(torch.tensor(self.img3)), Image(np.transpose(self.img3, (1, 2, 0))))
 
-        self.assertEqual(Image(torch.tensor(self.img1.astype(np.float32))), Image(255 * np.transpose(self.img1, (1, 2, 0))))
+        self.assertEqual(
+            Image(torch.tensor(self.img1.astype(np.float32))), Image(255 * np.transpose(self.img1, (1, 2, 0))))
         self.assertEqual(Image(torch.tensor(self.img2.astype(np.float32))), Image(255 * self.img2))
-        self.assertEqual(Image(torch.tensor(self.img3.astype(np.float32))), Image(255 * np.transpose(self.img3, (1, 2, 0))))
-
+        self.assertEqual(
+            Image(torch.tensor(self.img3.astype(np.float32))), Image(255 * np.transpose(self.img3, (1, 2, 0))))
 
     @pytest.mark.skipif(not is_package_installed('tensorflow'), reason="'tensorflow' is not installed. skipping.")
     def test_image_from_tf_tensor(self):

@@ -2,6 +2,7 @@ from unit_tests.base import PrefilledDataTestBase
 
 from aim.sdk.utils import generate_run_hash
 
+
 class TestStructuredDatabase(PrefilledDataTestBase):
     def test_entity_chaining_syntax(self):
         run = self.repo.structured_db.find_run('missing_run_hash')

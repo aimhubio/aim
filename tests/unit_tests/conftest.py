@@ -12,7 +12,7 @@ TEST_REPO_PATH = '.aim-test-repo'
 
 
 def _init_test_repo():
-    repo = Repo.default_repo(init=True)
+    Repo.default_repo(init=True)
     # some unittests check sequence tracking in a separate thread
     # need to make sure task_queue is there
     os.environ[AIM_ENABLE_TRACKING_THREAD] = 'ON'

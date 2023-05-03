@@ -361,7 +361,7 @@ class TestRunInfoApi(ApiTestBase):
 
         run1 = cls.create_run(system_tracking_interval=None)
         cls.run1_hash = run1.hash
-        images = generate_image_set(img_count=2, caption_prefix=f'Image 0')
+        images = generate_image_set(img_count=2, caption_prefix='Image 0')
         run1.track(images, name='image_lists', context={'subset': 'train'})
         run1.track(random.random(), name='floats', context={'subset': 'train'})
         run1.track(random.randint(100, 200), name='integers', context={'subset': 'train'})

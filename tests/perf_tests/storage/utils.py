@@ -21,7 +21,7 @@ def random_access_metric_values(repo, query, density):
     for trace in traces.iter():
         values = trace.values
         values_length = len(values)
-        step = len(values)//density
+        step = len(values) // density
 
         accessed_values = []
         for i in range(0, values_length, step):

@@ -21,7 +21,8 @@ class TestRunSequenceHomogeneousValues(TestBase):
         with self.assertRaises(ValueError) as cm:
             run.track([1], name='numbers', context={})
         exception = cm.exception
-        self.assertEqual('Cannot log value \'[1]\' on sequence \'numbers\'. Incompatible data types.', exception.args[0])
+        self.assertEqual(
+            'Cannot log value \'[1]\' on sequence \'numbers\'. Incompatible data types.', exception.args[0])
 
     def test_track_metrics_dict(self):
         run = Run(system_tracking_interval=None)
@@ -57,7 +58,8 @@ class TestRunSequenceHomogeneousValues(TestBase):
         with self.assertRaises(ValueError) as cm:
             new_run.track([1], name='numbers', context={})
         exception = cm.exception
-        self.assertEqual('Cannot log value \'[1]\' on sequence \'numbers\'. Incompatible data types.', exception.args[0])
+        self.assertEqual(
+            'Cannot log value \'[1]\' on sequence \'numbers\'. Incompatible data types.', exception.args[0])
 
     def test_type_compatibility_for_empty_list(self):
         run = Run(system_tracking_interval=None)
