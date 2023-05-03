@@ -10,7 +10,6 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 import SplitPane, { SplitPaneItem } from 'components/SplitPane';
 import ResizingFallback from 'components/ResizingFallback';
-import RouteLeavingGuard from 'components/RouteLeavingGuard';
 import { Box, Button, Link } from 'components/kit_v2';
 import Breadcrumb from 'components/kit_v2/Breadcrumb';
 
@@ -23,6 +22,8 @@ import pyodideEngine from '../../services/pyodide/store';
 
 import SaveBoard from './components/SaveBoard';
 import GridCell from './components/GridCell';
+import useBoardStore from './BoardSore';
+import BoardLeavingGuard from './components/BoardLeavingGuard';
 
 import './Board.scss';
 
@@ -37,7 +38,8 @@ function Board({
   saveBoard,
 }: any): React.FunctionComponentElement<React.ReactNode> {
   const { isLoading: pyodideIsLoading, pyodide, namespace } = usePyodide();
-
+  const setEditorValue = useBoardStore((state) => state.setEditorValue);
+  const destroyBoardStore = useBoardStore((state) => state.destroy);
   const boardId = data.id;
 
   const editorValue = React.useRef(data.code);
@@ -170,6 +172,7 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
   }, [pyodideIsLoading]);
 
   React.useEffect(() => {
+    setEditorValue(editorValue.current);
     const unsubscribe = pyodideEngine.events.on(
       boardId,
       ({ blocks, components, state, query }) => {
@@ -193,6 +196,7 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
     return () => {
       window.clearTimeout(timerId.current);
       unsubscribe();
+      destroyBoardStore();
     };
   }, [boardId]);
 
@@ -277,7 +281,10 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
                     language='python'
                     height='100%'
                     value={editorValue.current}
-                    onChange={(v) => (editorValue.current = v!)}
+                    onChange={(v) => {
+                      editorValue.current = v!;
+                      setEditorValue(v!);
+                    }}
                     loading={<span />}
                     options={{
                       tabSize: 4,
@@ -331,9 +338,7 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
           data={notifyData}
         />
       )}
-      {(editMode || newMode) && (
-        <RouteLeavingGuard when={editorValue.current !== data.code} />
-      )}
+      {(editMode || newMode) && <BoardLeavingGuard data={data.code} />}
     </ErrorBoundary>
   );
 }
