@@ -58,7 +58,7 @@ function getBoardData(boardId: string) {
 
 async function createBoard(name: string, description: string, code: string) {
   try {
-    await appsService
+    return await appsService
       .createApp({
         state: {
           name,
@@ -78,16 +78,17 @@ async function createBoard(name: string, description: string, code: string) {
             ...data.state,
           },
         });
-      });
+        onNotificationAdd({
+          notification: {
+            id: Date.now(),
+            severity: 'success',
+            messages: ['Board successfully created'],
+          },
+          model,
+        });
 
-    onNotificationAdd({
-      notification: {
-        id: Date.now(),
-        severity: 'success',
-        messages: ['Board successfully created'],
-      },
-      model,
-    });
+        return data;
+      });
   } catch (err: any) {
     onNotificationAdd({
       notification: {

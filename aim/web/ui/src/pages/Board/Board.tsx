@@ -271,7 +271,7 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
               sizes={editMode || newMode ? [40, 60] : [100, 0]}
               minSize={[400, 400]}
             >
-              {(editMode || newMode) && (
+              {editMode || newMode ? (
                 <SplitPaneItem className='BoardVisualizer__main__editor'>
                   <Editor
                     language='python'
@@ -285,7 +285,7 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
                     }}
                   />
                 </SplitPaneItem>
-              )}
+              ) : null}
               <SplitPaneItem
                 resizingFallback={<ResizingFallback />}
                 className={classNames('BoardVisualizer__main__components', {

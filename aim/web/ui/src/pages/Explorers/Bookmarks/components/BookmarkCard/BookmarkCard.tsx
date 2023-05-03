@@ -63,8 +63,10 @@ function BookmarkCard({
             </Tooltip>
             <Link
               css={{ ml: '$4', flex: '1' }}
+              ellipsis
               fontSize='$6'
-              fontWeight='$3'
+              fontWeight='$4'
+              title={name}
               onClick={() =>
                 analytics.trackEvent(ANALYTICS_EVENT_KEYS.bookmarks.view)
               }

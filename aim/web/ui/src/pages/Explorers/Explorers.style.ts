@@ -16,7 +16,7 @@ const ExplorersContentContainer = styled(LayoutContainer, {
 });
 
 const ExplorerCardsWrapper = styled(Box, {
-  gap: '$8',
+  gap: '$13',
   display: 'flex',
   ai: 'center',
   fw: 'wrap',
