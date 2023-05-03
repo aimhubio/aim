@@ -1,6 +1,7 @@
 import React from 'react';
 
 import * as TooltipPrimitive from '@radix-ui/react-tooltip';
+import { Slot } from '@radix-ui/react-slot';
 
 import { TooltipArrow, TooltipContent } from './Tooltip.style';
 import { ITooltipProps } from './Tooltip.d';
@@ -46,7 +47,11 @@ function Tooltip({
       skipDelayDuration={skipDelayDuration}
     >
       <TooltipPrimitive.Root {...props}>
-        <TooltipPrimitive.Trigger asChild>{children}</TooltipPrimitive.Trigger>
+        <TooltipPrimitive.Trigger asChild>
+          <Slot>
+            <div>{children}</div>
+          </Slot>
+        </TooltipPrimitive.Trigger>
         <TooltipPrimitive.Portal>
           <TooltipContent
             ref={ref}

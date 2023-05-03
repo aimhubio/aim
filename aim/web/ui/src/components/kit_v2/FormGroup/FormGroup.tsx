@@ -28,16 +28,16 @@ function FormGroup({
             {section?.sectionFields?.map((row, id: number) => {
               return (
                 <FormGroupRow key={id}>
-                  {row.content && (
-                    <FormGroupContent>{row.content}</FormGroupContent>
+                  {row?.content && (
+                    <FormGroupContent>{row?.content}</FormGroupContent>
                   )}
-                  {row.control && (
-                    <FormGroupControl>{row.control}</FormGroupControl>
+                  {row?.control && (
+                    <FormGroupControl>{row?.control}</FormGroupControl>
                   )}
-                  {row.actions?.map((action, id: number) => {
+                  {row?.actions?.map((action, id: number) => {
                     return (
                       <FormGroupActions key={id}>
-                        <Box>{action.component}</Box>
+                        <Box>{action?.component}</Box>
                       </FormGroupActions>
                     );
                   })}

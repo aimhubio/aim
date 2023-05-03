@@ -66,6 +66,12 @@ const RunMessagesVizElement = React.lazy(
       /* webpackPrefetch: true, webpackChunkName: "RunMessages" */ './RunMessagesVizElement'
     ),
 );
+const RunLogsVizElement = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "RunLogs" */ './RunLogsVizElement'
+    ),
+);
 const RunNotesVizElement = React.lazy(
   () =>
     import(
@@ -109,6 +115,13 @@ const TextAreaVizElement = React.lazy(
     ),
 );
 
+const CheckboxVizElement = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "Checkbox" */ './CheckboxVizElement'
+    ),
+);
+
 export type VizElementKey =
   | 'LineChart'
   | 'DataFrame'
@@ -121,13 +134,15 @@ export type VizElementKey =
   | 'Text'
   | 'Select'
   | 'RunMessages'
+  | 'RunLogs'
   | 'RunNotes'
   | 'Plotly'
   | 'Slider'
   | 'TextInput'
   | 'Button'
   | 'Switch'
-  | 'TextArea';
+  | 'TextArea'
+  | 'Checkbox';
 
 const VizElementsMap: Record<VizElementKey, React.FunctionComponent<any>> = {
   LineChart: LineChartVizElement,
@@ -141,6 +156,7 @@ const VizElementsMap: Record<VizElementKey, React.FunctionComponent<any>> = {
   Text: TextVizElement,
   Select: SelectVizElement,
   RunMessages: RunMessagesVizElement,
+  RunLogs: RunLogsVizElement,
   RunNotes: RunNotesVizElement,
   Plotly: PlotlyVizElement,
   Slider: SliderVizElement,
@@ -148,6 +164,7 @@ const VizElementsMap: Record<VizElementKey, React.FunctionComponent<any>> = {
   Button: ButtonVizElement,
   Switch: SwitchVizElement,
   TextArea: TextAreaVizElement,
+  Checkbox: CheckboxVizElement,
 };
 
 export default VizElementsMap;

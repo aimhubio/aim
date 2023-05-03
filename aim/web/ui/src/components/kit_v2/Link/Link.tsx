@@ -19,6 +19,7 @@ function Link({
   fontSize = '$5',
   fontWeight = '$2',
   color = '$primary100',
+  ellipsis = false,
   underline = true,
   css = {},
   children,
@@ -51,6 +52,7 @@ function Link({
       return (
         <StyledAnchor
           underline={underline}
+          ellipsis={ellipsis}
           css={cssProps}
           href={to}
           target={props.target || '_blank'}
@@ -62,7 +64,13 @@ function Link({
       );
     }
     return (
-      <StyledNavLink underline={underline} css={cssProps} to={to} {...props}>
+      <StyledNavLink
+        ellipsis={ellipsis}
+        underline={underline}
+        css={cssProps}
+        to={to}
+        {...props}
+      >
         {children}
       </StyledNavLink>
     );
