@@ -58,7 +58,7 @@ function getReportData(reportId: string) {
 
 async function createReport(name: string, description: string, code: string) {
   try {
-    await appsService
+    return await appsService
       .createApp({
         state: {
           name,
@@ -75,16 +75,16 @@ async function createReport(name: string, description: string, code: string) {
         model.setState({
           report: data,
         });
+        onNotificationAdd({
+          notification: {
+            id: Date.now(),
+            severity: 'success',
+            messages: ['Report successfully created'],
+          },
+          model,
+        });
+        return data;
       });
-
-    onNotificationAdd({
-      notification: {
-        id: Date.now(),
-        severity: 'success',
-        messages: ['Report successfully created'],
-      },
-      model,
-    });
   } catch (err: any) {
     onNotificationAdd({
       notification: {
