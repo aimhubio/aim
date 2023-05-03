@@ -5,7 +5,7 @@
   flex-direction: column;
   min-width: 310px;
   width: 310px;
-  background-color: $pico-2;
+  background-color: #fff;
   overflow: auto;
   height: 100vh;
   &__Spinner {
@@ -18,7 +18,7 @@
     display: none;
   }
   &__title {
-    margin-top: 1.25rem;
+    margin-top: $space-xs;
     padding: 0 1.5rem;
   }
   .ExploreSection__content {

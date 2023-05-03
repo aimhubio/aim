@@ -1,20 +1,21 @@
 import React from 'react';
 import classNames from 'classnames';
-import { Link as RouteLink } from 'react-router-dom';
 
-import { Link } from '@material-ui/core';
 import Editor from '@monaco-editor/react';
+import { IconPencil } from '@tabler/icons-react';
 
-import { Button, Icon, Spinner } from 'components/kit';
-import AppBar from 'components/AppBar/AppBar';
+import { Spinner } from 'components/kit';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 import SplitPane, { SplitPaneItem } from 'components/SplitPane';
 import ResizingFallback from 'components/ResizingFallback';
 import RouteLeavingGuard from 'components/RouteLeavingGuard';
+import { Box, Button, Link } from 'components/kit_v2';
+import Breadcrumb from 'components/kit_v2/Breadcrumb';
 
 import { PathEnum } from 'config/enums/routesEnum';
+import { TopBar } from 'config/stitches/foundations/layout';
 
 import usePyodide from 'services/pyodide/usePyodide';
 
@@ -24,6 +25,7 @@ import SaveBoard from './components/SaveBoard';
 import GridCell from './components/GridCell';
 
 import './Board.scss';
+
 function Board({
   data,
   isLoading,
@@ -208,13 +210,20 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
     <ErrorBoundary>
       <section className='Board'>
         {!previewMode && (
-          <AppBar title={data.name} className='Board__appBar'>
+          <TopBar className='Board__appBar'>
+            <Box flex='1 100%'>
+              <Breadcrumb
+                customRouteValues={{
+                  [`/boards/${boardId}`]: data.name,
+                }}
+              />
+            </Box>
             {editMode || newMode ? (
               <div className='Board__appBar__controls'>
                 <Button
                   color='primary'
                   variant='contained'
-                  size='small'
+                  size='xs'
                   onClick={execute}
                 >
                   Run
@@ -225,31 +234,30 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
                   initialState={data}
                 />
                 <Link
+                  css={{ display: 'flex' }}
                   to={PathEnum.Board.replace(
                     ':boardId',
                     newMode ? '' : boardId,
                   )}
-                  component={RouteLink}
-                  underline='none'
+                  underline={false}
                 >
-                  <Button variant='outlined' size='small'>
+                  <Button variant='outlined' size='xs'>
                     Cancel
                   </Button>
                 </Link>
               </div>
             ) : (
               <Link
+                css={{ display: 'flex' }}
                 to={PathEnum.Board_Edit.replace(':boardId', boardId)}
-                component={RouteLink}
-                underline='none'
+                underline={false}
               >
-                <Button variant='outlined' size='small'>
-                  Edit{' '}
-                  <Icon name='edit' style={{ marginLeft: 5 }} fontSize={12} />
+                <Button variant='outlined' size='xs' rightIcon={<IconPencil />}>
+                  Edit
                 </Button>
               </Link>
             )}
-          </AppBar>
+          </TopBar>
         )}
         <BusyLoaderWrapper
           isLoading={pyodideIsLoading || isLoading}
