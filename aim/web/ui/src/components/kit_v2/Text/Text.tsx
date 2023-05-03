@@ -26,7 +26,7 @@ const Text = React.forwardRef<React.ElementRef<typeof StyledSlot>, ITextProps>(
       disabled = false,
       textTransform,
       lineHeight,
-      truncate,
+      ellipsis,
       css,
       children,
       ...rest
@@ -36,7 +36,7 @@ const Text = React.forwardRef<React.ElementRef<typeof StyledSlot>, ITextProps>(
     const TagElement = as;
     return (
       <StyledSlot
-        truncate={truncate}
+        ellipsis={ellipsis}
         css={{
           fontSize: size,
           fontWeight: weight,
