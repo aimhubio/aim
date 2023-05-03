@@ -60,21 +60,21 @@ def check_directory_permissions(path: str, mount_root: Optional[str] = '', unmou
     if not os.access(path, os.W_OK):
         username = get_username()
         if unmount:
-            unmount_remote_repo(path, mount_root)
+            unmount_remote_path(path, mount_root)
         raise PermissionError(f'User {username} does not have write permissions on path: {path}.')
 
 
-def extract_remote_user_pwd_host_repo(path: str) -> Tuple[Optional[str], Optional[str], Optional[str], str]:
+def parse(path: str) -> Tuple[Optional[str], Optional[str], Optional[str], str]:
     """
-    Utility function to extract user, password, host and remote repo path from given remote path.
-    Arg path should follow the following format: 'ssh://[user:password@][host]:remote_repo_path'
+    Utility function to extract user, password, host and remote path from given remote path.
+    Arg path should follow the following format: 'ssh://[user:password@][host]:remote_path'
     Falls back to environment variables if some of the extractables are missing
     """
     assert path.startswith('ssh://')
     # strip the 'ssh://' prefix
     path = path[6:]
 
-    # split user:password and host:remote_repo_path pairs
+    # split into user:password and host:remote_path pairs
     initial_split = path.split('@', maxsplit=1)
 
     user = None
@@ -112,22 +112,22 @@ def extract_remote_user_pwd_host_repo(path: str) -> Tuple[Optional[str], Optiona
     return user, password, host, remote_path
 
 
-def mount_remote_repo(remote_path: str) -> Tuple[str, str]:
+def mount_remote_path(remote_path: str) -> Tuple[str, str]:
     """
-    Utility function to mount remote repository path to local  '/tmp/<timestamp>/<remote_repo_name>' directory
+    Utility function to mount remote path to local  '/tmp/<timestamp>/<remote_name>' directory
     """
 
     check_sshfs_installation()
 
-    user, pwd, host, remote_repo_path = extract_remote_user_pwd_host_repo(remote_path)
+    user, pwd, host, remote_path = parse(remote_path)
 
     # check if the current user has permissions to perform write operations on /tmp dir
     check_directory_permissions(path='/tmp')
     mount_root = f'/tmp/{int(time.time())}'
-    mount_point = f'{mount_root}/{remote_repo_path}'
+    mount_point = f'{mount_root}/{remote_path}'
     os.makedirs(mount_point, exist_ok=True)
 
-    login_options = f'{host}:{remote_repo_path}'
+    login_options = f'{host}:{remote_path}'
     if user:
         if pwd:
             login_options = f'{user}:{pwd}@{login_options}'
@@ -150,27 +150,27 @@ def mount_remote_repo(remote_path: str) -> Tuple[str, str]:
         # if mounting fails remove local mount point created by Aim
         # and print the command that was used, so it'll be easier for the user to perform manual mounting
         sshfs_process.wait()
-        unmount_remote_repo(mount_point, mount_root)
-        raise subprocess.SubprocessError(f'Could not mount remote repository using command: \n'
+        unmount_remote_path(mount_point, mount_root)
+        raise subprocess.SubprocessError(f'Could not mount remote path using command: \n'
                                          f'{" ".join(cmd)} \n'
                                          f'Please try to mount manually '
-                                         f'and use the local mount point as a usual repo path.')
+                                         f'and use the local mount point as a usual path.')
 
     # check if the user has permissions to perform write operations on local mount point (which means that the
-    # remote user also can perform write operations on remote repo path as well)
+    # remote user also can perform write operations on remote path as well)
     # unmount the local mount point in case of failure
     check_directory_permissions(mount_point, mount_root, unmount=True)
 
     return mount_root, mount_point
 
 
-def unmount_remote_repo(mount_point: str, mount_root: str):
+def unmount_remote_path(mount_point: str, mount_root: str):
     """
-    Utility function to unmount remote repo and cleanup local directories created by Aim for mounting
+    Utility function to unmount remote path and cleanup local directories created by Aim for mounting
     """
 
     # TODO: [MV] this is experimental
-    # TODO: [MV] decide later what to do with unmounting remote repo
+    # TODO: [MV] decide later what to do with unmounting remote path
     if not os.path.exists(mount_point):
         return
 

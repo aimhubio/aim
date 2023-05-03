@@ -9,7 +9,7 @@ from cachetools.func import ttl_cache
 from typing import Dict, Tuple, Iterator, NamedTuple, Optional, List, Set
 from weakref import WeakValueDictionary
 
-from aim.ext.sshfs.utils import mount_remote_repo, unmount_remote_repo
+from aim.core.sshfs import mount_remote_path, unmount_remote_path
 from aim.ext.task_queue.queue import TaskQueue
 from aim.core.cleanup import AutoClean
 from aim.ext.transport.client import Client
@@ -80,7 +80,7 @@ class RepoAutoClean(AutoClean):
             self._client.disconnect()
         if self._mount_root:
             logger.debug(f'Unmounting remote repository at {self._mount_root}')
-            unmount_remote_repo(self.root_path, self._mount_root)
+            unmount_remote_path(self.root_path, self._mount_root)
 
 
 # TODO make this api thread-safe
@@ -111,7 +111,7 @@ class Repo:
         self._client: Client = None
         self._lock_manager: LockManager = None
         if path.startswith('ssh://'):
-            self._mount_root, self.root_path = mount_remote_repo(path)
+            self._mount_root, self.root_path = mount_remote_path(path)
         elif self.is_remote_path(path):
             remote_path = path.replace('aim://', '')
             self._client = Client(remote_path)
@@ -126,7 +126,7 @@ class Repo:
             os.makedirs(os.path.join(self.path, 'locks'), exist_ok=True)
         if not self.is_remote_repo and not os.path.exists(self.path):
             if self._mount_root:
-                unmount_remote_repo(self.root_path, self._mount_root)
+                unmount_remote_path(self.root_path, self._mount_root)
             raise RuntimeError(f'Cannot find repository \'{self.path}\'. Please init first.')
 
         self.container_pool: Dict[ContainerConfig, Container] = WeakValueDictionary()
