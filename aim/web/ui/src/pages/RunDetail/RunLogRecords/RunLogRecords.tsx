@@ -91,15 +91,7 @@ function RunLogRecords({
                   key={`${parentHeight}${parentWidth}`}
                   height={parentHeight || 100}
                   itemCount={data?.length}
-                  itemSize={(index: number) => {
-                    return data[index]?.height;
-                  }}
-                  // itemKey={(index, data) => {
-                  //   const item: any = data[index];
-                  //   return `${item.itemType}${
-                  //     item.hash ? '__' + item.hash : ''
-                  //   }`;
-                  // }}
+                  itemSize={(index: number) => data[index]?.height}
                   width={'100%'}
                   overscanCount={100}
                   initialScrollOffset={scrollOffset ?? 0}
