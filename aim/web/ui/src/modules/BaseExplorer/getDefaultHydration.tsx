@@ -2,11 +2,12 @@ import * as React from 'react';
 import _ from 'lodash-es';
 
 import { ControlsConfigs } from 'modules/core/engine/visualizations/controls';
-import { GroupingConfigs } from 'modules/core/engine/explorer/groupings';
+import {
+  GroupingConfigs,
+  StyleApplierCallbackArgs,
+} from 'modules/core/engine/explorer/groupings';
 import { GroupType } from 'modules/core/pipeline';
-import Grouping, {
-  GroupingItem,
-} from 'modules/BaseExplorer/components/Grouping';
+import Grouping from 'modules/BaseExplorer/components/Grouping';
 import { BoxProperties } from 'modules/BaseExplorer/components/Controls';
 import FullVewPopover from 'modules/BaseExplorer/components/BoxFullViewPopover';
 import Visualizer from 'modules/BaseExplorer/components/Visualizer';
@@ -15,9 +16,10 @@ import { AdvancedQueryForm } from 'modules/BaseExplorer/components/QueryForm';
 import Controls from 'modules/BaseExplorer/components/Controls';
 import getBaseExplorerStaticContent from 'modules/BaseExplorer/utils/getBaseExplorerStaticContent';
 
-import { AimFlatObjectBase } from 'types/core/AimObjects';
+import { PersistenceTypesEnum } from '../core/engine/types';
 
 import { IBaseComponentProps } from './types';
+import FacetGroupingItem from './components/Grouping/FacetGroupingItem/FacetGroupingItem';
 
 const controls: ControlsConfigs = {
   boxProperties: {
@@ -37,27 +39,31 @@ const controls: ControlsConfigs = {
   },
 };
 
+/**
+ * facet groupings: COLUMN and ROW conflict with GRID grouping and should not be used together, so
+ * we need to make sure that only one of them is applied at a time (and GRID isn't applied by default),
+ * if you want to change default applications, you can do it in the specific explorer config
+ */
 const groupings: GroupingConfigs = {
   [GroupType.COLUMN]: {
     component: React.memo((props: IBaseComponentProps) => (
-      <GroupingItem groupName='columns' iconName='group-column' {...props} />
+      <FacetGroupingItem
+        groupName='columns'
+        iconName='group-column'
+        {...props}
+      />
     )),
-    // @ts-ignore
-    styleApplier: (
-      object: AimFlatObjectBase<any>,
-      group: any,
-      boxConfig: any,
-      iteration: number,
-    ) => {
+    styleApplier: ({ groupInfo, boxConfig }: StyleApplierCallbackArgs<any>) => {
       const rulerWidth =
-        group[GroupType.ROW] && !_.isEmpty(group[GroupType.ROW].config)
+        groupInfo[GroupType.ROW] && !_.isEmpty(groupInfo[GroupType.ROW].config)
           ? 200
           : 0;
       return {
         left:
           boxConfig.gap +
-          (group[GroupType.COLUMN]
-            ? group[GroupType.COLUMN].order * (boxConfig.width + boxConfig.gap)
+          (groupInfo[GroupType.COLUMN]
+            ? groupInfo[GroupType.COLUMN].order *
+              (boxConfig.width + boxConfig.gap)
             : 0) +
           rulerWidth,
       };
@@ -65,6 +71,7 @@ const groupings: GroupingConfigs = {
     defaultApplications: {
       fields: [],
       orders: [],
+      isApplied: true,
     },
     // state: {
     //   // observable state, to listen on base visualizer
@@ -72,31 +79,27 @@ const groupings: GroupingConfigs = {
     //     rowLength: 4,
     //   },
     // },
-    // settings: {
-    //   // settings to pass to component, to use, alter it can be color scales values for color grouping
-    //   maxRowsLength: 10,
-    // },
+    settings: {
+      // settings to pass to component, to use, alter it can be color scales values for color grouping
+      facet: true,
+    },
   },
   [GroupType.ROW]: {
     component: React.memo((props: IBaseComponentProps) => (
-      <GroupingItem groupName='rows' iconName='image-group' {...props} />
+      <FacetGroupingItem groupName='rows' iconName='image-group' {...props} />
     )),
-    // @ts-ignore
-    styleApplier: (
-      object: AimFlatObjectBase<any>,
-      group: any,
-      boxConfig: any,
-      iteration: number,
-    ) => {
+    styleApplier: ({ groupInfo, boxConfig }: StyleApplierCallbackArgs<any>) => {
       const rulerHeight =
-        group[GroupType.COLUMN] && !_.isEmpty(group[GroupType.COLUMN].config)
+        groupInfo[GroupType.COLUMN] &&
+        !_.isEmpty(groupInfo[GroupType.COLUMN].config)
           ? 30
           : 0;
       return {
         top:
           boxConfig.gap +
-          (group[GroupType.ROW]
-            ? group[GroupType.ROW].order * (boxConfig.height + boxConfig.gap)
+          (groupInfo[GroupType.ROW]
+            ? groupInfo[GroupType.ROW].order *
+              (boxConfig.height + boxConfig.gap)
             : 0) +
           rulerHeight,
       };
@@ -104,6 +107,7 @@ const groupings: GroupingConfigs = {
     defaultApplications: {
       fields: [],
       orders: [],
+      isApplied: true,
     },
     // state: {
     //   // observable state, to listen on base visualizer
@@ -111,10 +115,52 @@ const groupings: GroupingConfigs = {
     //     rowLength: 4,
     //   },
     // },
-    // settings: {
-    //   // settings to pass to component, to use, alter it can be color scales values for color grouping
-    //   maxRowsLength: 10,
-    // },
+    settings: {
+      // settings to pass to component, to use, alter it can be color scales values for color grouping
+      facet: true,
+    },
+  },
+  [GroupType.GRID]: {
+    component: React.memo((props: IBaseComponentProps) => (
+      <FacetGroupingItem groupName='grid' iconName='image-group' {...props} />
+    )),
+    styleApplier: ({
+      groupInfo,
+      boxConfig,
+      state = {},
+    }: StyleApplierCallbackArgs<any>) => {
+      if (!groupInfo[GroupType.GRID]) {
+        return {};
+      }
+      const { maxColumnCount = 3 } = state[GroupType.GRID] || {};
+      return {
+        top:
+          boxConfig.gap + groupInfo[GroupType.GRID]
+            ? Math.floor(groupInfo[GroupType.GRID].order / maxColumnCount) *
+              (boxConfig.height + boxConfig.gap)
+            : 0,
+        left:
+          boxConfig.gap + groupInfo[GroupType.GRID]
+            ? (groupInfo[GroupType.GRID].order % maxColumnCount) *
+              (boxConfig.width + boxConfig.gap)
+            : 0,
+      };
+    },
+    defaultApplications: {
+      fields: [],
+      orders: [],
+      isApplied: false,
+    },
+    state: {
+      initialState: {
+        maxColumnCount: 3,
+      },
+      persist: PersistenceTypesEnum.Url,
+    },
+    settings: {
+      // settings to pass to component, to use, alter it can be color scales values for color grouping
+      facet: true,
+    },
   },
 };
 

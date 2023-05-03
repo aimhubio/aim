@@ -1,5 +1,4 @@
-
-# You should download and extract the data beforehand. Simply by doing this: 
+# You should download and extract the data beforehand. Simply by doing this:
 # wget https://archive.ics.uci.edu/ml/machine-learning-databases/dermatology/dermatology.data
 
 from __future__ import division
@@ -9,12 +8,15 @@ import xgboost as xgb
 from aim.xgboost import AimCallback
 
 # label need to be 0 to num_class -1
-data = np.loadtxt('./dermatology.data', delimiter=',',
-        converters={33: lambda x:int(x == '?'), 34: lambda x:int(x) - 1})
+data = np.loadtxt(
+    './dermatology.data',
+    delimiter=',',
+    converters={33: lambda x: int(x == '?'), 34: lambda x: int(x) - 1},
+)
 sz = data.shape
 
-train = data[:int(sz[0] * 0.7), :]
-test = data[int(sz[0] * 0.7):, :]
+train = data[: int(sz[0] * 0.7), :]
+test = data[int(sz[0] * 0.7) :, :]
 
 train_X = train[:, :33]
 train_Y = train[:, 34]
@@ -45,7 +47,13 @@ print('Test error using softmax = {}'.format(error_rate))
 
 # do the same thing again, but output probabilities
 param['objective'] = 'multi:softprob'
-bst = xgb.train(param, xg_train, num_round, watchlist, callbacks=[AimCallback(repo='.', experiment='xgboost_test')])
+bst = xgb.train(
+    param,
+    xg_train,
+    num_round,
+    watchlist,
+    callbacks=[AimCallback(repo='.', experiment_name='xgboost_test')],
+)
 # Note: this convention has been changed since xgboost-unity
 # get prediction, this is in 1D array, need reshape to (ndata, nclass)
 pred_prob = bst.predict(xg_test).reshape(test_Y.shape[0], 6)

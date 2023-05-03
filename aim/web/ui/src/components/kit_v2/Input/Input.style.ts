@@ -166,6 +166,18 @@ const ClearButtonContainer = styled('div', {
         right: '$6',
       },
     },
+    disabled: {
+      true: {
+        '& .Icon__container': {
+          '& > i': {
+            opacity: 0.5,
+          },
+        },
+        userSelect: 'none',
+        cursor: 'not-allowed',
+        pointerEvents: 'none',
+      },
+    },
   },
 });
 

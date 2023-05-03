@@ -13,6 +13,11 @@ const ExplorerCardContainer = styled(NavLink, {
   textDecoration: 'none',
   position: 'relative',
   transition: 'all 0.18s ease-out',
+  '&:hover': {
+    '.card-title': {
+      textDecoration: 'underline',
+    },
+  },
 });
 
 const ExplorerCardBadge = styled(Text, {

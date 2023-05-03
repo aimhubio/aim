@@ -1,5 +1,6 @@
 from copy import deepcopy
-from typing import Iterator
+from functools import wraps
+from typing import Iterator, Dict, Optional
 
 from aim.storage.hashing import hash_auto
 from aim.storage.types import AimObject, AimObjectKey
@@ -7,6 +8,16 @@ from aim.storage.types import AimObject, AimObjectKey
 
 class Context:
     __slots__ = ('_context', '_hash')
+
+    _context_cache: Dict[int, 'Context'] = {}
+
+    @staticmethod
+    def from_idx(idx: int) -> Optional['Context']:
+        return Context._context_cache.get(idx)
+
+    @staticmethod
+    def cache(idx: int, ctx: 'Context'):
+        Context._context_cache[idx] = ctx
 
     def __init__(
         self,
@@ -48,3 +59,14 @@ class Context:
         if hash(self) != hash(other):
             return False
         return self._context == other._context
+
+
+def cached_context(func):
+    @wraps(func)
+    def wrapper(*args, ctx_idx: int, **kwargs) -> Context:
+        ctx = Context.from_idx(ctx_idx)
+        if ctx is None:
+            ctx = func(*args, ctx_idx=ctx_idx, **kwargs)
+            Context.cache(ctx_idx, ctx)
+        return ctx
+    return wrapper

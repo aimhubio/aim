@@ -7,7 +7,7 @@ from js import search
 import hashlib
 
 
-memoize_cache = {}
+board_id = None
 
 
 def deep_copy(obj):
@@ -27,19 +27,7 @@ def deep_copy(obj):
         return obj
 
 
-def memoize_async(func):
-    async def wrapper(*args, **kwargs):
-        if func.__name__ not in memoize_cache:
-            memoize_cache[func.__name__] = {}
-
-        key = generate_key(args + tuple(kwargs.items()))
-
-        if key not in memoize_cache[func.__name__]:
-            memoize_cache[func.__name__][key] = await func(*args, **kwargs)
-
-        return memoize_cache[func.__name__][key]
-
-    return wrapper
+memoize_cache = {}
 
 
 def memoize(func):
@@ -57,22 +45,69 @@ def memoize(func):
     return wrapper
 
 
-class Repo:
-    @classmethod
-    @memoize_async
-    async def filter(self, type, query=""):
-        data = await search(type, query)
+query_result_cache = {}
+
+
+def query_filter(type_, query=""):
+    query_key = f'{type_}_{query}'
+
+    if query_key in query_result_cache:
+        return query_result_cache[query_key]
+
+    try:
+        data = search(board_id, type_, query)
         data = create_proxy(data.to_py())
         items = []
         i = 0
         for item in data:
             d = item
-            d["type"] = type
+            d["type"] = type_
             d["key"] = i
             i = i + 1
             items.append(d)
         data.destroy()
+
+        query_result_cache[query_key] = items
+
         return items
+    except:
+        return []
+
+
+class Metric():
+    @classmethod
+    def filter(self, query=""):
+        return query_filter('Metric', query)
+
+
+class Images():
+    @classmethod
+    def filter(self, query=""):
+        return query_filter('Images', query)
+
+
+class Audios():
+    @classmethod
+    def filter(self, query=""):
+        return query_filter('Audios', query)
+
+
+class Texts():
+    @classmethod
+    def filter(self, query=""):
+        return query_filter('Texts', query)
+
+
+class Figures():
+    @classmethod
+    def filter(self, query=""):
+        return query_filter('Figures', query)
+
+
+class Distributions():
+    @classmethod
+    def filter(self, query=""):
+        return query_filter('Distributions', query)
 
 
 ####################
@@ -119,8 +154,6 @@ def generate_key(data):
     content = str(data)
     return hashlib.md5(content.encode()).hexdigest()
 
-
-board_id = None
 
 viz_map_keys = {}
 
@@ -258,12 +291,12 @@ class Element:
 
 
 class Block(Element):
-    def __init__(self, type):
+    def __init__(self, type_):
         super().__init__()
         block_context["current"] += 1
         self.block_context = {
             "id": block_context["current"],
-            "type": type
+            "type": type_
         }
         self.key = generate_key(self.block_context)
 
@@ -296,11 +329,11 @@ class Column(Block):
 
 
 class Component(Element):
-    def __init__(self, key, type):
+    def __init__(self, key, type_):
         super().__init__()
         self.state = {}
         self.key = key
-        self.type = type
+        self.type = type_
         self.data = None
         self.callbacks = {}
         self.options = {}
@@ -528,7 +561,7 @@ class JSON(Component):
         self.render()
 
 
-class Table(Component):
+class DataFrame(Component):
     def __init__(self, data, key=None):
         component_type = "DataFrame"
         component_key = update_viz_map(component_type, key)
@@ -553,6 +586,16 @@ class HTML(Component):
 class RunMessages(Component):
     def __init__(self, run_hash, key=None):
         component_type = "RunMessages"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type)
+
+        self.data = run_hash
+
+        self.render()
+
+class RunLogs(Component):
+    def __init__(self, run_hash, key=None):
+        component_type = "RunLogs"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type)
 
@@ -734,7 +777,7 @@ class Button(Component):
             "size": size,
             "variant": variant,
             "color": color,
-            "label": label | 'button',
+            "label": label or 'button',
         }
 
         self.callbacks = {
@@ -775,19 +818,20 @@ class Switch(Component):
         })
         print("Switch" + str(val))
 
-
-class ToggleButton(Component):
-    def __init__(self, checked=None, size=None, defaultChecked=None, disabled=None, key=None):
-        component_type = "ToggleButton"
+class TextArea(Component):
+    def __init__(self, value=None, size=None, resize=None, disabled=None, caption=None, key=None):
+        component_type = "TextArea"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type)
 
-        self.data = checked
+        self.data = value
 
         self.options = {
+            "value": self.value,
             "size": size,
-            "defaultChecked": defaultChecked,
+            "resize": resize,
             "disabled": disabled,
+            "caption": caption
         }
 
         self.callbacks = {
@@ -796,9 +840,11 @@ class ToggleButton(Component):
 
         self.render()
 
+    @property
+    def value(self):
+        return self.state["value"] if "value" in self.state else self.data
+
     async def on_change(self, val):
-        # You can define the callback behavior here
         self.set_state({
-            "data": val
+           "value": val
         })
-        print("Switch" + str(val))

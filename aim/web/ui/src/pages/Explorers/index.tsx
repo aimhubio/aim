@@ -52,9 +52,8 @@ function Explorers(): React.FunctionComponentElement<React.ReactNode> {
         <Box display='flex' fd='column'>
           <Box>
             <Text css={{ mb: '$5' }} weight='$3' as='h3' size='$6'>
-              Prompt engineering
+              Explore Executions of AI Systems
             </Text>
-            <Text>Explore and compare your prompts and generated outputs</Text>
             <ExplorerCardsWrapper>
               {Object.values(explorers.promptExplorers).map(
                 (item, index: number) => (
@@ -70,14 +69,10 @@ function Explorers(): React.FunctionComponentElement<React.ReactNode> {
           </Box>
           <Box mt='$17'>
             <Text css={{ mb: '$5' }} weight='$3' as='h3' size='$6'>
-              Experiment tracking
-            </Text>
-            <Text>
-              Explorers will help you to compare 1000s of AI experiments with a
-              few clicks. Explorers are the main tools that Aim is built around
+              Explore Training Runs
             </Text>
             <ExplorerCardsWrapper>
-              {Object.values(explorers.aimExplorers).map(
+              {Object.values(explorers.trainingsExplorers).map(
                 (item, index: number) => (
                   <ExplorerCard
                     {...item}

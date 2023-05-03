@@ -20,6 +20,7 @@ import {
   Popover,
   Separator,
   Text,
+  Tooltip,
 } from 'components/kit_v2';
 
 import { PathEnum } from 'config/enums/routesEnum';
@@ -42,20 +43,17 @@ function ReportCard({
     <ReportCardContainer key={id}>
       <ReportCardHeader>
         <Link
+          ellipsis
           css={{ flex: 1 }}
           fontWeight='$4'
+          fontSize='$6'
+          title={name}
           to={PathEnum.Report.replace(':reportId', id)}
         >
           {name}
         </Link>
         <Popover
-          popperProps={{
-            align: 'end',
-            css: {
-              width: '108px',
-              p: '$4 0',
-            },
-          }}
+          popperProps={{ align: 'end', css: { width: '108px', p: '$4 0' } }}
           trigger={
             <IconButton
               variant='ghost'

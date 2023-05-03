@@ -26,7 +26,7 @@ const Trigger = styled('button', {
     },
     focused: {
       true: {
-        bs: '0px 0px 0px 1px $colors$secondary100',
+        bs: 'inset 0px 0px 0px 1px $colors$secondary100',
         bc: '#E2E6ED',
       },
     },

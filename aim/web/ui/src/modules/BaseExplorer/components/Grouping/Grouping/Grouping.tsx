@@ -1,11 +1,11 @@
-import React, { memo } from 'react';
+import React from 'react';
 
-import { Text } from 'components/kit';
-import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import ErrorBoundary from 'components/ErrorBoundary';
+import { Box } from 'components/kit_v2';
 
 import { IBaseComponentProps } from 'modules/BaseExplorer/types';
 
-import './Grouping.scss';
+import FacetGrouping from '../FacetGrouping';
 
 function Grouping(props: IBaseComponentProps) {
   const {
@@ -13,28 +13,49 @@ function Grouping(props: IBaseComponentProps) {
   } = props;
   const currentValues = useStore(groupings.currentValuesSelector);
 
-  const groupingItems = React.useMemo(() => {
-    return Object.keys(currentValues).map((key: string) => {
-      const Component = groupings[key].component;
+  const { facetGroupings, restGroupings } = React.useMemo(() => {
+    const facet: Record<string, any> = {};
+    const rest: Record<string, any> = {};
+    Object.keys(currentValues).forEach((key: string) => {
+      const grouping = groupings[key];
+      if (grouping.component) {
+        if (grouping.settings.facet) {
+          facet[key] = grouping;
+        } else {
+          rest[key] = grouping;
+        }
+      }
+    });
+    return { facetGroupings: facet, restGroupings: rest };
+  }, [currentValues, groupings]);
+
+  const renderGrouping = React.useCallback(
+    ([key, grouping]: [string, any]) => {
+      const { component: Component } = grouping;
       if (__DEV__) {
         Component.displayName = 'GroupingComponent';
       }
       return <Component key={key} {...props} />;
-    });
-  }, [currentValues, groupings, props]);
+    },
+    [props],
+  );
 
   return (
     <ErrorBoundary>
-      <div className='BaseGrouping'>
-        <Text size={12} weight={500} className='BaseGrouping__title'>
-          Group by:
-        </Text>
-        <div className='BaseGrouping__content'>{groupingItems}</div>
-      </div>
+      <Box display='flex' ai='center'>
+        <Box gap='$5' display='flex' ai='center' jc='center'>
+          <FacetGrouping
+            {...props}
+            facetGroupings={facetGroupings}
+            renderGrouping={renderGrouping}
+          />
+          {Object.entries(restGroupings).map(renderGrouping)}
+        </Box>
+      </Box>
     </ErrorBoundary>
   );
 }
 
 Grouping.displayName = 'Grouping';
 
-export default memo<IBaseComponentProps>(Grouping);
+export default React.memo<IBaseComponentProps>(Grouping);
