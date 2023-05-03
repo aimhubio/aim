@@ -1,11 +1,10 @@
 # LangChain
 
-LangChain is a useful tool that can help speed up the development of advanced NLP applications in different areas. It's a platform that aims to help developers create powerful applications by combining large language models (LLMs) with other sources of computation or knowledge. For more see the [Github page](https://github.com/hwchase17/langchain).
+LangChain is a library that helps to build powerful applications by integrating LLMs with other computational resources or knowledge sources. Large LLMs are really powerful tools for developers to create better apps, LangChain uses them to chain deterministic components and complete a given task.
 
 With the Text Explorer feature, it is possible to compare multiple executions of LangChain runs side by side, providing a comprehensive and visually appealing comparison:
 
 ![](https://user-images.githubusercontent.com/13848158/227784994-699b24b7-e69b-48f9-9ffa-e6a6142fd719.png)
-
 
 ## Tracking LangChain Executions
 

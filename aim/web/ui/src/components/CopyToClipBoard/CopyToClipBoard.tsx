@@ -19,15 +19,6 @@ function CopyToClipboard({
 }: ICopyToClipBoardProps): React.FunctionComponentElement<ICopyToClipBoardProps> {
   const { onCopy, copied, setCopied } = useCopy(copyContent ?? contentRef);
 
-  React.useEffect(() => {
-    if (copied) {
-      setTimeout(() => {
-        setCopied(false);
-      }, showSuccessDelay);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [copied]);
-
   return (
     <ErrorBoundary>
       <Tooltip title={copied ? 'Copied!' : 'Copy to clipboard'}>

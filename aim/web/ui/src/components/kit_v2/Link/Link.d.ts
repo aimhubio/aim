@@ -35,6 +35,12 @@ export interface ILinkProps extends NavLinkProps {
    */
   css?: CSS;
   /**
+   * @description The underline of the link
+   * @default true
+   * @type boolean
+   */
+  underline?: boolean;
+  /**
    * @description The children of the link
    * @default null
    * @type React.ReactNode

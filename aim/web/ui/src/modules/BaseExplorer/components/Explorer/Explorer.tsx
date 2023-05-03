@@ -32,6 +32,10 @@ function Explorer({ configuration, engineInstance }: ExplorerProps) {
       {/* @ts-ignore*/}
       <configuration.components.queryForm engine={engineInstance} />
       <Visualizations
+        forceRenderVisualizations={
+          configuration.forceRenderVisualizations ?? false
+        }
+        displayProgress={configuration.displayProgress ?? true}
         getStaticContent={configuration.getStaticContent}
         visualizers={configuration.visualizations}
         engine={engineInstance}
