@@ -318,16 +318,6 @@ class Block(Element):
         render_to_layout(block_data)
 
 
-class Row(Block):
-    def __init__(self):
-        super().__init__('row')
-
-
-class Column(Block):
-    def __init__(self):
-        super().__init__('column')
-
-
 class Component(Element):
     def __init__(self, key, type_):
         super().__init__()
@@ -361,6 +351,8 @@ class Component(Element):
 
         render_to_layout(component_data)
 
+
+class AimSequenceComponent(Component):
     def group(self, prop, value=[]):
         group_map, group_data = group(prop, self.data, value, self.key)
 
@@ -398,7 +390,10 @@ class Component(Element):
         self.render()
 
 
-class LineChart(Component):
+# AimSequenceVizComponents
+
+
+class LineChart(AimSequenceComponent):
     def __init__(self, data, x, y, color=[], stroke_style=[], options={}, key=None):
         component_type = "LineChart"
         component_key = update_viz_map(component_type, key)
@@ -466,7 +461,7 @@ class LineChart(Component):
             data.destroy()
 
 
-class ImagesList(Component):
+class ImagesList(AimSequenceComponent):
     def __init__(self, data, key=None):
         component_type = "Images"
         component_key = update_viz_map(component_type, key)
@@ -485,7 +480,7 @@ class ImagesList(Component):
         self.render()
 
 
-class AudiosList(Component):
+class AudiosList(AimSequenceComponent):
     def __init__(self, data, key=None):
         component_type = "Audios"
         component_key = update_viz_map(component_type, key)
@@ -504,7 +499,7 @@ class AudiosList(Component):
         self.render()
 
 
-class TextsList(Component):
+class TextsList(AimSequenceComponent):
     def __init__(self, data, color=[], key=None):
         component_type = "Texts"
         component_key = update_viz_map(component_type, key)
@@ -529,7 +524,7 @@ class TextsList(Component):
         self.render()
 
 
-class FiguresList(Component):
+class FiguresList(AimSequenceComponent):
     def __init__(self, data, key=None):
         component_type = "Figures"
         component_key = update_viz_map(component_type, key)
@@ -546,6 +541,46 @@ class FiguresList(Component):
             figures.append(figure)
 
         self.data = figures
+
+        self.render()
+
+
+class Union(Component):
+    def __init__(self, components, key=None):
+        component_type = "Union"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type)
+
+        for i, elem in reversed(list(enumerate(current_layout))):
+            for comp in components:
+                if elem["key"] == comp.key:
+                    del current_layout[i]
+
+        self.data = []
+        for comp in components:
+            self.data = self.data + comp.data
+            self.callbacks.update(comp.callbacks)
+
+        def get_viz_for_type(type):
+            for comp in components:
+                if comp.data and comp.data[0] and comp.data[0]["type"] == type:
+                    return comp.type
+
+        self.type = get_viz_for_type
+
+        self.render()
+
+
+# DataDisplayComponents
+
+
+class Plotly(Component):
+    def __init__(self, fig, key=None):
+        component_type = "Plotly"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type)
+
+        self.data = fig.to_json()
 
         self.render()
 
@@ -583,6 +618,19 @@ class HTML(Component):
         self.render()
 
 
+class Text(Component):
+    def __init__(self, data, key=None):
+        component_type = "Text"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type)
+
+        self.data = data
+
+        self.render()
+
+# AimHighLevelComponents
+
+
 class RunMessages(Component):
     def __init__(self, run_hash, key=None):
         component_type = "RunMessages"
@@ -592,6 +640,7 @@ class RunMessages(Component):
         self.data = run_hash
 
         self.render()
+
 
 class RunLogs(Component):
     def __init__(self, run_hash, key=None):
@@ -615,15 +664,7 @@ class RunNotes(Component):
         self.render()
 
 
-class Plotly(Component):
-    def __init__(self, fig, key=None):
-        component_type = "Plotly"
-        component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type)
-
-        self.data = fig.to_json()
-
-        self.render()
+# InputComponents
 
 
 class Slider(Component):
@@ -728,43 +769,6 @@ class Select(Component):
             })
 
 
-class Text(Component):
-    def __init__(self, data, key=None):
-        component_type = "Text"
-        component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type)
-
-        self.data = data
-
-        self.render()
-
-
-class Union(Component):
-    def __init__(self, components, key=None):
-        component_type = "Union"
-        component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type)
-
-        for i, elem in reversed(list(enumerate(current_layout))):
-            for comp in components:
-                if elem["key"] == comp.key:
-                    del current_layout[i]
-
-        self.data = []
-        for comp in components:
-            self.data = self.data + comp.data
-            self.callbacks.update(comp.callbacks)
-
-        def get_viz_for_type(type):
-            for comp in components:
-                if comp.data and comp.data[0] and comp.data[0]["type"] == type:
-                    return comp.type
-
-        self.type = get_viz_for_type
-
-        self.render()
-
-
 class Button(Component):
     def __init__(self, label=None, size=None, variant=None, color=None, key=None):
         component_type = "Button"
@@ -786,9 +790,8 @@ class Button(Component):
 
         self.render()
 
-    def on_click(self, event):
-        # You can define the callback behavior here
-        print("Button clicked")
+    def on_click(self):
+        ...
 
 
 class Switch(Component):
@@ -811,12 +814,15 @@ class Switch(Component):
 
         self.render()
 
+    @property
+    def value(self):
+        return self.state["value"] if "value" in self.state else self.data
+
     async def on_change(self, val):
-        # You can define the callback behavior here
         self.set_state({
-            "data": val
+            "value": val
         })
-        print("Switch" + str(val))
+
 
 class TextArea(Component):
     def __init__(self, value=None, size=None, resize=None, disabled=None, caption=None, key=None):
@@ -846,5 +852,140 @@ class TextArea(Component):
 
     async def on_change(self, val):
         self.set_state({
-           "value": val
+            "value": val
         })
+
+
+class UI:
+    def __init__(self):
+        self.block_context = None
+
+    def add(self, element):
+        element.set_parent_block(self.block_context)
+        element.render()
+
+    # layout elements
+    def rows(self, count):
+        rows = []
+        for i in range(count):
+            row = Row()
+            rows.append(row)
+            self.add(row)
+        return rows
+
+    def columns(self, count):
+        cols = []
+        for i in range(count):
+            col = Column()
+            cols.append(col)
+            self.add(col)
+        return cols
+
+    # input elements
+    def button(self, *args, **kwargs):
+        button = Button(*args, **kwargs)
+        self.add(button)
+        return button
+
+    def text_input(self, *args, **kwargs):
+        input = TextInput(*args, **kwargs)
+        self.add(input)
+        return input.value
+
+    def text_area(self, *args, **kwargs):
+        textarea = TextArea(*args, **kwargs)
+        self.add(textarea)
+        return textarea.value
+
+    def switch(self, *args, **kwargs):
+        switch = Switch(*args, **kwargs)
+        self.add(switch)
+        return switch.value
+
+    def select(self, *args, **kwargs):
+        select = Select(*args, **kwargs)
+        self.add(select)
+        return select.values if type(select.values) is list else select.value
+
+    def slider(self, *args, **kwargs):
+        slider = Slider(*args, **kwargs)
+        self.add(slider)
+        return slider.value
+
+    # data display elements
+    def text(self, *args, **kwargs):
+        text = Text(*args, **kwargs)
+        self.add(text)
+
+    def plotly(self, *args, **kwargs):
+        plotly_chart = Plotly(*args, **kwargs)
+        self.add(plotly_chart)
+
+    def json(self, *args, **kwargs):
+        json = JSON(*args, **kwargs)
+        self.add(json)
+
+    def dataframe(self, *args, **kwargs):
+        dataframe = DataFrame(*args, **kwargs)
+        self.add(dataframe)
+
+    def html(self, *args, **kwargs):
+        html = HTML(*args, **kwargs)
+        self.add(html)
+
+    # Aim sequence viz components
+    def line_chart(self, *args, **kwargs):
+        line_chart = LineChart(*args, **kwargs)
+        self.add(line_chart)
+        return line_chart
+
+    def images(self, *args, **kwargs):
+        images = ImagesList(*args, **kwargs)
+        self.add(images)
+        return images
+
+    def audios(self, *args, **kwargs):
+        audios = AudiosList(*args, **kwargs)
+        self.add(audios)
+        return audios
+
+    def figures(self, *args, **kwargs):
+        figures = FiguresList(*args, **kwargs)
+        self.add(figures)
+        return figures
+
+    def texts(self, *args, **kwargs):
+        texts = TextsList(*args, **kwargs)
+        self.add(texts)
+        return texts
+
+    def union(self, *args, **kwargs):
+        union = Union(*args, **kwargs)
+        self.add(union)
+        return union
+
+    # Aim high level components
+    def run_messages(self, *args, **kwargs):
+        run_messages = RunMessages(*args, **kwargs)
+        self.add(run_messages)
+
+    def run_logs(self, *args, **kwargs):
+        run_logs = RunLogs(*args, **kwargs)
+        self.add(run_logs)
+
+    def run_notes(self, *args, **kwargs):
+        run_notes = RunNotes(*args, **kwargs)
+        self.add(run_notes)
+
+
+class Row(Block, UI):
+    def __init__(self):
+        super().__init__('row')
+
+
+class Column(Block, UI):
+    def __init__(self):
+        super().__init__('column')
+
+
+ui = UI()

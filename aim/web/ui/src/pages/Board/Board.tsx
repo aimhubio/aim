@@ -1,5 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
+import _ from 'lodash-es';
 
 import Editor from '@monaco-editor/react';
 import { IconPencil } from '@tabler/icons-react';
@@ -38,6 +39,7 @@ function Board({
   saveBoard,
 }: any): React.FunctionComponentElement<React.ReactNode> {
   const { isLoading: pyodideIsLoading, pyodide, namespace } = usePyodide();
+  const editorRef = React.useRef<any>(null);
   const setEditorValue = useBoardStore((state) => state.setEditorValue);
   const destroyBoardStore = useBoardStore((state) => state.destroy);
   const boardId = data.id;
@@ -65,7 +67,7 @@ function Board({
           ...s,
           isProcessing: true,
         }));
-        const code = editorValue.current;
+        const code = editorRef.current?.getValue() || data.code;
 
         const packagesListProxy = pyodide?.pyodide_py.code.find_imports(code);
         const packagesList = packagesListProxy.toJs();
@@ -172,7 +174,7 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
   }, [pyodideIsLoading]);
 
   React.useEffect(() => {
-    setEditorValue(editorValue.current);
+    setEditorValue(data.code);
     const unsubscribe = pyodideEngine.events.on(
       boardId,
       ({ blocks, components, state, query }) => {
@@ -199,6 +201,19 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
       destroyBoardStore();
     };
   }, [boardId]);
+
+  function handleEditorMount(editor: any) {
+    editorRef.current = editor;
+    editorRef.current?.onKeyDown(onKeyDown);
+  }
+
+  function onKeyDown() {
+    const updateEditorValue = _.debounce(() => {
+      setEditorValue(editorRef.current?.getValue());
+    }, 40);
+
+    updateEditorValue();
+  }
 
   const tree = constructTree(
     state.layout.blocks.concat(state.layout.components),
@@ -234,7 +249,7 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
                 </Button>
                 <SaveBoard
                   saveBoard={saveBoard}
-                  getEditorValue={() => editorValue.current}
+                  getEditorValue={() => editorRef.current?.getValue() ?? ''}
                   initialState={data}
                 />
                 <Link
@@ -280,11 +295,8 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
                   <Editor
                     language='python'
                     height='100%'
-                    value={editorValue.current}
-                    onChange={(v) => {
-                      editorValue.current = v!;
-                      setEditorValue(v!);
-                    }}
+                    value={editorRef.current?.getValue() ?? data.code}
+                    onMount={handleEditorMount}
                     loading={<span />}
                     options={{
                       tabSize: 4,

@@ -33,7 +33,7 @@ function Breadcrumb({
 
         const isLast = index === pathnames.length - 1;
         return (
-          <React.Fragment key={route?.path}>
+          <React.Fragment key={currentPath}>
             {isLast ? (
               <BreadcrumbLastItem>{displayName}</BreadcrumbLastItem>
             ) : (
