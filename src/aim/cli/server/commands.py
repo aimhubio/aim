@@ -7,7 +7,7 @@ from aim.sdk.utils import clean_repo_path
 from aim.ext.transport.config import AIM_SERVER_DEFAULT_HOST, AIM_SERVER_DEFAULT_PORT, AIM_SERVER_MOUNTED_REPO_PATH
 from aim.ext.transport.server import run_router
 
-from aim.utils.tracking import analytics
+from aim.core.utils.tracking import analytics
 
 
 @click.command()

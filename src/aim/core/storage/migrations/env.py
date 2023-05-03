@@ -8,7 +8,6 @@ from alembic.config import Config
 
 from aim.web.configs import AIM_ENV_MODE_KEY
 from aim.core.storage.structured.sql_engine.models import *
-from aim.core.storage.structured.db import DB
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

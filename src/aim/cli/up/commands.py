@@ -19,7 +19,7 @@ from aim.sdk.utils import clean_repo_path
 from aim.web.utils import exec_cmd
 from aim.web.utils import ShellCommandException
 
-from aim.utils.tracking import analytics
+from aim.core.utils.tracking import analytics
 
 
 @click.command()

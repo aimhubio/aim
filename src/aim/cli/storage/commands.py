@@ -189,7 +189,7 @@ def prune(ctx):
 @click.pass_context
 def reindex(ctx, finalize_only):
     """ Process runs left in 'in progress' state. """
-    from aim.utils.deprecation import deprecation_warning
+    from aim.core.utils.deprecation import deprecation_warning
 
     deprecation_warning(remove_version='3.16', msg='`aim storage reindex` is deprecated! '
                                                    'Use `aim runs close` command instead.')

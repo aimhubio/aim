@@ -6,7 +6,7 @@ import time
 from pathlib import Path
 
 from aim.sdk.configs import AIM_REPO_NAME
-from aim.utils.tracking import analytics
+from aim.core.utils.tracking import analytics
 from tests.perf_tests.utils import get_baseline_filename
 
 TEST_REPO_PATHS = {

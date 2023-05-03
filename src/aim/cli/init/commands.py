@@ -4,7 +4,7 @@ import os
 from aim.sdk.repo import Repo
 from aim.sdk.utils import clean_repo_path
 
-from aim.utils.tracking import analytics
+from aim.core.utils.tracking import analytics
 
 
 @click.command()
