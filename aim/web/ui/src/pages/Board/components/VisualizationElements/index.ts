@@ -137,25 +137,32 @@ export type VizElementKey =
   | 'TextArea';
 
 const VizElementsMap: Record<VizElementKey, React.FunctionComponent<any>> = {
-  LineChart: LineChartVizElement,
+  // input elements
+  Button: ButtonVizElement,
+  TextInput: TextInputVizElement,
+  Switch: SwitchVizElement,
+  TextArea: TextAreaVizElement,
+  Slider: SliderVizElement,
+  Select: SelectVizElement,
+
+  // data display elements
+  Plotly: PlotlyVizElement,
   DataFrame: DataFrameVizElement,
+  JSON: JSONVizElement,
+  HTML: HTMLVizElement,
+  Text: TextVizElement,
+
+  // Aim sequence viz components
+  LineChart: LineChartVizElement,
   Figures: FiguresVizElement,
   Audios: AudiosVizElement,
   Images: ImagesVizElement,
   Texts: TextsVizElement,
-  JSON: JSONVizElement,
-  HTML: HTMLVizElement,
-  Text: TextVizElement,
-  Select: SelectVizElement,
+
+  // Aim high level components
   RunMessages: RunMessagesVizElement,
   RunLogs: RunLogsVizElement,
   RunNotes: RunNotesVizElement,
-  Plotly: PlotlyVizElement,
-  Slider: SliderVizElement,
-  TextInput: TextInputVizElement,
-  Button: ButtonVizElement,
-  Switch: SwitchVizElement,
-  TextArea: TextAreaVizElement,
 };
 
 export default VizElementsMap;
