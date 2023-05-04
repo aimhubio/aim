@@ -9,7 +9,7 @@ const ExplorerCardContainer = styled(NavLink, {
   minWidth: '426px',
   height: '118px',
   borderRadius: 3,
-  p: '$8 $8 0',
+  p: '$13 $13 0',
   textDecoration: 'none',
   position: 'relative',
   transition: 'all 0.18s ease-out',

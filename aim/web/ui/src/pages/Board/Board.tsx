@@ -1,19 +1,21 @@
 import React from 'react';
 import classNames from 'classnames';
-import { Link as RouteLink } from 'react-router-dom';
+import _ from 'lodash-es';
 
-import { Link } from '@material-ui/core';
 import Editor from '@monaco-editor/react';
+import { IconPencil } from '@tabler/icons-react';
 
-import { Button, Icon, Spinner } from 'components/kit';
-import AppBar from 'components/AppBar/AppBar';
+import { Spinner } from 'components/kit';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 import SplitPane, { SplitPaneItem } from 'components/SplitPane';
 import ResizingFallback from 'components/ResizingFallback';
+import { Box, Button, Link } from 'components/kit_v2';
+import Breadcrumb from 'components/kit_v2/Breadcrumb';
 
 import { PathEnum } from 'config/enums/routesEnum';
+import { TopBar } from 'config/stitches/foundations/layout';
 
 import usePyodide from 'services/pyodide/usePyodide';
 
@@ -21,8 +23,11 @@ import pyodideEngine from '../../services/pyodide/store';
 
 import SaveBoard from './components/SaveBoard';
 import GridCell from './components/GridCell';
+import useBoardStore from './BoardSore';
+import BoardLeavingGuard from './components/BoardLeavingGuard';
 
 import './Board.scss';
+
 function Board({
   data,
   isLoading,
@@ -34,7 +39,9 @@ function Board({
   saveBoard,
 }: any): React.FunctionComponentElement<React.ReactNode> {
   const { isLoading: pyodideIsLoading, pyodide, namespace } = usePyodide();
-
+  const editorRef = React.useRef<any>(null);
+  const setEditorValue = useBoardStore((state) => state.setEditorValue);
+  const destroyBoardStore = useBoardStore((state) => state.destroy);
   const boardId = data.id;
 
   const editorValue = React.useRef(data.code);
@@ -60,7 +67,7 @@ function Board({
           ...s,
           isProcessing: true,
         }));
-        const code = editorValue.current;
+        const code = editorRef.current?.getValue() || data.code;
 
         const packagesListProxy = pyodide?.pyodide_py.code.find_imports(code);
         const packagesList = packagesListProxy.toJs();
@@ -167,6 +174,7 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
   }, [pyodideIsLoading]);
 
   React.useEffect(() => {
+    setEditorValue(data.code);
     const unsubscribe = pyodideEngine.events.on(
       boardId,
       ({ blocks, components, state, query }) => {
@@ -190,8 +198,22 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
     return () => {
       window.clearTimeout(timerId.current);
       unsubscribe();
+      destroyBoardStore();
     };
   }, [boardId]);
+
+  function handleEditorMount(editor: any) {
+    editorRef.current = editor;
+    editorRef.current?.onKeyDown(onKeyDown);
+  }
+
+  function onKeyDown() {
+    const updateEditorValue = _.debounce(() => {
+      setEditorValue(editorRef.current?.getValue());
+    }, 40);
+
+    updateEditorValue();
+  }
 
   const tree = constructTree(
     state.layout.blocks.concat(state.layout.components),
@@ -207,48 +229,54 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
     <ErrorBoundary>
       <section className='Board'>
         {!previewMode && (
-          <AppBar title={data.name} className='Board__appBar'>
+          <TopBar className='Board__appBar'>
+            <Box flex='1 100%'>
+              <Breadcrumb
+                customRouteValues={{
+                  [`/boards/${boardId}`]: data.name,
+                }}
+              />
+            </Box>
             {editMode || newMode ? (
               <div className='Board__appBar__controls'>
                 <Button
                   color='primary'
                   variant='contained'
-                  size='small'
+                  size='xs'
                   onClick={execute}
                 >
                   Run
                 </Button>
                 <SaveBoard
                   saveBoard={saveBoard}
-                  getEditorValue={() => editorValue.current}
+                  getEditorValue={() => editorRef.current?.getValue() ?? ''}
                   initialState={data}
                 />
                 <Link
+                  css={{ display: 'flex' }}
                   to={PathEnum.Board.replace(
                     ':boardId',
                     newMode ? '' : boardId,
                   )}
-                  component={RouteLink}
-                  underline='none'
+                  underline={false}
                 >
-                  <Button variant='outlined' size='small'>
+                  <Button variant='outlined' size='xs'>
                     Cancel
                   </Button>
                 </Link>
               </div>
             ) : (
               <Link
+                css={{ display: 'flex' }}
                 to={PathEnum.Board_Edit.replace(':boardId', boardId)}
-                component={RouteLink}
-                underline='none'
+                underline={false}
               >
-                <Button variant='outlined' size='small'>
-                  Edit{' '}
-                  <Icon name='edit' style={{ marginLeft: 5 }} fontSize={12} />
+                <Button variant='outlined' size='xs' rightIcon={<IconPencil />}>
+                  Edit
                 </Button>
               </Link>
             )}
-          </AppBar>
+          </TopBar>
         )}
         <BusyLoaderWrapper
           isLoading={pyodideIsLoading || isLoading}
@@ -267,8 +295,8 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
                   <Editor
                     language='python'
                     height='100%'
-                    value={editorValue.current}
-                    onChange={(v) => (editorValue.current = v!)}
+                    value={editorRef.current?.getValue() ?? data.code}
+                    onMount={handleEditorMount}
                     loading={<span />}
                     options={{
                       tabSize: 4,
@@ -322,6 +350,7 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
           data={notifyData}
         />
       )}
+      {(editMode || newMode) && <BoardLeavingGuard data={data.code} />}
     </ErrorBoundary>
   );
 }
