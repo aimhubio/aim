@@ -22,9 +22,9 @@ jobs:
           git checkout nightly
           git pull --rebase
           git merge main --strategy-option theirs
-          git checkout main -- ./aim/VERSION
-          . ./.github/scripts/override-version.sh
-          git add ./aim/VERSION
+          git checkout main -- ./src/aim/VERSION
+          . ./.github/workflow_files/override-version.sh
+          git add ./src/aim/VERSION
           git commit -m "Update VERSION file"
           git push
 
@@ -46,16 +46,16 @@ jobs:
       - name: install deps
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -r requirements.dev.txt
-          python -m pip install -r tests/requirements.txt
+          python -m pip install -r ./.github/workflow_files/requirements.txt
+          python -m pip install -r tests/unit_tests/requirements.txt
 
       - name: code style checks
         run: |
-          flake8 aim
+          flake8 src/aim
 
       - name: unit-tests
         run: |
-          pytest tests || pytest --lf tests
+          pytest tests/unit_tests || pytest --lf tests/unit_tests
 
   trigger-packaging-workflow:
     needs: version-override

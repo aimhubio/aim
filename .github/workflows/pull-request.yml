@@ -7,15 +7,14 @@ on:
       - release/**
       - feature/**
     paths:
-      - 'aim/cli/**'
-      - 'aim/ext/**'
-      - 'aim/sdk/**'
-      - 'aim/web/api/**'
-      - 'aim/storage/**'
-      - 'aim/utils/**'
+      - 'src/aim/cli/**'
+      - 'src/aim/ext/**'
+      - 'src/aim/sdk/**'
+      - 'src/aim/web/api/**'
+      - 'src/aim/core/storage/**'
+      - 'src/aim/utils/**'
       - '.github/workflows/pull-request.yml'
       - 'tests/**'
-      - 'performance_tests/**'
       - 'setup.py'
     types:
       - opened
@@ -52,16 +51,18 @@ jobs:
       - name: install deps
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -r requirements.dev.txt
-          python -m pip install -r tests/requirements.txt
+          python -m pip install -r ./.github/workflow_files/requirements.txt
+          python -m pip install -r tests/unit_tests/requirements.txt
 
       - name: code style checks
         run: |
-          flake8 aim
+          flake8 src
+          flake8 pkgs
+          flake8 tests
 
       - name: unit-tests
         run: |
-          pytest --cov-report term --cov-branch --cov-fail-under=50 --cov=aim/web --cov=aim/storage --cov=aim/sdk tests
+          pytest tests/unit_tests --cov-config=pyproject.toml --cov=aim --cov-report=term --cov-fail-under=50
 
   storage-performance-checks:
     needs: run-checks
@@ -80,12 +81,12 @@ jobs:
           python3 -m venv venv
           . venv/bin/activate
           python -m pip install --upgrade pip
-          python -m pip install -r requirements.dev.txt
-          python -m pip install -r performance_tests/requirements.txt
+          python -m pip install -r ./.github/workflow_files/requirements.txt
+          python -m pip install -r tests/perf_tests/requirements.txt
 
       - name: perf tests
         run: |
           . venv/bin/activate
           export AWS_ACCESS_KEY_ID=${{ secrets.AIM_LOGS_AWS_ACCESS_KEY_ID }}
           export AWS_SECRET_ACCESS_KEY=${{ secrets.AIM_LOGS_AWS_SECRET_ACCESS_KEY }}
-          pytest performance_tests || pytest --lf performance_tests
+          pytest tests/perf_tests || pytest --lf tests/perf_tests
