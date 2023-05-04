@@ -9,20 +9,19 @@ from aim.storage.types import BLOB
 logger = logging.getLogger(__name__)
 
 
-@CustomObject.alias('aim.geometry')
-class Geometry(CustomObject):
-    """Geometry object used to store geometry objects in Aim repository..
+@CustomObject.alias('aim.figure3d')
+class Figure3D(CustomObject):
+    """Figure3D object used to store 3-dimensional objects in Aim repository..
 
-    Currently, geometry formats are limited to mp3, wav, flac
+    Currently, 3D figure formats are limited to stl and obj
 
     Args:
-         data: file path, bytes, io.BaseIO or numpy.array (only for WAV)
-         format (:obj:`str`): Format of the geometry source
-         rate (:obj:`int`): Rate of the geometry file, for WAV defaults to 22500
-         caption (:obj:`str`, optional): Optional geometry caption. '' by default.
+         data: file path, bytes or io.BaseIO
+         format (:obj:`str`): Format of the 3D object source
+         caption (:obj:`str`, optional): Optional 3D object caption. '' by default.
     """
 
-    AIM_NAME = 'aim.geometry'
+    AIM_NAME = 'aim.figure3d'
 
     # supported geo formats
     UNKNOWN = ''
@@ -31,7 +30,7 @@ class Geometry(CustomObject):
 
     geometry_formats = (STL, OBJ)
 
-    def __init__(self, data, format: str = '', caption: str = '', rate: int = None):
+    def __init__(self, data, format: str = '', caption: str = ''):
         super().__init__()
 
         geometry_format = format.lower()
@@ -60,7 +59,7 @@ class Geometry(CustomObject):
         self._prepare(data, **extra)
 
     def json(self):
-        """Dump geometry metadata to a dict"""
+        """Dump figure metadata to a dict"""
         return {
             'caption': self.storage['caption'],
             'format': self.storage['format']

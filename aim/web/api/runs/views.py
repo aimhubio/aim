@@ -8,7 +8,7 @@ from aim.web.api.runs.object_views import (
     DistributionApiConfig,
     AudioApiConfig,
     FigureApiConfig,
-    GeometryApiConfig
+    Figure3DApiConfig
 )
 from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
 from typing import Optional, Tuple
@@ -414,4 +414,4 @@ def add_api_routes():
     DistributionApiConfig.register_endpoints(runs_router)
     AudioApiConfig.register_endpoints(runs_router)
     FigureApiConfig.register_endpoints(runs_router)
-    GeometryApiConfig.register_endpoints(runs_router)
+    Figure3DApiConfig.register_endpoints(runs_router)

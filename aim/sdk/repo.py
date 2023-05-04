@@ -636,9 +636,9 @@ class Repo:
         from aim.sdk.sequences.figure_sequence import Figures
         return QuerySequenceCollection(repo=self, seq_cls=Figures, query=query, report_mode=report_mode)
     
-    def query_geometry_objects(self,
-                             query: str = '',
-                             report_mode: QueryReportMode = QueryReportMode.PROGRESS_BAR) -> QuerySequenceCollection:
+    def query_figure3d_objects(self,
+                               query: str = '',
+                               report_mode: QueryReportMode = QueryReportMode.PROGRESS_BAR) -> QuerySequenceCollection:
         """Get Figures collections satisfying query expression.
 
         Args:
@@ -649,8 +649,8 @@ class Repo:
             :obj:`SequenceCollection`: Iterable for Figure sequences matching query expression.
         """
         self._prepare_runs_cache()
-        from aim.sdk.sequences.geometry_sequence import Geometries
-        return QuerySequenceCollection(repo=self, seq_cls=Geometries, query=query, report_mode=report_mode)
+        from aim.sdk.sequences.figure3d_sequence import Figures3D
+        return QuerySequenceCollection(repo=self, seq_cls=Figures3D, query=query, report_mode=report_mode)
 
     def query_distributions(self,
                             query: str = '',
