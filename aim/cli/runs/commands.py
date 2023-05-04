@@ -5,21 +5,14 @@ import tqdm
 from multiprocessing.pool import ThreadPool
 from psutil import cpu_count
 
-from aim.cli.runs.utils import list_repo_runs, match_runs, make_zip_archive, upload_repo_runs, optimize_container
+from aim.cli.runs.utils import match_runs, make_zip_archive, upload_repo_runs
 from aim.sdk.repo import Repo
-from aim.sdk.lock_manager import LockManager
-from aim.sdk.index_manager import RepoIndexManager
 
 
 @click.group()
 @click.option('--repo', required=False,
               default=os.getcwd(),
-              type=click.Path(
-                  exists=True,
-                  file_okay=False,
-                  dir_okay=True,
-                  writable=True
-              ))
+              type=str)
 @click.pass_context
 def runs(ctx, repo):
     """Manage runs in aim repository."""
@@ -32,11 +25,13 @@ def runs(ctx, repo):
 def list_runs(ctx):
     """List Runs available in Repo."""
     repo_path = ctx.obj['repo']
-    if not Repo.exists(repo_path):
-        click.echo(f'\'{repo_path}\' is not a valid aim repo.')
-        exit(1)
+    if not Repo.is_remote_path(repo_path):
+        if not Repo.exists(repo_path):
+            click.echo(f'\'{repo_path}\' is not a valid aim repo.')
+            exit(1)
 
-    run_hashes = list_repo_runs(repo_path)
+    repo = Repo.from_path(repo_path)
+    run_hashes = repo.list_all_runs()
 
     click.echo('\t'.join(run_hashes))
     click.echo(f'Total {len(run_hashes)} runs.')
@@ -54,7 +49,7 @@ def remove_runs(ctx, hashes, yes):
     repo_path = ctx.obj['repo']
     repo = Repo.from_path(repo_path)
 
-    matched_hashes = match_runs(repo_path, hashes)
+    matched_hashes = match_runs(repo, hashes)
     if yes:
         confirmed = True
     else:
@@ -72,13 +67,7 @@ def remove_runs(ctx, hashes, yes):
 
 
 @runs.command(name='cp')
-@click.option('--destination', required=True,
-              type=click.Path(
-                  exists=True,
-                  file_okay=False,
-                  dir_okay=True,
-                  writable=True
-              ))
+@click.option('--destination', required=True, type=str)
 @click.argument('hashes', nargs=-1, type=str)
 @click.pass_context
 def copy_runs(ctx, destination, hashes):
@@ -90,7 +79,7 @@ def copy_runs(ctx, destination, hashes):
     source_repo = Repo.from_path(source)
     destination_repo = Repo.from_path(destination)
 
-    matched_hashes = match_runs(source, hashes)
+    matched_hashes = match_runs(source_repo, hashes)
     success, remaining_runs = source_repo.copy_runs(matched_hashes, destination_repo)
     if success:
         click.echo(f'Successfully copied {len(matched_hashes)} runs.')
@@ -101,12 +90,7 @@ def copy_runs(ctx, destination, hashes):
 
 @runs.command(name='mv')
 @click.option('--destination', required=True,
-              type=click.Path(
-                  exists=True,
-                  file_okay=False,
-                  dir_okay=True,
-                  writable=True
-              ))
+              type=str)
 @click.argument('hashes', nargs=-1, type=str)
 @click.pass_context
 def move_runs(ctx, destination, hashes):
@@ -118,7 +102,7 @@ def move_runs(ctx, destination, hashes):
     source_repo = Repo.from_path(source)
     destination_repo = Repo.from_path(destination)
 
-    matched_hashes = match_runs(source, hashes)
+    matched_hashes = match_runs(source_repo, hashes)
 
     success, remaining_runs = source_repo.move_runs(matched_hashes, destination_repo)
     if success:
@@ -170,23 +154,10 @@ def close_runs(ctx, hashes, yes):
     if not confirmed:
         return
 
-    lock_manager = LockManager(repo.path)
-    index_manager = RepoIndexManager.get_index_manager(repo)
-
-    def close_run(run_hash):
-        if lock_manager.release_locks(run_hash, force=True):
-            # Run rocksdb optimizations if container locks are removed
-            meta_db_path = os.path.join(repo.path, 'meta', 'chunks', run_hash)
-            seqs_db_path = os.path.join(repo.path, 'seqs', 'chunks', run_hash)
-            optimize_container(meta_db_path, extra_options={'compaction': True})
-            optimize_container(seqs_db_path, extra_options={})
-        if index_manager.run_needs_indexing(run_hash):
-            index_manager.index(run_hash)
-
     pool = ThreadPool(cpu_count(logical=False))
 
     for _ in tqdm.tqdm(
-            pool.imap_unordered(close_run, hashes),
+            pool.imap_unordered(repo._close_run, hashes),
             desc='Closing runs',
             total=len(hashes)):
         pass
