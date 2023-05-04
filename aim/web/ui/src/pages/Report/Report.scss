@@ -16,6 +16,7 @@
   }
 }
 .Report__appBar__controls {
+  display: flex;
   > * {
     margin-left: $space-xxs;
   }
@@ -23,7 +24,7 @@
 
 .ReportVisualizer {
   width: 100%;
-  height: calc(100vh - 40px);
+  height: calc(100vh - 28px);
   max-width: 100%;
   overflow: hidden;
 }
@@ -45,7 +46,8 @@
   flex-direction: column;
   background-color: #fff;
 
-  .monaco-editor-background, .monaco-editor .margin {
+  .monaco-editor-background,
+  .monaco-editor .margin {
     background-color: #fff;
   }
 }

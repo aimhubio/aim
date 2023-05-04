@@ -1,15 +1,15 @@
 import React from 'react';
 import { Prompt, useHistory } from 'react-router-dom';
 
-import ConfirmModal from 'components/ConfirmModal/ConfirmModal';
-import { Icon } from 'components/kit';
+import { IconAlertTriangle } from '@tabler/icons-react';
+
+import { Dialog } from 'components/kit_v2';
 
 import { IRouteLeavingGuardProps } from './RouteLeavingGuard.d';
 
 function RouteLeavingGuard({
   when,
   message = 'Changes you made may not be saved.',
-  confirmBtnText = 'Leave',
 }: IRouteLeavingGuardProps) {
   const [openModal, setOpenModal] = React.useState<boolean>(false);
   const [nextLocation, setNextLocation] = React.useState<string>('');
@@ -67,15 +67,17 @@ function RouteLeavingGuard({
   return (
     <>
       <Prompt when={when} message={handleBlockedNavigation} />
-      <ConfirmModal
-        open={openModal}
-        onCancel={closeModal}
-        onSubmit={handleConfirm}
-        text={message}
-        icon={<Icon name='warning-contained' />}
-        statusType='warning'
-        confirmBtnText={confirmBtnText}
+      <Dialog
         title='Are you sure'
+        onOpenChange={(val) => {
+          if (!val) {
+            closeModal();
+          }
+        }}
+        open={openModal}
+        titleIcon={<IconAlertTriangle />}
+        onConfirm={handleConfirm}
+        description={message}
       />
     </>
   );

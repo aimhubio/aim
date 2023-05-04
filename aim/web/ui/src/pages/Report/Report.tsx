@@ -1,21 +1,23 @@
 import * as React from 'react';
 import ReactMarkdown from 'react-markdown';
 import classNames from 'classnames';
-import { Link as RouteLink } from 'react-router-dom';
 
-import { Link } from '@material-ui/core';
 import Editor from '@monaco-editor/react';
+import { IconPencil } from '@tabler/icons-react';
 
-import { Button, Icon, Spinner } from 'components/kit';
+import { Spinner } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
-import AppBar from 'components/AppBar/AppBar';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import CodeBlock from 'components/CodeBlock/CodeBlock';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 import SplitPane, { SplitPaneItem } from 'components/SplitPane';
 import ResizingFallback from 'components/ResizingFallback';
+import RouteLeavingGuard from 'components/RouteLeavingGuard';
+import { Box, Button, Link } from 'components/kit_v2';
+import Breadcrumb from 'components/kit_v2/Breadcrumb';
 
 import { PathEnum } from 'config/enums/routesEnum';
+import { TopBar } from 'config/stitches/foundations/layout';
 
 import Board from 'pages/Board/Board';
 
@@ -75,7 +77,14 @@ function Report({
     <ErrorBoundary>
       <section className='Report'>
         {!previewMode && (
-          <AppBar title={data.name} className='Report__appBar'>
+          <TopBar className='Report__appBar'>
+            <Box flex='1 100%'>
+              <Breadcrumb
+                customRouteValues={{
+                  [`/reports/${reportId}`]: data.name,
+                }}
+              />
+            </Box>
             {editMode || newMode ? (
               <div className='Report__appBar__controls'>
                 <SaveReport
@@ -84,31 +93,30 @@ function Report({
                   initialState={data}
                 />
                 <Link
+                  css={{ display: 'flex' }}
                   to={PathEnum.Report.replace(
                     ':reportId',
                     newMode ? '' : reportId,
                   )}
-                  component={RouteLink}
-                  underline='none'
+                  underline={false}
                 >
-                  <Button variant='outlined' size='small'>
+                  <Button variant='outlined' size='xs'>
                     Cancel
                   </Button>
                 </Link>
               </div>
             ) : (
               <Link
+                css={{ display: 'flex' }}
                 to={PathEnum.Report_Edit.replace(':reportId', reportId)}
-                component={RouteLink}
-                underline='none'
+                underline={false}
               >
-                <Button variant='outlined' size='small'>
-                  Edit{' '}
-                  <Icon name='edit' style={{ marginLeft: 5 }} fontSize={12} />
+                <Button variant='outlined' size='xs' rightIcon={<IconPencil />}>
+                  Edit
                 </Button>
               </Link>
             )}
-          </AppBar>
+          </TopBar>
         )}
         <BusyLoaderWrapper isLoading={isLoading} height={'100%'}>
           <div className='ReportVisualizer'>
@@ -165,6 +173,9 @@ function Report({
           </div>
         </BusyLoaderWrapper>
       </section>
+      {(editMode || newMode) && (
+        <RouteLeavingGuard when={value !== data.code} />
+      )}
       {notifyData?.length > 0 && (
         <NotificationContainer
           handleClose={onNotificationDelete}
@@ -175,4 +186,5 @@ function Report({
   );
 }
 
+Report.displayName = 'Report';
 export default Report;

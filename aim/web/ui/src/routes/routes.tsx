@@ -138,7 +138,7 @@ export const explorersRoutes: { [key: string]: IRoute } = {
     icon: 'metrics',
     isExact: true,
     title: pageTitlesEnum.METRICS_EXPLORER,
-    color: '$purple',
+    color: '#7A4CE0',
     category: ExplorersCatsEnum.Trainings,
   },
   PARAMS: {
@@ -151,7 +151,7 @@ export const explorersRoutes: { [key: string]: IRoute } = {
     icon: 'params',
     isExact: true,
     title: pageTitlesEnum.PARAMS_EXPLORER,
-    color: '$red',
+    color: '#AF4EAB',
     category: ExplorersCatsEnum.Trainings,
   },
   TEXT_EXPLORER: {
@@ -164,7 +164,7 @@ export const explorersRoutes: { [key: string]: IRoute } = {
       'Text Explorer offers visualization of text inputs and outputs in NLP-related experiments.',
     isExact: true,
     title: pageTitlesEnum.TEXT_EXPLORER,
-    color: '$pink',
+    color: '#E149A0',
     category: ExplorersCatsEnum.Trainings,
   },
   PROMPTS_EXPLORER: {
@@ -177,7 +177,7 @@ export const explorersRoutes: { [key: string]: IRoute } = {
       'Prompts Explorer enables visualization of LLMs prompts and agents actions in AI systems execution.',
     isExact: true,
     title: pageTitlesEnum.PROMPTS_EXPLORER,
-    color: '$primary',
+    color: '#1473E6',
     category: ExplorersCatsEnum.Prompts,
   },
   IMAGE_EXPLORE: {
@@ -190,7 +190,7 @@ export const explorersRoutes: { [key: string]: IRoute } = {
     icon: 'images',
     isExact: true,
     title: pageTitlesEnum.IMAGES_EXPLORER,
-    color: '$orange',
+    color: '#F17922',
     category: ExplorersCatsEnum.Trainings,
   },
   FIGURES_EXPLORER: {
@@ -203,7 +203,7 @@ export const explorersRoutes: { [key: string]: IRoute } = {
       'Figures Explorer enables easy comparison of hundreds of Plotly figures.',
     isExact: true,
     title: pageTitlesEnum.FIGURES_EXPLORER,
-    color: '$yellow',
+    color: '#18AB6D',
     category: ExplorersCatsEnum.Trainings,
   },
   AUDIOS_EXPLORER: {
@@ -216,7 +216,7 @@ export const explorersRoutes: { [key: string]: IRoute } = {
       'Audio Explorer enables analysis of audio objects in speech-to-text or other speech-related tasks.',
     isExact: true,
     title: pageTitlesEnum.AUDIOS_EXPLORER,
-    color: '$green',
+    color: '#FCB500',
     category: ExplorersCatsEnum.Trainings,
   },
   SCATTERS: {
@@ -229,7 +229,7 @@ export const explorersRoutes: { [key: string]: IRoute } = {
     icon: 'scatterplot',
     isExact: true,
     title: pageTitlesEnum.SCATTERS_EXPLORER,
-    color: '$primary',
+    color: '#606986',
     category: ExplorersCatsEnum.Trainings,
   },
   METRICS_EXPLORER: {
@@ -243,7 +243,7 @@ export const explorersRoutes: { [key: string]: IRoute } = {
     isExact: true,
     title: pageTitlesEnum.METRICS_EXPLORER_V2,
     status: RouteStatusEnum.NEW,
-    color: '$purple',
+    color: '#7A4CE0',
     category: ExplorersCatsEnum.Trainings,
   },
 };

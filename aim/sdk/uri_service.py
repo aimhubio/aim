@@ -1,10 +1,10 @@
 from cryptography.fernet import Fernet
+from collections import defaultdict
 from typing import Iterator, List, Optional, Dict
 from typing import TYPE_CHECKING
 
 from aim.storage.encoding import encode_path, decode_path
 from aim.storage.types import BLOB
-from aim.sdk.repo import ContainerConfig
 
 if TYPE_CHECKING:
     from aim.storage.types import AimObjectPath
@@ -23,7 +23,7 @@ class URIService:
 
     def __init__(self, repo: 'Repo'):
         self.repo = repo
-        self.container_persistent_pool = dict()
+        self.runs_pool = defaultdict(list)
 
     @classmethod
     def generate_uri(cls, repo: 'Repo', run_name: str, sub_name: str, resource_path: str = None) -> str:
@@ -48,29 +48,33 @@ class URIService:
     def request_batch(self, uri_batch: List[str]) -> Iterator[Dict[str, bytes]]:
         for uri in uri_batch:
             run_name, sub_name, resource_path = self.decode_uri(self.repo, uri)
-            container = self._get_container(run_name, sub_name)
-            resource_path = decode_path(bytes.fromhex(resource_path))
+            self.runs_pool[run_name].append((uri, sub_name, resource_path))
 
-            # TODO: [MV] change to some other implementation of view when available
-            #  which won't collect in case of custom objects
-            data = container.tree().subtree(resource_path).collect()
-            if isinstance(data, BLOB):
-                data = data.load()
-            yield {uri: data}
+        for run_name in self.runs_pool.keys():
+            run_containers = {}
+            for uri, sub_name, resource_path in self.runs_pool[run_name]:
+                container = run_containers.get(sub_name)
+                if not container:
+                    container = self._get_container(run_name, sub_name)
+                    run_containers[sub_name] = container
 
-        # clear container pool
-        self.container_persistent_pool.clear()
+                resource_path = decode_path(bytes.fromhex(resource_path))
+
+                # TODO: [MV] change to some other implementation of view when available
+                #  which won't collect in case of custom objects
+                data = container.tree().subtree(resource_path).collect()
+                if isinstance(data, BLOB):
+                    data = data.load()
+                yield {uri: data}
+            del run_containers
+
+        # clear runs pool
+        self.runs_pool.clear()
 
     def _get_container(self, run_name: str, sub_name: str):
-        config = ContainerConfig(run_name, sub_name, read_only=True)
-        container = self.container_persistent_pool.get(config)
-
-        if not container:
-            if sub_name == 'meta':
-                container = self.repo.request(sub_name, run_name, from_union=True, read_only=True)
-            else:
-                container = self.repo.request(sub_name, run_name, read_only=True)
-
-            self.container_persistent_pool[config] = container
+        if sub_name == 'meta':
+            container = self.repo.request(sub_name, run_name, from_union=True, read_only=True)
+        else:
+            container = self.repo.request(sub_name, run_name, read_only=True)
 
         return container

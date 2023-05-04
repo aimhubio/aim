@@ -2,7 +2,7 @@ import { styled } from 'config/stitches';
 import { LayoutContainer } from 'config/stitches/foundations/layout';
 
 const ReportsContainer = styled(LayoutContainer, {
-  $$space: '$space$13',
+  $$space: '$space$15',
   py: '$$space',
   height: 'calc(100vh - $$space)',
   overflowY: 'auto',
