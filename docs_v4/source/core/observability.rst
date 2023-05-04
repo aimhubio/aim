@@ -6,7 +6,7 @@ Observability
 - `Reports <./components/collection.html>`_: Create custom reports to document insights and progress
 
 .. toctree::
-  :maxdepth: 4
+  :maxdepth: 2
   :caption: Observability
   :name: observability
 

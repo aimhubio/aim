@@ -1,5 +1,6 @@
-Welcome to Aim
-==============
+===============
+ Welcome to Aim
+===============
 
 Aim is a framework for developing loggers for any use-case.
 There are 3 main layers, where Aim provides support:
@@ -42,8 +43,8 @@ Checkout the below guide for a walk-through of how to get started using Aim to c
   quick_start/integrations.rst
   quick_start/next_steps.rst
 
-Core
------
+Core Concepts
+-------------
 
 There are 3 main layers that Aim provides support for.
 For each layer we provide some examples to get started, how-to guides, reference docs, and conceptual guides.
@@ -57,10 +58,12 @@ For each layer we provide some examples to get started, how-to guides, reference
 
 .. toctree::
   :maxdepth: 4
-  :caption: ⚡ Core
+  :caption: ⚡ Core Concepts
   :name: core
 
+  ./core/overview.rst
   ./core/logging.rst
+  ./core/search.rst
   ./core/automations.rst
   ./core/observability.rst
 
@@ -102,6 +105,34 @@ Reference
   refs/sdk.rst
   refs/ui.rst
 
+Community
+---------
+
+Community guides
+
+.. toctree::
+  :maxdepth: 1
+  :caption:  Community
+  :name: community
+
+  ./community/CHANGELOG.md
+  ./community/CONTRIBUTING.md
+  ./community/CODE_OF_CONDUCT.md
+
+
+Browse
+------
+
+.. toctree::
+  :maxdepth: 1
+  :caption:  Browse
+  :name: browse
+
+  ./browse/glossary.rst
+  ./browse/genindex.rst
+  ./browse/modindex.rst
+
+
 Resources
 ---------
 
@@ -110,20 +141,12 @@ Resources
   :caption: 🔗 Resources
   :name: resources
 
-  ./resources/glossary.rst
-  generated/CHANGELOG.md
   Aim repo <https://github.com/aimhubio/aim>
   AimStack repo <https://github.com/aimhubio/aimstack>
   Discord <https://community.aimstack.io>
   Twitter <https://twitter.com/aimstackio>
   Blog <https://aimstack.io/blog>
   Website <https://aimstack.io>
-
-Indices and Tables
-------------------
-
-- :ref:`genindex`
-- :ref:`modindex`
 
 
 TODO

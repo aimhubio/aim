@@ -8,7 +8,7 @@ Log any type of data from anywhere using Aim building blocks.
 - `Collection <./components/collection.html>`_: Collections of Sequences and Objects.
 
 .. toctree::
-  :maxdepth: 4
+  :maxdepth: 2
   :caption: Logging
   :name: logging
 
