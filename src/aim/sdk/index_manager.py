@@ -13,7 +13,7 @@ from typing import Iterable
 
 from aim.sdk.repo import Repo
 from aim.sdk.run_status_watcher import Event
-from aim.storage.locking import RefreshLock
+from aim.core.storage.locking import RefreshLock
 
 logger = logging.getLogger(__name__)
 
