@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.17.6 
+- Switch to patched version of official `pynvml` (mihran113)
+
 ## 3.17.5 Jun 2, 2023
 
 - Fix gpu stat collection when driver is not loaded (mihran113)
