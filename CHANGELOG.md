@@ -14,7 +14,8 @@
 
 ### Fixes
 
--  Convert NaNs and Infs in responses to strings (n-gao)
+- Convert NaNs and Infs in responses to strings (n-gao)
+- Import `Image` and `Audio` for `TensorboardFolderTracker` (alansaul)
 
 ## 3.17.4  May 4, 2023
 
