@@ -1,6 +1,6 @@
 @use 'src/styles/abstracts' as *;
 
-.GeometriesVisualizer {
+.Figures3DVisualizer {
   height: 100%;
   padding: toRem(10px);
   overflow: auto;
@@ -13,7 +13,7 @@
   }
 }
 
-.GeometriesVisualizer__recordCnt__loader {
+.Figures3DVisualizer__recordCnt__loader {
     position: absolute;
     width: 100%;
     height: 100%;

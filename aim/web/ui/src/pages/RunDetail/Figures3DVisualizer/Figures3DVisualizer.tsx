@@ -13,7 +13,7 @@ import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 import { Spinner } from 'components/kit';
 
 import blobsURIModel from 'services/models/media/blobsURIModel';
-import geometriesExploreService from 'services/api/geometriesExplore/geometriesExploreService';
+import figures3dExploreService from 'services/api/figures3d/figures3dService';
 
 import {
   decodeBufferPairs,
@@ -22,12 +22,12 @@ import {
 } from 'utils/encoder/streamEncoding';
 import arrayBufferToBase64 from 'utils/arrayBufferToBase64';
 
-import { IGeometriesVisualizerProps } from '../types';
+import { IFigures3DVisualizerProps } from '../types';
 
-import './GeometriesVisualizer.scss';
+import './Figures3DVisualizer.scss';
 
 function buildScene(
-  geometryBlob: any,
+  figure3dBlob: any,
   format: string,
   canvas: HTMLCanvasElement,
 ) {
@@ -75,7 +75,7 @@ function buildScene(
     console.log('File Format Not Supported');
   }
 
-  const geometry = loader.parse(atob(geometryBlob));
+  const geometry = loader.parse(atob(figure3dBlob));
 
   // OBJ Files:
   if (geometry && geometry instanceof THREE.Group) {
@@ -148,8 +148,8 @@ function buildScene(
   window.addEventListener('resize', onWindowResize);
 }
 
-function getGeometriesBlobsData(uris: string[]) {
-  const request = geometriesExploreService.getGeometriesByURIs(uris);
+function getFigures3DBlobsData(uris: string[]) {
+  const request = figures3dExploreService.getFigures3DByURIs(uris);
   return {
     abort: request.abort,
     call: () => {
@@ -166,7 +166,7 @@ function getGeometriesBlobsData(uris: string[]) {
             });
           }
         })
-        .catch((ex) => {
+        .catch((ex: any) => {
           if (ex.name === 'AbortError') {
             // Abort Error
           } else {
@@ -178,41 +178,46 @@ function getGeometriesBlobsData(uris: string[]) {
   };
 }
 
-function GeometriesVisualizer(
-  props: IGeometriesVisualizerProps,
+function Figures3DVisualizer(
+  props: IFigures3DVisualizerProps,
 ): React.FunctionComponentElement<React.ReactNode> {
   const { data, isLoading } = props;
-  const [geometryBlob, setGeometryBlob] = React.useState('');
-  const [geometryBlobFormat, setGeometryBlobFormat] = React.useState('');
   const [loadingScene, setLoadingScene] = React.useState(true);
 
   React.useEffect(() => {
+    let blobURI = data?.originalValue?.blob_uri;
+    let requestRef = getFigures3DBlobsData([blobURI]);
+
     async function fetchData() {
-      let blobURI = data?.geometriesSetData?.[' = 1'][0].blob_uri;
-      setGeometryBlobFormat(data?.geometriesSetData?.[' = 1'][0].format);
-      if (blobURI !== undefined) {
-        let requestRef = getGeometriesBlobsData([blobURI]);
-        await requestRef.call();
-        setGeometryBlob(blobsURIModel.getState()[blobURI]);
-        return () => {
-          requestRef.abort();
-        };
-      }
+      await requestRef.call();
+      build3DScene(
+        blobsURIModel.getState()[blobURI],
+        data.originalValue.format,
+      );
     }
-    fetchData();
+    if (blobURI) {
+      fetchData();
+    }
+    return () => {
+      if (requestRef) {
+        requestRef.abort();
+      }
+    };
   }, [data]);
 
   const canvasRef = React.useRef(null);
-  React.useEffect(() => {
-    if (geometryBlob !== '') {
+
+  const build3DScene = React.useCallback((figure3dBlob, figure3dBlobFormat) => {
+    if (figure3dBlob) {
+      setLoadingScene(true);
       let canvas: HTMLCanvasElement | null = document.querySelector('#geo');
       if (!canvas) {
         return;
       }
-      buildScene(geometryBlob, geometryBlobFormat, canvas);
+      buildScene(figure3dBlob, figure3dBlobFormat, canvas);
       setLoadingScene(false);
     }
-  }, [geometryBlob, geometryBlobFormat]);
+  }, []);
 
   return (
     <ErrorBoundary>
@@ -220,13 +225,13 @@ function GeometriesVisualizer(
         className='VisualizationLoader'
         isLoading={!!isLoading}
       >
-        <div className='GeometriesVisualizer'>
-          {_.isEmpty(props.data?.geometriesSetData) ? (
-            <IllustrationBlock size='xLarge' title='No Tracked Figures' />
+        <div className='Figures3DVisualizer'>
+          {!data?.originalValue?.blob_uri ? (
+            <IllustrationBlock size='xLarge' title='No Tracked Figures 3D' />
           ) : (
-            <div className='GeometriesVisualizer__recordCnt'>
+            <div className='Figures3DVisualizer__recordCnt'>
               {loadingScene && (
-                <div className='GeometriesVisualizer__recordCnt__loader'>
+                <div className='Figures3DVisualizer__recordCnt__loader'>
                   <Spinner />
                 </div>
               )}
@@ -239,6 +244,6 @@ function GeometriesVisualizer(
   );
 }
 
-GeometriesVisualizer.displayName = 'GeometriesVisualizer';
+Figures3DVisualizer.displayName = 'Figures3DVisualizer';
 
-export default memo<IGeometriesVisualizerProps>(GeometriesVisualizer);
+export default memo<IFigures3DVisualizerProps>(Figures3DVisualizer);

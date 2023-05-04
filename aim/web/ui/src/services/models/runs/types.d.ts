@@ -32,7 +32,7 @@ export type TraceType =
   | 'texts'
   | 'videos'
   | 'figures'
-  | 'geometries'
+  | 'figures3d'
   | 'metric';
 
 /**

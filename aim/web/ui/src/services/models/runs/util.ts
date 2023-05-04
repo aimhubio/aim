@@ -454,60 +454,19 @@ export function processPlotlyData(data: Partial<IPlotlyData>) {
   };
 }
 
-export function processGeometriesData(
-  data: Partial<ImagesData>,
-  params?: { [key: string]: unknown },
-) {
-  const {
-    record_range_total,
-    iters,
-    values,
-    index_range_total,
-    context,
-    name,
-  } = data;
-  const groupingSelectOptions = params
-    ? getGroupingSelectOptions({
-        params: getObjectPaths(params, params),
-        sequenceName: 'geometries',
-      })
-    : [];
-  let geometriesSetData: any[] = [];
+/**
+ * process figures3d data
+ */
+export function processFigures3DData(data: any) {
+  const { record_range_total, iters, values } = data;
 
-  values?.forEach((stepData: IImageData[], stepIndex: number) => {
-    stepData.forEach((geometry: IImageData) => {
-      const geometryKey = encode({
-        name,
-        traceContext: context,
-        index: geometry.index,
-        step: iters?.[stepIndex],
-        caption: geometry.caption,
-      });
-      const seqKey = encode({
-        name,
-        traceContext: context,
-      });
-      geometriesSetData.push({
-        ...geometry,
-        geometry_name: name,
-        step: iters?.[stepIndex],
-        context: context,
-        key: geometryKey,
-        seqKey: seqKey,
-      });
-    });
-  });
-  const { mediaSetData, orderedMap } = getDataAsMediaSetNestedObject({
-    data: groupData(_.orderBy(geometriesSetData)),
-    groupingSelectOptions,
-    defaultGroupFields: ['step'],
-  });
+  let originalValue = values[0][0];
+
   return {
-    geometriesSetData: mediaSetData,
-    orderedMap,
+    iters,
     record_range: [record_range_total?.[0], (record_range_total?.[1] || 0) - 1],
-    index_range: [index_range_total?.[0], (index_range_total?.[1] || 0) - 1],
-    processedDataType: VisualizationMenuTitles.geometries,
+    originalValue,
+    processedDataType: VisualizationMenuTitles.figures3d,
   };
 }
 
@@ -518,5 +477,5 @@ export const VisualizationMenuTitles = {
   videos: 'Videos',
   texts: 'Texts',
   figures: 'Plotly',
-  geometries: 'Geometries',
+  figures3d: 'Figures3D',
 };

@@ -21,7 +21,7 @@ export enum AppNameEnum {
   IMAGES = 'images',
   SCATTERS = 'scatters',
   FIGURES = 'figures',
-  GEOMETRIES = 'geometries',
+  FIGURES3D = 'figures3d',
   AUDIOS = 'audios',
   TEXT = 'text',
 }

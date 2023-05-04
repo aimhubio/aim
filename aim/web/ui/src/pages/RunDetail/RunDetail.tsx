@@ -93,7 +93,7 @@ const tabs: Record<string, string> = {
   audios: 'Audios',
   texts: 'Texts',
   figures: 'Figures',
-  geometries: 'Geometries',
+  figures3d: 'Figures 3D',
   settings: 'Settings',
 };
 
@@ -206,10 +206,10 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
         traceInfo={runData?.runTraces}
       />
     ),
-    geometries: (
+    figures3d: (
       <TraceVisualizationContainer
         runHash={runHash}
-        traceType='geometries'
+        traceType='figures3d'
         traceInfo={runData?.runTraces}
       />
     ),

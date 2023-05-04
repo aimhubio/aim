@@ -11,7 +11,7 @@ export default function getGroupingSelectOptions({
   params: string[];
   runProps?: string[];
   contexts?: string[];
-  sequenceName?: null | 'metric' | 'images' | 'audios' | 'geometries';
+  sequenceName?: null | 'metric' | 'images' | 'audios' | 'figures3d';
 }): IGroupingSelectOption[] {
   let options = [
     {

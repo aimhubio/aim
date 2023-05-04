@@ -7,7 +7,7 @@ import {
   processTextsData,
   processPlotlyData,
   processAudiosData,
-  processGeometriesData,
+  processFigures3DData,
 } from './util';
 
 type InputItem = {
@@ -183,34 +183,41 @@ const settings: Record<string, SettingItem> = {
       },
     },
   },
-  geometries: {
-    dataProcessor: processGeometriesData,
+  figures3d: {
+    dataProcessor: processFigures3DData,
+    paramsToApi: (queryData?: QueryData) => {
+      const record_step = queryData?.inputs?.record_range ?? -1;
+      return record_step !== -1
+        ? {
+            record_step,
+            record_density: 1,
+          }
+        : { record_density: 1 };
+    },
+    inputValidation: (min: number | string, max: number | string) => [
+      {
+        errorCondition: (value: string | number) => +value < min,
+        errorText: `Value should be equal or greater then ${min}`,
+      },
+      {
+        errorCondition: (value: string | number) => +value > max,
+        errorText: `Value should be equal or smaller then ${max}`,
+      },
+    ],
     sliders: {
       record_range: {
-        defaultValue: [0, 50],
+        defaultValue: [0, 0],
         tooltip: 'Training step. Increments every time track() is called',
-        title: 'Steps',
-        sliderType: 'range',
+        title: 'Step',
+        sliderType: 'single',
         infoPropertyName: 'step',
-      },
-      index_range: {
-        defaultValue: [0, 50],
-        tooltip: 'Index in the list of geometries passed to track() call',
-        title: 'Indices',
-        sliderType: 'range',
-        infoPropertyName: 'index',
       },
     },
     inputs: {
-      record_density: {
-        defaultValue: 50,
-        title: 'Steps count',
-        tooltip: 'Number of steps to display',
-      },
-      index_density: {
-        defaultValue: 5,
-        title: 'Indices count',
-        tooltip: 'Number of geometries per step',
+      record_range: {
+        defaultValue: -1,
+        tooltip: 'Training step. To see figures3d tracked in the step.',
+        title: 'Step',
       },
     },
   },
