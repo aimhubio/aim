@@ -2,7 +2,13 @@ import { Root, Item, Indicator } from '@radix-ui/react-radio-group';
 
 import { styled } from 'config/stitches';
 
-const StyledRadioGroup = styled(Root, {});
+const StyledRadioGroup = styled(Root, {
+  '&[data-disabled]': {
+    pointerEvents: 'none',
+    userSelect: 'none',
+    opacity: 0.4,
+  },
+});
 
 const IndicatorWrapper = styled('span', {
   all: 'unset',

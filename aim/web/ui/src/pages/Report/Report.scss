@@ -41,8 +41,6 @@
 .ReportVisualizer__main__editor {
   height: 100%;
   position: relative;
-  flex: 0.6;
-  border-right: $border-dark;
   display: flex;
   flex-direction: column;
   background-color: #fff;
@@ -62,7 +60,6 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  width: 60%;
   overflow: auto;
 
   &--fullWidth {
