@@ -35,14 +35,6 @@ class Geometry(CustomObject):
         super().__init__()
 
         geometry_format = format.lower()
-        # if inst_has_typename(data, ['ndarray.numpy']):
-        #     # Currently, only WAV geometry formats are supported for numpy
-        #     geometry_format = self.WAV
-        #     if not rate:
-        #         rate = 22500
-        #         logger.info(f'Parameter "rate" is not provided! Using default: {rate}')
-        #     bs = wavfile.write(rate, data)
-        #     data = bs
 
         # act as a regular file with enforced geometry format definition by user side
         if not geometry_format:
@@ -80,17 +72,6 @@ class Geometry(CustomObject):
         for k, v in extra.items():
             self.storage[k] = v
         self.storage['data'] = BLOB(data=data)
-
-    # def to_numpy(self):
-    #     """
-    #     This method converts WAV to Numpy array.
-    #     Other geometry formats are not supported at this moment.
-
-    #     Returns: numpy array
-    #     """
-    #     assert self.storage['format'] == self.WAV
-
-    #     return wavfile.read(self.get())
 
     def get(self) -> io.BytesIO:
         """

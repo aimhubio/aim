@@ -221,10 +221,10 @@ class DistributionInfo(BaseModel):
 class FigureInfo(BaseModel):
     blob_uri: str
 
+
 class GeometryInfo(BaseModel):
     caption: str
     blob_uri: str
-    index: int
 
 
 class NoteIn(BaseModel):
@@ -234,4 +234,3 @@ class NoteIn(BaseModel):
 ImageList = List[ImageInfo]
 TextList = List[TextInfo]
 AudioList = List[AudioInfo]
-GeometryList = List[GeometryInfo]

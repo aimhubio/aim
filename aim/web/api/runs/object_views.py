@@ -15,7 +15,6 @@ from aim.web.api.runs.pydantic_models import (
     ImageList,
     TextList,
     AudioList,
-    GeometryList,
     DistributionInfo,
     FigureInfo,
     GeometryInfo,
@@ -185,7 +184,8 @@ class FigureApiConfig(CustomObjectApiConfig):
     dump_record_fn = lambda x: x.data  # noqa E731
     model = FigureInfo
 
+
 class GeometryApiConfig(CustomObjectApiConfig):
     sequence_type = Geometries
     resolve_blobs = False
-    model = GeometryList
+    model = GeometryInfo

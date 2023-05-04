@@ -10,7 +10,7 @@ class Geometries(MediaSequenceBase):
     @classmethod
     def allowed_dtypes(cls) -> Union[str, Tuple[str, ...]]:
         geometry_typename = Geometry.get_typename()
-        return geometry_typename, f'list({geometry_typename})'
+        return geometry_typename
 
     @classmethod
     def sequence_name(cls) -> str:
