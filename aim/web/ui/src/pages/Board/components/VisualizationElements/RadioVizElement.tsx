@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { Radio, RadioGroup } from 'components/kit_v2';
+import { Radio, RadioGroup, Text } from 'components/kit_v2';
 import { RadioLabel } from 'components/kit_v2/Radio/Radio.style';
 
 function RadioVizElement(props: any) {
@@ -37,7 +37,7 @@ function RadioVizElement(props: any) {
       <RadioLabel htmlFor={value}>{props.options.label}</RadioLabel>
       {options.map((option: string) => (
         <Radio key={option} value={option}>
-          {option}
+          <Text>{option}</Text>
         </Radio>
       ))}
     </RadioGroup>
