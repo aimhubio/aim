@@ -10,6 +10,7 @@
 - Add the ability to create custom UI boards (roubkar, arsengit, KaroMourad)
 - Relocate aim explorers to `Explorers` page (arsengit)
 - Add functionality for custom context in the PyTorch Ignite (tmynn)
+- Extend `aim.ext.tensorboard_tracker.run.Run` to allow stdout logging and system stats and parameter logging (alansaul)
 
 ### Fixes
 
