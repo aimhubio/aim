@@ -1,7 +1,7 @@
 from typing import Any, Callable, Dict, List, Optional, Union
 
 from aim import Run
-from aim.ext.system_info.configs import DEFAULT_SYSTEM_TRACKING_INT
+from aim.ext.system_info import DEFAULT_SYSTEM_TRACKING_INT
 
 try:
     from torch.optim import Optimizer

@@ -28,13 +28,14 @@ from aim.core.storage.treeview import TreeView
 from aim.sdk.context import Context
 from aim.core.storage import treeutils
 
-from aim.ext.system_info import ResourceTracker, DEFAULT_SYSTEM_TRACKING_INT
-from aim.core.cleanup import AutoClean
-from aim.ext.utils import (
+from aim.ext.system_info import (
+    ResourceTracker,
+    DEFAULT_SYSTEM_TRACKING_INT,
     get_environment_variables,
     get_installed_packages,
     get_git_info,
 )
+from aim.core.cleanup import AutoClean
 from aim.ext.exception_resistant import noexcept
 
 from typing import Any, Dict, Iterator, Optional, Tuple, Union

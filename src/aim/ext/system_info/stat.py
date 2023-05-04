@@ -2,8 +2,6 @@ import psutil
 import json
 from typing import List
 
-from aim.ext.system_info.utils import round10e5
-
 import aim.ext.system_info.pynvml as nvml
 
 
@@ -191,3 +189,7 @@ class Stat(object):
             pass
 
         return system, gpus
+
+
+def round10e5(val):
+    return round(val * 10e5) / 10e5

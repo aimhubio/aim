@@ -6,7 +6,7 @@ from stable_baselines3.common.logger import KVWriter, Logger
 from stable_baselines3.common.callbacks import BaseCallback  # type: ignore
 
 from aim.sdk.run import Run
-from aim.ext.system_info.configs import DEFAULT_SYSTEM_TRACKING_INT
+from aim.ext.system_info import DEFAULT_SYSTEM_TRACKING_INT
 
 
 logger = logging.getLogger(__name__)
