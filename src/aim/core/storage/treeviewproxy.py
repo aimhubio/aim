@@ -46,6 +46,7 @@ class ProxyTree(TreeView):
         handler = self._rpc_client.get_resource_handler(self, self.resource_type, args=self.init_args)
 
         self._resources = ProxyTreeAutoClean(self)
+        self._resources.hash = sub
         self._resources.rpc_client = client
         self._resources.handler = handler
         self._handler = handler

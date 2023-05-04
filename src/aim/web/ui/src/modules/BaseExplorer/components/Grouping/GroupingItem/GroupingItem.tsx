@@ -2,7 +2,7 @@ import React from 'react';
 import _ from 'lodash-es';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
-import { Box, ControlsButton, Tooltip, Popover, Text } from 'components/kit_v2';
+import { Box, ControlsButton, Popover, Text } from 'components/kit_v2';
 
 import { PipelineStatusEnum } from 'modules/core/engine/types';
 

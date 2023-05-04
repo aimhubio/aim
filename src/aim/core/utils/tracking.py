@@ -5,7 +5,7 @@ import sys
 import uuid
 import contextlib
 
-import segment.analytics as sa
+import segment.analytics as sa  # noqa
 
 logger = logging.getLogger(__name__)
 
@@ -56,7 +56,7 @@ class Analytics:
                 self.initialize()
                 self._warn_once()
 
-                sa.track(self._user_id, event=event_name, properties=kwargs)
+                # sa.track(self._user_id, event=event_name, properties=kwargs)
             except Exception as e:  # noqa
                 logger.debug(f'Failed to track event {event_name}. Reason: {e}.')
 
@@ -67,11 +67,11 @@ class Analytics:
         segment_logger = logging.getLogger('segment')
         segment_logger.disabled = True
 
-        sa.write_key = Analytics.SEGMENT_WRITE_KEY
-        sa.timeout = 2  # set send request timeout to 2 seconds
-        sa.max_retries = 2  # set maximum send request retries to 2
-
-        sa.identify(user_id=self._user_id)
+        # sa.write_key = Analytics.SEGMENT_WRITE_KEY
+        # sa.timeout = 2  # set send request timeout to 2 seconds
+        # sa.max_retries = 2  # set maximum send request retries to 2
+        #
+        # sa.identify(user_id=self._user_id)
         self.initialized = True
 
     @property

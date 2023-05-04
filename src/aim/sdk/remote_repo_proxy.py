@@ -31,3 +31,18 @@ class RemoteRepoProxy:
 
     def list_active_runs(self):
         return self._rpc_client.run_instruction(-1, self._handler, 'list_active_runs', [])
+
+    def delete_run(self, hash_):
+        return self._rpc_client.run_instruction(-1, self._handler, 'delete_run', [hash_])
+
+    def prune(self):
+        return self._rpc_client.run_instruction(-1, self._handler, 'prune', [])
+
+    def _backup_run(self, hash_):
+        return self._rpc_client.run_instruction(-1, self._handler, '_backup_run', [hash_])
+
+    def _restore_run(self, hash_):
+        return self._rpc_client.run_instruction(-1, self._handler, '_restore_run', [hash_])
+
+    def _close_run(self, hash_):
+        return self._rpc_client.run_instruction(-1, self._handler, '_close_run', [hash_])

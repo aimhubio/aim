@@ -8,7 +8,7 @@ from typing import Iterator, Optional, Tuple
 
 from aim.core.cleanup import AutoClean
 from aim.ext.exception_resistant import exception_resistant
-from aim.core.storage.locking import SoftFileLock, NoopLock, DualLock
+from aim.core.storage.locking import SoftFileLock, NoopLock
 from aim.core.storage.types import BLOB
 from aim.core.storage.container import Container, ContainerKey, ContainerValue, ContainerItemsIterator
 from aim.core.storage.prefixview import PrefixView
@@ -608,9 +608,3 @@ class RocksContainerItemsIterator(ContainerItemsIterator):
             return key, self.container._get_blob(key)
 
         return key, value
-
-
-class LockableRocksContainer(RocksContainer):
-    def get_lock_cls(self):
-        """Use both Unix file-locks and Soft file-locks to cover all the scenarios and avoid corruptions."""
-        return DualLock

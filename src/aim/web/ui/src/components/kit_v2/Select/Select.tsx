@@ -172,7 +172,7 @@ const Select = ({
     <Popover
       popperProps={{
         ...popoverProps,
-        css: { p: '$5 0', ...popoverProps.css },
+        css: { p: '$5 0', ...popoverProps?.css },
       }}
       trigger={({ open }) =>
         typeof trigger === 'function'

@@ -10,10 +10,8 @@ import os
 import weakref
 import queue
 
-from typing import TYPE_CHECKING, Any
-
-if TYPE_CHECKING:
-    from aim import Audio, Image
+from typing import Any
+from aim import Audio, Image
 
 
 class TensorboardTracker:

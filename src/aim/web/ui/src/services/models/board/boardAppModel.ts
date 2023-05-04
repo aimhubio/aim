@@ -58,7 +58,7 @@ function getBoardData(boardId: string) {
 
 async function createBoard(name: string, description: string, code: string) {
   try {
-    await appsService
+    return await appsService
       .createApp({
         state: {
           name,
@@ -73,18 +73,22 @@ async function createBoard(name: string, description: string, code: string) {
       })
       .then((data: any) => {
         model.setState({
-          board: data,
+          board: {
+            ...data,
+            ...data.state,
+          },
         });
-      });
+        onNotificationAdd({
+          notification: {
+            id: Date.now(),
+            severity: 'success',
+            messages: ['Board successfully created'],
+          },
+          model,
+        });
 
-    onNotificationAdd({
-      notification: {
-        id: Date.now(),
-        severity: 'success',
-        messages: ['Board successfully created'],
-      },
-      model,
-    });
+        return data;
+      });
   } catch (err: any) {
     onNotificationAdd({
       notification: {
@@ -109,7 +113,10 @@ async function updateBoard(boardId: string, update: Record<string, unknown>) {
       })
       .then((data: any) => {
         model.setState({
-          board: data,
+          board: {
+            ...data,
+            ...data.state,
+          },
         });
       });
 

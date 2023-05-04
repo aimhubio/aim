@@ -114,6 +114,12 @@ const TextAreaVizElement = React.lazy(
       /* webpackPrefetch: true, webpackChunkName: "TextArea" */ './TextAreaVizElement'
     ),
 );
+const RadioVizElement = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "Radio" */ './RadioVizElement'
+    ),
+);
 
 export type VizElementKey =
   | 'LineChart'
@@ -134,28 +140,37 @@ export type VizElementKey =
   | 'TextInput'
   | 'Button'
   | 'Switch'
-  | 'TextArea';
+  | 'TextArea'
+  | 'Radio';
 
 const VizElementsMap: Record<VizElementKey, React.FunctionComponent<any>> = {
-  LineChart: LineChartVizElement,
+  // input elements
+  Button: ButtonVizElement,
+  TextInput: TextInputVizElement,
+  Switch: SwitchVizElement,
+  TextArea: TextAreaVizElement,
+  Slider: SliderVizElement,
+  Select: SelectVizElement,
+  Radio: RadioVizElement,
+
+  // data display elements
+  Plotly: PlotlyVizElement,
   DataFrame: DataFrameVizElement,
+  JSON: JSONVizElement,
+  HTML: HTMLVizElement,
+  Text: TextVizElement,
+
+  // Aim sequence viz components
+  LineChart: LineChartVizElement,
   Figures: FiguresVizElement,
   Audios: AudiosVizElement,
   Images: ImagesVizElement,
   Texts: TextsVizElement,
-  JSON: JSONVizElement,
-  HTML: HTMLVizElement,
-  Text: TextVizElement,
-  Select: SelectVizElement,
+
+  // Aim high level components
   RunMessages: RunMessagesVizElement,
   RunLogs: RunLogsVizElement,
   RunNotes: RunNotesVizElement,
-  Plotly: PlotlyVizElement,
-  Slider: SliderVizElement,
-  TextInput: TextInputVizElement,
-  Button: ButtonVizElement,
-  Switch: SwitchVizElement,
-  TextArea: TextAreaVizElement,
 };
 
 export default VizElementsMap;

@@ -235,11 +235,13 @@ class Client:
 
         return response.handler
 
-    def release_resource(self, resource_handler):
+    def release_resource(self, queue_id, resource_handler):
         request = rpc_messages.ReleaseResourceRequest(
             handler=resource_handler,
             client_uri=self.uri
         )
+        if queue_id != -1:
+            self.get_queue(queue_id).wait_for_finish()
         response = self.remote.release_resource(request, metadata=self._request_metadata)
         if response.status == rpc_messages.ReleaseResourceResponse.Status.ERROR:
             raise_exception(response.exception)

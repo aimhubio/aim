@@ -67,8 +67,8 @@ export async function loadPyodideInstance() {
     namespace: null,
     isLoading: true,
   });
-
-  const pyodide = await (window as any).loadPyodide({
+  // @ts-ignore
+  const pyodide = await window.loadPyodide({
     stdout: (...args: any[]) => {
       window.requestAnimationFrame(() => {
         const terminal = document.getElementById('console');
@@ -125,8 +125,5 @@ const toObjectDict = {
 };
 function toObject(x: any): any {
   const cb = toObjectDict[x?.constructor.name];
-  if (cb) {
-    return cb(x);
-  }
-  return x;
+  return cb ? cb(x) : x;
 }

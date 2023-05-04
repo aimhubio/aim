@@ -1,9 +1,11 @@
 import { NavLink } from 'react-router-dom';
 
 import { styled, css } from 'config/stitches';
+import { textEllipsis } from 'config/stitches/foundations/layout';
 
 const StyledLink = css({
   textDecoration: 'none',
+  display: 'block',
   variants: {
     underline: {
       true: {
@@ -11,6 +13,10 @@ const StyledLink = css({
           textDecoration: 'underline',
         },
       },
+      false: {},
+    },
+    ellipsis: {
+      true: textEllipsis,
       false: {},
     },
   },
