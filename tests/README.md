@@ -5,6 +5,7 @@ Be able to test the correctness of the
  - `aim engine`
  - `aim sdk`
  - `aim ql`
+ - `extensions`
 
 ### Folder Structure
 
@@ -15,6 +16,8 @@ tests
   sdk
     test_*.py
   ql
+    test_*.py
+  ext
     test_*.py
 ```
 

@@ -5,6 +5,7 @@
 - Fix gpu stat collection when driver is not loaded (mihran113)
 - Fix issue with overflowing box content in full-view mode in Base Explorers (KaroMourad)
 - Fix issue on git stat collection (mihran113)
+- Import `Image` and `Audio` for `TensorboardFolderTracker` (alansaul)
 
 ## 3.17.4  May 4, 2023
 
