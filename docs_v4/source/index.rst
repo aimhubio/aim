@@ -2,14 +2,13 @@
  Welcome to Aim
 ===============
 
-Aim is a framework for developing loggers for any use-case.
+Aim is an all-in-one python framework for building end-to-end modular data tracking and visualization tools.
+
 There are 3 main layers, where Aim provides support:
 
-- *Logging*: log any data from anywhere.
-- *Automations*: log any data from anywhere.
-- *Observability*: log any data from anywhere.
-
-The Aim framework is designed with the above principles in mind.
+- *Logging*: Log any type of data from any source.
+- *Automations*: Automate processes, actions, and set up alerts.
+- *Observability*: Create your own boards, explorers, and reports.
 
 .. mermaid::
 
@@ -24,24 +23,24 @@ The Aim framework is designed with the above principles in mind.
         Sequences
         Collections
       Automations
-        Search
         Callbacks
         Notifications
+        Monitoring
 
-Quick Start
----------------
+Getting Started with Aim
+------------------------
 
-Checkout the below guide for a walk-through of how to get started using Aim to create a new logger.
-
+If you're new to Aim, follow the quick start guide below to create a new logger
+and explore the basics of using Aim for data tracking and visualization.
 
 .. toctree::
   :maxdepth: 3
   :caption: 🏁 Getting Started
-  :name: quick_start
+  :name: getting_started
 
-  quick_start/getting_started.rst
-  quick_start/integrations.rst
-  quick_start/next_steps.rst
+  getting_started/quick_start.rst
+  getting_started/integrations.rst
+  getting_started/next_steps.rst
 
 Core Concepts
 -------------
@@ -63,14 +62,15 @@ For each layer we provide some examples to get started, how-to guides, reference
 
   ./core/overview.rst
   ./core/logging.rst
-  ./core/search.rst
   ./core/automations.rst
   ./core/observability.rst
+  ./core/search.rst
 
 Use Cases
 ---------
 
-Explore use-cases Aim unlocks.
+Explore the various use cases that Aim enables, and see in action how it enhances
+your data tracking and visualization processes.
 
 .. toctree::
   :maxdepth: 1
@@ -83,8 +83,8 @@ Explore use-cases Aim unlocks.
 Packages
 ---------
 
-Aim is just a groundwork for bulding custom loggers.
-Explorer Aim ecosystem (AimStack) and pick a logger for your use-case.
+Aim serves as a foundation for building custom loggers.
+Discover the Aim ecosystem – AimStack, and choose a logger tailored to your specific use case.
 
 .. toctree::
   :maxdepth: 1
@@ -97,6 +97,8 @@ Explorer Aim ecosystem (AimStack) and pick a logger for your use-case.
 Reference
 ---------
 
+All of Aim’s reference documentation, in one place.
+
 .. toctree::
   :maxdepth: 1
   :caption: 📚 Reference
@@ -108,7 +110,7 @@ Reference
 Community
 ---------
 
-Community guides
+Become a part of the Aim community.
 
 .. toctree::
   :maxdepth: 1
@@ -123,6 +125,9 @@ Community guides
 Browse
 ------
 
+Explore the content directory to quickly find specific topics, terms,
+and concepts within the documentation.
+
 .. toctree::
   :maxdepth: 1
   :caption: 🗂️ Browse
@@ -135,6 +140,8 @@ Browse
 
 Resources
 ---------
+
+Discover Aim resources, including the official repositories, community channels, and more.
 
 .. toctree::
   :maxdepth: 1
