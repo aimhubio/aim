@@ -20,6 +20,7 @@ from aim.core.transport.worker import RemoteWorker, LocalWorker
 from aim.core.transport.health import HealthServicer
 from aim.core.transport.proto import health_pb2_grpc
 from aim.core.transport.router import RemoteRouterServicer, router_pb2_grpc
+from aim.core.transport.remote_tracking import ResourceTypeRegistry
 from aim.core.transport.remote_tracking import RemoteTrackingServicer, tracking_pb2_grpc
 
 
