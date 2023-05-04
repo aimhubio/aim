@@ -819,9 +819,7 @@ class Switch(Component):
         return self.state["value"] if "value" in self.state else self.data
 
     async def on_change(self, val):
-        self.set_state({
-            "value": val
-        })
+        self.set_state({ "value": val })
 
 
 class TextArea(Component):
@@ -851,9 +849,33 @@ class TextArea(Component):
         return self.state["value"] if "value" in self.state else self.data
 
     async def on_change(self, val):
-        self.set_state({
-            "value": val
-        })
+        self.set_state({ "value": val })
+
+class Radio(Component):
+    def __init__(self, label=None, options=(), index=0, disabled=None, key=None):
+        component_type = "Radio"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type)
+
+        self.options = {
+            "label": label,
+            "options": options,
+            "disabled": disabled,
+            "defaultValue": options[index]
+        }
+
+        self.callbacks = {
+            "on_change": self.on_change
+        }
+
+        self.render()
+
+    @property
+    def value(self):
+        return self.state["value"] if "value" in self.state else self.options["defaultValue"]
+
+    async def on_change(self, val):
+        self.set_state({ "value": val })
 
 
 class UI:
@@ -911,6 +933,11 @@ class UI:
         slider = Slider(*args, **kwargs)
         self.add(slider)
         return slider.value
+
+    def radio(self, *args, **kwargs):
+        radio = Radio(*args, **kwargs)
+        self.add(radio)
+        return radio.value
 
     # data display elements
     def text(self, *args, **kwargs):

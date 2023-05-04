@@ -8,7 +8,7 @@
   height: toRem(4px);
   transition: all 0.15s ease-out 0.2s;
   background-color: transparent;
-  box-shadow: inset 0 2px 0 0 $primary-color-20;
+  box-shadow: inset 0 1px 0 0 var(--aim-ui-colors-border30);
   &:hover,
   &:active,
   &.resizing {

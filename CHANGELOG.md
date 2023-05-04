@@ -14,7 +14,18 @@
 
 ### Fixes
 
--  Convert NaNs and Infs in responses to strings (n-gao)
+- Convert NaNs and Infs in responses to strings (n-gao)
+- Import `Image` and `Audio` for `TensorboardFolderTracker` (alansaul)
+
+## 3.17.4  May 4, 2023
+
+- Resolve run messages duplication issue for in progress runs (roubkar)
+- Fix metric values inconsistency with steps (mihran113)
+- Enable CLI for remote repos (mihran113)
+- Safe force-acquire index lock using meta-locks (alberttorosyan, mihran113)
+- Fix the issue with containers left open (mihran113)
+- Fix issue with notebook extension start-up (mihran113)
+- Disable SDK events tracking with Segment API (alberttorosyan)
 
 ## 3.17.3 Apr 6, 2023
 

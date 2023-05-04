@@ -1,5 +1,6 @@
 import React from 'react';
 import moment from 'moment';
+import _ from 'lodash-es';
 
 import {
   TIMELINE_DAY_FORMAT,
@@ -26,7 +27,7 @@ function useRunLogRecords(runId: string, inProgress: boolean) {
   const liveUpdate = React.useRef<{ intervalId: number } | null>(null);
   const lastItemHash = React.useRef<number>(-1);
   const runLogRecordsState: IResourceState<{
-    runLogRecordsList: RunLogRecordType[];
+    runLogRecordsList: Record<string, RunLogRecordType>;
     runLogRecordsTotalCount: number;
   }> = engine.runLogRecordsState((state) => state);
 
@@ -50,12 +51,18 @@ function useRunLogRecords(runId: string, inProgress: boolean) {
   }, [inProgress]);
 
   React.useEffect(() => {
-    if (runLogRecordsState.data?.runLogRecordsList?.length) {
-      let newData =
-        lastRequestType === LogsLastRequestEnum.LIVE_UPDATE
-          ? [...runLogRecordsState.data.runLogRecordsList, ...data]
-          : [...data, ...runLogRecordsState.data.runLogRecordsList];
-      setData(newData);
+    if (!_.isEmpty(runLogRecordsState.data?.runLogRecordsList)) {
+      setData((d) => {
+        let newData = [...d.reverse()];
+        for (let hash in runLogRecordsState.data?.runLogRecordsList) {
+          let index = +hash;
+          let record = runLogRecordsState.data?.runLogRecordsList[hash];
+          if (record) {
+            newData[index] = record;
+          }
+        }
+        return newData.sort((a, b) => b.hash - a.hash);
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [runLogRecordsState.data]);

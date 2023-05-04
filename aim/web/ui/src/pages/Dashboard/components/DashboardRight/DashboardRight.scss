@@ -4,10 +4,10 @@
   display: flex;
   flex-direction: column;
   width: 285px;
-  background-color: #fafafb;
+  background-color: #fff;
   overflow: auto;
   &__title {
-    margin-top: $space-md;
+    margin-top: $space-xs;
     padding: 0 $space-lg;
   }
 }

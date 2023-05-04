@@ -73,7 +73,10 @@ async function createReport(name: string, description: string, code: string) {
       })
       .then((data: any) => {
         model.setState({
-          report: data,
+          report: {
+            ...data,
+            ...data.state,
+          },
         });
         onNotificationAdd({
           notification: {
@@ -109,7 +112,10 @@ async function updateReport(reportId: string, update: Record<string, unknown>) {
       })
       .then((data: any) => {
         model.setState({
-          report: data,
+          report: {
+            ...data,
+            ...data.state,
+          },
         });
       });
 

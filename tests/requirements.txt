@@ -1,8 +1,8 @@
 -r ../requirements.txt
 torch
 tensorflow
-hub
 deeplake
+# hub
 fastapi>=0.87.0
 httpx
 pandas
