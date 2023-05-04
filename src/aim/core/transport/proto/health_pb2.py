@@ -3,6 +3,6 @@ import google.protobuf
 protobuf_version = google.protobuf.__version__[0]
 
 if protobuf_version == "3":
-    pass
+    from aim.core.transport.proto.v3.health_pb2 import *
 elif protobuf_version == "4":
-    pass
+    from aim.core.transport.proto.v4.health_pb2 import *
