@@ -4,7 +4,6 @@ import * as THREE from 'three';
 
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader';
-//import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { ArcballControls } from 'three/examples/jsm/controls/ArcballControls.js';
 //https://threejs.org/docs/#examples/en/controls/ArcballControls
 

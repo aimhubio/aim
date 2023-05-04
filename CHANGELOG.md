@@ -4,6 +4,7 @@
 
 ### Enhancements
 
+- Add the ability to track and visualize 3D Geometry objects (pabhermoso)
 - Revamp grouping popovers design in Base Explorers (KaroMourad, arsengit)
 - Add the ability to group by `grid` type in Base Explorers (KaroMourad)
 - Add the ability to create Reports (roubkar, arsengit)

@@ -59,9 +59,6 @@ const FiguresExplore = React.lazy(
   () =>
     import(/* webpackChunkName: "figures" */ 'pages/Explorers/FiguresExplorer'),
 );
-const GeometriesExplore = React.lazy(
-  () => import(/* webpackChunkName: "figures" */ 'pages/GeometriesExplorer'),
-);
 const AudiosExplorer = React.lazy(
   () =>
     import(/* webpackChunkName: "audios" */ 'pages/Explorers/AudiosExplorer'),
