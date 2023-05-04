@@ -186,7 +186,7 @@ function AutocompleteInput({
           //   : formattedValue;
           onChange(formattedValue, ev);
         }
-        if (ev.changes[0].text === '\n') {
+        if (/^\r?\n$/.test(ev.changes[0].text)) {
           formattedValue = hasSelection
             ? editorValue.replace(/[\n\r]/g, '')
             : formattedValue;
