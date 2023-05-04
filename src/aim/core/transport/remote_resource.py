@@ -1,5 +1,5 @@
 from aim.core.cleanup import AutoClean
-from aim.ext.transport.client import Client
+from .client import Client
 
 
 class RemoteResourceAutoClean(AutoClean):

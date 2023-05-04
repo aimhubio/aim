@@ -3,7 +3,7 @@ import struct
 import json
 from typing import Iterator, Tuple, Union
 
-import aim.ext.transport.proto.remote_tracking_pb2 as rpc_messages
+import aim.core.transport.proto.remote_tracking_pb2 as rpc_messages
 from aim.core.storage.object import CustomObject
 from aim.core.storage.types import BLOB
 

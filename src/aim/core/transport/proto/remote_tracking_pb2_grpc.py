@@ -6,7 +6,7 @@ try:
 except ImportError:
     grpc = None
 
-import aim.ext.transport.proto.remote_tracking_pb2 as remote__tracking__pb2
+import aim.core.transport.proto.remote_tracking_pb2 as remote__tracking__pb2
 
 
 class RemoteTrackingServiceStub(object):

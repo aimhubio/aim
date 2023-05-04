@@ -6,8 +6,8 @@ from concurrent import futures
 
 from aim.core.cleanup import AutoClean
 
-from aim.ext.transport.config import AIM_RT_MAX_MESSAGE_SIZE, AIM_RT_DEFAULT_MAX_MESSAGE_SIZE
-from aim.ext.transport.handlers import (
+from aim.core.transport.config import AIM_RT_MAX_MESSAGE_SIZE, AIM_RT_DEFAULT_MAX_MESSAGE_SIZE
+from aim.core.transport.handlers import (
     get_tree,
     get_structured_run,
     get_repo,
@@ -15,11 +15,12 @@ from aim.ext.transport.handlers import (
     get_run_heartbeat,
     get_file_manager
 )
-from aim.ext.transport.heartbeat import RPCHeartbeatWatcher
-from aim.ext.transport.worker import RemoteWorker, LocalWorker
-from aim.ext.transport.health import HealthServicer, health_pb2_grpc
-from aim.ext.transport.router import RemoteRouterServicer, router_pb2_grpc
-from aim.ext.transport.remote_tracking import RemoteTrackingServicer, tracking_pb2_grpc, ResourceTypeRegistry
+from aim.core.transport.heartbeat import RPCHeartbeatWatcher
+from aim.core.transport.worker import RemoteWorker, LocalWorker
+from aim.core.transport.health import HealthServicer
+from aim.core.transport.proto import health_pb2_grpc
+from aim.core.transport.router import RemoteRouterServicer, router_pb2_grpc
+from aim.core.transport.remote_tracking import RemoteTrackingServicer, tracking_pb2_grpc
 
 
 def _wait_forever():
@@ -134,3 +135,7 @@ def run_worker(host, port, ssl_keyfile=None, ssl_certfile=None):
     server.start(host, port, ssl_keyfile, ssl_certfile)
 
     _wait_forever()
+
+
+# alias for running router servicer
+start_server = run_router

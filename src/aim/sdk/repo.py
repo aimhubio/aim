@@ -12,7 +12,7 @@ from weakref import WeakValueDictionary
 from aim.core.sshfs import mount_remote_path, unmount_remote_path
 from aim.ext.task_queue.queue import TaskQueue
 from aim.core.cleanup import AutoClean
-from aim.ext.transport.client import Client
+from aim.core.transport import Client
 
 from aim.sdk.configs import get_aim_repo_name, AIM_ENABLE_TRACKING_THREAD
 from aim.sdk.errors import RepoIntegrityError

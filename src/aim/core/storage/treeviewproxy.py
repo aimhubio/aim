@@ -1,5 +1,5 @@
-from aim.ext.transport.message_utils import ResourceObject, pack_args
-from aim.ext.transport.remote_resource import RemoteResourceAutoClean
+from aim.core.transport.message_utils import ResourceObject, pack_args
+from aim.core.transport.remote_resource import RemoteResourceAutoClean
 
 from aim.core.storage.treeview import TreeView
 from aim.core.storage.treeutils import encode_tree
@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING, Any, Iterator, Tuple, Union, List
 
 
 if TYPE_CHECKING:
-    from aim.ext.transport.client import Client
+    from aim.core.transport import Client
 
 
 class ProxyTreeAutoClean(RemoteResourceAutoClean):

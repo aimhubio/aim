@@ -5,7 +5,7 @@ import pytz
 
 from datetime import datetime
 
-from aim.ext.transport.config import AIM_SERVER_MOUNTED_REPO_PATH
+from aim.core.transport.config import AIM_SERVER_MOUNTED_REPO_PATH
 
 from aim.sdk import Repo
 from aim.sdk.reporter import RunStatusReporter, ScheduledStatusReporter

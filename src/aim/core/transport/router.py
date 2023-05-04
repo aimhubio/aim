@@ -2,13 +2,13 @@ import datetime
 
 from typing import List, TYPE_CHECKING
 
-import aim.ext.transport.proto.remote_router_pb2 as router_rpc
-import aim.ext.transport.proto.remote_router_pb2_grpc as router_pb2_grpc
+import aim.core.transport.proto.remote_router_pb2 as router_rpc
+import aim.core.transport.proto.remote_router_pb2_grpc as router_pb2_grpc
 
-from aim.ext.transport.message_utils import build_exception
+from aim.core.transport.message_utils import build_exception
 
 if TYPE_CHECKING:
-    from aim.ext.transport.worker import RemoteWorker
+    from aim.core.transport.worker import RemoteWorker
 
 
 class RemoteRouterServicer(router_pb2_grpc.RemoteRouterServiceServicer):

@@ -7,15 +7,15 @@ from collections import defaultdict
 from copy import deepcopy
 from typing import Tuple
 
-import aim.ext.transport.proto.remote_tracking_pb2 as rpc_messages
-import aim.ext.transport.proto.remote_router_pb2 as router_messages
-import aim.ext.transport.proto.remote_tracking_pb2_grpc as remote_tracking_pb2_grpc
-import aim.ext.transport.proto.remote_router_pb2_grpc as remote_router_pb2_grpc
+import aim.core.transport.proto.remote_tracking_pb2 as rpc_messages
+import aim.core.transport.proto.remote_router_pb2 as router_messages
+import aim.core.transport.proto.remote_tracking_pb2_grpc as remote_tracking_pb2_grpc
+import aim.core.transport.proto.remote_router_pb2_grpc as remote_router_pb2_grpc
 
-from aim.ext.transport.message_utils import pack_stream, unpack_stream, raise_exception
-from aim.ext.transport.rpc_queue import RpcQueueWithRetry
-from aim.ext.transport.heartbeat import RPCHeartbeatSender
-from aim.ext.transport.config import (
+from aim.core.transport.message_utils import pack_stream, unpack_stream, raise_exception
+from aim.core.transport.rpc_queue import RpcQueueWithRetry
+from aim.core.transport.heartbeat import RPCHeartbeatSender
+from aim.core.transport.config import (
     AIM_CLIENT_SSL_CERTIFICATES_FILE,
     AIM_RT_MAX_MESSAGE_SIZE,
     AIM_RT_DEFAULT_MAX_MESSAGE_SIZE,

@@ -1,11 +1,11 @@
 from typing import TYPE_CHECKING, List
 
 from aim.core.storage.treeutils import encode_tree
-from aim.ext.transport.message_utils import pack_args
-from aim.ext.transport.remote_resource import RemoteResourceAutoClean
+from aim.core.transport.message_utils import pack_args
+from aim.core.transport.remote_resource import RemoteResourceAutoClean
 
 if TYPE_CHECKING:
-    from aim.ext.transport.client import Client
+    from aim.core.transport import Client
     from datetime import datetime
 
 

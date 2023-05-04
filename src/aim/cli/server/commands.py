@@ -4,8 +4,8 @@ import click
 from aim.cli.utils import set_log_level
 from aim.sdk.repo import Repo, RepoStatus
 from aim.sdk.utils import clean_repo_path
-from aim.ext.transport.config import AIM_SERVER_DEFAULT_HOST, AIM_SERVER_DEFAULT_PORT, AIM_SERVER_MOUNTED_REPO_PATH
-from aim.ext.transport.server import run_router
+from aim.core.transport.config import AIM_SERVER_DEFAULT_HOST, AIM_SERVER_DEFAULT_PORT, AIM_SERVER_MOUNTED_REPO_PATH
+from aim.core.transport import start_server
 
 from aim.core.utils.tracking import analytics
 
@@ -78,7 +78,7 @@ def server(host, port, workers,
     analytics.track_event(event_name='[Aim Remote Tracking] Start server')
 
     try:
-        run_router(host, port, workers, ssl_keyfile, ssl_certfile)
+        start_server(host, port, workers, ssl_keyfile, ssl_certfile)
     except Exception:
         click.echo('Failed to run Aim Tracking Server. '
                    'Please see the logs for details.')
