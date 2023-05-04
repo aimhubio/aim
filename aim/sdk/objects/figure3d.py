@@ -2,7 +2,6 @@ import io
 import logging
 import os.path
 
-from aim.sdk.num_utils import inst_has_typename
 from aim.storage.object import CustomObject
 from aim.storage.types import BLOB
 

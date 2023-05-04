@@ -635,7 +635,7 @@ class Repo:
         self._prepare_runs_cache()
         from aim.sdk.sequences.figure_sequence import Figures
         return QuerySequenceCollection(repo=self, seq_cls=Figures, query=query, report_mode=report_mode)
-    
+
     def query_figure3d_objects(self,
                                query: str = '',
                                report_mode: QueryReportMode = QueryReportMode.PROGRESS_BAR) -> QuerySequenceCollection:
