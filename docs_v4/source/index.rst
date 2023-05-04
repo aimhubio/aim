@@ -40,6 +40,7 @@ Checkout the below guide for a walk-through of how to get started using Aim to c
 
   quick_start/getting_started.rst
   quick_start/integrations.rst
+  quick_start/next_steps.rst
 
 Core
 -----

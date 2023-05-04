@@ -10,4 +10,5 @@ Getting started with Aim
   :name: quick_start
 
   ./getting_started/installation.rst
-  ./getting_started/tracking.rst
+  ./getting_started/logging_basics.rst
+  ./getting_started/observability_basics.rst
