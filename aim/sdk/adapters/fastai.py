@@ -18,13 +18,29 @@ logger = getLogger(__name__)
 
 
 class AimCallback(Callback):
-    def __init__(self,
-                 repo: Optional[str] = None,
-                 experiment_name: Optional[str] = None,
-                 system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT,
-                 log_system_params: [bool] = True,
-                 capture_terminal_logs: Optional[bool] = True,
-                 ):
+    """
+    AimCallback callback class.
+
+    Args:
+        repo (:obj:`str`, optional): Aim repository path or Repo object to which Run object is bound.
+            If skipped, default Repo is used.
+        experiment_name (:obj:`str`, optional): Sets Run's `experiment` property. 'default' if not specified.
+            Can be used later to query runs/sequences.
+        system_tracking_interval (:obj:`int`, optional): Sets the tracking interval in seconds for system usage
+            metrics (CPU, Memory, etc.). Set to `None` to disable system metrics tracking.
+        log_system_params (:obj:`bool`, optional): Enable/Disable logging of system params such as installed packages,
+            git info, environment variables, etc.
+        capture_terminal_logs (:obj:`bool`, optional): Enable/Disable terminal stdout logging.
+    """
+
+    def __init__(
+        self,
+        repo: Optional[str] = None,
+        experiment_name: Optional[str] = None,
+        system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT,
+        log_system_params: Optional[bool] = True,
+        capture_terminal_logs: Optional[bool] = True,
+    ):
         store_attr()
         self.repo = repo
         self.experiment_name = experiment_name
@@ -77,7 +93,9 @@ class AimCallback(Callback):
     def after_batch(self):
         context = {'subset': 'train'} if self.training else {'subset': 'val'}
 
-        self._run.track(self.loss.item(), name='train_loss', step=self.train_iter, context=context)
+        self._run.track(
+            self.loss.item(), name='train_loss', step=self.train_iter, context=context
+        )
         for i, h in enumerate(self.opt.hypers):
             for k, v in h.items():
                 self._run.track(v, f'{k}_{i}', step=self.train_iter, context=context)
@@ -96,17 +114,26 @@ class AimCallback(Callback):
             self._run.close()
 
     def gather_args(self):
-        "Gather config parameters accessible to the learner"
+        'Gather config parameters accessible to the learner'
         # args stored by 'store_attr'
-        cb_args = {f'{cb}': getattr(cb, '__stored_args__', True) for cb in self.cbs if cb != self}
+        cb_args = {
+            f'{cb}': getattr(cb, '__stored_args__', True)
+            for cb in self.cbs
+            if cb != self
+        }
         args = {'Learner': self.learn, **cb_args}
         # input dim
         try:
             n_inp = self.dls.train.n_inp
             args['n_inp'] = n_inp
             xb = self.dls.valid.one_batch()[:n_inp]
-            args.update({f'input {n+1} dim {i+1}': d for n in range(n_inp)
-                        for i, d in enumerate(list(detuplify(xb[n]).shape))})
+            args.update(
+                {
+                    f'input {n+1} dim {i+1}': d
+                    for n in range(n_inp)
+                    for i, d in enumerate(list(detuplify(xb[n]).shape))
+                }
+            )
         except Exception:
             logger.warning('Failed to gather input dimensions')
         # other args
@@ -125,7 +152,7 @@ class AimCallback(Callback):
 
     @classmethod
     def format_config(cls, config):
-        "Format config parameters for logging"
+        'Format config parameters for logging'
         for key, value in config.items():
             if isinstance(value, dict):
                 config[key] = AimCallback.format_config(value)

@@ -18,6 +18,7 @@ const DialogOverlay = styled(DialogPrimitive.Overlay, {
   bc: 'hsla(206, 22%, 7%, 0.5)',
   position: 'fixed',
   inset: 0,
+  zIndex: 11,
   animation: `${overlayShow} 150ms cubic-bezier(0.16, 1, 0.3, 1)`,
 });
 
@@ -32,8 +33,9 @@ const DialogContent = styled(DialogPrimitive.Content, {
   width: '90vw',
   maxWidth: '450px',
   maxHeight: '85vh',
-  p: '$5',
+  p: '$9',
   animation: `${contentShow} 150ms cubic-bezier(0.16, 1, 0.3, 1)`,
+  zIndex: 12,
   '&:focus': { outline: 'none' },
 });
 
@@ -46,7 +48,8 @@ const DialogTitle = styled(DialogPrimitive.Title, {
 
 const DialogDescription = styled(DialogPrimitive.Description, {
   margin: '$7 0',
-  fontSize: 15,
+  fontSize: '$3',
+  color: '$textPrimary',
   lineHeight: 1.5,
 });
 

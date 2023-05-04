@@ -12,60 +12,50 @@ with try_import() as _imports:
     from aim.ext.resource.configs import DEFAULT_SYSTEM_TRACKING_INT
 
 
-@experimental_class("2.9.0")
+@experimental_class('2.9.0')
 class AimCallback:
-    """Callback to track Optuna trials with Aim.
-
-    This callback enables tracking of Optuna study in Aim.
-    The study is tracked as a single experiment run,
-    where all suggested hyperparameters and optimized metrics
-    are logged and plotted as a function of optimizer steps.
-
-    .. note::
-        Users who want to run multiple Optuna studies within the same process
-        should call ``close()`` method between subsequent calls to
-        ``study.optimize()``. Calling ``close()`` method is not necessary
-        if you are running one Optuna study per process.
-
-    .. note::
-        To ensure correct trial order in Aim, this callback
-        should only be used with ``study.optimize(n_jobs=1)``.
-
+    """
+    AimCallback callback class.
 
     Args:
-        metric_name:
-            Name assigned to optimized metric. In case of multi-objective optimization,
-            list of names can be passed. Those names will be assigned
+        repo (:obj:`str`, optional): Aim repository path or Repo object to which Run object is bound.
+            If skipped, default Repo is used.
+        experiment_name (:obj:`str`, optional): Sets Run's `experiment` property. 'default' if not specified.
+            Can be used later to query runs/sequences.
+        system_tracking_interval (:obj:`int`, optional): Sets the tracking interval in seconds for system usage
+            metrics (CPU, Memory, etc.). Set to `None` to disable system metrics tracking.
+        log_system_params (:obj:`bool`, optional): Enable/Disable logging of system params such as installed packages,
+            git info, environment variables, etc.
+        capture_terminal_logs (:obj:`bool`, optional): Enable/Disable terminal stdout logging.
+        metric_name (:obj:`str`, optional): Name assigned to optimized metric.
+            In case of multi-objective optimization, list of names can be passed. Those names will be assigned
             to metrics in the order returned by objective function.
             If single name is provided, or this argument is left to default value,
             it will be broadcasted to each objective with a number suffix in order
             returned by objective function e.g. two objectives and default metric name
             will be logged as ``value_0`` and ``value_1``. The number of metrics must be
             the same as the number of values objective function returns.
-        as_multirun:
-            Creates new runs for each trial and sets the metrics as run parametrs.
+        as_multirun (:obj:`bool`, optional): Creates new runs for each trial and sets the metrics as run parametrs.
             Useful for exploring parameters in Aim UI
             (for more: https://aimstack.readthedocs.io/en/latest/ui/pages/explorers.html#params-explorer).
             If is false then all of the stats are tracked in a single run as Aim metrics.
-
     """
 
     def __init__(
         self,
-        metric_name: Union[str, Sequence[str]] = "value",
-        as_multirun: bool = False,
         repo: Optional[str] = None,
         experiment_name: Optional[str] = None,
         system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT,
         log_system_params: Optional[bool] = True,
         capture_terminal_logs: Optional[bool] = True,
+        metric_name: Union[str, Sequence[str]] = 'value',
+        as_multirun: bool = False,
     ) -> None:
-
         _imports.check()
 
         if not isinstance(metric_name, Sequence):
             raise TypeError(
-                f"Expected metric_name to be string or sequence of strings, got {type(metric_name)}."
+                f'Expected metric_name to be string or sequence of strings, got {type(metric_name)}.'
             )
 
         self._metric_name = metric_name
@@ -81,20 +71,21 @@ class AimCallback:
         if not self._as_multirun:
             self.setup()
 
-    def __call__(self, study: optuna.study.Study, trial: optuna.trial.FrozenTrial) -> None:
-
+    def __call__(
+        self, study: optuna.study.Study, trial: optuna.trial.FrozenTrial
+    ) -> None:
         if isinstance(self._metric_name, str):
             if len(trial.values) > 1:
                 # Broadcast default name for multi-objective optimization.
-                names = [f"{self._metric_name}_{i}" for i in range(len(trial.values))]
+                names = [f'{self._metric_name}_{i}' for i in range(len(trial.values))]
             else:
                 names = [self._metric_name]
         else:
             if len(self._metric_name) != len(trial.values):
                 raise ValueError(
-                    "Running multi-objective optimization "
-                    f"with {len(trial.values)} objective values, but {len(self._metric_name)} names specified. "
-                    "Match objective values and names, or use default broadcasting."
+                    'Running multi-objective optimization '
+                    f'with {len(trial.values)} objective values, but {len(self._metric_name)} names specified. '
+                    'Match objective values and names, or use default broadcasting.'
                 )
             else:
                 names = self._metric_name
@@ -102,20 +93,20 @@ class AimCallback:
         metrics = {name: value for name, value in zip(names, trial.values)}
 
         if self._as_multirun:
-            metrics["trial_number"] = trial.number
+            metrics['trial_number'] = trial.number
 
-        attributes = {"direction": [d.name for d in study.directions]}
+        attributes = {'direction': [d.name for d in study.directions]}
 
         step = trial.number if self._run else None
 
         if not self._run:
             self.setup()
-            self._run.name = f"trial-{trial.number}"
+            self._run.name = f'trial-{trial.number}'
 
         for key, value in attributes.items():
             self._run.set(('hparams', key), value, strict=False)
 
-        self._run.set("study_name", study.study_name)
+        self._run.set('study_name', study.study_name)
 
         if self._as_multirun:
             for key, value in trial.params.items():
@@ -166,7 +157,7 @@ class AimCallback:
             self._run = None
             self._run_hash = None
 
-    @experimental_func("3.0.0")
+    @experimental_func('3.0.0')
     def track_in_aim(self) -> Callable:
         """Decorator for using Aim for tracking inside the objective function.
 
@@ -182,7 +173,9 @@ class AimCallback:
             def wrapper(trial: optuna.trial.Trial) -> Union[float, Sequence[float]]:
                 if not self._run:
                     self.setup()
-                    self._run.name = f"trial-{trial.number}"
+                    self._run.name = f'trial-{trial.number}'
                 return func(trial)
+
             return wrapper
+
         return decorator
