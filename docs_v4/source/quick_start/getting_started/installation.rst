@@ -1,12 +1,13 @@
-Installation
-############
+#############
+ Installation
+#############
 
 This section shows a simple end-to-end aim setup. It starts from the installation, shows how to run Aim UI and explore the
 results.
 Use this as a starting point to get familiar with the basics of Aim while getting up and running.
 
 Installing Aim
-**************
+==============
 
 Aim is a python package available for Linux and MacOs for Python versions 3.6+. Install Aim using `pip3`:
 
@@ -29,7 +30,7 @@ The installed package includes Python SDK needed for tracking training runs, UI 
 for managing UI and results.
 
 Nightly releases
-================
+----------------
 
 Aim also provides daily dev packages with the features developed between main minor releases.
 
@@ -48,7 +49,7 @@ Previous daily dev packages can be installed using the following command:
 `Release history <https://pypi.org/project/aim/#history>`_
 
 Initializing Aim repository
-***************************
+===========================
 
 Aim repository is the space where all your training runs are logged.
 

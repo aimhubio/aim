@@ -3,7 +3,7 @@
 =======
 
 LangChain
----------
+=========
 
 LangChain is a library that helps to build powerful applications by integrating LLMs with other computational resources or knowledge sources. Large LLMs are really powerful tools for developers to create better apps, LangChain uses them to chain deterministic components and complete a given task.
 
@@ -12,7 +12,7 @@ With the Text Explorer feature, it is possible to compare multiple executions of
 .. image:: https://user-images.githubusercontent.com/13848158/227784994-699b24b7-e69b-48f9-9ffa-e6a6142fd719.png
 
 Tracking LangChain Executions
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-----------------------------
 
 Let's move forward and see how to enable and configure the callback. We will explore three use-cases.
 To start off, we will install the necessary packages and import certain modules.
@@ -62,7 +62,7 @@ The event methods of ``AimCallbackHandler`` accept the LangChain module or agent
 The ``flush_tracker`` function is used to record LangChain assets. By default, the session is reset rather than being terminated outright.
 
 Scenario 1
-~~~~~~~~~~
+----------
 
 In the first scenario, we will use OpenAI LLM.
 
@@ -75,7 +75,7 @@ In the first scenario, we will use OpenAI LLM.
     )
 
 Scenario 2
-~~~~~~~~~~
+----------
 
 Scenario two involves chaining with multiple SubChains across multiple generations.
 
@@ -104,7 +104,7 @@ Scenario two involves chaining with multiple SubChains across multiple generatio
 
 
 Scenario 3
-~~~~~~~~~~
+----------
 
 The third scenario involves an agent with tools.
 

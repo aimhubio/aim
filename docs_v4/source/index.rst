@@ -34,7 +34,7 @@ Checkout the below guide for a walk-through of how to get started using Aim to c
 
 
 .. toctree::
-  :maxdepth: 4
+  :maxdepth: 3
   :caption: 🏁 Getting Started
   :name: quick_start
 
