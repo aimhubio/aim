@@ -4,11 +4,15 @@
 
 Aim is an all-in-one python framework for building end-to-end modular data tracking and visualization tools.
 
-There are 3 main layers, where Aim provides support:
+Aim is built around three main aspects, each focusing on different pillar of the
+data collection and analysis process:
 
-- *Logging*: Log any type of data from any source.
-- *Automations*: Automate processes, actions, and set up alerts.
-- *Observability*: Create your own boards, explorers, and reports.
+- **Logging**: Log any type of data from any source.
+- **Automations**: Automate processes, actions, and set up alerts.
+- **Observability**: Create your own boards, explorers, and reports.
+
+Together, they form the foundation of the Aim framework, providing a powerful and flexible way
+for building any kind of data tracking and visualization tool.
 
 .. mermaid::
 
