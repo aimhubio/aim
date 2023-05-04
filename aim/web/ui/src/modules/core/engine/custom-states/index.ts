@@ -7,9 +7,7 @@ import {
 } from 'modules/core/utils/store';
 import getUrlSearchParam from 'modules/core/utils/getUrlSearchParam';
 import browserHistory from 'modules/core/services/browserHistory';
-import getUpdatedUrl from 'modules/core/utils/getUpdatedUrl';
-
-import { encode } from 'utils/encoder/encoder';
+import setStatePersistence from 'modules/core/utils/setStatePersistence';
 
 import {
   PersistenceTypesEnum,
@@ -24,63 +22,36 @@ export type CustomStatesEngine = {
 };
 
 function createCustomStatesEngine(store: any, config: CustomStates = {}) {
-  const customStates: {
-    [key: string]: PreCreatedStateSlice;
-  } = createStateSlices(config || {});
+  const customStates: Record<string, PreCreatedStateSlice> = createStateSlices(
+    config || {},
+  );
 
-  const engine: {
-    [key: string]: Omit<PreCreatedStateSlice, 'methods'> & StoreSliceMethods;
-  } = {};
+  const engine: Record<
+    string,
+    Omit<PreCreatedStateSlice, 'methods'> & StoreSliceMethods
+  > = {};
 
-  const initialState: {
-    [key: string]: any;
-  } = {};
-
-  const intializers: (() => void)[] = [];
+  const initialState: Record<string, any> = {};
+  const initializers: Function[] = [];
 
   Object.keys(customStates).forEach((name: string) => {
     const state: PreCreatedStateSlice = customStates[name];
     initialState[name] = state.initialState;
     const originalMethods = state.methods(store.setState, store.getState);
-    // @ts-ignore
-    const overrideMethods = { ...originalMethods };
     const persistenceKey = ['cs', name].join('-');
-
     const persistenceType = config[name].persist;
-    if (persistenceType) {
-      if (persistenceType === PersistenceTypesEnum.Url) {
-        const stateFromStorage = getUrlSearchParam(persistenceKey) || {};
+    const overrideMethods = setStatePersistence(
+      persistenceKey,
+      persistenceType as PersistenceTypesEnum,
+      originalMethods,
+    );
 
-        // update state
-        if (!isEmpty(stateFromStorage)) {
-          originalMethods.update(stateFromStorage);
-        }
-        overrideMethods.update = (d: any) => {
-          originalMethods.update(d);
-          const url = getUpdatedUrl(persistenceKey, encode(d));
-
-          if (url !== `${window.location.pathname}${window.location.search}`) {
-            browserHistory.push(url, null);
-          }
-        };
-
-        overrideMethods.reset = () => {
-          originalMethods.reset();
-
-          const url = getUpdatedUrl(persistenceKey, encode({}));
-
-          if (url !== `${window.location.pathname}${window.location.search}`) {
-            browserHistory.push(url, null);
-          }
-        };
-      }
-    }
     engine[name] = {
       ...omit(state, 'methods'),
       ...overrideMethods,
     };
 
-    intializers.push(
+    initializers.push(
       createInitializer(
         persistenceKey,
         originalMethods.update,
@@ -103,7 +74,7 @@ function createCustomStatesEngine(store: any, config: CustomStates = {}) {
     reset: StoreSliceMethods['reset'],
     persist?: StatePersistOption,
   ) {
-    return (): (() => void) => {
+    return (): Function => {
       if (persist === PersistenceTypesEnum.Url) {
         const stateFromStorage = getUrlSearchParam(key) || {};
 
@@ -133,11 +104,10 @@ function createCustomStatesEngine(store: any, config: CustomStates = {}) {
   }
 
   const initialize = () => {
-    const finalizers: (() => void)[] = [];
+    const finalizers: Function[] = [];
     // call initializers
-    intializers.forEach((init) => {
+    initializers.forEach((init) => {
       const finalizer = init();
-      // @ts-ignore
       finalizers.push(finalizer);
     });
     // call finalizers

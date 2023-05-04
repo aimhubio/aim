@@ -1,8 +1,6 @@
 import React from 'react';
 import _ from 'lodash-es';
 
-import { Tooltip } from '@material-ui/core';
-
 import { ReactComponent as DebugIcon } from 'assets/icons/debug.svg';
 
 import { Icon, JsonViewPopover, Text } from 'components/kit';
@@ -82,17 +80,13 @@ function LogRecordItem(
                   justifyContent: item.extraParams ? 'flex-start' : 'center',
                 }}
               >
-                <Tooltip title={item?.message ?? 'no message found'}>
-                  <div>
-                    <Text
-                      className='LogRecordItem__content__item__itemBox__message'
-                      component='pre'
-                      size={14}
-                    >
-                      {item?.message ?? 'no message found'}
-                    </Text>
-                  </div>
-                </Tooltip>
+                <Text
+                  className='LogRecordItem__content__item__itemBox__message'
+                  component='pre'
+                  size={14}
+                >
+                  {item?.message ?? 'no message found'}
+                </Text>
 
                 {item.extraParams && (
                   <div className='LogRecordItem__content__item__itemBox__extraParams'>

@@ -1,5 +1,6 @@
 const pageTitles = {
   DASHBOARD: '',
+  EXPLORERS: 'Explorers',
   RUNS_EXPLORER: 'Runs Explorer',
   METRICS_EXPLORER: 'Metrics Explorer',
   PARAMS_EXPLORER: 'Params Explorer',
@@ -8,12 +9,17 @@ const pageTitles = {
   FIGURES_EXPLORER: 'Figures Explorer',
   AUDIOS_EXPLORER: 'Audios Explorer',
   TEXT_EXPLORER: 'Text Explorer',
+  PROMPTS_EXPLORER: 'Prompts Explorer',
   BOOKMARKS: 'Bookmarks',
   TAGS: 'Tags',
-  RUN_DETAIL: '',
-  EXPERIMENT: '',
+  RUN_DETAIL: 'Run',
+  EXPERIMENT: 'Experiment',
   FIGURES_EXPLORER_NEW: 'New Figures',
+  BOARDS: 'Boards',
+  BOARD: 'Board',
   METRICS_EXPLORER_V2: 'Metrics Explorer v2',
+  REPORTS: 'Reports',
+  REPORT: 'Report',
 };
 
 export default pageTitles;

@@ -25,13 +25,15 @@ const slideLeftAndFade = keyframes({
 const TooltipContent = styled(Tooltip.Content, {
   borderRadius: 4,
   padding: '10px 15px',
-  fontSize: 15,
+  maxWidth: 400,
+  fontSize: '$3',
+  border: '1px solid rgba(90, 102, 122, 0.2)',
+  wordBreak: 'break-word',
   lineHeight: 1,
   backgroundColor: 'white',
-  boxShadow:
-    'hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px',
+  bs: 'rgba(90, 102, 122, 0.3) 0px 10px 38px -10px, rgba(90, 102, 122, 0.3) 0px 10px 20px -15px',
   userSelect: 'none',
-  animationDuration: '400ms',
+  animationDuration: '300ms',
   animationTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)',
   willChange: 'transform, opacity',
   '&[data-state="delayed-open"]': {

@@ -21,6 +21,7 @@ export type CurrentGrouping = {
   [key: string]: {
     orders: Order[];
     fields: string[];
+    isApplied: boolean;
   };
 };
 

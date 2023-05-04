@@ -1,6 +1,5 @@
 import React from 'react';
 import moment from 'moment';
-import _ from 'lodash-es';
 
 import {
   TIMELINE_DAY_FORMAT,
@@ -32,18 +31,16 @@ function useRunLogRecords(runId: string, inProgress: boolean) {
   }> = engine.runLogRecordsState((state) => state);
 
   React.useEffect(() => {
-    if (_.isEmpty(runLogRecordsState.data?.runLogRecordsList)) {
-      engine.fetchRunLogRecords({ runId }).then(() => {
-        stopLiveUpdate();
-        startLiveUpdate();
-      });
-    }
+    engine.fetchRunLogRecords({ runId }).then(() => {
+      stopLiveUpdate();
+      startLiveUpdate();
+    });
     return () => {
       engine.destroy();
       stopLiveUpdate(true);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [runId]);
 
   React.useEffect(() => {
     if (!inProgress) {

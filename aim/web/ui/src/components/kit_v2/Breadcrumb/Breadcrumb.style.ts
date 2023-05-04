@@ -8,9 +8,20 @@ const BreadcrumbItem = styled(NavLink, {
   fontWeight: '$3',
   textTransform: 'uppercase',
   fontSize: '$3',
+  transition: 'all 0.18s ease-out',
+  '&:hover': {
+    color: '$textPrimary',
+  },
   '&.active': {
     color: '$textPrimary',
   },
 });
 
-export { BreadcrumbItem };
+const BreadcrumbLastItem = styled('span', {
+  fontWeight: '$3',
+  textTransform: 'uppercase',
+  fontSize: '$3',
+  color: '$textPrimary',
+});
+
+export { BreadcrumbItem, BreadcrumbLastItem };

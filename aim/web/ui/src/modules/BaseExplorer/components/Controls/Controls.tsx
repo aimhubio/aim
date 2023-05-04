@@ -18,14 +18,12 @@ function Controls(props: IControlsProps) {
   const Components = React.useMemo(
     () =>
       Object.entries(_.omit(controls, ['reset'])).map(([key, Control]) => {
-        // @ts-ignore
-        const Component = Control.component;
-
-        return (
+        const Component = Control?.component;
+        return Component ? (
           <div key={key} className='Control'>
             <Component {...props} />
           </div>
-        );
+        ) : null;
       }),
     [controls, props],
   );

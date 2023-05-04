@@ -66,7 +66,7 @@ const InputContainer: any = styled('input', {
   height: '100%',
   width: '100%',
   color: '$textPrimary',
-  bs: '0px 0px 0px 1px $colors$secondary50',
+  bs: 'inset 0px 0px 0px 1px $colors$secondary50',
   br: '$3',
   fontSize: '$3',
   p: 0,
@@ -74,10 +74,10 @@ const InputContainer: any = styled('input', {
     color: '$textPrimary50',
   },
   '&:hover': {
-    bs: '0px 0px 0px 1px $colors$secondary100',
+    bs: 'inset 0px 0px 0px 1px $colors$secondary100',
   },
   '&:focus': {
-    bs: '0px 0px 0px 1px $colors$primary100',
+    bs: 'inset 0px 0px 0px 1px $colors$primary100',
   },
   variants: {
     leftIcon: { true: {} },
@@ -100,7 +100,7 @@ const InputContainer: any = styled('input', {
     },
     error: {
       true: {
-        bs: '0px 0px 0px 1px $colors$danger100 !important',
+        bs: 'inset 0px 0px 0px 1px $colors$danger100 !important',
       },
     },
     disabled: {
@@ -164,6 +164,18 @@ const ClearButtonContainer = styled('div', {
       },
       xl: {
         right: '$6',
+      },
+    },
+    disabled: {
+      true: {
+        '& .Icon__container': {
+          '& > i': {
+            opacity: 0.5,
+          },
+        },
+        userSelect: 'none',
+        cursor: 'not-allowed',
+        pointerEvents: 'none',
       },
     },
   },

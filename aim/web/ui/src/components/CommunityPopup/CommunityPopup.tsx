@@ -2,6 +2,8 @@ import * as React from 'react';
 
 import { Tooltip } from '@material-ui/core';
 
+import { Box } from 'components/kit_v2';
+
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import { trackEvent } from 'services/analytics';
@@ -99,7 +101,7 @@ function CommunityPopup(props: ICommunityPopupProps) {
         </React.Fragment>
       }
     >
-      <div>{props.children}</div>
+      <Box width='100%'>{props.children}</Box>
     </Tooltip>
   );
 }

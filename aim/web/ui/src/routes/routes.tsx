@@ -1,6 +1,15 @@
 import React from 'react';
 
+import {
+  IconChartDots,
+  IconFileAnalytics,
+  IconFlag3,
+  IconLayout2,
+  IconTable,
+} from '@tabler/icons-react';
+
 import { PathEnum } from 'config/enums/routesEnum';
+import { ExplorersCatsEnum } from 'config/enums/explorersCatsEnum';
 import pageTitlesEnum from 'config/pageTitles/pageTitles';
 
 const Runs = React.lazy(
@@ -10,51 +19,89 @@ const RunDetail = React.lazy(
   () => import(/* webpackChunkName: "run" */ 'pages/RunDetail/RunDetail'),
 );
 const Experiment = React.lazy(
-  () => import(/* webpackChunkName: "run" */ 'pages/Experiment/Experiment'),
+  () =>
+    import(/* webpackChunkName: "experiment" */ 'pages/Experiment/Experiment'),
 );
 const Metrics = React.lazy(
   () =>
-    import(/* webpackChunkName: "metrics" */ 'pages/Metrics/MetricsContainer'),
-);
-const Params = React.lazy(
-  () => import(/* webpackChunkName: "params" */ 'pages/Params/ParamsContainer'),
-);
-const Bookmarks = React.lazy(
-  () =>
     import(
-      /* webpackChunkName: "bookmarks" */ 'pages/Bookmarks/BookmarksContainer'
+      /* webpackChunkName: "metrics" */ 'pages/Explorers/Metrics/MetricsContainer'
     ),
 );
+const Params = React.lazy(
+  () =>
+    import(
+      /* webpackChunkName: "params" */ 'pages/Explorers/Params/ParamsContainer'
+    ),
+);
+
 const Dashboard = React.lazy(
   () => import(/* webpackChunkName: "dashboard" */ 'pages/Dashboard/Dashboard'),
 );
 const TagsContainer = React.lazy(
   () => import(/* webpackChunkName: "tags" */ 'pages/Tags/TagsContainer'),
 );
+
 const Scatters = React.lazy(
   () =>
     import(
-      /* webpackChunkName: "scatters" */ 'pages/Scatters/ScattersContainer'
+      /* webpackChunkName: "scatters" */ 'pages/Explorers/Scatters/ScattersContainer'
     ),
 );
+
 const ImagesExplore = React.lazy(
   () =>
     import(
-      /* webpackChunkName: "images" */ 'pages/ImagesExplore/ImagesExplore'
+      /* webpackChunkName: "images" */ 'pages/Explorers/ImagesExplore/ImagesExplore'
     ),
 );
 const FiguresExplore = React.lazy(
-  () => import(/* webpackChunkName: "figures" */ 'pages/FiguresExplorer'),
+  () =>
+    import(/* webpackChunkName: "figures" */ 'pages/Explorers/FiguresExplorer'),
 );
 const AudiosExplorer = React.lazy(
-  () => import(/* webpackChunkName: "audios" */ 'pages/AudiosExplorer'),
+  () =>
+    import(/* webpackChunkName: "audios" */ 'pages/Explorers/AudiosExplorer'),
 );
+
 const MetricsExplorer = React.lazy(
-  () => import(/* webpackChunkName: "metrics_v2" */ 'pages/MetricsExplorer'),
+  () =>
+    import(
+      /* webpackChunkName: "metrics_v2" */ 'pages/Explorers/MetricsExplorer'
+    ),
 );
 
 const TextExplorer = React.lazy(
-  () => import(/* webpackChunkName: "text" */ 'pages/TextExplorer'),
+  () => import(/* webpackChunkName: "text" */ 'pages/Explorers/TextExplorer'),
+);
+
+const PromptsExplorer = React.lazy(
+  () =>
+    import(/* webpackChunkName: "text" */ 'pages/Explorers/PromptsExplorer'),
+);
+
+const Explorers = React.lazy(
+  () => import(/* webpackChunkName: "explorers" */ 'pages/Explorers'),
+);
+
+const Bookmarks = React.lazy(
+  () => import(/* webpackChunkName: "bookmarks" */ 'pages/Explorers/Bookmarks'),
+);
+
+const Boards = React.lazy(
+  () => import(/* webpackChunkName: "boards" */ 'pages/Boards/Boards'),
+);
+
+const Board = React.lazy(
+  () => import(/* webpackChunkName: "board" */ 'pages/Board/BoardContainer'),
+);
+
+const Reports = React.lazy(
+  () => import(/* webpackChunkName: "reports" */ 'pages/Reports'),
+);
+
+const Report = React.lazy(
+  () => import(/* webpackChunkName: "report" */ 'pages/Report/ReportContainer'),
 );
 
 export interface IRoute {
@@ -66,10 +113,142 @@ export interface IRoute {
     | any;
   showInSidebar: boolean;
   displayName: string | null;
-  icon?: string | null;
+  icon?: React.ReactNode | string | null;
+  isExact?: boolean;
+  title: string;
+  color?: string;
+  status?: RouteStatusEnum;
+  description?: string;
+  category?: string;
 }
 
-const routes = {
+export enum RouteStatusEnum {
+  NEW = 'new',
+  COMING_SOON = 'coming-soon',
+}
+
+export const explorersRoutes: { [key: string]: IRoute } = {
+  METRICS: {
+    path: PathEnum.Metrics,
+    component: Metrics,
+    showInSidebar: false,
+    displayName: 'Metrics',
+    description:
+      'Metrics Explorer allows to filter, group, aggregate tracked metrics.',
+    icon: 'metrics',
+    isExact: true,
+    title: pageTitlesEnum.METRICS_EXPLORER,
+    color: '#7A4CE0',
+    category: ExplorersCatsEnum.Trainings,
+  },
+  PARAMS: {
+    path: PathEnum.Params,
+    component: Params,
+    showInSidebar: false,
+    displayName: 'Params',
+    description:
+      'Params Explorer helps to visualize tracked h-params and metrics results via parallel coordinates plot.',
+    icon: 'params',
+    isExact: true,
+    title: pageTitlesEnum.PARAMS_EXPLORER,
+    color: '#AF4EAB',
+    category: ExplorersCatsEnum.Trainings,
+  },
+  TEXT_EXPLORER: {
+    path: PathEnum.Text_Explorer,
+    component: TextExplorer,
+    showInSidebar: false,
+    icon: 'text',
+    displayName: 'Text',
+    description:
+      'Text Explorer offers visualization of text inputs and outputs in NLP-related experiments.',
+    isExact: true,
+    title: pageTitlesEnum.TEXT_EXPLORER,
+    color: '#E149A0',
+    category: ExplorersCatsEnum.Trainings,
+  },
+  PROMPTS_EXPLORER: {
+    path: PathEnum.Prompts_Explorer,
+    component: PromptsExplorer,
+    showInSidebar: false,
+    icon: 'text',
+    displayName: 'Prompts',
+    description:
+      'Prompts Explorer enables visualization of LLMs prompts and agents actions in AI systems execution.',
+    isExact: true,
+    title: pageTitlesEnum.PROMPTS_EXPLORER,
+    color: '#1473E6',
+    category: ExplorersCatsEnum.Prompts,
+  },
+  IMAGE_EXPLORE: {
+    path: PathEnum.Images_Explore,
+    component: ImagesExplore,
+    showInSidebar: false,
+    displayName: 'Images',
+    description:
+      'Images Explorer allows comparison of tracked images during training and evaluation.',
+    icon: 'images',
+    isExact: true,
+    title: pageTitlesEnum.IMAGES_EXPLORER,
+    color: '#F17922',
+    category: ExplorersCatsEnum.Trainings,
+  },
+  FIGURES_EXPLORER: {
+    path: PathEnum.Figures_Explorer,
+    component: FiguresExplore,
+    showInSidebar: false,
+    icon: 'figures',
+    displayName: 'Figures',
+    description:
+      'Figures Explorer enables easy comparison of hundreds of Plotly figures.',
+    isExact: true,
+    title: pageTitlesEnum.FIGURES_EXPLORER,
+    color: '#18AB6D',
+    category: ExplorersCatsEnum.Trainings,
+  },
+  AUDIOS_EXPLORER: {
+    path: PathEnum.Audios_Explorer,
+    component: AudiosExplorer,
+    showInSidebar: false,
+    icon: 'audios',
+    displayName: 'Audios',
+    description:
+      'Audio Explorer enables analysis of audio objects in speech-to-text or other speech-related tasks.',
+    isExact: true,
+    title: pageTitlesEnum.AUDIOS_EXPLORER,
+    color: '#FCB500',
+    category: ExplorersCatsEnum.Trainings,
+  },
+  SCATTERS: {
+    path: PathEnum.Scatters,
+    component: Scatters,
+    showInSidebar: false,
+    displayName: 'Scatters',
+    description:
+      'Scatter Explorer visualizes correlations between metrics results and h-params.',
+    icon: 'scatterplot',
+    isExact: true,
+    title: pageTitlesEnum.SCATTERS_EXPLORER,
+    color: '#606986',
+    category: ExplorersCatsEnum.Trainings,
+  },
+  METRICS_EXPLORER: {
+    path: PathEnum.Metrics_Explorer,
+    component: MetricsExplorer,
+    showInSidebar: false,
+    icon: 'metrics',
+    displayName: 'Metrics [v2]',
+    description:
+      'Explore thousands of tracked metrics with Metrics Explorer v2.',
+    isExact: true,
+    title: pageTitlesEnum.METRICS_EXPLORER_V2,
+    status: RouteStatusEnum.NEW,
+    color: '#7A4CE0',
+    category: ExplorersCatsEnum.Trainings,
+  },
+};
+
+const routes: { [key: string]: any } = {
   DASHBOARD: {
     path: PathEnum.Dashboard,
     component: Dashboard,
@@ -84,19 +263,71 @@ const routes = {
     component: Runs,
     showInSidebar: true,
     displayName: 'Runs',
-    icon: 'runs',
+    icon: <IconTable color='#9D257F' />,
     isExact: true,
     title: pageTitlesEnum.RUNS_EXPLORER,
   },
-  METRICS: {
-    path: PathEnum.Metrics,
-    component: Metrics,
+  EXPLORERS: {
+    path: PathEnum.Explorers,
+    component: Explorers,
     showInSidebar: true,
-    displayName: 'Metrics',
-    icon: 'metrics',
+    displayName: 'Explorers',
+    icon: <IconChartDots color='#1473E6' />,
     isExact: true,
-    title: pageTitlesEnum.METRICS_EXPLORER,
+    title: pageTitlesEnum.EXPLORERS,
   },
+  BOARDS: {
+    path: PathEnum.Boards,
+    component: Boards,
+    showInSidebar: true,
+    displayName: 'Boards',
+    icon: <IconLayout2 color='#2A6218' />,
+    isExact: true,
+    title: pageTitlesEnum.BOARDS,
+  },
+  BOARD: {
+    path: PathEnum.Board,
+    component: Board,
+    showInSidebar: false,
+    displayName: 'Board',
+    isExact: true,
+    title: pageTitlesEnum.BOARD,
+  },
+  BOARD_EDIT: {
+    path: PathEnum.Board_Edit,
+    component: Board,
+    showInSidebar: false,
+    displayName: 'Board',
+    isExact: true,
+    title: pageTitlesEnum.BOARD,
+  },
+  REPORTS: {
+    path: PathEnum.Reports,
+    component: Reports,
+    showInSidebar: true,
+    displayName: 'Reports',
+    icon: <IconFileAnalytics color='#5B329A' />,
+    isExact: true,
+    title: pageTitlesEnum.REPORTS,
+  },
+  REPORT: {
+    path: PathEnum.Report,
+    component: Report,
+    showInSidebar: false,
+    displayName: 'Report',
+    isExact: true,
+    title: pageTitlesEnum.REPORT,
+  },
+  REPORT_EDIT: {
+    path: PathEnum.Report_Edit,
+    component: Report,
+    showInSidebar: false,
+    displayName: 'Report',
+    isExact: true,
+    title: pageTitlesEnum.REPORT,
+  },
+  ...explorersRoutes,
+
   METRICS_ID: {
     path: PathEnum.Metrics_Id,
     component: Metrics,
@@ -104,15 +335,6 @@ const routes = {
     displayName: 'MetricsId',
     isExact: true,
     title: pageTitlesEnum.METRICS_EXPLORER,
-  },
-  PARAMS: {
-    path: PathEnum.Params,
-    component: Params,
-    showInSidebar: true,
-    displayName: 'Params',
-    icon: 'params',
-    isExact: true,
-    title: pageTitlesEnum.PARAMS_EXPLORER,
   },
   PARAMS_ID: {
     path: PathEnum.Params_Id,
@@ -122,24 +344,6 @@ const routes = {
     isExact: true,
     title: pageTitlesEnum.PARAMS_EXPLORER,
   },
-  TEXT_EXPLORER: {
-    path: PathEnum.Text_Explorer,
-    component: TextExplorer,
-    showInSidebar: true,
-    icon: 'text',
-    displayName: 'Text',
-    isExact: true,
-    title: pageTitlesEnum.TEXT_EXPLORER,
-  },
-  IMAGE_EXPLORE: {
-    path: PathEnum.Images_Explore,
-    component: ImagesExplore,
-    showInSidebar: true,
-    displayName: 'Images',
-    icon: 'images',
-    isExact: true,
-    title: pageTitlesEnum.IMAGES_EXPLORER,
-  },
   IMAGE_EXPLORE_ID: {
     path: PathEnum.Images_Explore_Id,
     component: ImagesExplore,
@@ -147,33 +351,6 @@ const routes = {
     displayName: 'ImagesId',
     isExact: true,
     title: pageTitlesEnum.IMAGES_EXPLORER,
-  },
-  FIGURES_EXPLORER: {
-    path: PathEnum.Figures_Explorer,
-    component: FiguresExplore,
-    showInSidebar: true,
-    icon: 'figures',
-    displayName: 'Figures',
-    isExact: true,
-    title: pageTitlesEnum.FIGURES_EXPLORER,
-  },
-  AUDIOS_EXPLORER: {
-    path: PathEnum.Audios_Explorer,
-    component: AudiosExplorer,
-    showInSidebar: true,
-    icon: 'audios',
-    displayName: 'Audios',
-    isExact: true,
-    title: pageTitlesEnum.AUDIOS_EXPLORER,
-  },
-  SCATTERS: {
-    path: PathEnum.Scatters,
-    component: Scatters,
-    showInSidebar: true,
-    displayName: 'Scatters',
-    icon: 'scatterplot',
-    isExact: true,
-    title: pageTitlesEnum.SCATTERS_EXPLORER,
   },
   SCATTERS_EXPLORE_ID: {
     path: PathEnum.Scatters_Id,
@@ -186,7 +363,7 @@ const routes = {
   BOOKMARKS: {
     path: PathEnum.Bookmarks,
     component: Bookmarks,
-    showInSidebar: true,
+    showInSidebar: false,
     displayName: 'Bookmarks',
     icon: 'bookmarks',
     isExact: true,
@@ -197,7 +374,7 @@ const routes = {
     component: TagsContainer,
     showInSidebar: true,
     displayName: 'Tags',
-    icon: 'tags',
+    icon: <IconFlag3 color='#2A6218' />,
     isExact: true,
     title: pageTitlesEnum.TAGS,
   },

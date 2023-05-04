@@ -9,6 +9,7 @@ import { ILinkProps } from './Link.d';
  * @param {string} [props.fontSize='$5'] - font size
  * @param {string} [props.fontWeight='$2'] - font weight
  * @param {string} [props.color='$primary100'] - color
+ * @param {boolean} [props.underline=true] - underline
  * @param {CSS} [props.css] - css
  * @param {React.ReactNode} [props.children] - children
  * @returns {React.FunctionComponentElement<React.ReactNode>}
@@ -18,6 +19,8 @@ function Link({
   fontSize = '$5',
   fontWeight = '$2',
   color = '$primary100',
+  ellipsis = false,
+  underline = true,
   css = {},
   children,
   ...props
@@ -48,6 +51,8 @@ function Link({
         : 'noopener noreferrer';
       return (
         <StyledAnchor
+          underline={underline}
+          ellipsis={ellipsis}
           css={cssProps}
           href={to}
           target={props.target || '_blank'}
@@ -59,7 +64,13 @@ function Link({
       );
     }
     return (
-      <StyledNavLink css={cssProps} to={to} {...props}>
+      <StyledNavLink
+        ellipsis={ellipsis}
+        underline={underline}
+        css={cssProps}
+        to={to}
+        {...props}
+      >
         {children}
       </StyledNavLink>
     );

@@ -3,9 +3,17 @@
 ## Unreleased 
 
 ### Enhancements
+
+- Revamp grouping popovers design in Base Explorers (KaroMourad, arsengit)
+- Add the ability to group by `grid` type in Base Explorers (KaroMourad)
+- Add the ability to create Reports (roubkar, arsengit)
+- Add the ability to create custom UI boards (roubkar, arsengit, KaroMourad)
+- Relocate aim explorers to `Explorers` page (arsengit)
 - Add functionality for custom context in the PyTorch Ignite (tmynn)
 - Extend `aim.ext.tensorboard_tracker.run.Run` to allow stdout logging and system stats and parameter logging (alansaul)
-### fixes
+
+### Fixes
+
 -  Convert NaNs and Infs in responses to strings (n-gao)
 
 ## 3.17.3 Apr 6, 2023
