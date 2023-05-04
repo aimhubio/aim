@@ -25,9 +25,10 @@ def runs(ctx, repo):
 def list_runs(ctx):
     """List Runs available in Repo."""
     repo_path = ctx.obj['repo']
-    if not Repo.exists(repo_path):
-        click.echo(f'\'{repo_path}\' is not a valid aim repo.')
-        exit(1)
+    if not Repo.is_remote_path(repo_path):
+        if not Repo.exists(repo_path):
+            click.echo(f'\'{repo_path}\' is not a valid aim repo.')
+            exit(1)
 
     repo = Repo.from_path(repo_path)
     run_hashes = repo.list_all_runs()

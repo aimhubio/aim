@@ -23,7 +23,7 @@ class StructuredRunProxy:
         kwargs = {
             'hash_': hash_,
             'read_only': read_only,
-            'created_at': created_at.timestamp()
+            'created_at': created_at.timestamp() if created_at is not None else created_at
         }
 
         self.init_args = pack_args(encode_tree(kwargs))

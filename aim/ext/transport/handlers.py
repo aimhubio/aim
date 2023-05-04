@@ -67,7 +67,8 @@ def get_structured_run(hash_, read_only, created_at, **kwargs):
         repo = Repo.from_path(repo_path)
     else:
         repo = Repo.default_repo()
-    created_at = datetime.fromtimestamp(created_at, tz=pytz.utc).replace(tzinfo=None)
+    if created_at is not None:
+        created_at = datetime.fromtimestamp(created_at, tz=pytz.utc).replace(tzinfo=None)
     return ResourceRef(repo.request_props(hash_, read_only, created_at))
 
 
