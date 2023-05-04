@@ -112,7 +112,7 @@ Community guides
 
 .. toctree::
   :maxdepth: 1
-  :caption:  Community
+  :caption: 👐 Community
   :name: community
 
   ./community/CHANGELOG.md
@@ -125,7 +125,7 @@ Browse
 
 .. toctree::
   :maxdepth: 1
-  :caption:  Browse
+  :caption: 🗂️ Browse
   :name: browse
 
   ./browse/glossary.rst
