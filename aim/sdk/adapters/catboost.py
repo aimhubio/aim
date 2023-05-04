@@ -6,17 +6,34 @@ from aim.ext.resource import DEFAULT_SYSTEM_TRACKING_INT
 
 
 class AimLogger:
+    """
+    AimLogger logger class.
 
-    def __init__(self, loss_function: Optional[str] = "Loss",
-                 repo: Optional[str] = None,
-                 experiment: Optional[str] = None,
-                 system_tracking_interval: Optional[int]
-                 = DEFAULT_SYSTEM_TRACKING_INT,
-                 log_system_params: Optional[bool] = True,
-                 capture_terminal_logs: Optional[bool] = True,
-                 log_cout=stdout):
+    Args:
+        repo (:obj:`str`, optional): Aim repository path or Repo object to which Run object is bound.
+            If skipped, default Repo is used.
+        experiment_name (:obj:`str`, optional): Sets Run's `experiment` property. 'default' if not specified.
+            Can be used later to query runs/sequences.
+        system_tracking_interval (:obj:`int`, optional): Sets the tracking interval in seconds for system usage
+            metrics (CPU, Memory, etc.). Set to `None` to disable system metrics tracking.
+        log_system_params (:obj:`bool`, optional): Enable/Disable logging of system params such as installed packages,
+            git info, environment variables, etc.
+        capture_terminal_logs (:obj:`bool`, optional): Enable/Disable terminal stdout logging.
+        loss_function (:obj:`str`, optional): Loss function
+        log_cout (:obj:`bool`, optional): Enable/Disable stdout logging.
+    """
+
+    def __init__(
+        self,
+        repo: Optional[str] = None,
+        experiment: Optional[str] = None,
+        system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT,
+        log_system_params: Optional[bool] = True,
+        capture_terminal_logs: Optional[bool] = True,
+        loss_function: Optional[str] = 'Loss',
+        log_cout=stdout,
+    ):
         super().__init__()
-        self._loss_function = loss_function
         self._repo_path = repo
         self._experiment = experiment
         self._system_tracking_interval = system_tracking_interval
@@ -24,10 +41,11 @@ class AimLogger:
         self._capture_terminal_logs = capture_terminal_logs
         self._run = None
         self._run_hash = None
+        self._loss_function = loss_function
         self._log_cout = log_cout
 
         if log_cout is not None:
-            assert hasattr(log_cout, "write")
+            assert hasattr(log_cout, 'write')
 
     @property
     def experiment(self) -> Run:
@@ -85,11 +103,26 @@ class AimLogger:
                         value_best = self._to_number(log[6])
             if any((value_learn, value_test, value_best)):
                 if value_learn:
-                    run.track(value_learn, name=self._loss_function, step=value_iter, context={'log': 'learn'})
+                    run.track(
+                        value_learn,
+                        name=self._loss_function,
+                        step=value_iter,
+                        context={'log': 'learn'},
+                    )
                 if value_test:
-                    run.track(value_test, name=self._loss_function, step=value_iter, context={'log': 'test'})
+                    run.track(
+                        value_test,
+                        name=self._loss_function,
+                        step=value_iter,
+                        context={'log': 'test'},
+                    )
                 if value_best:
-                    run.track(value_best, name=self._loss_function, step=value_iter, context={'log': 'best'})
+                    run.track(
+                        value_best,
+                        name=self._loss_function,
+                        step=value_iter,
+                        context={'log': 'best'},
+                    )
             else:
                 # Unhandled or junky log
                 pass

@@ -165,4 +165,5 @@ const DASHBOARD_PAGE_GUIDES: { name: string; url: string }[] = [
   },
 ];
 
-export { DOCUMENTATIONS, GUIDES, DEMOS, DASHBOARD_PAGE_GUIDES };
+const GITHUB_URL = 'https://github.com/aimhubio/aim';
+export { DOCUMENTATIONS, GUIDES, DEMOS, DASHBOARD_PAGE_GUIDES, GITHUB_URL };

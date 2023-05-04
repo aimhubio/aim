@@ -8,7 +8,7 @@ import ListItem from 'components/kit/ListItem/ListItem';
 
 import { IDashboardData } from 'modules/core/api/dashboardsApi';
 
-import { BookmarkIconType } from 'pages/Bookmarks/components/BookmarkCard/BookmarkCard';
+import { BookmarkIconType } from 'pages/Explorers/Bookmarks/components/BookmarkCard/BookmarkCard';
 
 import useDashboardBookmarks from './useDashboardBookmarks';
 

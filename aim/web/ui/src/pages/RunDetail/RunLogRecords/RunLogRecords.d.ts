@@ -13,7 +13,7 @@ export type RunLogRecordType = {
 };
 
 export type RunLogRecordStateType = {
-  runLogRecordsList: RunLogRecordType[];
+  runLogRecordsList: Record<string, RunLogRecordType>;
   runLogRecordsTotalCount: number;
 };
 

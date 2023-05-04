@@ -29,7 +29,7 @@ import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 import { DATE_WITH_SECONDS } from 'config/dates/dates';
 import { PathEnum } from 'config/enums/routesEnum';
 
-import CompareSelectedRunsPopover from 'pages/Metrics/components/Table/CompareSelectedRunsPopover';
+import CompareSelectedRunsPopover from 'pages/Explorers/Metrics/components/Table/CompareSelectedRunsPopover';
 
 import runDetailAppModel from 'services/models/runs/runDetailAppModel';
 import * as analytics from 'services/analytics';

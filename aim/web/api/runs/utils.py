@@ -397,7 +397,7 @@ async def run_log_records_streamer(run: Run, record_range: str) -> bytes:
         start = 0
 
     # range is missing completely
-    log_records_count = logs.last_step()
+    log_records_count = logs.last_step() + 1
 
     if record_range.start is None and record_range.stop is None:
         start = max(log_records_count - 200, 0)

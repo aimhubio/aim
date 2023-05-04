@@ -42,6 +42,37 @@ class CustomObjectApiConfig:
             raise HTTPException(status_code=400, detail='Density must be greater than 0.')
 
     @classmethod
+    def sequence_search_fn(cls,
+                           repo,
+                           query: str,
+                           skip_system: Optional[bool] = True,
+                           record_range: Optional[str] = '', record_density: Optional[int] = 50,
+                           index_range: Optional[str] = '', index_density: Optional[int] = 5,
+                           report_progress: Optional[bool] = True,
+                           x_timezone_offset: int = Header(default=0),):
+        assert issubclass(cls.sequence_type, Sequence)
+
+        record_range = checked_range(record_range)
+        index_range = checked_range(index_range)
+        CustomObjectApiConfig.check_density(record_density)
+        CustomObjectApiConfig.check_density(index_density)
+
+        # TODO [MV, AT]: move to `repo.py` when `SELECT` statements are introduced
+        repo._prepare_runs_cache()
+        query_iterator = QuerySequenceCollection(repo=repo,
+                                                 seq_cls=cls.sequence_type,
+                                                 query=query,
+                                                 report_mode=QueryReportMode.PROGRESS_TUPLE,
+                                                 timezone_offset=x_timezone_offset)
+
+        api = CustomObjectApi(cls.sequence_type.sequence_name(), resolve_blobs=cls.resolve_blobs)
+        api.set_dump_data_fn(cls.dump_record_fn)
+        api.set_trace_collection(query_iterator)
+        api.set_ranges(record_range, record_density, index_range, index_density)
+        streamer = api.search_result_streamer(skip_system, report_progress)
+        return StreamingResponse(streamer)
+
+    @classmethod
     def register_endpoints(cls, router):
         assert issubclass(cls.sequence_type, Sequence)
         seq_name = cls.sequence_type.sequence_name()
@@ -60,25 +91,11 @@ class CustomObjectApiConfig:
             # search Sequence API
             repo = get_project_repo()
             query = checked_query(q)
-            record_range = checked_range(record_range)
-            index_range = checked_range(index_range)
-            CustomObjectApiConfig.check_density(record_density)
-            CustomObjectApiConfig.check_density(index_density)
-
-            # TODO [MV, AT]: move to `repo.py` when `SELECT` statements are introduced
-            repo._prepare_runs_cache()
-            query_iterator = QuerySequenceCollection(repo=repo,
-                                                     seq_cls=cls.sequence_type,
-                                                     query=query,
-                                                     report_mode=QueryReportMode.PROGRESS_TUPLE,
-                                                     timezone_offset=x_timezone_offset)
-
-            api = CustomObjectApi(seq_name, resolve_blobs=cls.resolve_blobs)
-            api.set_dump_data_fn(cls.dump_record_fn)
-            api.set_trace_collection(query_iterator)
-            api.set_ranges(record_range, record_density, index_range, index_density)
-            streamer = api.search_result_streamer(skip_system, report_progress)
-            return StreamingResponse(streamer)
+            return cls.sequence_search_fn(repo, query,
+                                          skip_system=skip_system,
+                                          record_range=record_range, record_density=record_density,
+                                          index_range=index_range, index_density=index_density,
+                                          report_progress=report_progress, x_timezone_offset=x_timezone_offset)
 
         # run sequence batch API
         sequence_batch_endpoint = f'/{{run_id}}/{seq_name}/get-batch/'

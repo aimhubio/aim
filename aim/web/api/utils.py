@@ -4,6 +4,8 @@ import pytz
 from fastapi import APIRouter as FastAPIRouter
 from fastapi import HTTPException
 from fastapi.types import DecoratedCallable
+from starlette.types import ASGIApp, Receive, Scope, Send
+
 from typing import Any, Callable
 
 
@@ -41,3 +43,18 @@ class APIRouter(FastAPIRouter):
             return add_path(func)
 
         return decorator
+
+
+class ResourceCleanupMiddleware:
+    def __init__(
+        self, app: ASGIApp
+    ) -> None:
+        self.app = app
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        from aim.web.api.projects.project import Project
+        await self.app(scope, receive, send)
+
+        # cleanup repo pools after each api call
+        project = Project()
+        project.cleanup_repo_pools()

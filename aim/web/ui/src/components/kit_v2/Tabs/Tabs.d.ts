@@ -1,3 +1,5 @@
+import React from 'react';
+
 import { TabsProps } from '@radix-ui/react-tabs';
 
 export interface ITabsProps extends TabsProps {
@@ -10,11 +12,13 @@ export interface ITabsProps extends TabsProps {
 type TabType = {
   /**
    * @description The label of the tab
-   * @type {string}
+   * @type {string | JSX.Element}
    * @required
    * @example 'Explorers'
    */
-  label: string;
+  label: string | JSX.Element;
+
+  labelRightIcon?: JSX.Element;
   /**
    * @description The value of the tab
    * @type {string}

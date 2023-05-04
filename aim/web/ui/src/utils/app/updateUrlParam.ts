@@ -1,3 +1,5 @@
+import { PathEnum } from 'config/enums/routesEnum';
+
 import getUrlWithParam from 'utils/getUrlWithParam';
 import { setItem } from 'utils/storage';
 
@@ -24,15 +26,13 @@ export default function updateUrlParam({
   const isExistBasePath = (window as any).API_BASE_PATH !== '{{ base_path }}';
 
   const appId: string =
-    window.location.pathname.split('/')[isExistBasePath ? 3 : 2];
+    window.location.pathname.split('/')[isExistBasePath ? 4 : 3];
   if (!appId) {
     let fullURL = url;
-
     if (isExistBasePath) {
       fullURL = fullURL.replace((window as any).API_BASE_PATH, '');
     }
-
-    if (fullURL.startsWith(`/${appName}?`)) {
+    if (fullURL.startsWith(`${PathEnum.Explorers}/${appName}?`)) {
       setItem(`${appName}Url`, fullURL);
     }
   }

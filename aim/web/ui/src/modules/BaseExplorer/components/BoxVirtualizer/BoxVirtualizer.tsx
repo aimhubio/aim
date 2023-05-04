@@ -9,7 +9,7 @@ import { IBoxVirtualizerProps, IBoxVirtualizerGridWindow } from './';
 import './BoxVirtualizer.scss';
 
 function BoxVirtualizer(props: IBoxVirtualizerProps<AimFlatObjectBase>) {
-  const { data = [], container } = props;
+  const { data = [], container, groupByPositionCb } = props;
   const grid = React.useRef<HTMLDivElement>(document.createElement('div'));
   const rafIDRef = React.useRef<number>();
 
@@ -88,11 +88,7 @@ function BoxVirtualizer(props: IBoxVirtualizerProps<AimFlatObjectBase>) {
       item.style.top >= gridWindow.top - item.style.height &&
       item.style.top <= gridWindow.top + gridWindow.height,
   );
-  const groupedByPosition = _.groupBy(filteredItems, (item) => {
-    const rowId = item.groups?.rows ? item.groups.rows[0] : '';
-    const columnId = item.groups?.columns ? item.groups.columns[0] : '';
-    return `${rowId}--${columnId}`;
-  });
+  const groupedByPosition = _.groupBy(filteredItems, groupByPositionCb);
 
   // Find the edges for container size calculation
   const gridSize = React.useMemo(() => {

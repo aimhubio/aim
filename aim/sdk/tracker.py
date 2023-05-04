@@ -233,11 +233,11 @@ class RunTracker:
 
     def _add_value(self, seq_info, val, step, epoch, track_time):
         step_hash = seq_info.step_hash_fn(step)
-        if seq_info.step_view is not None:
-            seq_info.step_view[step_hash] = step
         seq_info.val_view[step_hash] = val
         seq_info.epoch_view[step_hash] = epoch
         seq_info.time_view[step_hash] = track_time
+        if seq_info.step_view is not None:
+            seq_info.step_view[step_hash] = step
 
     @staticmethod
     def _normalized_values(value, name):

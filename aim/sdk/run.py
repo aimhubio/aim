@@ -814,6 +814,7 @@ class Run(BasicRun):
             metrics (CPU, Memory, etc.). Set to `None` to disable system metrics tracking.
          log_system_params (:obj:`bool`, optional): Enable/Disable logging of system params such as installed packages,
             git info, environment variables, etc.
+         capture_terminal_logs (:obj:`bool`, optional): Enable/Disable terminal stdout logging.
     """
 
     @noexcept
