@@ -212,7 +212,7 @@ function GeometriesVisualizer(
       buildScene(geometryBlob, geometryBlobFormat, canvas);
       setLoadingScene(false);
     }
-  }, [geometryBlob]);
+  }, [geometryBlob, geometryBlobFormat]);
 
   return (
     <ErrorBoundary>
