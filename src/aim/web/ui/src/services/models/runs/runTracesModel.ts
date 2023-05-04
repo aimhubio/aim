@@ -182,7 +182,7 @@ async function getRunTraceBatch(isInitial = false) {
     };
   }
 
-  if (traceType === 'figures') {
+  if (traceType === 'figures' || traceType === 'figures3d') {
     getTraceBatchRequestRef = runsService.getBatchByStep(
       state.runHash || '',
       traceType,

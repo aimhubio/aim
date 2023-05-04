@@ -7,6 +7,7 @@ import {
   processTextsData,
   processPlotlyData,
   processAudiosData,
+  processFigures3DData,
 } from './util';
 
 type InputItem = {
@@ -178,6 +179,44 @@ const settings: Record<string, SettingItem> = {
       record_range: {
         defaultValue: -1,
         tooltip: 'Training step. To see figures tracked in the step.',
+        title: 'Step',
+      },
+    },
+  },
+  figures3d: {
+    dataProcessor: processFigures3DData,
+    paramsToApi: (queryData?: QueryData) => {
+      const record_step = queryData?.inputs?.record_range ?? -1;
+      return record_step !== -1
+        ? {
+            record_step,
+            record_density: 1,
+          }
+        : { record_density: 1 };
+    },
+    inputValidation: (min: number | string, max: number | string) => [
+      {
+        errorCondition: (value: string | number) => +value < min,
+        errorText: `Value should be equal or greater then ${min}`,
+      },
+      {
+        errorCondition: (value: string | number) => +value > max,
+        errorText: `Value should be equal or smaller then ${max}`,
+      },
+    ],
+    sliders: {
+      record_range: {
+        defaultValue: [0, 0],
+        tooltip: 'Training step. Increments every time track() is called',
+        title: 'Step',
+        sliderType: 'single',
+        infoPropertyName: 'step',
+      },
+    },
+    inputs: {
+      record_range: {
+        defaultValue: -1,
+        tooltip: 'Training step. To see figures3d tracked in the step.',
         title: 'Step',
       },
     },

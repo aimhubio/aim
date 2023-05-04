@@ -639,6 +639,22 @@ class Repo:
         from aim.sdk.sequences.figure_sequence import Figures
         return QuerySequenceCollection(repo=self, seq_cls=Figures, query=query, report_mode=report_mode)
 
+    def query_figure3d_objects(self,
+                               query: str = '',
+                               report_mode: QueryReportMode = QueryReportMode.PROGRESS_BAR) -> QuerySequenceCollection:
+        """Get Figures collections satisfying query expression.
+
+        Args:
+             query (:obj:`str`): query expression.
+             report_mode(:obj:`QueryReportMode`, optional): indicates report mode
+                (0: DISABLED, 1: PROGRESS BAR, 2: PROGRESS TUPLE). QueryReportMode.PROGRESS_BAR if not specified.
+        Returns:
+            :obj:`SequenceCollection`: Iterable for Figure sequences matching query expression.
+        """
+        self._prepare_runs_cache()
+        from aim.sdk.sequences.figure3d_sequence import Figures3D
+        return QuerySequenceCollection(repo=self, seq_cls=Figures3D, query=query, report_mode=report_mode)
+
     def query_distributions(self,
                             query: str = '',
                             report_mode: QueryReportMode = QueryReportMode.PROGRESS_BAR) -> QuerySequenceCollection:
