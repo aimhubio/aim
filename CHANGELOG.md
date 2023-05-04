@@ -6,6 +6,7 @@
 - Fix issue with overflowing box content in full-view mode in Base Explorers (KaroMourad)
 - Fix issue on git stat collection (mihran113)
 - Import `Image` and `Audio` for `TensorboardFolderTracker` (alansaul)
+- Extend `aim.ext.tensorboard_tracker.run.Run` to allow stdout logging and system stats and parameter logging (alansaul)
 
 ## 3.17.4  May 4, 2023
 
