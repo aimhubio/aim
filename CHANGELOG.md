@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.17.4 
+## 3.17.4  May 4, 2023
 
 - Resolve run messages duplication issue for in progress runs (roubkar)
 - Fix metric values inconsistency with steps (mihran113)
