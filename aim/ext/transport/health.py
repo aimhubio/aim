@@ -5,8 +5,8 @@
 import collections
 import threading
 
-from aim.ext.transport import health_pb2 as health_pb2
-from aim.ext.transport import health_pb2_grpc as health_pb2_grpc
+from aim.ext.transport.proto import health_pb2 as health_pb2
+from aim.ext.transport.proto import health_pb2_grpc as health_pb2_grpc
 
 
 # The service name of the health checking servicer.

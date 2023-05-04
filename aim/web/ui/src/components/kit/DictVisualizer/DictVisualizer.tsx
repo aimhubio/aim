@@ -113,7 +113,16 @@ function DictVisualizerRow(props: IDictVisualizerRowProps) {
   const { row, style, index, collapseToggler, isCollapsed, rowsCount } = props;
 
   return (
-    <div key={row.key} className='DictVisualizer__row' style={style}>
+    <div
+      key={row.key}
+      className='DictVisualizer__row'
+      style={{
+        ...style,
+        ...(style?.width === '100%'
+          ? { minWidth: '100%', width: 'unset' }
+          : {}),
+      }}
+    >
       {index !== 0 &&
         index !== rowsCount - 1 &&
         Array(row.level + 1)
@@ -168,7 +177,7 @@ function DictVisualizerRow(props: IDictVisualizerRowProps) {
       {row.copyContent && (
         <CopyToClipBoard
           className='DictVisualizer__row__copy'
-          iconSize='xxSmall'
+          iconSize='xs'
           copyContent={row.copyContent}
         />
       )}

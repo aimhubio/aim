@@ -1,4 +1,10 @@
 const ENDPOINTS = {
+  DATA: {
+    BASE: '/data',
+    GET: '',
+    FETCH: 'fetch',
+  },
+
   PROJECTS: {
     BASE: '/projects',
     GET: '',
@@ -18,6 +24,9 @@ const ENDPOINTS = {
     GET: '',
     CREATE: '',
     SEARCH: 'search',
+    GET_ACTIVITY: 'activity',
+    GET_NOTE: 'note',
+    CREATE_NOTE: 'note',
   },
 
   DASHBOARDS: {
@@ -34,6 +43,7 @@ const ENDPOINTS = {
     UPDATE: '',
     DELETE: '',
   },
+
   RELEASE_NOTES: {
     BASE: 'https://api.github.com/repos/aimhubio/aim/releases',
     GET: '',

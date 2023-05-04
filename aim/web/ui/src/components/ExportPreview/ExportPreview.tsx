@@ -1,8 +1,6 @@
 import React from 'react';
 import moment from 'moment';
 
-import { Grid } from '@material-ui/core';
-
 import { Dropdown, InputWrapper, Modal, Slider, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
@@ -14,7 +12,8 @@ import * as analytics from 'services/analytics';
 import { downloadLink, getSVGString, imgSource2Image } from 'utils/helper';
 
 import { FORMAT_ENUM, PREVIEW_BOUNDS, PREVIEW_MODAL_DIMENSION } from './config';
-import { IExportPreviewProps } from './ExportPreview.d';
+
+import { IExportPreviewProps } from '.';
 
 import './ExportPreview.scss';
 
@@ -24,9 +23,12 @@ function ExportPreview({
   withDynamicDimensions = false,
   explorerPage = 'metrics',
   children,
+  appendElement = null,
 }: IExportPreviewProps): React.FunctionComponentElement<React.ReactNode> {
-  const containerRef = React.useRef<HTMLDivElement>(null);
+  const gridRef = React.useRef<HTMLDivElement>(null);
   const previewRef = React.useRef<HTMLDivElement>(null);
+  const appendElRef = React.useRef<HTMLDivElement>(null);
+
   const [processing, setProcessing] = React.useState<boolean>(false);
   const [openFormatDropdown, setOpenFormatDropdown] =
     React.useState<boolean>(false);
@@ -54,91 +56,185 @@ function ExportPreview({
     [],
   );
 
-  const getSVGWrapper = React.useCallback(
-    (chartPanel: HTMLElement): SVGSVGElement => {
-      const { scrollWidth: panelWidth, scrollHeight: panelHeight } = chartPanel;
-      const nameSpace = 'http://www.w3.org/2000/svg';
-      let wrapper: SVGSVGElement = document.createElementNS(nameSpace, 'svg');
-      wrapper.setAttribute('width', `${panelWidth}px`);
-      wrapper.setAttribute('height', `${panelHeight}px`);
-      wrapper.setAttribute('viewBox', `0 0 ${panelWidth} ${panelHeight}`);
-      wrapper.setAttribute('preserveAspectRatio', 'xMidYMid meet');
-      if (format !== FORMAT_ENUM.PNG) {
-        wrapper.style.backgroundColor = 'white';
-        wrapper.style.fill = 'white';
-      }
-      const svgElements = chartPanel.querySelectorAll('svg');
-      const gridColumns = Math.round(panelWidth / svgElements[0].clientWidth);
+  const appendVizNodes = React.useCallback(
+    (
+      wrapper: SVGSVGElement,
+      chartGrid: HTMLElement,
+      imgFormat: FORMAT_ENUM,
+    ) => {
+      const svgVizNodes = chartGrid.querySelectorAll('svg.Visualization');
+      const gridColumns = Math.round(
+        chartGrid.scrollWidth / svgVizNodes[0].clientWidth,
+      );
       let gridRows = 0;
-      svgElements?.forEach((svgElement, index) => {
+      svgVizNodes?.forEach((svgVizNode, index) => {
         if (index !== 0 && index % gridColumns === 0) {
           gridRows++;
         }
         const clearedSvgElement = clearChart(
-          svgElement.cloneNode(true) as SVGSVGElement,
+          svgVizNode.cloneNode(true) as SVGSVGElement,
         );
         const columnIndex = index % gridColumns;
         clearedSvgElement.setAttribute(
           'x',
-          columnIndex * svgElement.clientWidth + 'px',
+          columnIndex * svgVizNode.clientWidth + 'px',
         );
         if (gridRows) {
           clearedSvgElement.setAttribute(
             'y',
-            gridRows * svgElement.clientHeight + 'px',
+            gridRows * svgVizNode.clientHeight + 'px',
           );
         }
         const rect = clearedSvgElement.querySelector('rect');
-        if (rect && format !== FORMAT_ENUM.PNG) {
+        if (rect && imgFormat !== FORMAT_ENUM.PNG) {
           clearedSvgElement.style.backgroundColor = 'white';
           clearedSvgElement.style.fill = 'white';
           rect.style.fill = 'white';
         }
         wrapper.appendChild(clearedSvgElement);
       });
+    },
+    [clearChart],
+  );
+
+  const appendLegends = React.useCallback(
+    (
+      wrapper: SVGSVGElement,
+      chartLegends: HTMLElement | null,
+      gridWidth: number,
+      gridHeight: number,
+      format: FORMAT_ENUM,
+    ) => {
+      const svgLegendNode = chartLegends?.querySelector('svg.Legends');
+      if (chartLegends && svgLegendNode) {
+        const { scrollWidth: legendsWidth, scrollHeight: legendsHeight } =
+          svgLegendNode;
+        const clonedSVGNode = svgLegendNode.cloneNode(true) as SVGSVGElement;
+        clonedSVGNode.setAttribute('x', gridWidth + 'px');
+        clonedSVGNode.setAttribute('y', '0px');
+
+        const width = gridWidth + legendsWidth;
+        const height = legendsHeight > gridHeight ? legendsHeight : gridHeight;
+
+        wrapper.setAttribute('width', width + 'px');
+        wrapper.setAttribute('height', height + 'px');
+        wrapper.setAttribute('viewBox', `0 0 ${width} ${height}`);
+
+        if (format !== FORMAT_ENUM.PNG) {
+          clonedSVGNode.style.backgroundColor = 'white';
+          clonedSVGNode.style.fill = 'white';
+        }
+        wrapper.appendChild(clonedSVGNode);
+        return { width, height };
+      }
+      return { width: gridWidth, height: gridHeight };
+    },
+    [],
+  );
+
+  const createSVGWrapper = React.useCallback(
+    (width: number, height: number, format: FORMAT_ENUM): SVGSVGElement => {
+      const nameSpace = 'http://www.w3.org/2000/svg';
+      let wrapper: SVGSVGElement = document.createElementNS(nameSpace, 'svg');
+      wrapper.setAttribute('width', `${width}px`);
+      wrapper.setAttribute('height', `${height}px`);
+      wrapper.setAttribute('viewBox', `0 0 ${width} ${height}`);
+      wrapper.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+      if (format !== FORMAT_ENUM.PNG) {
+        wrapper.style.backgroundColor = 'white';
+        wrapper.style.fill = 'white';
+      }
       return wrapper;
     },
-    [clearChart, format],
+    [],
+  );
+
+  const getExportFunc = React.useCallback(
+    (
+      svgWrapper: SVGSVGElement,
+      fileName: string,
+      width: number,
+      height: number,
+    ) => {
+      const svgString = getSVGString(svgWrapper);
+      const imgSrc =
+        'data:image/svg+xml;base64,' +
+        btoa(unescape(encodeURIComponent(svgString))); // Convert SVG string to data URL
+
+      const imgSrcExportDict = {
+        [FORMAT_ENUM.SVG]: () => downloadLink(imgSrc, fileName || 'name'),
+        [FORMAT_ENUM.PNG]: () =>
+          imgSource2Image({
+            imgSrc,
+            width,
+            height,
+            format: FORMAT_ENUM.PNG,
+            callback: (blob) => {
+              const src = URL.createObjectURL(blob);
+              downloadLink(src, fileName || 'name');
+            },
+          }),
+        [FORMAT_ENUM.JPEG]: () =>
+          imgSource2Image({
+            imgSrc,
+            width,
+            height,
+            format: FORMAT_ENUM.JPEG,
+            callback: (blob) => {
+              const src = URL.createObjectURL(blob);
+              downloadLink(src, fileName || 'name');
+            },
+          }),
+      };
+
+      return imgSrcExportDict;
+    },
+    [],
   );
 
   const onExportImage = React.useCallback((): void => {
-    const chartPanel = containerRef.current;
-    if (chartPanel) {
-      setProcessing(true);
-      const svgWrapper = getSVGWrapper(chartPanel);
-      try {
-        const svgString = getSVGString(svgWrapper);
-        const imgSrc =
-          'data:image/svg+xml;base64,' +
-          btoa(unescape(encodeURIComponent(svgString))); // Convert SVG string to data URL
-        switch (format) {
-          case FORMAT_ENUM.SVG:
-            downloadLink(imgSrc, fileName || 'name');
-            break;
-          default:
-            imgSource2Image({
-              imgSrc,
-              width: chartPanel.scrollWidth,
-              height: chartPanel.scrollHeight,
-              format,
-              callback: (blob) => {
-                const src = URL.createObjectURL(blob);
-                downloadLink(src, fileName || 'name');
-              },
-            });
+    setProcessing(true);
+    try {
+      const chartGrid = gridRef.current;
+      if (chartGrid) {
+        const { scrollWidth: gridWidth, scrollHeight: gridHeight } = chartGrid;
+
+        const svgWrapper = createSVGWrapper(gridWidth, gridHeight, format);
+        appendVizNodes(svgWrapper, chartGrid, format);
+
+        const chartLegends = appendElRef.current;
+
+        const { width: imgWidth, height: imgHeight } = appendLegends(
+          svgWrapper,
+          chartLegends,
+          gridWidth,
+          gridHeight,
+          format,
+        );
+
+        const exportFunc = getExportFunc(
+          svgWrapper,
+          fileName,
+          imgWidth,
+          imgHeight,
+        )[format];
+
+        if (typeof exportFunc === 'function') {
+          exportFunc();
         }
+
         analytics.trackEvent(
           ANALYTICS_EVENT_KEYS[explorerPage].chart.controls.exportChart,
         );
-      } catch (err) {
-        // eslint-disable-next-line no-console
-        console.error(err);
-      } finally {
-        setProcessing(false);
       }
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(err);
+    } finally {
+      setProcessing(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [format, getSVGWrapper, fileName]);
+  }, [format, createSVGWrapper, fileName, appendLegends, appendVizNodes]);
 
   const formatOptions = React.useMemo(
     () =>
@@ -154,9 +250,11 @@ function ExportPreview({
       if (previewRef.current) {
         if (dimensions.hasOwnProperty('height')) {
           previewRef.current.style.height = `${dimensions['height']}px`;
+          previewRef.current.style.minHeight = `${dimensions['height']}px`;
         }
         if (dimensions.hasOwnProperty('width')) {
           previewRef.current.style.width = `${dimensions['width']}px`;
+          previewRef.current.style.minWidth = `${dimensions['width']}px`;
         }
       }
     },
@@ -208,20 +306,24 @@ function ExportPreview({
       >
         <div className='ExportPreview__container'>
           <div ref={previewRef} style={PREVIEW_MODAL_DIMENSION}>
-            <Grid
-              ref={containerRef}
-              container
-              className='ExportPreview__container__grid'
-            >
+            <div ref={gridRef} className='ExportPreview__container__grid'>
               {children}
-            </Grid>
+            </div>
           </div>
+          {!!appendElement && (
+            <div
+              ref={appendElRef}
+              className='ExportPreview__container__appendElement'
+            >
+              {appendElement}
+            </div>
+          )}
         </div>
         <div className='ExportPreview__controls'>
           {withDynamicDimensions && (
             <div className='ExportPreview__controls__dimension'>
               <div className='ExportPreview__controls__dimension__width'>
-                <Text size={14}>Image Width</Text>
+                <Text size={14}>Chart Width</Text>
                 <Slider
                   aria-label='Width'
                   valueLabelDisplay='auto'

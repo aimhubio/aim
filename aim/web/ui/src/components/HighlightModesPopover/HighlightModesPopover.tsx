@@ -32,15 +32,15 @@ function HighlightModesPopover({
           Highlight Off
         </MenuItem>
         <MenuItem
-          data-name={HighlightEnum.Run}
-          selected={mode === HighlightEnum.Run}
+          data-name={HighlightEnum.Metric}
+          selected={mode === HighlightEnum.Metric}
           onClick={handleClick}
         >
           Highlight Metric on Hover
         </MenuItem>
         <MenuItem
-          data-name={HighlightEnum.Metric}
-          selected={mode === HighlightEnum.Metric}
+          data-name={HighlightEnum.Run}
+          selected={mode === HighlightEnum.Run}
           onClick={handleClick}
         >
           Highlight Run On Hover

@@ -22,7 +22,7 @@ export const AIM64_ENCODING_PREFIX = 'O-';
 
 export function aim64encode(value: Record<string, unknown>) {
   const json_encoded = JSON.stringify(value);
-  let aim64_encoded = btoa(json_encoded);
+  let aim64_encoded = btoa(encodeURI(json_encoded));
   for (let { searchValue, replaceValue } of BS64_REPLACE_CHARACTERS.ENCODING) {
     aim64_encoded = aim64_encoded.replaceAll(searchValue, replaceValue);
   }
@@ -39,7 +39,7 @@ export function aim64decode(aim64_encoded: string) {
   }
   // add padding `=` characters back to make the encoded string length a multiple of 4
   bs64_encoded += BS64_ENCODING_PADDING[bs64_encoded.length % 4];
-  return atob(bs64_encoded);
+  return decodeURI(atob(bs64_encoded));
 }
 
 export function encode(

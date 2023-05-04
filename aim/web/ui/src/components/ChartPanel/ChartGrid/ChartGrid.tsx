@@ -7,7 +7,7 @@ import { CHART_TYPES_CONFIG } from 'components/ChartPanel/config';
 
 import { GRID_SIZE, CHART_GRID_PATTERN } from 'config/charts';
 
-import { IChartGridProps } from './ChartGrid.d';
+import { IChartGridProps } from '.';
 
 import './ChartGrid.scss';
 
@@ -21,6 +21,7 @@ function ChartGrid({
   syncHoverState,
   resizeMode,
   chartPanelOffsetHeight,
+  onMount,
 }: IChartGridProps): React.FunctionComponentElement<React.ReactNode> {
   function getGridSize(dataLength: number, index: number): GridSize {
     return (
@@ -45,6 +46,7 @@ function ChartGrid({
               index={index}
               {...chartProps[index]}
               readOnly={readOnly}
+              onMount={onMount}
               data={chartData}
               syncHoverState={syncHoverState}
               resizeMode={resizeMode}

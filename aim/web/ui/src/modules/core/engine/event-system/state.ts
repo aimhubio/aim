@@ -41,7 +41,7 @@ function createState<TStore>(
         }),
         false,
         // @ts-ignore
-        '@EVENTS/setEventPayload',
+        `@EVENTS/set_${eventName}_Payload`,
       ),
     /**
      * Function to get the preserved payload of the event

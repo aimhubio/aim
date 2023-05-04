@@ -1,11 +1,9 @@
 import * as React from 'react';
-import { FunctionComponent } from 'react';
 
 import { PipelineStatusEnum } from 'modules/core/engine/types';
 import { IVisualizationsProps } from 'modules/BaseExplorer/types';
 import VisualizerPanel from 'modules/BaseExplorer/components/VisualizerPanel';
-
-import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
+import VisualizerRangePanel from 'modules/BaseExplorer/components/RangePanel';
 
 import ProgressBar from '../ProgressBar';
 
@@ -17,57 +15,53 @@ function Visualizations(props: IVisualizationsProps) {
     engine: { pipeline, useStore },
     components,
     visualizers,
+    forceRenderVisualizations,
+    displayProgress,
+    getStaticContent,
   } = props;
 
-  const status = useStore(pipeline.statusSelector);
+  const status: PipelineStatusEnum = useStore(pipeline.statusSelector);
 
-  const Visualizations = React.useMemo(() => {
-    return Object.keys(visualizers).map((name: string, index: number) => {
-      const visualizer = visualizers[name];
-      const Viz = visualizer.component as FunctionComponent;
-
-      return (
-        <Viz
-          key={Viz.displayName || name}
-          // @ts-ignore
-          engine={engine}
-          name={name}
-          box={visualizer.box.component}
-          hasDepthSlider={visualizer.box.hasDepthSlider}
-          panelRenderer={() => (
-            <VisualizerPanel
-              engine={engine}
-              // @ts-ignore
-              controls={visualizer.controlsContainer}
-              // @ts-ignore
-              grouping={index === 0 ? components.grouping : null}
-              visualizationName={name}
-            />
-          )}
-        />
-      );
-    });
-  }, [components, engine, visualizers]);
-
-  const renderIllustration = React.useMemo(
+  const Visualizations: React.ReactNode = React.useMemo(
     () =>
-      [
-        PipelineStatusEnum.NeverExecuted,
-        PipelineStatusEnum.Empty,
-        PipelineStatusEnum.Insufficient_Resources,
-        PipelineStatusEnum.Failed,
-      ].indexOf(status) !== -1,
-    [status],
+      Object.keys(visualizers).map((name: string, index: number) => {
+        const visualizer = visualizers[name];
+        const VisualizerComponent = visualizer.component;
+
+        return VisualizerComponent ? (
+          <VisualizerComponent
+            key={VisualizerComponent.displayName || name}
+            engine={engine}
+            name={name}
+            box={visualizer.box.component}
+            boxStacking={visualizer.box.stacking}
+            topPanelRenderer={() => (
+              <VisualizerPanel
+                engine={engine}
+                controls={visualizer.controlsContainer}
+                grouping={index === 0 ? components.grouping : null}
+                visualizationName={name}
+              />
+            )}
+            bottomPanelRenderer={() => <VisualizerRangePanel engine={engine} />}
+            widgets={visualizer.widgets}
+          />
+        ) : null;
+      }),
+    [components, engine, visualizers],
   );
+
+  const Content = React.useMemo(() => {
+    if (!forceRenderVisualizations && typeof getStaticContent === 'function') {
+      return getStaticContent(status) || Visualizations;
+    }
+    return Visualizations;
+  }, [status, Visualizations, getStaticContent, forceRenderVisualizations]);
 
   return (
     <div className='Visualizations'>
-      <ProgressBar engine={engine} />
-      {renderIllustration ? (
-        <IllustrationBlock size='xLarge' page='figures' type={status} />
-      ) : (
-        Visualizations
-      )}
+      {displayProgress && <ProgressBar engine={engine} />}
+      {Content}
     </div>
   );
 }

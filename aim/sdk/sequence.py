@@ -190,7 +190,7 @@ class SequenceV2Data(SequenceData):
             steps = np.fromiter(self.steps.values(), np.intp)
             columns = [np.fromiter(arr.values(), arr.dtype) for arr in self.arrays]
         else:
-            last_step = self.meta_tree['last_step']
+            last_step = self.meta_tree.get('last_step', None)
             steps = np.fromiter(islice(self.steps.values(), self.n_items), np.intp)
             columns = [np.fromiter(islice(arr.values(), self.n_items), arr.dtype) for arr in self.arrays]
 
@@ -339,25 +339,26 @@ class Sequence(Generic[T]):
     def preload(self):
         self.series_tree.preload()
 
-
-class MediaSequenceBase(Sequence):
-    """Helper class for media sequence types."""
-
-    collections_allowed = True
-
     def first_step(self):
         """Get sequence tracked first step.
 
         Required to implement ranged and sliced data fetching.
         """
-        return self._meta_tree['first_step']
+        return self._meta_tree.get('first_step', 0)
 
     def last_step(self):
         """Get sequence tracked last step.
 
         Required to implement ranged and sliced data fetching.
         """
-        return self._meta_tree['last_step']
+        # fallback to first_step() if 'last_step' key is not yet written
+        return self._meta_tree.get('last_step', self.first_step())
+
+
+class MediaSequenceBase(Sequence):
+    """Helper class for media sequence types."""
+
+    collections_allowed = True
 
     def record_length(self):
         """Get tracked records longest list length or `None` if Text objects are tracked.

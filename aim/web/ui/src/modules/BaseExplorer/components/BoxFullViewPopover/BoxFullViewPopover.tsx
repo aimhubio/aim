@@ -25,7 +25,7 @@ import './BoxFullViewPopover.scss';
 function BoxFullViewPopover({
   onClose,
   sequenceName,
-  groupInfo,
+  itemGroupInfo,
   children,
   item,
 }: IBoxFullViewPopoverProps) {
@@ -43,6 +43,20 @@ function BoxFullViewPopover({
               component={RouteLink}
             >
               {runData.name}
+            </Link>
+          ),
+        },
+        {
+          icon: 'link',
+          value: (
+            <Link
+              to={PathEnum.Experiment.replace(
+                ':experimentId',
+                runData.experimentId,
+              )}
+              component={RouteLink}
+            >
+              {runData.experiment}
             </Link>
           ),
         },
@@ -87,9 +101,9 @@ function BoxFullViewPopover({
     return {
       runInfo,
       sequence,
-      groups: groupInfo,
+      groups: itemGroupInfo,
     };
-  }, [item, sequenceName, groupInfo]);
+  }, [item, sequenceName, itemGroupInfo]);
 
   return (
     <ErrorBoundary>
@@ -144,12 +158,14 @@ function BoxFullViewPopover({
                     {item.label}:
                   </Text>
                   <Tooltip title={item.value}>
-                    <Text
-                      tint={100}
-                      className='BoxFullViewPopover__container__detail__truncatedInfo'
-                    >
-                      {item.value}
-                    </Text>
+                    <div>
+                      <Text
+                        tint={100}
+                        className='BoxFullViewPopover__container__detail__truncatedInfo'
+                      >
+                        {item.value}
+                      </Text>
+                    </div>
                   </Tooltip>
                 </div>
               ))}

@@ -12,7 +12,6 @@
     "plugin:react/recommended",
     "plugin:react-hooks/recommended",
     "plugin:prettier/recommended",
-    "plugin:prettier/recommended",
     "prettier"
   ],
   "rules": {
@@ -87,6 +86,11 @@
             "position": "before"
           },
           {
+            "pattern": "modules/**",
+            "group": "parent",
+            "position": "before"
+          },
+          {
             "pattern": "pages/**",
             "group": "parent",
             "position": "before"
@@ -107,6 +111,11 @@
             "position": "before"
           },
           {
+            "pattern": "tests/**",
+            "group": "parent",
+            "position": "before"
+          },
+          {
             "pattern": "types/**",
             "group": "parent",
             "position": "before"
@@ -123,10 +132,5 @@
       }
     ]
   },
-  "plugins": [
-    "react",
-    "prettier",
-    "react-hooks",
-    "@typescript-eslint"
-  ]
+  "plugins": ["react", "prettier", "react-hooks", "@typescript-eslint"]
 }

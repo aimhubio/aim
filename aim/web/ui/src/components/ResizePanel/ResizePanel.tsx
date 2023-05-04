@@ -33,14 +33,7 @@ function ResizePanel({
             resizeMode={resizeMode}
             onTableResizeModeChange={onTableResizeModeChange}
           />
-        ) : (
-          <div className='ResizePanel__dots'>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
-        )}
+        ) : null}
       </div>
     </ErrorBoundary>
   );

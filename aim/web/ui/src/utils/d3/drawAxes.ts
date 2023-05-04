@@ -308,18 +308,6 @@ function drawAxes(args: IDrawAxesArgs): void {
       }),
     );
 
-    // TODO need to check necessity
-    // if (
-    //   axesScaleType.xAxis === ScaleEnum.Log &&
-    //   alignmentConfig?.type === AlignmentOptionsEnum.ABSOLUTE_TIME
-    // ) {
-    //   ticks
-    //     ?.select('text')
-    //     .attr('transform', 'rotate(-12)')
-    //     .attr('y', '12')
-    //     .attr('x', '-20');
-    // }
-
     ticks?.select('line').attr('stroke', '#8E9BAE').attr('y1', '6');
 
     if (!drawBgTickLines.x) {

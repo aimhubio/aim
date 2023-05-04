@@ -8,7 +8,7 @@ import { Icon } from 'components/kit';
 
 import useCodeHighlighter from 'hooks/useCodeHighlighter';
 
-import { BookmarkIconType } from 'pages/Bookmarks/components/BookmarkCard/BookmarkCard';
+import { BookmarkIconType } from 'pages/Explorers/Bookmarks/components/BookmarkCard/BookmarkCard';
 
 import { encode } from 'utils/encoder/encoder';
 

@@ -56,7 +56,9 @@ def create_app():
     from aim.web.api.dashboard_apps.views import dashboard_apps_router
     from aim.web.api.dashboards.views import dashboards_router
     from aim.web.api.projects.views import projects_router
+    from aim.web.api.queries.views import query_router
     from aim.web.api.views import statics_router
+    from aim.web.api.utils import ResourceCleanupMiddleware
     from aim.web.configs import AIM_UI_BASE_PATH
 
     from aim.web.api.projects.project import Project
@@ -64,11 +66,12 @@ def create_app():
 
     # The indexing thread has to run in the same process as the uvicorn app itself.
     # This allows sharing state of indexing using memory instead of process synchronization methods.
-    index_mng = RepoIndexManager.get_index_manager(Project().repo.path)
+    index_mng = RepoIndexManager.get_index_manager(Project().repo)
     index_mng.start_indexing_thread()
 
     api_app = FastAPI()
-    api_app.add_middleware(GZipMiddleware)
+    api_app.add_middleware(GZipMiddleware, compresslevel=1)
+    api_app.add_middleware(ResourceCleanupMiddleware)
     api_app.add_exception_handler(HTTPException, http_exception_handler)
     api_app.add_exception_handler(Exception, fallback_exception_handler)
 
@@ -84,6 +87,7 @@ def create_app():
     api_app.include_router(projects_router, prefix='/projects')
     api_app.include_router(runs_router, prefix='/runs')
     api_app.include_router(tags_router, prefix='/tags')
+    api_app.include_router(query_router, prefix='/data')
 
     base_path = os.environ.get(AIM_UI_BASE_PATH, '')
 

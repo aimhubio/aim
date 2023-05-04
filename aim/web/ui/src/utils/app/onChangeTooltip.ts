@@ -15,12 +15,12 @@ import updateURL from './updateURL';
 
 export default function onChangeTooltip<M extends State>({
   tooltip,
-  groupingItems,
+  groupingNames,
   model,
   appName,
 }: {
   tooltip: Partial<ITooltip>;
-  groupingItems: GroupNameEnum[];
+  groupingNames: GroupNameEnum[];
   model: IModel<M>;
   appName: string;
 }): void {
@@ -51,7 +51,7 @@ export default function onChangeTooltip<M extends State>({
     const tooltipData = {
       ...configData?.chart?.tooltip,
       content: getTooltipContent({
-        groupingItems,
+        groupingNames,
         groupingSelectOptions,
         data: data as IMetricsCollection<any>[],
         configData,

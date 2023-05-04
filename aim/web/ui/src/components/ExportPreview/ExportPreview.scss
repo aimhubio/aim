@@ -1,13 +1,18 @@
 @use 'src/styles/abstracts' as *;
 
 .ExportPreview {
-  .ChartGrid {
+  .ChartGrid, .ChartLegends {
     height: 100%;
     margin: 0;
     padding: 0;
     box-shadow: none;
     border: none;
     outline: none;
+  }
+  .ChartLegends {
+    &__container {
+     overflow: visible;
+    }
   }
   &__modal {
     & > .Modal {
@@ -29,11 +34,19 @@
     height: 62vh;
     overflow: auto;
     margin: toRem(1px);
-    border-radius: $border-radius-lg;
+    border-radius: $border-radius-sm;
     box-shadow: 0 0 0 toRem(1px) $cuddle;
+    display: flex;
     &__grid {
       height: 100%;
+      width: 100%;
       margin: 0;
+      display: flex;
+      flex-wrap: wrap;
+    }
+    &__appendElement {
+      height: 100%;
+      width: 100%;
     }
   }
   &__controls {

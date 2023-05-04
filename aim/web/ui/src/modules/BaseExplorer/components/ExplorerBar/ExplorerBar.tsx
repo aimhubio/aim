@@ -1,13 +1,14 @@
 import React, { useCallback } from 'react';
 
 import { MenuItem } from '@material-ui/core';
-import { IExplorerBarProps } from 'modules/BaseExplorer/types';
-import { PipelineStatusEnum } from 'modules/core/engine/types';
 
 import AppBar from 'components/AppBar/AppBar';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import { Button, Icon } from 'components/kit';
+
+import { PipelineStatusEnum } from 'modules/core/engine/types';
+import { IExplorerBarProps } from 'modules/BaseExplorer/types';
 
 import './ExplorerBar.scss';
 
@@ -17,7 +18,7 @@ function ExplorerBar(props: IExplorerBarProps) {
   const disableResetControls = React.useMemo(
     () =>
       [
-        PipelineStatusEnum.NeverExecuted,
+        PipelineStatusEnum.Never_Executed,
         PipelineStatusEnum.Empty,
         PipelineStatusEnum.Insufficient_Resources,
         PipelineStatusEnum.Executing,
@@ -82,4 +83,4 @@ function ExplorerBar(props: IExplorerBarProps) {
   );
 }
 
-export default ExplorerBar;
+export default React.memo(ExplorerBar);

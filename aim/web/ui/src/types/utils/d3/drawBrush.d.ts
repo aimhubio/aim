@@ -7,7 +7,7 @@ import { IAxesScaleRange } from 'types/components/AxesPropsPopover/AxesPropsPopo
 import { IGetAxesScaleProps } from './getAxisScale';
 
 export interface IDrawBrushArgs extends IGetAxesScaleProps {
-  index: number;
+  id: string;
   plotBoxRef: React.MutableRefObject<>;
   plotNodeRef: React.MutableRefObject<>;
   visBoxRef: React.MutableRefObject<>;

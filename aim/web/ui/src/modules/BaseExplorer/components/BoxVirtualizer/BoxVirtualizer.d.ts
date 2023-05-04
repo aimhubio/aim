@@ -1,8 +1,16 @@
 import React from 'react';
 
+import { IWidgetRendererProps } from '../../types';
+
 export interface IBoxVirtualizerProps<T> {
   data: Array<T>;
-  itemsRenderer: (value: [groupId: string, items: Array<T>]) => React.ReactNode;
+  container: React.MutableRefObject<HTMLDivElement>;
+  itemsRenderer: (
+    value: [boxId: string, boxItems: Array<T>],
+    boxIndex: number,
+  ) => React.ReactNode;
+  widgetRenderer?: (props: IWidgetRendererProps) => React.ReactNode;
+  groupByPositionCb: (item: T) => string;
   offset: number;
   axisData?: {
     columns?: any;
@@ -12,4 +20,11 @@ export interface IBoxVirtualizerProps<T> {
     columns?: (item: any, i: number) => React.ReactNode;
     rows?: (item: any, i: number) => React.ReactNode;
   };
+}
+
+export interface IBoxVirtualizerGridWindow {
+  top: number;
+  left: number;
+  width: number;
+  height: number;
 }

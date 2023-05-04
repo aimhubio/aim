@@ -21,8 +21,10 @@ class ProxyTree(TreeView):
     def __init__(self, client: 'Client',
                  name: str,
                  sub: str,
+                 *,
                  read_only: bool,
                  from_union: bool = False,
+                 no_cache: bool = False,
                  index=False,
                  timeout=None):
         self._resources: ProxyTreeAutoClean = None
@@ -37,12 +39,14 @@ class ProxyTree(TreeView):
             'from_union': from_union,
             'index': index,
             'timeout': timeout,
+            'no_cache': no_cache,
         }
         self.init_args = pack_args(encode_tree(kwargs))
         self.resource_type = 'TreeView'
         handler = self._rpc_client.get_resource_handler(self, self.resource_type, args=self.init_args)
 
         self._resources = ProxyTreeAutoClean(self)
+        self._resources.hash = sub
         self._resources.rpc_client = client
         self._resources.handler = handler
         self._handler = handler
@@ -82,10 +86,18 @@ class ProxyTree(TreeView):
     ):
         self._rpc_client.run_instruction(self._hash, self._handler, '__delitem__', (path,), is_write_only=True)
 
+    def set(
+        self,
+        path: Union[AimObjectKey, AimObjectPath],
+        value: AimObject,
+        strict: bool = True
+    ):
+        self._rpc_client.run_instruction(self._hash, self._handler, 'set', (path, value, strict), is_write_only=True)
+
     def __setitem__(
-            self,
-            path: Union[AimObjectKey, AimObjectPath],
-            value: AimObject
+        self,
+        path: Union[AimObjectKey, AimObjectPath],
+        value: AimObject
     ):
         self._rpc_client.run_instruction(self._hash, self._handler, '__setitem__', (path, value), is_write_only=True)
 
@@ -201,6 +213,14 @@ class SubtreeView(TreeView):
         path: Union[AimObjectKey, AimObjectPath]
     ):
         del self.tree[self.absolute_path(path)]
+
+    def set(
+        self,
+        path: Union[AimObjectKey, AimObjectPath],
+        value: AimObject,
+        strict: bool = True
+    ):
+        self.tree.set(self.absolute_path(path), value, strict)
 
     def __setitem__(
             self,

@@ -27,10 +27,14 @@ import Spinner from 'components/kit/Spinner';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 import { DATE_WITH_SECONDS } from 'config/dates/dates';
+import { PathEnum } from 'config/enums/routesEnum';
+
+import CompareSelectedRunsPopover from 'pages/Explorers/Metrics/components/Table/CompareSelectedRunsPopover';
 
 import runDetailAppModel from 'services/models/runs/runDetailAppModel';
 import * as analytics from 'services/analytics';
 import notesModel from 'services/models/notes/notesModel';
+import { AppNameEnum } from 'services/models/explorer';
 
 import { setDocumentTitle } from 'utils/document/documentTitle';
 import { processDurationTime } from 'utils/processDurationTime';
@@ -72,12 +76,16 @@ const RunOverviewTab = React.lazy(
 const RunLogsTab = React.lazy(
   () => import(/* webpackChunkName: "RunLogsTab" */ './RunLogsTab'),
 );
+const RunLogRecords = React.lazy(
+  () => import(/* webpackChunkName: "RunLogRecords" */ './RunLogRecords'),
+);
 
-const tabs: { [key: string]: string } = {
+const tabs: Record<string, string> = {
   overview: 'Overview',
   run_parameters: 'Run Params',
   notes: 'Notes',
   logs: 'Logs',
+  messages: 'Messages',
   metrics: 'Metrics',
   system: 'System',
   distributions: 'Distributions',
@@ -89,26 +97,21 @@ const tabs: { [key: string]: string } = {
 };
 
 function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
-  let runsOfExperimentRequestRef: any = null;
+  const { runHash } = useParams<{ runHash: string }>();
+  const history = useHistory();
+  const { url } = useRouteMatch();
+  const { pathname } = useLocation();
   const runData = useModel(runDetailAppModel);
 
+  let runsOfExperimentRequestRef: any = null;
   const containerRef = React.useRef<HTMLDivElement | any>(null);
   const [dateNow, setDateNow] = React.useState(Date.now());
   const [isRunSelectDropdownOpen, setIsRunSelectDropdownOpen] =
     React.useState(false);
-  const { runHash } = useParams<{ runHash: string }>();
-  const { url } = useRouteMatch();
-  const location = useLocation();
-  const [activeTab, setActiveTab] = React.useState(location.pathname);
-  const history = useHistory();
-
-  React.useEffect(() => {
-    redirect();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const [activeTab, setActiveTab] = React.useState(pathname);
 
   function redirect(): void {
-    const splitPathname: string[] = location.pathname.split('/');
+    const splitPathname: string[] = pathname.split('/');
     const path: string = `${url}/overview`;
     if (splitPathname.length > 4) {
       history.replace(path);
@@ -125,7 +128,7 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
     setActiveTab(path);
   }
 
-  const tabContent: { [key: string]: JSX.Element } = {
+  const tabContent: Record<string, JSX.Element> = {
     overview: <RunOverviewTab runHash={runHash} runData={runData} />,
     run_parameters: (
       <RunDetailParamsTab
@@ -140,6 +143,12 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
         inProgress={_.isNil(runData?.runInfo?.end_time)}
         updatedLogsCount={runData?.updatedLogsCount}
         isRunLogsLoading={runData?.isRunLogsLoading}
+      />
+    ),
+    messages: (
+      <RunLogRecords
+        runHash={runHash}
+        inProgress={_.isNil(runData?.runInfo?.end_time)}
       />
     ),
     metrics: (
@@ -228,6 +237,18 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
     setIsRunSelectDropdownOpen(!isRunSelectDropdownOpen);
   }
 
+  function getCurrentTabValue(pathname: string, url: string) {
+    const values = Object.keys(tabs).map((tabKey) => `${url}/${tabKey}`);
+    return values.indexOf(pathname) === -1 ? false : pathname;
+  }
+
+  React.useEffect(() => {
+    if (pathname !== activeTab) {
+      setActiveTab(pathname);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
+
   React.useEffect(() => {
     setDateNow(Date.now());
     runDetailAppModel.initialize();
@@ -248,14 +269,9 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
   }, [runHash]);
 
   React.useEffect(() => {
-    if (location.pathname !== activeTab) {
-      setActiveTab(location.pathname);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.pathname]);
-
-  React.useEffect(() => {
+    redirect();
     analytics.pageView(ANALYTICS_EVENT_KEYS.runDetails.pageView);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -267,7 +283,7 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
               <div className='RunDetail__runDetailContainer__appBarContainer__appBarBox__runInfoBox'>
                 <ControlPopover
                   anchorOrigin={{
-                    vertical: 'center',
+                    vertical: 'bottom',
                     horizontal: 'left',
                   }}
                   transformOrigin={{
@@ -288,16 +304,26 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
                               } / ${runData?.runInfo?.name || ''}`}
                             >
                               <div className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__container'>
+                                <Link
+                                  to={PathEnum.Experiment.replace(
+                                    ':experimentId',
+                                    runData?.runInfo?.experiment?.id,
+                                  )}
+                                  className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__experimentName'
+                                >
+                                  <Text tint={100} size={16} weight={600}>
+                                    {runData?.runInfo?.experiment?.name ||
+                                      'default'}
+                                  </Text>
+                                </Link>
                                 <Text
                                   tint={100}
                                   size={16}
                                   weight={600}
-                                  className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__title'
+                                  className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__runName'
                                 >
-                                  {`${
-                                    runData?.runInfo?.experiment?.name ||
-                                    'default'
-                                  } / ${runData?.runInfo?.name || ''}`}
+                                  {' '}
+                                  / {runData?.runInfo?.name || ''}
                                 </Text>
                               </div>
                             </Tooltip>
@@ -384,6 +410,13 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
                   )}
                 </div>
               </div>
+              <div className='RunDetail__runDetailContainer__appBarContainer__appBarBox__explore'>
+                <CompareSelectedRunsPopover
+                  appName={'run' as AppNameEnum} // @TODO: change to AppNameEnum.RUN
+                  query={`run.hash == "${runHash}"`}
+                  buttonText={'Explore'}
+                />
+              </div>
               <div className='RunDetail__runDetailContainer__appBarContainer__appBarBox__actionContainer'>
                 <NavLink to={`${url}/settings`}>
                   <Button withOnlyIcon size='small' color='secondary'>
@@ -396,7 +429,7 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
           <Paper className='RunDetail__runDetailContainer__tabsContainer'>
             <Tabs
               className='RunDetail__runDetailContainer__Tabs container'
-              value={location.pathname}
+              value={getCurrentTabValue(pathname, url)}
               onChange={handleTabChange}
               indicatorColor='primary'
               textColor='primary'

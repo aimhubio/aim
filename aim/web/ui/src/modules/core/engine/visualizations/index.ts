@@ -3,13 +3,13 @@ import { StoreApi } from 'zustand';
 import { isEmpty, omit } from 'lodash-es';
 
 import {
-  IBoxProps,
+  IBoxContentProps,
   IControlsProps,
   IEngineStates,
   IVisualizationProps,
 } from 'modules/BaseExplorer/types';
 import { createSliceState } from 'modules/core/utils/store';
-import updateUrlSearchParam from 'modules/core/utils/updateUrlSearchParam';
+import getUpdatedUrl from 'modules/core/utils/getUpdatedUrl';
 import browserHistory from 'modules/core/services/browserHistory';
 import getUrlSearchParam from 'modules/core/utils/getUrlSearchParam';
 
@@ -28,18 +28,27 @@ type BoxConfig = {
     height: number;
     gap: number;
   };
-  hasDepthSlider: boolean;
-  component: FunctionComponent<IBoxProps>;
+  stacking: boolean;
+  component: FunctionComponent<IBoxContentProps>;
 };
 
 export type VisualizationConfig = {
   controls: ControlsConfigs;
   extendDefaultControls?: boolean;
   component?: FunctionComponent<IVisualizationProps>;
+  widgets?: WidgetsConfig;
   controlsContainer?: FunctionComponent<IControlsProps>;
   box: BoxConfig;
   states?: IEngineStates;
 };
+
+export type WidgetsConfig = Record<
+  string,
+  {
+    component: FunctionComponent<any>;
+    props?: object;
+  }
+>;
 
 export type BoxState = BoxConfig['initialState'];
 
@@ -64,10 +73,10 @@ export function createState(
     createVisualizationStatePrefix(visualizationName),
   );
 
-  const resetMethods: (() => void)[] = [];
+  const resetMethods: Function[] = [];
 
   const controlsProperties = Object.keys(controlsStateConfig.slices).reduce(
-    (acc: { [key: string]: object }, name: string) => {
+    (acc: Record<string, object>, name: string) => {
       const elem = controlsStateConfig.slices[name];
       const methods = elem.methods(store.setState, store.getState);
       resetMethods.push(methods.reset);
@@ -154,7 +163,7 @@ function createVisualizationEngine<TStore>(
               controlsState.properties[key].methods.update = (d: any) => {
                 originalMethods.update(d);
 
-                const url = updateUrlSearchParam(persistenceKey, encode(d));
+                const url = getUpdatedUrl(persistenceKey, encode(d));
 
                 if (
                   url !== `${window.location.pathname}${window.location.search}`
@@ -167,7 +176,7 @@ function createVisualizationEngine<TStore>(
               controlsState.properties[key].methods.reset = () => {
                 originalMethods.reset();
 
-                const url = updateUrlSearchParam(persistenceKey, null);
+                const url = getUpdatedUrl(persistenceKey, null);
 
                 if (
                   url !== `${window.location.pathname}${window.location.search}`

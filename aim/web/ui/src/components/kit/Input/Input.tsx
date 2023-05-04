@@ -4,7 +4,8 @@ import classNames from 'classnames';
 
 import { TextField, Tooltip } from '@material-ui/core';
 
-import { Text, Icon } from 'components/kit';
+import Icon from 'components/kit/Icon';
+import Text from 'components/kit/Text';
 
 import {
   IMetadataMessages,

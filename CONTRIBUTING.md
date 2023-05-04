@@ -35,8 +35,6 @@ This section describes governance processes we follow in developing Aim.
 - Arsen Alkamyan ([arsengit](https://github.com/arsengit))
 - Karo Muradyan ([KaroMourad](https://github.com/KaroMourad))
 - Mihran Vanyan ([mihran113](https://github.com/mihran113))
-- Ruben Aprikyan ([rubenaprikyan](https://github.com/rubenaprikyan))
-- Vardges Hovhannisyan ([VkoHov](https://github.com/VkoHov))
 
 ### Releases
 

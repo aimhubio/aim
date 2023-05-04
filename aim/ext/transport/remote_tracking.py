@@ -1,7 +1,7 @@
 from typing import Dict, Union
 
-import aim.ext.transport.remote_tracking_pb2 as tracking_rpc
-import aim.ext.transport.remote_tracking_pb2_grpc as tracking_pb2_grpc
+import aim.ext.transport.proto.remote_tracking_pb2 as tracking_rpc
+import aim.ext.transport.proto.remote_tracking_pb2_grpc as tracking_pb2_grpc
 import aim.ext.transport.message_utils as utils
 
 from aim.ext.transport.handlers import get_handler
@@ -45,7 +45,17 @@ class RemoteTrackingServicer(tracking_pb2_grpc.RemoteTrackingServiceServicer):
         try:
             resource_cls = self.registry[request.resource_type]
             if len(request.args) > 0:
-                res = resource_cls(request.args)
+                kwargs = decode_tree(utils.unpack_args(request.args))
+                checked_kwargs = {}
+                for argname, arg in kwargs.items():
+                    if isinstance(arg, utils.ResourceObject):
+                        handler = arg.storage['handler']
+                        self._verify_resource_handler(handler, request.client_uri)
+                        checked_kwargs[argname] = self.resource_pool[handler][1].ref
+                    else:
+                        checked_kwargs[argname] = arg
+
+                res = resource_cls(**checked_kwargs)
             else:
                 res = resource_cls()
 
@@ -96,13 +106,13 @@ class RemoteTrackingServicer(tracking_pb2_grpc.RemoteTrackingServiceServicer):
                 if isinstance(arg, utils.ResourceObject):
                     handler = arg.storage['handler']
                     self._verify_resource_handler(handler, client_uri)
-                    checked_args.append(self.resource_pool[handler][1])
+                    checked_args.append(self.resource_pool[handler][1].ref)
                 else:
                     checked_args.append(arg)
 
             method_name = header.header.method_name
 
-            resource = self.resource_pool[resource_handler][1]
+            resource = self.resource_pool[resource_handler][1].ref
             if method_name.endswith('.setter'):
                 attr_name = method_name.split('.')[0]
                 setattr(resource, attr_name, checked_args[0])
@@ -148,11 +158,11 @@ class RemoteTrackingServicer(tracking_pb2_grpc.RemoteTrackingServiceServicer):
                     if isinstance(arg, utils.ResourceObject):
                         handler = arg.storage['handler']
                         self._verify_resource_handler(handler, client_uri)
-                        checked_args.append(self.resource_pool[handler][1])
+                        checked_args.append(self.resource_pool[handler][1].ref)
                     else:
                         checked_args.append(arg)
 
-                resource = self.resource_pool[resource_handler][1]
+                resource = self.resource_pool[resource_handler][1].ref
                 if method_name.endswith('.setter'):
                     attr_name = method_name.split('.')[0]
                     setattr(resource, attr_name, checked_args[0])

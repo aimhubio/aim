@@ -1,0 +1,48 @@
+@use 'src/styles/abstracts' as *;
+
+.ExperimentRunsTable {
+  height: 100%;
+  position: relative;
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: toRem(28px);
+    &__titleBox {
+      display: flex;
+      align-items: center;
+      &__title {
+        margin-right: $space-xxxs;
+      }
+    }
+    .CompareSelectedRunsPopover__trigger {
+      margin-right: 0 !important;
+    }
+  }
+  &__table {
+    height: calc(100% - 34px);
+    margin-top: $space-xxs;
+    border: $border-grey;
+    border-top: none;
+    width: 100%;
+    &--loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    &--empty {
+      border: none;
+    }
+  }
+}
+
+.Infinite_Loader {
+  position: absolute;
+  width: 100%;
+  height: 100px;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.3);
+}

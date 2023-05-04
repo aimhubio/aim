@@ -92,7 +92,7 @@ def cli_main():
     # training
     # ------------
     aim_logger = AimLogger(
-        experiment='pt_lightning_exp',
+        experiment_name='pt_lightning_exp',
         train_metric_prefix='train_',
         test_metric_prefix='test_',
         val_metric_prefix='val_',
@@ -103,7 +103,7 @@ def cli_main():
     # ------------
     # testing
     # ------------
-    trainer.test(test_dataloaders=test_loader)
+    trainer.test(dataloaders=test_loader)
 
 
 if __name__ == '__main__':

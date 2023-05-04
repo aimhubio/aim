@@ -43,8 +43,7 @@ function setAdapterConfig(options: AdapterConfigOptions): void {
 
 function baseProcessor(runs: RunSearchRunView[]): Promise<ProcessedData> {
   const { sequenceName, objectDepth } = adapterConfig;
-  adapterConfig.statusChangeCallback &&
-    adapterConfig.statusChangeCallback(PipelinePhasesEnum.Adopting);
+  adapterConfig.statusChangeCallback?.(PipelinePhasesEnum.Adopting);
   try {
     return Promise.resolve(processor(runs, sequenceName, objectDepth));
   } catch (e) {

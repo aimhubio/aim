@@ -138,6 +138,10 @@ class ResourceTracker(object):
             if not self._buffer_registry:
                 self._uninstall_stream_patches()
 
+    def close(self):
+        """Interface to make compatible with Resource AutoClean"""
+        self.stop()
+
     def _track(self, stat: Stat):
         # Store system stats
         for resource, usage in stat.system.items():
@@ -197,7 +201,7 @@ class ResourceTracker(object):
         # handle the buffered data and store
 
         lines = data.split(b'\n')
-        ansi_csi_re = re.compile(b"\001?\033\\[((?:\\d|;)*)([a-zA-Z])\002?")
+        ansi_csi_re = re.compile(b"\001?\033\\[((?:\\d|;)*)([a-dA-D])\002?")
 
         def _handle_csi(line):
             def _remove_csi(line):

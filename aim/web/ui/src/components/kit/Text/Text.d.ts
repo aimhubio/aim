@@ -25,6 +25,7 @@ type componentType =
   | 'h6'
   | 'span'
   | 'p'
+  | 'pre'
   | 'strong'
   | 'small';
 type componentColorType =

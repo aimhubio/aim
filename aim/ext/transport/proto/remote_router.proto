@@ -33,12 +33,13 @@ message ConnectRequest {
 
 message ConnectResponse {
     string port = 1;
+    string worker_index = 2;
     enum Status {
         OK = 0;
         ERROR = 1;
     }
-    Status status = 2;
-    ExceptionResponse exception = 3;
+    Status status = 3;
+    ExceptionResponse exception = 4;
 }
 
 message ReconnectRequest {

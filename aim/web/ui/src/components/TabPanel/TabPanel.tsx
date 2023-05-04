@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 
 import { Box } from '@material-ui/core';
 
-import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import ErrorBoundary from 'components/ErrorBoundary';
 
 import { ITabPanelProps } from 'types/components/TabPanel/TabPanel';
 

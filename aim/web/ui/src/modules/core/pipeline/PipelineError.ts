@@ -1,4 +1,4 @@
-import BaseError from '../BaseError';
+import AimError from '../AimError';
 import { PipelineErrorType } from '../engine/types';
 
 /**
@@ -17,7 +17,7 @@ import { PipelineErrorType } from '../engine/types';
  * @param {string} source - source of the pipeline error
  * @return {PipelineError} - pipeline error object
  */
-class PipelineError extends BaseError {
+class PipelineError extends AimError {
   source: string;
   constructor(
     message?: string,

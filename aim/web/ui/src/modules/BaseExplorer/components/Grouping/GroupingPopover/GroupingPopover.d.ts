@@ -7,3 +7,10 @@ export interface IGroupingPopoverProps extends IBaseComponentProps {
   inputLabel?: string;
   advancedComponent?: React.FunctionComponentElement<React.ReactNode> | null;
 }
+
+export interface IGroupingSelectOption {
+  label: string;
+  group: string;
+  value: string;
+  readonly?: boolean;
+}

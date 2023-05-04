@@ -1,28 +1,28 @@
 import logging
 
-import os
 import datetime
 import json
 import pytz
 import sys
+import pathlib
 
 from collections import defaultdict
+from functools import partialmethod
+from inspect import currentframe, getframeinfo
 
 from aim.sdk.base_run import BaseRun
 from aim.sdk.sequence import Sequence
 from aim.sdk.tracker import RunTracker
-from aim.sdk.reporter import RunStatusReporter
+from aim.sdk.reporter import RunStatusReporter, ScheduledStatusReporter
+from aim.sdk.reporter.file_manager import LocalFileManager
+from aim.sdk.remote_run_reporter import RemoteRunHeartbeatReporter, RemoteFileManager
 from aim.sdk.sequence_collection import SingleRunSequenceCollection
 from aim.sdk.utils import (
     backup_run,
 )
-from aim.ext.utils import (
-    get_environment_variables,
-    get_installed_packages,
-    get_git_info,
-)
+
 from aim.sdk.types import AimObject
-from aim.sdk.configs import AIM_RUN_INDEXING_TIMEOUT
+from aim.sdk.logging import LogRecord, LogRecords
 
 from aim.storage.treeview import TreeView
 from aim.storage.context import Context
@@ -30,6 +30,12 @@ from aim.storage import treeutils
 
 from aim.ext.resource import ResourceTracker, DEFAULT_SYSTEM_TRACKING_INT
 from aim.ext.cleanup import AutoClean
+from aim.ext.utils import (
+    get_environment_variables,
+    get_installed_packages,
+    get_git_info,
+)
+from aim.ext.exception_resistant import noexcept
 
 from typing import Any, Dict, Iterator, Optional, Tuple, Union
 from typing import TYPE_CHECKING
@@ -50,7 +56,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class RunAutoClean(AutoClean['Run']):
+class BasicRunAutoClean(AutoClean['BasicRun']):
     PRIORITY = 90
 
     def __init__(self, instance: 'Run') -> None:
@@ -66,31 +72,22 @@ class RunAutoClean(AutoClean['Run']):
         self.hash = instance.hash
         self.meta_run_tree = instance.meta_run_tree
         self.repo = instance.repo
-        self._system_resource_tracker = instance._system_resource_tracker
-        # this reference is needed for system resource tracker finalization
+
+        self.extra_resources = []
+
         self._tracker = instance._tracker
         self._checkins = instance._checkins
+        self._heartbeat = instance._heartbeat
+        self._lock = instance._lock
+
+    def add_extra_resource(self, resource) -> None:
+        self.extra_resources.append(resource)
 
     def finalize_run(self):
         """
         Finalize the run by indexing all the data.
         """
         self.meta_run_tree['end_time'] = datetime.datetime.now(pytz.utc).timestamp()
-        try:
-            timeout = os.getenv(AIM_RUN_INDEXING_TIMEOUT, 2 * 60)
-            index = self.repo._get_index_tree('meta', timeout=timeout).view(())
-            logger.debug(f'Indexing Run {self.hash}...')
-            self.meta_run_tree.finalize(index=index)
-        except TimeoutError:
-            logger.warning(f'Cannot index Run {self.hash}. Index is locked.')
-
-    def finalize_system_tracker(self):
-        """
-        Stop the system resource tracker before closing the run.
-        """
-        if self._system_resource_tracker is not None:
-            logger.debug('Stopping resource tracker')
-            self._system_resource_tracker.stop()
 
     def empty_rpc_queue(self):
         if self.repo.is_remote_repo:
@@ -108,12 +105,19 @@ class RunAutoClean(AutoClean['Run']):
         if self.read_only:
             logger.debug(f'Run {self.hash} is read-only, skipping cleanup')
             return
-        self.finalize_system_tracker()
+        for res in reversed(self.extra_resources):
+            logger.debug(f'Closing resource {res}')
+            res.close()
+
         self.empty_rpc_queue()
         self.finalize_run()
-        self.finalize_rpc_queue()
+        if self._heartbeat is not None:
+            self._heartbeat.stop()
         if self._checkins is not None:
             self._checkins.close()
+        if self._lock:
+            self._lock.release()
+        self.finalize_rpc_queue()
 
 
 # TODO: [AT] generate automatically based on ModelMappedRun
@@ -245,7 +249,7 @@ class StructuredRunMixin:
         """Add tag to run
 
         Args:
-            value (str): Tag to add.
+            value (:obj:`str`): Tag to add.
         """
         return self.props.add_tag(value)
 
@@ -253,43 +257,23 @@ class StructuredRunMixin:
         """Remove run tag.
 
         Args:
-            tag_name (str): :obj:`name` of tag to be removed.
+            tag_name (:obj:`str`): :obj:`name` of tag to be removed.
         """
         return self.props.remove_tag(tag_name)
 
 
-class Run(BaseRun, StructuredRunMixin):
-    """Run object used for tracking metrics.
-
-    Provides method :obj:`track` to track value and object series for multiple names and contexts.
-    Provides dictionary-like interface for Run object meta-parameters.
-    Provides API for iterating through tracked sequences.
-
-    Args:
-         run_hash (:obj:`str`, optional): Run's hash. If skipped, generated automatically.
-         repo (:obj:`Union[Repo,str], optional): Aim repository path or Repo object to which Run object is bound.
-            If skipped, default Repo is used.
-         read_only (:obj:`bool`, optional): Run creation mode.
-            Default is False, meaning Run object can be used to track metrics.
-         experiment (:obj:`str`, optional): Sets Run's `experiment` property. 'default' if not specified.
-            Can be used later to query runs/sequences.
-         system_tracking_interval (:obj:`int`, optional): Sets the tracking interval in seconds for system usage
-            metrics (CPU, Memory, etc.). Set to `None` to disable system metrics tracking.
-         log_system_params (:obj:`bool`, optional): Enable/Disable logging of system params such as installed packages,
-            git info, environment variables, etc.
-    """
+class BasicRun(BaseRun, StructuredRunMixin):
 
     _metric_version_warning_shown = False
 
     def __init__(self, run_hash: Optional[str] = None, *,
-                 repo: Optional[Union[str, 'Repo']] = None,
+                 repo: Optional[Union[str, 'Repo', pathlib.Path]] = None,
                  read_only: bool = False,
                  experiment: Optional[str] = None,
-                 system_tracking_interval: Optional[Union[int, float]] = DEFAULT_SYSTEM_TRACKING_INT,
-                 log_system_params: Optional[bool] = False,
-                 capture_terminal_logs: Optional[bool] = True):
-        self._resources: Optional[RunAutoClean] = None
-        super().__init__(run_hash, repo=repo, read_only=read_only)
+                 force_resume: bool = False,
+                 ):
+        self._resources: Optional[BasicRunAutoClean] = None
+        super().__init__(run_hash, repo=repo, read_only=read_only, force_resume=force_resume)
 
         self.meta_attrs_tree: TreeView = self.meta_tree.subtree('attrs')
         self.meta_run_attrs_tree: TreeView = self.meta_run_tree.subtree('attrs')
@@ -321,19 +305,16 @@ class Run(BaseRun, StructuredRunMixin):
 
         self._props = None
         self._checkins = None
+        self._heartbeat = None
 
         if not read_only:
             if not self.repo.is_remote_repo:
-                self._checkins = RunStatusReporter(self)
-            if log_system_params:
-                system_params = {
-                    'packages': get_installed_packages(),
-                    'env_variables': get_environment_variables(),
-                    'git_info': get_git_info(),
-                    'executable': sys.executable,
-                    'arguments': sys.argv
-                }
-                self.__setitem__("__system_params", system_params)
+                self._checkins = RunStatusReporter(self.hash, LocalFileManager(self.repo.path))
+                progress_flag_path = pathlib.Path(self.repo.path) / 'meta' / 'progress' / self.hash
+                self._heartbeat = ScheduledStatusReporter(self._checkins, touch_path=progress_flag_path)
+            else:
+                self._checkins = RunStatusReporter(self.hash, RemoteFileManager(self.repo._client, self.hash))
+                self._heartbeat = RemoteRunHeartbeatReporter(self.repo._client, self.hash)
 
             try:
                 self.meta_run_attrs_tree.first_key()
@@ -346,11 +327,7 @@ class Run(BaseRun, StructuredRunMixin):
             self.experiment = experiment
 
         self._tracker = RunTracker(self)
-
-        self._system_resource_tracker: ResourceTracker = None
-        self._prepare_resource_tracker(system_tracking_interval, capture_terminal_logs)
-
-        self._resources = RunAutoClean(self)
+        self._resources = BasicRunAutoClean(self)
 
     def __hash__(self) -> int:
         return super().__hash__()
@@ -358,6 +335,7 @@ class Run(BaseRun, StructuredRunMixin):
     def idx_to_ctx(self, idx: int) -> Context:
         return self._tracker.idx_to_ctx(idx)
 
+    @noexcept
     def __setitem__(self, key: str, val: Any):
         """Set Run top-level meta-parameter.
 
@@ -388,6 +366,7 @@ class Run(BaseRun, StructuredRunMixin):
         """
         return self._collect(key)
 
+    @noexcept
     def set(self, key, val: Any, strict: bool = True):
         self.meta_run_attrs_tree.set(key, val, strict)
         self.meta_attrs_tree.set(key, val, strict)
@@ -401,23 +380,6 @@ class Run(BaseRun, StructuredRunMixin):
     def _collect(self, key, strict: bool = True, resolve_objects: bool = False):
         return self.meta_run_attrs_tree.collect(key, strict=strict, resolve_objects=resolve_objects)
 
-    def _prepare_resource_tracker(
-            self,
-            tracking_interval: Union[int, float] = None,
-            capture_terminal_logs: bool = True
-    ):
-        if self.read_only:
-            return
-
-        if ResourceTracker.check_interval(tracking_interval) or capture_terminal_logs:
-            current_logs = self.get_terminal_logs()
-            log_offset = current_logs.last_step() + 1 if current_logs else 0
-            self._system_resource_tracker = ResourceTracker(self._tracker,
-                                                            tracking_interval,
-                                                            capture_terminal_logs,
-                                                            log_offset)
-            self._system_resource_tracker.start()
-
     def __delitem__(self, key: str):
         """Remove key from run meta-params.
         Args:
@@ -426,6 +388,7 @@ class Run(BaseRun, StructuredRunMixin):
         del self.meta_attrs_tree[key]
         del self.meta_run_attrs_tree[key]
 
+    @noexcept
     def track(
         self,
         value,
@@ -439,7 +402,7 @@ class Run(BaseRun, StructuredRunMixin):
 
         Args:
              value: The tracked value.
-             name (str): Tracked sequence name.
+             name (:obj:`str`): Tracked sequence name.
              step (:obj:`int`, optional): Sequence tracking iteration. Auto-incremented if not specified.
              epoch (:obj:`int`, optional): The training epoch.
              context (:obj:`dict`, optional): Sequence tracking context.
@@ -449,6 +412,27 @@ class Run(BaseRun, StructuredRunMixin):
         """
 
         self._tracker(value, name, step, epoch, context=context)
+
+    # logging API
+    def _log_message(self, level: int, msg: str, **params):
+        frame_info = getframeinfo(currentframe().f_back)
+        logger_info = (frame_info.filename, frame_info.lineno)
+        self.track(LogRecord(msg, level, logger_info=logger_info, **params), name='__log_records')
+        block = (level > logging.WARNING)
+        self._checkins.check_in(flag_name="new_logs", block=block)
+
+    log_error = partialmethod(_log_message, logging.ERROR)
+    log_warning = partialmethod(_log_message, logging.WARNING)
+    log_info = partialmethod(_log_message, logging.INFO)
+    log_debug = partialmethod(_log_message, logging.DEBUG)
+
+    def get_log_records(self) -> Optional[LogRecords]:
+        """Retrieve duplicated terminal logs for a run
+
+        Returns:
+            :obj:`Sequence` object if exists, `None` otherwise.
+        """
+        return self._get_sequence('log_records', '__log_records', Context({}))
 
     @property
     def props(self):
@@ -515,7 +499,7 @@ class Run(BaseRun, StructuredRunMixin):
         """Retrieve metric sequence by it's name and context.
 
         Args:
-             name (str): Tracked metric name.
+             name (:obj:`str`): Tracked metric name.
              context (:obj:`Context`): Tracking context.
 
         Returns:
@@ -538,7 +522,7 @@ class Run(BaseRun, StructuredRunMixin):
         """Retrieve images sequence by it's name and context.
 
         Args:
-             name (str): Tracked image sequence name.
+             name (:obj:`str`): Tracked image sequence name.
              context (:obj:`Context`): Tracking context.
 
         Returns:
@@ -554,7 +538,7 @@ class Run(BaseRun, StructuredRunMixin):
         """Retrieve figure sequence by its name and context.
 
         Args:
-             name (str): Tracked figure sequence name.
+             name (:obj:`str`): Tracked figure sequence name.
              context (:obj:`Context`): Tracking context.
 
         Returns:
@@ -570,7 +554,7 @@ class Run(BaseRun, StructuredRunMixin):
         """Retrieve audios sequence by its name and context.
 
         Args:
-             name (str): Tracked audios sequence name.
+             name (:obj:`str`): Tracked audios sequence name.
              context (:obj:`Context`): Tracking context.
 
         Returns:
@@ -586,7 +570,7 @@ class Run(BaseRun, StructuredRunMixin):
         """Retrieve distributions sequence by it's name and context.
 
         Args:
-             name (str): Tracked distribution sequence name.
+             name (:obj:`str`): Tracked distribution sequence name.
              context (:obj:`Context`): Tracking context.
 
         Returns:
@@ -610,7 +594,7 @@ class Run(BaseRun, StructuredRunMixin):
         """Retrieve texts sequence by it's name and context.
 
         Args:
-             name (str): Tracked text sequence name.
+             name (:obj:`str`): Tracked text sequence name.
              context (:obj:`Context`): Tracking context.
 
         Returns:
@@ -655,7 +639,7 @@ class Run(BaseRun, StructuredRunMixin):
         Args:
              sequence_types: Type names of sequences for which to collect name/context pairs.
              skip_last_value (:obj:`bool`, optional): Boolean flag to include tracked sequence last value in
-             sequence info. False by default.
+                sequence info. False by default.
 
         Returns:
              :obj:`list`: list of sequence's `context`, `name` and optionally last tracked value triplets.
@@ -808,3 +792,59 @@ class Run(BaseRun, StructuredRunMixin):
         if self._checkins is None:
             raise ValueError('Progress reports are not enabled for this run')
         self._checkins._report_successful_finish(block=block)
+
+
+class Run(BasicRun):
+    """Run object used for tracking metrics.
+
+    Provides method :obj:`track` to track value and object series for multiple names and contexts.
+    Provides dictionary-like interface for Run object meta-parameters.
+    Provides API for iterating through tracked sequences.
+
+    Args:
+         run_hash (:obj:`str`, optional): Run's hash. If skipped, generated automatically.
+         repo (:obj:`Union[Repo,str]`, optional): Aim repository path or Repo object to which Run object is bound.
+            If skipped, default Repo is used.
+         read_only (:obj:`bool`, optional): Run creation mode.
+            Default is False, meaning Run object can be used to track metrics.
+         experiment (:obj:`str`, optional): Sets Run's `experiment` property. 'default' if not specified.
+            Can be used later to query runs/sequences.
+         force_resume (:obj:`bool`, optional): Forcefully resume stalled Run.
+         system_tracking_interval (:obj:`int`, optional): Sets the tracking interval in seconds for system usage
+            metrics (CPU, Memory, etc.). Set to `None` to disable system metrics tracking.
+         log_system_params (:obj:`bool`, optional): Enable/Disable logging of system params such as installed packages,
+            git info, environment variables, etc.
+         capture_terminal_logs (:obj:`bool`, optional): Enable/Disable terminal stdout logging.
+    """
+
+    @noexcept
+    def __init__(self, run_hash: Optional[str] = None, *,
+                 repo: Optional[Union[str, 'Repo', pathlib.Path]] = None,
+                 read_only: bool = False,
+                 experiment: Optional[str] = None,
+                 force_resume: bool = False,
+                 system_tracking_interval: Optional[Union[int, float]] = DEFAULT_SYSTEM_TRACKING_INT,
+                 log_system_params: Optional[bool] = False,
+                 capture_terminal_logs: Optional[bool] = True):
+        super().__init__(run_hash, repo=repo, read_only=read_only, experiment=experiment, force_resume=force_resume)
+
+        self._system_resource_tracker: ResourceTracker = None
+        if not read_only:
+            if log_system_params:
+                self['__system_params'] = {
+                    'packages': get_installed_packages(),
+                    'env_variables': get_environment_variables(),
+                    'git_info': get_git_info(),
+                    'executable': sys.executable,
+                    'arguments': sys.argv
+                }
+
+            if ResourceTracker.check_interval(system_tracking_interval) or capture_terminal_logs:
+                current_logs = self.get_terminal_logs()
+                log_offset = current_logs.last_step() + 1 if current_logs else 0
+                self._system_resource_tracker = ResourceTracker(self._tracker,
+                                                                system_tracking_interval,
+                                                                capture_terminal_logs,
+                                                                log_offset)
+                self._system_resource_tracker.start()
+                self._resources.add_extra_resource(self._system_resource_tracker)

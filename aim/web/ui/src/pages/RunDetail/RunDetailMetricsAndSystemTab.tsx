@@ -253,7 +253,7 @@ function RunDetailMetricsAndSystemTab({
     <ErrorBoundary>
       <BusyLoaderWrapper
         isLoading={isRunBatchLoading}
-        className='runDetailParamsTabLoader'
+        className='RunDetailTabLoader'
         height='100%'
       >
         {!_.isEmpty(tabMertcis) ? (
@@ -264,7 +264,7 @@ function RunDetailMetricsAndSystemTab({
         ) : (
           <IllustrationBlock
             size='xLarge'
-            className='runDetailParamsTabLoader'
+            className='RunDetailTabLoader'
             title={`No tracked ${isSystem ? 'system' : ''} metrics`}
           />
         )}

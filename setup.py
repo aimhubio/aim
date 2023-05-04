@@ -20,10 +20,10 @@ here = os.path.abspath(os.path.dirname(__file__))
 NAME = 'aim'
 DESCRIPTION = 'A super-easy way to record, search and compare AI experiments.'
 VERSION = __version__
-REQUIRES_PYTHON = '>=3.6.0'
+REQUIRES_PYTHON = '>=3.7.0'
 
 # Get packages
-packages = find_packages(exclude=('tests', 'aim.web.ui'))
+packages = find_packages(exclude=('tests', 'performance_tests', 'aim.web.ui'))
 
 
 # Get a list of all files in the html directory to include in our module
@@ -45,36 +45,35 @@ readme_text = open('/'.join((here, readme_file)), encoding="utf-8").read()
 LONG_DESCRIPTION = readme_text.strip()
 
 SETUP_REQUIRED = [
-    'Cython==3.0.0a9',
+    'Cython==3.0.0a11',
 ]
 
 # What packages are required for this module to be executed?
 REQUIRED = [
     f'aim-ui=={__version__}',
     'aimrecords==0.0.7',
-    'aimrocks==0.2.1',
+    'aimrocks==0.4.0',
     'cachetools>=4.0.0',
     'click>=7.0',
     'cryptography>=3.0',
-    'filelock>=3.3.0',
-    'numpy>=1.12.0',
-    'protobuf>=3.11.0',
+    'filelock<4,>=3.3.0',
+    'numpy<2,>=1.12.0',
     'psutil>=5.6.7',
     'RestrictedPython>=5.1',
     'tqdm>=4.20.0',
     'aiofiles>=0.5.0',
-    'alembic>=1.4.0',
-    'fastapi>=0.65.0,<0.68.0',
-    'jinja2>=2.10.0',
+    'alembic<2,>=1.5.0',
+    'fastapi<1,>=0.69.0',
+    'jinja2<4,>=2.10.0',
     'pytz>=2019.1',
-    'SQLAlchemy>=1.4.1',
-    'uvicorn>=0.12.0',
+    'SQLAlchemy<2,>=1.4.1',
+    'uvicorn<1,>=0.12.0',
     'Pillow>=8.0.0',
-    'protobuf >= 3.9.2,<4.0.0',
-    # fastapi to support python3.6
-    'async-exit-stack>=1.0.0; python_version<"3.7"',
-    'async-generator>=1.0; python_version<"3.7"',
+    'protobuf<5,>=3.9.2',
     'packaging>=15.0',
+    'python-dateutil',
+    'requests',
+    'segment-analytics-python',
 ]
 
 if platform.machine() != 'arm64':
@@ -197,14 +196,14 @@ setup(
     package_data={'aim': migration_files + storage_migration_files + notifier_files + version_files},
     include_package_data=True,
     classifiers=[
-        'License :: OSI Approved :: MIT License',
+        'License :: OSI Approved :: Apache Software License',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
         'Programming Language :: Python :: Implementation :: PyPy'
     ],
     ext_modules=cytonize_extensions(),

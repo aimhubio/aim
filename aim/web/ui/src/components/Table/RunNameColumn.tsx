@@ -30,13 +30,16 @@ function RunNameColumn({
           />
         </div>
       </Tooltip>
-
-      <Link
-        to={PathEnum.Run_Detail.replace(':runHash', runHash)}
-        component={RouteLink}
-      >
-        {run}
-      </Link>
+      <Tooltip title={run}>
+        <div className='RunNameColumn__runName'>
+          <Link
+            to={PathEnum.Run_Detail.replace(':runHash', runHash)}
+            component={RouteLink}
+          >
+            {run}
+          </Link>
+        </div>
+      </Tooltip>
     </div>
   );
 }

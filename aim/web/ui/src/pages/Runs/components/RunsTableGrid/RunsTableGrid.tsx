@@ -1,9 +1,11 @@
+import * as React from 'react';
 import { merge } from 'lodash-es';
 
 import { Badge } from 'components/kit';
 import RunNameColumn from 'components/Table/RunNameColumn';
 import GroupedColumnHeader from 'components/Table/GroupedColumnHeader';
 import AttachedTagsList from 'components/AttachedTagsList/AttachedTagsList';
+import ExperimentNameBox from 'components/ExperimentNameBox';
 
 import COLORS from 'config/colors/colors';
 import { TABLE_DEFAULT_CONFIG } from 'config/table/tableConfigs';
@@ -24,6 +26,30 @@ function getRunsTableColumns(
   hiddenColumns: string[],
 ): ITableColumn[] {
   let columns: ITableColumn[] = [
+    {
+      key: 'experiment',
+      content: <span>Name</span>,
+      topHeader: 'Experiment',
+      pin: order?.left?.includes('experiment')
+        ? 'left'
+        : order?.middle?.includes('experiment')
+        ? null
+        : order?.right?.includes('experiment')
+        ? 'right'
+        : null,
+    },
+    {
+      key: 'experiment_description',
+      content: <span>Description</span>,
+      topHeader: 'Experiment',
+      pin: order?.left?.includes('experiment_description')
+        ? 'left'
+        : order?.middle?.includes('experiment_description')
+        ? null
+        : order?.right?.includes('experiment_description')
+        ? 'right'
+        : null,
+    },
     {
       key: 'hash',
       content: <span>Hash</span>,
@@ -47,18 +73,6 @@ function getRunsTableColumns(
         : order?.right?.includes('run')
         ? 'right'
         : 'left',
-    },
-    {
-      key: 'experiment',
-      content: <span>Experiment</span>,
-      topHeader: 'Run',
-      pin: order?.left?.includes('experiment')
-        ? 'left'
-        : order?.middle?.includes('experiment')
-        ? null
-        : order?.right?.includes('experiment')
-        ? 'right'
-        : null,
     },
     {
       key: 'description',
@@ -208,7 +222,14 @@ function runsTableRowRenderer(
     return merge({}, rowData, row);
   } else {
     const row = {
-      experiment: rowData.experiment,
+      experiment: {
+        content: (
+          <ExperimentNameBox
+            experimentName={rowData.experiment}
+            experimentId={rowData.experimentId}
+          />
+        ),
+      },
       run: {
         content: (
           <RunNameColumn
@@ -219,14 +240,15 @@ function runsTableRowRenderer(
         ),
       },
       tags: {
-        component: TagsColumn,
-        props: {
-          runHash: rowData.hash,
-          tags: rowData.tags,
-          onRunsTagsChange,
-          headerRenderer: () => <></>,
-          addTagButtonSize: 'xxSmall',
-        },
+        content: (
+          <TagsColumn
+            runHash={rowData.hash}
+            tags={rowData.tags}
+            onRunsTagsChange={onRunsTagsChange}
+            headerRenderer={() => <></>}
+            addTagButtonSize='xxSmall'
+          />
+        ),
       },
       actions: {
         content: null,

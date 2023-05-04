@@ -28,8 +28,8 @@ export interface SequenceAlignedView extends SequenceBase {
 
 export interface SequenceFullView extends SequenceAlignedView {
   slice: [number, number, number];
-  values: EncodedNumpyArray | null;
-  epochs: Array<number>;
-  iters: Array<number>;
-  timestamps: EncodedNumpyArray | null;
+  values: EncodedNumpyArray;
+  epochs: EncodedNumpyArray;
+  iters: EncodedNumpyArray;
+  timestamps: EncodedNumpyArray;
 }

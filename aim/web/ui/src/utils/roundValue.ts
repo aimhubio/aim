@@ -10,8 +10,8 @@
  * @returns {number} - formatted number
  */
 function getRoundedValue(value: number, digits: number = 10): number {
-  let tenPow = Math.pow(10, digits);
-  return Math.round(value * tenPow) / tenPow;
+  let roundBy = 10 ** digits;
+  return Math.round(value * roundBy) / roundBy;
 }
 
 export default getRoundedValue;

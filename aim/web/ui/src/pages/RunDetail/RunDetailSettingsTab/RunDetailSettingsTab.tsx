@@ -5,13 +5,13 @@ import { useHistory } from 'react-router-dom';
 import ConfirmModal from 'components/ConfirmModal/ConfirmModal';
 import { ActionCard, Icon } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import NameAndDescriptionCard from 'components/NameAndDescriptionCard';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import runDetailAppModel from 'services/models/runs/runDetailAppModel';
 import * as analytics from 'services/analytics';
 
-import RunNameAndDescriptionCard from './RunNameAndDescriptionCard';
 import { IRunDetailSettingsTabProps } from './types';
 
 import './RunDetailSettingsTab.scss';
@@ -52,15 +52,24 @@ function RunDetailSettingsTab({
   React.useEffect(() => {
     analytics.pageView(ANALYTICS_EVENT_KEYS.runDetails.tabs.settings.tabView);
   }, []);
+
+  function onSave(name: string, description: string) {
+    runDetailAppModel.editRunNameAndDescription(
+      runHash,
+      name,
+      description,
+      isArchived,
+    );
+  }
+
   return (
     <ErrorBoundary>
       <div className='RunDetailSettingsTab'>
         <div className='RunDetailSettingsTab__actionCardsCnt'>
-          <RunNameAndDescriptionCard
+          <NameAndDescriptionCard
             defaultName={defaultName ?? ''}
             defaultDescription={defaultDescription ?? ''}
-            runHash={runHash}
-            isArchived={isArchived}
+            onSave={onSave}
           />
           <ActionCard
             title={isArchived ? 'Unarchive Run' : 'Archive Run'}

@@ -36,12 +36,7 @@ function createExplorer(
     const { components, visualizations } = configuration;
 
     const visualizationsHydration = Object.keys(visualizations).reduce(
-      (
-        acc: {
-          [key: string]: VisualizationConfig;
-        },
-        name: string,
-      ) => {
+      (acc: Record<string, VisualizationConfig>, name: string) => {
         const viz = visualizations[name];
         acc[name] = {
           ...viz,
@@ -49,8 +44,7 @@ function createExplorer(
           box: {
             initialState:
               viz.box.initialState || defaultHydration.box.initialState,
-            hasDepthSlider:
-              viz.box.hasDepthSlider ?? defaultHydration.box.hasDepthSlider,
+            stacking: viz.box.stacking ?? defaultHydration.box.stacking,
             component: viz.box.component,
             persist: viz.box.hasOwnProperty('persist')
               ? viz.box.persist
@@ -74,10 +68,12 @@ function createExplorer(
       groupings: configuration.groupings || defaultHydration.groupings,
       visualizations: visualizationsHydration,
       states: {
-        ...defaultHydration.customStates,
+        ...defaultHydration.states,
         ...(configuration.states || {}),
       },
       enablePipelineCache: configuration.enablePipelineCache || true,
+      getStaticContent:
+        configuration.getStaticContent || defaultHydration.getStaticContent,
     };
 
     const basePath =

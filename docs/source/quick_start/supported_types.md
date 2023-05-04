@@ -389,3 +389,22 @@ If we apply our previous code snippet on the same repo - we can observe the same
     ]
 }
 ```
+
+### Logging huggingface/datasets dataset info with Aim
+
+Aim provides wrapper object for `datasets`. It allows to store the dataset info as a `Run`
+parameter and retrieve it later just as any other `Run` param. Here is an example of using Aim to log dataset info:
+
+```python
+from datasets import load_dataset
+
+from aim import Run
+from aim.hf_dataset import HFDataset
+
+# create dataset object
+dataset = load_dataset('rotten_tomatoes')
+
+# store dataset metadata
+run = Run()
+run['datasets_info'] = HFDataset(dataset)
+```

@@ -20,7 +20,6 @@ The created bookmark will contain all the current configuration of the explorer.
 <p>&nbsp;</p>
 <p>&nbsp;</p>
 
-
 ### The Bookmark Card
 
 <img alt="bookmark card" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/bookmarks/bookmark-card.png">
@@ -35,7 +34,6 @@ Each of the bookmark cards contains the following:
 
 <p>&nbsp;</p>
 <p>&nbsp;</p>
-
 
 ### Delete Bookmark
     

@@ -1,20 +1,148 @@
 # Changelog
 
-## Unreleased
+## Unreleased 
+
+### Enhancements
+
+- Add activeloop deeplake plugin (drahnreb)
+- Revamp grouping popovers design in Base Explorers (KaroMourad, arsengit)
+- Add the ability to group by `grid` type in Base Explorers (KaroMourad)
+- Add the ability to create Reports (roubkar, arsengit)
+- Add the ability to create custom UI boards (roubkar, arsengit, KaroMourad)
+- Relocate aim explorers to `Explorers` page (arsengit)
+- Add functionality for custom context in the PyTorch Ignite (tmynn)
+- Extend `aim.ext.tensorboard_tracker.run.Run` to allow stdout logging and system stats and parameter logging (alansaul)
+
+### Fixes
+
+- Convert NaNs and Infs in responses to strings (n-gao)
+- Import `Image` and `Audio` for `TensorboardFolderTracker` (alansaul)
+
+## 3.17.4  May 4, 2023
+
+- Resolve run messages duplication issue for in progress runs (roubkar)
+- Fix metric values inconsistency with steps (mihran113)
+- Enable CLI for remote repos (mihran113)
+- Safe force-acquire index lock using meta-locks (alberttorosyan, mihran113)
+- Fix the issue with containers left open (mihran113)
+- Fix issue with notebook extension start-up (mihran113)
+- Disable SDK events tracking with Segment API (alberttorosyan)
+
+## 3.17.3 Apr 6, 2023
+
+- Fix the community popup overflowing issue (KaroMourad)
+- Optimize images blobs URI loading performance (asynclee)
+
+## 3.17.2 Mar 28, 2023
+
+- Fix explorer crashing issue caused by adding a `displayName` property in Grouping component (KaroMourad)
+
+## 3.17.1 Mar 24, 2023
+
+- Avoid explorer crashing when accessing empty chart values (KaroMourad)
+
+## 3.17.0 Mar 24, 2023
+
+### Enhancements
+- Expose `run_name` and `run_hash` parameters to the `aim.sdk.adapters.pytorch_lightning.AimLogger` adapter (constd)
+- Add navigation link to Experiment page from the Run page (roubkar)
+- Add navigation to explorers from the Run page (roubkar)
+- Implement Metrics Explorer v2 via Base Explorer (KaroMourad)
+- Add Text Explorer to filter and compare text (roubkar)
+- Add groundwork for the UI kit v2 for improved usability (arsengit)
+
+### Fixes
+
+- Add support for Path type to the repo attribute of the Run class (emekaokoli19)
+- Add support for jax>0.4.0 (n-gao)
+- Add -y option to Aim CLI commands (emekaokoli19)
+- Fix issue with toggling lines visibility during live update (roubkar)
+- Fix the issue when HF model doesn't have `num_labels` attribute (mihran113)
+- Fix table cell scrolling issue in the Texts tab of the Run page (roubkar)
+
+## 3.16.2 Mar 3, 2023
+
+- Add exception-free mode to Aim (alberttorosyan)
+- Expose `capture_terminal_logs` argument for `aim.sdk.adapters` classes (mihran113)
+- Handle inconsistency between Sequence data and metadata (alberttorosyan)
+
+## 3.16.1 Feb 27, 2023
+
+- Pin package version `alembic>=1.5.0` (justinvyu)
+- Fix segment `flush()` issue with no internet access (alberttorosyan)
+- Fix the issue with an empty-illustrations styles on Base explorers (KaroMourad)
+- Add 'join community' popup to the sidebar (KaroMourad)
+- Use non-strict mode when logging HF model metadata (alberttorosyan)
+- Add set() method implementation in ProxyTree/SubtreeView classes (alberttorosyan)
+
+## 3.16.0 Feb 3, 2023
+
+### Enhancements
+
+- Drop support for python3.6 (mihran113)
+- Add support for python3.11 (alberttorosyan)
+- Add other x-axis alignment and system logs tracking to cli convert wandb (hjoonjang)
+- Add support for pre-binned distribution/histogram (YodaEmbedding)
+- Display logged run messages in Run page (VkoHov, alberttorosyan, roubkar)
+- Use read-only mode when opening container for indexing (alberttorosyan)
+- Add Stable-Baselines3 integration (tmynn)
+- Add Acme integration (tmynn)
+- Add huggingface/datasets integration (tmynn)
+- Enable support for protobuf v4 (mihran113)
+- Support events signaling for Remote Tracking server (alberttorosyan)
+- Enhance DVC parameters tracking (tmynn)
+- Add SDK events tracking (alberttorosyan)
+- Add the ability to easily copy run hash with a single click (VkoHov)
+- Add Prophet integration (grigoryan-davit)
+- Add 'Dataset' type support for hf/datasets (tmynn)
+- Add HuggingFace Transformers model info (tmynn)
+- Add multidataset logging support for HuggingFace transformers (tmynn)
+
+### Fixes
+
+- Fix gpu stats logging when some stats are unavailable (timokau)
+- Sub-path support for RTS addresses (mihran113)
+- Fix experiment name update issues (mihran113)
+- Fix run experiment setting race conditions (mihran113)
+- Fix the issue with runs not appearing on UI (mihran113)
+
+## 3.15.2 Dec 23, 2022
+
+- Change logging level for reporter debug messages (alberttorosyan)
+- Fix styling issues on the experiment page (KaroMourad)
+- Fix client side worker port calculation for RTS (mihran113)
+- Add discord community link in the sidebar (arsengit)
+- Display experiments descriptions in the explorers tables (arsengit)
+
+## 3.15.1 Dec 1, 2022
+
+- Fix issue with index container lock for older repos (mihran113)
+- Fix issue with rendering incorrect empty-illustration content in Audios explorer (KaroMourad)
+
+## 3.15.0 Nov 26, 2022
 
 ### Enhancements:
 
+- Implement Aim callbacks system and extended notifications (alberttorosyan)
+- Add chart legends to the Metrics Explorer (KaroMourad)
 - Implement vertically scalable version of Remote Tracking (mihran113, alberttorosyan)
+- Add the ability to search, filter, and compare audio through Audios Explorer (VkoHov)
 - Add epoch tracking for PyTorch Lightning (tmynn)
 - Add PaddlePaddle integration (tmynn)
 - Add Optuna integration (tmynn)
-- Use `packaging` to parse version strings(jangop)
+- Use `packaging` to parse version strings (jangop)
+- Implement the experiment page for the overall experiment info view (VkoHov)
+- Implement dynamic flushing mechanism for `CheckIn`s based on the flag (mahnerak)
+- Implement robust locking and indexing mechanism for Aim Runs (alberttorosyan)
 
 ### Fixes:
 
 - Fix multiple progress bars handling for terminal logs capturing (mihran113)
 - Handle resources when multiple `Ctrl-C`s are pressed (alberttorosyan)
 - Remove non unicode symbols from `aim up` command logs (mihran113)
+- Fix "Show Table Diff" for list type elements in runs, params and scatters explorers (kumarshreshtha)
+- Support non-Latin chars for encoding in Aim UI (roubkar)
+- Make new `CheckIn`s always override the expiry date, consistent to what is documented (mahnerak)
 
 ## 3.14.4 Nov 11, 2022
 

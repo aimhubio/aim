@@ -1,9 +1,10 @@
 import React from 'react';
+import _ from 'lodash-es';
 
 import DataList from 'components/kit/DataList';
 import { Text } from 'components/kit';
 
-import CompareSelectedRunsPopover from 'pages/Metrics/components/Table/CompareSelectedRunsPopover';
+import CompareSelectedRunsPopover from 'pages/Explorers/Metrics/components/Table/CompareSelectedRunsPopover';
 
 import { AppNameEnum } from 'services/models/explorer';
 
@@ -49,7 +50,7 @@ function ExperimentsCard(): React.FunctionComponentElement<React.ReactNode> | nu
             key='compareSelectedRunsPopover'
             appName={'dashboard' as AppNameEnum}
             query={experimentsQuery}
-            disabled={!selectedRows.length}
+            disabled={_.isEmpty(selectedRows)}
           />,
         ]}
         disableMatchBar={true}

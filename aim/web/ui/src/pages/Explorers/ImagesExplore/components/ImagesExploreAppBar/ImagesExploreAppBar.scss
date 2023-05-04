@@ -1,0 +1,36 @@
+@use 'src/styles/abstracts' as *;
+
+.ImagesExploreAppBar {
+  &__item {
+    &__bookmark {
+      margin-right: $space-xxxs;
+      padding: 0 $space-xs !important;
+      &__Text {
+        margin-right: 0.625rem;
+      }
+      &__Icon {
+        color: $text-color;
+      }
+    }
+  }
+  &__menu {
+    border-left: $border-main;
+    padding: 0 $space-xxxs;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    span {
+      cursor: pointer;
+    }
+  }
+  &__popover {
+    width: 16rem;
+    padding: $space-xs;
+    display: flex;
+    flex-direction: column;
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+  }
+}

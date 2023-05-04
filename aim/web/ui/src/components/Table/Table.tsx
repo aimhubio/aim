@@ -19,11 +19,11 @@ import {
 } from 'config/table/tableConfigs';
 import { IllustrationsEnum } from 'config/illustrationConfig/illustrationConfig';
 
-import SortPopover from 'pages/Metrics/components/Table/SortPopover/SortPopover';
-import ManageColumnsPopover from 'pages/Metrics/components/Table/ManageColumnsPopover/ManageColumnsPopover';
-import HideRowsPopover from 'pages/Metrics/components/Table/HideRowsPopover/HideRowsPopover';
-import RowHeightPopover from 'pages/Metrics/components/Table/RowHeightPopover/RowHeightPopover';
-import CompareSelectedRunsPopover from 'pages/Metrics/components/Table/CompareSelectedRunsPopover';
+import SortPopover from 'pages/Explorers/Metrics/components/Table/SortPopover/SortPopover';
+import ManageColumnsPopover from 'pages/Explorers/Metrics/components/Table/ManageColumnsPopover/ManageColumnsPopover';
+import HideRowsPopover from 'pages/Explorers/Metrics/components/Table/HideRowsPopover/HideRowsPopover';
+import RowHeightPopover from 'pages/Explorers/Metrics/components/Table/RowHeightPopover/RowHeightPopover';
+import CompareSelectedRunsPopover from 'pages/Explorers/Metrics/components/Table/CompareSelectedRunsPopover';
 
 import { ITableProps } from 'types/components/Table/Table';
 
@@ -335,10 +335,11 @@ const Table = React.forwardRef(function Table(
         }
 
         if (
-          tableContainerRef.current.scrollTop > top ||
-          tableContainerRef.current.scrollTop +
-            tableContainerRef.current.offsetHeight <
-            top
+          tableContainerRef.current &&
+          (tableContainerRef.current.scrollTop > top ||
+            tableContainerRef.current.scrollTop +
+              tableContainerRef.current.offsetHeight <
+              top)
         ) {
           setTimeout(() => {
             window.requestAnimationFrame(() => {
@@ -759,7 +760,7 @@ const Table = React.forwardRef(function Table(
   return (
     <ErrorBoundary>
       {!isEmpty(rowData) ? (
-        <div style={{ height: '100%' }} className={className}>
+        <div style={{ height: '100%', width: '100%' }} className={className}>
           {!hideHeaderActions && isEmpty(selectedRows) ? (
             <div className='Table__header'>
               {showResizeContainerActionBar && (

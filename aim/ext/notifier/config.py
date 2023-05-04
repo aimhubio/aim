@@ -1,4 +1,5 @@
 import json
+import logging
 import uuid
 
 from typing import Dict
@@ -58,3 +59,11 @@ class Config:
     @property
     def notifiers(self) -> Dict:
         return self._cfg['notifications']['notifiers']
+
+    @property
+    def log_level(self) -> int:
+        return self._cfg['notifications'].get('log_level', logging.WARNING)
+
+    @log_level.setter
+    def log_level(self, lvl: int):
+        self._cfg['notifications']['log_level'] = lvl

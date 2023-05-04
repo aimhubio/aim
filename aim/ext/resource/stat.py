@@ -151,38 +151,49 @@ class Stat(object):
         # Collect GPU statistics
         gpus = []
         try:
+            nvml.nvmlInit()
             gpu_device_count = nvml.nvmlDeviceGetCount()
             for i in range(gpu_device_count):
+                gpu_info = dict()
                 handle = nvml.nvmlDeviceGetHandleByIndex(i)
-                nvml_tmp = nvml.NVML_TEMPERATURE_GPU
-
-                # Get device memory and temperature
-                util = nvml.nvmlDeviceGetUtilizationRates(handle)
-                memory = nvml.nvmlDeviceGetMemoryInfo(handle)
-                temp = nvml.nvmlDeviceGetTemperature(handle, nvml_tmp)
-
-                # Compute power usage in watts and percent
-                power_watts = nvml.nvmlDeviceGetPowerUsage(handle) / 1000
-                power_cap = nvml.nvmlDeviceGetEnforcedPowerLimit(handle)
-                power_cap_watts = power_cap / 1000
-                power_watts / power_cap_watts * 100
-
-                gpus.append({
+                try:
+                    util = nvml.nvmlDeviceGetUtilizationRates(handle)
                     # GPU utilization percent
-                    'gpu': round10e5(util.gpu),
-
+                    gpu_info["gpu"] = round10e5(util.gpu)
+                except nvml.NVML_ERROR_NOT_SUPPORTED:
+                    pass
+                try:
+                    # Get device memory
+                    memory = nvml.nvmlDeviceGetMemoryInfo(handle)
                     # Device memory usage
                     # 'memory_used': round10e5(memory.used / 1024 / 1024),
-                    'gpu_memory_percent': round10e5(memory.used * 100 / memory.total),
-
-                    # Power usage in watts and percent
-                    'gpu_power_watts': round10e5(power_watts),
-                    # 'power_percent': round10e5(power_usage),
-
+                    gpu_info["gpu_memory_percent"] = (
+                        round10e5(memory.used * 100 / memory.total),
+                    )
+                except nvml.NVML_ERROR_NOT_SUPPORTED:
+                    pass
+                try:
+                    # Get device temperature
+                    nvml_tmp = nvml.NVML_TEMPERATURE_GPU
+                    temp = nvml.nvmlDeviceGetTemperature(handle, nvml_tmp)
                     # Device temperature
-                    'gpu_temp': round10e5(temp),
-                })
-        except Exception:
+                    gpu_info["gpu_temp"] = round10e5(temp)
+                except nvml.NVML_ERROR_NOT_SUPPORTED:
+                    pass
+                try:
+                    # Compute power usage in watts and percent
+                    power_watts = nvml.nvmlDeviceGetPowerUsage(handle) / 1000
+                    power_cap = nvml.nvmlDeviceGetEnforcedPowerLimit(handle)
+                    power_cap_watts = power_cap / 1000
+                    power_watts / power_cap_watts * 100
+                    # Power usage in watts and percent
+                    gpu_info["gpu_power_watts"]: round10e5(power_watts)
+                    # gpu_info["power_percent"] = round10e5(power_usage)
+                except nvml.NVML_ERROR_NOT_SUPPORTED:
+                    pass
+                gpus.append(gpu_info)
+            nvml.nvmlShutdown()
+        except (nvml.NVML_ERROR_LIBRARY_NOT_FOUND, nvml.NVML_ERROR_NOT_SUPPORTED):
             pass
 
         return system, gpus

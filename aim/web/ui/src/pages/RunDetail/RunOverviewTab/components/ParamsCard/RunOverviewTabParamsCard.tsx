@@ -64,7 +64,7 @@ function RunOverviewTabParamsCard({ runParams, isRunInfoLoading }: any) {
     <ErrorBoundary>
       <BusyLoaderWrapper
         isLoading={isRunInfoLoading || !runParams}
-        className='runDetailParamsTabLoader'
+        className='RunDetailTabLoader'
         height='100%'
       >
         <Card

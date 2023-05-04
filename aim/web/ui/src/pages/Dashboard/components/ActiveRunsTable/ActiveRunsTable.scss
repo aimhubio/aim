@@ -18,7 +18,7 @@
 .ActiveRunsTable__table {
   height: 271px;
   margin-top: $space-xxs;
-  border: 1px solid $cuddle-50;
+  border: $border-grey;
   border-top: none;
 }
 
@@ -26,7 +26,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-} 
+}
 
 .ActiveRunsTable__table--empty {
   border: none;

@@ -24,7 +24,7 @@ function RunDetailParamsTab({
     <ErrorBoundary>
       <BusyLoaderWrapper
         isLoading={isRunInfoLoading || !runParams}
-        className='runDetailParamsTabLoader'
+        className='RunDetailTabLoader'
         height='100%'
       >
         {!_.isEmpty(runParams) ? (
@@ -36,7 +36,7 @@ function RunDetailParamsTab({
         ) : (
           <IllustrationBlock
             size='xLarge'
-            className='runDetailParamsTabLoader'
+            className='RunDetailTabLoader'
             title='No Params'
           />
         )}

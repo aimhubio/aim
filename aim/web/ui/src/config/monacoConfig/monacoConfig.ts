@@ -78,15 +78,19 @@ export const getSuggestionsByExplorer = (
       created_at: 0,
       finalized_at: 0,
       duration: 0,
-      ...data.params,
+      ...(data?.params || {}),
     },
   };
+
   const explorersList = {
     [AppNameEnum.RUNS]: defaultSuggestions,
     [AppNameEnum.METRICS]: defaultSuggestions,
     [AppNameEnum.PARAMS]: defaultSuggestions,
     [AppNameEnum.SCATTERS]: defaultSuggestions,
     [AppNameEnum.IMAGES]: defaultSuggestions,
+    [AppNameEnum.FIGURES]: defaultSuggestions,
+    [AppNameEnum.AUDIOS]: defaultSuggestions,
+    [AppNameEnum.TEXT]: defaultSuggestions,
   };
   return explorersList[explorerName] || defaultSuggestions;
 };

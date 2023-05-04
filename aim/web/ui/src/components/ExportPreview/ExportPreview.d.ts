@@ -6,6 +6,7 @@ export interface IExportPreviewProps {
   withDynamicDimensions?: boolean;
   explorerPage?: 'metrics' | 'scatters';
   children?: React.ReactNode;
+  appendElement?: React.ReactNode;
 }
 
 export interface IPreviewBounds {

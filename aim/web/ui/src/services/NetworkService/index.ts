@@ -197,7 +197,6 @@ class NetworkService {
           message: HttpErrorMessages.INVALID_REQUEST_PARAMS,
         });
       }
-
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       fetch(url, fetchOptions)

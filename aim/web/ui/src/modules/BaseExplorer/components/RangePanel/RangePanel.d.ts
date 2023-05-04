@@ -1,13 +1,13 @@
 import { IQueryableData } from 'modules/core/engine';
 import { IBaseComponentProps } from 'modules/BaseExplorer/types';
 
-export interface IRangePanelProps {
-  engine: IBaseComponentProps['engine'];
-  rangesData: any;
+export interface IVisualizerRangePanelProps extends IBaseComponentProps {}
+
+export interface IRangePanelProps extends IBaseComponentProps {
+  rangesData: IQueryableData;
 }
 
-export interface IRangePanelItemProps {
-  engine: IBaseComponentProps['engine'];
+export interface IRangePanelItemProps extends IBaseComponentProps {
   sliderName: 'record' | 'index';
   onSubmit: () => {};
   itemConfig: {

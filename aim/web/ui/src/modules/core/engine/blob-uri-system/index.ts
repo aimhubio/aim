@@ -1,8 +1,8 @@
 import _ from 'lodash-es';
 
-import { createBlobsRequest } from 'modules/core/api/runsApi';
-
 import { throttle } from 'components/Table/utils';
+
+import { createBlobsRequest } from 'modules/core/api/runsApi';
 
 import { SequenceTypesEnum } from 'types/core/enums';
 
@@ -125,7 +125,7 @@ function createBlobURISystemEngine(
         return request
           .call(blobUris)
           .then(async (stream) => {
-            parseStream(stream, {
+            await parseStream(stream, {
               callback: (object: { hash: string; value: ArrayBuffer }) => {
                 const blobData: string = arrayBufferToBase64(object.value);
                 fire(object.hash, blobData);

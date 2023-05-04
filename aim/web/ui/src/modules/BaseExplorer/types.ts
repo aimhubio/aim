@@ -4,13 +4,14 @@ import { GroupType } from 'modules/core/pipeline';
 import { GroupingConfigs } from 'modules/core/engine/explorer/groupings';
 import { ControlsConfigs } from 'modules/core/engine/visualizations/controls';
 import { CustomStates } from 'modules/core/utils/store';
+import {
+  VisualizationsConfig,
+  WidgetsConfig,
+} from 'modules/core/engine/visualizations';
+import { EngineNew } from 'modules/core/engine/explorer-engine';
+import { PipelineStatusEnum } from 'modules/core/engine/types';
 
 import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
-import { AimFlatObjectBase } from 'types/core/AimObjects';
-
-import { VisualizationsConfig } from '../core/engine/visualizations';
-import { EngineNew } from '../core/engine/explorer-engine';
-import { StatePersistOption } from '../core/engine/types';
 
 export interface IEngineStates {
   [key: string]: {
@@ -60,15 +61,14 @@ export interface IUIComponents {
   queryForm: React.FunctionComponent<IQueryFormProps>;
   grouping: React.FunctionComponent<IGroupingProps>;
   visualizations: React.FunctionComponent<IVisualizationProps>[];
-  box: React.FunctionComponent<IBoxProps>;
+  box: React.FunctionComponent<IBoxContentProps>;
   controls: React.FunctionComponent<IControlsProps>;
 }
 
 export interface IQueryFormProps extends IBaseComponentProps {
   hasAdvancedMode?: boolean;
 }
-export interface IGroupingProps
-  extends Omit<IBaseComponentProps, 'visualizationName'> {}
+export interface IGroupingProps extends IBaseComponentProps {}
 export interface IControlsProps extends IBaseComponentProps {
   visualizationName: string;
 }
@@ -76,41 +76,67 @@ export interface IControlsProps extends IBaseComponentProps {
 export interface IVisualizationsProps extends IBaseComponentProps {
   components: IUIComponents;
   visualizers: VisualizationsConfig;
+  forceRenderVisualizations?: boolean;
+  displayProgress: boolean;
+  getStaticContent?: (
+    type: StaticContentType,
+    defaultContent?: React.ReactNode,
+  ) => React.ReactNode;
 }
 
 export interface IVisualizationProps extends IBaseComponentProps {
-  box?: React.FunctionComponent<IBoxProps>;
-  hasDepthSlider: boolean;
-  panelRenderer: () => React.ReactNode;
+  box?: React.FunctionComponent<IBoxContentProps>;
+  boxStacking: boolean;
+  topPanelRenderer: () => React.ReactNode;
+  bottomPanelRenderer: () => React.ReactNode;
   name: string;
+  widgets?: WidgetsConfig;
 }
 
 export interface IProgressBarProps extends IBaseComponentProps {}
 
-export interface IBoxProps extends IBaseComponentProps {
+export interface IBoxContentProps extends Partial<IBaseComponentProps> {
   data: any;
-  items: AimFlatObjectBase[];
   style?: React.CSSProperties;
   isFullView?: boolean;
+  index?: number;
+  id?: string;
+  visualizationName?: string;
+  itemGroupInfo?: Record<string, IGroupInfo>;
+}
+
+export interface IGroupInfo {
+  key: string;
+  config: Record<string, any>;
+  items_count_in_group: number;
+  order: number;
 }
 
 export interface IOptionalExplorerConfig {}
-export interface IExplorerBarProps
-  extends Omit<IBaseComponentProps, 'visualizationName'> {
+export interface IExplorerBarProps extends IBaseComponentProps {
   explorerName: string;
-  documentationLink: string;
+  documentationLink?: string;
 }
+export interface IExplorerNotificationProps extends IBaseComponentProps {}
 
 export interface IBaseComponentProps {
   engine: any;
-  visualizationName: string;
   // dataSelector: () => any;
 }
+
+export interface IWidgetRendererProps {
+  boxContainer: React.MutableRefObject<HTMLDivElement>;
+  vizContainer: React.MutableRefObject<HTMLDivElement>;
+}
+
+export interface IWidgetComponentProps
+  extends IWidgetRendererProps,
+    IBaseComponentProps {}
 
 export declare interface ExplorerEngineConfiguration {
   /**
    * @optional
-   * Useful when it need to persist query and grouping states through url
+   * Useful when it needs to persist query and grouping states through url
    */
   persist?: boolean; // TODO later use StatePersistOption;
   /**
@@ -149,7 +175,11 @@ export declare interface ExplorerEngineConfiguration {
   visualizations: ExplorerVisualizationsConfiguration;
 
   /**
-   * Custom States
+   * Explorer level additional custom states
+   * @optional
+   * This property is useful to create custom states for the explorer, and it will be accessible directly from engine
+   * The usage of the state defined on state slice documentation
+   * @default value is {}
    */
   states?: CustomStates;
 }
@@ -210,13 +240,25 @@ export declare interface ExplorerConfiguration
   components?: ExplorerUIComponents;
 
   /**
-   * Explorer level additional custom states
-   * @optional
-   * This property is useful to create custom states for the explorer, and it will be accessible directly from engine
-   * The usage of the state defined on state slice documentation
-   * @default value is {}
+   * Explorer level static content
+   * @param type
    */
   readonly states?: CustomStates;
+
+  /**
+   * Do not check for pipeline status and skip rendering the illustrration block
+   * @optional
+   * @default value is false
+   */
+  forceRenderVisualizations?: boolean;
+
+  /**
+   * Check whether to render the progress bar for the search query
+   * @optional
+   * @default value is true
+   */
+  displayProgress?: boolean;
+  getStaticContent?: (type: string) => React.ReactNode;
 }
 
 export declare interface ExplorerProps<
@@ -236,3 +278,5 @@ export declare interface ExplorerProps<
    */
   children?: React.ReactChildren;
 }
+
+export type StaticContentType = string | PipelineStatusEnum;

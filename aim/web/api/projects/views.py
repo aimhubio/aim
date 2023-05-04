@@ -6,7 +6,7 @@ from collections import Counter
 from fastapi import Depends, HTTPException, Query, Header
 from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
 
-from aim.web.configs import AIM_UI_TELEMETRY_KEY, AIM_PROJECT_SETTINGS_FILE
+from aim.web.configs import AIM_PROJECT_SETTINGS_FILE
 from aim.web.api.projects.project import Project
 from aim.web.api.projects.pydantic_models import (
     ProjectActivityApiOut,
@@ -18,6 +18,7 @@ from aim.web.api.projects.pydantic_models import (
 from aim.web.api.utils import object_factory
 from aim.sdk.index_manager import RepoIndexManager
 from aim.storage.locking import AutoFileLock
+from aim.utils.tracking import analytics
 
 projects_router = APIRouter()
 
@@ -33,7 +34,7 @@ async def project_api():
         'name': project.name,
         'path': project.path,
         'description': project.description,
-        'telemetry_enabled': os.getenv(AIM_UI_TELEMETRY_KEY, '1'),
+        'telemetry_enabled': analytics.telemetry_enabled,
     }
 
 
@@ -154,4 +155,4 @@ async def project_status_api():
     if not project.exists():
         raise HTTPException(status_code=404)
 
-    return RepoIndexManager.get_index_manager(project.repo.path).repo_status
+    return RepoIndexManager.get_index_manager(project.repo).repo_status

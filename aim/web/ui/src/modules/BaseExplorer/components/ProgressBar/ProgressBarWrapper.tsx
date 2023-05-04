@@ -1,14 +1,11 @@
 import React from 'react';
 
-import { PipelineStatusEnum } from 'modules/core/engine/types';
-
 import ProgressBar from 'components/ProgressBar/ProgressBar';
 
-import { IProgressBarProps } from '../../types';
+import { PipelineStatusEnum } from 'modules/core/engine/types';
+import { IProgressBarProps } from 'modules/BaseExplorer/types';
 
-function ProgressBarWrapper(
-  props: Omit<IProgressBarProps, 'visualizationName'>,
-) {
+function ProgressBarWrapper(props: IProgressBarProps) {
   const {
     engine: { useStore, pipeline },
   } = props;
@@ -32,6 +29,4 @@ function ProgressBarWrapper(
   );
 }
 
-export default React.memo<Omit<IProgressBarProps, 'visualizationName'>>(
-  ProgressBarWrapper,
-);
+export default React.memo<IProgressBarProps>(ProgressBarWrapper);

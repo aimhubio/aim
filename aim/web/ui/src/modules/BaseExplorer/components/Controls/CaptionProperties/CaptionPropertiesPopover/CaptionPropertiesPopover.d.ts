@@ -4,4 +4,5 @@ import { ICaptionProperties } from '../';
 
 export interface ICaptionPropertiesPopoverProps extends IBaseComponentProps {
   captionProperties: ICaptionProperties;
+  visualizationName: string;
 }

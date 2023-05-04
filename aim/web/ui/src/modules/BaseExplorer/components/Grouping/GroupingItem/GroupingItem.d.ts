@@ -1,8 +1,8 @@
 import React from 'react';
 
-import { IBaseComponentProps } from 'modules/BaseExplorer/types';
-
 import { IconName } from 'components/kit/Icon';
+
+import { IBaseComponentProps } from 'modules/BaseExplorer/types';
 
 export interface IGroupingItemProps extends IBaseComponentProps {
   groupName: string;

@@ -70,7 +70,6 @@ function RunLogsTab({
       record_range: logsRowsData.current
         ? `${logsRange.current?.[1] > 5 ? logsRange.current?.[1] - 5 : 0}:`
         : '',
-      isLiveUpdate: true,
     });
   }
 
@@ -83,12 +82,7 @@ function RunLogsTab({
     }
   }
 
-  function getRunLogs(params: {
-    runHash: string;
-    record_range?: string;
-    isLiveUpdate?: boolean;
-    isLoadMore?: boolean;
-  }) {
+  function getRunLogs(params: { runHash: string; record_range?: string }) {
     setRequestStatus(RequestStatusEnum.Pending);
     runsBatchRequestRef.current = runDetailAppModel.getRunLogs(params);
     runsBatchRequestRef.current.call().then(() => {
@@ -130,7 +124,6 @@ function RunLogsTab({
             ? logsRange.current?.[0] - LOAD_MORE_LOGS_COUNT
             : 0
         }:${logsRange.current?.[0]}`,
-        isLoadMore: true,
       });
     }
   }
@@ -221,7 +214,7 @@ function RunLogsTab({
         isLoading={
           isRunLogsLoading && lastRequestType === LogsLastRequestEnum.DEFAULT
         }
-        className='runDetailParamsTabLoader'
+        className='RunDetailTabLoader'
         height='100%'
       >
         {!_.isEmpty(runLogs) &&
@@ -258,7 +251,7 @@ function RunLogsTab({
                         lastRequestType === LogsLastRequestEnum.LOAD_MORE,
                     })}
                   >
-                    <Spinner size={24} thickness={4} color='primary' />
+                    <Spinner size={24} />
                   </div>
                 </div>
               </div>
@@ -267,7 +260,7 @@ function RunLogsTab({
         ) : (
           <IllustrationBlock
             size='xLarge'
-            className='runDetailParamsTabLoader'
+            className='RunDetailTabLoader'
             title='No Logs'
           />
         )}

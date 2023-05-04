@@ -1,34 +1,61 @@
-import React, { memo } from 'react';
+import React from 'react';
+
+import ErrorBoundary from 'components/ErrorBoundary';
+import { Box } from 'components/kit_v2';
 
 import { IBaseComponentProps } from 'modules/BaseExplorer/types';
 
-import { Text } from 'components/kit';
-import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import FacetGrouping from '../FacetGrouping';
 
-import './Grouping.scss';
+function Grouping(props: IBaseComponentProps) {
+  const {
+    engine: { useStore, groupings },
+  } = props;
+  const currentValues = useStore(groupings.currentValuesSelector);
 
-function Grouping(props: Omit<IBaseComponentProps, 'visualizationName'>) {
-  const engine = props.engine;
-  const currentValues = engine.useStore(engine.groupings.currentValuesSelector);
-
-  const groupingItems = React.useMemo(() => {
-    return Object.keys(currentValues).map((key: string) => {
-      const Component = engine.groupings[key].component;
-      return <Component key={key} {...props} />;
+  const { facetGroupings, restGroupings } = React.useMemo(() => {
+    const facet: Record<string, any> = {};
+    const rest: Record<string, any> = {};
+    Object.keys(currentValues).forEach((key: string) => {
+      const grouping = groupings[key];
+      if (grouping.component) {
+        if (grouping.settings.facet) {
+          facet[key] = grouping;
+        } else {
+          rest[key] = grouping;
+        }
+      }
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    return { facetGroupings: facet, restGroupings: rest };
+  }, [currentValues, groupings]);
+
+  const renderGrouping = React.useCallback(
+    ([key, grouping]: [string, any]) => {
+      const { component: Component } = grouping;
+      if (__DEV__) {
+        Component.displayName = 'GroupingComponent';
+      }
+      return <Component key={key} {...props} />;
+    },
+    [props],
+  );
 
   return (
     <ErrorBoundary>
-      <div className='BaseGrouping'>
-        <Text size={12} weight={500} className='BaseGrouping__title'>
-          Group by:
-        </Text>
-        <div className='BaseGrouping__content'>{groupingItems}</div>
-      </div>
+      <Box display='flex' ai='center'>
+        <Box gap='$5' display='flex' ai='center' jc='center'>
+          <FacetGrouping
+            {...props}
+            facetGroupings={facetGroupings}
+            renderGrouping={renderGrouping}
+          />
+          {Object.entries(restGroupings).map(renderGrouping)}
+        </Box>
+      </Box>
     </ErrorBoundary>
   );
 }
 
-export default memo<Omit<IBaseComponentProps, 'visualizationName'>>(Grouping);
+Grouping.displayName = 'Grouping';
+
+export default React.memo<IBaseComponentProps>(Grouping);

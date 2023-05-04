@@ -1,17 +1,19 @@
-import { isEmpty, isEqual, omit } from 'lodash-es';
+import _ from 'lodash-es';
 
 import {
   IRunProgressObject,
   RunsSearchQueryParams,
 } from 'modules/core/api/runsApi';
 import createPipeline, {
+  CustomPhaseExecutionArgs,
   GroupType,
   Order,
   PipelineOptions,
   PipelinePhasesEnum,
+  PipelineResult,
 } from 'modules/core/pipeline';
 import getUrlSearchParam from 'modules/core/utils/getUrlSearchParam';
-import updateUrlSearchParam from 'modules/core/utils/updateUrlSearchParam';
+import getUpdatedUrl from 'modules/core/utils/getUpdatedUrl';
 import browserHistory from 'modules/core/services/browserHistory';
 import getQueryParamsFromState from 'modules/core/utils/getQueryParamsFromState';
 
@@ -21,6 +23,7 @@ import { encode } from 'utils/encoder/encoder';
 
 import { PipelineStatusEnum, ProgressState } from '../types';
 import { QueryState } from '../explorer/query';
+import { INotificationsEngine } from '../notifications';
 
 import createState, {
   CurrentGrouping,
@@ -40,6 +43,8 @@ export interface IPipelineEngine<TObject, TStore> {
     destroy: () => void;
     reset: () => void;
     initialize: () => () => void;
+    executeCustomPhase: (args: CustomPhaseExecutionArgs) => void;
+    resetCustomPhaseArgs: () => void;
   } & Omit<PipelineStateBridge<TObject, TStore>, 'selectors'> &
     PipelineStateBridge<TObject, TStore>['selectors'];
 }
@@ -47,9 +52,15 @@ export interface IPipelineEngine<TObject, TStore> {
 function createPipelineEngine<TStore, TObject>(
   store: any,
   options: Omit<PipelineOptions, 'callbacks'>,
-  defaultGroupings?: any,
+  groupingConfig: any,
+  notificationsEngine?: INotificationsEngine<TStore>['engine'],
 ): IPipelineEngine<TObject, TStore> {
   const initialState = getInitialState<TObject>();
+
+  const defaultGroupings: CurrentGrouping = {};
+  Object.keys(groupingConfig || {}).forEach((key: string) => {
+    defaultGroupings[key] = groupingConfig?.[key].defaultApplications;
+  });
 
   if (defaultGroupings) {
     initialState.currentGroupings = defaultGroupings;
@@ -122,16 +133,24 @@ function createPipelineEngine<TStore, TObject>(
     params: RunsSearchQueryParams,
     isInternal: boolean = false,
   ): void {
-    const currentGroupings = state.getCurrentGroupings();
+    // @TODO add a "customMetric" to the query params dynamically
+    const customMetric =
+      store.getState().visualizations.vis1.controls.axesProperties?.alignment
+        .metric;
 
-    state.setCurrentQuery(params);
+    const queryParams = {
+      ...params,
+      ...(customMetric ? { x_axis: customMetric } : {}),
+    };
+
+    state.setCurrentQuery(queryParams);
     state.setError(null);
 
     if (!isInternal && pipelineOptions.persist) {
       const queryState = store.getState().query;
 
       if (!queryState.ranges.isInitial) {
-        const url = updateUrlSearchParam(
+        const url = getUpdatedUrl(
           'query',
           encode({
             ...queryState,
@@ -149,20 +168,15 @@ function createPipelineEngine<TStore, TObject>(
       }
     }
 
-    const groupOptions = Object.keys(currentGroupings).map((key: string) => ({
-      type: key as GroupType,
-      fields: currentGroupings[key].fields,
-      orders: currentGroupings[key].orders,
-    }));
-
     // @TODO complete response typings
     pipeline
       .execute({
         query: {
-          params,
+          params: queryParams,
           ignoreCache: true,
         },
-        group: groupOptions,
+        group: normalizeGroupConfig(state.getCurrentGroupings()),
+        custom: state.getCurrentCustomPhaseArgs(),
       })
       .then((res) => {
         // collect result
@@ -171,11 +185,11 @@ function createPipelineEngine<TStore, TObject>(
         // save to state
         state.setResult(data, foundGroups, additionalData, queryableData);
         state.changeCurrentPhaseOrStatus(
-          isEmpty(data) ? PipelineStatusEnum.Empty : state.getStatus(),
+          _.isEmpty(data) ? PipelineStatusEnum.Empty : state.getStatus(),
         );
 
         if (!isInternal && pipelineOptions.persist) {
-          const url = updateUrlSearchParam(
+          const url = getUpdatedUrl(
             'query',
             encode({
               ...store.getState().query,
@@ -193,6 +207,9 @@ function createPipelineEngine<TStore, TObject>(
       .catch((err) => {
         state.setError(err);
         state.changeCurrentPhaseOrStatus(PipelineStatusEnum.Failed);
+        if (err && err.message !== 'SyntaxError') {
+          notificationsEngine?.error(err.message);
+        }
       });
   }
 
@@ -202,6 +219,7 @@ function createPipelineEngine<TStore, TObject>(
       type: GroupType;
       fields: string[];
       orders: Order[];
+      isApplied: boolean;
     }[] = [];
 
     Object.keys(config).forEach((key: string) => {
@@ -209,10 +227,12 @@ function createPipelineEngine<TStore, TObject>(
         type: GroupType;
         fields: string[];
         orders: Order[];
+        isApplied: boolean;
       } = {
         type: key as GroupType,
         fields: config[key as GroupType].fields,
         orders: config[key as GroupType].orders,
+        isApplied: config[key as GroupType].isApplied,
       };
       config[key as GroupType].fields.length && groupConfig.push(groupConf);
     });
@@ -225,18 +245,15 @@ function createPipelineEngine<TStore, TObject>(
    * @example
    *     pipeline.engine.group(config)
    * @param {CurrentGrouping} config
-   * @param {boolean} isInternal - indicates called internally or from UI, if isInternal doesnt need to update current query
+   * @param {boolean} isInternal - indicates called internally or from UI, if isInternal doesn't need to update current query
    */
   function group(config: CurrentGrouping, isInternal: boolean = false): void {
     state.setCurrentGroupings(config);
 
-    const equal = isEqual(config, defaultGroupings);
+    const equal = _.isEqual(config, defaultGroupings);
 
     if (!isInternal && pipelineOptions.persist) {
-      const url = updateUrlSearchParam(
-        'groupings',
-        equal ? null : encode(config),
-      );
+      const url = getUpdatedUrl('groupings', equal ? null : encode(config));
 
       if (url !== `${window.location.pathname}${window.location.search}`) {
         browserHistory.push(url, null);
@@ -249,6 +266,7 @@ function createPipelineEngine<TStore, TObject>(
           params: state.getCurrentQuery(),
         },
         group: normalizeGroupConfig(config),
+        custom: state.getCurrentCustomPhaseArgs(),
       })
       .then((res) => {
         const { data, additionalData, foundGroups } = res;
@@ -264,14 +282,14 @@ function createPipelineEngine<TStore, TObject>(
     if (pipelineOptions.persist) {
       const stateFromStorage = getUrlSearchParam('groupings') || {};
       // update state
-      if (!isEmpty(stateFromStorage)) {
+      if (!_.isEmpty(stateFromStorage)) {
         state.setCurrentGroupings(stateFromStorage);
       }
 
       const removeGroupingsListener = browserHistory.listenSearchParam<any>(
         'groupings',
         (groupings: any) => {
-          if (!isEmpty(groupings)) {
+          if (!_.isEmpty(groupings)) {
             group(groupings, true);
           } else {
             group(defaultGroupings, true);
@@ -284,7 +302,7 @@ function createPipelineEngine<TStore, TObject>(
         browserHistory.listenSearchParam<QueryState | null>(
           'query',
           (query: QueryState | null) => {
-            if (!isEmpty(query)) {
+            if (!_.isEmpty(query)) {
               search(
                 {
                   ...getQueryParamsFromState(
@@ -313,18 +331,50 @@ function createPipelineEngine<TStore, TObject>(
     };
   }
 
+  function resetCustomPhaseArgs() {
+    state.setCurrentCustomPhaseArgs(null);
+  }
+
+  function executeCustomPhase(args: CustomPhaseExecutionArgs) {
+    state.setCurrentCustomPhaseArgs(args);
+
+    pipeline
+      .execute({
+        query: {
+          params: state.getCurrentQuery(),
+        },
+        group: normalizeGroupConfig(state.getCurrentGroupings()),
+        custom: args,
+      })
+      .then((res: PipelineResult) => {
+        const { data, foundGroups, additionalData, queryableData } = res;
+        // save to state
+        state.setResult(data, foundGroups, additionalData, queryableData);
+      })
+      .catch((err) => {
+        resetCustomPhaseArgs();
+        state.setError(err);
+        state.changeCurrentPhaseOrStatus(PipelineStatusEnum.Failed);
+        if (err && err.message !== 'SyntaxError') {
+          notificationsEngine?.error(err.message);
+        }
+      });
+  }
+
   return {
     state: {
       pipeline: state.initialState,
     },
     engine: {
-      ...omit(state, ['selectors']),
+      ..._.omit(state, ['selectors']),
       ...state.selectors,
       getSequenceName: () => options.sequenceName,
       search,
       group,
       reset,
       initialize,
+      executeCustomPhase,
+      resetCustomPhaseArgs,
       destroy: () => {
         /**
          * This line creates some bugs right now, use this after creating complete clean-up mechanism for resources

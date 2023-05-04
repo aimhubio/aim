@@ -7,6 +7,8 @@ const DOCUMENTATIONS = {
   SUPPORTED_TYPES:
     'https://aimstack.readthedocs.io/en/latest/quick_start/supported_types.html',
   EXPLORERS: {
+    SEARCH: 'https://aimstack.readthedocs.io/en/latest/ui/pages/explorers.html',
+
     PARAMS: {
       MAIN: 'https://aimstack.readthedocs.io/en/latest/ui/pages/explorers.html#params-explorer',
       SEARCH:
@@ -31,12 +33,6 @@ const DOCUMENTATIONS = {
       MAIN: 'https://aimstack.readthedocs.io/en/latest/ui/pages/run_management.html#runs-explorer',
       SEARCH:
         'https://aimstack.readthedocs.io/en/latest/ui/pages/run_management.html#search-runs',
-    },
-    //@TODO set right docs link after adding Figures docs to the docs
-    FIGURES: {
-      MAIN: 'https://aimstack.readthedocs.io/en/latest/ui/pages/explorers.html',
-      SEARCH:
-        'https://aimstack.readthedocs.io/en/latest/ui/pages/explorers.html',
     },
   },
   INTEGRATIONS: {
@@ -120,8 +116,28 @@ const DASHBOARD_PAGE_GUIDES: { name: string; url: string }[] = [
     url: `https://aimstack.readthedocs.io/en/${version}/using/remote_tracking.html`,
   },
   {
+    name: 'Notify on failed/stuck runs',
+    url: `https://aimstack.readthedocs.io/en/${version}/using/training_monitoring.html`,
+  },
+  {
+    name: 'Log messages during training process',
+    url: `https://aimstack.readthedocs.io/en/${version}/using/logging.html`,
+  },
+  {
+    name: 'Set up the notification service',
+    url: `https://aimstack.readthedocs.io/en/${version}/using/notifications.html`,
+  },
+  {
+    name: 'Define custom callbacks',
+    url: `https://aimstack.readthedocs.io/en/${version}/using/callbacks.html`,
+  },
+  {
     name: 'Host Aim on Kubernetes (K8S)',
     url: `https://aimstack.readthedocs.io/en/${version}/using/k8s_deployment.html`,
+  },
+  {
+    name: 'Run Aim UI on Hugging Face Spaces',
+    url: `https://aimstack.readthedocs.io/en/${version}/using/huggingface_spaces.html`,
   },
   {
     name: 'Run Aim UI on Jupyter Notebook',
@@ -149,4 +165,5 @@ const DASHBOARD_PAGE_GUIDES: { name: string; url: string }[] = [
   },
 ];
 
-export { DOCUMENTATIONS, GUIDES, DEMOS, DASHBOARD_PAGE_GUIDES };
+const GITHUB_URL = 'https://github.com/aimhubio/aim';
+export { DOCUMENTATIONS, GUIDES, DEMOS, DASHBOARD_PAGE_GUIDES, GITHUB_URL };

@@ -35,7 +35,7 @@ def hash_none(obj: NoneType = None) -> int:
     return _HASH_NONE
 
 
-def hash_uniform(bad_hash: int) -> int:
+def hash_uniform(bad_hash):
     """Make a uniform permutation for mapping to make it more or less
     cryptographically stable, so it's more difficult to manually or (by chance
     in real applications) craft / find such examples that `a != b` but

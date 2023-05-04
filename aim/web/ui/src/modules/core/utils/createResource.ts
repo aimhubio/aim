@@ -13,7 +13,7 @@ const defaultState = {
   error: null,
 };
 
-function createResource<T, GetterArgs = RequestOptions>(getter: any) {
+function createResource<T, GetterArgs = RequestOptions | any>(getter: any) {
   const state = create<IResourceState<T>>(() => defaultState);
 
   async function fetchData(args?: GetterArgs) {

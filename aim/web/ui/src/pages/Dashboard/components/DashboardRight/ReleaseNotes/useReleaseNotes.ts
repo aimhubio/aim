@@ -2,11 +2,11 @@ import React from 'react';
 import _ from 'lodash-es';
 import { marked } from 'marked';
 
+import { AIM_VERSION } from 'config/config';
+
 import { IReleaseNote } from 'modules/core/api/releaseNotesApi/types';
 import { IResourceState } from 'modules/core/utils/createResource';
 import { fetchReleaseByTagName } from 'modules/core/api/releaseNotesApi';
-
-import { AIM_VERSION } from 'config/config';
 
 import createReleaseNotesEngine from './ReleasesStore';
 
@@ -24,6 +24,8 @@ function useReleaseNotes() {
   const releaseNoteRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
+    const releaseNoteNode = releaseNoteRef.current;
+
     if (releaseNotesStore.data?.length) {
       // detect current release in fetched release notes
       const release: IReleaseNote | undefined = releaseNotesStore.data?.find(
@@ -39,10 +41,7 @@ function useReleaseNotes() {
       releaseNotesEngine.fetchReleases();
     }
     return () => {
-      releaseNoteRef?.current?.removeEventListener(
-        'scroll',
-        onChangelogContentScroll,
-      );
+      releaseNoteNode?.removeEventListener('scroll', onChangelogContentScroll);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [releaseNotesStore.data]);
@@ -89,6 +88,7 @@ function useReleaseNotes() {
       if (index < 4) {
         listElements.push(
           li.innerText.replace(
+            // eslint-disable-next-line no-useless-escape
             /(\sby\s\@[A-z\d](?:[A-z\d]|-(?=[A-z\d])){0,38}\s\w+\shttps\:\/\/github\.com\/((\w+\/?){4}))/g,
             '',
           ),
@@ -102,6 +102,7 @@ function useReleaseNotes() {
 
   // function to modify release notes name
   function modifyReleaseName(releaseTitle: string): string {
+    // eslint-disable-next-line no-useless-escape
     return releaseTitle.replace(/(^\🚀\s*v\d+\.\d+\.\d+\s*\-\s*)/, '');
   }
 
@@ -117,6 +118,7 @@ function useReleaseNotes() {
           info: modifyReleaseName(release.name),
           url: release.html_url,
         });
+        return false;
       });
       return data;
     }, [releaseNotesStore.data]);

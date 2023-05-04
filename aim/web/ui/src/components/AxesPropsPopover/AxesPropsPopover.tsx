@@ -83,7 +83,7 @@ function AxesPropsPopover({
   }, [selectFormOptions]);
 
   const selected = React.useMemo(() => {
-    return alignmentConfig.type === AlignmentOptionsEnum.CUSTOM_METRIC
+    return alignmentConfig?.type === AlignmentOptionsEnum.CUSTOM_METRIC
       ? alignmentConfig.metric
       : alignmentConfig.type;
   }, [alignmentConfig]);

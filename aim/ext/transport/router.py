@@ -2,8 +2,8 @@ import datetime
 
 from typing import List, TYPE_CHECKING
 
-import aim.ext.transport.remote_router_pb2 as router_rpc
-import aim.ext.transport.remote_router_pb2_grpc as router_pb2_grpc
+import aim.ext.transport.proto.remote_router_pb2 as router_rpc
+import aim.ext.transport.proto.remote_router_pb2_grpc as router_pb2_grpc
 
 from aim.ext.transport.message_utils import build_exception
 
@@ -45,6 +45,7 @@ class RemoteRouterServicer(router_pb2_grpc.RemoteRouterServiceServicer):
         try:
             worker = self.new_client(request.client_uri)
             return router_rpc.ConnectResponse(port=worker.port,
+                                              worker_index=worker.index,
                                               status=router_rpc.ConnectResponse.Status.OK)
         except Exception as e:
             return router_rpc.ConnectResponse(status=router_rpc.ConnectResponse.Status.ERROR,

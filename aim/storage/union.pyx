@@ -183,7 +183,7 @@ class DB(object):
             index_db = self._get_db(index_prefix, index_path, self._dbs)
         except Exception:
             index_db = None
-            logger.warning('No index was detected')
+            logger.info('No index was detected')
 
         # If index exists -- only load those in progress
         selector = 'progress' if index_db is not None else 'chunks'
@@ -232,10 +232,6 @@ class RocksUnionContainer(RocksContainer):
         return super().__init__(*args, **kwargs)
 
     @property
-    def writable_db(self) -> aimrocks.DB:
-        raise NotImplementedError
-
-    @property
     def db(self) -> aimrocks.DB:
         assert self.read_only
 
@@ -268,10 +264,6 @@ class RocksUnionSubContainer(RocksContainer):
     def __init__(self, container: 'RocksUnionContainer', domain: bytes):
         self._parent = container
         self.domain = domain
-
-    @property
-    def writable_db(self) -> aimrocks.DB:
-        raise NotImplementedError
 
     @property
     def db(self) -> aimrocks.DB:

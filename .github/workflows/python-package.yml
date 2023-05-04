@@ -33,7 +33,7 @@ jobs:
       - name: Build UI
         working-directory: ./aim/web/ui
         run: |
-          npm i
+          npm i --legacy-peer-deps
           CI=false npm run build
 
       - name: Setup python
@@ -117,6 +117,7 @@ jobs:
         run: docker login -u $DOCKER_HUB_USERNAME -p $DOCKER_HUB_PASSWORD
 
       - name: Build & Push aim image
+        if: matrix.manylinux-version == 'manylinux_2_24_x86_64'
         working-directory: ./docker
         env:
           AIM_VERSION: ${{ steps.capture-version.outputs.AIM_VERSION }}
@@ -129,11 +130,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ '3.6', '3.7', '3.8', '3.9', '3.10' ]
+        python-version: [ '3.7', '3.8', '3.9', '3.10', '3.11' ]
         arch: ['arm64', 'x86_64']
         exclude:
-          - arch: 'arm64'
-            python-version: 3.6
           - arch: 'arm64'
             python-version: 3.7
 

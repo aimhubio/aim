@@ -2,12 +2,13 @@ import React from 'react';
 import _ from 'lodash-es';
 import moment from 'moment';
 
-import { IResourceState } from 'modules/core/utils/createResource';
-
 import RunNameColumn from 'components/Table/RunNameColumn';
 import { Badge } from 'components/kit';
+import ExperimentNameBox from 'components/ExperimentNameBox';
 
 import { TABLE_DATE_FORMAT } from 'config/dates/dates';
+
+import { IResourceState } from 'modules/core/utils/createResource';
 
 import { IRun } from 'types/services/models/metrics/runModel';
 
@@ -115,7 +116,14 @@ function useActiveRunsTable() {
             key,
             selectKey: key,
             index,
-            experiment: props.experiment?.name,
+            experiment: {
+              content: (
+                <ExperimentNameBox
+                  experimentName={props.experiment?.name || ''}
+                  experimentId={props.experiment?.id || ''}
+                />
+              ),
+            },
             run: {
               content: (
                 <RunNameColumn
@@ -238,7 +246,7 @@ function useActiveRunsTable() {
           .join(', ')}]`,
       );
     },
-    [selectedRows, tableData],
+    [selectedRows],
   );
 
   return {

@@ -1,0 +1,17 @@
+@use 'src/styles/abstracts' as *;
+
+.ExperimentStatistics {
+  &__trackedSequences {
+    margin-top: $space-lg;
+  }
+  &__cards {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: $space-unit;
+    margin-top: $space-sm;
+  }
+  &__bar {
+    margin-top: $space-sm;
+  }
+}
