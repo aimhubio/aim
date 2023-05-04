@@ -1,6 +1,7 @@
 -r ../requirements.txt
 torch
 tensorflow
+deeplake
 # hub
 fastapi>=0.87.0
 httpx
