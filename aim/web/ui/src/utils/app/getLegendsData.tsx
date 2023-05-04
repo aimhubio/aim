@@ -1,10 +1,13 @@
+import {
+  LegendColumnDataType,
+  LegendsDataType,
+} from 'components/VisualizationLegends';
+
 import { GroupNameEnum } from 'config/grouping/GroupingPopovers';
 
 import {
   IGroupingSelectOption,
   IMetricsCollection,
-  LegendColumnDataType,
-  LegendsDataType,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IGroupingConfig } from 'types/services/models/explorer/createAppModel';
 

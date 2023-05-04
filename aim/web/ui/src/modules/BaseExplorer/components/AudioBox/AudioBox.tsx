@@ -8,7 +8,7 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { BATCH_COLLECT_DELAY } from 'config/mediaConfigs/mediaConfigs';
 
-import { IBoxProps } from 'modules/BaseExplorer/types';
+import { IBoxContentProps } from 'modules/BaseExplorer/types';
 
 import contextToString from 'utils/contextToString';
 import { downloadLink } from 'utils/helper';
@@ -18,9 +18,7 @@ import AudioBoxVolume from './AudioBoxVolume';
 
 import './AudioBox.scss';
 
-function AudioBox(
-  props: IBoxProps,
-): React.FunctionComponentElement<React.ReactNode> {
+function AudioBox(props: IBoxContentProps) {
   const {
     engine: { events, blobURI },
     data: {
@@ -263,4 +261,4 @@ function AudioBox(
   );
 }
 
-export default AudioBox;
+export default React.memo(AudioBox);

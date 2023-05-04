@@ -13,15 +13,12 @@ function ZoomOutPopover({
   zoomHistory = [],
   onChange,
 }: IZoomOutPopoverProps): React.FunctionComponentElement<React.ReactNode> {
-  const groupedHistory = _.groupBy(zoomHistory, (item) => item.index);
+  const groupedHistory = _.groupBy(zoomHistory, (item) => item.id);
 
   function handleZoomOut(e: React.ChangeEvent<any>): void {
     const value = e.target?.getAttribute('data-name');
     if (value && typeof onChange === 'function') {
-      const index = _.findLastIndex(
-        zoomHistory,
-        (item) => item.index === parseInt(value),
-      );
+      const index = _.findLastIndex(zoomHistory, (item) => item.id === value);
       let changedHistory = [...zoomHistory];
       if (index || index === 0) {
         changedHistory.splice(index, 1);
@@ -38,9 +35,9 @@ function ZoomOutPopover({
   return (
     <ErrorBoundary>
       <div className='ZoomOutPopover'>
-        {Object.keys(groupedHistory)?.map((index) => (
-          <MenuItem key={index} data-name={index} onClick={handleZoomOut}>
-            {`Zoom Out Chart ${parseInt(index) + 1}`}
+        {Object.keys(groupedHistory)?.map((id) => (
+          <MenuItem key={id} data-name={id} onClick={handleZoomOut}>
+            {`Zoom Out Chart ${id}`}
           </MenuItem>
         ))}
         <MenuItem onClick={handleResetZooming}>Reset Zooming</MenuItem>

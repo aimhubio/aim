@@ -1,4 +1,4 @@
-import React, { memo, useMemo } from 'react';
+import React from 'react';
 import _ from 'lodash-es';
 
 import {
@@ -45,7 +45,7 @@ type StatusCheckResult = {
   isInsufficientResources: boolean;
 };
 
-function QueryForm(props: Omit<IQueryFormProps, 'visualizationName'>) {
+function QueryForm(props: IQueryFormProps) {
   const [anchorEl, setAnchorEl] = React.useState<any>(null);
   const [searchValue, setSearchValue] = React.useState<string>('');
   const engine = props.engine;
@@ -65,7 +65,7 @@ function QueryForm(props: Omit<IQueryFormProps, 'visualizationName'>) {
   const updateError = React.useRef(engine.pipeline.setError);
 
   const { isExecuting, isInsufficientResources } =
-    useMemo((): StatusCheckResult => {
+    React.useMemo((): StatusCheckResult => {
       let result: StatusCheckResult = {
         isExecuting: false,
         isInsufficientResources: false,
@@ -451,10 +451,8 @@ function QueryForm(props: Omit<IQueryFormProps, 'visualizationName'>) {
   );
 }
 
-export const AdvancedQueryForm = memo(
-  (props: Omit<IQueryFormProps, 'visualizationName'>) => (
-    <QueryForm engine={props.engine} hasAdvancedMode />
-  ),
-);
+export const AdvancedQueryForm = React.memo((props: IQueryFormProps) => (
+  <QueryForm engine={props.engine} hasAdvancedMode />
+));
 
-export default memo<Omit<IQueryFormProps, 'visualizationName'>>(QueryForm);
+export default React.memo<IQueryFormProps>(QueryForm);

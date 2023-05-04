@@ -9,6 +9,8 @@ import { TABLE_DATE_FORMAT } from 'config/dates/dates';
 
 import { IResourceState } from 'modules/core/utils/createResource';
 
+import { experimentContributionsEngine } from 'pages/Experiment/components/ExperimentOverviewTab/ExperimentContributions';
+
 import { IRun } from 'types/services/models/metrics/runModel';
 
 import { getMetricHash } from 'utils/app/getMetricHash';
@@ -20,7 +22,6 @@ import { processDurationTime } from 'utils/processDurationTime';
 import { decode, encode } from 'utils/encoder/encoder';
 
 import experimentRunsEngine from '../ExperimentRunsStore';
-import { experimentContributionsEngine } from '../../ExperimentOverviewTab/ExperimentContributions';
 
 function useExperimentRunsTable(experimentName: string, experimentId: string) {
   const tableRef = React.useRef<any>(null);

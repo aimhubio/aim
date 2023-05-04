@@ -25,7 +25,7 @@ import './BoxFullViewPopover.scss';
 function BoxFullViewPopover({
   onClose,
   sequenceName,
-  groupInfo,
+  itemGroupInfo,
   children,
   item,
 }: IBoxFullViewPopoverProps) {
@@ -101,9 +101,9 @@ function BoxFullViewPopover({
     return {
       runInfo,
       sequence,
-      groups: groupInfo,
+      groups: itemGroupInfo,
     };
-  }, [item, sequenceName, groupInfo]);
+  }, [item, sequenceName, itemGroupInfo]);
 
   return (
     <ErrorBoundary>

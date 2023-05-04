@@ -6,3 +6,9 @@
   width: 100%;
   position: relative;
 }
+
+.TextsVisualizer__textCell {
+  height: 100%;
+  padding: $space-sm $space-xs;
+  overflow: auto;
+}

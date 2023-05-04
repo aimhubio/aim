@@ -12,18 +12,17 @@ import { Badge, SelectDropdown, Text, ToggleButton } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import { ISelectDropdownOption } from 'components/kit/SelectDropdown';
 
+import { TooltipAppearanceEnum } from 'modules/BaseExplorer/components/Controls/ConfigureTooltip';
+
 import { ITooltipContentPopoverProps } from 'types/components/TooltipContentPopover/TooltipContentPopover';
-import {
-  IGroupingSelectOption,
-  TooltipAppearance,
-} from 'types/services/models/metrics/metricsAppModel.d';
+import { IGroupingSelectOption } from 'types/services/models/metrics/metricsAppModel.d';
 
 import './TooltipContentPopover.scss';
 
 function TooltipContentPopover({
   onChangeTooltip,
   selectedFields = [],
-  tooltipAppearance = TooltipAppearance.Auto,
+  tooltipAppearance = TooltipAppearanceEnum.Auto,
   isTooltipDisplayed = true,
   selectOptions,
 }: ITooltipContentPopoverProps): React.FunctionComponentElement<React.ReactNode> {
@@ -78,7 +77,7 @@ function TooltipContentPopover({
 
   const tooltipAppearanceOptions: ISelectDropdownOption[] =
     React.useMemo(() => {
-      return Object.values(TooltipAppearance).map((option) => {
+      return Object.values(TooltipAppearanceEnum).map((option) => {
         return { label: _.capitalize(option), value: option };
       });
     }, []);

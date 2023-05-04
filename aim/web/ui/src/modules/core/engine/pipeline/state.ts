@@ -1,7 +1,11 @@
 import { StoreApi } from 'zustand';
 import produce, { Draft } from 'immer';
 
-import { Order, PipelinePhasesEnum } from 'modules/core/pipeline';
+import {
+  CustomPhaseExecutionArgs,
+  Order,
+  PipelinePhasesEnum,
+} from 'modules/core/pipeline';
 import { RunsSearchQueryParams } from 'modules/core/api/runsApi';
 
 import { AimFlatObjectBase } from 'types/core/AimObjects';
@@ -17,6 +21,7 @@ export type CurrentGrouping = {
   [key: string]: {
     orders: Order[];
     fields: string[];
+    isApplied: boolean;
   };
 };
 
@@ -32,6 +37,7 @@ export interface IPipelineState<TObject> {
   additionalData: AdditionalData;
   queryableData: QueryableData;
   currentQuery: CurrentQuery;
+  currentCustomPhaseArgs: CustomPhaseExecutionArgs | null;
   status: PipelineStatusEnum;
   foundGroups: FoundGroups;
   progress: ProgressState;
@@ -69,6 +75,8 @@ export type PipelineStateBridge<TObject, TStore> = {
     status: PipelineStatusEnum,
     phase?: PipelinePhasesEnum,
   ) => void;
+  setCurrentCustomPhaseArgs: (args: CustomPhaseExecutionArgs | null) => void;
+  getCurrentCustomPhaseArgs: () => CustomPhaseExecutionArgs | null;
   getCurrentPhase: () => PipelinePhasesEnum;
   getStatus: () => PipelineStatusEnum;
   setProgress: (progress: ProgressState) => void;
@@ -100,6 +108,7 @@ function getInitialState<TObject>(): IPipelineState<TObject> {
     queryableData: {},
     currentQuery: {},
     currentGroupings: {},
+    currentCustomPhaseArgs: null,
     data: [],
     foundGroups: {},
     error: null,
@@ -186,6 +195,19 @@ function createState<TStore, TObject>(
         // @ts-ignore
         '@PIPELINE/SET_CURRENT_GROUPINGS',
       ),
+    setCurrentCustomPhaseArgs: (args: CustomPhaseExecutionArgs | null) =>
+      store.setState(
+        produce<ExtractState<TStore, TObject>>(
+          (draft_state: Draft<ExtractState<TStore, TObject>>) => {
+            draft_state.pipeline.currentCustomPhaseArgs = args;
+          },
+        ),
+        false,
+        // @ts-ignore
+        '@PIPELINE/SET_CURRENT_CUSTOM_PHASE_ARGS',
+      ),
+    getCurrentCustomPhaseArgs: () =>
+      store.getState().pipeline.currentCustomPhaseArgs,
     getCurrentQuery: (): CurrentQuery => store.getState().pipeline.currentQuery,
     getCurrentGroupings: (): CurrentGrouping =>
       store.getState().pipeline.currentGroupings,

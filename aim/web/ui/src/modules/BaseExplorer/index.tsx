@@ -44,8 +44,7 @@ function createExplorer(
           box: {
             initialState:
               viz.box.initialState || defaultHydration.box.initialState,
-            hasDepthSlider:
-              viz.box.hasDepthSlider ?? defaultHydration.box.hasDepthSlider,
+            stacking: viz.box.stacking ?? defaultHydration.box.stacking,
             component: viz.box.component,
             persist: viz.box.hasOwnProperty('persist')
               ? viz.box.persist
@@ -69,7 +68,7 @@ function createExplorer(
       groupings: configuration.groupings || defaultHydration.groupings,
       visualizations: visualizationsHydration,
       states: {
-        ...defaultHydration.customStates,
+        ...defaultHydration.states,
         ...(configuration.states || {}),
       },
       enablePipelineCache: configuration.enablePipelineCache || true,

@@ -67,13 +67,7 @@ function getPipelineEngine(
 ) {
   const useCache = config.enablePipelineCache;
 
-  const defaultGroupings = Object.keys(config.groupings || {}).reduce(
-    (acc: Record<string, unknown>, key: string) => {
-      acc[key] = config.groupings?.[key].defaultApplications;
-      return acc;
-    },
-    {},
-  );
+  // const defaultControls = config.controls || {};
 
   const pipelineOptions: Omit<PipelineOptions, 'callbacks'> = {
     sequenceName: config.sequenceName,
@@ -87,13 +81,16 @@ function getPipelineEngine(
     query: {
       useCache,
     },
+    custom: {
+      useCache,
+    },
     persist: config.persist,
   };
 
-  const pipeline = createPipelineEngine<object, AimFlatObjectBase<any>>(
+  const pipeline = createPipelineEngine<object, AimFlatObjectBase>(
     { setState: set, getState: get },
     pipelineOptions,
-    defaultGroupings,
+    config.groupings,
     notificationsEngine,
   );
 
@@ -179,15 +176,14 @@ function getNotificationsEngine(
   set: any,
   get: any,
 ) {
-  const { state: notificationsState, engine: notificationsEngine } =
-    createNotificationsEngine<State>({
-      setState: set,
-      getState: get,
-    });
+  const notifications = createNotificationsEngine<State>({
+    setState: set,
+    getState: get,
+  });
 
-  state['notifications'] = notificationsState.notifications;
+  state['notifications'] = notifications.state.notifications;
 
-  return notificationsEngine;
+  return notifications.engine;
 }
 
 function createEngine<TObject = any>(
@@ -338,7 +334,7 @@ function createEngine<TObject = any>(
         }
       })
       // eslint-disable-next-line no-console
-      .catch((err) => console.error(err));
+      .catch(console.error);
 
     if (config.persist) {
       if (!basePath && basePath !== '') {

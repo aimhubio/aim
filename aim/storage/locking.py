@@ -28,7 +28,7 @@ class FileSystemInspector:
         'ext3', 'ext4', 'xfs', 'zfs', 'apfs',
         # We include only NFS v4 filesystems here (yet).
         # NFS v3 does not support file locks.
-        'nfs4',
+        'nfs4', 'ceph',
     }
     warned_devices: Set[int] = set()
 

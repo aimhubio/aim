@@ -4,7 +4,7 @@ import {
   MediaItemAlignmentEnum,
 } from 'config/enums/imageEnums';
 
-import { TooltipAppearance } from 'types/services/models/metrics/metricsAppModel.d';
+import { TooltipAppearanceEnum } from 'modules/BaseExplorer/components/Controls/ConfigureTooltip';
 
 import {
   AggregationAreaMethods,
@@ -23,7 +23,7 @@ import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 
 export const CONTROLS_DEFAULT_CONFIG = {
   metrics: {
-    highlightMode: HighlightEnum.Metric,
+    highlightMode: HighlightEnum.Run,
     ignoreOutliers: true,
     axesScaleType: {
       xAxis: ScaleEnum.Linear,
@@ -53,13 +53,14 @@ export const CONTROLS_DEFAULT_CONFIG = {
       isEnabled: false,
     },
     tooltip: {
-      appearance: TooltipAppearance.Auto,
+      appearance: TooltipAppearanceEnum.Auto,
       display: true,
       selectedFields: [],
     },
     zoom: {
       active: false,
       mode: ZoomEnum.MULTIPLE,
+      history: [],
     },
     legends: {
       display: true,
@@ -70,7 +71,7 @@ export const CONTROLS_DEFAULT_CONFIG = {
     curveInterpolation: CurveEnum.MonotoneX,
     isVisibleColorIndicator: false,
     tooltip: {
-      appearance: TooltipAppearance.Auto,
+      appearance: TooltipAppearanceEnum.Auto,
       display: true,
       selectedFields: [],
     },
@@ -82,7 +83,7 @@ export const CONTROLS_DEFAULT_CONFIG = {
     imageRendering: ImageRenderingEnum.Smooth,
     stacking: false,
     tooltip: {
-      appearance: TooltipAppearance.Auto,
+      appearance: TooltipAppearanceEnum.Auto,
       display: true,
       selectedFields: [],
     },
@@ -95,7 +96,7 @@ export const CONTROLS_DEFAULT_CONFIG = {
       isApplied: false,
     },
     tooltip: {
-      appearance: TooltipAppearance.Auto,
+      appearance: TooltipAppearanceEnum.Auto,
       display: true,
       selectedFields: [],
     },

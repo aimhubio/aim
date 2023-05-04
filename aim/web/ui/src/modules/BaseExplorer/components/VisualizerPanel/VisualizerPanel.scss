@@ -1,7 +1,8 @@
-@use 'src/styles/abstracts/index' as *;
+@use 'src/styles/abstracts' as *;
 
 .VisualizerPanel {
-  height: 2rem;
+  min-height: 2rem;
+  max-height: 2rem;
   display: flex;
   justify-content: space-between;
   overflow: hidden;

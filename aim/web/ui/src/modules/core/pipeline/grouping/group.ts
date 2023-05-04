@@ -45,7 +45,10 @@ function group(
 
   // @ts-ignore
   const result = data.map((item: any) => {
-    const groupKey: string = buildObjectHash(pickValues(item, config.fields));
+    const groupKey: string = buildObjectHash({
+      ...pickValues(item, config.fields),
+      type: config.type,
+    });
 
     const group = item['groups'] || {};
     return {

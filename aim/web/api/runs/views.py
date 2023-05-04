@@ -16,6 +16,7 @@ from aim.sdk.types import QueryReportMode
 from aim.web.api.runs.utils import (
     checked_query,
     collect_requested_metric_traces,
+    convert_nan_and_inf_to_str,
     custom_aligned_metrics_streamer,
     get_project_repo,
     get_run_or_404,
@@ -54,20 +55,18 @@ runs_router = APIRouter()
 NOTE_NOT_FOUND = 'Note with id {id} is not found in this run.'
 
 
-@runs_router.get('/search/run/', response_model=RunSearchApiOut,
-                 responses={400: {'model': QuerySyntaxErrorOut}})
-async def run_search_api(q: Optional[str] = '',
-                         limit: Optional[int] = 0,
-                         offset: Optional[str] = None,
-                         skip_system: Optional[bool] = True,
-                         report_progress: Optional[bool] = True,
-                         exclude_params: Optional[bool] = False,
-                         exclude_traces: Optional[bool] = False,
-                         x_timezone_offset: int = Header(default=0),):
-    from aim.sdk.sequence_collection import QueryRunSequenceCollection
-    repo = get_project_repo()
-    query = checked_query(q)
+def runs_search_fn(repo,
+                   query: str,
+                   *,
+                   limit: Optional[int] = 0,
+                   offset: Optional[str] = None,
+                   skip_system: Optional[bool] = True,
+                   report_progress: Optional[bool] = True,
+                   exclude_params: Optional[bool] = False,
+                   exclude_traces: Optional[bool] = False,
+                   x_timezone_offset: int = Header(default=0)):
 
+    from aim.sdk.sequence_collection import QueryRunSequenceCollection
     repo._prepare_runs_cache()
     runs = QueryRunSequenceCollection(repo=repo,
                                       query=query,
@@ -82,6 +81,25 @@ async def run_search_api(q: Optional[str] = '',
     return StreamingResponse(streamer)
 
 
+@runs_router.get('/search/run/', response_model=RunSearchApiOut,
+                 responses={400: {'model': QuerySyntaxErrorOut}})
+async def run_search_api(q: Optional[str] = '',
+                         limit: Optional[int] = 0,
+                         offset: Optional[str] = None,
+                         skip_system: Optional[bool] = True,
+                         report_progress: Optional[bool] = True,
+                         exclude_params: Optional[bool] = False,
+                         exclude_traces: Optional[bool] = False,
+                         x_timezone_offset: int = Header(default=0),):
+    repo = get_project_repo()
+    query = checked_query(q)
+
+    return runs_search_fn(repo, query,
+                          limit=limit, offset=offset, skip_system=skip_system,
+                          report_progress=report_progress, exclude_params=exclude_params,
+                          exclude_traces=exclude_traces, x_timezone_offset=x_timezone_offset)
+
+
 @runs_router.post('/search/metric/align/', response_model=RunMetricCustomAlignApiOut)
 async def run_metric_custom_align_api(request_data: MetricAlignApiIn):
     repo = get_project_repo()
@@ -89,6 +107,33 @@ async def run_metric_custom_align_api(request_data: MetricAlignApiIn):
     requested_runs = request_data.runs
 
     streamer = custom_aligned_metrics_streamer(requested_runs, x_axis_metric_name, repo)
+    return StreamingResponse(streamer)
+
+
+def metrics_search_fn(repo,
+                      query: str,
+                      *,
+                      p: Optional[int] = 50,
+                      x_axis: Optional[str] = None,
+                      skip_system: Optional[bool] = True,
+                      report_progress: Optional[bool] = True,
+                      x_timezone_offset: int = Header(default=0),):
+    from aim.sdk.sequences.metric import Metric
+    from aim.sdk.sequence_collection import QuerySequenceCollection
+
+    steps_num = p
+
+    if x_axis:
+        x_axis = x_axis.strip()
+
+    repo._prepare_runs_cache()
+    traces = QuerySequenceCollection(repo=repo,
+                                     seq_cls=Metric,
+                                     query=query,
+                                     report_mode=QueryReportMode.PROGRESS_TUPLE,
+                                     timezone_offset=x_timezone_offset,)
+
+    streamer = metric_search_result_streamer(traces, skip_system, steps_num, x_axis, report_progress)
     return StreamingResponse(streamer)
 
 
@@ -100,26 +145,11 @@ async def run_metric_search_api(q: Optional[str] = '',
                                 skip_system: Optional[bool] = True,
                                 report_progress: Optional[bool] = True,
                                 x_timezone_offset: int = Header(default=0),):
-    from aim.sdk.sequences.metric import Metric
-    from aim.sdk.sequence_collection import QuerySequenceCollection
-
-    steps_num = p
-
-    if x_axis:
-        x_axis = x_axis.strip()
-
     repo = get_project_repo()
     query = checked_query(q)
-
-    repo._prepare_runs_cache()
-    traces = QuerySequenceCollection(repo=repo,
-                                     seq_cls=Metric,
-                                     query=query,
-                                     report_mode=QueryReportMode.PROGRESS_TUPLE,
-                                     timezone_offset=x_timezone_offset,)
-
-    streamer = metric_search_result_streamer(traces, skip_system, steps_num, x_axis, report_progress)
-    return StreamingResponse(streamer)
+    return metrics_search_fn(repo, query,
+                             p=p, x_axis=x_axis, skip_system=skip_system,
+                             report_progress=report_progress, x_timezone_offset=x_timezone_offset)
 
 
 @runs_router.get('/active/', response_model=RunActiveOut)
@@ -152,6 +182,8 @@ async def run_params_api(run_id: str,
         'traces': run.collect_sequence_info(sequence, skip_last_value=True),
         'props': get_run_props(run)
     }
+    # Convert NaN and Inf to strings
+    response = convert_nan_and_inf_to_str(response)
 
     response['props'].update({
         'notes': len(run.props.notes_obj)

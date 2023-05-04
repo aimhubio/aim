@@ -1,11 +1,10 @@
-@use 'src/styles/abstracts/index' as *;
+@use 'src/styles/abstracts' as *;
 
 .RunOverviewSidebar {
   width: $run-overview-sidebar-width;
   min-width: $run-overview-sidebar-width;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: $space-xs;
   padding: $space-unit * 2 $space-xs $space-xs;
   position: sticky;
   top: 0;

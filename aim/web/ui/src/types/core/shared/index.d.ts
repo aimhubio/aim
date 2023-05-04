@@ -2,7 +2,7 @@ export interface EncodedNumpyArray {
   type: string;
   shape: number;
   dtype: string;
-  blob: any; // @TODO find a way to indicate byte
+  blob: Uint8Array;
 }
 
 export type Context = Record<string, any>;

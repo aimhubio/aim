@@ -1,85 +1,106 @@
 import * as React from 'react';
 import _ from 'lodash-es';
-import { useDepthMap } from 'hooks';
 
 import { Tooltip } from '@material-ui/core';
 
 import { Text } from 'components/kit';
 
+import { buildObjectHash } from 'modules/core/utils/hashing';
 import { GroupType } from 'modules/core/pipeline';
-import { IQueryableData } from 'modules/core/pipeline';
+import {
+  IGroupInfo,
+  IVisualizationProps,
+  IWidgetRendererProps,
+} from 'modules/BaseExplorer/types';
 
 import { AimFlatObjectBase } from 'types/core/AimObjects';
 
 import contextToString from 'utils/contextToString';
 
-import { IVisualizationProps } from '../../types';
 import BoxVirtualizer from '../BoxVirtualizer';
 import BoxWrapper from '../BoxWrapper';
-import RangePanel from '../RangePanel';
+
+import { useDepthMap } from './hooks';
 
 import './Visualizer.scss';
 
 function Visualizer(props: IVisualizationProps) {
   const {
     engine,
-    engine: { useStore, pipeline },
+    engine: { useStore, pipeline, visualizations, groupings, depthMap },
     name,
     box: BoxContent,
-    hasDepthSlider,
-    panelRenderer,
+    boxStacking,
+    topPanelRenderer,
+    bottomPanelRenderer,
+    widgets,
   } = props;
 
   const foundGroups = useStore(pipeline.foundGroupsSelector);
   const dataState = useStore(pipeline.dataSelector);
-  const rangesData: IQueryableData = useStore(pipeline.queryableDataSelector);
 
-  const vizEngine = engine.visualizations[name];
+  const groupingStates = useStore(groupings.stateSelector);
+
+  const vizEngine = visualizations[name];
   const boxConfig = useStore(vizEngine.box.stateSelector);
+
+  const boxContainer = React.useRef<HTMLDivElement>(
+    document.createElement('div'),
+  );
+  const vizContainer = React.useRef<HTMLDivElement>(
+    document.createElement('div'),
+  );
 
   const data = React.useMemo(() => {
     return dataState?.map((d: any, i: number) => {
       const groupTypes = Object.keys(d.groups || {});
-      const info: Record<string, object> = {};
+      const groupInfo: Record<string, IGroupInfo> = {};
       if (foundGroups) {
         groupTypes.forEach((groupType) => {
-          const current = foundGroups[d.groups[groupType]];
-          if (current) {
-            info[groupType] = {
-              key: current.key,
-              config: current.fields,
-              items_count_in_group: current.items.length,
-              order: current.order,
+          const group = foundGroups[d.groups[groupType]];
+          if (group) {
+            groupInfo[groupType] = {
+              key: group.key,
+              config: group.fields,
+              items_count_in_group: group.items_count_in_group,
+              order: group.order,
             };
           }
         });
       }
 
       // calculate styles by position
-      // get style applier of box  from engine
+      // get style applier of box from engine
       // listen to found groups
-      function applyStyles(obj: any, group: any, iteration: number) {
+      function applyStyles(object: any, groupInfo: any, state: object) {
         let style = {};
-        engine.groupings.styleAppliers.forEach((applier: any) => {
+        groupings.styleAppliers.forEach((applier: any) => {
           style = {
             ...style,
-            ...applier(obj, group, boxConfig, iteration),
+            ...applier({ object, groupInfo, boxConfig, state }),
           };
         });
-
         return style;
       }
 
       return {
         ...d,
+        groupInfo,
+        groupKey: buildObjectHash(groupInfo),
         style: {
           width: boxConfig.width,
           height: boxConfig.height,
-          ...applyStyles(d, info, i),
+          ...applyStyles(d, groupInfo, groupingStates),
         },
       };
     });
-  }, [dataState, foundGroups, boxConfig, engine.groupings.styleAppliers]);
+  }, [
+    dataState,
+    foundGroups,
+    boxConfig,
+    groupings.styleAppliers,
+    groupingStates,
+  ]);
 
   // FOR ROWS
   const rowsAxisData = React.useMemo(() => {
@@ -107,7 +128,7 @@ function Visualizer(props: IVisualizationProps) {
               textAlign: 'right',
               textOverflow: 'ellipsis',
               lineHeight: '0.875rem',
-              zIndex: foundGroups[key].order,
+              zIndex: item.order,
             },
           };
         });
@@ -141,63 +162,85 @@ function Visualizer(props: IVisualizationProps) {
               overflow: 'hidden',
               whiteSpace: 'nowrap',
               textOverflow: 'ellipsis',
-              zIndex: foundGroups[key].order,
+              zIndex: item.order,
             },
           };
         });
     }
   }, [foundGroups, boxConfig, rowsAxisData]);
 
-  const [depthSelector, onDepthMapChange] = useDepthMap<AimFlatObjectBase<any>>(
-    {
-      data,
-      groupItemCb: (item) => {
-        const rowId = item.groups?.rows ? item.groups.rows[0] : '';
-        const columnId = item.groups?.columns ? item.groups.columns[0] : '';
-        return `${rowId}--${columnId}`;
-      },
-      state: engine.depthMap,
-      sync: true,
-      deps: [dataState, foundGroups],
+  const widgetRenderer = React.useCallback(
+    ({ boxContainer, vizContainer }: IWidgetRendererProps) => {
+      return widgets && !_.isEmpty(widgets)
+        ? Object.entries(widgets).map(
+            ([widgetKey, { component: WidgetComponent, props = {} }]) =>
+              WidgetComponent ? (
+                <WidgetComponent
+                  key={widgetKey}
+                  engine={engine}
+                  visualizationName={name}
+                  boxContainer={boxContainer}
+                  vizContainer={vizContainer}
+                  {...props}
+                />
+              ) : null,
+          )
+        : null;
     },
+    [widgets, engine, name],
   );
+
+  const groupByPositionCb = (item: AimFlatObjectBase): string => {
+    const gridId = item.groups?.[GroupType.GRID]?.[0] || '';
+    const rowId = item.groups?.[GroupType.ROW]?.[0] || '';
+    const columnId = item.groups?.[GroupType.COLUMN]?.[0] || '';
+    return [gridId, rowId, columnId].filter(Boolean).join('--');
+  };
+
+  const { depthSelector, onDepthMapChange } = useDepthMap({
+    data: dataState,
+    state: depthMap,
+    deps: [dataState, foundGroups],
+    groupItemCb: groupByPositionCb,
+  });
 
   return (
     <div className='Visualizer'>
-      {panelRenderer()}
-      <div className='VisualizerContainer'>
+      {topPanelRenderer()}
+      <div className='VisualizerContainer' ref={vizContainer}>
         {!_.isEmpty(dataState) && (
           <BoxVirtualizer
             data={data}
-            itemsRenderer={([groupId, items]) => {
-              return (
-                <BoxWrapper
-                  visualizationName={name}
-                  key={groupId}
-                  groupId={groupId}
-                  engine={engine}
-                  component={BoxContent}
-                  hasDepthSlider={hasDepthSlider}
-                  items={items}
-                  depthSelector={depthSelector}
-                  onDepthMapChange={onDepthMapChange}
-                />
-              );
-            }}
+            container={boxContainer}
+            itemsRenderer={([boxId, boxItems], boxIndex) => (
+              <BoxWrapper
+                key={boxId}
+                boxId={boxId}
+                boxIndex={boxIndex}
+                boxItems={boxItems}
+                engine={engine}
+                component={BoxContent}
+                visualizationName={name}
+                boxStacking={boxStacking}
+                depthSelector={depthSelector}
+                onDepthMapChange={onDepthMapChange}
+              />
+            )}
+            groupByPositionCb={groupByPositionCb}
             offset={boxConfig.gap}
             axisData={{
               columns: columnsAxisData,
               rows: rowsAxisData,
             }}
             axisItemRenderer={{
-              columns: (item: any) => (
+              columns: (item) => (
                 <Tooltip key={item.key} title={item.value}>
                   <div style={item.style}>
                     <Text>{item.value}</Text>
                   </div>
                 </Tooltip>
               ),
-              rows: (item: any) => (
+              rows: (item) => (
                 <div key={item.key} style={item.style}>
                   <Tooltip title={item.value}>
                     <span>
@@ -209,10 +252,9 @@ function Visualizer(props: IVisualizationProps) {
             }}
           />
         )}
+        {widgetRenderer({ boxContainer, vizContainer })}
       </div>
-      {!_.isEmpty(rangesData) && (
-        <RangePanel engine={engine} rangesData={rangesData} />
-      )}
+      {bottomPanelRenderer()}
     </div>
   );
 }

@@ -37,6 +37,14 @@
         &__runInfoBox {
           max-width: 50%;
         }
+        &__explore {
+          display: flex;
+          flex: 1;
+          align-items: center;
+          justify-content: flex-end;
+          margin-right: 1rem;
+          margin-bottom: 1rem;
+        }
         &__actionContainer {
           width: 4.5rem;
           display: flex;
@@ -66,7 +74,21 @@
           display: flex;
           width: 100%;
         }
-        &__title {
+        &__experimentName {
+          display: inline-block;
+          max-width: 100%;
+          text-decoration: none;
+
+
+          &:hover {
+            text-decoration: underline;
+            color: inherit;
+          }
+        }
+        &__runName {
+          display: flex;
+          width: 100%;
+          margin-left: $space-xxs;
           margin-bottom: $space-xxs;
         }
         &__date {
@@ -93,7 +115,6 @@
         &__container {
           display: flex;
           align-items: flex-start;
-          flex-direction: column;
           margin-right: $space-xxxs;
           cursor: pointer;
           max-width: calc(100% - 6.5rem);

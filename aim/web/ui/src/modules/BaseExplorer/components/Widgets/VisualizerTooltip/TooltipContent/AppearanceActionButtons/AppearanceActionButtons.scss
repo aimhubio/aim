@@ -1,0 +1,36 @@
+@use 'src/styles/abstracts' as *;
+
+.ActionButtons {
+  display: flex;
+  padding: $space-xxxxs;
+  height: 1.875rem;
+  position: absolute;
+  top: toRem(-28px);
+  left: toRem(-1px);
+  background: #fff;
+  border: $border-main;
+  border-bottom: transparent;
+  border-radius: $space-xxxs $space-xxxs 0 0;
+  box-shadow: -1px 1px 1px rgb(34 58 90 / 20%);
+  &::after {
+    content: '';
+    height: $space-xxxs;
+    width: calc(100% + 2px);
+    background: #fff;
+    position: absolute;
+    bottom: toRem(-2px);
+    left: toRem(-1px);
+    border-left: $border-main;
+  }
+  &__actionButton {
+    margin-left: $space-xxxxs;
+    &__icon {
+      color: $pico-70;
+    }
+    &.active {
+      .ActionButtons__actionButton__icon {
+        color: $primary-color;
+      }
+    }
+  }
+}

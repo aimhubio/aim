@@ -1,7 +1,7 @@
 import React from 'react';
 import _ from 'lodash-es';
 
-import { Tooltip } from '@material-ui/core';
+import { ReactComponent as DebugIcon } from 'assets/icons/debug.svg';
 
 import { Icon, JsonViewPopover, Text } from 'components/kit';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
@@ -46,11 +46,15 @@ function LogRecordItem(
             <div className='LogRecordItem__content__item' key={item.hash}>
               <div className='LogRecordItem__content__item__leftBox'>
                 <div className='LogRecordItem__content__item__leftBox__statusBadge'>
-                  <Icon
-                    name={RunLogRecordsConfig[item?.type ?? 'ERROR'].icon}
-                    fontSize={16}
-                    color={RunLogRecordsConfig[item?.type ?? 'ERROR'].color}
-                  />
+                  {item.type === 'DEBUG' ? (
+                    <DebugIcon fill='#1c2852' />
+                  ) : (
+                    <Icon
+                      name={RunLogRecordsConfig[item?.type ?? 'ERROR'].icon}
+                      fontSize={16}
+                      color={RunLogRecordsConfig[item?.type ?? 'ERROR'].color}
+                    />
+                  )}
                 </div>
                 <div className='LogRecordItem__content__item__leftBox__content'>
                   <Text
@@ -76,17 +80,13 @@ function LogRecordItem(
                   justifyContent: item.extraParams ? 'flex-start' : 'center',
                 }}
               >
-                <Tooltip title={item?.message ?? 'no message found'}>
-                  <div>
-                    <Text
-                      className='LogRecordItem__content__item__itemBox__message'
-                      component='pre'
-                      size={14}
-                    >
-                      {item?.message ?? 'no message found'}
-                    </Text>
-                  </div>
-                </Tooltip>
+                <Text
+                  className='LogRecordItem__content__item__itemBox__message'
+                  component='pre'
+                  size={14}
+                >
+                  {item?.message ?? 'no message found'}
+                </Text>
 
                 {item.extraParams && (
                   <div className='LogRecordItem__content__item__itemBox__extraParams'>

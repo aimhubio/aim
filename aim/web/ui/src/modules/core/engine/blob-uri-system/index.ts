@@ -125,7 +125,7 @@ function createBlobURISystemEngine(
         return request
           .call(blobUris)
           .then(async (stream) => {
-            parseStream(stream, {
+            await parseStream(stream, {
               callback: (object: { hash: string; value: ArrayBuffer }) => {
                 const blobData: string = arrayBufferToBase64(object.value);
                 fire(object.hash, blobData);

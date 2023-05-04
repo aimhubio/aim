@@ -1,0 +1,35 @@
+@use 'src/styles/abstracts' as *;
+
+.VisualizationTooltip {
+  pointer-events: none;
+  z-index: 5 !important;
+  height: toRem(200px); // To not block table scroll
+  &.pinnedPopover {
+    width: 100%;
+    height: 100%;
+  }
+  > *:first-of-type {
+    height: toRem(200px); // To not block table scroll
+  }
+  &__content {
+    transform: none !important;
+    width: toRem(230px);
+    max-height: toRem(250px);
+    background: rgba(255, 255, 255, 0.78);
+    box-shadow: 0 1px 1px rgb(34 58 90 / 20%), 0 2px 2px rgb(34 58 90 / 20%),
+    0 4px 4px rgb(34 58 90 / 20%), 0 6px 8px rgb(34 58 90 / 20%);
+    border: $border-main;
+    backdrop-filter: blur(3px);
+    overflow: unset;
+    &__pinned {
+      width: auto;
+      max-height: toRem(130px);
+    }
+    &__active {
+      background: $white;
+    }
+    &__hide {
+      visibility: hidden;
+    }
+  }
+}

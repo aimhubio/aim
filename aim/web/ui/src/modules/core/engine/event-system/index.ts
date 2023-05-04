@@ -12,9 +12,9 @@ export interface IEventSystemEngine {
     fire: (
       eventName: string,
       payload: any,
-      options: Record<string, any>,
+      options?: { savePayload: boolean },
     ) => void;
-    on: (eventName: string, callback: Callback) => Callback;
+    on: (eventName: string, callback: Callback) => () => void;
     unsubscribe: (eventName: string, callback: Callback) => void;
     once: (
       eventName: string,
@@ -36,11 +36,12 @@ function createEventSystemEngine<TStore>(store: any): IEventSystemEngine {
    * Function to fire an event
    * @param {string} eventName
    * @param {any} payload
+   * @param {savePayload: boolean} options
    */
   function fire(
     eventName: string,
     payload: any,
-    options: Record<string, any> = { savePayload: true },
+    options = { savePayload: true },
   ) {
     if (events[eventName]) {
       events[eventName].forEach((callback: Callback) => callback(payload));

@@ -6,6 +6,7 @@ import { IModel } from 'types/services/models/model';
 import { IAppModelState } from 'types/services/models/explorer/createAppModel';
 
 import { filterArrayByIndexes } from '../filterArrayByIndexes';
+import { AlignmentOptionsEnum } from '../d3';
 
 import sortDependingArrays from './sortDependingArrays';
 import onNotificationAdd from './onNotificationAdd';
@@ -119,7 +120,7 @@ export function alignByAbsoluteTime(
 
 export function alignByCustomMetric(
   data: IMetricsCollection<IMetric>[],
-  model: IModel<IAppModelState>,
+  model?: IModel<IAppModelState>,
 ): IMetricsCollection<IMetric>[] {
   let missingTraces = false;
   for (let i = 0; i < data.length; i++) {
@@ -192,7 +193,7 @@ export function alignByCustomMetric(
       }
     }
   }
-  if (missingTraces) {
+  if (missingTraces && model) {
     onNotificationAdd({
       notification: {
         id: Date.now(),
@@ -203,4 +204,23 @@ export function alignByCustomMetric(
     });
   }
   return data;
+}
+
+export function alignData(
+  data: IMetricsCollection<IMetric>[],
+  type: AlignmentOptionsEnum = AlignmentOptionsEnum.STEP,
+  model?: IModel<IAppModelState>,
+): IMetricsCollection<IMetric>[] {
+  const alignmentObj: Record<string, Function> = {
+    [AlignmentOptionsEnum.STEP]: alignByStep,
+    [AlignmentOptionsEnum.EPOCH]: alignByEpoch,
+    [AlignmentOptionsEnum.RELATIVE_TIME]: alignByRelativeTime,
+    [AlignmentOptionsEnum.ABSOLUTE_TIME]: alignByAbsoluteTime,
+    [AlignmentOptionsEnum.CUSTOM_METRIC]: alignByCustomMetric,
+    default: () => {
+      throw new Error('Unknown value for X axis alignment');
+    },
+  };
+  const alignment = alignmentObj[type] || alignmentObj.default;
+  return alignment(data, model);
 }

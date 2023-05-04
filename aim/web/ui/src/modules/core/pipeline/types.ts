@@ -16,7 +16,9 @@ export enum Order {
 export enum GroupType {
   ROW = 'rows',
   COLUMN = 'columns',
+  GRID = 'grid',
   COLOR = 'color',
+  STROKE = 'stroke',
 }
 
 export type GroupOptions = {
@@ -30,6 +32,7 @@ export type BettaGroupOption = {
   type: GroupType;
   fields: string[];
   orders: Order[];
+  isApplied: boolean;
 };
 
 export type Group = { [key: string]: any };

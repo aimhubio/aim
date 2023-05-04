@@ -1,4 +1,4 @@
-import { orderBy } from 'lodash-es';
+import _ from 'lodash-es';
 
 import { buildObjectHash } from 'modules/core/utils/hashing';
 
@@ -28,30 +28,31 @@ function getGroups(
   type: string,
 ): Record<string, Group> {
   // generate possible groups
-  const groups: Record<string, Group> = data.reduce(
-    (groups: Group, value: any) => {
-      const groupValue: GroupValue = pickValues(value, fields);
-      const groupKey: string = buildObjectHash(groupValue);
-
-      if (!groups.hasOwnProperty(groupKey)) {
-        groups[groupKey] = {
-          key: groupKey,
-          fields: groupValue,
-          items: [],
-          type,
-        };
-      }
-
-      groups[groupKey].items.push(value);
-
+  const groups = data.reduce((groups: Record<string, Group>, value: any) => {
+    const pickedValues = pickValues(value, fields);
+    if (Object.keys(pickedValues).length === 0) {
       return groups;
-    },
-    {},
-  );
+    }
+    const groupValue: GroupValue = { ...pickedValues, type };
+    const groupKey: string = buildObjectHash(groupValue);
+
+    if (!groups.hasOwnProperty(groupKey)) {
+      groups[groupKey] = {
+        key: groupKey,
+        fields: _.omit(groupValue, 'type'),
+        items_count_in_group: 0,
+        type,
+      };
+    }
+
+    groups[groupKey].items_count_in_group++;
+
+    return groups;
+  }, {});
 
   const groupsList = Object.values(groups);
 
-  const orderedGroups = orderBy(
+  const orderedGroups = _.orderBy(
     groupsList,
     fields.map((f) => (group) => getValue(group, ['fields', f])),
     orders,

@@ -33,7 +33,7 @@ jobs:
       - name: Build UI
         working-directory: ./aim/web/ui
         run: |
-          npm i
+          npm i --legacy-peer-deps
           CI=false npm run build
 
       - name: Setup python

@@ -1,8 +1,7 @@
 import { omit } from 'lodash-es';
 
 import { createSliceState } from 'modules/core/utils/store';
-
-import { StatePersistOption } from '../../types';
+import { StatePersistOption } from 'modules/core/engine/types';
 
 export type ControlConfig<State extends object, Settings> = {
   /**
@@ -57,7 +56,7 @@ function createControl(config: ControlConfig<unknown & object, any>) {
   };
 }
 
-function createControlsSlice(slices: { [key: string]: any }) {
+function createControlsSlice(slices: Record<string, any>) {
   let initialState: Record<string, any> = {};
   const subSlices: Record<string, any> = {};
 

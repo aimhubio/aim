@@ -1,6 +1,8 @@
 import { GroupNameEnum } from 'config/grouping/GroupingPopovers';
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 
+import { TooltipAppearanceEnum } from 'modules/BaseExplorer/components/Controls/ConfigureTooltip';
+
 import {
   IAppModelConfig,
   IGroupingConfig,
@@ -80,7 +82,7 @@ export interface IAggregatedData extends IAggregationData {
   key?: string;
   color: string;
   dasharray: string;
-  chartIndex: number;
+  chartIndex?: number;
 }
 
 export interface ITooltipContent {
@@ -96,14 +98,8 @@ export interface ITooltipContent {
   run?: IRun;
 }
 
-export enum TooltipAppearance {
-  Top = 'top',
-  Auto = 'auto',
-  Bottom = 'bottom',
-}
-
 export interface ITooltipConfig {
-  appearance: TooltipAppearance;
+  appearance: TooltipAppearanceEnum;
   display: boolean;
   selectedFields: string[];
 }
@@ -157,7 +153,7 @@ export interface IChartZoom {
   active: boolean;
   mode: ZoomEnum;
   history: {
-    index: number;
+    id: string;
     xValues: [number, number];
     yValues: [number, number];
   }[];
@@ -174,7 +170,7 @@ export interface IAggregationConfig {
     line: AggregationLineMethods;
   };
   isApplied: boolean;
-  isEnabled: boolean;
+  isEnabled?: boolean;
 }
 
 export interface IFocusedState {
@@ -183,6 +179,7 @@ export interface IFocusedState {
   xValue?: number | string | null;
   yValue?: number | string | null;
   chartIndex?: number | null;
+  visId?: string | null;
 }
 
 export interface IMetricTableRowData {
@@ -252,8 +249,8 @@ export interface IAlignMetricsDataParams {
   runs: {
     run_id: string;
     traces: {
-      context: IMetricTrace['context'];
-      metric_name: string;
+      context: { [key: string]: unknown };
+      name: string;
       slice: number[];
     }[];
   }[];

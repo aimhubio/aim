@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
 
+import { ExplorerProps } from 'modules/BaseExplorer/types';
+
 import Visualizations from '../Visualizations';
 import ExplorerBar from '../ExplorerBar';
 import ExplorerNotifications from '../ExplorerNotifications';
-import { ExplorerProps } from '../../types';
 
 import './styles.scss';
 
@@ -25,13 +26,16 @@ function Explorer({ configuration, engineInstance }: ExplorerProps) {
       <ExplorerBar
         engine={engineInstance}
         explorerName={configuration.name}
-        // @ts-ignore
         documentationLink={configuration.documentationLink}
       />
       <ExplorerNotifications engine={engineInstance} />
       {/* @ts-ignore*/}
       <configuration.components.queryForm engine={engineInstance} />
       <Visualizations
+        forceRenderVisualizations={
+          configuration.forceRenderVisualizations ?? false
+        }
+        displayProgress={configuration.displayProgress ?? true}
         getStaticContent={configuration.getStaticContent}
         visualizers={configuration.visualizations}
         engine={engineInstance}

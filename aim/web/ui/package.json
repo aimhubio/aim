@@ -1,6 +1,6 @@
 {
   "name": "ui_v2",
-  "version": "3.16.2",
+  "version": "3.17.3",
   "private": true,
   "dependencies": {
     "@aksel/structjs": "^1.0.0",
@@ -8,9 +8,24 @@
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.60",
     "@monaco-editor/react": "4.4.4",
-    "@types/history": "^5.0.0",
-    "@types/marked": "^4.0.7",
+    "@radix-ui/primitive": "^1.0.0",
+    "@radix-ui/react-checkbox": "^1.0.1",
+    "@radix-ui/react-dialog": "^1.0.2",
+    "@radix-ui/react-popover": "^1.0.2",
+    "@radix-ui/react-radio-group": "^1.1.0",
+    "@radix-ui/react-separator": "^1.0.1",
+    "@radix-ui/react-slider": "^1.1.0",
+    "@radix-ui/react-slot": "^1.0.1",
+    "@radix-ui/react-switch": "^1.0.1",
+    "@radix-ui/react-tabs": "^1.0.3",
+    "@radix-ui/react-toast": "^1.1.2",
+    "@radix-ui/react-tooltip": "^1.0.3",
+    "@rowsncolumns/grid": "^8.0.8",
+    "@stitches/react": "^1.2.8",
+    "@storybook/react": "^6.5.12",
+    "@tabler/icons-react": "^2.2.0",
     "@uiw/react-textarea-code-editor": "^1.4.14",
+    "antd": "^4.23.6",
     "bs58check": "^2.1.2",
     "classnames": "^2.3.1",
     "comlink": "^4.3.1",
@@ -37,12 +52,16 @@
     "react-accessible-dropdown-menu-hook": "^3.1.0",
     "react-beautiful-dnd": "^13.1.0",
     "react-dom": "^17.0.2",
+    "react-markdown": "^8.0.6",
     "react-plotly.js": "^2.5.1",
     "react-router-dom": "^5.3.0",
     "react-scripts": "4.0.3",
-    "react-select": "^5.1.0",
+    "react-select": "^5.5.4",
     "react-split": "^2.0.14",
+    "react-use": "^17.4.0",
+    "react-virtualized": "^9.22.3",
     "react-virtualized-auto-sizer": "^1.0.5",
+    "react-virtualized-tree": "^3.4.1",
     "react-window": "^1.8.6",
     "rich-markdown-editor": "^11.21.3",
     "styled-components": "^5.3.3",
@@ -54,7 +73,7 @@
   "scripts": {
     "start": "react-app-rewired --max_old_space_size=4096 start",
     "build": "react-app-rewired --max_old_space_size=4096 build && gzipper c -i js,css,html ./build && node tasks/index-html-template-generator.js",
-    "test": "react-scripts test ",
+    "test": "react-app-rewired test ",
     "test:coverage": "react-app-rewired test --collectCoverage",
     "test:watch": "react-app-rewired test --watchAll",
     "eject": "react-scripts eject",
@@ -64,7 +83,9 @@
     "postinstall": "cp -R node_modules/monaco-editor/min/vs public/vs",
     "analyze-bundles": "node tasks/bundle-analyzer.js",
     "crc-kit": "func() { node tasks/cli/index.js  create-component --name=\"$1\" --path=./src/components/kit/ --lint; }; func",
-    "crc": "func() { node tasks/cli/index.js  create-component --name=\"$1\" --path=./src/components/ --lint; }; func"
+    "crc": "func() { node tasks/cli/index.js  create-component --name=\"$1\" --path=./src/components/ --lint; }; func",
+    "storybook": "start-storybook -p 6006 -s public",
+    "build-storybook": "build-storybook -s public"
   },
   "homepage": "/static-files/",
   "browserslist": {
@@ -84,18 +105,21 @@
       "pre-commit": "lint-staged"
     }
   },
-  "jest": {
-    "moduleNameMapper": {
-      "^lodash-es$": "lodash",
-      "^d3$": "<rootDir>/node_modules/d3/dist/d3.min.js"
-    }
-  },
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
       "prettier --write"
     ]
   },
   "devDependencies": {
+    "@storybook/addon-actions": "^6.5.12",
+    "@storybook/addon-essentials": "^6.5.12",
+    "@storybook/addon-interactions": "^6.5.12",
+    "@storybook/addon-links": "^6.5.12",
+    "@storybook/builder-webpack4": "^6.5.12",
+    "@storybook/manager-webpack4": "^6.5.12",
+    "@storybook/node-logger": "^6.5.12",
+    "@storybook/preset-create-react-app": "^3.2.0",
+    "@storybook/testing-library": "^0.0.13",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/react-hooks": "^7.0.2",
@@ -104,9 +128,11 @@
     "@types/d3": "^7.0.0",
     "@types/dot-object": "^2.1.2",
     "@types/file-saver": "^2.0.3",
+    "@types/history": "^5.0.0",
     "@types/humanize-duration": "^3.25.1",
     "@types/jest": "^26.0.15",
     "@types/lodash-es": "^4.17.4",
+    "@types/marked": "^4.0.7",
     "@types/md5": "^2.3.1",
     "@types/node": "^12.0.0",
     "@types/node-sass": "^4.11.2",
@@ -117,6 +143,7 @@
     "@types/react-router-dom": "^5.1.7",
     "@types/react-virtualized-auto-sizer": "^1.0.1",
     "@types/react-window": "^1.8.4",
+    "@types/storybook__react": "^5.2.1",
     "@types/styled-components": "^5.1.15",
     "@typescript-eslint/eslint-plugin": "^4.28.0",
     "@typescript-eslint/parser": "^4.28.0",
@@ -142,5 +169,17 @@
     "webpack-bundle-analyzer": "^4.4.2",
     "webpack-dynamic-public-path": "^1.0.8",
     "yargs": "^17.2.1"
+  },
+  "eslintConfig": {
+    "overrides": [
+      {
+        "files": [
+          "**/*.stories.*"
+        ],
+        "rules": {
+          "import/no-anonymous-default-export": "off"
+        }
+      }
+    ]
   }
 }

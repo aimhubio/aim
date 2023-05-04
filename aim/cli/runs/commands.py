@@ -45,7 +45,8 @@ def list_runs(ctx):
 @runs.command(name='rm')
 @click.argument('hashes', nargs=-1, type=str)
 @click.pass_context
-def remove_runs(ctx, hashes):
+@click.option('-y', '--yes', is_flag=True, help='Automatically confirm prompt')
+def remove_runs(ctx, hashes, yes):
     """Remove Run data for given run hashes."""
     if len(hashes) == 0:
         click.echo('Please specify at least one Run to delete.')
@@ -54,8 +55,11 @@ def remove_runs(ctx, hashes):
     repo = Repo.from_path(repo_path)
 
     matched_hashes = match_runs(repo_path, hashes)
-    confirmed = click.confirm(f'This command will permanently delete {len(matched_hashes)} runs from aim repo '
-                              f'located at \'{repo_path}\'. Do you want to proceed?')
+    if yes:
+        confirmed = True
+    else:
+        confirmed = click.confirm(f'This command will permanently delete {len(matched_hashes)} runs from aim repo '
+                                  f'located at \'{repo_path}\'. Do you want to proceed?')
     if not confirmed:
         return
 
@@ -147,7 +151,8 @@ def upload_runs(ctx, bucket):
 @runs.command(name='close')
 @click.argument('hashes', nargs=-1, type=str)
 @click.pass_context
-def close_runs(ctx, hashes):
+@click.option('-y', '--yes', is_flag=True, help='Automatically confirm prompt')
+def close_runs(ctx, hashes, yes):
     """Close failed/stalled Runs."""
     repo_path = ctx.obj['repo']
     repo = Repo.from_path(repo_path)
@@ -158,7 +163,11 @@ def close_runs(ctx, hashes):
 
     click.secho(f'This command will forcefully close {len(hashes)} Runs from Aim Repo \'{repo_path}\'. '
                 f'Please make sure Runs are not active. Data corruption may occur otherwise.')
-    if not click.confirm('Do you want to proceed?'):
+    if yes:
+        confirmed = True
+    else:
+        confirmed = click.confirm('Do you want to proceed?')
+    if not confirmed:
         return
 
     lock_manager = LockManager(repo.path)

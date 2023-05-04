@@ -9,7 +9,9 @@
   .VisualizerContainer {
     width: 100%;
     display: flex;
-    height: calc(100% - 5rem);
+    flex: 1;
+    max-height: 100%;
+    overflow: hidden;
   }
 }
 
