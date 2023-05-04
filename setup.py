@@ -55,7 +55,6 @@ REQUIRED = [
     'filelock<4,>=3.3.0',
     'numpy<2,>=1.12.0',
     'psutil>=5.6.7',
-    'py3nvml>=0.2.5',
     'RestrictedPython>=5.1',
     'tqdm>=4.20.0',
     'aiofiles>=0.5.0',

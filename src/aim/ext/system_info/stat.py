@@ -4,7 +4,7 @@ from typing import List
 
 from aim.ext.system_info.utils import round10e5
 
-from py3nvml import py3nvml as nvml
+import aim.ext.system_info.pynvml as nvml
 
 
 class StatDict(object):
