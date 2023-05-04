@@ -4,13 +4,7 @@ from typing import List
 
 from aim.ext.resource.utils import round10e5
 
-try:
-    # Import python wrapper for the NVIDIA Management Library
-    # Initialize it or pass if NVIDIA ML is not initialized
-    import aim.ext.pynvml as nvml
-    nvml.nvmlInit()
-except Exception:
-    pass
+import aim.ext.pynvml as nvml
 
 
 class StatDict(object):
@@ -160,7 +154,7 @@ class Stat(object):
                     util = nvml.nvmlDeviceGetUtilizationRates(handle)
                     # GPU utilization percent
                     gpu_info["gpu"] = round10e5(util.gpu)
-                except nvml.NVML_ERROR_NOT_SUPPORTED:
+                except nvml.NVMLError_NotSupported:
                     pass
                 try:
                     # Get device memory
@@ -170,7 +164,7 @@ class Stat(object):
                     gpu_info["gpu_memory_percent"] = (
                         round10e5(memory.used * 100 / memory.total),
                     )
-                except nvml.NVML_ERROR_NOT_SUPPORTED:
+                except nvml.NVMLError_NotSupported:
                     pass
                 try:
                     # Get device temperature
@@ -178,7 +172,7 @@ class Stat(object):
                     temp = nvml.nvmlDeviceGetTemperature(handle, nvml_tmp)
                     # Device temperature
                     gpu_info["gpu_temp"] = round10e5(temp)
-                except nvml.NVML_ERROR_NOT_SUPPORTED:
+                except nvml.NVMLError_NotSupported:
                     pass
                 try:
                     # Compute power usage in watts and percent
@@ -189,11 +183,11 @@ class Stat(object):
                     # Power usage in watts and percent
                     gpu_info["gpu_power_watts"]: round10e5(power_watts)
                     # gpu_info["power_percent"] = round10e5(power_usage)
-                except nvml.NVML_ERROR_NOT_SUPPORTED:
+                except nvml.NVMLError_NotSupported:
                     pass
                 gpus.append(gpu_info)
             nvml.nvmlShutdown()
-        except (nvml.NVML_ERROR_LIBRARY_NOT_FOUND, nvml.NVML_ERROR_NOT_SUPPORTED):
+        except (nvml.NVMLError_LibraryNotFound, nvml.NVMLError_NotSupported):
             pass
 
         return system, gpus
