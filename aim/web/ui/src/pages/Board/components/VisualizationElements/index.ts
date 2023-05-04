@@ -114,6 +114,12 @@ const TextAreaVizElement = React.lazy(
       /* webpackPrefetch: true, webpackChunkName: "TextArea" */ './TextAreaVizElement'
     ),
 );
+const RadioVizElement = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "Radio" */ './RadioVizElement'
+    ),
+);
 
 export type VizElementKey =
   | 'LineChart'
@@ -134,7 +140,8 @@ export type VizElementKey =
   | 'TextInput'
   | 'Button'
   | 'Switch'
-  | 'TextArea';
+  | 'TextArea'
+  | 'Radio';
 
 const VizElementsMap: Record<VizElementKey, React.FunctionComponent<any>> = {
   // input elements
@@ -144,6 +151,7 @@ const VizElementsMap: Record<VizElementKey, React.FunctionComponent<any>> = {
   TextArea: TextAreaVizElement,
   Slider: SliderVizElement,
   Select: SelectVizElement,
+  Radio: RadioVizElement,
 
   // data display elements
   Plotly: PlotlyVizElement,
