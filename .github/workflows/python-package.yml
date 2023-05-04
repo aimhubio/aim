@@ -46,10 +46,10 @@ jobs:
         run: |
           python -m pip install -r ./.github/workflow_files/requirements.dev.txt
 
-      - name: Build sdist
+      - name: Build sdist & universal wheel
         working-directory: ./src/aim/web/ui
         run: |
-          python setup.py sdist
+          python setup.py sdist bdist_wheel --universal
 
       - name: Publish wheel
         env:
