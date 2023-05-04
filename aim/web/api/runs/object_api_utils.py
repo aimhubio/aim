@@ -131,7 +131,8 @@ class CustomObjectApi:
             last_reported_progress_time = time.time()
             run_info = None
             progress_reports_sent = 0
-            for run_info in self.trace_cache.values():
+            for key in list(self.trace_cache.keys()):
+                run_info = self.trace_cache[key]
                 await asyncio.sleep(ASYNC_SLEEP_INTERVAL)
                 if report_progress and time.time() - last_reported_progress_time > AIM_PROGRESS_REPORT_INTERVAL:
                     yield collect_streamable_data(encode_tree(
@@ -152,6 +153,8 @@ class CustomObjectApi:
                         progress_reports_sent += 1
                         last_reported_progress_time = time.time()
 
+                del self.trace_cache[key]
+            self.traces = None
             if report_progress and run_info:
                 yield collect_streamable_data(encode_tree({f'progress_{progress_reports_sent}':
                                                            run_info['progress']}))
@@ -160,7 +163,8 @@ class CustomObjectApi:
 
     async def requested_traces_streamer(self) -> List[dict]:
         try:
-            for run_info in self.trace_cache.values():
+            for key in list(self.trace_cache.keys()):
+                run_info = self.trace_cache[key]
                 await asyncio.sleep(ASYNC_SLEEP_INTERVAL)
                 for trace in run_info['traces']:
                     trace_dict = self._get_trace_info(trace, False, False)
@@ -170,6 +174,8 @@ class CustomObjectApi:
                         trace_dict['index_range'] = self.index_range
                         trace_dict['index_range_total'] = self.total_index_range
                     yield collect_streamable_data(encode_tree(trace_dict))
+                del self.trace_cache[key]
+            self.run = None
         except asyncio.CancelledError:
             pass
 

@@ -1,6 +1,9 @@
 import os
 import uuid
 import pathlib
+import pytz
+
+from datetime import datetime
 
 from aim.ext.transport.config import AIM_SERVER_MOUNTED_REPO_PATH
 
@@ -58,14 +61,15 @@ def get_tree(**kwargs):
         return ResourceRef(repo.request_tree(name, sub, read_only=read_only, from_union=from_union, no_cache=no_cache))
 
 
-def get_structured_run(hash_, read_only, **kwargs):
+def get_structured_run(hash_, read_only, created_at, **kwargs):
     repo_path = os.environ.get(AIM_SERVER_MOUNTED_REPO_PATH)
     if repo_path:
         repo = Repo.from_path(repo_path)
     else:
         repo = Repo.default_repo()
-
-    return ResourceRef(repo.request_props(hash_, read_only))
+    if created_at is not None:
+        created_at = datetime.fromtimestamp(created_at, tz=pytz.utc).replace(tzinfo=None)
+    return ResourceRef(repo.request_props(hash_, read_only, created_at))
 
 
 def get_repo():

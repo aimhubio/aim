@@ -55,44 +55,41 @@ function BookmarkCard({
     <ErrorBoundary>
       <BookmarkCardContainer>
         <Box display='flex' ai='center'>
-          <Box display='flex' flex='1 100%'>
-            <Tooltip content={BookmarkIconType[type].tooltipTitle}>
-              <div>
-                <Icon color='#1473E6' box name={BookmarkIconType[type].name} />
-              </div>
-            </Tooltip>
-            <Link
-              css={{ ml: '$4', flex: '1' }}
-              ellipsis
-              fontSize='$6'
-              fontWeight='$4'
-              title={name}
-              onClick={() =>
-                analytics.trackEvent(ANALYTICS_EVENT_KEYS.bookmarks.view)
-              }
-              to={`${PathEnum.Explorers}/${type}/${app_id}`}
-            >
-              {name}
-            </Link>
-          </Box>
-          <Box as='span' ml='$3'>
-            <Dialog
-              titleIcon={<IconTrash />}
-              title='Delete bookmarks'
-              description='Are you sure you want to delete this bookmark?'
-              onConfirm={handleBookmarkDelete}
-              trigger={
-                <IconButton
-                  onMouseEnter={() => setOnDeleteHover(true)}
-                  onMouseLeave={() => setOnDeleteHover(false)}
-                  size='md'
-                  variant='ghost'
-                  color={onDeleteHover ? 'danger' : 'secondary'}
-                  icon={<IconTrash />}
-                />
-              }
-            />
-          </Box>
+          <Tooltip content={BookmarkIconType[type].tooltipTitle}>
+            <div>
+              <Icon color='#1473E6' box name={BookmarkIconType[type].name} />
+            </div>
+          </Tooltip>
+          <Link
+            css={{ ml: '$4', flex: '1' }}
+            ellipsis
+            fontSize='$6'
+            fontWeight='$4'
+            title={name}
+            onClick={() =>
+              analytics.trackEvent(ANALYTICS_EVENT_KEYS.bookmarks.view)
+            }
+            to={`${PathEnum.Explorers}/${type}/${app_id}`}
+          >
+            {name}
+          </Link>
+          <Dialog
+            titleIcon={<IconTrash />}
+            title='Delete bookmarks'
+            description='Are you sure you want to delete this bookmark?'
+            onConfirm={handleBookmarkDelete}
+            trigger={
+              <IconButton
+                onMouseEnter={() => setOnDeleteHover(true)}
+                onMouseLeave={() => setOnDeleteHover(false)}
+                size='md'
+                variant='ghost'
+                css={{ ml: '$3' }}
+                color={onDeleteHover ? 'danger' : 'secondary'}
+                icon={<IconTrash />}
+              />
+            }
+          />
         </Box>
         <Text css={{ mt: '$5', wordBreak: 'break-all' }} as='p'>
           {description}
