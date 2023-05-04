@@ -12,6 +12,7 @@ on:
       - 'aim/sdk/**'
       - 'aim/web/api/**'
       - 'aim/storage/**'
+      - 'aim/utils/**'
       - '.github/workflows/pull-request.yml'
       - 'tests/**'
       - 'performance_tests/**'

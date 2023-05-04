@@ -1,23 +1,16 @@
 import fnmatch
 import os
 
-from typing import List, Tuple
+from typing import List, Tuple, TYPE_CHECKING
 import io
 import zipfile
 from datetime import datetime
 
-from aim.storage.rockscontainer import RocksContainer
+if TYPE_CHECKING:
+    from aim.sdk.repo import Repo
 
 
-def list_repo_runs(repo_path: str, lookup_dir: str = None) -> List[str]:
-    if lookup_dir is None:
-        chunks_dir = os.path.join(repo_path, '.aim', 'meta', 'chunks')
-    else:
-        chunks_dir = os.path.join(repo_path, '.aim', lookup_dir)
-    return os.listdir(chunks_dir)
-
-
-def match_runs(repo_path: str, hashes: List[str], lookup_dir: str = None) -> List[str]:
+def match_runs(repo: 'Repo', hashes: List[str], lookup_dir: str = None) -> List[str]:
     matched_hashes = set()
     all_run_hashes = None
     for run_hash in hashes:
@@ -25,7 +18,7 @@ def match_runs(repo_path: str, hashes: List[str], lookup_dir: str = None) -> Lis
             expr = run_hash  # for the sake of readability
             # avoiding multiple or unnecessary list_runs() calls
             if not all_run_hashes:
-                all_run_hashes = list_repo_runs(repo_path, lookup_dir)
+                all_run_hashes = repo.list_all_runs()
             if expr == '*':
                 return all_run_hashes
             # update the matches set with current expression matches
@@ -73,8 +66,3 @@ def upload_repo_runs(buffer: io.BytesIO, bucket_name: str) -> Tuple[bool, str]:
         return True, key
     except Exception as e:
         return False, e
-
-
-def optimize_container(path, extra_options):
-    rc = RocksContainer(path, read_only=True, **extra_options)
-    rc.optimize_for_read()
