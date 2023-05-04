@@ -454,6 +454,22 @@ export function processPlotlyData(data: Partial<IPlotlyData>) {
   };
 }
 
+/**
+ * process figures3d data
+ */
+export function processFigures3DData(data: any) {
+  const { record_range_total, iters, values } = data;
+
+  let originalValue = values[0][0];
+
+  return {
+    iters,
+    record_range: [record_range_total?.[0], (record_range_total?.[1] || 0) - 1],
+    originalValue,
+    processedDataType: VisualizationMenuTitles.figures3d,
+  };
+}
+
 export const VisualizationMenuTitles = {
   images: 'Images',
   distributions: 'Distributions',
@@ -461,4 +477,5 @@ export const VisualizationMenuTitles = {
   videos: 'Videos',
   texts: 'Texts',
   figures: 'Plotly',
+  figures3d: 'Figures3D',
 };

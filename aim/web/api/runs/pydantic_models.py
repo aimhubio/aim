@@ -222,6 +222,11 @@ class FigureInfo(BaseModel):
     blob_uri: str
 
 
+class Figure3DInfo(BaseModel):
+    caption: str
+    blob_uri: str
+
+
 class NoteIn(BaseModel):
     content: str
 

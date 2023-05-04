@@ -89,6 +89,7 @@ export const getSuggestionsByExplorer = (
     [AppNameEnum.SCATTERS]: defaultSuggestions,
     [AppNameEnum.IMAGES]: defaultSuggestions,
     [AppNameEnum.FIGURES]: defaultSuggestions,
+    [AppNameEnum.FIGURES3D]: defaultSuggestions,
     [AppNameEnum.AUDIOS]: defaultSuggestions,
     [AppNameEnum.TEXT]: defaultSuggestions,
   };

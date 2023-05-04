@@ -4,6 +4,7 @@
 export enum SequenceTypesEnum {
   Distributions = 'distributions',
   Figures = 'figures',
+  Figures3D = 'figures3d',
   Images = 'images',
   Audios = 'audios',
   Metric = 'metric',

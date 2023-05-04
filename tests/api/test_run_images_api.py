@@ -394,7 +394,7 @@ class TestRunInfoApi(ApiTestBase):
     @parameterized.expand([
         ({'sequence': ('metric', 'images', 'audios',
                        'distributions', 'figures', 'texts', 'logs')}, 7),  # explicit specification
-        (None, 8)                                                          # default
+        (None, 9)                                                          # default
     ])
     def test_run_info_get_all_sequences_api(self, qparams, trace_type_count):
         client = self.client

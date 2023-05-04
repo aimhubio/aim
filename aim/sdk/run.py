@@ -48,6 +48,7 @@ if TYPE_CHECKING:
     from aim.sdk.sequences.audio_sequence import Audios
     from aim.sdk.sequences.distribution_sequence import Distributions
     from aim.sdk.sequences.figure_sequence import Figures
+    from aim.sdk.sequences.figure3d_sequence import Figures3D
     from aim.sdk.sequences.text_sequence import Texts
     from aim.sdk.sequence_collection import SequenceCollection
     from aim.ext.resource.log import Logs
@@ -545,6 +546,22 @@ class BasicRun(BaseRun, StructuredRunMixin):
             :obj:`Figures` object if exists, `None` otherwise.
         """
         return self._get_sequence('figures', name, context)
+
+    def get_figure3d_sequence(
+            self,
+            name: str,
+            context: Context
+    ) -> Optional['Figures3D']:
+        """Retrieve figure sequence by its name and context.
+
+        Args:
+             name (:obj:`str`): Tracked figure sequence name.
+             context (:obj:`Context`): Tracking context.
+
+        Returns:
+            :obj:`Figures3D` object if exists, `None` otherwise.
+        """
+        return self._get_sequence('figures3d', name, context)
 
     def get_audio_sequence(
             self,

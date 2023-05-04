@@ -107,6 +107,14 @@ export type GetParamsResult = {
    * ```
    */
   audios?: Record<string, Array<Context>>;
+  /**
+   * Context of tracked figures3d sequences by passing name of sequence as`audios`
+   * This generates by calling
+   * ```python
+   *    run.track([, , , aim.Figure3D(...)], name="...", context = {"subset": "test"})
+   * ```
+   */
+  figures3d?: Record<string, Array<Context>>;
 };
 
 /**
