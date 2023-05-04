@@ -35,7 +35,7 @@ function RunLogRecords({
     stopLiveUpdate,
     liveUpdateToken,
   } = useRunLogRecords(runHash, inProgress);
-  const listRef = React.useRef<any>({});
+  const listRef = React.useRef<any>(null);
   const logsContainerRef = React.useRef<any>(null);
 
   const [parentHeight, setParentHeight] = React.useState<number>(0);
@@ -66,6 +66,12 @@ function RunLogRecords({
     }
   }
 
+  React.useEffect(() => {
+    if (listRef.current) {
+      listRef.current.resetAfterIndex(0);
+    }
+  }, [data]);
+
   return (
     <ErrorBoundary>
       <BusyLoaderWrapper
@@ -85,7 +91,7 @@ function RunLogRecords({
                   key={`${parentHeight}${parentWidth}`}
                   height={parentHeight || 100}
                   itemCount={data?.length}
-                  itemSize={(index) => data[index]?.height}
+                  itemSize={(index: number) => data[index]?.height}
                   width={'100%'}
                   overscanCount={100}
                   initialScrollOffset={scrollOffset ?? 0}

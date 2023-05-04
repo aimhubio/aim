@@ -72,8 +72,12 @@ async function createBoard(name: string, description: string, code: string) {
         exceptionHandler({ detail, model });
       })
       .then((data: any) => {
-        model.setState({ board: data });
-
+        model.setState({
+          board: {
+            ...data,
+            ...data.state,
+          },
+        });
         onNotificationAdd({
           notification: {
             id: Date.now(),
@@ -109,7 +113,10 @@ async function updateBoard(boardId: string, update: Record<string, unknown>) {
       })
       .then((data: any) => {
         model.setState({
-          board: data,
+          board: {
+            ...data,
+            ...data.state,
+          },
         });
       });
 
