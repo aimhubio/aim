@@ -2,7 +2,7 @@ import psutil
 import json
 from typing import List
 
-from aim.ext.resource.utils import round10e5
+from aim.ext.system_info.utils import round10e5
 
 from py3nvml import py3nvml as nvml
 

@@ -28,7 +28,7 @@ from aim.core.storage.treeview import TreeView
 from aim.sdk.context import Context
 from aim.core.storage import treeutils
 
-from aim.ext.resource import ResourceTracker, DEFAULT_SYSTEM_TRACKING_INT
+from aim.ext.system_info import ResourceTracker, DEFAULT_SYSTEM_TRACKING_INT
 from aim.core.cleanup import AutoClean
 from aim.ext.utils import (
     get_environment_variables,
@@ -50,7 +50,7 @@ if TYPE_CHECKING:
     from aim.sdk.sequences.figure_sequence import Figures
     from aim.sdk.sequences.text_sequence import Texts
     from aim.sdk.sequence_collection import SequenceCollection
-    from aim.ext.resource.log import Logs
+    from aim.ext.system_info.log import Logs
     from aim.sdk.repo import Repo
 
 logger = logging.getLogger(__name__)

@@ -1,6 +1,6 @@
 import time
 
-from aim.ext.resource.log import LogLine
+from aim.ext.system_info.log import LogLine
 from aim.ext.tensorboard_tracker.run import Run as TensorboardRun
 
 from unit_tests.base import TestBase

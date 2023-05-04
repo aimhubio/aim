@@ -12,7 +12,7 @@ from mxnet.gluon.contrib.estimator import (
 )
 from typing import Optional, Union, Any, List
 from aim.sdk.run import Run
-from aim.ext.resource.configs import DEFAULT_SYSTEM_TRACKING_INT
+from aim.ext.system_info.configs import DEFAULT_SYSTEM_TRACKING_INT
 
 
 class AimLoggingHandler(

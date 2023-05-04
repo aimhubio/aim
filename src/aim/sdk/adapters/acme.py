@@ -1,6 +1,6 @@
 from typing import Optional, Dict
 from aim.sdk.run import Run
-from aim.ext.resource.configs import DEFAULT_SYSTEM_TRACKING_INT
+from aim.ext.system_info.configs import DEFAULT_SYSTEM_TRACKING_INT
 from acme.utils.loggers.base import Logger, LoggingData
 
 

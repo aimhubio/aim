@@ -28,7 +28,7 @@ except ImportError:
 from aim.sdk.run import Run
 from aim.sdk.repo import Repo
 from aim.sdk.utils import clean_repo_path, get_aim_repo_name
-from aim.ext.resource.configs import DEFAULT_SYSTEM_TRACKING_INT
+from aim.ext.system_info.configs import DEFAULT_SYSTEM_TRACKING_INT
 
 
 class AimLogger(Logger):

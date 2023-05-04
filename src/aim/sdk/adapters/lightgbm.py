@@ -1,7 +1,7 @@
 from typing import Optional
 
 from aim import Run
-from aim.ext.resource import DEFAULT_SYSTEM_TRACKING_INT
+from aim.ext.system_info import DEFAULT_SYSTEM_TRACKING_INT
 
 try:
     from lightgbm.callback import CallbackEnv
