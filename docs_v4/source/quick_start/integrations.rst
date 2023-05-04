@@ -1,5 +1,5 @@
 Integrations
-============
+############
 
 Aim is integrated with most various frameworks and tools.
 
@@ -11,3 +11,4 @@ Aim is integrated with most various frameworks and tools.
   ../integrations/ml_frameworks.rst
   ../integrations/mlops.rst
   ../integrations/llmops.rst
+
