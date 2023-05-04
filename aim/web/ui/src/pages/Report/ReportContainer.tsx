@@ -34,11 +34,15 @@ function ReportContainer(): React.FunctionComponentElement<React.ReactNode> {
   const saveReport = React.useCallback(
     async (data: any) => {
       if (params.reportId === 'new') {
-        await reportAppModel.createReport(
+        const newReport = await reportAppModel.createReport(
           data.name,
           data.description,
           data.code,
         );
+        if (newReport) {
+          const url = PathEnum.Report_Edit.replace(':reportId', newReport.id);
+          window.history.replaceState(null, '', url);
+        }
       } else {
         await reportAppModel.updateReport(params.reportId, {
           ...reportData.report,
@@ -46,7 +50,7 @@ function ReportContainer(): React.FunctionComponentElement<React.ReactNode> {
         });
       }
     },
-    [params.reportId, reportAppModel, reportData.report],
+    [params.reportId, reportData.report],
   );
 
   return (

@@ -5,7 +5,7 @@ import LinkComponent from 'components/kit_v2/Link';
 import { config } from 'config/stitches';
 
 export default {
-  title: 'Kit/Inputs/Link',
+  title: 'Kit/Data Display/Link',
   component: LinkComponent,
   argTypes: {
     color: {

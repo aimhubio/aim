@@ -6,6 +6,8 @@ import { IconName } from 'components/kit/Icon';
 
 import { RouteStatusEnum } from 'routes/routes';
 
+import hexToRgbA from 'utils/hexToRgbA';
+
 import { ExplorerCardBadge, ExplorerCardContainer } from './ExplorerCard.style';
 import { IExplorerCardProps } from './ExplorerCard.d';
 
@@ -27,8 +29,10 @@ function ExplorerCard({
     <ExplorerCardContainer
       to={path}
       css={{
-        backgroundColor: `${color}10`,
-        '&:hover': { bs: `0 0 0 1px inset $colors${color}100` },
+        backgroundColor: `${hexToRgbA(color!, 0.1)}`,
+        '&:hover': {
+          bs: `0 0 0 1px inset ${color}`,
+        },
       }}
     >
       {status && (
@@ -52,12 +56,12 @@ function ExplorerCard({
             display='flex'
             ai='center'
             jc='center'
-            css={{ size: '$7', br: '$pill', background: `${color}100` }}
+            css={{ size: '$7', br: '$pill', background: `${color}` }}
           >
             <Icon color='white' name={icon as IconName} />
           </Box>
         )}
-        <Text css={{ ml: '$5' }} size='$5' weight='$3'>
+        <Text className='card-title' css={{ ml: '$5' }} size='$6' weight='$3'>
           {displayName} {isLoading ? null : count ? `(${count})` : null}
         </Text>
       </Box>
