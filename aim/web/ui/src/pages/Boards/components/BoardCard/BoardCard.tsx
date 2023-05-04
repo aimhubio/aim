@@ -125,7 +125,11 @@ function BoardCard({
         />
       </BoardCardHeader>
       <Box mt='$5' flex='1'>
-        <Text color={description ? '$textPrimary' : '$textPrimary50'} as='p'>
+        <Text
+          ellipsis
+          color={description ? '$textPrimary' : '$textPrimary50'}
+          as='p'
+        >
           {description || 'No description yet'}
         </Text>
       </Box>

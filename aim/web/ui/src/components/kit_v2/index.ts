@@ -12,7 +12,7 @@ import Input from './Input';
 import ListItem from './ListItem';
 import Popover from './Popover';
 import QueryBadge from './QueryBadge';
-import Radio from './Radio';
+import Radio, { RadioGroup } from './Radio';
 import Select from './Select';
 import Separator from './Separator';
 import Slider from './Slider';
@@ -41,6 +41,7 @@ export {
   Popover,
   QueryBadge,
   Radio,
+  RadioGroup,
   Select,
   Separator,
   Slider,

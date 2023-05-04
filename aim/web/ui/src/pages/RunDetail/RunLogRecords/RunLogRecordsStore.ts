@@ -13,14 +13,14 @@ function createRunLogRecordsEngine() {
       parseStream(await call(runId, record_range), {
         dataProcessor: async (objects: any) => {
           const data: RunLogRecordStateType = {
-            runLogRecordsList: [],
+            runLogRecordsList: {},
             runLogRecordsTotalCount: 0,
           };
           try {
             for await (let [keys, val] of objects) {
               const object = { ...val, hash: keys[0] };
               if (typeof object.hash === 'number') {
-                data.runLogRecordsList.push(object);
+                data.runLogRecordsList[object.hash] = object;
               } else {
                 data.runLogRecordsTotalCount = val;
               }
@@ -32,7 +32,7 @@ function createRunLogRecordsEngine() {
           }
           return {
             ...data,
-            runLogRecordsList: data.runLogRecordsList.reverse(),
+            runLogRecordsList: data.runLogRecordsList,
           };
         },
       }),

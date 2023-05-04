@@ -8,7 +8,7 @@ import {
   TextField,
 } from '@material-ui/core';
 
-import { Button } from 'components/kit';
+import { Button } from 'components/kit_v2';
 
 function SaveReport(props: any) {
   let [opened, setOpened] = React.useState(false);
@@ -54,7 +54,7 @@ function SaveReport(props: any) {
   return (
     <>
       <Button
-        size='small'
+        size='xs'
         onClick={() => setOpened(true)}
         color='primary'
         variant='contained'
