@@ -10,6 +10,7 @@ import { ArcballControls } from 'three/examples/jsm/controls/ArcballControls.js'
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
+import { Spinner } from 'components/kit';
 
 import blobsURIModel from 'services/models/media/blobsURIModel';
 import geometriesExploreService from 'services/api/geometriesExplore/geometriesExploreService';
@@ -54,13 +55,6 @@ function buildScene(
   renderer.render(scene, camera);
 
   const loadingManager = new THREE.LoadingManager();
-
-  loadingManager.onLoad = function () {
-    console.log('Loading complete!');
-    const loadingScreen = document.getElementById('loader');
-    loadingScreen?.classList.add('fade-out');
-    loadingScreen?.remove();
-  };
 
   // Controls:
   const controls = new ArcballControls(camera, renderer.domElement, scene);
@@ -224,14 +218,18 @@ function GeometriesVisualizer(
     <ErrorBoundary>
       <BusyLoaderWrapper
         className='VisualizationLoader'
-        isLoading={!!props.isLoading}
+        isLoading={!!isLoading}
       >
         <div className='GeometriesVisualizer'>
           {_.isEmpty(props.data?.geometriesSetData) ? (
             <IllustrationBlock size='xLarge' title='No Tracked Figures' />
           ) : (
             <div className='GeometriesVisualizer__recordCnt'>
-              {loadingScene && <div id='loader'></div>}
+              {loadingScene && (
+                <div className='GeometriesVisualizer__recordCnt__loader'>
+                  <Spinner />
+                </div>
+              )}
               <canvas className='webgl' id='geo' ref={canvasRef}></canvas>
             </div>
           )}
