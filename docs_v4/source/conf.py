@@ -15,6 +15,7 @@ import sys
 import glob
 from importlib.util import module_from_spec, spec_from_file_location
 
+
 sys.path.insert(0, os.path.abspath('..'))
 
 
@@ -110,12 +111,5 @@ autodoc_member_order = 'groupwise'
 
 source_suffix = ['.rst', '.md']
 
-rst_prolog = """
-.. |Aim| replace:: Aim
-.. |Objects| replace:: :term:`Objects<Object>`
-.. |Object| replace:: :term:`Object<Object>`
-.. |Sequences| replace:: :term:`Sequences<Sequence>`
-.. |Sequence| replace:: :term:`Sequence<Sequence>`
-.. |Collections| replace:: :term:`Collections<Collection>`
-.. |Collection| replace:: :term:`Collection<Collection>`
-"""
+with open("rst_prolog.rst", "r") as prolog_file:
+    rst_prolog = prolog_file.read()
