@@ -9,7 +9,7 @@ from aimrocks import lib_utils
 # TODO This `setup.py` assumes that `Cython` and `aimrocks` are installed.
 # This is okay for now as users are expected to install `aim` from wheels.
 
-version_file = 'aim/VERSION'
+version_file = 'src/aim/VERSION'
 
 with open(version_file) as vf:
     __version__ = vf.read().strip()
@@ -22,9 +22,6 @@ DESCRIPTION = 'A super-easy way to record, search and compare AI experiments.'
 VERSION = __version__
 REQUIRES_PYTHON = '>=3.7.0'
 
-# Get packages
-packages = find_packages(exclude=('tests', 'performance_tests', 'aim.web.ui'))
-
 
 # Get a list of all files in the html directory to include in our module
 def package_files(directory):
@@ -35,9 +32,9 @@ def package_files(directory):
     return paths
 
 
-migration_files = package_files('aim/web/migrations')
-storage_migration_files = package_files('aim/storage/migrations')
-notifier_files = package_files('aim/ext/notifier')
+migration_files = package_files('src/aim/web/migrations')
+storage_migration_files = package_files('src/aim/core/storage/migrations')
+notifier_files = package_files('src/aim/ext/notifier')
 version_files = ['../aim/VERSION', ]
 
 readme_file = 'README.md'
@@ -51,7 +48,6 @@ SETUP_REQUIRED = [
 # What packages are required for this module to be executed?
 REQUIRED = [
     f'aim-ui=={__version__}',
-    'aimrecords==0.0.7',
     'aimrocks==0.4.0',
     'cachetools>=4.0.0',
     'click>=7.0',
@@ -59,7 +55,6 @@ REQUIRED = [
     'filelock<4,>=3.3.0',
     'numpy<2,>=1.12.0',
     'psutil>=5.6.7',
-    'py3nvml>=0.2.5',
     'RestrictedPython>=5.1',
     'tqdm>=4.20.0',
     'aiofiles>=0.5.0',
@@ -140,23 +135,23 @@ COMPILE_ARGS = [
     '-fPIC'
 ]
 CYTHON_SCRITPS = [
-    ('aim.storage.hashing.c_hash', 'aim/storage/hashing/c_hash.pyx'),
-    ('aim.storage.hashing.hashing', 'aim/storage/hashing/hashing.py'),
-    ('aim.storage.hashing', 'aim/storage/hashing/__init__.py'),
-    ('aim.storage.encoding.encoding_native', 'aim/storage/encoding/encoding_native.pyx'),
-    ('aim.storage.encoding.encoding', 'aim/storage/encoding/encoding.pyx'),
-    ('aim.storage.encoding', 'aim/storage/encoding/__init__.py'),
-    ('aim.storage.treeutils', 'aim/storage/treeutils.pyx'),
-    ('aim.storage.rockscontainer', 'aim/storage/rockscontainer.pyx'),
-    ('aim.storage.union', 'aim/storage/union.pyx'),
-    ('aim.storage.arrayview', 'aim/storage/arrayview.py'),
-    ('aim.storage.treearrayview', 'aim/storage/treearrayview.py'),
-    ('aim.storage.treeview', 'aim/storage/treeview.py'),
-    ('aim.storage.utils', 'aim/storage/utils.py'),
-    ('aim.storage.container', 'aim/storage/container.py'),
-    ('aim.storage.containertreeview', 'aim/storage/containertreeview.py'),
-    ('aim.storage.inmemorytreeview', 'aim/storage/inmemorytreeview.py'),
-    ('aim.storage.prefixview', 'aim/storage/prefixview.py'),
+    ('aim.core.storage.hashing.c_hash', 'src/aim/core/storage/hashing/c_hash.pyx'),
+    ('aim.core.storage.hashing.hashing', 'src/aim/core/storage/hashing/hashing.py'),
+    ('aim.core.storage.hashing', 'src/aim/core/storage/hashing/__init__.py'),
+    ('aim.core.storage.encoding.encoding_native', 'src/aim/core/storage/encoding/encoding_native.pyx'),
+    ('aim.core.storage.encoding.encoding', 'src/aim/core/storage/encoding/encoding.pyx'),
+    ('aim.core.storage.encoding', 'src/aim/core/storage/encoding/__init__.py'),
+    ('aim.core.storage.treeutils', 'src/aim/core/storage/treeutils.pyx'),
+    ('aim.core.storage.rockscontainer', 'src/aim/core/storage/rockscontainer.pyx'),
+    ('aim.core.storage.union', 'src/aim/core/storage/union.pyx'),
+    ('aim.core.storage.arrayview', 'src/aim/core/storage/arrayview.py'),
+    ('aim.core.storage.treearrayview', 'src/aim/core/storage/treearrayview.py'),
+    ('aim.core.storage.treeview', 'src/aim/core/storage/treeview.py'),
+    ('aim.core.storage.utils', 'src/aim/core/storage/utils.py'),
+    ('aim.core.storage.container', 'src/aim/core/storage/container.py'),
+    ('aim.core.storage.containertreeview', 'src/aim/core/storage/containertreeview.py'),
+    ('aim.core.storage.inmemorytreeview', 'src/aim/core/storage/inmemorytreeview.py'),
+    ('aim.core.storage.prefixview', 'src/aim/core/storage/prefixview.py'),
 ]
 
 
@@ -193,7 +188,11 @@ setup(
     python_requires=REQUIRES_PYTHON,
     setup_requires=SETUP_REQUIRED,
     install_requires=REQUIRED,
-    packages=packages,
+    packages=(
+        find_packages(where='src', exclude=('web.ui',)) +
+        find_packages(where='pkgs')
+    ),
+    package_dir={'aim': 'src/aim', 'aimstack': 'pkgs/aimstack'},
     package_data={'aim': migration_files + storage_migration_files + notifier_files + version_files},
     include_package_data=True,
     classifiers=[

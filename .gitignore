@@ -122,4 +122,4 @@ coverage_html_report/
 
 # generated cpp files
 # @TODO remove this line once there will be usage of cpp files
-aim/storage/**/*.cpp
+src/aim/core/storage/**/*.cpp
