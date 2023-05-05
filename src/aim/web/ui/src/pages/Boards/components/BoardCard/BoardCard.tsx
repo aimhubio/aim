@@ -20,7 +20,6 @@ import {
   Popover,
   Separator,
   Text,
-  Tooltip,
 } from 'components/kit_v2';
 
 import { PathEnum } from 'config/enums/routesEnum';
