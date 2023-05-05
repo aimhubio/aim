@@ -1,2 +1,38 @@
 [build-system]
-requires = ["setuptools", "cython == 3.0.0a11", "aimrocks == 0.4.0"]
+requires = ["setuptools", "Cython == 3.0.0a11", "aimrocks == 0.4.0"]
+
+[tool.pytest.ini_options]
+addopts = ["--pdbcls=IPython.terminal.debugger:Pdb", "-p no:cacheprovider"]
+
+[tool.coverage.run]
+branch = true
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "@(abc.)?abstractmethod",
+    "except ImportError:"
+]
+include = ["src/aim/web/*", "src/aim/core/*", "src/aim/sdk/*"]
+omit = ["src/aim/web/migrations/*", "src/aim/core/storage/migrations/*", "src/aim/core/storage/env.py"]
+
+[tool.flake8]
+max-line-length = 120
+ignore = ["E712", "F405"]
+exclude = [
+    "**/node_modules/",
+    "**/migrations/",
+    "**/legacy/",
+    "**/_legacy_repo",
+    "aim/web/ui",
+    "**/*pb2.py",
+    "**/*pb2_grpc.py"
+]
+per-file-ignores = [
+    "__init__.py:F401,F403"
+]

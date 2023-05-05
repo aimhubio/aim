@@ -3,6 +3,3 @@ sphinx
 sphinx_rtd_theme
 m2r2==0.3.1
 sphinx-copybutton
-Cython==3.0.0a9
-
--r ./../requirements.txt

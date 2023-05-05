@@ -37,7 +37,8 @@ The below example demonstrates how to implement custom callbacks to check and no
 #### Defining the callbacks
 
 ```python
-from aim.sdk.callbacks import events
+from aim.core.callbacks import events
+
 
 class MyCallbacks:
     @events.on.init  # Called when initializing the TrainingFlow object
@@ -47,7 +48,7 @@ class MyCallbacks:
         self.gnorm_len = 0
 
     @events.on.init
-    def init_ppl_accumulators(self, **kwargs): 
+    def init_ppl_accumulators(self, **kwargs):
         # Initialize a state to collect ppl values over training process
         self.ppl_sum = 0
         self.ppl_len = 0
@@ -64,38 +65,38 @@ class MyCallbacks:
     def check_cuda_version(self, run: aim.Run, **kwargs):
         if run['__system_params', 'cuda_version'] != '11.6':
             run.log_warning("Wrong CUDA version is installed!")
-	
+
     @events.on.training_metrics_collected
     def check_gnorm_and_notify(
-        self, 
-        metrics: Dict[str, Any], 
-        step: int, 
-        # always denotes the number of *training* steps
-        # `1 step per 4 batches` can be in case of gradient accumulation
-        epoch: int, 
-        run: aim.Run,
-        **kwargs
+            self,
+            metrics: Dict[str, Any],
+            step: int,
+            # always denotes the number of *training* steps
+            # `1 step per 4 batches` can be in case of gradient accumulation
+            epoch: int,
+            run: aim.Run,
+            **kwargs
     ):
-        current = metrics['gnorm'] # notice that it's the last one
+        current = metrics['gnorm']  # notice that it's the last one
         # thus we need to use self.* to collect gnorm values
         self.gnorm_sum += current
         self.gnorm_len += 1
         mean = self.gnorm_sum / self.gnorm_len
-        
+
         if current > 1.15 * mean:
             run.log_warning(f'gnorms have exploded. mean: {mean}, '
-                             'step {step}, epoch {epoch} ...')
+                            'step {step}, epoch {epoch} ...')
 
     @events.on.training_metrics_collected
     def check_ppl_and_notify(
-        self, 
-        metrics: Dict[str, Any], 
-        step: int,
-        epoch: int,
-        run: aim.Run,
-        **kwargs
+            self,
+            metrics: Dict[str, Any],
+            step: int,
+            epoch: int,
+            run: aim.Run,
+            **kwargs
     ):
-        current = metrics['ppl'] # notice that it's the last one
+        current = metrics['ppl']  # notice that it's the last one
         # thus we need to use self.* to collect ppl values
         self.ppl_sum += current
         self.ppl_len += 1
@@ -103,25 +104,25 @@ class MyCallbacks:
 
         if current > 1.15 * mean:
             run.log_warning(f'ppl have exploded. mean: {mean}, '
-                             'step {step}, epoch {epoch} ...')
-    
+                            'step {step}, epoch {epoch} ...')
+
     @events.on.training_metrics_collected
     def store_last_train_metrics(
-        self,
-        metrics: Dict[str, Any],
-        step: int,
-        epoch: int,
-        **kwargs,
+            self,
+            metrics: Dict[str, Any],
+            step: int,
+            epoch: int,
+            **kwargs,
     ):
         self.last_train_metrics.append(metrics)
 
     @events.on.validation_metrics_collected
     def check_overfitting(
-        self,
-        metrics: Dict[str, Any],
-        epoch: int = None,
-        run: aim.Run,
-        **kwargs,
+            self,
+            metrics: Dict[str, Any],
+            epoch: int = None,
+            run: aim.Run,
+            **kwargs,
     ):
         mean_train_ppl = sum(
             metrics['ppl'] for metrics
