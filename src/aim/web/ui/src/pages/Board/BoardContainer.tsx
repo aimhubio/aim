@@ -51,6 +51,7 @@ function BoardContainer(): React.FunctionComponentElement<React.ReactNode> {
         });
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [params.boardId, boardData.board],
   );
 

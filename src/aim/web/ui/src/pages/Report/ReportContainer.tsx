@@ -51,6 +51,7 @@ function ReportContainer(): React.FunctionComponentElement<React.ReactNode> {
         });
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [params.reportId, reportData.report],
   );
 

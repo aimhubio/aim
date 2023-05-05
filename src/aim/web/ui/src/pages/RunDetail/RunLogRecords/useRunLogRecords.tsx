@@ -121,7 +121,7 @@ function useRunLogRecords(runId: string, inProgress: boolean) {
         }
         if (record.args) {
           const payloadRowsCount = getObjectKeysCount(record.args);
-          messageSize += payloadRowsCount * 16.5;
+          messageSize += payloadRowsCount * 16.5 + 10;
         }
         const feedItem = {
           date: moment(record.timestamp * 1000).format(TIMELINE_TIME_FORMAT),
