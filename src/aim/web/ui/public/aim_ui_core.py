@@ -995,3 +995,48 @@ class Column(Block, UI):
 
 
 ui = UI()
+
+
+class Tree(Component):
+    def __init__(self, value=None, values=None, options=[], key=None, block=None):
+        component_type = "Tree"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type, block)
+
+        self.data = value or values
+
+        self.options = {
+            "value": self.value,
+            "values": self.values,
+            "options": options
+
+        }
+
+        self.callbacks = {
+            "on_change": self.on_change
+        }
+
+        self.render()
+
+    @property
+    def value(self):
+        return self.state["value"] if "value" in self.state else self.data
+
+    @property
+    def values(self):
+        return self.state["values"] if "values" in self.state else self.data
+
+    async def on_change(self, key):
+        if type(self.values) is list:
+            if key in self.values:
+                values = list(filter(lambda item: item != key, self.values))
+            else:
+                values = self.values + [key]
+
+            self.set_state({
+                "values": values
+            })
+        else:
+            self.set_state({
+                "value": key
+            })

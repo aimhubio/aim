@@ -1,5 +1,3 @@
-import * as React from 'react';
-
 import { Select } from 'components/kit_v2';
 
 function SelectVizElement(props: any) {

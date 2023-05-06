@@ -121,6 +121,13 @@ const RadioVizElement = React.lazy(
     ),
 );
 
+const TreeVizElement = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "Tree" */ './TreeVizElement'
+    ),
+);
+
 export type VizElementKey =
   | 'LineChart'
   | 'DataFrame'
@@ -141,7 +148,8 @@ export type VizElementKey =
   | 'Button'
   | 'Switch'
   | 'TextArea'
-  | 'Radio';
+  | 'Radio'
+  | 'Tree';
 
 const VizElementsMap: Record<VizElementKey, React.FunctionComponent<any>> = {
   // input elements
@@ -152,6 +160,7 @@ const VizElementsMap: Record<VizElementKey, React.FunctionComponent<any>> = {
   Slider: SliderVizElement,
   Select: SelectVizElement,
   Radio: RadioVizElement,
+  Tree: TreeVizElement,
 
   // data display elements
   Plotly: PlotlyVizElement,
