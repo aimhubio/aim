@@ -25,6 +25,7 @@ import ToggleButton from './ToggleButton';
 import Tabs from './Tabs';
 import Link from './Link';
 import Textarea from './Textarea';
+import Breadcrumb from './Breadcrumb';
 
 export {
   Badge,
@@ -56,4 +57,5 @@ export {
   Tabs,
   Link,
   Textarea,
+  Breadcrumb,
 };
