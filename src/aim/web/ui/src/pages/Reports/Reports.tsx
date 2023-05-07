@@ -92,7 +92,7 @@ function Reports(): React.FunctionComponentElement<React.ReactNode> {
             </>
           ) : (
             <Illustration type={ILLUSTRATION_TYPES.Empty_Reports}>
-              <Box mt='$6' display='flex' ai='center' jc='center'>
+              <Box mt='$8' display='flex' ai='center' jc='center'>
                 <Link
                   underline={false}
                   to={PathEnum.Report.replace(':reportId', 'new')}

@@ -73,7 +73,7 @@ function Boards(): React.FunctionComponentElement<React.ReactNode> {
             </>
           ) : (
             <Illustration type={ILLUSTRATION_TYPES.Empty_Boards}>
-              <Box mt='$6' display='flex' ai='center' jc='center'>
+              <Box mt='$8' display='flex' ai='center' jc='center'>
                 <Link
                   underline={false}
                   to={PathEnum.Board.replace(':boardId', 'new')}

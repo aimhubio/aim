@@ -55,8 +55,8 @@ function getDefaultIllustrationContent(
   const Insufficient_Resources = "You don't have any tracked data";
   const Empty = 'No Results';
   const Empty_Bookmarks = "You don't have any saved bookmark";
-  const Empty_Boards = "You don't have any board";
-  const Empty_Reports = "You don't have any report";
+  const Empty_Boards = "You don't have any board created";
+  const Empty_Reports = "You don't have any report created";
 
   const CONTENT = {
     [ILLUSTRATION_TYPES.Never_Executed]: Never_Executed,
