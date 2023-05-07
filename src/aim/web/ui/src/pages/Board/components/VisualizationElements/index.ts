@@ -120,6 +120,12 @@ const RadioVizElement = React.lazy(
       /* webpackPrefetch: true, webpackChunkName: "Radio" */ './RadioVizElement'
     ),
 );
+const LinkVizElement = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "Link" */ './LinkVizElement'
+    ),
+);
 
 export type VizElementKey =
   | 'LineChart'
@@ -131,6 +137,7 @@ export type VizElementKey =
   | 'JSON'
   | 'HTML'
   | 'Text'
+  | 'Link'
   | 'Select'
   | 'RunMessages'
   | 'RunLogs'
@@ -159,6 +166,7 @@ const VizElementsMap: Record<VizElementKey, React.FunctionComponent<any>> = {
   JSON: JSONVizElement,
   HTML: HTMLVizElement,
   Text: TextVizElement,
+  Link: LinkVizElement,
 
   // Aim sequence viz components
   LineChart: LineChartVizElement,

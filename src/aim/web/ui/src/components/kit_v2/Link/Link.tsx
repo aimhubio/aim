@@ -9,6 +9,7 @@ import { ILinkProps } from './Link.d';
  * @param {string} [props.fontSize='$5'] - font size
  * @param {string} [props.fontWeight='$2'] - font weight
  * @param {string} [props.color='$primary100'] - color
+ * @param {boolean} [props.ellipsis=false] - ellipsis
  * @param {boolean} [props.underline=true] - underline
  * @param {CSS} [props.css] - css
  * @param {React.ReactNode} [props.children] - children

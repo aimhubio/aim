@@ -625,6 +625,23 @@ class Text(Component):
 
         self.render()
 
+
+class Link(Component):
+    def __init__(self, text, to, key=None, block=None):
+        component_type = "Link"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type, block)
+
+        self.data = to
+
+        self.options = {
+            "text": text,
+            "to": to,
+        }
+
+        self.render()
+
+
 # AimHighLevelComponents
 
 
@@ -944,6 +961,10 @@ class UI:
     def html(self, *args, **kwargs):
         html = HTML(*args, **kwargs, block=self.block_context)
         return html
+
+    def link(self, *args, **kwargs):
+        link = Link(*args, **kwargs, block=self.block_context)
+        return link
 
     # Aim sequence viz components
     def line_chart(self, *args, **kwargs):
