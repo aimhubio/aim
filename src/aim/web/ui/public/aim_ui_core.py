@@ -759,7 +759,7 @@ class NumberInput(Component):
             "label": label,
             "min": min_value,
             "max": max_value,
-            "step": self.__getStep(value, step),
+            "step": self._get_step(value, step),
             "disabled": disabled or False
         }
 
@@ -769,7 +769,7 @@ class NumberInput(Component):
 
         self.render()
 
-    def __getStep(self, value, step):
+    def _get_step(self, value, step):
         if(step):
             return step
         elif isinstance(value, int):
