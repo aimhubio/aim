@@ -627,7 +627,7 @@ class Text(Component):
 
 
 class Link(Component):
-    def __init__(self, text, to, key=None, block=None):
+    def __init__(self, text, to, new_tab=False, key=None, block=None):
         component_type = "Link"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
@@ -637,6 +637,7 @@ class Link(Component):
         self.options = {
             "text": text,
             "to": to,
+            "new_tab": new_tab
         }
 
         self.render()
