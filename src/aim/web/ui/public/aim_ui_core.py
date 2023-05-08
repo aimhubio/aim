@@ -289,7 +289,7 @@ class Element:
 
 
 class Block(Element):
-    def __init__(self, type_, block):
+    def __init__(self, type_, data=None, block=None):
         super().__init__(block)
         block_context["current"] += 1
         self.block_context = {
@@ -297,6 +297,8 @@ class Block(Element):
             "type": type_
         }
         self.key = generate_key(self.block_context)
+
+        self.data = data
 
         self.render()
 
@@ -306,10 +308,17 @@ class Block(Element):
             "block_context": self.block_context,
             "key": self.key,
             "parent_block": self.parent_block,
-            "board_id": self.board_id
+            "board_id": self.board_id,
+            "data": self.data
         }
 
         render_to_layout(block_data)
+
+    def __enter__(self):
+        ui.set_block_context(self.block_context)
+
+    def __exit__(self, type, value, traceback):
+        ui.set_block_context(None)
 
 
 class Component(Element):
@@ -625,6 +634,24 @@ class Text(Component):
 
         self.render()
 
+
+class Link(Component):
+    def __init__(self, text, to, new_tab=False, key=None, block=None):
+        component_type = "Link"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type, block)
+
+        self.data = to
+
+        self.options = {
+            "text": text,
+            "to": to,
+            "new_tab": new_tab
+        }
+
+        self.render()
+
+
 # AimHighLevelComponents
 
 
@@ -936,6 +963,9 @@ class UI:
     def __init__(self):
         self.block_context = None
 
+    def set_block_context(self, block):
+        self.block_context = block
+
     # layout elements
     def rows(self, count):
         rows = []
@@ -950,6 +980,10 @@ class UI:
             col = Column(block=self.block_context)
             cols.append(col)
         return cols
+
+    def tabs(self, names):
+        tabs = Tabs(names, block=self.block_context)
+        return tabs.tabs
 
     # input elements
     def button(self, *args, **kwargs):
@@ -1009,6 +1043,10 @@ class UI:
         html = HTML(*args, **kwargs, block=self.block_context)
         return html
 
+    def link(self, *args, **kwargs):
+        link = Link(*args, **kwargs, block=self.block_context)
+        return link
+
     # Aim sequence viz components
     def line_chart(self, *args, **kwargs):
         line_chart = LineChart(*args, **kwargs, block=self.block_context)
@@ -1056,6 +1094,23 @@ class Row(Block, UI):
 class Column(Block, UI):
     def __init__(self, block=None):
         super().__init__('column', block=block)
+
+
+class Tab(Block, UI):
+    def __init__(self, label, block=None):
+        super().__init__('tab', data=label, block=block)
+
+        self.data = label
+
+
+class Tabs(Block, UI):
+    def __init__(self, labels, block=None):
+        super().__init__('tabs', block=block)
+
+        self.tabs = []
+        for label in labels:
+            tab = Tab(label, block=self.block_context)
+            self.tabs.append(tab)
 
 
 ui = UI()

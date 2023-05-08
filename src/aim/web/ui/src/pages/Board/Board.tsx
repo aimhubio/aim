@@ -11,8 +11,7 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 import SplitPane, { SplitPaneItem } from 'components/SplitPane';
 import ResizingFallback from 'components/ResizingFallback';
-import { Box, Button, Link } from 'components/kit_v2';
-import Breadcrumb from 'components/kit_v2/Breadcrumb';
+import { Box, Button, Link, Tabs, Breadcrumb } from 'components/kit_v2';
 
 import { PathEnum } from 'config/enums/routesEnum';
 import { TopBar } from 'config/stitches/foundations/layout';
@@ -365,22 +364,26 @@ function constructTree(elems: any, tree: any) {
         tree.root.elements[elem.block_context.id] = {
           ...elem.block_context,
           elements: {},
+          data: elem.data,
         };
       } else {
         if (!tree.hasOwnProperty(elem.parent_block.id)) {
           tree[elem.parent_block.id] = {
             id: elem.parent_block.id,
             elements: {},
+            data: elem.data,
           };
         }
         tree[elem.parent_block.id].elements[elem.block_context.id] = {
           ...elem.block_context,
           elements: {},
+          data: elem.data,
         };
       }
       tree[elem.block_context.id] = {
         ...elem.block_context,
         elements: {},
+        data: elem.data,
       };
     } else {
       if (!elem.parent_block) {
@@ -402,6 +405,30 @@ function renderTree(tree: any, elements: any) {
           {renderTree(tree, tree[element.id].elements)}
         </div>
       );
+    }
+
+    if (element.type === 'tabs') {
+      const tabs = [];
+      for (const tabIndex in tree[element.id].elements) {
+        const tab = tree[element.id].elements[tabIndex];
+        tabs.push({
+          label: tab.data,
+          value: tab.data,
+          content: (
+            <div key={element.type + i} className={'block--tab'}>
+              {renderTree(tree, tree[tab.id].elements)}
+            </div>
+          ),
+        });
+      }
+      return (
+        <div key={element.type + i} className={'block--tabs'}>
+          <Tabs tabs={tabs} />
+        </div>
+      );
+    }
+    if (element.type === 'tab') {
+      return null;
     }
 
     return <GridCell key={i} viz={element} />;
