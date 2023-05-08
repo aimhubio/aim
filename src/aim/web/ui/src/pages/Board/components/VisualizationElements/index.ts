@@ -96,6 +96,12 @@ const TextInputVizElement = React.lazy(
       /* webpackPrefetch: true, webpackChunkName: "TextInput" */ './TextInputVizElement'
     ),
 );
+const NumberInputVizElement = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "NumberInput" */ './NumberInputVizElement'
+    ),
+);
 const ButtonVizElement = React.lazy(
   () =>
     import(
@@ -152,6 +158,7 @@ export type VizElementKey =
   | 'Plotly'
   | 'Slider'
   | 'TextInput'
+  | 'NumberInput'
   | 'Button'
   | 'Switch'
   | 'TextArea'
@@ -162,6 +169,7 @@ const VizElementsMap: Record<VizElementKey, React.FunctionComponent<any>> = {
   // input elements
   Button: ButtonVizElement,
   TextInput: TextInputVizElement,
+  NumberInput: NumberInputVizElement,
   Switch: SwitchVizElement,
   TextArea: TextAreaVizElement,
   Slider: SliderVizElement,
