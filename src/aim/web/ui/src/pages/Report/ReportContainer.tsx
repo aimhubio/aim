@@ -1,5 +1,5 @@
 import React from 'react';
-import { useRouteMatch } from 'react-router-dom';
+import { useHistory, useRouteMatch } from 'react-router-dom';
 import { useModel } from 'hooks';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
@@ -17,6 +17,7 @@ import Report from './Report';
 function ReportContainer(): React.FunctionComponentElement<React.ReactNode> {
   const reportData = useModel(reportAppModel);
   const { params, path } = useRouteMatch<any>();
+  const history = useHistory();
 
   React.useEffect(() => {
     reportAppModel.initialize(params.reportId);
@@ -41,7 +42,7 @@ function ReportContainer(): React.FunctionComponentElement<React.ReactNode> {
         );
         if (newReport) {
           const url = PathEnum.Report_Edit.replace(':reportId', newReport.id);
-          window.history.replaceState(null, '', url);
+          history.push(url);
         }
       } else {
         await reportAppModel.updateReport(params.reportId, {
@@ -50,6 +51,7 @@ function ReportContainer(): React.FunctionComponentElement<React.ReactNode> {
         });
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [params.reportId, reportData.report],
   );
 

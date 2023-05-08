@@ -200,12 +200,10 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
       destroyBoardStore();
     };
   }, [boardId]);
-
   function handleEditorMount(editor: any) {
     editorRef.current = editor;
     editorRef.current?.onKeyDown(onKeyDown);
   }
-
   function onKeyDown() {
     const updateEditorValue = _.debounce(() => {
       setEditorValue(editorRef.current?.getValue());

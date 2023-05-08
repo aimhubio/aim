@@ -17,6 +17,8 @@ const ILLUSTRATION_TYPES: Record<string, IllustrationType> = {
   Empty: PipelineStatusEnum.Empty,
   Failed: PipelineStatusEnum.Failed,
   Empty_Bookmarks: 'emptyBookmarks',
+  Empty_Boards: 'emptyBoards',
+  Empty_Reports: 'emptyReports',
 };
 
 const ILLUSTRATION_LIST: Record<IllustrationType, React.ReactNode> = {
@@ -25,6 +27,8 @@ const ILLUSTRATION_LIST: Record<IllustrationType, React.ReactNode> = {
   [ILLUSTRATION_TYPES.Empty]: <EmptySearch />,
   [ILLUSTRATION_TYPES.Failed]: <WrongSearch />,
   [ILLUSTRATION_TYPES.Empty_Bookmarks]: <EmptyBookmarks />,
+  [ILLUSTRATION_TYPES.Empty_Boards]: <EmptyBookmarks />,
+  [ILLUSTRATION_TYPES.Empty_Reports]: <EmptyBookmarks />,
 };
 
 function getDefaultIllustrationContent(
@@ -51,6 +55,8 @@ function getDefaultIllustrationContent(
   const Insufficient_Resources = "You don't have any tracked data";
   const Empty = 'No Results';
   const Empty_Bookmarks = "You don't have any saved bookmark";
+  const Empty_Boards = "You don't have any board created";
+  const Empty_Reports = "You don't have any report created";
 
   const CONTENT = {
     [ILLUSTRATION_TYPES.Never_Executed]: Never_Executed,
@@ -58,6 +64,8 @@ function getDefaultIllustrationContent(
     [ILLUSTRATION_TYPES.Insufficient_Resources]: Insufficient_Resources,
     [ILLUSTRATION_TYPES.Empty]: Empty,
     [ILLUSTRATION_TYPES.Empty_Bookmarks]: Empty_Bookmarks,
+    [ILLUSTRATION_TYPES.Empty_Boards]: Empty_Boards,
+    [ILLUSTRATION_TYPES.Empty_Reports]: Empty_Reports,
   };
   return CONTENT[type] || null;
 }

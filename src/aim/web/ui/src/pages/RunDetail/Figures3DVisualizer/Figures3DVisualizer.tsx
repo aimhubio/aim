@@ -1,5 +1,4 @@
 import React, { memo } from 'react';
-import _ from 'lodash-es';
 import * as THREE from 'three';
 
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';

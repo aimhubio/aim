@@ -34,6 +34,7 @@ const Textarea = React.forwardRef<
       if (props.value !== TextareaValue) {
         setTextareaValue(props.value);
       }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.value]);
 
     const handleChange = React.useCallback(
