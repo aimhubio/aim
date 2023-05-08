@@ -625,12 +625,20 @@ class HTML(Component):
 
 
 class Text(Component):
-    def __init__(self, data, key=None, block=None):
+    def __init__(self, data, component=None, size=None, weight=None, color=None, mono=None, key=None, block=None):
         component_type = "Text"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
 
         self.data = data
+
+        self.options = {
+            "component": component,
+            "size": size,
+            "weight": weight,
+            "color": color,
+            "mono": mono
+        }
 
         self.render()
 
