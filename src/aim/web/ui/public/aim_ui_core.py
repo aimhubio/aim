@@ -893,6 +893,32 @@ class Radio(Component):
         self.set_state({"value": val})
 
 
+class Checkbox(Component):
+    def __init__(self, checked=False, disabled=None, key=None, block=None):
+        component_type = "Checkbox"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type, block)
+
+        self.data = checked
+
+        self.options = {
+            "disabled": disabled,
+        }
+
+        self.callbacks = {
+            "on_change": self.on_change
+        }
+
+        self.render()
+
+    @property
+    def value(self):
+        return self.state["value"] if "value" in self.state else self.data
+
+    async def on_change(self, val):
+        self.set_state({"value": val})
+
+
 class UI:
     def __init__(self):
         self.block_context = None
@@ -940,6 +966,10 @@ class UI:
     def radio(self, *args, **kwargs):
         radio = Radio(*args, **kwargs, block=self.block_context)
         return radio.value
+
+    def checkbox(self, *args, **kwargs):
+        checkbox = Checkbox(*args, **kwargs, block=self.block_context)
+        return checkbox.value
 
     # data display elements
     def text(self, *args, **kwargs):
