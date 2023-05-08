@@ -635,6 +635,23 @@ class Text(Component):
         self.render()
 
 
+class Link(Component):
+    def __init__(self, text, to, new_tab=False, key=None, block=None):
+        component_type = "Link"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type, block)
+
+        self.data = to
+
+        self.options = {
+            "text": text,
+            "to": to,
+            "new_tab": new_tab
+        }
+
+        self.render()
+
+
 # AimHighLevelComponents
 
 
@@ -886,6 +903,32 @@ class Radio(Component):
         self.set_state({"value": val})
 
 
+class Checkbox(Component):
+    def __init__(self, checked=False, disabled=None, key=None, block=None):
+        component_type = "Checkbox"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type, block)
+
+        self.data = checked
+
+        self.options = {
+            "disabled": disabled,
+        }
+
+        self.callbacks = {
+            "on_change": self.on_change
+        }
+
+        self.render()
+
+    @property
+    def value(self):
+        return self.state["value"] if "value" in self.state else self.data
+
+    async def on_change(self, val):
+        self.set_state({"value": val})
+
+
 class UI:
     def __init__(self):
         self.block_context = None
@@ -941,6 +984,10 @@ class UI:
         radio = Radio(*args, **kwargs, block=self.block_context)
         return radio.value
 
+    def checkbox(self, *args, **kwargs):
+        checkbox = Checkbox(*args, **kwargs, block=self.block_context)
+        return checkbox.value
+
     # data display elements
     def text(self, *args, **kwargs):
         text = Text(*args, **kwargs, block=self.block_context)
@@ -961,6 +1008,10 @@ class UI:
     def html(self, *args, **kwargs):
         html = HTML(*args, **kwargs, block=self.block_context)
         return html
+
+    def link(self, *args, **kwargs):
+        link = Link(*args, **kwargs, block=self.block_context)
+        return link
 
     # Aim sequence viz components
     def line_chart(self, *args, **kwargs):
