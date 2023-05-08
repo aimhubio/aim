@@ -929,6 +929,36 @@ class Checkbox(Component):
         self.set_state({"value": val})
 
 
+class ToggleButton(Component):
+    def __init__(self, left_value="On", right_value="Off", index=0, disabled=None, size=None, block=None, key=None):
+        component_type = "ToggleButton"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type, block)
+
+        self.options = {
+            "rightLabel": right_value,
+            "leftLabel": left_value,
+            "rightValue": right_value,
+            "leftValue": left_value,
+            "disabled": disabled,
+            "size": size,
+            "defaultValue": left_value if index == 0 else right_value,
+        }
+
+        self.callbacks = {
+            "on_change": self.on_change
+        }
+
+        self.render()
+
+    @property
+    def value(self):
+        return self.state["value"] if "value" in self.state else self.options["defaultValue"]
+
+    async def on_change(self, val):
+        self.set_state({"value": val})
+
+
 class UI:
     def __init__(self):
         self.block_context = None
@@ -987,6 +1017,10 @@ class UI:
     def checkbox(self, *args, **kwargs):
         checkbox = Checkbox(*args, **kwargs, block=self.block_context)
         return checkbox.value
+
+    def toggle_button(self, *args, **kwargs):
+        toggle = ToggleButton(*args, **kwargs, block=self.block_context)
+        return toggle.value
 
     # data display elements
     def text(self, *args, **kwargs):
