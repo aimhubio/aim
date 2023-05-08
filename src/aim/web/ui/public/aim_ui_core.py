@@ -876,21 +876,46 @@ class Radio(Component):
         self.set_state({"value": val})
 
 
-class ToggleButton(Component):
-    def __init__(self, defaultValue=None, leftLabel=None, leftValue=None, rightLabel=None, rightValue=None, disabled=None, size=None, color=None, block=None, key=None):
-        component_type = "ToggleButton"
+class Checkbox(Component):
+    def __init__(self, checked=False, disabled=None, key=None, block=None):
+        component_type = "Checkbox"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type)
+        super().__init__(component_key, component_type, block)
+
+        self.data = checked
 
         self.options = {
-            "rightLabel": rightLabel or "On",
-            "leftLabel": leftLabel or "Off",
-            "rightValue": rightValue or 'on',
-            "leftValue": leftValue or "off",
+            "disabled": disabled,
+        }
+
+        self.callbacks = {
+            "on_change": self.on_change
+        }
+
+        self.render()
+
+    @property
+    def value(self):
+        return self.state["value"] if "value" in self.state else self.data
+
+    async def on_change(self, val):
+        self.set_state({"value": val})
+
+
+class ToggleButton(Component):
+    def __init__(self, leftValue="On", rightValue="Off", index=0, disabled=None, size=None, block=None, key=None):
+        component_type = "ToggleButton"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type, block)
+
+        self.options = {
+            "rightLabel": rightValue,
+            "leftLabel": leftValue,
+            "rightValue": rightValue,
+            "leftValue": leftValue,
             "disabled": disabled,
             "size": size,
-            "color": color,
-            "defaultValue": defaultValue,
+            "defaultValue": leftValue if index == 0 else rightValue,
         }
 
         self.callbacks = {
@@ -954,6 +979,10 @@ class UI:
     def radio(self, *args, **kwargs):
         radio = Radio(*args, **kwargs, block=self.block_context)
         return radio.value
+
+    def checkbox(self, *args, **kwargs):
+        checkbox = Checkbox(*args, **kwargs, block=self.block_context)
+        return checkbox.value
 
     def toggle_button(self, *args, **kwargs):
         toggle = ToggleButton(*args, **kwargs, block=self.block_context)

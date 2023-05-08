@@ -121,6 +121,13 @@ const RadioVizElement = React.lazy(
     ),
 );
 
+const CheckboxVizElement = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "Checkbox" */ './CheckboxVizElement'
+    ),
+);
+
 const ToggleButtonVizElement = React.lazy(
   () =>
     import(
@@ -149,6 +156,7 @@ export type VizElementKey =
   | 'Switch'
   | 'TextArea'
   | 'Radio'
+  | 'Checkbox'
   | 'ToggleButton';
 
 const VizElementsMap: Record<VizElementKey, React.FunctionComponent<any>> = {
@@ -160,6 +168,7 @@ const VizElementsMap: Record<VizElementKey, React.FunctionComponent<any>> = {
   Slider: SliderVizElement,
   Select: SelectVizElement,
   Radio: RadioVizElement,
+  Checkbox: CheckboxVizElement,
   ToggleButton: ToggleButtonVizElement,
 
   // data display elements
