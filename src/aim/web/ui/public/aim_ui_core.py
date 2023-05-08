@@ -759,8 +759,8 @@ class NumberInput(Component):
             "label": label,
             "min": min_value,
             "max": max_value,
-            "step": self._get_step(value, step),
-            "disabled": disabled or False
+            "step": self._get_step(self.value, step),
+            "disabled": disabled
         }
 
         self.callbacks = {
