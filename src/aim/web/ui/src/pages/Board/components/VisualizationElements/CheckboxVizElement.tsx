@@ -5,11 +5,11 @@ import { Checkbox } from 'components/kit_v2';
 function CheckboxVizElement(
   props: any,
 ): React.FunctionComponentElement<React.ReactNode> {
-  const [checked, setChecked] = React.useState(props.data);
+  const [checked, setChecked] = React.useState(props.value);
 
   React.useEffect(() => {
-    if (props.data !== checked) {
-      setChecked(props.data);
+    if (props.value !== checked) {
+      setChecked(props.value);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.data]);

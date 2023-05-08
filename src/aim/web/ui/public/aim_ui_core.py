@@ -877,12 +877,12 @@ class Radio(Component):
 
 
 class Checkbox(Component):
-    def __init__(self, checked=None, disabled=None, key=None):
+    def __init__(self, checked=False, disabled=None, key=None, block=None):
         component_type = "Checkbox"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type)
+        super().__init__(component_key, component_type, block)
 
-        self.data = checked or False
+        self.data = checked
 
         self.options = {
             "disabled": disabled,
@@ -894,11 +894,12 @@ class Checkbox(Component):
 
         self.render()
 
-    def on_change(self, val):
-        # You can define the callback behavior here
-        self.set_state({
-            "data": val
-        })
+    @property
+    def value(self):
+        return self.state["value"] if "value" in self.state else self.data
+
+    async def on_change(self, val):
+        self.set_state({"value": val})
 
 
 class UI:
@@ -950,8 +951,8 @@ class UI:
         return radio.value
 
     def checkbox(self, *args, **kwargs):
-        radio = Radio(*args, **kwargs, block=self.block_context)
-        return radio.value
+        checkbox = Checkbox(*args, **kwargs, block=self.block_context)
+        return checkbox.value
 
     # data display elements
     def text(self, *args, **kwargs):
