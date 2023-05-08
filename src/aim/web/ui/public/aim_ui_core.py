@@ -903,19 +903,19 @@ class Checkbox(Component):
 
 
 class ToggleButton(Component):
-    def __init__(self, leftValue="On", rightValue="Off", index=0, disabled=None, size=None, block=None, key=None):
+    def __init__(self, left_value="On", right_value="Off", index=0, disabled=None, size=None, block=None, key=None):
         component_type = "ToggleButton"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
 
         self.options = {
-            "rightLabel": rightValue,
-            "leftLabel": leftValue,
-            "rightValue": rightValue,
-            "leftValue": leftValue,
+            "rightLabel": right_value,
+            "leftLabel": left_value,
+            "rightValue": right_value,
+            "leftValue": left_value,
             "disabled": disabled,
             "size": size,
-            "defaultValue": leftValue if index == 0 else rightValue,
+            "defaultValue": left_value if index == 0 else right_value,
         }
 
         self.callbacks = {
