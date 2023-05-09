@@ -6,7 +6,7 @@ import { IconCheck } from '@tabler/icons-react';
 import Text from '../Text';
 import Icon from '../Icon';
 import ListItem from '../ListItem';
-import { CheckBox } from '../Checkbox/Checkbox';
+import { Checkbox } from '../Checkbox/Checkbox';
 
 import { ISelectItemProps } from './Select.d';
 
@@ -51,7 +51,7 @@ const SelectItem = ({
           key={index}
           size={size}
           rightNode={rightNode}
-          leftNode={multiple ? <CheckBox checked={selected} /> : null}
+          leftNode={multiple ? <Checkbox checked={selected} /> : null}
           onClick={() => onValueChange(item.value!)}
         >
           <Text css={{ color: selected ? '$primary100' : '$textPrimary' }}>

@@ -70,7 +70,7 @@ def query_filter(type_, query=""):
         query_result_cache[query_key] = items
 
         return items
-    except: # noqa
+    except:  # noqa
         return []
 
 
@@ -121,7 +121,7 @@ def find(obj, element):
     for key in keys:
         try:
             rv = rv[key]
-        except: # noqa
+        except:  # noqa
             return None
     return rv
 
@@ -194,7 +194,8 @@ def group(name, data, options, key=None):
             for opt in options:
                 val = find(
                     item,
-                    str(opt) if type(opt) is not str else opt.replace("metric.", ""),
+                    str(opt) if type(opt) is not str else opt.replace(
+                        "metric.", ""),
                 )
                 group_values.append(val)
 
@@ -282,17 +283,14 @@ def render_to_layout(data):
 
 
 class Element:
-    def __init__(self):
-        self.parent_block = None
-        self.board_id = board_id
-
-    def set_parent_block(self, block):
+    def __init__(self, block=None):
         self.parent_block = block
+        self.board_id = board_id
 
 
 class Block(Element):
-    def __init__(self, type_):
-        super().__init__()
+    def __init__(self, type_, data=None, block=None):
+        super().__init__(block)
         block_context["current"] += 1
         self.block_context = {
             "id": block_context["current"],
@@ -300,11 +298,9 @@ class Block(Element):
         }
         self.key = generate_key(self.block_context)
 
-        self.render()
+        self.data = data
 
-    def add(self, element):
-        element.set_parent_block(self.block_context)
-        element.render()
+        self.render()
 
     def render(self):
         block_data = {
@@ -312,22 +308,30 @@ class Block(Element):
             "block_context": self.block_context,
             "key": self.key,
             "parent_block": self.parent_block,
-            "board_id": self.board_id
+            "board_id": self.board_id,
+            "data": self.data
         }
 
         render_to_layout(block_data)
 
+    def __enter__(self):
+        ui.set_block_context(self.block_context)
+
+    def __exit__(self, type, value, traceback):
+        ui.set_block_context(None)
+
 
 class Component(Element):
-    def __init__(self, key, type_):
-        super().__init__()
+    def __init__(self, key, type_, block):
+        super().__init__(block)
         self.state = {}
         self.key = key
         self.type = type_
         self.data = None
         self.callbacks = {}
         self.options = {}
-        self.state = state[board_id][key] if board_id in state and key in state[board_id] else {}
+        self.state = state[board_id][key] if board_id in state and key in state[board_id] else {
+        }
         self.no_facet = True
 
     def set_state(self, value):
@@ -394,20 +398,22 @@ class AimSequenceComponent(Component):
 
 
 class LineChart(AimSequenceComponent):
-    def __init__(self, data, x, y, color=[], stroke_style=[], options={}, key=None):
+    def __init__(self, data, x, y, color=[], stroke_style=[], options={}, key=None, block=None):
         component_type = "LineChart"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type)
+        super().__init__(component_key, component_type, block)
 
         color_map, color_data = group("color", data, color, component_key)
-        stroke_map, stroke_data = group("stroke_style", data, stroke_style, component_key)
+        stroke_map, stroke_data = group(
+            "stroke_style", data, stroke_style, component_key)
         lines = []
         for i, item in enumerate(data):
             color_val = apply_group_value_pattern(
                 color_map[color_data[i]["color"]]["order"], colors
             )
             stroke_val = apply_group_value_pattern(
-                stroke_map[stroke_data[i]["stroke_style"]]["order"], stroke_styles
+                stroke_map[stroke_data[i]["stroke_style"]
+                           ]["order"], stroke_styles
             )
 
             line = dict(item)
@@ -462,10 +468,10 @@ class LineChart(AimSequenceComponent):
 
 
 class ImagesList(AimSequenceComponent):
-    def __init__(self, data, key=None):
+    def __init__(self, data, key=None, block=None):
         component_type = "Images"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type)
+        super().__init__(component_key, component_type, block)
 
         images = []
 
@@ -481,10 +487,10 @@ class ImagesList(AimSequenceComponent):
 
 
 class AudiosList(AimSequenceComponent):
-    def __init__(self, data, key=None):
+    def __init__(self, data, key=None, block=None):
         component_type = "Audios"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type)
+        super().__init__(component_key, component_type, block)
 
         audios = []
 
@@ -500,10 +506,10 @@ class AudiosList(AimSequenceComponent):
 
 
 class TextsList(AimSequenceComponent):
-    def __init__(self, data, color=[], key=None):
+    def __init__(self, data, color=[], key=None, block=None):
         component_type = "Texts"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type)
+        super().__init__(component_key, component_type, block)
 
         color_map, color_data = group("color", data, color, component_key)
 
@@ -525,10 +531,10 @@ class TextsList(AimSequenceComponent):
 
 
 class FiguresList(AimSequenceComponent):
-    def __init__(self, data, key=None):
+    def __init__(self, data, key=None, block=None):
         component_type = "Figures"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type)
+        super().__init__(component_key, component_type, block)
 
         figures = []
 
@@ -546,10 +552,10 @@ class FiguresList(AimSequenceComponent):
 
 
 class Union(Component):
-    def __init__(self, components, key=None):
+    def __init__(self, components, key=None, block=None):
         component_type = "Union"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type)
+        super().__init__(component_key, component_type, block)
 
         for i, elem in reversed(list(enumerate(current_layout))):
             for comp in components:
@@ -575,10 +581,10 @@ class Union(Component):
 
 
 class Plotly(Component):
-    def __init__(self, fig, key=None):
+    def __init__(self, fig, key=None, block=None):
         component_type = "Plotly"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type)
+        super().__init__(component_key, component_type, block)
 
         self.data = fig.to_json()
 
@@ -586,10 +592,10 @@ class Plotly(Component):
 
 
 class JSON(Component):
-    def __init__(self, data, key=None):
+    def __init__(self, data, key=None, block=None):
         component_type = "JSON"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type)
+        super().__init__(component_key, component_type, block)
 
         self.data = data
 
@@ -597,10 +603,10 @@ class JSON(Component):
 
 
 class DataFrame(Component):
-    def __init__(self, data, key=None):
+    def __init__(self, data, key=None, block=None):
         component_type = "DataFrame"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type)
+        super().__init__(component_key, component_type, block)
 
         self.data = data.to_json(orient="records")
 
@@ -608,10 +614,10 @@ class DataFrame(Component):
 
 
 class HTML(Component):
-    def __init__(self, data, key=None):
+    def __init__(self, data, key=None, block=None):
         component_type = "HTML"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type)
+        super().__init__(component_key, component_type, block)
 
         self.data = data
 
@@ -619,23 +625,41 @@ class HTML(Component):
 
 
 class Text(Component):
-    def __init__(self, data, key=None):
+    def __init__(self, data, key=None, block=None):
         component_type = "Text"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type)
+        super().__init__(component_key, component_type, block)
 
         self.data = data
 
         self.render()
 
+
+class Link(Component):
+    def __init__(self, text, to, new_tab=False, key=None, block=None):
+        component_type = "Link"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type, block)
+
+        self.data = to
+
+        self.options = {
+            "text": text,
+            "to": to,
+            "new_tab": new_tab
+        }
+
+        self.render()
+
+
 # AimHighLevelComponents
 
 
 class RunMessages(Component):
-    def __init__(self, run_hash, key=None):
+    def __init__(self, run_hash, key=None, block=None):
         component_type = "RunMessages"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type)
+        super().__init__(component_key, component_type, block)
 
         self.data = run_hash
 
@@ -643,10 +667,10 @@ class RunMessages(Component):
 
 
 class RunLogs(Component):
-    def __init__(self, run_hash, key=None):
+    def __init__(self, run_hash, key=None, block=None):
         component_type = "RunLogs"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type)
+        super().__init__(component_key, component_type, block)
 
         self.data = run_hash
 
@@ -654,10 +678,10 @@ class RunLogs(Component):
 
 
 class RunNotes(Component):
-    def __init__(self, run_hash, key=None):
+    def __init__(self, run_hash, key=None, block=None):
         component_type = "RunNotes"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type)
+        super().__init__(component_key, component_type, block)
 
         self.data = run_hash
 
@@ -668,10 +692,10 @@ class RunNotes(Component):
 
 
 class Slider(Component):
-    def __init__(self, min, max, value, key=None):
+    def __init__(self, min, max, value, key=None, block=None):
         component_type = "Slider"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type)
+        super().__init__(component_key, component_type, block)
 
         self.data = value
 
@@ -698,10 +722,10 @@ class Slider(Component):
 
 
 class TextInput(Component):
-    def __init__(self, value, key=None):
+    def __init__(self, value, key=None, block=None):
         component_type = "TextInput"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type)
+        super().__init__(component_key, component_type, block)
 
         self.data = value
 
@@ -726,10 +750,10 @@ class TextInput(Component):
 
 
 class Select(Component):
-    def __init__(self, value=None, values=None, options=[], key=None):
+    def __init__(self, value=None, values=None, options=[], key=None, block=None):
         component_type = "Select"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type)
+        super().__init__(component_key, component_type, block)
 
         self.data = value or values
 
@@ -770,10 +794,10 @@ class Select(Component):
 
 
 class Button(Component):
-    def __init__(self, label=None, size=None, variant=None, color=None, key=None):
+    def __init__(self, label=None, size=None, variant=None, color=None, key=None, block=None):
         component_type = "Button"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type)
+        super().__init__(component_key, component_type, block)
 
         self.data = ''
 
@@ -795,10 +819,10 @@ class Button(Component):
 
 
 class Switch(Component):
-    def __init__(self, checked=None, size=None, defaultChecked=None, disabled=None, key=None):
+    def __init__(self, checked=None, size=None, defaultChecked=None, disabled=None, key=None, block=None):
         component_type = "Switch"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type)
+        super().__init__(component_key, component_type, block)
 
         self.data = checked
 
@@ -823,10 +847,10 @@ class Switch(Component):
 
 
 class TextArea(Component):
-    def __init__(self, value=None, size=None, resize=None, disabled=None, caption=None, key=None):
+    def __init__(self, value=None, size=None, resize=None, disabled=None, caption=None, key=None, block=None):
         component_type = "TextArea"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type)
+        super().__init__(component_key, component_type, block)
 
         self.data = value
 
@@ -853,10 +877,10 @@ class TextArea(Component):
 
 
 class Radio(Component):
-    def __init__(self, label=None, options=(), index=0, disabled=None, key=None):
+    def __init__(self, label=None, options=(), index=0, disabled=None, key=None, block=None):
         component_type = "Radio"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type)
+        super().__init__(component_key, component_type, block)
 
         self.options = {
             "label": label,
@@ -879,141 +903,214 @@ class Radio(Component):
         self.set_state({"value": val})
 
 
+class Checkbox(Component):
+    def __init__(self, checked=False, disabled=None, key=None, block=None):
+        component_type = "Checkbox"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type, block)
+
+        self.data = checked
+
+        self.options = {
+            "disabled": disabled,
+        }
+
+        self.callbacks = {
+            "on_change": self.on_change
+        }
+
+        self.render()
+
+    @property
+    def value(self):
+        return self.state["value"] if "value" in self.state else self.data
+
+    async def on_change(self, val):
+        self.set_state({"value": val})
+
+
+class ToggleButton(Component):
+    def __init__(self, left_value="On", right_value="Off", index=0, disabled=None, size=None, block=None, key=None):
+        component_type = "ToggleButton"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type, block)
+
+        self.options = {
+            "rightLabel": right_value,
+            "leftLabel": left_value,
+            "rightValue": right_value,
+            "leftValue": left_value,
+            "disabled": disabled,
+            "size": size,
+            "defaultValue": left_value if index == 0 else right_value,
+        }
+
+        self.callbacks = {
+            "on_change": self.on_change
+        }
+
+        self.render()
+
+    @property
+    def value(self):
+        return self.state["value"] if "value" in self.state else self.options["defaultValue"]
+
+    async def on_change(self, val):
+        self.set_state({"value": val})
+
+
 class UI:
     def __init__(self):
         self.block_context = None
 
-    def add(self, element):
-        element.set_parent_block(self.block_context)
-        element.render()
+    def set_block_context(self, block):
+        self.block_context = block
 
     # layout elements
     def rows(self, count):
         rows = []
         for i in range(count):
-            row = Row()
+            row = Row(block=self.block_context)
             rows.append(row)
-            self.add(row)
         return rows
 
     def columns(self, count):
         cols = []
         for i in range(count):
-            col = Column()
+            col = Column(block=self.block_context)
             cols.append(col)
-            self.add(col)
         return cols
+
+    def tabs(self, names):
+        tabs = Tabs(names, block=self.block_context)
+        return tabs.tabs
 
     # input elements
     def button(self, *args, **kwargs):
-        button = Button(*args, **kwargs)
-        self.add(button)
+        button = Button(*args, **kwargs, block=self.block_context)
         return button
 
     def text_input(self, *args, **kwargs):
-        input = TextInput(*args, **kwargs)
-        self.add(input)
+        input = TextInput(*args, **kwargs, block=self.block_context)
         return input.value
 
     def text_area(self, *args, **kwargs):
-        textarea = TextArea(*args, **kwargs)
-        self.add(textarea)
+        textarea = TextArea(*args, **kwargs, block=self.block_context)
         return textarea.value
 
     def switch(self, *args, **kwargs):
-        switch = Switch(*args, **kwargs)
-        self.add(switch)
+        switch = Switch(*args, **kwargs, block=self.block_context)
         return switch.value
 
     def select(self, *args, **kwargs):
-        select = Select(*args, **kwargs)
-        self.add(select)
+        select = Select(*args, **kwargs, block=self.block_context)
         return select.values if type(select.values) is list else select.value
 
     def slider(self, *args, **kwargs):
-        slider = Slider(*args, **kwargs)
-        self.add(slider)
+        slider = Slider(*args, **kwargs, block=self.block_context)
         return slider.value
 
     def radio(self, *args, **kwargs):
-        radio = Radio(*args, **kwargs)
-        self.add(radio)
+        radio = Radio(*args, **kwargs, block=self.block_context)
         return radio.value
+
+    def checkbox(self, *args, **kwargs):
+        checkbox = Checkbox(*args, **kwargs, block=self.block_context)
+        return checkbox.value
+
+    def toggle_button(self, *args, **kwargs):
+        toggle = ToggleButton(*args, **kwargs, block=self.block_context)
+        return toggle.value
 
     # data display elements
     def text(self, *args, **kwargs):
-        text = Text(*args, **kwargs)
-        self.add(text)
+        text = Text(*args, **kwargs, block=self.block_context)
+        return text
 
     def plotly(self, *args, **kwargs):
-        plotly_chart = Plotly(*args, **kwargs)
-        self.add(plotly_chart)
+        plotly_chart = Plotly(*args, **kwargs, block=self.block_context)
+        return plotly_chart
 
     def json(self, *args, **kwargs):
-        json = JSON(*args, **kwargs)
-        self.add(json)
+        json = JSON(*args, **kwargs, block=self.block_context)
+        return json
 
     def dataframe(self, *args, **kwargs):
-        dataframe = DataFrame(*args, **kwargs)
-        self.add(dataframe)
+        dataframe = DataFrame(*args, **kwargs, block=self.block_context)
+        return dataframe
 
     def html(self, *args, **kwargs):
-        html = HTML(*args, **kwargs)
-        self.add(html)
+        html = HTML(*args, **kwargs, block=self.block_context)
+        return html
+
+    def link(self, *args, **kwargs):
+        link = Link(*args, **kwargs, block=self.block_context)
+        return link
 
     # Aim sequence viz components
     def line_chart(self, *args, **kwargs):
-        line_chart = LineChart(*args, **kwargs)
-        self.add(line_chart)
+        line_chart = LineChart(*args, **kwargs, block=self.block_context)
         return line_chart
 
     def images(self, *args, **kwargs):
-        images = ImagesList(*args, **kwargs)
-        self.add(images)
+        images = ImagesList(*args, **kwargs, block=self.block_context)
         return images
 
     def audios(self, *args, **kwargs):
-        audios = AudiosList(*args, **kwargs)
-        self.add(audios)
+        audios = AudiosList(*args, **kwargs, block=self.block_context)
         return audios
 
     def figures(self, *args, **kwargs):
-        figures = FiguresList(*args, **kwargs)
-        self.add(figures)
+        figures = FiguresList(*args, **kwargs, block=self.block_context)
         return figures
 
     def texts(self, *args, **kwargs):
-        texts = TextsList(*args, **kwargs)
-        self.add(texts)
+        texts = TextsList(*args, **kwargs, block=self.block_context)
         return texts
 
     def union(self, *args, **kwargs):
-        union = Union(*args, **kwargs)
-        self.add(union)
+        union = Union(*args, **kwargs, block=self.block_context)
         return union
 
     # Aim high level components
     def run_messages(self, *args, **kwargs):
-        run_messages = RunMessages(*args, **kwargs)
-        self.add(run_messages)
+        run_messages = RunMessages(*args, **kwargs, block=self.block_context)
+        return run_messages
 
     def run_logs(self, *args, **kwargs):
-        run_logs = RunLogs(*args, **kwargs)
-        self.add(run_logs)
+        run_logs = RunLogs(*args, **kwargs, block=self.block_context)
+        return run_logs
 
     def run_notes(self, *args, **kwargs):
-        run_notes = RunNotes(*args, **kwargs)
-        self.add(run_notes)
+        run_notes = RunNotes(*args, **kwargs, block=self.block_context)
+        return run_notes
 
 
 class Row(Block, UI):
-    def __init__(self):
-        super().__init__('row')
+    def __init__(self, block=None):
+        super().__init__('row', block=block)
 
 
 class Column(Block, UI):
-    def __init__(self):
-        super().__init__('column')
+    def __init__(self, block=None):
+        super().__init__('column', block=block)
+
+
+class Tab(Block, UI):
+    def __init__(self, label, block=None):
+        super().__init__('tab', data=label, block=block)
+
+        self.data = label
+
+
+class Tabs(Block, UI):
+    def __init__(self, labels, block=None):
+        super().__init__('tabs', block=block)
+
+        self.tabs = []
+        for label in labels:
+            tab = Tab(label, block=self.block_context)
+            self.tabs.append(tab)
 
 
 ui = UI()

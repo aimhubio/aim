@@ -1,5 +1,5 @@
 import React from 'react';
-import { useRouteMatch } from 'react-router-dom';
+import { useHistory, useRouteMatch } from 'react-router-dom';
 import { useModel } from 'hooks';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
@@ -17,6 +17,7 @@ import Board from './Board';
 function BoardContainer(): React.FunctionComponentElement<React.ReactNode> {
   const boardData = useModel(boardAppModel);
   const { params, path } = useRouteMatch<any>();
+  const history = useHistory();
 
   React.useEffect(() => {
     boardAppModel.initialize(params.boardId);
@@ -41,7 +42,7 @@ function BoardContainer(): React.FunctionComponentElement<React.ReactNode> {
         );
         if (newBoard) {
           const url = PathEnum.Board_Edit.replace(':boardId', newBoard.id);
-          window.history.replaceState(null, '', url);
+          history.push(url);
         }
       } else {
         await boardAppModel.updateBoard(params.boardId, {
@@ -50,6 +51,7 @@ function BoardContainer(): React.FunctionComponentElement<React.ReactNode> {
         });
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [params.boardId, boardData.board],
   );
 

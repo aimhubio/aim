@@ -7,7 +7,7 @@ metrics = Metric.filter('metric.name == "loss"')
 #####
 # Render your data with viz component
 # Example
-line_chart = LineChart(metrics, x='steps', y='values',
+line_chart = ui.line_chart(metrics, x='steps', y='values',
                    color=["run.name"],
                    stroke_style=["metric.context"])
 #####
@@ -17,6 +17,6 @@ line_chart = LineChart(metrics, x='steps', y='values',
 # Example
 if line_chart.active_line:
     run = line_chart.active_line["run"]
-    JSON(run)
+    ui.json(run)
 #####
 `;
