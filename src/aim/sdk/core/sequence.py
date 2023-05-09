@@ -1,3 +1,5 @@
+import logging
+
 from typing import TypeVar, Generic, Any, Optional, Dict, Union, Tuple, List, Iterator, Callable
 
 from aim.sdk.core import type_utils
@@ -16,6 +18,8 @@ if TYPE_CHECKING:
 
 
 _ContextInfo = Union[Dict, Context, int]
+
+logger = logging.getLogger(__name__)
 
 
 class _SequenceInfo:
@@ -67,8 +71,9 @@ class Sequence(Generic[ItemType], ABCSequence):
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
         typename = cls.get_typename()
-        if typename is not None:  # check for intermediate helper classes
-            cls.registry[typename] = cls
+        if typename in cls.registry:  # check for name conflicts
+            logger.warning(f'Sequence registry already has typename \'{typename}\' registered.')
+        cls.registry[typename].append(cls)
 
     def __init__(self, container: 'Container', *, name: str, context: _ContextInfo):
         self._container: 'Container' = container

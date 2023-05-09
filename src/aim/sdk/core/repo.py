@@ -1,5 +1,6 @@
 import pathlib
 import weakref
+import logging
 
 from collections import defaultdict
 from typing import Union, Type, Optional
@@ -17,6 +18,8 @@ from aim.sdk.core.exceptions import AmbiguousQueryTypeError, UnknownQueryTypeErr
 from aim.sdk.reporter import RunStatusReporter, ScheduledStatusReporter
 from aim.sdk.reporter.file_manager import LocalFileManager
 from aim.sdk.remote_run_reporter import RemoteRunHeartbeatReporter, RemoteFileManager
+
+logger = logging.getLogger(__name__)
 
 
 class StorageEngine:
@@ -71,7 +74,7 @@ class Repo(LegacyRepo):
     def storage_engine(self) -> StorageEngine:
         return self._storage_engine
 
-    def _select(self, type_: Union[str, Type] = None, **kwargs):
+    def _select(self, type_: Type = None, **kwargs):
         if type_ is None:
             assert len(kwargs) == 1
             (var_name, type_) = kwargs.popitem()
@@ -87,19 +90,7 @@ class Repo(LegacyRepo):
             'query_cache': defaultdict(dict),
         }
 
-        if isinstance(type_, str):
-            cont_type = Container.registry.get(type_)
-            seq_type = Sequence.registry.get(type_)
-            if cont_type is not None and seq_type is not None:
-                raise AmbiguousQueryTypeError(type_)
-
-            if cont_type is None and seq_type is None:
-                raise UnknownQueryTypeError(type_)
-
-            orig_type = cont_type if cont_type is not None else seq_type
-            type_ = orig_type
-        else:
-            orig_type = type_.__origin__ if hasattr(type_, '__origin__') else type_
+        orig_type = type_.__origin__ if hasattr(type_, '__origin__') else type_
 
         if issubclass(orig_type, Container):
             query_context.update({
@@ -122,6 +113,14 @@ class Repo(LegacyRepo):
                    type_: Union[str, Type[Container]] = Container,
                    **kwargs) -> ContainerCollection:
         q = construct_query_expression('container', query_, **kwargs)
+
+        if isinstance(type_, str):
+            cont_types = Container.registry.get(type_)
+            if len(cont_types) > 1:
+                raise ValueError(f'Multiple matching container types for type name \'{type_}\'. '
+                                 f'Please include container package name.')
+            type_ = cont_types[0]
+
         return self._select(type_).filter(q) if q else self._select(type_)
 
     def sequences(self,
@@ -129,4 +128,12 @@ class Repo(LegacyRepo):
                   type_: Union[str, Type[Sequence]] = Sequence,
                   **kwargs) -> SequenceCollection:
         q = construct_query_expression('sequence', query_, **kwargs)
+
+        if isinstance(type_, str):
+            seq_types = Sequence.registry.get(type_)
+            if len(seq_types) > 1:
+                raise ValueError(f'Multiple matching sequence types for type name \'{type_}\'. '
+                                 f'Please include sequence package name.')
+            type_ = seq_types[0]
+
         return self._select(type_).filter(q) if q else self._select(type_)
