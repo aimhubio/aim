@@ -91,7 +91,7 @@ def auto_registry(cls):
     def get_typename_fn(cls_):
         if hasattr(cls_, '__aim_module__'):
             return f'{cls_.__aim_module__}.{cls_.__name__}'
-        return cls.__name__
+        return cls_.__name__
 
     @classmethod
     def get_full_typename_fn(cls_):
