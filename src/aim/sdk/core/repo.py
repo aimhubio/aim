@@ -3,7 +3,7 @@ import weakref
 import logging
 
 from collections import defaultdict
-from typing import Union, Type, Optional
+from typing import Union, Type, List, Optional
 
 from aim.sdk.repo import Repo as LegacyRepo
 
@@ -13,7 +13,7 @@ from aim.sdk.core.sequence import Sequence
 from aim.sdk.core.collections import ContainerCollection, SequenceCollection
 from aim.sdk.core.query_utils import construct_query_expression
 from aim.sdk.core.constants import ContainerOpenMode, KeyNames
-from aim.sdk.core.exceptions import AmbiguousQueryTypeError, UnknownQueryTypeError
+# from aim.sdk.core.exceptions import AmbiguousQueryTypeError, UnknownQueryTypeError
 
 from aim.sdk.reporter import RunStatusReporter, ScheduledStatusReporter
 from aim.sdk.reporter.file_manager import LocalFileManager
@@ -73,6 +73,18 @@ class Repo(LegacyRepo):
     @property
     def storage_engine(self) -> StorageEngine:
         return self._storage_engine
+
+    def tracked_container_types(self) -> List[str]:
+        return list(self.meta_tree.subtree('containers').keys())
+
+    def tracked_sequence_types(self) -> List[str]:
+        return list(self.meta_tree.subtree('sequences').keys())
+
+    def registered_container_types(self) -> List[str]:
+        return list(Container.registry.keys())
+
+    def registered_sequence_types(self) -> List[str]:
+        return list(Sequence.registry.keys())
 
     def _select(self, type_: Type = None, **kwargs):
         if type_ is None:
