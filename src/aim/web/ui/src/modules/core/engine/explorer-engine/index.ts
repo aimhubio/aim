@@ -331,6 +331,14 @@ function createEngine<TObject = any>(
               true,
             );
           }
+        } else if (config.initialState?.query) {
+          pipeline.search(
+            getQueryParamsFromState(
+              config.initialState.query,
+              config.sequenceName,
+            ),
+            true,
+          );
         }
       })
       // eslint-disable-next-line no-console

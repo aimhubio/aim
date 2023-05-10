@@ -180,7 +180,7 @@ export const explorersRoutes: { [key: string]: IRoute } = {
     color: '#1473E6',
     category: ExplorersCatsEnum.Prompts,
   },
-  IMAGE_EXPLORE: {
+  IMAGES_EXPLORER: {
     path: PathEnum.Images_Explore,
     component: ImagesExplore,
     showInSidebar: false,
@@ -344,7 +344,7 @@ const routes: { [key: string]: any } = {
     isExact: true,
     title: pageTitlesEnum.PARAMS_EXPLORER,
   },
-  IMAGE_EXPLORE_ID: {
+  IMAGES_EXPLORER_ID: {
     path: PathEnum.Images_Explore_Id,
     component: ImagesExplore,
     showInSidebar: false,

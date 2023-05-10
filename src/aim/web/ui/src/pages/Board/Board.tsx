@@ -387,6 +387,13 @@ function constructTree(elems: any, tree: any) {
       if (!elem.parent_block) {
         tree.root.elements[elem.key] = elem;
       } else {
+        if (!tree.hasOwnProperty(elem.parent_block.id)) {
+          tree[elem.parent_block.id] = {
+            id: elem.parent_block.id,
+            elements: {},
+            data: elem.data,
+          };
+        }
         tree[elem.parent_block.id].elements[elem.key] = elem;
       }
     }

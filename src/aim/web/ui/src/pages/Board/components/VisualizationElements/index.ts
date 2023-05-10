@@ -78,6 +78,12 @@ const RunNotesVizElement = React.lazy(
       /* webpackPrefetch: true, webpackChunkName: "RunNotes" */ './RunNotesVizElement'
     ),
 );
+const ExplorerVizElement = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "Explorer" */ './ExplorerVizElement'
+    ),
+);
 const PlotlyVizElement = React.lazy(
   () =>
     import(
@@ -171,7 +177,8 @@ export type VizElementKey =
   | 'TextArea'
   | 'Radio'
   | 'Checkbox'
-  | 'ToggleButton';
+  | 'ToggleButton'
+  | 'Explorer';
 
 const VizElementsMap: Record<VizElementKey, React.FunctionComponent<any>> = {
   // input elements
@@ -205,6 +212,7 @@ const VizElementsMap: Record<VizElementKey, React.FunctionComponent<any>> = {
   RunMessages: RunMessagesVizElement,
   RunLogs: RunLogsVizElement,
   RunNotes: RunNotesVizElement,
+  Explorer: ExplorerVizElement,
 };
 
 export default VizElementsMap;

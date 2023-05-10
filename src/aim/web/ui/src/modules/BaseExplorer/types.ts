@@ -182,6 +182,8 @@ export declare interface ExplorerEngineConfiguration {
    * @default value is {}
    */
   states?: CustomStates;
+
+  initialState?: Record<string, any>;
 }
 
 export declare interface ExplorerVisualizationsConfiguration
