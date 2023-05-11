@@ -23,7 +23,7 @@ PATH_HERE = os.path.abspath(os.path.dirname(__file__))
 PATH_ROOT = os.path.join(PATH_HERE, '..', '..')
 
 spec = spec_from_file_location(
-    'aim/__about__.py', os.path.join(PATH_ROOT, 'aim', '__about__.py')
+    'src/aim/__about__.py', os.path.join(PATH_ROOT, 'src', 'aim', '__about__.py')
 )
 about = module_from_spec(spec)
 spec.loader.exec_module(about)
@@ -78,6 +78,7 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx_copybutton',
     'sphinxcontrib.mermaid',
+    'sphinx.ext.autosectionlabel',
     'm2r2'
 ]
 
