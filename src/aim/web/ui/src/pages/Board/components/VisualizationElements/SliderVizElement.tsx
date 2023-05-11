@@ -8,7 +8,7 @@ function SliderVizElement(props: any) {
     _.debounce(props.callbacks?.on_change, 100),
     [],
   );
-  const id = React.useMemo(() => `slider_${Date.now()}}`, []);
+  const id = React.useMemo(() => `slider_${Date.now()}`, []);
   return (
     <div>
       {props.options.label && (

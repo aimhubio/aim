@@ -31,7 +31,7 @@ function NumberInputVizElement(props: any) {
     setErrorMsg(errMsg);
   }, [value, min, max]);
 
-  const id = React.useMemo(() => `number_input_${Date.now()}}`, []);
+  const id = React.useMemo(() => `number_input_${Date.now()}`, []);
   return (
     <div>
       {props.options.label && (
