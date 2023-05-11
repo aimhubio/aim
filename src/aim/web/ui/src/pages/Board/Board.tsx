@@ -1,9 +1,8 @@
 import React from 'react';
-import classNames from 'classnames';
 import _ from 'lodash-es';
 
 import Editor from '@monaco-editor/react';
-import { IconPencil } from '@tabler/icons-react';
+import { IconCaretDown, IconPencil } from '@tabler/icons-react';
 
 import { Spinner } from 'components/kit';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
@@ -11,7 +10,19 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 import SplitPane, { SplitPaneItem } from 'components/SplitPane';
 import ResizingFallback from 'components/ResizingFallback';
-import { Box, Button, Link, Tabs, Breadcrumb } from 'components/kit_v2';
+import {
+  Box,
+  Button,
+  Link,
+  Tabs,
+  Breadcrumb,
+  IconButton,
+  Text,
+} from 'components/kit_v2';
+import ResizeElement, {
+  ResizableElement,
+  ResizableSideEnum,
+} from 'components/ResizeElement';
 
 import { PathEnum } from 'config/enums/routesEnum';
 import { TopBar } from 'config/stitches/foundations/layout';
@@ -24,6 +35,14 @@ import SaveBoard from './components/SaveBoard';
 import GridCell from './components/GridCell';
 import useBoardStore from './BoardSore';
 import BoardLeavingGuard from './components/BoardLeavingGuard';
+import {
+  BoardComponentsViz,
+  BoardConsole,
+  BoardVisualizerComponentsPane,
+  BoardVisualizerContainer,
+  BoardVisualizerEditorPane,
+  BoardVisualizerPane,
+} from './Board.style';
 
 import './Board.scss';
 
@@ -39,8 +58,12 @@ function Board({
 }: any): React.FunctionComponentElement<React.ReactNode> {
   const { isLoading: pyodideIsLoading, pyodide, namespace } = usePyodide();
   const editorRef = React.useRef<any>(null);
+  const vizContainer = React.useRef<any>(null);
+  const boxContainer = React.useRef<any>(null);
+  let resizeElementRef = React.useRef<any>(null);
   const setEditorValue = useBoardStore((state) => state.setEditorValue);
   const destroyBoardStore = useBoardStore((state) => state.destroy);
+
   const boardId = data.id;
 
   const editorValue = React.useRef(data.code);
@@ -212,6 +235,30 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
     updateEditorValue();
   }
 
+  const onResizeEnd = React.useCallback(
+    (resizeElement) => {
+      boxContainer.current.classList.remove('ScrollBar__hidden');
+      vizContainer.current.style.marginBottom = `${resizeElement.current?.offsetHeight}px`;
+    },
+    [boxContainer],
+  );
+
+  const onResizeStart = React.useCallback(() => {
+    boxContainer.current.classList.add('ScrollBar__hidden');
+  }, [boxContainer]);
+
+  function handleOpenConsole() {
+    const height = resizeElementRef.current.offsetHeight;
+    // console.log(height);
+    if (height >= 80) {
+      resizeElementRef.current.style.height = '30px';
+      vizContainer.current.style.marginBottom = '30px';
+    } else {
+      resizeElementRef.current.style.height = '400px';
+      vizContainer.current.style.marginBottom = '400px';
+    }
+  }
+
   const tree = constructTree(
     state.layout.blocks.concat(state.layout.components),
     {
@@ -224,9 +271,9 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
 
   return (
     <ErrorBoundary>
-      <section className='Board'>
+      <Box as='section' height='100vh'>
         {!previewMode && (
-          <TopBar className='Board__appBar'>
+          <TopBar>
             <Box flex='1 100%'>
               <Breadcrumb
                 customRouteValues={{
@@ -235,7 +282,7 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
               />
             </Box>
             {editMode || newMode ? (
-              <div className='Board__appBar__controls'>
+              <Box display='flex' ai='center' gap='$5'>
                 <Button
                   color='primary'
                   variant='contained'
@@ -261,7 +308,7 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
                     Cancel
                   </Button>
                 </Link>
-              </div>
+              </Box>
             ) : (
               <Link
                 css={{ display: 'flex' }}
@@ -279,16 +326,10 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
           isLoading={pyodideIsLoading || isLoading}
           height={'100%'}
         >
-          <div className='BoardVisualizer'>
-            <SplitPane
-              id='BoardVisualizer'
-              useLocalStorage={true}
-              className='BoardVisualizer__main'
-              sizes={editMode || newMode ? [40, 60] : [100, 0]}
-              minSize={[400, 400]}
-            >
+          <BoardVisualizerContainer>
+            <BoardVisualizerPane id='BoardVisualizer'>
               {editMode || newMode ? (
-                <SplitPaneItem className='BoardVisualizer__main__editor'>
+                <BoardVisualizerEditorPane>
                   <Editor
                     language='python'
                     height='100%'
@@ -300,54 +341,112 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
                       useTabStops: true,
                     }}
                   />
-                </SplitPaneItem>
+                </BoardVisualizerEditorPane>
               ) : null}
-              <SplitPaneItem
+              <BoardVisualizerComponentsPane
                 resizingFallback={<ResizingFallback />}
-                className={classNames('BoardVisualizer__main__components', {
-                  'BoardVisualizer__main__components--loading':
-                    state.isProcessing === null,
-                  'BoardVisualizer__main__components--processing':
-                    state.isProcessing,
-                  'BoardVisualizer__main__components--fullWidth':
-                    !editMode && !newMode,
-                })}
+                loading={state.isProcessing === null}
+                processing={state.isProcessing}
+                fullWidth={!editMode && !newMode}
               >
                 {state.isProcessing !== false && (
                   <div className='BoardVisualizer__main__components__spinner'>
                     <Spinner />
                   </div>
                 )}
-                <div
-                  key={`${state.isProcessing}`}
-                  className='BoardVisualizer__main__components__viz'
-                >
-                  {state.error ? (
-                    <pre className='BoardVisualizer__main__components__viz__error'>
-                      {state.error}
-                    </pre>
-                  ) : (
-                    renderTree(tree, tree.root.elements)
-                  )}
-                </div>
-                {(editMode || newMode) && (
-                  <pre
-                    id='console'
-                    className='BoardVisualizer__main__components__console'
-                  />
+                {newMode || editMode ? (
+                  <>
+                    <Box height='100%' css={{ overflow: 'auto' }}>
+                      <BoardComponentsViz
+                        ref={vizContainer}
+                        key={`${state.isProcessing}`}
+                      >
+                        {state.error ? (
+                          <Box
+                            as='pre'
+                            css={{ fontMono: 14 }}
+                            color='$danger100'
+                            p='$5'
+                          >
+                            {state.error}
+                          </Box>
+                        ) : (
+                          renderTree(tree, tree.root.elements)
+                        )}
+                      </BoardComponentsViz>
+                    </Box>
+                    <div ref={boxContainer}>
+                      <ResizeElement
+                        id={'board-ResizeElement'}
+                        side={ResizableSideEnum.TOP}
+                        snapOffset={50}
+                        useLocalStorage={true}
+                        onMount={(resizeElement) => {
+                          resizeElementRef = resizeElement;
+                        }}
+                        initialSizes={{
+                          height: 200,
+                          maxHeight: 400,
+                          width: 100000,
+                          maxWidth: 100000,
+                        }}
+                        onResizeEnd={onResizeEnd}
+                        onResizeStart={onResizeStart}
+                      >
+                        <ResizableElement>
+                          <Box
+                            p='$2 $5'
+                            display='flex'
+                            ai='center'
+                            jc='space-between'
+                          >
+                            <Text size='$3' mono>
+                              Console
+                            </Text>
+                            <IconButton
+                              variant='static'
+                              color='secondary'
+                              size='xs'
+                              onClick={handleOpenConsole}
+                              icon={<IconCaretDown />}
+                            />
+                          </Box>
+                          <BoardConsole id='console' />
+                        </ResizableElement>
+                      </ResizeElement>
+                    </div>
+                  </>
+                ) : (
+                  <BoardComponentsViz
+                    className='sss'
+                    ref={vizContainer}
+                    key={`${state.isProcessing}`}
+                  >
+                    {state.error ? (
+                      <Box
+                        as='pre'
+                        css={{ fontMono: 14 }}
+                        color='$danger100'
+                        p='$5'
+                      >
+                        {state.error}
+                      </Box>
+                    ) : (
+                      renderTree(tree, tree.root.elements)
+                    )}
+                  </BoardComponentsViz>
                 )}
-              </SplitPaneItem>
-            </SplitPane>
-          </div>
+              </BoardVisualizerComponentsPane>
+            </BoardVisualizerPane>
+          </BoardVisualizerContainer>
         </BusyLoaderWrapper>
-      </section>
+      </Box>
       {notifyData?.length > 0 && (
         <NotificationContainer
           handleClose={onNotificationDelete}
           data={notifyData}
         />
       )}
-      {(editMode || newMode) && <BoardLeavingGuard data={data.code} />}
     </ErrorBoundary>
   );
 }
