@@ -31,7 +31,7 @@ jobs:
           node-version: '16'
 
       - name: Build UI
-        working-directory: ./aim/web/ui
+        working-directory: ./src/aim/web/ui
         run: |
           npm i --legacy-peer-deps
           CI=false npm run build
@@ -44,17 +44,17 @@ jobs:
 
       - name: Install dev dependencies
         run: |
-          python -m pip install -r requirements.dev.txt
+          python -m pip install -r ./.github/workflow_files/requirements.dev.txt
 
-      - name: Build sdist
-        working-directory: ./aim/web/ui
+      - name: Build sdist & universal wheel
+        working-directory: ./src/aim/web/ui
         run: |
-          python setup.py sdist
+          python setup.py sdist bdist_wheel --universal
 
       - name: Publish wheel
         env:
           PYPI_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-        working-directory: ./aim/web/ui
+        working-directory: ./src/aim/web/ui
         run: |
           python -m twine upload -u __token__ -p "${PYPI_PASSWORD}" dist/*
 
@@ -81,7 +81,7 @@ jobs:
       - name: Capture aim version
         id: capture-version
         run: |
-          AIM_VERSION=$(< ./aim/VERSION)
+          AIM_VERSION=$(< ./src/aim/VERSION)
           echo "::set-output name=AIM_VERSION::$AIM_VERSION"
 
       - name: Setup python
@@ -92,8 +92,8 @@ jobs:
 
       - name: Install dev dependencies
         run: |
-          python -m pip install -r requirements.dev.txt
-          python -m pip install -r requirements.txt
+          python -m pip install -r ./.github/workflow_files/requirements.dev.txt
+          python -m pip install -r ./.github/workflow_files/requirements.txt
 
       - name: Build bdist wheels
         uses: nick-fields/retry@v2
@@ -101,7 +101,11 @@ jobs:
           max_attempts: 3
           timeout_minutes: 30
           retry_wait_seconds: 60
-          command: docker run --mount type=bind,source=$PWD,target=/opt/aim quay.io/pypa/${{ matrix.manylinux-version }} bash /opt/aim/docker/build-wheels.sh
+          command:
+            docker run
+            --mount type=bind,source=${PWD},target=/opt/aim
+            --mount type=bind,source=${PWD}/.github/workflow_files/docker,target=/opt/docker
+            quay.io/pypa/${{ matrix.manylinux-version }} bash /opt/docker/build-wheels.sh
 
 
       - name: Publish wheels
@@ -118,11 +122,10 @@ jobs:
 
       - name: Build & Push aim image
         if: matrix.manylinux-version == 'manylinux_2_24_x86_64'
-        working-directory: ./docker
         env:
           AIM_VERSION: ${{ steps.capture-version.outputs.AIM_VERSION }}
           UPDATE_TAG: ${{ inputs.branch || 'latest' }}
-        run: . create-docker-image.sh
+        run: . ./.github/workflow_files/create-docker-image.sh
 
   macos-dist:
     if: ${{ github.event_name == 'schedule' || github.actor == 'gorarakelyan' || github.actor == 'alberttorosyan' || github.actor == 'roubkar' }}
