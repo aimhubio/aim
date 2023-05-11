@@ -2,31 +2,21 @@ import React from 'react';
 import _ from 'lodash-es';
 
 import Editor from '@monaco-editor/react';
-import { IconCaretDown, IconPencil } from '@tabler/icons-react';
+import { IconPencil } from '@tabler/icons-react';
 
 import { Spinner } from 'components/kit';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 import ResizingFallback from 'components/ResizingFallback';
-import {
-  Box,
-  Button,
-  Link,
-  Tabs,
-  Breadcrumb,
-  IconButton,
-  Text,
-} from 'components/kit_v2';
-import ResizeElement, {
-  ResizableElement,
-  ResizableSideEnum,
-} from 'components/ResizeElement';
+import { Box, Button, Link, Tabs, Breadcrumb } from 'components/kit_v2';
 
 import { PathEnum } from 'config/enums/routesEnum';
 import { TopBar } from 'config/stitches/foundations/layout';
 
 import usePyodide from 'services/pyodide/usePyodide';
+
+import { getItem } from 'utils/storage';
 
 import pyodideEngine from '../../services/pyodide/store';
 
@@ -37,13 +27,13 @@ import BoardLeavingGuard from './components/BoardLeavingGuard';
 import {
   BoardBlockTab,
   BoardComponentsViz,
-  BoardConsole,
   BoardSpinner,
   BoardVisualizerComponentsPane,
   BoardVisualizerContainer,
   BoardVisualizerEditorPane,
   BoardVisualizerPane,
 } from './Board.style';
+import BoardConsole from './components/BoardConsole';
 
 function Board({
   data,
@@ -59,7 +49,6 @@ function Board({
   const editorRef = React.useRef<any>(null);
   const vizContainer = React.useRef<any>(null);
   const boxContainer = React.useRef<any>(null);
-  let resizeElementRef = React.useRef<any>(null);
   const setEditorValue = useBoardStore((state) => state.setEditorValue);
   const destroyBoardStore = useBoardStore((state) => state.destroy);
 
@@ -222,10 +211,12 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
       destroyBoardStore();
     };
   }, [boardId]);
+
   function handleEditorMount(editor: any) {
     editorRef.current = editor;
     editorRef.current?.onKeyDown(onKeyDown);
   }
+
   function onKeyDown() {
     const updateEditorValue = _.debounce(() => {
       setEditorValue(editorRef.current?.getValue());
@@ -234,28 +225,9 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
     updateEditorValue();
   }
 
-  const onResizeEnd = React.useCallback(
-    (resizeElement) => {
-      boxContainer.current.classList.remove('ScrollBar__hidden');
-      vizContainer.current.style.marginBottom = `${resizeElement.current?.offsetHeight}px`;
-    },
-    [boxContainer],
-  );
-
-  const onResizeStart = React.useCallback(() => {
-    boxContainer.current.classList.add('ScrollBar__hidden');
-  }, [boxContainer]);
-
-  function handleOpenConsole() {
-    const height = resizeElementRef.current.offsetHeight;
-    // console.log(height);
-    if (height >= 80) {
-      resizeElementRef.current.style.height = '30px';
-      vizContainer.current.style.marginBottom = '30px';
-    } else {
-      resizeElementRef.current.style.height = '400px';
-      vizContainer.current.style.marginBottom = '400px';
-    }
+  function getResizeElementSize() {
+    const sizes = JSON.parse(getItem('board-ResizeElement')!);
+    return sizes?.height || '200px';
   }
 
   const tree = constructTree(
@@ -358,6 +330,7 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
                     <Box height='100%' css={{ overflow: 'auto' }}>
                       <BoardComponentsViz
                         ref={vizContainer}
+                        style={{ marginBottom: getResizeElementSize() }}
                         key={`${state.isProcessing}`}
                       >
                         {state.error ? (
@@ -374,47 +347,17 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
                         )}
                       </BoardComponentsViz>
                     </Box>
-                    <div ref={boxContainer}>
-                      <ResizeElement
-                        id={'board-ResizeElement'}
-                        side={ResizableSideEnum.TOP}
-                        snapOffset={50}
-                        useLocalStorage={true}
-                        onMount={(resizeElement) => {
-                          resizeElementRef = resizeElement;
-                        }}
-                        initialSizes={{
-                          height: 200,
-                          maxHeight: 400,
-                          width: 100000,
-                          maxWidth: 100000,
-                        }}
-                        onResizeEnd={onResizeEnd}
-                        onResizeStart={onResizeStart}
-                      >
-                        <ResizableElement>
-                          <Box
-                            p='$2 $5'
-                            display='flex'
-                            ai='center'
-                            jc='space-between'
-                          >
-                            <Text size='$3' mono>
-                              Console
-                            </Text>
-                            <IconButton
-                              variant='static'
-                              color='secondary'
-                              size='xs'
-                              onClick={handleOpenConsole}
-                              icon={<IconCaretDown />}
-                            />
-                          </Box>
-                          <BoardConsole id='console' />
-                        </ResizableElement>
-                      </ResizeElement>
-                      <BoardLeavingGuard data={data.code} />
-                    </div>
+                    {state.isProcessing !== null && (
+                      <div ref={boxContainer}>
+                        <BoardConsole
+                          key={'board-console'}
+                          boxContainer={boxContainer}
+                          vizContainer={vizContainer}
+                        />
+                      </div>
+                    )}
+
+                    <BoardLeavingGuard data={data.code} />
                   </>
                 ) : (
                   <BoardComponentsViz

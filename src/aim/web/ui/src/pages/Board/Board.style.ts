@@ -48,9 +48,10 @@ const BoardVisualizerComponentsPane = styled(SplitPaneItem, {
   '.ResizeElement': {
     position: 'absolute',
     bottom: 0,
+    zIndex: 1,
     bc: '#fff',
-    minHeight: '100px',
-    width: '100%',
+    minHeight: '$3',
+    width: '100% !important',
   },
   '.ResizeElement__gutter__top': {
     bs: 'inset 0 1px 0 0 $colors$border30',
@@ -98,14 +99,14 @@ const BoardVisualizerComponentsPane = styled(SplitPaneItem, {
     fd: 'row',
     width: '100%',
     jc: 'center',
-    gap: '$5',
+    gap: '$9',
     fw: 'wrap',
   },
   '.block--column': {
     display: 'inline-flex',
     fd: 'column',
     flex: 1,
-    gap: '$5',
+    gap: '$9',
     jc: 'center',
   },
   variants: {
@@ -130,7 +131,7 @@ const BoardVisualizerComponentsPane = styled(SplitPaneItem, {
   },
 });
 
-const BoardConsole = styled('pre', {
+const BoardConsoleElement = styled('pre', {
   fontMono: 14,
   p: '$5',
   overflow: 'auto',
@@ -182,7 +183,7 @@ export {
   BoardVisualizerEditorPane,
   BoardComponentsViz,
   BoardVisualizerComponentsPane,
-  BoardConsole,
+  BoardConsoleElement,
   BoardBlockTab,
   BoardSpinner,
 };
