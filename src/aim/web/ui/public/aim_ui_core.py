@@ -692,7 +692,7 @@ class RunNotes(Component):
 
 
 class Slider(Component):
-    def __init__(self, min, max, value, key=None, block=None):
+    def __init__(self, label, min, max, value, step=None, disabled=None, key=None, block=None):
         component_type = "Slider"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
@@ -700,9 +700,12 @@ class Slider(Component):
         self.data = value
 
         self.options = {
+            "value": self.value,
+            "label": label,
             "min": min,
             "max": max,
-            "value": self.value
+            "step": self._get_step(self.data, step),
+            "disabled": disabled,
         }
 
         self.callbacks = {
@@ -711,15 +714,63 @@ class Slider(Component):
 
         self.render()
 
+    def _get_step(self, initial_value, step):
+        if(step):
+            return step
+        elif isinstance(initial_value, int):
+            return 1
+        elif isinstance(initial_value, float):
+            return 0.01
+        else:
+            return None
+
     @property
     def value(self):
         return self.state["value"][0] if "value" in self.state else self.data
 
     async def on_change(self, val):
-        self.set_state({
-            "value": val.to_py()
-        })
+        self.set_state({ "value": val.to_py() })
 
+class RangeSlider(Component):
+    def __init__(self, label, min, max, value, step=None, disabled=None, key=None, block=None):
+        component_type = "RangeSlider"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type, block)
+
+        self.data = sorted(value, key=int)
+
+        self.options = {
+            "value": self.value,
+            "label": label,
+            "min": min,
+            "max": max,
+            "disabled": disabled,
+            "step": self._get_step(self.data, step),
+        }
+
+        self.callbacks = {
+            "on_change": self.on_change
+        }
+
+        self.render()
+
+    def _get_step(self, initial_range, step):
+        if(step):
+            return step
+        elif all(isinstance(n, int) for n in initial_range):
+            return 1
+        elif any(isinstance(n, float) for n in initial_range):
+            return 0.01
+        else:
+            return None
+
+    @property
+    def value(self):
+        value_state = self.state["value"] if "value" in self.state else self.data
+        return tuple(value_state)
+
+    async def on_change(self, val):
+        self.set_state({ "value": tuple(val.to_py()) })
 
 class TextInput(Component):
     def __init__(self, value, key=None, block=None):
@@ -747,7 +798,7 @@ class TextInput(Component):
         self.set_state({ "value": val })
 
 class NumberInput(Component):
-    def __init__(self, value, label=None, min_value=None, max_value=None, step=None, disabled=None, key=None, block=None):
+    def __init__(self, label, value, min=None, max=None, step=None, disabled=None, key=None, block=None):
         component_type = "NumberInput"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
@@ -757,8 +808,8 @@ class NumberInput(Component):
         self.options = {
             "value": self.value,
             "label": label,
-            "min": min_value,
-            "max": max_value,
+            "min": min,
+            "max": max,
             "step": self._get_step(self.value, step),
             "disabled": disabled
         }
@@ -1051,6 +1102,10 @@ class UI:
     def slider(self, *args, **kwargs):
         slider = Slider(*args, **kwargs, block=self.block_context)
         return slider.value
+
+    def range_slider(self, *args, **kwargs):
+        range_slider = RangeSlider(*args, **kwargs, block=self.block_context)
+        return range_slider.value
 
     def radio(self, *args, **kwargs):
         radio = Radio(*args, **kwargs, block=self.block_context)

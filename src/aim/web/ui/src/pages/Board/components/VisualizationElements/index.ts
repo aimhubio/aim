@@ -90,6 +90,12 @@ const SliderVizElement = React.lazy(
       /* webpackPrefetch: true, webpackChunkName: "Slider" */ './SliderVizElement'
     ),
 );
+const RangeSliderVizElement = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "RangeSlider" */ './RangeSliderVizElement'
+    ),
+);
 const TextInputVizElement = React.lazy(
   () =>
     import(
@@ -132,14 +138,12 @@ const LinkVizElement = React.lazy(
       /* webpackPrefetch: true, webpackChunkName: "Link" */ './LinkVizElement'
     ),
 );
-
 const CheckboxVizElement = React.lazy(
   () =>
     import(
       /* webpackPrefetch: true, webpackChunkName: "Checkbox" */ './CheckboxVizElement'
     ),
 );
-
 const ToggleButtonVizElement = React.lazy(
   () =>
     import(
@@ -164,6 +168,7 @@ export type VizElementKey =
   | 'RunNotes'
   | 'Plotly'
   | 'Slider'
+  | 'RangeSlider'
   | 'TextInput'
   | 'NumberInput'
   | 'Button'
@@ -181,6 +186,7 @@ const VizElementsMap: Record<VizElementKey, React.FunctionComponent<any>> = {
   Switch: SwitchVizElement,
   TextArea: TextAreaVizElement,
   Slider: SliderVizElement,
+  RangeSlider: RangeSliderVizElement,
   Select: SelectVizElement,
   Radio: RadioVizElement,
   Checkbox: CheckboxVizElement,
