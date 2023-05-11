@@ -8,7 +8,6 @@ import { Spinner } from 'components/kit';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
-import SplitPane, { SplitPaneItem } from 'components/SplitPane';
 import ResizingFallback from 'components/ResizingFallback';
 import {
   Box,
@@ -36,15 +35,15 @@ import GridCell from './components/GridCell';
 import useBoardStore from './BoardSore';
 import BoardLeavingGuard from './components/BoardLeavingGuard';
 import {
+  BoardBlockTab,
   BoardComponentsViz,
   BoardConsole,
+  BoardSpinner,
   BoardVisualizerComponentsPane,
   BoardVisualizerContainer,
   BoardVisualizerEditorPane,
   BoardVisualizerPane,
 } from './Board.style';
-
-import './Board.scss';
 
 function Board({
   data,
@@ -350,9 +349,9 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
                 fullWidth={!editMode && !newMode}
               >
                 {state.isProcessing !== false && (
-                  <div className='BoardVisualizer__main__components__spinner'>
+                  <BoardSpinner className='BoardVisualizer__main__components__spinner'>
                     <Spinner />
-                  </div>
+                  </BoardSpinner>
                 )}
                 {newMode || editMode ? (
                   <>
@@ -414,6 +413,7 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
                           <BoardConsole id='console' />
                         </ResizableElement>
                       </ResizeElement>
+                      <BoardLeavingGuard data={data.code} />
                     </div>
                   </>
                 ) : (
@@ -512,16 +512,16 @@ function renderTree(tree: any, elements: any) {
           label: tab.data,
           value: tab.data,
           content: (
-            <div key={element.type + i} className={'block--tab'}>
+            <BoardBlockTab key={element.type + i} className={'block--tab'}>
               {renderTree(tree, tree[tab.id].elements)}
-            </div>
+            </BoardBlockTab>
           ),
         });
       }
       return (
-        <div key={element.type + i} className={'block--tabs'}>
+        <Box width='100%' key={element.type + i} className={'block--tabs'}>
           <Tabs tabs={tabs} />
-        </div>
+        </Box>
       );
     }
     if (element.type === 'tab') {

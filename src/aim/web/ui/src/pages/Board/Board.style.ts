@@ -30,6 +30,16 @@ const BoardVisualizerEditorPane = styled(SplitPaneItem, {
   position: 'relative',
 });
 
+const BoardSpinner = styled('div', {
+  position: 'absolute',
+  width: '100%',
+  height: '100%',
+  zIndex: 2,
+  display: 'flex',
+  ai: 'center',
+  jc: 'center',
+});
+
 const BoardVisualizerComponentsPane = styled(SplitPaneItem, {
   position: 'relative',
   flex: 1,
@@ -44,6 +54,59 @@ const BoardVisualizerComponentsPane = styled(SplitPaneItem, {
   },
   '.ResizeElement__gutter__top': {
     bs: 'inset 0 1px 0 0 $colors$border30',
+  },
+  '.BoxVirtualizer': {
+    position: 'relative',
+    width: '100%',
+    height: '100%',
+    overflow: 'hidden',
+    background: '#f7f7f7',
+    border: '1px solid $border30',
+  },
+  '.BoxVirtualizer__placeholder': {
+    position: 'absolute',
+    top: '0px',
+    left: '0px',
+    width: '200px',
+    height: '30px',
+    backgroundColor: '#fff',
+    borderBottom: '1px solid $border30',
+    border: '1px solid $border30',
+    zIndex: 3,
+  },
+  '.BoxVirtualizer__container': {
+    width: '100%',
+    height: '100%',
+    position: 'relative',
+    overflow: 'auto',
+  },
+  '.BoxVirtualizer__grid': {
+    display: 'inline',
+    overflow: 'hidden',
+  },
+  '.BoxVirtualizer__container__verticalRuler': {
+    position: 'sticky',
+    top: '0px',
+    height: '30px',
+    minWidth: '100%',
+    border: '1px solid $border30',
+    backgroundColor: '#fff',
+    zIndex: 2,
+  },
+  '.block--row': {
+    display: 'flex',
+    fd: 'row',
+    width: '100%',
+    jc: 'center',
+    gap: '$5',
+    fw: 'wrap',
+  },
+  '.block--column': {
+    display: 'inline-flex',
+    fd: 'column',
+    flex: 1,
+    gap: '$5',
+    jc: 'center',
   },
   variants: {
     loading: {
@@ -86,7 +149,7 @@ const BoardComponentsViz = styled('div', {
   bc: '#fff',
   gap: '$13',
   height: '100%',
-  padding: '$9',
+  p: '$9',
   '.VizComponentContainer': {
     width: '100%',
     height: '100%',
@@ -94,15 +157,23 @@ const BoardComponentsViz = styled('div', {
     ai: 'center',
     gap: '$9',
     jc: 'center',
-    padding: '$5',
+    p: '$5',
+    border: '1px solid $border30',
     br: '$3',
     '.RunLogRecords': {
-      padding: 0,
+      p: 0,
     },
     '&__contentWrapper': {
       border: 'none',
     },
   },
+});
+
+const BoardBlockTab = styled('div', {
+  width: '100%',
+  height: 'calc(500px + 2 * $5)',
+  p: '$5',
+  overflow: 'auto',
 });
 
 export {
@@ -112,4 +183,6 @@ export {
   BoardComponentsViz,
   BoardVisualizerComponentsPane,
   BoardConsole,
+  BoardBlockTab,
+  BoardSpinner,
 };
