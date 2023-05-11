@@ -55,7 +55,7 @@ const ImagesExplore = React.lazy(
       /* webpackChunkName: "images" */ 'pages/Explorers/ImagesExplore/ImagesExplore'
     ),
 );
-const FiguresExplore = React.lazy(
+const FiguresExplorer = React.lazy(
   () =>
     import(/* webpackChunkName: "figures" */ 'pages/Explorers/FiguresExplorer'),
 );
@@ -195,7 +195,7 @@ export const explorersRoutes: { [key: string]: IRoute } = {
   },
   FIGURES_EXPLORER: {
     path: PathEnum.Figures_Explorer,
-    component: FiguresExplore,
+    component: FiguresExplorer,
     showInSidebar: false,
     icon: 'figures',
     displayName: 'Figures',

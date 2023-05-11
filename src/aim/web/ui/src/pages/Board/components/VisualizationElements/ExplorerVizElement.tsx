@@ -3,8 +3,9 @@ import * as React from 'react';
 import renderer from 'modules/BaseExplorer';
 
 import { metricsExplorerConfig } from 'pages/Explorers/MetricsExplorer';
-
-import routes from 'routes/routes';
+import { figuresExplorerConfig } from 'pages/Explorers/FiguresExplorer';
+import { audiosExplorerConfig } from 'pages/Explorers/AudiosExplorer';
+import { textExplorerConfig } from 'pages/Explorers/TextExplorer';
 
 function ExplorerVizElement(props: any) {
   const state = {
@@ -21,11 +22,10 @@ function ExplorerVizElement(props: any) {
       },
     },
   };
+
   const Component = ExplorersMap[props.data?.toLowerCase()](state);
 
   Component.setState(state);
-
-  React.useEffect(() => {}, [props.options.query]);
 
   return Component ? (
     <div
@@ -44,9 +44,24 @@ const ExplorersMap: Record<string, any> = {
       persist: false,
       initialState: state,
     }),
-  figures: () => routes.FIGURES_EXPLORER.component,
-  audios: () => routes.AUDIOS_EXPLORER.component,
-  texts: () => routes.TEXT_EXPLORER.component,
+  figures: (state: Record<string, any>) =>
+    renderer({
+      ...figuresExplorerConfig,
+      persist: false,
+      initialState: state,
+    }),
+  audios: (state: Record<string, any>) =>
+    renderer({
+      ...audiosExplorerConfig,
+      persist: false,
+      initialState: state,
+    }),
+  texts: (state: Record<string, any>) =>
+    renderer({
+      ...textExplorerConfig,
+      persist: false,
+      initialState: state,
+    }),
 };
 
 export default ExplorerVizElement;
