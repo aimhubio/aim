@@ -744,9 +744,47 @@ class TextInput(Component):
         return self.state["value"] if "value" in self.state else self.data
 
     async def on_change(self, val):
-        self.set_state({
-            "value": val
-        })
+        self.set_state({ "value": val })
+
+class NumberInput(Component):
+    def __init__(self, value, label=None, min_value=None, max_value=None, step=None, disabled=None, key=None, block=None):
+        component_type = "NumberInput"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type, block)
+
+        self.data = value
+
+        self.options = {
+            "value": self.value,
+            "label": label,
+            "min": min_value,
+            "max": max_value,
+            "step": self._get_step(self.value, step),
+            "disabled": disabled
+        }
+
+        self.callbacks = {
+            "on_change": self.on_change
+        }
+
+        self.render()
+
+    def _get_step(self, value, step):
+        if(step):
+            return step
+        elif isinstance(value, int):
+            return 1
+        elif isinstance(value, float):
+            return 0.01
+        else:
+            return None
+
+    @property
+    def value(self):
+        return self.state["value"] if "value" in self.state else self.data
+
+    async def on_change(self, val):
+        self.set_state({ "value": val })
 
 
 class Select(Component):
@@ -992,6 +1030,10 @@ class UI:
 
     def text_input(self, *args, **kwargs):
         input = TextInput(*args, **kwargs, block=self.block_context)
+        return input.value
+
+    def number_input(self, *args, **kwargs):
+        input = NumberInput(*args, **kwargs, block=self.block_context)
         return input.value
 
     def text_area(self, *args, **kwargs):
