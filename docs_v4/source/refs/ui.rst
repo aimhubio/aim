@@ -9,73 +9,119 @@ Explore the components and its interface to learn more on how to build awesome o
 
 Sections:
 
-* :ref:`Text`
-* Data display
-* Charts
-* Media
-* Inputs
-* Layouts
-* Explorers
+- :ref:`Text<text>`
+- :ref:`Data display<data-display>`
+- :ref:`Charts<charts>`
+- :ref:`Media<media>`
+- :ref:`Inputs<inputs>`
+- :ref:`Layouts<layouts>`
+- :ref:`Explorers<explorers>`
+
+
+
+.. toctree::
+  :maxdepth: 2
+  :hidden:
+
+  ./ui/text.rst
+
+.. _text:
 
 Text
-=====================
+====
 
 Simple text
----------------------
+------------
 
-`ui.text`
+.. code-block:: python
 
-Displays simple text
+   ui.text("text")
 
+Displays simple text.
+
+`Learn more <./ui/text.html>`_
 
 Headers
----------------------
+-------
 
-`ui.header1`
-`ui.header2`
-`ui.header3`
+.. code-block:: python
 
-Headers like in markdown
+   ui.header()
+   ui.subheader()
 
+Headers like in markdown - large and medium.
 
 Titles
----------------------
+------
 
-`ui.title`
-`ui.subtitle`
+.. code-block:: python
 
-Page title and subtitle
+   ui.title()
+   ui.subtitle()
 
+Page title and subtitle.
+
+.. _data-display:
 
 Data display
-======================
+============
 
 Table
-----------------------
+-----
 
-Basic table visualization
+.. code-block:: python
 
-`ui.table()`
+   ui.table()
 
+Basic table visualization.
 
 JSON
-----------------------
+----
 
-JSON visualization
+.. code-block:: python
 
-`ui.json()`
+   ui.json()
 
+JSON visualization.
+
+.. _charts:
 
 Charts
-======================
-
+======
 
 Plotly
-----------------------
+------
 
-Plotly visualization
+.. code-block:: python
 
-`ui.plotly`
+   ui.plotly()
 
-etc
+Plotly visualization.
 
+.. _media:
+
+Media
+=====
+
+Media
+
+.. _inputs:
+
+Inputs
+======
+
+Inputs
+
+.. _layouts:
+
+Layouts
+=======
+
+Layouts
+
+.. _explorers:
+
+Explorers
+========
+
+Explorers
