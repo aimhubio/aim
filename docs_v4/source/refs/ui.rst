@@ -17,8 +17,6 @@ Sections:
 - :ref:`Layouts<layouts>`
 - :ref:`Explorers<explorers>`
 
-
-
 .. toctree::
   :maxdepth: 2
   :hidden:
