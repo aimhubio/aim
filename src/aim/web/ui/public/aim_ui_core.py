@@ -718,7 +718,8 @@ class Slider(Component):
         return self.state["value"][0] if "value" in self.state else self.data
 
     async def on_change(self, val):
-        self.set_state({ "value": val.to_py() })
+        self.set_state({"value": val.to_py()})
+
 
 class RangeSlider(Component):
     def __init__(self, label, min, max, value, step=None, disabled=None, key=None, block=None):
@@ -759,7 +760,8 @@ class RangeSlider(Component):
         return tuple(value_state)
 
     async def on_change(self, val):
-        self.set_state({ "value": tuple(val.to_py()) })
+        self.set_state({"value": tuple(val.to_py())})
+
 
 class TextInput(Component):
     def __init__(self, value, key=None, block=None):
@@ -1058,6 +1060,11 @@ class Header(TypographyComponent):
         super().__init__(text, "Header", key, block)
 
 
+class SubHeader(TypographyComponent):
+    def __init__(self, text, key=None, block=None):
+        super().__init__(text, "SubHeader", key, block)
+
+
 class UI:
     def __init__(self):
         self.block_context = None
@@ -1157,6 +1164,10 @@ class UI:
     def header(self, *args, **kwargs):
         header = Header(*args, **kwargs, block=self.block_context)
         return header
+
+    def subheader(self, *args, **kwargs):
+        subheader = SubHeader(*args, **kwargs, block=self.block_context)
+        return subheader
 
     # Aim sequence viz components
     def line_chart(self, *args, **kwargs):
