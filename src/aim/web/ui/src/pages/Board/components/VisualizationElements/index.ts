@@ -151,6 +151,13 @@ const ToggleButtonVizElement = React.lazy(
     ),
 );
 
+const HeaderVizElement = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "Header" */ './HeaderVizElement'
+    ),
+);
+
 export type VizElementKey =
   | 'LineChart'
   | 'DataFrame'
@@ -176,7 +183,8 @@ export type VizElementKey =
   | 'TextArea'
   | 'Radio'
   | 'Checkbox'
-  | 'ToggleButton';
+  | 'ToggleButton'
+  | 'Header';
 
 const VizElementsMap: Record<VizElementKey, React.FunctionComponent<any>> = {
   // input elements
@@ -199,6 +207,7 @@ const VizElementsMap: Record<VizElementKey, React.FunctionComponent<any>> = {
   HTML: HTMLVizElement,
   Text: TextVizElement,
   Link: LinkVizElement,
+  Header: HeaderVizElement,
 
   // Aim sequence viz components
   LineChart: LineChartVizElement,
