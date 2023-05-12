@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { Text } from 'components/kit_v2';
 
-function TextVizElement(props: any) {
-  return <Text>{props.data}</Text>;
+function TextVizElement({ data }: { data: string }) {
+  return <Text as='p'>{data}</Text>;
 }
 export default TextVizElement;

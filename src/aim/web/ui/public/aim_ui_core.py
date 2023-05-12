@@ -624,17 +624,6 @@ class HTML(Component):
         self.render()
 
 
-class Text(Component):
-    def __init__(self, data, key=None, block=None):
-        component_type = "Text"
-        component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type, block)
-
-        self.data = data
-
-        self.render()
-
-
 class Link(Component):
     def __init__(self, text, to, new_tab=False, key=None, block=None):
         component_type = "Link"
@@ -744,7 +733,8 @@ class TextInput(Component):
         return self.state["value"] if "value" in self.state else self.data
 
     async def on_change(self, val):
-        self.set_state({ "value": val })
+        self.set_state({"value": val})
+
 
 class NumberInput(Component):
     def __init__(self, value, label=None, min_value=None, max_value=None, step=None, disabled=None, key=None, block=None):
@@ -784,7 +774,7 @@ class NumberInput(Component):
         return self.state["value"] if "value" in self.state else self.data
 
     async def on_change(self, val):
-        self.set_state({ "value": val })
+        self.set_state({"value": val})
 
 
 class Select(Component):
@@ -997,6 +987,26 @@ class ToggleButton(Component):
         self.set_state({"value": val})
 
 
+class TypographyComponent(Component):
+    def __init__(self, text, component_type, key=None, block=None):
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type, block)
+
+        self.data = text
+
+        self.render()
+
+
+class Text(TypographyComponent):
+    def __init__(self, text, key=None, block=None):
+        super().__init__(text, "Text", key, block)
+
+
+class Header(TypographyComponent):
+    def __init__(self, text, key=None, block=None):
+        super().__init__(text, "Header", key, block)
+
+
 class UI:
     def __init__(self):
         self.block_context = None
@@ -1088,6 +1098,10 @@ class UI:
     def link(self, *args, **kwargs):
         link = Link(*args, **kwargs, block=self.block_context)
         return link
+
+    def header(self, *args, **kwargs):
+        header = Header(*args, **kwargs, block=self.block_context)
+        return header
 
     # Aim sequence viz components
     def line_chart(self, *args, **kwargs):
