@@ -624,6 +624,25 @@ class HTML(Component):
         self.render()
 
 
+class Text(Component):
+    def __init__(self, data, component=None, size=None, weight=None, color=None, mono=None, key=None, block=None):
+        component_type = "Text"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type, block)
+
+        self.data = data
+
+        self.options = {
+            "component": component,
+            "size": size,
+            "weight": weight,
+            "color": color,
+            "mono": mono
+        }
+
+        self.render()
+
+
 class Link(Component):
     def __init__(self, text, to, new_tab=False, key=None, block=None):
         component_type = "Link"
@@ -1041,28 +1060,32 @@ class ToggleButton(Component):
 
 
 class TypographyComponent(Component):
-    def __init__(self, text, component_type, key=None, block=None):
+    def __init__(self, text, component_type, options=None, key=None, block=None):
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
 
         self.data = text
+        self.options = options
 
         self.render()
 
 
-class Text(TypographyComponent):
-    def __init__(self, text, key=None, block=None):
-        super().__init__(text, "Text", key, block)
-
-
 class Header(TypographyComponent):
     def __init__(self, text, key=None, block=None):
-        super().__init__(text, "Header", key, block)
+        options = {
+            "component": "h2",
+            "size": "$9"
+        }
+        super().__init__(text, "Header", options, key, block)
 
 
 class SubHeader(TypographyComponent):
     def __init__(self, text, key=None, block=None):
-        super().__init__(text, "SubHeader", key, block)
+        options = {
+            "component": "h3",
+            "size": "$6"
+        }
+        super().__init__(text, "SubHeader", options, key, block)
 
 
 class UI:

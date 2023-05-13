@@ -151,20 +151,6 @@ const ToggleButtonVizElement = React.lazy(
     ),
 );
 
-const HeaderVizElement = React.lazy(
-  () =>
-    import(
-      /* webpackPrefetch: true, webpackChunkName: "Header" */ './HeaderVizElement'
-    ),
-);
-
-const SubHeaderVizElement = React.lazy(
-  () =>
-    import(
-      /* webpackPrefetch: true, webpackChunkName: "SubHeader" */ './SubHeaderVizElement'
-    ),
-);
-
 export type VizElementKey =
   | 'LineChart'
   | 'DataFrame'
@@ -215,8 +201,8 @@ const VizElementsMap: Record<VizElementKey, React.FunctionComponent<any>> = {
   HTML: HTMLVizElement,
   Text: TextVizElement,
   Link: LinkVizElement,
-  Header: HeaderVizElement,
-  SubHeader: SubHeaderVizElement,
+  Header: TextVizElement,
+  SubHeader: TextVizElement,
 
   // Aim sequence viz components
   LineChart: LineChartVizElement,
