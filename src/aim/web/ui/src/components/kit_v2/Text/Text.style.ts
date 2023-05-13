@@ -8,6 +8,13 @@ const StyledSlot: any = styled(Slot, {
     ellipsis: {
       true: textEllipsis,
     },
+    disabled: {
+      true: {
+        cursor: 'not-allowed',
+        pointerEvents: 'none',
+        color: '$secondary30',
+      },
+    },
   },
 });
 

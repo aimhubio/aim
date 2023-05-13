@@ -700,7 +700,7 @@ class RunNotes(Component):
 
 
 class Slider(Component):
-    def __init__(self, min, max, value, key=None, block=None):
+    def __init__(self, label, min, max, value, step=None, disabled=None, key=None, block=None):
         component_type = "Slider"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
@@ -708,9 +708,12 @@ class Slider(Component):
         self.data = value
 
         self.options = {
+            "value": self.value,
+            "label": label,
             "min": min,
             "max": max,
-            "value": self.value
+            "step": self._get_step(self.data, step),
+            "disabled": disabled,
         }
 
         self.callbacks = {
@@ -719,14 +722,64 @@ class Slider(Component):
 
         self.render()
 
+    def _get_step(self, initial_value, step):
+        if(step):
+            return step
+        elif isinstance(initial_value, int):
+            return 1
+        elif isinstance(initial_value, float):
+            return 0.01
+        else:
+            return None
+
     @property
     def value(self):
         return self.state["value"][0] if "value" in self.state else self.data
 
     async def on_change(self, val):
-        self.set_state({
-            "value": val.to_py()
-        })
+        self.set_state({"value": val.to_py()})
+
+
+class RangeSlider(Component):
+    def __init__(self, label, min, max, value, step=None, disabled=None, key=None, block=None):
+        component_type = "RangeSlider"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type, block)
+
+        self.data = sorted(value, key=int)
+
+        self.options = {
+            "value": self.value,
+            "label": label,
+            "min": min,
+            "max": max,
+            "disabled": disabled,
+            "step": self._get_step(self.data, step),
+        }
+
+        self.callbacks = {
+            "on_change": self.on_change
+        }
+
+        self.render()
+
+    def _get_step(self, initial_range, step):
+        if(step):
+            return step
+        elif all(isinstance(n, int) for n in initial_range):
+            return 1
+        elif any(isinstance(n, float) for n in initial_range):
+            return 0.01
+        else:
+            return None
+
+    @property
+    def value(self):
+        value_state = self.state["value"] if "value" in self.state else self.data
+        return tuple(value_state)
+
+    async def on_change(self, val):
+        self.set_state({"value": tuple(val.to_py())})
 
 
 class TextInput(Component):
@@ -752,9 +805,48 @@ class TextInput(Component):
         return self.state["value"] if "value" in self.state else self.data
 
     async def on_change(self, val):
-        self.set_state({
-            "value": val
-        })
+        self.set_state({"value": val})
+
+
+class NumberInput(Component):
+    def __init__(self, label, value, min=None, max=None, step=None, disabled=None, key=None, block=None):
+        component_type = "NumberInput"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type, block)
+
+        self.data = value
+
+        self.options = {
+            "value": self.value,
+            "label": label,
+            "min": min,
+            "max": max,
+            "step": self._get_step(self.value, step),
+            "disabled": disabled
+        }
+
+        self.callbacks = {
+            "on_change": self.on_change
+        }
+
+        self.render()
+
+    def _get_step(self, value, step):
+        if(step):
+            return step
+        elif isinstance(value, int):
+            return 1
+        elif isinstance(value, float):
+            return 0.01
+        else:
+            return None
+
+    @property
+    def value(self):
+        return self.state["value"] if "value" in self.state else self.data
+
+    async def on_change(self, val):
+        self.set_state({"value": val})
 
 
 class Select(Component):
@@ -967,6 +1059,21 @@ class ToggleButton(Component):
         self.set_state({"value": val})
 
 
+class TypographyComponent(Component):
+    def __init__(self, text, component_type, key=None, block=None):
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type, block)
+
+        self.data = text
+
+        self.render()
+
+
+class Header(TypographyComponent):
+    def __init__(self, text, key=None, block=None):
+        super().__init__(text, "Header", key, block)
+
+
 class UI:
     def __init__(self):
         self.block_context = None
@@ -1002,6 +1109,10 @@ class UI:
         input = TextInput(*args, **kwargs, block=self.block_context)
         return input.value
 
+    def number_input(self, *args, **kwargs):
+        input = NumberInput(*args, **kwargs, block=self.block_context)
+        return input.value
+
     def text_area(self, *args, **kwargs):
         textarea = TextArea(*args, **kwargs, block=self.block_context)
         return textarea.value
@@ -1017,6 +1128,10 @@ class UI:
     def slider(self, *args, **kwargs):
         slider = Slider(*args, **kwargs, block=self.block_context)
         return slider.value
+
+    def range_slider(self, *args, **kwargs):
+        range_slider = RangeSlider(*args, **kwargs, block=self.block_context)
+        return range_slider.value
 
     def radio(self, *args, **kwargs):
         radio = Radio(*args, **kwargs, block=self.block_context)
@@ -1054,6 +1169,10 @@ class UI:
     def link(self, *args, **kwargs):
         link = Link(*args, **kwargs, block=self.block_context)
         return link
+
+    def header(self, *args, **kwargs):
+        header = Header(*args, **kwargs, block=self.block_context)
+        return header
 
     # Aim sequence viz components
     def line_chart(self, *args, **kwargs):

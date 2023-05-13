@@ -90,10 +90,22 @@ const SliderVizElement = React.lazy(
       /* webpackPrefetch: true, webpackChunkName: "Slider" */ './SliderVizElement'
     ),
 );
+const RangeSliderVizElement = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "RangeSlider" */ './RangeSliderVizElement'
+    ),
+);
 const TextInputVizElement = React.lazy(
   () =>
     import(
       /* webpackPrefetch: true, webpackChunkName: "TextInput" */ './TextInputVizElement'
+    ),
+);
+const NumberInputVizElement = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "NumberInput" */ './NumberInputVizElement'
     ),
 );
 const ButtonVizElement = React.lazy(
@@ -126,18 +138,23 @@ const LinkVizElement = React.lazy(
       /* webpackPrefetch: true, webpackChunkName: "Link" */ './LinkVizElement'
     ),
 );
-
 const CheckboxVizElement = React.lazy(
   () =>
     import(
       /* webpackPrefetch: true, webpackChunkName: "Checkbox" */ './CheckboxVizElement'
     ),
 );
-
 const ToggleButtonVizElement = React.lazy(
   () =>
     import(
       /* webpackPrefetch: true, webpackChunkName: "ToggleButton" */ './ToggleButtonVizElement'
+    ),
+);
+
+const HeaderVizElement = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "Header" */ './HeaderVizElement'
     ),
 );
 
@@ -158,21 +175,26 @@ export type VizElementKey =
   | 'RunNotes'
   | 'Plotly'
   | 'Slider'
+  | 'RangeSlider'
   | 'TextInput'
+  | 'NumberInput'
   | 'Button'
   | 'Switch'
   | 'TextArea'
   | 'Radio'
   | 'Checkbox'
-  | 'ToggleButton';
+  | 'ToggleButton'
+  | 'Header';
 
 const VizElementsMap: Record<VizElementKey, React.FunctionComponent<any>> = {
   // input elements
   Button: ButtonVizElement,
   TextInput: TextInputVizElement,
+  NumberInput: NumberInputVizElement,
   Switch: SwitchVizElement,
   TextArea: TextAreaVizElement,
   Slider: SliderVizElement,
+  RangeSlider: RangeSliderVizElement,
   Select: SelectVizElement,
   Radio: RadioVizElement,
   Checkbox: CheckboxVizElement,
@@ -185,6 +207,7 @@ const VizElementsMap: Record<VizElementKey, React.FunctionComponent<any>> = {
   HTML: HTMLVizElement,
   Text: TextVizElement,
   Link: LinkVizElement,
+  Header: HeaderVizElement,
 
   // Aim sequence viz components
   LineChart: LineChartVizElement,

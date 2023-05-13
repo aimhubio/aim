@@ -37,6 +37,7 @@ const Text = React.forwardRef<React.ElementRef<typeof StyledSlot>, ITextProps>(
     return (
       <StyledSlot
         ellipsis={ellipsis}
+        disabled={disabled}
         css={{
           fontSize: size,
           fontWeight: weight,

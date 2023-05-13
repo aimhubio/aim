@@ -85,6 +85,7 @@ export interface ITextProps
    * <Text css={{ color: '$primary' }}>Custom text</Text>
    */
   css?: CSS;
+  htmlFor?: string;
 }
 
 export type typographyType =
@@ -108,4 +109,5 @@ export type typographyType =
   | 's'
   | 'samp'
   | 'sub'
-  | 'sup';
+  | 'sup'
+  | 'label';
