@@ -113,7 +113,8 @@ function Board({
 block_context = {
   "current": 0,
 }
-board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
+board_id = ${boardId === undefined ? 'None' : `"${boardId}"`}
+session_state = state[board_id] if board_id in state else {}
 `;
         const code =
           resetCode +

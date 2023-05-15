@@ -147,6 +147,13 @@ const ToggleButtonVizElement = React.lazy(
     ),
 );
 
+const BoardVizElement = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "BoardEmbed" */ './BoardVizElement'
+    ),
+);
+
 export type VizElementKey =
   | 'LineChart'
   | 'DataFrame'
@@ -171,7 +178,8 @@ export type VizElementKey =
   | 'TextArea'
   | 'Radio'
   | 'Checkbox'
-  | 'ToggleButton';
+  | 'ToggleButton'
+  | 'Board';
 
 const VizElementsMap: Record<VizElementKey, React.FunctionComponent<any>> = {
   // input elements
@@ -205,6 +213,9 @@ const VizElementsMap: Record<VizElementKey, React.FunctionComponent<any>> = {
   RunMessages: RunMessagesVizElement,
   RunLogs: RunLogsVizElement,
   RunNotes: RunNotesVizElement,
+
+  // Super components
+  Board: BoardVizElement,
 };
 
 export default VizElementsMap;

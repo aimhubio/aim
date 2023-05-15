@@ -6,6 +6,7 @@ import {
   IconFlag3,
   IconLayout2,
   IconTable,
+  IconBox,
 } from '@tabler/icons-react';
 
 import { PathEnum } from 'config/enums/routesEnum';
@@ -102,6 +103,10 @@ const Reports = React.lazy(
 
 const Report = React.lazy(
   () => import(/* webpackChunkName: "report" */ 'pages/Report/ReportContainer'),
+);
+
+const App = React.lazy(
+  () => import(/* webpackChunkName: "app" */ 'pages/App/App'),
 );
 
 export interface IRoute {
@@ -257,6 +262,15 @@ const routes: { [key: string]: any } = {
     icon: 'dashboard',
     isExact: true,
     title: pageTitlesEnum.DASHBOARD,
+  },
+  APP: {
+    path: PathEnum.App,
+    component: App,
+    showInSidebar: true,
+    displayName: 'App',
+    icon: <IconBox color='#179299' />,
+    isExact: false,
+    title: pageTitlesEnum.APP,
   },
   RUNS: {
     path: PathEnum.Runs,

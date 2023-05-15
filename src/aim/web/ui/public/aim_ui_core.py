@@ -744,7 +744,8 @@ class TextInput(Component):
         return self.state["value"] if "value" in self.state else self.data
 
     async def on_change(self, val):
-        self.set_state({ "value": val })
+        self.set_state({"value": val})
+
 
 class NumberInput(Component):
     def __init__(self, value, label=None, min_value=None, max_value=None, step=None, disabled=None, key=None, block=None):
@@ -770,7 +771,7 @@ class NumberInput(Component):
         self.render()
 
     def _get_step(self, value, step):
-        if(step):
+        if (step):
             return step
         elif isinstance(value, int):
             return 1
@@ -784,7 +785,7 @@ class NumberInput(Component):
         return self.state["value"] if "value" in self.state else self.data
 
     async def on_change(self, val):
-        self.set_state({ "value": val })
+        self.set_state({"value": val})
 
 
 class Select(Component):
@@ -997,6 +998,53 @@ class ToggleButton(Component):
         self.set_state({"value": val})
 
 
+class TypographyComponent(Component):
+    def __init__(self, text, component_type, options=None, key=None, block=None):
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type, block)
+
+        self.data = text
+        self.options = options
+
+        self.render()
+
+
+class Header(TypographyComponent):
+    def __init__(self, text, key=None, block=None):
+        options = {
+            "component": "h2",
+            "size": "$9"
+        }
+        super().__init__(text, "Header", options, key, block)
+
+
+class SubHeader(TypographyComponent):
+    def __init__(self, text, key=None, block=None):
+        options = {
+            "component": "h3",
+            "size": "$6"
+        }
+        super().__init__(text, "SubHeader", options, key, block)
+
+
+# Super components
+
+class Board(Component):
+    def __init__(self, id=None, state=None, block=None, key=None):
+        component_type = "Board"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type, block)
+
+        self.data = id
+
+        set_state(state or {}, id)
+
+        self.render()
+
+    def get_state(self):
+        return state[self.data] if self.data in state else None
+
+
 class UI:
     def __init__(self):
         self.block_context = None
@@ -1126,6 +1174,12 @@ class UI:
     def run_notes(self, *args, **kwargs):
         run_notes = RunNotes(*args, **kwargs, block=self.block_context)
         return run_notes
+
+    # Super components
+
+    def board(self, *args, **kwargs):
+        board = Board(*args, **kwargs, block=self.block_context)
+        return board
 
 
 class Row(Block, UI):
