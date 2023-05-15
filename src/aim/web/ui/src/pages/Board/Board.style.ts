@@ -5,7 +5,7 @@ import { styled } from 'config/stitches';
 
 const BoardVisualizerContainer = styled(Box, {
   $$topDistance: '28px',
-  height: 'calc(100vh - $$topDistance)',
+  height: 'calc(100% - $$topDistance)',
   width: '100%',
   maxWidth: '100%',
 });
@@ -14,20 +14,18 @@ const BoardVisualizerPane = styled(SplitPane, {
   width: '100%',
   maxWidth: '100%',
   height: '100%',
-  display: 'flex',
   position: 'relative',
+  display: 'flex',
   '.gutter-horizontal': {
     bs: 'inset -1px 0 0 0 $colors$border30 !important',
   },
 });
 
 const BoardVisualizerEditorPane = styled(SplitPaneItem, {
-  width: '100%',
-  maxWidth: '100%',
   height: '100%',
+  position: 'relative',
   display: 'flex',
   fd: 'column',
-  position: 'relative',
 });
 
 const BoardSpinner = styled('div', {
@@ -45,10 +43,38 @@ const BoardVisualizerComponentsPane = styled(SplitPaneItem, {
   flex: 1,
   display: 'flex',
   fd: 'column',
+  '.BoardVisualizer__main__components--fullWidth': {
+    width: '100%',
+  },
+  '.VizComponentContainer': {
+    width: '100%',
+    height: '100%',
+    minHeight: '300px',
+    minWidth: '200px',
+    display: 'flex',
+    ai: 'center',
+    gap: '$9',
+    jc: 'center',
+    p: '$5',
+    border: '1px solid $border30',
+    br: '$3',
+    '.RunLogRecords': {
+      p: 0,
+      '&__contentWrapper': {
+        border: 'none',
+      },
+    },
+    '.RunDetailLogsTabWrapper': {
+      '.RunDetailLogsTab': {
+        borderLeft: 'none',
+        borderRight: 'none',
+      },
+    },
+  },
   '.ResizeElement': {
     position: 'absolute',
     bottom: 0,
-    zIndex: 1,
+    zIndex: 9,
     bc: '#fff',
     minHeight: '$3',
     width: '100% !important',
@@ -63,6 +89,11 @@ const BoardVisualizerComponentsPane = styled(SplitPaneItem, {
     overflow: 'hidden',
     background: '#f7f7f7',
     border: '1px solid $border30',
+    br: '$3',
+    '.VizComponentContainer': {
+      minHeight: 'unset !important',
+      minWidth: 'unset !important',
+    },
   },
   '.BoxVirtualizer__placeholder': {
     position: 'absolute',
@@ -71,8 +102,7 @@ const BoardVisualizerComponentsPane = styled(SplitPaneItem, {
     width: '200px',
     height: '30px',
     backgroundColor: '#fff',
-    borderBottom: '1px solid $border30',
-    border: '1px solid $border30',
+    bs: 'inset -1px -1px 0px 0px #ced1d7',
     zIndex: 3,
   },
   '.BoxVirtualizer__container': {
@@ -85,12 +115,21 @@ const BoardVisualizerComponentsPane = styled(SplitPaneItem, {
     display: 'inline',
     overflow: 'hidden',
   },
-  '.BoxVirtualizer__container__verticalRuler': {
+  '.BoxVirtualizer__container__horizontalRuler': {
     position: 'sticky',
-    top: '0px',
+    top: 0,
     height: '30px',
     minWidth: '100%',
-    border: '1px solid $border30',
+    borderBottom: '1px solid $border30',
+    backgroundColor: '#fff',
+    zIndex: 2,
+  },
+  '.BoxVirtualizer__container__verticalRuler': {
+    position: 'sticky',
+    left: 0,
+    width: '200px',
+    minHeight: 'calc(100% - 30px)',
+    borderRight: '1px solid $border30',
     backgroundColor: '#fff',
     zIndex: 2,
   },
@@ -101,6 +140,7 @@ const BoardVisualizerComponentsPane = styled(SplitPaneItem, {
     jc: 'center',
     gap: '$9',
     fw: 'wrap',
+    maxHeight: '100%',
   },
   '.block--column': {
     display: 'inline-flex',
@@ -108,6 +148,8 @@ const BoardVisualizerComponentsPane = styled(SplitPaneItem, {
     flex: 1,
     gap: '$9',
     jc: 'center',
+    maxHeight: '100%',
+    maxWidth: '100%',
   },
   variants: {
     loading: {
@@ -135,7 +177,6 @@ const BoardConsoleElement = styled('pre', {
   fontMono: 14,
   p: '$5',
   overflow: 'auto',
-  height: '100%',
   borderTop: '1px solid $border30',
 });
 
@@ -151,23 +192,6 @@ const BoardComponentsViz = styled('div', {
   gap: '$13',
   height: '100%',
   p: '$9',
-  '.VizComponentContainer': {
-    width: '100%',
-    height: '100%',
-    display: 'flex',
-    ai: 'center',
-    gap: '$9',
-    jc: 'center',
-    p: '$5',
-    border: '1px solid $border30',
-    br: '$3',
-    '.RunLogRecords': {
-      p: 0,
-    },
-    '&__contentWrapper': {
-      border: 'none',
-    },
-  },
 });
 
 const BoardBlockTab = styled('div', {
