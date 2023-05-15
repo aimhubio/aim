@@ -858,6 +858,7 @@ class Select(Component):
         self.default = value
 
         self.options = {
+            "isMulti": False,
             "value": self.value,
             "options": options
         }
@@ -877,15 +878,17 @@ class Select(Component):
 
 
 class MultiSelect(Component):
-    def __init__(self, options=(), values=None, key=None, block=None):
-        component_type = "MultiSelect"
+    def __init__(self, options=(), value=None, key=None, block=None):
+        component_type = "Select"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
 
-        self.default = values
+
+        self.default = value
 
         self.options = {
-            "values": self.values,
+            "isMulti": True,
+            "value": self.value,
             "options": options
         }
 
@@ -896,17 +899,17 @@ class MultiSelect(Component):
         self.render()
 
     @property
-    def values(self):
-        return self.state["values"] if "values" in self.state else self.default
+    def value(self):
+        return self.state["value"] if "value" in self.state else self.default
 
     async def on_change(self, val, index):
-        if type(self.values) is list:
-            if val in self.values:
-                values = list(filter(lambda item: item != val, self.values))
+        if type(self.value) is list:
+            if val in self.value:
+                value = list(filter(lambda item: item != val, self.value))
             else:
-                values = self.values + [val]
+                value = self.value + [val]
 
-            self.set_state({"values": values})
+            self.set_state({"value": value})
 
 
 class Button(Component):
@@ -1157,7 +1160,7 @@ class UI:
 
     def multi_select(self, *args, **kwargs):
         multi_select = MultiSelect(*args, **kwargs, block=self.block_context)
-        return multi_select.values
+        return multi_select.value
 
     def slider(self, *args, **kwargs):
         slider = Slider(*args, **kwargs, block=self.block_context)

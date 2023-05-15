@@ -15,9 +15,14 @@ function SelectVizElement(props: any) {
     }
   };
 
+  const id = React.useMemo(
+    () => `${props.options.isMulti ? 'multi_' : ''}select_${Date.now()}`,
+    [],
+  );
   return (
     <Select
-      multiple={false}
+      key={id}
+      multiple={props.options.isMulti}
       searchable
       value={props.options.value}
       popoverProps={{ align: 'start' }}
