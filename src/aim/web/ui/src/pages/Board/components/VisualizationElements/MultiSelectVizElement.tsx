@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { Select } from 'components/kit_v2';
 
-function SelectVizElement(props: any) {
+function MultiSelectVizElement(props: any) {
   const options = (props.options.options || []).map((opt: string) => ({
     value: opt,
     label: opt,
@@ -17,9 +17,9 @@ function SelectVizElement(props: any) {
 
   return (
     <Select
-      multiple={false}
+      multiple={true}
       searchable
-      value={props.options.value}
+      value={props.options.values}
       popoverProps={{ align: 'start' }}
       options={[
         {
@@ -32,4 +32,4 @@ function SelectVizElement(props: any) {
   );
 }
 
-export default SelectVizElement;
+export default MultiSelectVizElement;

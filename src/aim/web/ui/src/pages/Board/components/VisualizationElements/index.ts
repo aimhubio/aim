@@ -60,6 +60,12 @@ const SelectVizElement = React.lazy(
       /* webpackPrefetch: true, webpackChunkName: "Select" */ './SelectVizElement'
     ),
 );
+const MultiSelectVizElement = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "MultiSelect" */ './MultiSelectVizElement'
+    ),
+);
 const RunMessagesVizElement = React.lazy(
   () =>
     import(
@@ -163,6 +169,7 @@ export type VizElementKey =
   | 'Text'
   | 'Link'
   | 'Select'
+  | 'MultiSelect'
   | 'RunMessages'
   | 'RunLogs'
   | 'RunNotes'
@@ -190,6 +197,7 @@ const VizElementsMap: Record<VizElementKey, React.FunctionComponent<any>> = {
   Slider: SliderVizElement,
   RangeSlider: RangeSliderVizElement,
   Select: SelectVizElement,
+  MultiSelect: MultiSelectVizElement,
   Radio: RadioVizElement,
   Checkbox: CheckboxVizElement,
   ToggleButton: ToggleButtonVizElement,
