@@ -18,6 +18,16 @@ const SliderRoot = styled(SliderPrimitive.Root, {
     width: 10,
     height: 100,
   },
+  '&[data-disabled]': {
+    cursor: 'unset',
+    '.SliderThumb': {
+      pointerEvents: 'none',
+      bc: '#CED1D7',
+    },
+    '.SliderRange': {
+      bc: '#CED1D7',
+    },
+  },
 });
 
 const SliderMark = styled('span', {
@@ -34,9 +44,10 @@ const SliderMark = styled('span', {
   '&[data-active=true]': {
     bc: '$primary100',
   },
-  '&[data-disabled]': {
+  '&[data-disabled=true]': {
     pointerEvents: 'none',
     bc: '#CED1D7',
+    cursor: 'unset',
   },
   '&:before': {
     content: '""',
