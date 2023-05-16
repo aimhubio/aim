@@ -996,16 +996,19 @@ class TextArea(Component):
 
 
 class Radio(Component):
-    def __init__(self, label=None, options=(), index=0, disabled=None, key=None, block=None):
+    def __init__(self, label=None, options=(), index=0, orientation='vertical', disabled=None, key=None, block=None):
         component_type = "Radio"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
 
+        self.default = options[index]
+
         self.options = {
+            "value": self.value,
             "label": label,
             "options": options,
+            "orientation": orientation,
             "disabled": disabled,
-            "defaultValue": options[index]
         }
 
         self.callbacks = {
@@ -1016,7 +1019,7 @@ class Radio(Component):
 
     @property
     def value(self):
-        return self.state["value"] if "value" in self.state else self.options["defaultValue"]
+        return self.state["value"] if "value" in self.state else self.default
 
     async def on_change(self, val):
         self.set_state({"value": val})

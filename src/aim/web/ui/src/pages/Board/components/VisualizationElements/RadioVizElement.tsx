@@ -4,7 +4,7 @@ import { Radio, RadioGroup, Text } from 'components/kit_v2';
 import { RadioLabel } from 'components/kit_v2/Radio/Radio.style';
 
 function RadioVizElement(props: any) {
-  const [value, setValue] = React.useState<string>(props.value);
+  const [value, setValue] = React.useState<string>(`${props.options.value}`);
 
   const onChange = React.useCallback(
     (value: string) => {
@@ -21,26 +21,34 @@ function RadioVizElement(props: any) {
   );
 
   React.useEffect(() => {
-    if (props.value !== value) {
-      setValue(props.value);
+    if (props.options.value !== value) {
+      setValue(`${props.options.value}`);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.value]);
+  }, [props.options.value]);
 
+  const id = React.useMemo(() => `radio_${Date.now()}`, []);
   return (
-    <RadioGroup
-      onValueChange={onChange}
-      value={value}
-      disabled={props.options.disabled}
-      defaultValue={props.options.defaultValue || undefined}
-    >
-      <RadioLabel htmlFor={value}>{props.options.label}</RadioLabel>
-      {options.map((option: string) => (
-        <Radio key={option} value={option}>
-          <Text>{option}</Text>
-        </Radio>
-      ))}
-    </RadioGroup>
+    <div>
+      {props.options.label && (
+        <Text as='label' htmlFor={id} disabled={props.options.disabled}>
+          {props.options.label}
+        </Text>
+      )}
+      <RadioGroup
+        id={id}
+        orientation={props.options.orientation}
+        onValueChange={onChange}
+        value={value}
+        disabled={props.options.disabled}
+      >
+        {options.map((option: string) => (
+          <Radio key={option} value={option}>
+            <Text>{option}</Text>
+          </Radio>
+        ))}
+      </RadioGroup>
+    </div>
   );
 }
 export default RadioVizElement;
