@@ -16,8 +16,6 @@ import { TopBar } from 'config/stitches/foundations/layout';
 
 import usePyodide from 'services/pyodide/usePyodide';
 
-import { getItem } from 'utils/storage';
-
 import pyodideEngine from '../../services/pyodide/store';
 
 import SaveBoard from './components/SaveBoard';
@@ -34,6 +32,7 @@ import {
   BoardVisualizerPane,
 } from './Board.style';
 import BoardConsole from './components/BoardConsole';
+import FormVizElement from './components/VisualizationElements/FormVizElement';
 
 function Board({
   data,
@@ -226,11 +225,6 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
     updateEditorValue();
   }
 
-  function getResizeElementSize() {
-    const sizes = JSON.parse(getItem('board-ResizeElement')!);
-    return sizes?.height || '200px';
-  }
-
   const tree = constructTree(
     state.layout.blocks.concat(state.layout.components),
     {
@@ -338,7 +332,6 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
                       <BoardComponentsViz
                         ref={vizContainer}
                         className='BoardVisualizer__main__components__viz'
-                        style={{ marginBottom: getResizeElementSize() }}
                         key={`${state.isProcessing}`}
                       >
                         {state.error ? (
@@ -412,26 +405,26 @@ function constructTree(elems: any, tree: any) {
         tree.root.elements[elem.block_context.id] = {
           ...elem.block_context,
           elements: {},
-          data: elem.data,
+          ...elem,
         };
       } else {
         if (!tree.hasOwnProperty(elem.parent_block.id)) {
           tree[elem.parent_block.id] = {
             id: elem.parent_block.id,
             elements: {},
-            data: elem.data,
+            ...elem,
           };
         }
         tree[elem.parent_block.id].elements[elem.block_context.id] = {
           ...elem.block_context,
           elements: {},
-          data: elem.data,
+          ...elem,
         };
       }
       tree[elem.block_context.id] = {
         ...elem.block_context,
         elements: {},
-        data: elem.data,
+        ...elem,
       };
     } else {
       if (!elem.parent_block) {
@@ -477,6 +470,14 @@ function renderTree(tree: any, elements: any) {
     }
     if (element.type === 'tab') {
       return null;
+    }
+
+    if (element.type === 'form') {
+      return (
+        <FormVizElement key={element.type + i} {...element}>
+          {renderTree(tree, tree[element.id].elements)}
+        </FormVizElement>
+      );
     }
 
     return <GridCell key={i} viz={element} />;
