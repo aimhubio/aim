@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { Route } from 'react-router-dom';
 
+import { IconPencil } from '@tabler/icons-react';
+
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import {
@@ -18,119 +20,95 @@ import { PathEnum } from 'config/enums/routesEnum';
 
 import Board from 'pages/Board/Board';
 
+import boardAppModel from 'services/models/board/boardAppModel';
+
 import useApp from './useApp';
-import {
-  AppContainer,
-  BoardContainer,
-  BoardWrapper,
-  BoardLink,
-} from './App.style';
+import { AppContainer, BoardWrapper, BoardLink } from './App.style';
 
-interface BoardsListProps {
-  boards: any[];
-}
-
-const BoardsList: React.FC<BoardsListProps> = ({ boards }) => {
+const BoardsList: React.FC<any> = ({ boards, editMode }) => {
   return (
-    <div>
+    <Box
+      width={200}
+      css={{ borderRight: '1px solid $border30', backgroundColor: '#fff' }}
+    >
       {boards.map((board: any) => (
-        <BoardLink key={board.id} to={`${PathEnum.App}/${board.id}`}>
+        <BoardLink
+          key={board.id}
+          to={`${PathEnum.App}/${editMode ? 'edit' : 'view'}/${board.id}`}
+        >
           <ListItem>{board.name}</ListItem>
         </BoardLink>
       ))}
-    </div>
-  );
-};
-
-interface BoardRendererProps {
-  board: any;
-  data: any;
-}
-
-const BoardRenderer: React.FC<BoardRendererProps> = ({ board, data }) => {
-  const code = data.files_contents[board.path];
-  const lines = code.split('\n');
-  const embedPattern = /^BoardEmbed\("(.*?)"\)$/;
-  const linkPattern = /^BoardLink\("(.*?)"\)$/;
-  const replacedLines = lines.map((line: string) => {
-    // Replace embeds
-    const embedMatch = line.match(embedPattern);
-    if (embedMatch) {
-      const filePath = embedMatch[1].replace(/\./g, '/') + '.py';
-      const relPath = filePath
-        .replace(new RegExp(`^${data.app_dir_name}/?`), '')
-        .trim();
-      try {
-        return data.files_contents[relPath];
-      } catch (error) {
-        return line;
-      }
-    }
-    // Replace links
-    const linkMatch = line.match(linkPattern);
-    if (linkMatch) {
-      const filePath = linkMatch[1].replace(/\./g, '/') + '.py';
-      const relPath = filePath
-        .replace(new RegExp(`^${data.app_dir_name}/?`), '')
-        .trim();
-      return `BoardLink("${relPath}")`;
-      // return 'pass';
-    }
-    return line;
-  });
-  const fullCode = replacedLines.join('\n');
-
-  return (
-    <BoardWrapper>
-      <Board
-        key={board.path}
-        data={{
-          code: fullCode,
-        }}
-        editMode={false}
-        previewMode
-      />
-    </BoardWrapper>
+    </Box>
   );
 };
 
 function App(): React.FunctionComponentElement<React.ReactNode> {
   const { data, isLoading } = useApp();
 
+  const saveBoard = React.useCallback(
+    async (board: any) => {
+      await boardAppModel.updateBoard(board.id, {
+        ...board,
+      });
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
+
   return (
     <ErrorBoundary>
-      <TopBar>
-        <Text weight='$3'>APP</Text>
-      </TopBar>
-      {isLoading ? (
-        <>
-          <p>Loading...</p>
-        </>
-      ) : (
-        <AppContainer>
-          <BoardWrapper>
-            <Route path={`${PathEnum.App}/:boardId`}>
-              {(props) => {
-                const boardId = props.match?.params?.boardId;
-                if (!boardId) {
-                  return <div />;
-                }
-                const board = data.find((b: any) => b.id === boardId);
-                return (
-                  <Board
-                    key={board.id}
-                    data={{
-                      code: board.code,
-                    }}
-                    editMode={false}
-                    previewMode
-                  />
-                );
-              }}
-            </Route>
-          </BoardWrapper>
-          <BoardsList boards={data} />
-        </AppContainer>
+      {isLoading ? null : (
+        <Route
+          path={[
+            `${PathEnum.App}/view/:boardId`,
+            `${PathEnum.App}/edit/:boardId`,
+          ]}
+          exact
+        >
+          {(props) => {
+            const boardId = props.match?.params?.boardId;
+            const board = data.find((b: any) => b.id === boardId);
+            const editMode = props.match?.path.includes(`${PathEnum.App}/edit`);
+            return (
+              <AppContainer>
+                <TopBar id='app-top-bar'>
+                  <Box flex='1 100%'>
+                    <Text weight='$3'>APP</Text>
+                  </Box>
+                  {board && !editMode && (
+                    <Link
+                      css={{ display: 'flex' }}
+                      to={`${PathEnum.App}/edit/${boardId}`}
+                      underline={false}
+                    >
+                      <Button
+                        variant='outlined'
+                        size='xs'
+                        rightIcon={<IconPencil />}
+                      >
+                        Edit
+                      </Button>
+                    </Link>
+                  )}
+                </TopBar>
+                <Box display='flex'>
+                  <BoardsList boards={data} editMode={editMode} />
+                  <BoardWrapper>
+                    {board && (
+                      <Board
+                        key={board.id + editMode}
+                        data={board}
+                        editMode={editMode}
+                        saveBoard={saveBoard}
+                      />
+                    )}
+                  </BoardWrapper>
+                </Box>
+              </AppContainer>
+            );
+          }}
+        </Route>
       )}
     </ErrorBoundary>
   );

@@ -14,7 +14,7 @@ function BoardVizElement(props: any) {
   return (
     <div
       className='VizComponentContainer'
-      style={{ flex: 1, display: 'block', minHeight: 500, padding: 0 }}
+      style={{ flex: 1, display: 'block', padding: 0 }}
     >
       {isLoading ? (
         <Spinner />
