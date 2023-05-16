@@ -299,6 +299,8 @@ class Block(Element):
         self.key = generate_key(self.block_context)
 
         self.data = data
+        self.callbacks = {}
+        self.options = {}
 
         self.render()
 
@@ -309,7 +311,9 @@ class Block(Element):
             "key": self.key,
             "parent_block": self.parent_block,
             "board_id": self.board_id,
-            "data": self.data
+            "data": self.data,
+            "options": self.options,
+            "callbacks": self.callbacks,
         }
 
         render_to_layout(block_data)
@@ -335,9 +339,24 @@ class Component(Element):
         self.no_facet = True
 
     def set_state(self, value):
-        set_state({
-            self.key: value
-        }, self.board_id)
+        should_batch = self.parent_block is not None and self.parent_block["type"] == "form"
+
+        if should_batch:
+            state_slice = state[self.board_id][
+                self.parent_block["id"]
+            ] if (self.board_id in state and self.parent_block["id"] in state[self.board_id]) else {}
+
+            state_slice.update({
+                self.key: value
+            })
+
+            set_state({
+                self.parent_block["id"]: state_slice
+            }, self.board_id)
+        else:
+            set_state({
+                self.key: value
+            }, self.board_id)
 
     def render(self):
         component_data = {
@@ -723,7 +742,7 @@ class Slider(Component):
         self.render()
 
     def _get_step(self, initial_value, step):
-        if(step):
+        if (step):
             return step
         elif isinstance(initial_value, int):
             return 1
@@ -764,7 +783,7 @@ class RangeSlider(Component):
         self.render()
 
     def _get_step(self, initial_range, step):
-        if(step):
+        if (step):
             return step
         elif all(isinstance(n, int) for n in initial_range):
             return 1
@@ -832,7 +851,7 @@ class NumberInput(Component):
         self.render()
 
     def _get_step(self, value, step):
-        if(step):
+        if (step):
             return step
         elif isinstance(value, int):
             return 1
@@ -882,7 +901,6 @@ class MultiSelect(Component):
         component_type = "Select"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
-
 
         self.default = value
 
@@ -1133,6 +1151,10 @@ class UI:
         tabs = Tabs(names, block=self.block_context)
         return tabs.tabs
 
+    def form(self, *args, **kwargs):
+        form = Form(*args, **kwargs, block=self.block_context)
+        return form
+
     # input elements
     def button(self, *args, **kwargs):
         button = Button(*args, **kwargs, block=self.block_context)
@@ -1279,6 +1301,25 @@ class Tabs(Block, UI):
         for label in labels:
             tab = Tab(label, block=self.block_context)
             self.tabs.append(tab)
+
+
+class Form(Block, UI):
+    def __init__(self, submit_button_label='Submit', block=None):
+        super().__init__('form', block=block)
+
+        self.options = {
+            'submit_button_label': submit_button_label
+        }
+        self.callbacks = {
+            'on_submit': self.submit
+        }
+
+        self.render()
+
+    def submit(self):
+        batch_id = self.block_context["id"]
+        state_update = state[board_id][batch_id]
+        set_state(state_update, board_id=self.board_id)
 
 
 ui = UI()

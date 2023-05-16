@@ -10,14 +10,18 @@ import { Box, IconButton, Text, Tooltip } from 'components/kit_v2';
 
 import { getItem } from 'utils/storage';
 
-import { BoardConsoleElement } from '../Board.style';
+import {
+  BoardConsoleWrapper,
+  BoardConsolePanel,
+  BoardConsoleElement,
+} from '../Board.style';
 import useBoardStore from '../BoardSore';
 
 const BOARD_CONSOLE_SIZES = {
   MIN_HEIGHT: 24,
   INITIAL_SIZES: {
     height: 150,
-    maxHeight: 250,
+    maxHeight: 400,
     maxWidth: 1920,
   },
 };
@@ -32,7 +36,6 @@ function BoardConsole({
   const onResizeEnd = React.useCallback(
     (resizeElement) => {
       boxContainer.current.classList.remove('ScrollBar__hidden');
-      vizContainer.current.style.marginBottom = `${resizeElement.current?.offsetHeight}px`;
       setConsoleOpen(
         resizeElement.current?.offsetHeight > BOARD_CONSOLE_SIZES.MIN_HEIGHT,
       );
@@ -80,16 +83,18 @@ function BoardConsole({
       onResizeStart={onResizeStart}
     >
       <ResizableElement>
-        <Box p='$2 $5' display='flex' ai='center' jc='space-between'>
-          <Text size='$3' mono>
-            Console
-          </Text>
-          <BoardConsoleOpener
-            consoleElement={consoleElementRef}
-            onClick={handleOpenConsole}
-          />
-        </Box>
-        <BoardConsoleElement ref={consoleElementRef} id='console' />
+        <BoardConsoleWrapper>
+          <BoardConsolePanel>
+            <Text size='$3' mono>
+              Console
+            </Text>
+            <BoardConsoleOpener
+              consoleElement={consoleElementRef}
+              onClick={handleOpenConsole}
+            />
+          </BoardConsolePanel>
+          <BoardConsoleElement ref={consoleElementRef} id='console' />
+        </BoardConsoleWrapper>
       </ResizableElement>
     </ResizeElement>
   );
