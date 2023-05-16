@@ -718,6 +718,17 @@ class RunNotes(Component):
 # InputComponents
 
 
+def get_component_batch_state(key, parent_block=None):
+    if parent_block is None:
+        return None
+
+    if board_id in state and parent_block["id"] in state[board_id]:
+        if key in state[board_id][parent_block["id"]]:
+            return state[board_id][parent_block["id"]][key]
+
+    return None
+
+
 class Slider(Component):
     def __init__(self, label, min, max, value, step=None, disabled=None, key=None, block=None):
         component_type = "Slider"
@@ -726,8 +737,10 @@ class Slider(Component):
 
         self.data = value
 
+        batch_state = get_component_batch_state(component_key, block)
+
         self.options = {
-            "value": self.value,
+            "value": self.value if batch_state is None else batch_state["value"][0],
             "label": label,
             "min": min,
             "max": max,
@@ -767,8 +780,10 @@ class RangeSlider(Component):
 
         self.data = sorted(value, key=int)
 
+        batch_state = get_component_batch_state(component_key, block)
+
         self.options = {
-            "value": self.value,
+            "value": self.value if batch_state is None else batch_state["value"],
             "label": label,
             "min": min,
             "max": max,
@@ -809,8 +824,10 @@ class TextInput(Component):
 
         self.data = value
 
+        batch_state = get_component_batch_state(component_key, block)
+
         self.options = {
-            "value": self.value
+            "value": self.value if batch_state is None else batch_state["value"],
         }
 
         self.callbacks = {
@@ -835,8 +852,10 @@ class NumberInput(Component):
 
         self.data = value
 
+        batch_state = get_component_batch_state(component_key, block)
+
         self.options = {
-            "value": self.value,
+            "value": self.value if batch_state is None else batch_state["value"],
             "label": label,
             "min": min,
             "max": max,
@@ -876,9 +895,11 @@ class Select(Component):
 
         self.default = value
 
+        batch_state = get_component_batch_state(component_key, block)
+
         self.options = {
             "isMulti": False,
-            "value": self.value,
+            "value": self.value if batch_state is None else batch_state["value"],
             "options": options
         }
 
@@ -904,9 +925,11 @@ class MultiSelect(Component):
 
         self.default = value
 
+        batch_state = get_component_batch_state(component_key, block)
+
         self.options = {
             "isMulti": True,
-            "value": self.value,
+            "value": self.value if batch_state is None else batch_state["value"],
             "options": options
         }
 
@@ -928,31 +951,6 @@ class MultiSelect(Component):
                 value = self.value + [val]
 
             self.set_state({"value": value})
-
-
-class Button(Component):
-    def __init__(self, label=None, size=None, variant=None, color=None, key=None, block=None):
-        component_type = "Button"
-        component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type, block)
-
-        self.data = ''
-
-        self.options = {
-            "size": size,
-            "variant": variant,
-            "color": color,
-            "label": label or 'button',
-        }
-
-        self.callbacks = {
-            "on_click": self.on_click
-        }
-
-        self.render()
-
-    def on_click(self):
-        ...
 
 
 class Switch(Component):
@@ -991,8 +989,10 @@ class TextArea(Component):
 
         self.data = value
 
+        batch_state = get_component_batch_state(component_key, block)
+
         self.options = {
-            "value": self.value,
+            "value": self.value if batch_state is None else batch_state["value"],
             "size": size,
             "resize": resize,
             "disabled": disabled,
@@ -1156,10 +1156,6 @@ class UI:
         return form
 
     # input elements
-    def button(self, *args, **kwargs):
-        button = Button(*args, **kwargs, block=self.block_context)
-        return button
-
     def text_input(self, *args, **kwargs):
         input = TextInput(*args, **kwargs, block=self.block_context)
         return input.value
