@@ -1,5 +1,7 @@
 # Changelog
 
+- Fix issue with overflowing box content in full-view mode in Base Explorers (KaroMourad)
+
 ## 3.17.4  May 4, 2023
 
 - Resolve run messages duplication issue for in progress runs (roubkar)

@@ -36,7 +36,6 @@
       margin: 0 auto;
     }
   }
-
   &__fullViewContent {
     width: 100%;
     height: 100%;
@@ -44,10 +43,12 @@
     align-items: center;
     background-color: $cuddle-10;
     position: relative;
-    overflow: auto;
+    overflow: hidden;
+    padding: 2rem 0.5rem;
     &__box {
-      display: inline-flex;
+      max-height: 100%;
       margin: 0 auto;
+      overflow: auto;
     }
     &__depthSlider {
       position: absolute;
