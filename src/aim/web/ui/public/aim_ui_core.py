@@ -299,6 +299,8 @@ class Block(Element):
         self.key = generate_key(self.block_context)
 
         self.data = data
+        self.callbacks = {}
+        self.options = {}
 
         self.render()
 
@@ -309,7 +311,9 @@ class Block(Element):
             "key": self.key,
             "parent_block": self.parent_block,
             "board_id": self.board_id,
-            "data": self.data
+            "data": self.data,
+            "options": self.options,
+            "callbacks": self.callbacks,
         }
 
         render_to_layout(block_data)
@@ -335,9 +339,24 @@ class Component(Element):
         self.no_facet = True
 
     def set_state(self, value):
-        set_state({
-            self.key: value
-        }, self.board_id)
+        should_batch = self.parent_block is not None and self.parent_block["type"] == "form"
+
+        if should_batch:
+            state_slice = state[self.board_id][
+                self.parent_block["id"]
+            ] if (self.board_id in state and self.parent_block["id"] in state[self.board_id]) else {}
+
+            state_slice.update({
+                self.key: value
+            })
+
+            set_state({
+                self.parent_block["id"]: state_slice
+            }, self.board_id)
+        else:
+            set_state({
+                self.key: value
+            }, self.board_id)
 
     def render(self):
         component_data = {
@@ -699,6 +718,17 @@ class RunNotes(Component):
 # InputComponents
 
 
+def get_component_batch_state(key, parent_block=None):
+    if parent_block is None:
+        return None
+
+    if board_id in state and parent_block["id"] in state[board_id]:
+        if key in state[board_id][parent_block["id"]]:
+            return state[board_id][parent_block["id"]][key]
+
+    return None
+
+
 class Slider(Component):
     def __init__(self, label, min, max, value, step=None, disabled=None, key=None, block=None):
         component_type = "Slider"
@@ -707,8 +737,10 @@ class Slider(Component):
 
         self.data = value
 
+        batch_state = get_component_batch_state(component_key, block)
+
         self.options = {
-            "value": self.value,
+            "value": self.value if batch_state is None else batch_state["value"][0],
             "label": label,
             "min": min,
             "max": max,
@@ -723,7 +755,7 @@ class Slider(Component):
         self.render()
 
     def _get_step(self, initial_value, step):
-        if(step):
+        if (step):
             return step
         elif isinstance(initial_value, int):
             return 1
@@ -748,8 +780,10 @@ class RangeSlider(Component):
 
         self.data = sorted(value, key=int)
 
+        batch_state = get_component_batch_state(component_key, block)
+
         self.options = {
-            "value": self.value,
+            "value": self.value if batch_state is None else batch_state["value"],
             "label": label,
             "min": min,
             "max": max,
@@ -764,7 +798,7 @@ class RangeSlider(Component):
         self.render()
 
     def _get_step(self, initial_range, step):
-        if(step):
+        if (step):
             return step
         elif all(isinstance(n, int) for n in initial_range):
             return 1
@@ -790,8 +824,10 @@ class TextInput(Component):
 
         self.data = value
 
+        batch_state = get_component_batch_state(component_key, block)
+
         self.options = {
-            "value": self.value
+            "value": self.value if batch_state is None else batch_state["value"],
         }
 
         self.callbacks = {
@@ -816,8 +852,10 @@ class NumberInput(Component):
 
         self.data = value
 
+        batch_state = get_component_batch_state(component_key, block)
+
         self.options = {
-            "value": self.value,
+            "value": self.value if batch_state is None else batch_state["value"],
             "label": label,
             "min": min,
             "max": max,
@@ -832,7 +870,7 @@ class NumberInput(Component):
         self.render()
 
     def _get_step(self, value, step):
-        if(step):
+        if (step):
             return step
         elif isinstance(value, int):
             return 1
@@ -857,9 +895,11 @@ class Select(Component):
 
         self.default = value
 
+        batch_state = get_component_batch_state(component_key, block)
+
         self.options = {
             "isMulti": False,
-            "value": self.value,
+            "value": self.value if batch_state is None else batch_state["value"],
             "options": options
         }
 
@@ -883,12 +923,13 @@ class MultiSelect(Component):
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
 
-
         self.default = value
+
+        batch_state = get_component_batch_state(component_key, block)
 
         self.options = {
             "isMulti": True,
-            "value": self.value,
+            "value": self.value if batch_state is None else batch_state["value"],
             "options": options
         }
 
@@ -910,31 +951,6 @@ class MultiSelect(Component):
                 value = self.value + [val]
 
             self.set_state({"value": value})
-
-
-class Button(Component):
-    def __init__(self, label=None, size=None, variant=None, color=None, key=None, block=None):
-        component_type = "Button"
-        component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type, block)
-
-        self.data = ''
-
-        self.options = {
-            "size": size,
-            "variant": variant,
-            "color": color,
-            "label": label or 'button',
-        }
-
-        self.callbacks = {
-            "on_click": self.on_click
-        }
-
-        self.render()
-
-    def on_click(self):
-        ...
 
 
 class Switch(Component):
@@ -973,8 +989,10 @@ class TextArea(Component):
 
         self.data = value
 
+        batch_state = get_component_batch_state(component_key, block)
+
         self.options = {
-            "value": self.value,
+            "value": self.value if batch_state is None else batch_state["value"],
             "size": size,
             "resize": resize,
             "disabled": disabled,
@@ -1136,11 +1154,11 @@ class UI:
         tabs = Tabs(names, block=self.block_context)
         return tabs.tabs
 
-    # input elements
-    def button(self, *args, **kwargs):
-        button = Button(*args, **kwargs, block=self.block_context)
-        return button
+    def form(self, *args, **kwargs):
+        form = Form(*args, **kwargs, block=self.block_context)
+        return form
 
+    # input elements
     def text_input(self, *args, **kwargs):
         input = TextInput(*args, **kwargs, block=self.block_context)
         return input.value
@@ -1282,6 +1300,25 @@ class Tabs(Block, UI):
         for label in labels:
             tab = Tab(label, block=self.block_context)
             self.tabs.append(tab)
+
+
+class Form(Block, UI):
+    def __init__(self, submit_button_label='Submit', block=None):
+        super().__init__('form', block=block)
+
+        self.options = {
+            'submit_button_label': submit_button_label
+        }
+        self.callbacks = {
+            'on_submit': self.submit
+        }
+
+        self.render()
+
+    def submit(self):
+        batch_id = self.block_context["id"]
+        state_update = state[board_id][batch_id]
+        set_state(state_update, board_id=self.board_id)
 
 
 ui = UI()

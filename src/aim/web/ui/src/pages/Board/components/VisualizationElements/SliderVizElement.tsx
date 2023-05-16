@@ -10,7 +10,7 @@ function SliderVizElement(props: any) {
   );
   const id = React.useMemo(() => `slider_${Date.now()}`, []);
   return (
-    <div>
+    <div style={{ flex: 1 }}>
       {props.options.label && (
         <Text as='label' htmlFor={id} disabled={props.options.disabled}>
           {props.options.label}
