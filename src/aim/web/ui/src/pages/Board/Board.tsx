@@ -243,7 +243,7 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
 
   return (
     <ErrorBoundary>
-      <Box as='section' height='100vh'>
+      <Box as='section' height='100vh' className='Board'>
         {!previewMode && (
           <TopBar>
             <Box flex='1 100%'>
@@ -254,7 +254,12 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
               />
             </Box>
             {editMode || newMode ? (
-              <Box display='flex' ai='center' gap='$5'>
+              <Box
+                className='Board__appBar__controls'
+                display='flex'
+                ai='center'
+                gap='$5'
+              >
                 <Button
                   color='primary'
                   variant='contained'
@@ -298,10 +303,10 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
           isLoading={pyodideIsLoading || isLoading}
           height={'100%'}
         >
-          <BoardVisualizerContainer>
+          <BoardVisualizerContainer className='BoardVisualizer'>
             <BoardVisualizerPane id='BoardVisualizer'>
               {editMode || newMode ? (
-                <BoardVisualizerEditorPane>
+                <BoardVisualizerEditorPane className='BoardVisualizer__main__editor'>
                   <Editor
                     language='python'
                     height='100%'
@@ -316,6 +321,7 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
                 </BoardVisualizerEditorPane>
               ) : null}
               <BoardVisualizerComponentsPane
+                className='BoardVisualizer__main__components'
                 resizingFallback={<ResizingFallback />}
                 loading={state.isProcessing === null}
                 processing={state.isProcessing}
@@ -331,6 +337,7 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
                     <Box height='100%' css={{ overflow: 'auto' }}>
                       <BoardComponentsViz
                         ref={vizContainer}
+                        className='BoardVisualizer__main__components__viz'
                         style={{ marginBottom: getResizeElementSize() }}
                         key={`${state.isProcessing}`}
                       >
@@ -362,7 +369,7 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
                   </>
                 ) : (
                   <BoardComponentsViz
-                    className='sss'
+                    className='BoardVisualizer__main__components__viz'
                     ref={vizContainer}
                     key={`${state.isProcessing}`}
                   >

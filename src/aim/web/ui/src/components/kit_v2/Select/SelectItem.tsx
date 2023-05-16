@@ -27,8 +27,13 @@ const SelectItem = ({
   const item = items[index];
   let selected: boolean = false;
   if (item.value) {
-    selected = value === item.value || value?.indexOf(item.value) !== -1;
+    if (value === item.value) {
+      selected = true;
+    } else if (value && Array.isArray(value)) {
+      selected = value.indexOf(item.value) !== -1;
+    }
   }
+
   const rightNode = multiple ? null : selected ? (
     <Icon css={{ color: '$primary100' }} icon={<IconCheck />} />
   ) : null;

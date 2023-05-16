@@ -1,12 +1,12 @@
 import React from 'react';
 
-import { IconCaretDown, IconCaretUp } from '@tabler/icons-react';
+import { IconCaretDown, IconCaretUp, IconCircleX } from '@tabler/icons-react';
 
 import ResizeElement, {
   ResizableElement,
   ResizableSideEnum,
 } from 'components/ResizeElement';
-import { Box, IconButton, Text } from 'components/kit_v2';
+import { Box, IconButton, Text, Tooltip } from 'components/kit_v2';
 
 import { getItem } from 'utils/storage';
 
@@ -27,6 +27,7 @@ function BoardConsole({
 }: any): React.FunctionComponentElement<React.ReactNode> {
   const setConsoleOpen = useBoardStore((state) => state.setConsoleOpen);
   const resizeElementRef = React.useRef<any>(null);
+  const consoleElementRef = React.useRef<any>(null);
 
   const onResizeEnd = React.useCallback(
     (resizeElement) => {
@@ -83,29 +84,50 @@ function BoardConsole({
           <Text size='$3' mono>
             Console
           </Text>
-          <BoardConsoleOpener onClick={handleOpenConsole} />
+          <BoardConsoleOpener
+            consoleElement={consoleElementRef}
+            onClick={handleOpenConsole}
+          />
         </Box>
-        <BoardConsoleElement id='console' />
+        <BoardConsoleElement ref={consoleElementRef} id='console' />
       </ResizableElement>
     </ResizeElement>
   );
 }
 
-function BoardConsoleOpener({ onClick }: any) {
+function BoardConsoleOpener({ onClick, consoleElement }: any) {
   const isConsoleOpened = useBoardStore((state) => state.consoleOpen);
   const setConsoleOpen = useBoardStore((state) => state.setConsoleOpen);
   function handleClick() {
     setConsoleOpen(!isConsoleOpened);
     onClick();
   }
+
+  function handleClearConsole() {
+    consoleElement.current.innerHTML = '';
+  }
   return (
-    <IconButton
-      variant='static'
-      color='secondary'
-      size='xs'
-      onClick={handleClick}
-      icon={isConsoleOpened ? <IconCaretDown /> : <IconCaretUp />}
-    />
+    <Box display='flex' ai='center'>
+      <Tooltip content='Clear console'>
+        <IconButton
+          variant='static'
+          color='secondary'
+          size='xs'
+          onClick={handleClearConsole}
+          icon={<IconCircleX />}
+          css={{ mr: '$3' }}
+        />
+      </Tooltip>
+      <Tooltip content={`${isConsoleOpened ? 'Close' : 'Open'} console`}>
+        <IconButton
+          variant='static'
+          color='secondary'
+          size='xs'
+          onClick={handleClick}
+          icon={isConsoleOpened ? <IconCaretDown /> : <IconCaretUp />}
+        />
+      </Tooltip>
+    </Box>
   );
 }
 export default React.memo(BoardConsole);
