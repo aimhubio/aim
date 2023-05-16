@@ -57,7 +57,7 @@ class StorageEngine:
         else:
             return None
 
-    def remote_task_queue(self, hash_: str):
+    def remove_queue(self, hash_: str):
         if self.repo().is_remote_repo:
             self.repo()._client.remove_queue(hash_)
 

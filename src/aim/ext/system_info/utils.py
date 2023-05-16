@@ -57,7 +57,7 @@ def get_git_info():
 
     try:
         commit_hash, commit_timestamp, commit_author = results.get('commit').split('/')
-    except ValueError:
+    except (ValueError, AttributeError):
         commit_hash = commit_timestamp = commit_author = None
 
     git_info.update({
