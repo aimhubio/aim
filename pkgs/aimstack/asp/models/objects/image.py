@@ -12,14 +12,14 @@ from typing import List
 import numpy as np
 
 from aim.sdk.num_utils import inst_has_typename
-from aim.core.storage.object import CustomObject
+from aim.sdk.core.object import Object
 from aim.core.storage.types import BLOB
 
 logger = logging.getLogger(__name__)
 
 
-@CustomObject.alias('aim.image')
-class Image(CustomObject):
+@Object.alias('aim.Image')
+class Image(Object):
     """Image object used to store image objects in Aim repository...
 
     Args:
@@ -39,7 +39,7 @@ class Image(CustomObject):
 
     DEFAULT_IMG_FORMAT = 'png'
     FLAG_WARN_RGBA_RGB = False
-    AIM_NAME = 'aim.image'
+    AIM_NAME = 'aim.Image'
 
     def __init__(self, image, caption: str = '', format=None, quality=90, optimize=False):
         super().__init__()

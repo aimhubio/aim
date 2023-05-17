@@ -4,14 +4,14 @@ import os.path
 
 from aim.sdk.num_utils import inst_has_typename
 from aim.sdk.objects.io import wavfile
-from aim.core.storage.object import CustomObject
+from aim.sdk.core.object import Object
 from aim.core.storage.types import BLOB
 
 logger = logging.getLogger(__name__)
 
 
-@CustomObject.alias('aim.audio')
-class Audio(CustomObject):
+@Object.alias('aim.Audio')
+class Audio(Object):
     """Audio object used to store audio objects in Aim repository..
 
     Currently, audio formats are limited to mp3, wav, flac
@@ -23,7 +23,7 @@ class Audio(CustomObject):
          caption (:obj:`str`, optional): Optional audio caption. '' by default.
     """
 
-    AIM_NAME = 'aim.audio'
+    AIM_NAME = 'aim.Audio'
 
     # supported audio formats
     UNKNOWN = ''

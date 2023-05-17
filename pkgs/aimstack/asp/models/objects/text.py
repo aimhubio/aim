@@ -1,16 +1,16 @@
-from aim.core.storage.object import CustomObject
+from aim.sdk.core.object import Object
 from aim.core.storage.types import BLOB
 
 
-@CustomObject.alias('aim.text')
-class Text(CustomObject):
+@Object.alias('aim.Text')
+class Text(Object):
     """Text object used to store text objects in Aim repository.
 
         Args:
              text (:obj:): str object used to construct `aim.Text`.
         """
 
-    AIM_NAME = 'aim.text'
+    AIM_NAME = 'aim.Text'
 
     def __init__(self, text):
         super().__init__()

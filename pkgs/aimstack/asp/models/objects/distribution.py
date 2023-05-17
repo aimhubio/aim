@@ -1,11 +1,11 @@
 import numpy as np
 
-from aim.core.storage.object import CustomObject
+from aim.sdk.core.object import Object
 from aim.core.storage.types import BLOB
 
 
-@CustomObject.alias('aim.distribution')
-class Distribution(CustomObject):
+@Object.alias('aim.Distribution')
+class Distribution(Object):
     """Distribution object used to store distribution objects in Aim repository.
 
     Args:
@@ -17,7 +17,7 @@ class Distribution(CustomObject):
         bin_range (:obj:`tuple`, optional): Tuple of (start, end) bin range.
     """
 
-    AIM_NAME = 'aim.distribution'
+    AIM_NAME = 'aim.Distribution'
 
     def __init__(self, samples=None, bin_count=64, *, hist=None, bin_range=None):
         super().__init__()
