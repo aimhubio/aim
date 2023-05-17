@@ -213,7 +213,7 @@ class Container(ABCContainer):
         return self._check(query, query_cache)
 
     def _check(self, query, query_cache, *, aliases=()) -> bool:
-        proxy = ContainerQueryProxy(self._tree, query_cache)
+        proxy = ContainerQueryProxy(self.hash, self._tree, query_cache)
 
         if isinstance(aliases, str):
             aliases = (aliases,)
