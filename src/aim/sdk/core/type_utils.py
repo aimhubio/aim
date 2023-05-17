@@ -1,3 +1,4 @@
+import numbers
 import os
 
 from typing import Iterator, Tuple, Type, Optional, Any, TypeVar, Union
@@ -27,6 +28,8 @@ def get_typename(type_: Type, inner_type: Optional[Type] = None) -> str:
         return f'{Object.get_typename()}->aim.Number->aim.Int'
     if issubclass(type_, float):
         return f'{Object.get_typename()}->aim.Number->aim.Float'
+    if issubclass(type_, numbers.Number):
+        return f'{Object.get_typename()}->aim.Number'
     if issubclass(type_, str):
         return f'{Object.get_typename()}->aim.String'
     if issubclass(type_, Object):
