@@ -64,7 +64,7 @@ class RpcQueueWithRetry(object):
 
     def _try_exec_task(self, task_f, *args):
         # temporary workaround for M1 build
-        import grpc
+        from websockets.exceptions import ConnectionClosedError
 
         retry = 0
         while retry < self.retry_count:
@@ -80,9 +80,7 @@ class RpcQueueWithRetry(object):
             try:
                 task_f(*args)
                 return True
-            except grpc.RpcError as e:
-                if e.code() != grpc.StatusCode.UNAVAILABLE:
-                    raise e
+            except ConnectionClosedError as e:
                 self._needs_reconnect = True
 
                 retry += 1
