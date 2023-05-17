@@ -1,11 +1,19 @@
 import React from 'react';
+import classNames from 'classnames';
 
-const TableRow = React.forwardRef<
-  HTMLTableRowElement,
-  React.HTMLAttributes<HTMLTableRowElement>
->(({ className, ...props }, ref) => (
-  <tr ref={ref} className={`${className} TableRow`} {...props} />
-));
+import { TableRowStyled } from '../Table.style';
+import { TableRowProps } from '../Table.d';
+
+const TableRow = React.forwardRef<HTMLTableRowElement, TableRowProps>(
+  ({ className, isFocused, ...props }, ref) => (
+    <TableRowStyled
+      ref={ref}
+      isFocused={isFocused}
+      className={classNames('TableRow', className)}
+      {...props}
+    />
+  ),
+);
 
 TableRow.displayName = 'TableRow';
 export default TableRow;

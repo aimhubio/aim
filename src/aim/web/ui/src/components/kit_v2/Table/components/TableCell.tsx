@@ -1,10 +1,17 @@
 import React from 'react';
+import classNames from 'classnames';
+
+import { TableCellStyled } from '../Table.style';
 
 const TableCell = React.forwardRef<
   HTMLTableCellElement,
   React.TdHTMLAttributes<HTMLTableCellElement>
 >(({ className, ...props }, ref) => (
-  <td ref={ref} className={`${className} TableCell`} {...props} />
+  <TableCellStyled
+    ref={ref}
+    className={classNames('TableCell', className)}
+    {...props}
+  />
 ));
 
 TableCell.displayName = 'TableCell';
