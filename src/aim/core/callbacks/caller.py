@@ -1,6 +1,7 @@
 import logging
 import inspect
 import traceback
+import weakref
 from collections import defaultdict
 from typing import Callable, List, Optional, Dict, Any
 
@@ -11,7 +12,7 @@ logger = logging.getLogger(__name__)
 CallbackHandler = Any
 
 
-class Caller:
+class Caller(object):
     def __init__(self, callbacks: Optional[List['CallbackHandler']] = None):
         self._handlers: Dict[str, List[Callable]] = defaultdict(list)
 
@@ -26,7 +27,7 @@ class Caller:
 
     def _bind_events_for(self, callback: Callable):
         for e_name in get_handler_event_names(callback):
-            self._handlers[e_name].append(callback)
+            self._handlers[e_name].append(weakref.WeakMethod(callback))
 
     def _extra_kwargs(self) -> Dict[str, Any]:
         return {'_caller_': self}
@@ -37,9 +38,11 @@ class Caller:
 
         handlers = self._handlers.get(event_name, [])
         for handler in handlers:
-            try:
-                handler(**all_kwargs)
-            except Exception:  # noqa
-                # TODO catch errors on handler invocation (nice-to-have)
-                logger.warning(f'Failed to run callback \'{handler.__name__}\'.')
-                logger.warning(traceback.format_exc())
+            handler = handler()
+            if handler:
+                try:
+                    handler(**all_kwargs)
+                except Exception:  # noqa
+                    # TODO catch errors on handler invocation (nice-to-have)
+                    logger.warning(f'Failed to run callback \'{handler.__name__}\'.')
+                    logger.warning(traceback.format_exc())
