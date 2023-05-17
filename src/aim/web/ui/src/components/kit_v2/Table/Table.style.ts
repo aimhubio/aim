@@ -12,17 +12,17 @@ const TableStyled = styled('table', {
   width: '100%',
   borderSpacing: '0',
   color: '#1F2227',
-  fontSize: '11px',
+  fontSize: '$3',
   variants: {
     size: {
       small: {
-        fontSize: '11px',
+        fontSize: '$3',
       },
       medium: {
-        fontSize: '13px',
+        fontSize: '$4',
       },
       large: {
-        fontSize: '15px',
+        fontSize: '$5',
       },
     },
   },
@@ -34,7 +34,9 @@ const TableHeadStyled = styled('th', {
   textAlign: 'left',
   border: '1px solid  rgba(180, 191, 202, 0.3)',
   verticalAlign: 'middle',
+  fontWeight: '$3',
   bc: '#F7F8FA',
+  fontSize: '11px',
 });
 
 const TableBodyStyled = styled('tbody', {});

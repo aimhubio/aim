@@ -3,10 +3,17 @@ import { Root, Item, Indicator } from '@radix-ui/react-radio-group';
 import { styled } from 'config/stitches';
 
 const StyledRadioGroup = styled(Root, {
+  display: 'flex',
   '&[data-disabled]': {
     pointerEvents: 'none',
     userSelect: 'none',
     opacity: 0.4,
+  },
+  '&[data-orientation="horizontal"]': {
+    fd: 'row',
+  },
+  '&[data-orientation="vertical"]': {
+    fd: 'column',
   },
 });
 

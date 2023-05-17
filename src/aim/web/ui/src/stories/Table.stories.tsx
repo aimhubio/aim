@@ -14,7 +14,7 @@ const Template: ComponentStory<typeof TableComponent> = (args) => (
 );
 
 export const Table = Template.bind({});
-
+const numberList = ['0.1', '0.2', '0.3', '0.4', '0.5', '0.6'];
 Table.args = {
   data: {
     Metrics: [
@@ -27,10 +27,10 @@ Table.args = {
       '0.5',
       '0.6',
     ],
-    'Train Loss': ['0.1', '0.2', '0.3', '0.4', '0.5', '0.6'],
-    'Train Accuracy': ['0.1', '0.2', '0.3', '0.4', '0.5', '0.6'],
-    'Validation Loss': ['0.1', '0.2', '0.3', '0.4', '0.5', '0.6'],
-    'Validation Accuracy': ['0.1', '0.2', '0.3', '0.4', '0.5', '0.6'],
+    'Train Loss': numberList,
+    'Train Accuracy': numberList,
+    'Validation Loss': numberList,
+    'Validation Accuracy': numberList,
   },
   selectedIndices: [0, 1],
 };
