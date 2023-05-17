@@ -68,6 +68,7 @@ REQUIRED = [
     'protobuf<5,>=3.9.2',
     'packaging>=15.0',
     'python-dateutil',
+    'websockets',
     'requests',
     'segment-analytics-python',
 ]
