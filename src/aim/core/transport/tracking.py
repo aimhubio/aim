@@ -2,7 +2,7 @@ import uuid
 import base64
 
 from typing import Dict, Union
-from fastapi import WebSocket, Request, WebSocketDisconnect, APIRouter
+from fastapi import WebSocket, Request, APIRouter
 from fastapi.responses import StreamingResponse, JSONResponse
 
 import aim.core.transport.message_utils as utils

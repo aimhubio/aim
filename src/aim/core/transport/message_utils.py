@@ -1,7 +1,6 @@
 import importlib
 import struct
 import json
-import base64
 from typing import Iterator, Tuple
 
 from aim.core.storage.object import CustomObject

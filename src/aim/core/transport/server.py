@@ -22,6 +22,7 @@ from aim.core.transport.handlers import (
     get_file_manager
 )
 
+
 def prepare_resource_registry():
     registry = ResourceTypeRegistry()
     registry.register('TreeView', get_tree)

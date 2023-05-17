@@ -723,7 +723,7 @@ class Slider(Component):
         self.render()
 
     def _get_step(self, initial_value, step):
-        if(step):
+        if step:
             return step
         elif isinstance(initial_value, int):
             return 1
@@ -764,7 +764,7 @@ class RangeSlider(Component):
         self.render()
 
     def _get_step(self, initial_range, step):
-        if(step):
+        if step:
             return step
         elif all(isinstance(n, int) for n in initial_range):
             return 1
@@ -832,7 +832,7 @@ class NumberInput(Component):
         self.render()
 
     def _get_step(self, value, step):
-        if(step):
+        if step:
             return step
         elif isinstance(value, int):
             return 1

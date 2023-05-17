@@ -1,6 +1,6 @@
 import datetime
 
-from aim.web.api.utils import APIRouter
+from fastapi import APIRouter
 
 
 class ClientRouter:
