@@ -3,7 +3,8 @@
 ####################
 
 from pyodide.ffi import create_proxy
-from js import search
+from js import search, localStorage
+import json
 import hashlib
 
 
@@ -249,17 +250,23 @@ def group(name, data, options, key=None):
 current_layout = []
 
 
+saved_state_str = localStorage.getItem("app_state")
+
 state = {}
 
+if saved_state_str:
+    state = json.loads(saved_state_str)
 
-def set_state(update, board_id):
+
+def set_state(update, board_id, persist=False):
     from js import setState
 
     if board_id not in state:
         state[board_id] = {}
 
     state[board_id].update(update)
-    setState(state, board_id)
+
+    setState(state, board_id, persist)
 
 
 block_context = {
@@ -467,23 +474,20 @@ class LineChart(AimSequenceComponent):
     def focused_point(self):
         return self.state["focused_point"] if "focused_point" in self.state else None
 
-    async def on_active_point_change(self, val, is_active):
-        if val is not None:
-            data = create_proxy(val.to_py())
-            item = self.data[data["key"]]
+    async def on_active_point_change(self, point, is_active):
+        if point is not None:
+            item = self.data[point.key]
 
             if is_active:
                 self.set_state({
                     "focused_line": item,
-                    "focused_point": data,
+                    "focused_point": point,
                 })
             else:
                 self.set_state({
                     "active_line": item,
-                    "active_point": data,
+                    "active_point": point,
                 })
-
-            data.destroy()
 
 
 class ImagesList(AimSequenceComponent):

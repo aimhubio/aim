@@ -50,6 +50,7 @@ const BoardVisualizerComponentsPane = styled(SplitPaneItem, {
     width: '100%',
     height: '100%',
     minHeight: '300px',
+    maxHeight: '100%',
     minWidth: '200px',
     display: 'flex',
     ai: 'center',
