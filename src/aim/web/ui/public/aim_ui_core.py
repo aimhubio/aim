@@ -299,6 +299,8 @@ class Block(Element):
         self.key = generate_key(self.block_context)
 
         self.data = data
+        self.callbacks = {}
+        self.options = {}
 
         self.render()
 
@@ -309,7 +311,9 @@ class Block(Element):
             "key": self.key,
             "parent_block": self.parent_block,
             "board_id": self.board_id,
-            "data": self.data
+            "data": self.data,
+            "options": self.options,
+            "callbacks": self.callbacks,
         }
 
         render_to_layout(block_data)
@@ -335,9 +339,24 @@ class Component(Element):
         self.no_facet = True
 
     def set_state(self, value):
-        set_state({
-            self.key: value
-        }, self.board_id)
+        should_batch = self.parent_block is not None and self.parent_block["type"] == "form"
+
+        if should_batch:
+            state_slice = state[self.board_id][
+                self.parent_block["id"]
+            ] if (self.board_id in state and self.parent_block["id"] in state[self.board_id]) else {}
+
+            state_slice.update({
+                self.key: value
+            })
+
+            set_state({
+                self.parent_block["id"]: state_slice
+            }, self.board_id)
+        else:
+            set_state({
+                self.key: value
+            }, self.board_id)
 
     def render(self):
         component_data = {
@@ -625,12 +644,20 @@ class HTML(Component):
 
 
 class Text(Component):
-    def __init__(self, data, key=None, block=None):
+    def __init__(self, data, component=None, size=None, weight=None, color=None, mono=None, key=None, block=None):
         component_type = "Text"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
 
         self.data = data
+
+        self.options = {
+            "component": component,
+            "size": size,
+            "weight": weight,
+            "color": color,
+            "mono": mono
+        }
 
         self.render()
 
@@ -706,18 +733,34 @@ class Explorer(Component):
 # InputComponents
 
 
+def get_component_batch_state(key, parent_block=None):
+    if parent_block is None:
+        return None
+
+    if board_id in state and parent_block["id"] in state[board_id]:
+        if key in state[board_id][parent_block["id"]]:
+            return state[board_id][parent_block["id"]][key]
+
+    return None
+
+
 class Slider(Component):
-    def __init__(self, min, max, value, key=None, block=None):
+    def __init__(self, label, min, max, value, step=None, disabled=None, key=None, block=None):
         component_type = "Slider"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
 
         self.data = value
 
+        batch_state = get_component_batch_state(component_key, block)
+
         self.options = {
+            "value": self.value if batch_state is None else batch_state["value"][0],
+            "label": label,
             "min": min,
             "max": max,
-            "value": self.value
+            "step": self._get_step(self.data, step),
+            "disabled": disabled,
         }
 
         self.callbacks = {
@@ -726,14 +769,66 @@ class Slider(Component):
 
         self.render()
 
+    def _get_step(self, initial_value, step):
+        if (step):
+            return step
+        elif isinstance(initial_value, int):
+            return 1
+        elif isinstance(initial_value, float):
+            return 0.01
+        else:
+            return None
+
     @property
     def value(self):
         return self.state["value"][0] if "value" in self.state else self.data
 
     async def on_change(self, val):
-        self.set_state({
-            "value": val.to_py()
-        })
+        self.set_state({"value": val.to_py()})
+
+
+class RangeSlider(Component):
+    def __init__(self, label, min, max, value, step=None, disabled=None, key=None, block=None):
+        component_type = "RangeSlider"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type, block)
+
+        self.data = sorted(value, key=int)
+
+        batch_state = get_component_batch_state(component_key, block)
+
+        self.options = {
+            "value": self.value if batch_state is None else batch_state["value"],
+            "label": label,
+            "min": min,
+            "max": max,
+            "disabled": disabled,
+            "step": self._get_step(self.data, step),
+        }
+
+        self.callbacks = {
+            "on_change": self.on_change
+        }
+
+        self.render()
+
+    def _get_step(self, initial_range, step):
+        if (step):
+            return step
+        elif all(isinstance(n, int) for n in initial_range):
+            return 1
+        elif any(isinstance(n, float) for n in initial_range):
+            return 0.01
+        else:
+            return None
+
+    @property
+    def value(self):
+        value_state = self.state["value"] if "value" in self.state else self.data
+        return tuple(value_state)
+
+    async def on_change(self, val):
+        self.set_state({"value": tuple(val.to_py())})
 
 
 class TextInput(Component):
@@ -744,8 +839,10 @@ class TextInput(Component):
 
         self.data = value
 
+        batch_state = get_component_batch_state(component_key, block)
+
         self.options = {
-            "value": self.value
+            "value": self.value if batch_state is None else batch_state["value"],
         }
 
         self.callbacks = {
@@ -759,21 +856,24 @@ class TextInput(Component):
         return self.state["value"] if "value" in self.state else self.data
 
     async def on_change(self, val):
-        self.set_state({ "value": val })
+        self.set_state({"value": val})
+
 
 class NumberInput(Component):
-    def __init__(self, value, label=None, min_value=None, max_value=None, step=None, disabled=None, key=None, block=None):
+    def __init__(self, label, value, min=None, max=None, step=None, disabled=None, key=None, block=None):
         component_type = "NumberInput"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
 
         self.data = value
 
+        batch_state = get_component_batch_state(component_key, block)
+
         self.options = {
-            "value": self.value,
+            "value": self.value if batch_state is None else batch_state["value"],
             "label": label,
-            "min": min_value,
-            "max": max_value,
+            "min": min,
+            "max": max,
             "step": self._get_step(self.value, step),
             "disabled": disabled
         }
@@ -785,7 +885,7 @@ class NumberInput(Component):
         self.render()
 
     def _get_step(self, value, step):
-        if(step):
+        if (step):
             return step
         elif isinstance(value, int):
             return 1
@@ -799,20 +899,22 @@ class NumberInput(Component):
         return self.state["value"] if "value" in self.state else self.data
 
     async def on_change(self, val):
-        self.set_state({ "value": val })
+        self.set_state({"value": val})
 
 
 class Select(Component):
-    def __init__(self, value=None, values=None, options=[], key=None, block=None):
+    def __init__(self, options=(), value=None, key=None, block=None):
         component_type = "Select"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
 
-        self.data = value or values
+        self.default = value
+
+        batch_state = get_component_batch_state(component_key, block)
 
         self.options = {
-            "value": self.value,
-            "values": self.values,
+            "isMulti": False,
+            "value": self.value if batch_state is None else batch_state["value"],
             "options": options
         }
 
@@ -824,51 +926,46 @@ class Select(Component):
 
     @property
     def value(self):
-        return self.state["value"] if "value" in self.state else self.data
+        return self.state["value"] if "value" in self.state else self.default
 
-    @property
-    def values(self):
-        return self.state["values"] if "values" in self.state else self.data
-
-    async def on_change(self, key):
-        if type(self.values) is list:
-            if key in self.values:
-                values = list(filter(lambda item: item != key, self.values))
-            else:
-                values = self.values + [key]
-
-            self.set_state({
-                "values": values
-            })
-        else:
-            self.set_state({
-                "value": key
-            })
+    async def on_change(self, val, index):
+        self.set_state({"value": val})
 
 
-class Button(Component):
-    def __init__(self, label=None, size=None, variant=None, color=None, key=None, block=None):
-        component_type = "Button"
+class MultiSelect(Component):
+    def __init__(self, options=(), value=None, key=None, block=None):
+        component_type = "Select"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
 
-        self.data = ''
+        self.default = value
+
+        batch_state = get_component_batch_state(component_key, block)
 
         self.options = {
-            "size": size,
-            "variant": variant,
-            "color": color,
-            "label": label or 'button',
+            "isMulti": True,
+            "value": self.value if batch_state is None else batch_state["value"],
+            "options": options
         }
 
         self.callbacks = {
-            "on_click": self.on_click
+            "on_change": self.on_change
         }
 
         self.render()
 
-    def on_click(self):
-        ...
+    @property
+    def value(self):
+        return self.state["value"] if "value" in self.state else self.default
+
+    async def on_change(self, val, index):
+        if type(self.value) is list:
+            if val in self.value:
+                value = list(filter(lambda item: item != val, self.value))
+            else:
+                value = self.value + [val]
+
+            self.set_state({"value": value})
 
 
 class Switch(Component):
@@ -907,8 +1004,10 @@ class TextArea(Component):
 
         self.data = value
 
+        batch_state = get_component_batch_state(component_key, block)
+
         self.options = {
-            "value": self.value,
+            "value": self.value if batch_state is None else batch_state["value"],
             "size": size,
             "resize": resize,
             "disabled": disabled,
@@ -930,16 +1029,19 @@ class TextArea(Component):
 
 
 class Radio(Component):
-    def __init__(self, label=None, options=(), index=0, disabled=None, key=None, block=None):
+    def __init__(self, label=None, options=(), index=0, orientation='vertical', disabled=None, key=None, block=None):
         component_type = "Radio"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
 
+        self.default = options[index]
+
         self.options = {
+            "value": self.value,
             "label": label,
             "options": options,
+            "orientation": orientation,
             "disabled": disabled,
-            "defaultValue": options[index]
         }
 
         self.callbacks = {
@@ -950,7 +1052,7 @@ class Radio(Component):
 
     @property
     def value(self):
-        return self.state["value"] if "value" in self.state else self.options["defaultValue"]
+        return self.state["value"] if "value" in self.state else self.default
 
     async def on_change(self, val):
         self.set_state({"value": val})
@@ -1012,6 +1114,35 @@ class ToggleButton(Component):
         self.set_state({"value": val})
 
 
+class TypographyComponent(Component):
+    def __init__(self, text, component_type, options=None, key=None, block=None):
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type, block)
+
+        self.data = text
+        self.options = options
+
+        self.render()
+
+
+class Header(TypographyComponent):
+    def __init__(self, text, key=None, block=None):
+        options = {
+            "component": "h2",
+            "size": "$9"
+        }
+        super().__init__(text, "Header", options, key, block)
+
+
+class SubHeader(TypographyComponent):
+    def __init__(self, text, key=None, block=None):
+        options = {
+            "component": "h3",
+            "size": "$6"
+        }
+        super().__init__(text, "SubHeader", options, key, block)
+
+
 class UI:
     def __init__(self):
         self.block_context = None
@@ -1038,11 +1169,11 @@ class UI:
         tabs = Tabs(names, block=self.block_context)
         return tabs.tabs
 
-    # input elements
-    def button(self, *args, **kwargs):
-        button = Button(*args, **kwargs, block=self.block_context)
-        return button
+    def form(self, *args, **kwargs):
+        form = Form(*args, **kwargs, block=self.block_context)
+        return form
 
+    # input elements
     def text_input(self, *args, **kwargs):
         input = TextInput(*args, **kwargs, block=self.block_context)
         return input.value
@@ -1061,11 +1192,19 @@ class UI:
 
     def select(self, *args, **kwargs):
         select = Select(*args, **kwargs, block=self.block_context)
-        return select.values if type(select.values) is list else select.value
+        return select.value
+
+    def multi_select(self, *args, **kwargs):
+        multi_select = MultiSelect(*args, **kwargs, block=self.block_context)
+        return multi_select.value
 
     def slider(self, *args, **kwargs):
         slider = Slider(*args, **kwargs, block=self.block_context)
         return slider.value
+
+    def range_slider(self, *args, **kwargs):
+        range_slider = RangeSlider(*args, **kwargs, block=self.block_context)
+        return range_slider.value
 
     def radio(self, *args, **kwargs):
         radio = Radio(*args, **kwargs, block=self.block_context)
@@ -1103,6 +1242,14 @@ class UI:
     def link(self, *args, **kwargs):
         link = Link(*args, **kwargs, block=self.block_context)
         return link
+
+    def header(self, *args, **kwargs):
+        header = Header(*args, **kwargs, block=self.block_context)
+        return header
+
+    def subheader(self, *args, **kwargs):
+        subheader = SubHeader(*args, **kwargs, block=self.block_context)
+        return subheader
 
     # Aim sequence viz components
     def line_chart(self, *args, **kwargs):
@@ -1172,6 +1319,25 @@ class Tabs(Block, UI):
         for label in labels:
             tab = Tab(label, block=self.block_context)
             self.tabs.append(tab)
+
+
+class Form(Block, UI):
+    def __init__(self, submit_button_label='Submit', block=None):
+        super().__init__('form', block=block)
+
+        self.options = {
+            'submit_button_label': submit_button_label
+        }
+        self.callbacks = {
+            'on_submit': self.submit
+        }
+
+        self.render()
+
+    def submit(self):
+        batch_id = self.block_context["id"]
+        state_update = state[board_id][batch_id]
+        set_state(state_update, board_id=self.board_id)
 
 
 ui = UI()

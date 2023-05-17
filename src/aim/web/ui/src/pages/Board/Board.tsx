@@ -1,5 +1,4 @@
 import React from 'react';
-import classNames from 'classnames';
 import _ from 'lodash-es';
 
 import Editor from '@monaco-editor/react';
@@ -9,7 +8,6 @@ import { Spinner } from 'components/kit';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
-import SplitPane, { SplitPaneItem } from 'components/SplitPane';
 import ResizingFallback from 'components/ResizingFallback';
 import { Box, Button, Link, Tabs, Breadcrumb } from 'components/kit_v2';
 
@@ -24,8 +22,17 @@ import SaveBoard from './components/SaveBoard';
 import GridCell from './components/GridCell';
 import useBoardStore from './BoardSore';
 import BoardLeavingGuard from './components/BoardLeavingGuard';
-
-import './Board.scss';
+import {
+  BoardBlockTab,
+  BoardComponentsViz,
+  BoardSpinner,
+  BoardVisualizerComponentsPane,
+  BoardVisualizerContainer,
+  BoardVisualizerEditorPane,
+  BoardVisualizerPane,
+} from './Board.style';
+import BoardConsole from './components/BoardConsole';
+import FormVizElement from './components/VisualizationElements/FormVizElement';
 
 function Board({
   data,
@@ -39,8 +46,11 @@ function Board({
 }: any): React.FunctionComponentElement<React.ReactNode> {
   const { isLoading: pyodideIsLoading, pyodide, namespace } = usePyodide();
   const editorRef = React.useRef<any>(null);
+  const vizContainer = React.useRef<any>(null);
+  const boxContainer = React.useRef<any>(null);
   const setEditorValue = useBoardStore((state) => state.setEditorValue);
   const destroyBoardStore = useBoardStore((state) => state.destroy);
+
   const boardId = data.id;
 
   const editorValue = React.useRef(data.code);
@@ -200,10 +210,12 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
       destroyBoardStore();
     };
   }, [boardId]);
+
   function handleEditorMount(editor: any) {
     editorRef.current = editor;
     editorRef.current?.onKeyDown(onKeyDown);
   }
+
   function onKeyDown() {
     const updateEditorValue = _.debounce(() => {
       setEditorValue(editorRef.current?.getValue());
@@ -224,9 +236,9 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
 
   return (
     <ErrorBoundary>
-      <section className='Board'>
+      <Box as='section' height='100vh' className='Board'>
         {!previewMode && (
-          <TopBar className='Board__appBar'>
+          <TopBar>
             <Box flex='1 100%'>
               <Breadcrumb
                 customRouteValues={{
@@ -235,7 +247,12 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
               />
             </Box>
             {editMode || newMode ? (
-              <div className='Board__appBar__controls'>
+              <Box
+                className='Board__appBar__controls'
+                display='flex'
+                ai='center'
+                gap='$5'
+              >
                 <Button
                   color='primary'
                   variant='contained'
@@ -261,7 +278,7 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
                     Cancel
                   </Button>
                 </Link>
-              </div>
+              </Box>
             ) : (
               <Link
                 css={{ display: 'flex' }}
@@ -279,16 +296,10 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
           isLoading={pyodideIsLoading || isLoading}
           height={'100%'}
         >
-          <div className='BoardVisualizer'>
-            <SplitPane
-              id='BoardVisualizer'
-              useLocalStorage={true}
-              className='BoardVisualizer__main'
-              sizes={editMode || newMode ? [40, 60] : [100, 0]}
-              minSize={[400, 400]}
-            >
+          <BoardVisualizerContainer className='BoardVisualizer'>
+            <BoardVisualizerPane id='BoardVisualizer'>
               {editMode || newMode ? (
-                <SplitPaneItem className='BoardVisualizer__main__editor'>
+                <BoardVisualizerEditorPane className='BoardVisualizer__main__editor'>
                   <Editor
                     language='python'
                     height='100%'
@@ -300,54 +311,85 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
                       useTabStops: true,
                     }}
                   />
-                </SplitPaneItem>
+                </BoardVisualizerEditorPane>
               ) : null}
-              <SplitPaneItem
+              <BoardVisualizerComponentsPane
+                className='BoardVisualizer__main__components'
                 resizingFallback={<ResizingFallback />}
-                className={classNames('BoardVisualizer__main__components', {
-                  'BoardVisualizer__main__components--loading':
-                    state.isProcessing === null,
-                  'BoardVisualizer__main__components--processing':
-                    state.isProcessing,
-                  'BoardVisualizer__main__components--fullWidth':
-                    !editMode && !newMode,
-                })}
+                loading={state.isProcessing === null}
+                processing={state.isProcessing}
+                fullWidth={!editMode && !newMode}
               >
                 {state.isProcessing !== false && (
-                  <div className='BoardVisualizer__main__components__spinner'>
+                  <BoardSpinner className='BoardVisualizer__main__components__spinner'>
                     <Spinner />
-                  </div>
+                  </BoardSpinner>
                 )}
-                <div
-                  key={`${state.isProcessing}`}
-                  className='BoardVisualizer__main__components__viz'
-                >
-                  {state.error ? (
-                    <pre className='BoardVisualizer__main__components__viz__error'>
-                      {state.error}
-                    </pre>
-                  ) : (
-                    renderTree(tree, tree.root.elements)
-                  )}
-                </div>
-                {(editMode || newMode) && (
-                  <pre
-                    id='console'
-                    className='BoardVisualizer__main__components__console'
-                  />
+                {newMode || editMode ? (
+                  <>
+                    <Box height='100%' css={{ overflow: 'auto' }}>
+                      <BoardComponentsViz
+                        ref={vizContainer}
+                        className='BoardVisualizer__main__components__viz'
+                        key={`${state.isProcessing}`}
+                      >
+                        {state.error ? (
+                          <Box
+                            as='pre'
+                            css={{ fontMono: 14 }}
+                            color='$danger100'
+                            p='$5'
+                          >
+                            {state.error}
+                          </Box>
+                        ) : (
+                          renderTree(tree, tree.root.elements)
+                        )}
+                      </BoardComponentsViz>
+                    </Box>
+                    {state.isProcessing !== null && (
+                      <div ref={boxContainer}>
+                        <BoardConsole
+                          key={'board-console'}
+                          boxContainer={boxContainer}
+                          vizContainer={vizContainer}
+                        />
+                      </div>
+                    )}
+
+                    <BoardLeavingGuard data={data.code} />
+                  </>
+                ) : (
+                  <BoardComponentsViz
+                    className='BoardVisualizer__main__components__viz'
+                    ref={vizContainer}
+                    key={`${state.isProcessing}`}
+                  >
+                    {state.error ? (
+                      <Box
+                        as='pre'
+                        css={{ fontMono: 14 }}
+                        color='$danger100'
+                        p='$5'
+                      >
+                        {state.error}
+                      </Box>
+                    ) : (
+                      renderTree(tree, tree.root.elements)
+                    )}
+                  </BoardComponentsViz>
                 )}
-              </SplitPaneItem>
-            </SplitPane>
-          </div>
+              </BoardVisualizerComponentsPane>
+            </BoardVisualizerPane>
+          </BoardVisualizerContainer>
         </BusyLoaderWrapper>
-      </section>
+      </Box>
       {notifyData?.length > 0 && (
         <NotificationContainer
           handleClose={onNotificationDelete}
           data={notifyData}
         />
       )}
-      {(editMode || newMode) && <BoardLeavingGuard data={data.code} />}
     </ErrorBoundary>
   );
 }
@@ -362,26 +404,26 @@ function constructTree(elems: any, tree: any) {
         tree.root.elements[elem.block_context.id] = {
           ...elem.block_context,
           elements: {},
-          data: elem.data,
+          ...elem,
         };
       } else {
         if (!tree.hasOwnProperty(elem.parent_block.id)) {
           tree[elem.parent_block.id] = {
             id: elem.parent_block.id,
             elements: {},
-            data: elem.data,
+            ...elem,
           };
         }
         tree[elem.parent_block.id].elements[elem.block_context.id] = {
           ...elem.block_context,
           elements: {},
-          data: elem.data,
+          ...elem,
         };
       }
       tree[elem.block_context.id] = {
         ...elem.block_context,
         elements: {},
-        data: elem.data,
+        ...elem,
       };
     } else {
       if (!elem.parent_block) {
@@ -420,20 +462,28 @@ function renderTree(tree: any, elements: any) {
           label: tab.data,
           value: tab.data,
           content: (
-            <div key={element.type + i} className={'block--tab'}>
+            <BoardBlockTab key={element.type + i} className={'block--tab'}>
               {renderTree(tree, tree[tab.id].elements)}
-            </div>
+            </BoardBlockTab>
           ),
         });
       }
       return (
-        <div key={element.type + i} className={'block--tabs'}>
+        <Box width='100%' key={element.type + i} className={'block--tabs'}>
           <Tabs tabs={tabs} />
-        </div>
+        </Box>
       );
     }
     if (element.type === 'tab') {
       return null;
+    }
+
+    if (element.type === 'form') {
+      return (
+        <FormVizElement key={element.type + i} {...element}>
+          {renderTree(tree, tree[element.id].elements)}
+        </FormVizElement>
+      );
     }
 
     return <GridCell key={i} viz={element} />;
