@@ -156,3 +156,35 @@ async def project_status_api():
         raise HTTPException(status_code=404)
 
     return RepoIndexManager.get_index_manager(project.repo).repo_status
+
+
+@projects_router.get('/packages/')
+async def project_packages_api():
+    from aim.sdk.core.package_utils import Package
+    return list(Package.pool.keys())
+
+
+@projects_router.get('/sequences/')
+async def project_sequence_types_api(only_tracked: Optional[bool] = False):
+    project = Project()
+
+    if not project.exists():
+        raise HTTPException(status_code=404)
+
+    if only_tracked:
+        return project.repo.tracked_sequence_types()
+    else:
+        return project.repo.registered_sequence_types()
+
+
+@projects_router.get('/containers/')
+async def project_container_types_api(only_tracked: Optional[bool] = False):
+    project = Project()
+
+    if not project.exists():
+        raise HTTPException(status_code=404)
+
+    if only_tracked:
+        return project.repo.tracked_container_types()
+    else:
+        return project.repo.registered_container_types()

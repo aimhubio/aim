@@ -15,7 +15,7 @@ class Sequence(object):
 
     @property
     @abstractmethod
-    def item_type(self) -> str:
+    def type(self) -> str:
         ...
 
     @property
@@ -55,10 +55,9 @@ class Sequence(object):
     def axis(self, name: str) -> Iterator[Any]:
         ...
 
+    @abstractmethod
     def values(self) -> Iterator[Any]:
-        # default implementation
-        for _, v in self.items():
-            yield v
+        ...
 
     def steps(self) -> Iterator[int]:
         # default implementation
