@@ -73,11 +73,6 @@ REQUIRED = [
     'segment-analytics-python',
 ]
 
-if platform.machine() != 'arm64':
-    # Temporarily avoid `grpcio` until the issue
-    # https://github.com/grpc/grpc/issues/29262 is resolved
-    REQUIRED.append('grpcio>=1.42.0')
-
 
 class UploadCommand(Command):
     """Support setup.py upload."""
