@@ -5,7 +5,7 @@ from unit_tests.utils import truncate_api_db, full_class_name, fill_up_test_data
 from aim.sdk.repo import Repo
 from aim.sdk.run import Run
 
-from aim.web.run import app
+from aimcore.web.run import app
 
 
 class TestBase(unittest.TestCase):

@@ -6,7 +6,7 @@ from sqlalchemy import create_engine
 from alembic import context
 from alembic.config import Config
 
-from aim.web.configs import AIM_ENV_MODE_KEY
+from aim.sdk.configs import AIM_ENV_MODE_KEY
 from aim.core.storage.structured.sql_engine.models import *
 
 # this is the Alembic Config object, which provides

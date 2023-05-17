@@ -2,7 +2,7 @@ import os
 import subprocess
 import sys
 
-from aim.web.configs import AIM_ENV_MODE_KEY
+from aim.sdk.configs import AIM_ENV_MODE_KEY
 
 
 def create_migration_cmd():

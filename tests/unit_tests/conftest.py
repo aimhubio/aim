@@ -2,10 +2,9 @@ import os
 import shutil
 
 from aim.sdk.repo import Repo, _get_tracking_queue
-from aim.web.utils import exec_cmd
-from aim.cli.up.utils import build_db_upgrade_command
-from aim.web.configs import AIM_ENV_MODE_KEY
-from aim.sdk.configs import AIM_ENABLE_TRACKING_THREAD, AIM_REPO_NAME
+from aimcore.web.utils import exec_cmd
+from aimcore.cli.up import build_db_upgrade_command
+from aim.sdk.configs import AIM_ENABLE_TRACKING_THREAD, AIM_REPO_NAME, AIM_ENV_MODE_KEY
 from aim.core.utils.tracking import analytics
 
 TEST_REPO_PATH = '.aim-test-repo'

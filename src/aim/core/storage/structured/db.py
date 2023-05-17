@@ -9,7 +9,7 @@ from sqlalchemy.orm import sessionmaker, scoped_session
 from aim.core.storage.migrations.utils import upgrade_database
 from aim.core.storage.structured.sql_engine.factory import ModelMappedFactory as ObjectFactory
 from aim.core.storage.types import SafeNone
-from aim.web.configs import AIM_LOG_LEVEL_KEY
+from aim.sdk.configs import AIM_LOG_LEVEL_KEY
 
 
 class ObjectCache:

@@ -31,7 +31,7 @@ jobs:
           node-version: '16'
 
       - name: Build UI
-        working-directory: ./src/aim/web/ui
+        working-directory: ./src/aimcore/web/ui
         run: |
           npm i --legacy-peer-deps
           CI=false npm run build
@@ -47,14 +47,14 @@ jobs:
           python -m pip install -r ./.github/workflow_files/requirements.dev.txt
 
       - name: Build sdist & universal wheel
-        working-directory: ./src/aim/web/ui
+        working-directory: ./src/aimcore/web/ui
         run: |
           python setup.py sdist bdist_wheel --universal
 
       - name: Publish wheel
         env:
           PYPI_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-        working-directory: ./src/aim/web/ui
+        working-directory: ./src/aimcore/web/ui
         run: |
           python -m twine upload -u __token__ -p "${PYPI_PASSWORD}" dist/*
 

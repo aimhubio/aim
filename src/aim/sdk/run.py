@@ -209,8 +209,8 @@ class StructuredRunMixin:
         if self.end_time:
             return self.end_time - self.creation_time
         else:
-            from aim.web.api.utils import datetime_now
-            return datetime_now().timestamp() - self.creation_time
+            from aim.sdk.core.utils import utc_timestamp
+            return utc_timestamp() - self.creation_time
 
     @property
     def active(self):

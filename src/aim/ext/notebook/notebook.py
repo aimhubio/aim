@@ -1,7 +1,6 @@
 import shlex
 
-from aim.cli.configs import VERSION_NAME, UP_NAME
-import aim.cli.manager.manager as manager
+import aim.ext.notebook.manager as manager
 
 # Error message prefix for aim commands
 ERROR_MSG_PREFIX = b'Error:'
@@ -165,7 +164,7 @@ def up(options, context):
             display_id=True,
         )
 
-    result = manager.run_process(UP_NAME, options)
+    result = manager.run_up(options)
 
     if result.status == manager.ManagerActionStatuses.Failed:
         print(result.info["message"])
@@ -188,7 +187,7 @@ def up(options, context):
 
 def version(options, context):
     """Handles aim version (get version process) and send to the ui"""
-    result = manager.run_process(VERSION_NAME, options)
+    result = manager.run_version(options)
     if result.status is manager.ManagerActionStatuses.Failed:
         print(result.info["message"])
     else:
@@ -196,11 +195,10 @@ def version(options, context):
 
 
 # Those are aim magic function available commands
-# This is why we are not using constants from aim.cli.commands
 # It is possible to add commands outside aim cli
 handlers = {
-    UP_NAME: up,
-    VERSION_NAME: version
+    'up': up,
+    'version': version
 }
 
 

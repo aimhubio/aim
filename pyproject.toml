@@ -18,8 +18,8 @@ exclude_lines = [
     "@(abc.)?abstractmethod",
     "except ImportError:"
 ]
-include = ["src/aim/web/*", "src/aim/core/*", "src/aim/sdk/*"]
-omit = ["src/aim/web/migrations/*", "src/aim/core/storage/migrations/*", "src/aim/core/storage/env.py"]
+include = ["src/aimcore/web/*", "src/aim/core/*", "src/aim/sdk/*"]
+omit = ["src/aimcore/web/migrations/*", "src/aim/core/storage/migrations/*", "src/aim/core/storage/env.py"]
 
 [tool.flake8]
 max-line-length = 120
@@ -29,7 +29,7 @@ exclude = [
     "**/migrations/",
     "**/legacy/",
     "**/_legacy_repo",
-    "aim/web/ui",
+    "aimcore/web/ui",
     "**/*pb2.py",
     "**/*pb2_grpc.py"
 ]

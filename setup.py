@@ -32,8 +32,8 @@ def package_files(directory):
     return paths
 
 
-migration_files = package_files('src/aim/web/migrations')
-storage_migration_files = package_files('src/aim/core/storage/migrations')
+aimcore_migration_files = package_files('src/aimcore/web/migrations')
+aim_migration_files = package_files('src/aim/core/storage/migrations')
 notifier_files = package_files('src/aim/ext/notifier')
 version_files = ['../aim/VERSION', ]
 
@@ -190,10 +190,14 @@ setup(
     install_requires=REQUIRED,
     packages=(
         find_packages(where='src', exclude=('web.ui',)) +
+        # find_packages(where='src/py-sdk') +
         find_packages(where='pkgs')
     ),
-    package_dir={'aim': 'src/aim', 'aimstack': 'pkgs/aimstack'},
-    package_data={'aim': migration_files + storage_migration_files + notifier_files + version_files},
+    package_dir={'aim': 'src/aim', 'aimcore': 'src/aimcore', 'aimstack': 'pkgs/aimstack'},
+    package_data={
+        'aim': aim_migration_files + notifier_files + version_files,
+        'aimcore': aimcore_migration_files
+    },
     include_package_data=True,
     classifiers=[
         'License :: OSI Approved :: Apache Software License',
@@ -209,8 +213,8 @@ setup(
     ext_modules=cytonize_extensions(),
     entry_points={
         'console_scripts': [
-            'aim=aim.cli.cli:cli_entry_point',
-            'aim-watcher=aim.cli.watcher_cli:cli_entry_point',
+            'aim=aimcore.cli.cli:cli_entry_point',
+            'aim-watcher=aimcore.cli.watcher_cli:cli_entry_point',
         ],
     },
     cmdclass={

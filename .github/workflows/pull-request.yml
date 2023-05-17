@@ -7,10 +7,10 @@ on:
       - release/**
       - feature/**
     paths:
-      - 'src/aim/cli/**'
+      - 'src/aimcore/cli/**'
       - 'src/aim/ext/**'
       - 'src/aim/sdk/**'
-      - 'src/aim/web/api/**'
+      - 'src/aimcore/web/api/**'
       - 'src/aim/core/storage/**'
       - 'src/aim/utils/**'
       - '.github/workflows/pull-request.yml'
