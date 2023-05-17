@@ -72,8 +72,6 @@ const BoardVisualizerComponentsPane = styled(SplitPaneItem, {
     },
   },
   '.ResizeElement': {
-    position: 'absolute',
-    bottom: 0,
     zIndex: 9,
     bc: '#fff',
     minHeight: '$3',
@@ -138,6 +136,7 @@ const BoardVisualizerComponentsPane = styled(SplitPaneItem, {
     fd: 'row',
     width: '100%',
     jc: 'center',
+    ai: 'center',
     gap: '$9',
     fw: 'wrap',
     maxHeight: '100%',
@@ -150,6 +149,16 @@ const BoardVisualizerComponentsPane = styled(SplitPaneItem, {
     jc: 'center',
     maxHeight: '100%',
     maxWidth: '100%',
+  },
+  '.block--form': {
+    display: 'flex',
+    fd: 'row',
+    width: '100%',
+    jc: 'center',
+    ai: 'center',
+    gap: '$9',
+    fw: 'wrap',
+    maxHeight: '100%',
   },
   variants: {
     loading: {
@@ -173,11 +182,29 @@ const BoardVisualizerComponentsPane = styled(SplitPaneItem, {
   },
 });
 
+const BoardConsoleWrapper = styled('div', {
+  position: 'relative',
+  width: '100%',
+  height: '100%',
+  overflow: 'auto',
+});
+
+const BoardConsolePanel = styled('div', {
+  display: 'flex',
+  ai: 'center',
+  jc: 'space-between',
+  p: '$2 $5',
+  backgroundColor: '#fff',
+  borderTop: '1px solid $border30',
+  borderBottom: '1px solid $border30',
+  position: 'sticky',
+  top: 0,
+});
+
 const BoardConsoleElement = styled('pre', {
   fontMono: 14,
   p: '$5',
   overflow: 'auto',
-  borderTop: '1px solid $border30',
 });
 
 const BoardComponentsViz = styled('div', {
@@ -207,6 +234,8 @@ export {
   BoardVisualizerEditorPane,
   BoardComponentsViz,
   BoardVisualizerComponentsPane,
+  BoardConsoleWrapper,
+  BoardConsolePanel,
   BoardConsoleElement,
   BoardBlockTab,
   BoardSpinner,

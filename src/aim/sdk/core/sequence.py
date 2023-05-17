@@ -90,7 +90,6 @@ class Sequence(Generic[ItemType], ABCSequence):
         self._tree = self._container_tree.subtree((KeyNames.SEQUENCES, self._ctx_idx, self._name))
 
         self._values = None
-        self._axis = {}
         self._info = _SequenceInfo(self._tree)
         self._allowed_value_types = None
 
@@ -159,7 +158,14 @@ class Sequence(Generic[ItemType], ABCSequence):
         return self._info.axis_names
 
     def axis(self, name: str) -> Iterator[Any]:
-        return self._data.array(name).values()
+        return map(lambda x: x.get(name, None), self._data.array('val').values())
+
+    def items(self) -> Iterator[Tuple[int, Any]]:
+        return self._data.array('val').items()
+
+    def values(self) -> Iterator[Any]:
+        for _, v in self.items():
+            yield v['val']
 
     @property
     def allowed_value_types(self) -> Tuple[str]:
@@ -211,13 +217,11 @@ class Sequence(Generic[ItemType], ABCSequence):
 
         if self._values is None:
             self._values = self._data.array('val').allocate()
-        self._values[step] = value
-        for k, v in axis.items():
-            self._axis.setdefault(k, self._data.array(k).allocate())[step] = v
-        self._info.next_step = self._info.last_step + 1
 
-    def items(self) -> Iterator[Tuple[int, Any]]:
-        return self._data.array('val').items()
+        val = {k: v for k, v in axis.items()}
+        val['val'] = value
+        self._values[step] = val
+        self._info.next_step = self._info.last_step + 1
 
     def __iter__(self) -> Iterator[Tuple[int, Tuple[Any, ...]]]:
         data_iterator = zip(self.items(), zip(map(self.axis, self.axis_names)))
