@@ -297,7 +297,7 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
           height={'100%'}
         >
           <BoardVisualizerContainer className='BoardVisualizer'>
-            <BoardVisualizerPane id='BoardVisualizer'>
+            <BoardVisualizerPane id='BoardVisualizer' useLocalStorage={true}>
               {editMode || newMode ? (
                 <BoardVisualizerEditorPane className='BoardVisualizer__main__editor'>
                   <Editor
@@ -356,7 +356,6 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
                         />
                       </div>
                     )}
-
                     <BoardLeavingGuard data={data.code} />
                   </>
                 ) : (

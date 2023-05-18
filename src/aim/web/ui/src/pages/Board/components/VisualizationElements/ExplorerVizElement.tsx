@@ -23,44 +23,54 @@ function ExplorerVizElement(props: any) {
     },
   };
 
-  const Component = ExplorersMap[props.data?.toLowerCase()](state);
+  const Component = React.useMemo(() => {
+    const explorer = ExplorersMap[props.data?.toLowerCase()];
+    return explorer ? explorer(state) : null;
+  }, []);
 
-  Component.setState(state);
+  Component?.setState(state);
 
   return Component ? (
     <div
       className='VizComponentContainer'
-      style={{ display: 'block', padding: 0 }}
+      style={{ display: 'block', padding: 0, overflow: 'hidden' }}
     >
       <Component />
     </div>
   ) : null;
 }
-
 const ExplorersMap: Record<string, any> = {
   metrics: (state: Record<string, any>) =>
     renderer({
       ...metricsExplorerConfig,
       persist: false,
       initialState: state,
+      hideExplorerBar: true,
+      hideQueryForm: true,
     }),
   figures: (state: Record<string, any>) =>
     renderer({
       ...figuresExplorerConfig,
       persist: false,
       initialState: state,
+      hideExplorerBar: true,
+      hideQueryForm: true,
     }),
   audios: (state: Record<string, any>) =>
     renderer({
       ...audiosExplorerConfig,
       persist: false,
       initialState: state,
+      hideExplorerBar: true,
+      hideQueryForm: true,
     }),
   texts: (state: Record<string, any>) =>
     renderer({
       ...textExplorerConfig,
       persist: false,
       initialState: state,
+      hideExplorerBar: true,
+      hideQueryForm: true,
     }),
 };
 
