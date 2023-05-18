@@ -13,6 +13,8 @@ const TableStyled = styled('table', {
   borderSpacing: '0',
   color: '#1F2227',
   fontSize: '$3',
+  br: '$3',
+  overflow: 'hidden',
   variants: {
     size: {
       small: {

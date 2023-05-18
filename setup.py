@@ -68,14 +68,10 @@ REQUIRED = [
     'protobuf<5,>=3.9.2',
     'packaging>=15.0',
     'python-dateutil',
+    'websockets',
     'requests',
     'segment-analytics-python',
 ]
-
-if platform.machine() != 'arm64':
-    # Temporarily avoid `grpcio` until the issue
-    # https://github.com/grpc/grpc/issues/29262 is resolved
-    REQUIRED.append('grpcio>=1.42.0')
 
 
 class UploadCommand(Command):

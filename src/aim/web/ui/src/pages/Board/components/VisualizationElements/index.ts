@@ -12,6 +12,14 @@ const DataFrameVizElement = React.lazy(
       /* webpackPrefetch: true, webpackChunkName: "DataFrame" */ './DataFrameVizElement'
     ),
 );
+
+const TableVizElement = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "Table" */ './TableVizElement'
+    ),
+);
+
 const FiguresVizElement = React.lazy(
   () =>
     import(
@@ -192,6 +200,7 @@ export type VizElementKey =
   | 'ToggleButton'
   | 'Header'
   | 'SubHeader'
+  | 'Table'
   | 'Board'
   | 'BoardLink';
 
@@ -212,6 +221,7 @@ const VizElementsMap: Record<VizElementKey, React.FunctionComponent<any>> = {
   // data display elements
   Plotly: PlotlyVizElement,
   DataFrame: DataFrameVizElement,
+  Table: TableVizElement,
   JSON: JSONVizElement,
   HTML: HTMLVizElement,
   Text: TextVizElement,

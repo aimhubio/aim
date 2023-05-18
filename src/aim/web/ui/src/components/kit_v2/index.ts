@@ -26,6 +26,7 @@ import Tabs from './Tabs';
 import Link from './Link';
 import Textarea from './Textarea';
 import Breadcrumb from './Breadcrumb';
+import Table from './Table';
 
 export {
   Badge,
@@ -58,4 +59,5 @@ export {
   Link,
   Textarea,
   Breadcrumb,
+  Table,
 };

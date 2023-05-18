@@ -120,13 +120,16 @@ function createGroupingsSlice(slices: Record<string, any>) {
         ...initialState.currentValues,
         [name]: defaultValues,
       },
-      isEmpty: defaultValues.fields.length === 0,
     };
     subSlices[name] = {
       ...omit(slice, 'observableState'),
       ...slice.observableState,
     };
   });
+
+  initialState.isEmpty = isEmptyFields(
+    Object.values(initialState.currentValues),
+  );
 
   function generateMethods(set: Function, get: Function) {
     const update = (
@@ -136,7 +139,6 @@ function createGroupingsSlice(slices: Record<string, any>) {
       >,
     ) => {
       const store = get().groupings;
-      let isEmpty = true;
       const newValues = Object.keys(groupValues).reduce(
         (
           acc: Record<
@@ -149,10 +151,6 @@ function createGroupingsSlice(slices: Record<string, any>) {
             ...getCurrentValues(groupValues[name]),
             isApplied: groupValues[name].isApplied,
           };
-
-          if (acc[name].fields.length > 0) {
-            isEmpty = false;
-          }
           return acc;
         },
         {},
@@ -163,7 +161,7 @@ function createGroupingsSlice(slices: Record<string, any>) {
           groupings: {
             ...store,
             currentValues: newValues,
-            isEmpty,
+            isEmpty: isEmptyFields(Object.values(newValues)),
           },
         },
         false,
@@ -172,16 +170,12 @@ function createGroupingsSlice(slices: Record<string, any>) {
     };
     const reset = () => {
       const store = get().groupings;
-      let isEmpty = true;
       const newValues = Object.keys(store.currentValues).reduce(
         (
           acc: Record<string, { orders: Order[]; fields: string[] }>,
           name: string,
         ) => {
           acc[name] = slices[name].defaultApplications;
-          if (acc[name].fields.length > 0) {
-            isEmpty = false;
-          }
           return acc;
         },
         {},
@@ -191,7 +185,7 @@ function createGroupingsSlice(slices: Record<string, any>) {
           groupings: {
             ...store,
             currentValues: newValues,
-            isEmpty,
+            isEmpty: isEmptyFields(Object.values(newValues)),
           },
         },
         false,
@@ -202,6 +196,16 @@ function createGroupingsSlice(slices: Record<string, any>) {
       update,
       reset,
     };
+  }
+
+  function isEmptyFields(v: { orders: Order[]; fields: string[] }[]): boolean {
+    let isEmpty = true;
+    for (const { fields } of v) {
+      if (fields.length > 0) {
+        isEmpty = false;
+      }
+    }
+    return isEmpty;
   }
 
   return {
