@@ -1,4 +1,5 @@
 import logging
+import cachetools.func
 
 from collections import defaultdict
 from typing import Optional, Type, Union, Dict, Callable, Iterator, Tuple, Any
@@ -109,6 +110,7 @@ class Container(ABCContainer):
         elif isinstance(repo, str):
             from aim.sdk.core.repo import Repo
             repo = Repo.from_path(repo)
+        self.repo = repo
         self.storage = repo.storage_engine
 
         if hash_ is None:
@@ -276,7 +278,11 @@ class ContainerSequenceMap(SequenceMap[Sequence]):
             name = item[0]
             context = {} if item[1] is None else item[1]
 
-        ctx_idx = Context(context).idx
+        return self._sequence(name, Context(context))
+
+    @cachetools.func.ttl_cache()
+    def _sequence(self, name: str, context: Context) -> Sequence:
+        ctx_idx = context.idx
         try:
             self._sequence_tree.subtree((ctx_idx, name)).last_key()
             exists = True
