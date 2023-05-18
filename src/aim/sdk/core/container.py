@@ -133,7 +133,7 @@ class Container(ABCContainer):
         if self._is_readonly:
             self._meta_tree: TreeView = repo._meta_tree
         else:
-            self._meta_tree: TreeView = self.storage.tree('meta', self.hash, read_only=self._is_readonly)
+            self._meta_tree: TreeView = self.storage.tree(self.hash, 'meta', read_only=self._is_readonly)
 
         self.__storage_init__()
 
@@ -187,7 +187,8 @@ class Container(ABCContainer):
     @property
     def _sequence_data_tree(self) -> 'TreeView':
         if self.__sequence_data_tree is None:
-            self.__sequence_data_tree = self.storage.tree('seqs', self.hash, read_only=self._is_readonly)
+            self.__sequence_data_tree = self.storage.tree(
+                self.hash, 'seqs', read_only=self._is_readonly).subtree('chunks').subtree(self.hash)
         return self.__sequence_data_tree
 
     def __setitem__(self, key, value):

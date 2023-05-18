@@ -110,9 +110,10 @@ class Repo:
             self._client = Client(remote_path)
             self._remote_repo_proxy = RemoteRepoProxy(self._client)
             self.root_path = remote_path
+            self.path = path
         else:
             self.root_path = path
-        self.path = os.path.join(self.root_path, get_aim_repo_name())
+            self.path = os.path.join(self.root_path, get_aim_repo_name())
 
         if init:
             os.makedirs(self.path, exist_ok=True)

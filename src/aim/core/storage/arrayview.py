@@ -125,3 +125,19 @@ class ArrayView:
         """Last value of the array.
         """
         ...
+
+    def sample(
+        self,
+        num_samples: int = 512,
+        begin: int = None,
+        end: int = None,
+    ) -> List[Tuple[
+        int,
+        Any
+    ]]:
+        """
+        Yield max `size` random items from the subarray at a given range
+        `[begin, end)` (end is not included)
+        If `begin` and `end` are not specified, the whole subarray is sampled.
+        """
+        ...

@@ -115,8 +115,8 @@ class Sequence(Generic[ItemType], ABCSequence):
         self._context = None
         self._init_context(context)
 
-        self._data_loader = lambda: storage.tree('seqs', hash_, read_only=True)
-        self.__data = None
+        self._data_loader = lambda: storage.tree(hash_, 'seqs', read_only=True).subtree('chunks').subtree(hash_)
+        self.__data: TreeView = None
 
         self.__storage_init__()
         return self
@@ -167,19 +167,22 @@ class Sequence(Generic[ItemType], ABCSequence):
         return self._check(query, query_cache)
 
     @property
-    def axis_names(self) -> List[str]:
+    def axis_names(self) -> Tuple[str]:
         self._info.preload()
-        return list(self._info.axis_names)
+        return tuple(self._info.axis_names)
 
     def axis(self, name: str) -> Iterator[Any]:
-        return map(lambda x: x.get(name, None), self._data.array('val').values())
+        return map(lambda x: x.get(name, None), self._data.reservoir().values())
 
     def items(self) -> Iterator[Tuple[int, Any]]:
-        return self._data.array('val').items()
+        return self._data.reservoir().items()
 
     def values(self) -> Iterator[Any]:
         for _, v in self.items():
             yield v['val']
+
+    def sample(self, k: int) -> List[Any]:
+        return self[:].sample(k)
 
     @property
     def allowed_value_types(self) -> Tuple[str]:
@@ -235,7 +238,7 @@ class Sequence(Generic[ItemType], ABCSequence):
                 self._info.axis_names.update(axis_names)
                 self._tree[KeyNames.INFO_PREFIX, 'axis'] = tuple(self._info.axis_names)
             if self._values is None:
-                self._values = self._data.array('val').allocate()
+                self._values = self._data.reservoir()
 
             val = {k: v for k, v in axis.items()}
             val['val'] = value
@@ -246,6 +249,15 @@ class Sequence(Generic[ItemType], ABCSequence):
         data_iterator = zip(self.items(), zip(map(self.axis, self.axis_names)))
         for (step, value), axis_values in data_iterator:
             yield step, (value,) + axis_values
+
+    def __getitem__(self, item: Union[slice, str, Tuple[str]]) -> 'SequenceView':
+        if isinstance(item, str):
+            item = (item,)
+        if isinstance(item, slice):
+            columns = self.axis_names + ('val',)
+            return SequenceView(self, columns=columns, start=item.start, stop=item.stop)
+        elif isinstance(item, tuple):
+            return SequenceView(self, columns=item)
 
     @property
     def _data(self) -> 'TreeView':
@@ -279,3 +291,47 @@ class Sequence(Generic[ItemType], ABCSequence):
 
     def __repr__(self) -> str:
         return f'<{self.get_typename()} #{hash(self)} name={self.name} context={self._ctx_idx}>'
+
+
+class SequenceView(object):
+    def __init__(self, sequence: Sequence, *, columns: Tuple[str], start: int = None, stop: int = None):
+        self._start: int = start
+        self._stop: int = stop
+        self._columns: Set[str] = set(columns)
+        self._sequence = sequence
+
+    @property
+    def start(self) -> int:
+        return self._start
+
+    @property
+    def stop(self) -> int:
+        return self._stop
+
+    @property
+    def columns(self) -> Tuple[str]:
+        return tuple(self._columns)
+
+    def __getitem__(self, item: Union[slice, str, Tuple[str]]) -> 'SequenceView':
+        if isinstance(item, str):
+            item = (item,)
+        if isinstance(item, slice):
+            if self.start is not None and item.start is not None:
+                start = max(self.start, item.start)
+            else:
+                start = self.start if item.start is None else item.start
+            if self.stop is not None and item.stop is not None:
+                stop = min(self.stop, item.stop)
+            else:
+                stop = self.stop if item.stop is None else item.stop
+            return SequenceView(self._sequence, start=start, stop=stop, columns=self.columns)
+        elif isinstance(item, tuple):
+            columns = tuple(self._columns.intersection(item))
+            return SequenceView(self._sequence, start=self.start, stop=self.stop, columns=columns)
+
+    def sample(self, k: int) -> List[Any]:
+        def get_columns(item):
+            return [item[0], {k: v for k, v in item[1].items() if k in self._columns}]
+
+        samples = self._sequence._data.reservoir().sample(k, begin=self.start, end=self.stop)
+        return sorted(map(get_columns, samples), key=lambda x: x[0])

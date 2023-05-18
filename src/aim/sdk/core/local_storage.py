@@ -15,7 +15,7 @@ class LocalStorage(StorageEngine):
     def __init__(self, path: str, read_only: bool = True):
         self.root_path: str = path
         self.path: str = f'{path}/data'
-        self.container: StorageContainer = RocksContainer(path, read_only=read_only)
+        self.container: StorageContainer = RocksContainer(self.path, read_only=read_only)
         self.root_tree: TreeView = self.container.tree()
         self._lock_manager = LockManager(self.path)
 

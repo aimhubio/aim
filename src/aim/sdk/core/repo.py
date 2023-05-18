@@ -29,10 +29,10 @@ class Repo(LegacyRepo):
         if self.is_remote_path(path):
             self._storage_engine = RemoteStorage(path, read_only=read_only)
         else:
-            self._storage_engine = LocalStorage(path, read_only=read_only)
+            self._storage_engine = LocalStorage(self.path, read_only=read_only)
 
         self._system_tracker = None
-        self._meta_tree = self._storage_engine.tree(hash_=None, name='meta', read_only=True)
+        self._meta_tree = self._storage_engine.tree(None, 'meta', read_only=True)
 
     @property
     def storage_engine(self) -> StorageEngine:
@@ -80,7 +80,7 @@ class Repo(LegacyRepo):
 
         if issubclass(orig_type, Container):
             query_context.update({
-                KeyNames.CONTAINER_TYPES_MAP: self.meta_tree.subtree(KeyNames.CONTAINER_TYPES_MAP),
+                KeyNames.CONTAINER_TYPES_MAP: self._meta_tree.subtree(KeyNames.CONTAINER_TYPES_MAP),
                 KeyNames.CONTAINER_TYPE: type_,
                 'required_typename': type_.get_full_typename(),
             })

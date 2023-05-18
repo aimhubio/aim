@@ -213,7 +213,7 @@ class ContainerSequenceCollection(SequenceCollectionBase['Sequence']):
 class SequenceCollection(SequenceCollectionBase['Sequence']):
     def __init__(self, query_context: Dict):
         super().__init__(query_context)
-        self.hashes = self.query_context['storage'].container_hashes()
+        self.hashes = self.query_context['repo'].container_hashes
 
     def __iter_meta__(self) -> Iterator[Tuple[str, str, Dict]]:
         for hash_ in self.hashes:

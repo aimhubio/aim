@@ -62,5 +62,6 @@ class Package:
 
 
 def register_aimstack_packages():
+    logger.debug('Registering Aim packages available at aimstack')
     import aimstack
     Package.discover(aimstack)

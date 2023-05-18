@@ -67,7 +67,7 @@ class PrefixView(Container):
 
     def absolute_path(
         self,
-        path: bytes = None
+        path: bytes = b''
     ) -> bytes:
         """Returns the absolute path for the given relative `path`.
 
@@ -77,7 +77,7 @@ class PrefixView(Container):
         `join('a/b/c/', 'e/f/') == 'a/b/c/' + 'e/f/' = 'a/b/c/e/f/'`
         """
         if path is None:
-            return self.prefix
+            return None
         return self.prefix + path
 
     def get(
@@ -231,26 +231,37 @@ class PrefixView(Container):
 
     def items(
         self,
-        key: ContainerKey = b''
+        begin: ContainerKey = b'',
+        end: ContainerKey = b'',
     ) -> Iterator[Tuple[ContainerKey, ContainerValue]]:
         """Iterate over all the key-value records in the prefix key range.
 
         The iteration is always performed in lexiographic order w.r.t keys.
-        If `prefix` is provided, iterate only over those records that have key
-        starting with the `prefix`.
+        If `begin` is provided, iterate only over those records that have key
+        starting with the `begin`. If `end` is provided, iterate only over
+        those records lexigraphically strictly smaller than `end`.
 
-        For example, if `prefix == b'meta.'`, and the Container consists of:
+        For example, if `begin == b'meta.'`, and the Container consists of:
         `{
             b'e.y': b'012',
             b'meta.x': b'123',
             b'meta.z': b'x',
-            b'zzz': b'oOo'
+            b'zza': b'oOo',
+            b'zzb': b'x',
+            b'zzc': b'yf'
         }`, the method will yield `(b'meta.x', b'123')` and `(b'meta.z', b'x')`
+        in this order. However, if `end == b'zzb'`, the method will include the
+        `(b'zza', b'oOo')` record in the iteration.
 
         Args:
-            prefix (:obj:`bytes`): the prefix that defines the key range
+            begin (:obj:`bytes`): the prefix that defines the key range of the
+                iteration. The iteration will start from the first key that
+                comes after `begin` in lexicographic order, including `begin`.
+            end (:obj:`bytes`): the prefix that defines the key range of the
+                iteration. The iteration will end at the first key that comes
+                after `end` in lexicographic order, excluding `end`.
         """
-        return PrefixViewItemsIterator(self, key)
+        return PrefixViewItemsIterator(self, begin=begin, end=end)
 
     def view(
         self,
@@ -327,12 +338,24 @@ class PrefixView(Container):
 
 class PrefixViewItemsIterator(ContainerItemsIterator):
 
-    def __init__(self, prefix_view, key):
+    def __init__(
+        self,
+        prefix_view: Container,
+        begin: ContainerKey,
+        end: ContainerKey,
+    ):
         self.prefix_view = prefix_view
-        self.path = prefix_view.absolute_path(key)
-        self.it = prefix_view.parent.items(self.path)
+        self.begin = prefix_view.absolute_path(begin)
+        if end:
+            self.end = prefix_view.absolute_path(end)
+        else:
+            self.end = b''
+
+        self.it = prefix_view.parent.items(self.begin, self.end)
         # We store length of the path to strip it from the key faster
-        self.prefix_len = len(self.path)
+        self.prefix_len = len(self.prefix_view.prefix)
+        self.begin = begin
+        self.end = end
 
     def next(self):
         item = self.it.next()
@@ -343,4 +366,5 @@ class PrefixViewItemsIterator(ContainerItemsIterator):
         keys = item[0]
         value = item[1]
 
-        return keys[self.prefix_len:], value
+        keys = keys[self.prefix_len:]
+        return keys, value

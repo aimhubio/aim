@@ -1,6 +1,6 @@
 from aim.core.storage.types import AimObject, AimObjectKey, AimObjectPath
 
-from typing import TYPE_CHECKING, Any, Iterator, Tuple, Union
+from typing import TYPE_CHECKING, Any, Iterator, Tuple, Union, List
 
 if TYPE_CHECKING:
     from aim.core.storage.arrayview import ArrayView
@@ -27,7 +27,7 @@ class TreeView:
         self,
         path: Union[AimObjectKey, AimObjectPath],
         resolve: bool = False
-    ):
+    ) -> 'TreeView':
         ...
 
     def make_array(
@@ -127,4 +127,10 @@ class TreeView:
         self,
         path: Union[AimObjectKey, AimObjectPath] = ()
     ) -> AimObjectKey:
+        ...
+
+    def reservoir(
+        self,
+        path: Union[AimObjectKey, AimObjectPath] = (),
+    ) -> 'ArrayView':
         ...

@@ -17,7 +17,8 @@ cdef class PrefixView(Container):
 
 cdef class PrefixViewItemsIterator(ContainerItemsIterator):
     cdef PrefixView prefix_view
-    cdef bytes path
+    cdef bytes begin
+    cdef bytes end
     cdef int prefix_len
     cdef ContainerItemsIterator it
 

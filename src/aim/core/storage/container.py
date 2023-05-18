@@ -1,4 +1,4 @@
-from typing import Iterator, Tuple, Union
+from typing import Iterator, List, Tuple, Union
 
 from typing import TYPE_CHECKING
 
@@ -113,25 +113,58 @@ class Container:
         """
         ...
 
-    def items(self, prefix: ContainerKey = b'') -> Iterator[Tuple[ContainerKey, ContainerValue]]:
+    def items(self, begin: ContainerKey = b'', end: ContainerKey = b'') -> Iterator[Tuple[ContainerKey, ContainerValue]]:
         """Iterate over all the key-value records in the prefix key range.
 
-        The iteration is always performed in lexicographic order w.r.t keys.
-        If `prefix` is provided, iterate only over those records that have key
-        starting with the `prefix`.
+        The iteration is always performed in lexiographic order w.r.t keys.
+        If `begin` is provided, iterate only over those records that have key
+        starting with the `begin`. If `end` is provided, iterate only over
+        those records lexigraphically strictly smaller than `end`.
 
-        For example, if `prefix == b'meta.'`, and the Container consists of:
+        For example, if `begin == b'meta.'`, and the Container consists of:
         `{
             b'e.y': b'012',
             b'meta.x': b'123',
             b'meta.z': b'x',
-            b'zzz': b'oOo'
+            b'zza': b'oOo',
+            b'zzb': b'x',
+            b'zzc': b'yf'
         }`, the method will yield `(b'meta.x', b'123')` and `(b'meta.z', b'x')`
+        in this order. However, if `end == b'zzb'`, the method will include the
+        `(b'zza', b'oOo')` record in the iteration.
 
         Args:
-            prefix (:obj:`bytes`): the prefix that defines the key range
+            begin (:obj:`bytes`): the prefix that defines the key range of the
+                iteration. The iteration will start from the first key that
+                comes after `begin` in lexicographic order, including `begin`.
+            end (:obj:`bytes`): the prefix that defines the key range of the
+                iteration. The iteration will end at the first key that comes
+                after `end` in lexicographic order, excluding `end`.
         """
-        ...
+        raise NotImplementedError
+
+    def samples(
+        self,
+        begin: ContainerKey = b'',
+        end: ContainerKey = b'',
+    ) -> List[Tuple[ContainerKey, ContainerValue]]:
+        """
+        Iterates over all the key-value records in the prefix key range,
+        in random order. Yields lists of records, grouped by the level.
+        Each group is guaranteed to be non-empty. In the same group, the
+        records are sorted by keys in lexicographic order. For higher-level
+        random sampling, each group should should be considered in whole.
+
+        Args:
+            begin (:obj:`bytes`): the prefix that defines the key range of the
+                iteration. The iteration will start from the first key that
+                comes after `begin` in lexicographic order, including `begin`.
+            end (:obj:`bytes`): the prefix that defines the key range of the
+                iteration. The iteration will end at the first key that comes
+                after `end` in lexicographic order, excluding `end`.
+        """
+        all_samples = list(self.items(begin, end))
+        yield all_samples
 
     def keys(self, prefix: ContainerKey = b'') -> Iterator[ContainerKey]:
         """Iterate over all the keys in the prefix range.
@@ -151,7 +184,7 @@ class Container:
         Args:
             prefix (:obj:`bytes`): the prefix that defines the key range
         """
-        return utils.KeysIterator(self.items(prefix=prefix))
+        return utils.KeysIterator(self.items(prefix))
 
     def values(self, prefix: ContainerKey = b'') -> Iterator[ContainerValue]:
         """Iterate over all the values in the given prefix key range.
@@ -171,7 +204,7 @@ class Container:
         Args:
             prefix (:obj:`bytes`): the prefix that defines the key range
         """
-        return utils.ValuesIterator(self.items(prefix=prefix))
+        return utils.ValuesIterator(self.items(prefix))
 
     def view(self, prefix: ContainerKey = b'') -> 'Container':
         """Return a view (even mutable ones) that enable access to the container

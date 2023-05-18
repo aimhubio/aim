@@ -32,7 +32,7 @@ class Sequence(object):
 
     @property
     @abstractmethod
-    def axis_names(self) -> List[str]:
+    def axis_names(self) -> Tuple[str]:
         ...
 
     @abstractmethod
