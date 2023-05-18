@@ -159,8 +159,6 @@ class RestrictedPythonQuery(Query):
 
     __slots__ = ('_checker', 'run_metadata_cache')
 
-    allowed_params = {'run', 'metric', 'images', 'audios', 'distributions', 'figures', 'figures3d', 'texts'}
-
     def __init__(
         self,
         query: str,
@@ -190,9 +188,3 @@ class RestrictedPythonQuery(Query):
     @classmethod
     def query_expression(cls, query: str) -> str:
         return strip_query(query)
-
-
-class LegacyRestrictedPythonQuery(RestrictedPythonQuery):
-    @classmethod
-    def query_expression(cls, query: str) -> str:
-        return query_add_default_expr(strip_query(query))
