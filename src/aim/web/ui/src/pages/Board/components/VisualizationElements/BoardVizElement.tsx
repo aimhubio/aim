@@ -12,10 +12,7 @@ function BoardVizElement(props: any) {
   const board = data.find((b: any) => b.id === boardId);
 
   return (
-    <div
-      className='VizComponentContainer'
-      style={{ flex: 1, display: 'block', padding: 0 }}
-    >
+    <div className='VizComponentContainer' style={{ flex: 1, padding: 0 }}>
       {isLoading ? (
         <Spinner />
       ) : board ? (

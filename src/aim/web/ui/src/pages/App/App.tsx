@@ -25,11 +25,15 @@ import boardAppModel from 'services/models/board/boardAppModel';
 import useApp from './useApp';
 import { AppContainer, BoardWrapper, BoardLink } from './App.style';
 
-const BoardsList: React.FC<any> = ({ boards, editMode }) => {
+const AppStructure: React.FC<any> = ({ boards, editMode }) => {
   return (
     <Box
       width={200}
-      css={{ borderRight: '1px solid $border30', backgroundColor: '#fff' }}
+      css={{
+        borderRight: '1px solid $border30',
+        backgroundColor: '#fff',
+        p: '$3 0',
+      }}
     >
       {boards.map((board: any) => (
         <BoardLink
@@ -92,8 +96,8 @@ function App(): React.FunctionComponentElement<React.ReactNode> {
                     </Link>
                   )}
                 </TopBar>
-                <Box display='flex'>
-                  <BoardsList boards={data} editMode={editMode} />
+                <Box display='flex' height='calc(100% - 28px)'>
+                  <AppStructure boards={data} editMode={editMode} />
                   <BoardWrapper>
                     {board && (
                       <Board

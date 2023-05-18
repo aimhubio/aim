@@ -3,17 +3,15 @@ import { createPortal } from 'react-dom';
 import _ from 'lodash-es';
 
 import Editor from '@monaco-editor/react';
-import { IconPencil } from '@tabler/icons-react';
 
 import { Spinner } from 'components/kit';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 import ResizingFallback from 'components/ResizingFallback';
-import { Box, Button, Link, Tabs, Breadcrumb } from 'components/kit_v2';
+import { Box, Button, Link, Tabs } from 'components/kit_v2';
 
 import { PathEnum } from 'config/enums/routesEnum';
-import { TopBar } from 'config/stitches/foundations/layout';
 
 import usePyodide from 'services/pyodide/usePyodide';
 
@@ -83,7 +81,7 @@ function Board({
         packagesListProxy.destroy();
 
         for await (const lib of packagesList) {
-          if (lib !== 'js') {
+          if (!['js', 'ml'].includes(lib)) {
             await pyodide?.loadPackage('micropip');
             try {
               const micropip = pyodide?.pyimport('micropip');
@@ -123,8 +121,11 @@ function Board({
 block_context = {
   "current": 0,
 }
+current_layout = []
 board_id = ${boardId === undefined ? 'None' : `"${boardId}"`}
 session_state = state[board_id] if board_id in state else {}
+def set_session_state(state_slice):
+  set_state(state_slice, board_id)
 `;
         const code =
           resetCode +

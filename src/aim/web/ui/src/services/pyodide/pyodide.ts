@@ -103,10 +103,23 @@ export async function loadPyodideInstance() {
   });
 
   const namespace = pyodide.toPy({});
-  const mock = await fetch(`${getBasePath()}/static-files/aim_ui_core.py`);
-  const mockText = await mock.text();
+  const coreFile = await fetch(`${getBasePath()}/static-files/aim_ui_core.py`);
+  const coreCode = await coreFile.text();
 
-  await pyodide.runPythonAsync(mockText, { globals: namespace });
+  pyodide.runPython(coreCode, { globals: namespace });
+
+  let ml = {
+    Metric: {
+      filter: (query: string) => {
+        let val = pyodide.runPython(
+          `query_filter('Metric', ${JSON.stringify(query)})`,
+          { globals: namespace },
+        );
+        return val;
+      },
+    },
+  };
+  pyodide.registerJsModule('ml', ml);
 
   pyodideEngine.setPyodide({
     current: pyodide,

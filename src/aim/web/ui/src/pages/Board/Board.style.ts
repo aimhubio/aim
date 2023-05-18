@@ -73,6 +73,7 @@ const BoardVisualizerComponentsPane = styled(SplitPaneItem, {
     },
     '.Board': {
       height: '100%',
+      width: '100%',
 
       '.BoardVisualizer': {
         height: '100%',

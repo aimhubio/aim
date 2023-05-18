@@ -16,7 +16,7 @@ const BoardWrapper = styled(Box, {
 });
 
 const BoardLink = styled(NavLink, {
-  display: 'flex',
+  display: 'block',
   textDecoration: 'none',
 });
 
