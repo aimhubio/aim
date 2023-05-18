@@ -1,6 +1,6 @@
 import logging
 
-from typing import TypeVar, Generic, Any, Optional, Dict, Union, Tuple, List, Iterator, Callable
+from typing import TypeVar, Generic, Any, Optional, Dict, Union, Tuple, List, Set, Iterator, Callable
 
 from aim.sdk.core import type_utils
 from aim.sdk.core.utils import utc_timestamp
@@ -32,7 +32,7 @@ class _SequenceInfo:
         self.first_step = None
         self.last_step = None
         self.creation_time = None
-        self.axis_names: List[str] = []
+        self.axis_names: Set[str] = set()
         self.dtype = None
         self.empty = None
 
@@ -48,7 +48,7 @@ class _SequenceInfo:
             self.first_step = info['first_step']
             self.last_step = info['last_step']
             self.creation_time = info['creation_time']
-            self.axis_names = info['axis']
+            self.axis_names = set(info['axis'])
             self.dtype = info[KeyNames.VALUE_TYPE]
             self.stype = info[KeyNames.SEQUENCE_TYPE]
             self.empty = False
@@ -77,6 +77,7 @@ class Sequence(Generic[ItemType], ABCSequence):
 
     def __init__(self, container: 'Container', *, name: str, context: _ContextInfo):
         self._container: 'Container' = container
+        self._container_hash: str = container.hash
         self._meta_tree = container._meta_tree
         self._container_tree = container._tree
 
@@ -102,6 +103,7 @@ class Sequence(Generic[ItemType], ABCSequence):
     def from_storage(cls, storage, meta_tree: 'TreeView', *, hash_: str, name: str, context: _ContextInfo):
         self = cls.__new__(cls)
         self._container = None
+        self._container_hash = hash_
         self._meta_tree = meta_tree
         self._container_tree = meta_tree.subtree('chunks').subtree(hash_)
 
@@ -152,6 +154,11 @@ class Sequence(Generic[ItemType], ABCSequence):
         self._info.preload()
         return self._info.empty
 
+    @property
+    def next_step(self) -> int:
+        self._info.preload()
+        return self._info.next_step
+
     def match(self, expr) -> bool:
         query = RestrictedPythonQuery(expr)
         query_cache = dict
@@ -160,7 +167,7 @@ class Sequence(Generic[ItemType], ABCSequence):
     @property
     def axis_names(self) -> List[str]:
         self._info.preload()
-        return self._info.axis_names
+        return list(self._info.axis_names)
 
     def axis(self, name: str) -> Iterator[Any]:
         return map(lambda x: x.get(name, None), self._data.array('val').values())
@@ -189,13 +196,14 @@ class Sequence(Generic[ItemType], ABCSequence):
         if step is None:
             step = self._info.next_step
 
+        axis_names = set(axis.keys())
         if self._info.empty:
             self._tree[KeyNames.INFO_PREFIX, 'creation_time'] = utc_timestamp()
             self._tree[KeyNames.INFO_PREFIX, 'version'] = self.version
             self._tree[KeyNames.INFO_PREFIX, KeyNames.OBJECT_CATEGORY] = self.object_category
             self._tree[KeyNames.INFO_PREFIX, 'first_step'] = self._info.first_step = step
             self._tree[KeyNames.INFO_PREFIX, 'last_step'] = self._info.last_step = step
-            self._tree[KeyNames.INFO_PREFIX, 'axis'] = self._info.axis_names = tuple(axis.keys())
+            self._tree[KeyNames.INFO_PREFIX, 'axis'] = tuple(axis_names)
             self._tree[KeyNames.INFO_PREFIX, KeyNames.VALUE_TYPE] = self._info.dtype = value_type
             self._tree[KeyNames.INFO_PREFIX, KeyNames.SEQUENCE_TYPE] = self.get_full_typename()
 
@@ -206,20 +214,23 @@ class Sequence(Generic[ItemType], ABCSequence):
 
             self._tree['first_value'] = value
             self._tree['last_value'] = value
+            self._tree['axis_last_values'] = axis
+            self._info.axis_names = axis_names
             self._info.empty = False
 
         if step > self._info.last_step:
-            self._tree[KeyNames.INFO_PREFIX, 'last_step'] = step
+            self._tree[KeyNames.INFO_PREFIX, 'last_step'] = self._info.last_step = step
             self._tree['last_value'] = value
-            self._info.last_step = step
+            self._tree['axis_last_values'] = axis
         if step < self._info.first_step:
-            self._tree[KeyNames.INFO_PREFIX, 'first_step'] = step
+            self._tree[KeyNames.INFO_PREFIX, 'first_step'] = self._info.first_step = step
             self._tree['first_value'] = value
-            self._info.first_step = step
         if not type_utils.is_subtype(value_type, self._info.dtype):
             dtype = type_utils.get_common_typename((value_type, self._info.dtype))
             self._tree[KeyNames.INFO_PREFIX, KeyNames.VALUE_TYPE] = self._info.dtype = dtype
-
+        if not axis_names.issubset(self._info.axis_names):
+            self._info.axis_names.update(axis_names)
+            self._tree[KeyNames.INFO_PREFIX, 'axis'] = tuple(self._info.axis_names)
         if self._values is None:
             self._values = self._data.array('val').allocate()
 
@@ -246,14 +257,18 @@ class Sequence(Generic[ItemType], ABCSequence):
         return self.__class__
 
     def _check(self, query, query_cache, *, aliases=()) -> bool:
-        hash_ = self._container.hash
+        hash_ = self._container_hash
         proxy = SequenceQueryProxy(self.name, self._context_from_idx, self._ctx_idx, self._tree, query_cache[hash_])
-        c_proxy = ContainerQueryProxy(self._container_tree, query_cache[hash_])
+        c_proxy = ContainerQueryProxy(hash_, self._container_tree, query_cache[hash_])
 
         if isinstance(aliases, str):
             aliases = (aliases,)
         alias_names = self.default_aliases.union(aliases)
-        container_alias_names = self._container.default_aliases
+        if self._container is not None:
+            container_alias_names = self._container.default_aliases
+        else:
+            from aim.sdk.core.container import Container
+            container_alias_names = Container.default_aliases
 
         query_params = {p: proxy for p in alias_names}
         query_params.update({cp: c_proxy for cp in container_alias_names})
