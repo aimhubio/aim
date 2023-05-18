@@ -1,7 +1,7 @@
 from typing import Optional
 
 from aim.sdk.run import Run
-from aim.sdk.adapters.keras_mixins import TrackerKerasCallbackMetricsEpochEndMixin
+from aimstack.ml.adapters.keras_mixins import TrackerKerasCallbackMetricsEpochEndMixin
 from aim.ext.system_info import DEFAULT_SYSTEM_TRACKING_INT
 
 try:

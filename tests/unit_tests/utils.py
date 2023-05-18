@@ -9,7 +9,7 @@ from sqlalchemy import text as sa_text
 
 from aim.sdk.repo import Repo
 from aim.sdk.run import Run
-from aim.sdk.objects.image import Image as AimImage
+from aimstack.asp.models.objects.image import Image as AimImage
 from aim.core.storage.structured.sql_engine.models import Base as StructuredBase
 from aimcore.web.api.db import get_contexted_session
 from aimcore.web.api.db import Base as ApiBase

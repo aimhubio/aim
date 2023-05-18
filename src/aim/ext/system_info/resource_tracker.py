@@ -3,7 +3,6 @@ import logging
 import re
 import sys
 import time
-import weakref
 
 from psutil import Process, cpu_percent
 from threading import Thread
@@ -11,16 +10,24 @@ from typing import Union
 from weakref import WeakValueDictionary
 
 from aim.ext.system_info.configs import AIM_RESOURCE_METRIC_PREFIX
-from aim.ext.system_info.log import LogLine
 from aim.ext.system_info.stat import Stat
+from aim.core.callbacks import Caller, event
 
 logger = logging.getLogger(__name__)
 
 
-class ResourceTracker(object):
+class ResourceTracker(Caller):
     _buffer_registry = WeakValueDictionary()
     _old_out_write = None
     _old_err_write = None
+
+    @event
+    def logs_collected(self, log_lines, **kwargs):
+        """Is called periodically when the new output stream buffer is available."""
+
+    @event
+    def system_resource_stats_collected(self, stats, context, **kwargs):
+        """Is called periodically when the resource usage stats are available."""
 
     @classmethod
     def _install_stream_patches(cls):
@@ -76,11 +83,9 @@ class ResourceTracker(object):
         cpu_percent(0.0)
 
     def __init__(self,
-                 tracker,
                  interval: Union[int, float] = STAT_INTERVAL_DEFAULT,
-                 capture_logs: bool = True,
-                 log_offset: int = 0):
-        self._tracker = weakref.ref(tracker)
+                 capture_logs: bool = True):
+        super().__init__()
         self._stat_capture_interval = None
         if self.check_interval(interval, warn=False):
             self._stat_capture_interval = interval
@@ -91,7 +96,7 @@ class ResourceTracker(object):
         self._old_out = None
         self._old_err = None
         self._io_buffer = io.BytesIO()
-        self._line_counter = log_offset
+        self._line_counter = 0
 
         try:
             self._process = Process()
@@ -144,20 +149,16 @@ class ResourceTracker(object):
 
     def _track(self, stat: Stat):
         # Store system stats
+        stats = {}
         for resource, usage in stat.system.items():
-            self._tracker()(
-                usage,
-                name='{}{}'.format(AIM_RESOURCE_METRIC_PREFIX, resource),
-            )
-
+            stats['{}{}'.format(AIM_RESOURCE_METRIC_PREFIX, resource)] = usage
+        self.system_resource_stats_collected(stats=stats, context={})
         # Store GPU stats
         for gpu_idx, gpu in enumerate(stat.gpus):
+            stats = {}
             for resource, usage in gpu.items():
-                self._tracker()(
-                    usage,
-                    name='{}{}'.format(AIM_RESOURCE_METRIC_PREFIX, resource),
-                    context={'gpu': gpu_idx}
-                )
+                stats['{}{}'.format(AIM_RESOURCE_METRIC_PREFIX, resource)] = usage
+            self.system_resource_stats_collected(stats=stats, context={'gpu': gpu_idx})
 
     def _stat_collector(self):
         """
@@ -218,14 +219,15 @@ class ResourceTracker(object):
             return _remove_csi(line)
 
         line = None
+        log_lines = []
         for line in lines:
             # handle cursor up and down symbols
             line = _handle_csi(line)
             # handle each line for carriage returns
             line = line.rsplit(b'\r')[-1]
-            self._tracker()(LogLine(line.decode()), name='logs', step=self._line_counter)
+            log_lines.append((line.decode(), self._line_counter))
             self._line_counter += 1
-
+        self.logs_collected(log_lines=log_lines)
         self._line_counter -= 1
 
         # if there was no b'\n' at the end of the data keep the last line in buffer for further writing

@@ -7,8 +7,6 @@ import sys
 import pathlib
 
 from collections import defaultdict
-from functools import partialmethod
-from inspect import currentframe, getframeinfo
 
 from aim.sdk.base_run import BaseRun
 from aim.sdk.sequence import Sequence
@@ -16,13 +14,11 @@ from aim.sdk.tracker import RunTracker
 from aim.sdk.reporter import RunStatusReporter, ScheduledStatusReporter
 from aim.sdk.reporter.file_manager import LocalFileManager
 from aim.sdk.remote_run_reporter import RemoteRunHeartbeatReporter, RemoteFileManager
-from aim.sdk.sequence_collection import SingleRunSequenceCollection
 from aim.sdk.utils import (
     backup_run,
 )
 
 from aim.sdk.types import AimObject
-from aim.sdk.logging import LogRecord, LogRecords
 
 from aim.core.storage.treeview import TreeView
 from aim.sdk.context import Context
@@ -44,15 +40,6 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from pandas import DataFrame
 
-    from aim.sdk.sequences.metric import Metric
-    from aim.sdk.sequences.image_sequence import Images
-    from aim.sdk.sequences.audio_sequence import Audios
-    from aim.sdk.sequences.distribution_sequence import Distributions
-    from aim.sdk.sequences.figure_sequence import Figures
-    from aim.sdk.sequences.figure3d_sequence import Figures3D
-    from aim.sdk.sequences.text_sequence import Texts
-    from aim.sdk.sequence_collection import SequenceCollection
-    from aim.ext.system_info.log import Logs
     from aim.sdk.repo import Repo
 
 logger = logging.getLogger(__name__)
@@ -415,27 +402,6 @@ class BasicRun(BaseRun, StructuredRunMixin):
 
         self._tracker(value, name, step, epoch, context=context)
 
-    # logging API
-    def _log_message(self, level: int, msg: str, **params):
-        frame_info = getframeinfo(currentframe().f_back)
-        logger_info = (frame_info.filename, frame_info.lineno)
-        self.track(LogRecord(msg, level, logger_info=logger_info, **params), name='__log_records')
-        block = (level > logging.WARNING)
-        self._checkins.check_in(flag_name="new_logs", block=block)
-
-    log_error = partialmethod(_log_message, logging.ERROR)
-    log_warning = partialmethod(_log_message, logging.WARNING)
-    log_info = partialmethod(_log_message, logging.INFO)
-    log_debug = partialmethod(_log_message, logging.DEBUG)
-
-    def get_log_records(self) -> Optional[LogRecords]:
-        """Retrieve duplicated terminal logs for a run
-
-        Returns:
-            :obj:`Sequence` object if exists, `None` otherwise.
-        """
-        return self._get_sequence('log_records', '__log_records', Context({}))
-
     @property
     def props(self):
         if self._props is None:
@@ -475,150 +441,8 @@ class BasicRun(BaseRun, StructuredRunMixin):
                 if '*' in dtypes or run_ctx_dict[seq_name].get('dtype', 'float') in dtypes:
                     yield seq_name, ctx, self
 
-    def metrics(self) -> 'SequenceCollection':
-        """Get iterable object for all run tracked metrics.
-
-        Returns:
-            :obj:`MetricCollection`: Iterable for run metrics.
-
-        Examples:
-            >>> run = Run('3df703c')
-            >>> for metric in run.metrics():
-            >>>     metric.values.sparse_numpy()
-        """
-        from aim.sdk.sequences.metric import Metric
-        self.repo._prepare_runs_cache()
-        return SingleRunSequenceCollection(self, seq_cls=Metric)
-
     def __eq__(self, other: 'Run') -> bool:
         return self.hash == other.hash and self.repo == other.repo
-
-    def get_metric(
-            self,
-            name: str,
-            context: Context
-    ) -> Optional['Metric']:
-        """Retrieve metric sequence by it's name and context.
-
-        Args:
-             name (:obj:`str`): Tracked metric name.
-             context (:obj:`Context`): Tracking context.
-
-        Returns:
-            :obj:`Metric` object if exists, `None` otherwise.
-        """
-        if self.read_only and not Run._metric_version_warning_shown:
-            if self.check_metrics_version():
-                logger.warning(f'Detected sub-optimal format metrics for Run {self.hash}. Consider upgrading repo '
-                               f'to improve queries performance:')
-                logger.warning(f'aim storage --repo {self.repo.path} upgrade 3.11+ \'*\'')
-                Run._metric_version_warning_shown = True
-
-        return self._get_sequence('metric', name, context)
-
-    def get_image_sequence(
-            self,
-            name: str,
-            context: Context
-    ) -> Optional['Images']:
-        """Retrieve images sequence by it's name and context.
-
-        Args:
-             name (:obj:`str`): Tracked image sequence name.
-             context (:obj:`Context`): Tracking context.
-
-        Returns:
-            :obj:`Images` object if exists, `None` otherwise.
-        """
-        return self._get_sequence('images', name, context)
-
-    def get_figure_sequence(
-            self,
-            name: str,
-            context: Context
-    ) -> Optional['Figures']:
-        """Retrieve figure sequence by its name and context.
-
-        Args:
-             name (:obj:`str`): Tracked figure sequence name.
-             context (:obj:`Context`): Tracking context.
-
-        Returns:
-            :obj:`Figures` object if exists, `None` otherwise.
-        """
-        return self._get_sequence('figures', name, context)
-
-    def get_figure3d_sequence(
-            self,
-            name: str,
-            context: Context
-    ) -> Optional['Figures3D']:
-        """Retrieve figure sequence by its name and context.
-
-        Args:
-             name (:obj:`str`): Tracked figure sequence name.
-             context (:obj:`Context`): Tracking context.
-
-        Returns:
-            :obj:`Figures3D` object if exists, `None` otherwise.
-        """
-        return self._get_sequence('figures3d', name, context)
-
-    def get_audio_sequence(
-            self,
-            name: str,
-            context: Context
-    ) -> Optional['Audios']:
-        """Retrieve audios sequence by its name and context.
-
-        Args:
-             name (:obj:`str`): Tracked audios sequence name.
-             context (:obj:`Context`): Tracking context.
-
-        Returns:
-            :obj:`Audios` object if exists, `None` otherwise.
-        """
-        return self._get_sequence('audios', name, context)
-
-    def get_distribution_sequence(
-            self,
-            name: str,
-            context: Context
-    ) -> Optional['Distributions']:
-        """Retrieve distributions sequence by it's name and context.
-
-        Args:
-             name (:obj:`str`): Tracked distribution sequence name.
-             context (:obj:`Context`): Tracking context.
-
-        Returns:
-            :obj:`Distributions` object if exists, `None` otherwise.
-        """
-        return self._get_sequence('distributions', name, context)
-
-    def get_terminal_logs(self) -> Optional['Logs']:
-        """Retrieve duplicated terminal logs for a run
-
-                Returns:
-                    :obj:`Logs` object if exists, `None` otherwise.
-                """
-        return self._get_sequence('logs', 'logs', Context({}))
-
-    def get_text_sequence(
-            self,
-            name: str,
-            context: Context
-    ) -> Optional['Texts']:
-        """Retrieve texts sequence by it's name and context.
-
-        Args:
-             name (:obj:`str`): Tracked text sequence name.
-             context (:obj:`Context`): Tracking context.
-
-        Returns:
-            :obj:`Texts` object if exists, `None` otherwise.
-        """
-        return self._get_sequence('texts', name, context)
 
     def _get_sequence_dtype(
             self,
@@ -841,7 +665,6 @@ class Run(BasicRun):
                  read_only: bool = False,
                  experiment: Optional[str] = None,
                  force_resume: bool = False,
-                 system_tracking_interval: Optional[Union[int, float]] = DEFAULT_SYSTEM_TRACKING_INT,
                  log_system_params: Optional[bool] = False,
                  capture_terminal_logs: Optional[bool] = True):
         super().__init__(run_hash, repo=repo, read_only=read_only, experiment=experiment, force_resume=force_resume)
@@ -856,13 +679,3 @@ class Run(BasicRun):
                     'executable': sys.executable,
                     'arguments': sys.argv
                 }
-
-            if ResourceTracker.check_interval(system_tracking_interval) or capture_terminal_logs:
-                current_logs = self.get_terminal_logs()
-                log_offset = current_logs.last_step() + 1 if current_logs else 0
-                self._system_resource_tracker = ResourceTracker(self._tracker,
-                                                                system_tracking_interval,
-                                                                capture_terminal_logs,
-                                                                log_offset)
-                self._system_resource_tracker.start()
-                self._resources.add_extra_resource(self._system_resource_tracker)
