@@ -106,6 +106,7 @@ function createVisualizationEngine<TStore>(
   config: VisualizationConfig,
   visualizationName: string,
   store: StoreApi<TStore>,
+  persist?: boolean, // TODO later use StatePersistOption,
 ) {
   const controlsState = createState(store, visualizationName, config.controls);
 
@@ -143,99 +144,105 @@ function createVisualizationEngine<TStore>(
       },
 
       initialize: (keyNamePrefix: string = 'core-viz') => {
-        const funcs: CallableFunction[] = [];
-        Object.keys(config.controls).forEach((key: string) => {
-          const control = config.controls[key];
-          const persistenceType = control?.state?.persist;
-          const persistenceKey = [visualizationName, 'c', key].join('-');
-          if (persistenceType) {
-            if (persistenceType === PersistenceTypesEnum.Url) {
-              const originalMethods =
-                // @ts-ignore
-                { ...controlsState.properties[key].methods };
-              const stateFromStorage = getUrlSearchParam(persistenceKey) || {};
+        if (persist) {
+          const funcs: CallableFunction[] = [];
+          Object.keys(config.controls).forEach((key: string) => {
+            const control = config.controls[key];
+            const persistenceType = control?.state?.persist;
+            const persistenceKey = [visualizationName, 'c', key].join('-');
+            if (persistenceType) {
+              if (persistenceType === PersistenceTypesEnum.Url) {
+                const originalMethods =
+                  // @ts-ignore
+                  { ...controlsState.properties[key].methods };
+                const stateFromStorage =
+                  getUrlSearchParam(persistenceKey) || {};
 
-              // update state
-              if (!isEmpty(stateFromStorage)) {
-                originalMethods.update(stateFromStorage);
-              }
-              // @ts-ignore
-              controlsState.properties[key].methods.update = (d: any) => {
-                originalMethods.update(d);
-
-                const url = getUpdatedUrl(persistenceKey, encode(d));
-
-                if (
-                  url !== `${window.location.pathname}${window.location.search}`
-                ) {
-                  browserHistory.push(url, null);
+                // update state
+                if (!isEmpty(stateFromStorage)) {
+                  originalMethods.update(stateFromStorage);
                 }
-              };
-
-              // @ts-ignore
-              controlsState.properties[key].methods.reset = () => {
-                originalMethods.reset();
-
-                const url = getUpdatedUrl(persistenceKey, null);
-
-                if (
-                  url !== `${window.location.pathname}${window.location.search}`
-                ) {
-                  browserHistory.push(url, null);
-                }
-              };
-              customControlResets.push(
                 // @ts-ignore
-                controlsState.properties[key].methods.reset,
-              );
-              const removeListener = browserHistory.listenSearchParam<any>(
-                persistenceKey,
-                (data: any) => {
-                  if (isEmpty(data)) {
-                    // @ts-ignore
-                    originalMethods.reset();
-                  } else {
-                    // @ts-ignore
-                    originalMethods.update(data);
+                controlsState.properties[key].methods.update = (d: any) => {
+                  originalMethods.update(d);
+
+                  const url = getUpdatedUrl(persistenceKey, encode(d));
+
+                  if (
+                    url !==
+                    `${window.location.pathname}${window.location.search}`
+                  ) {
+                    browserHistory.push(url, null);
                   }
-                },
-                ['PUSH'],
-              );
+                };
 
-              funcs.push(removeListener);
+                // @ts-ignore
+                controlsState.properties[key].methods.reset = () => {
+                  originalMethods.reset();
+
+                  const url = getUpdatedUrl(persistenceKey, null);
+
+                  if (
+                    url !==
+                    `${window.location.pathname}${window.location.search}`
+                  ) {
+                    browserHistory.push(url, null);
+                  }
+                };
+                customControlResets.push(
+                  // @ts-ignore
+                  controlsState.properties[key].methods.reset,
+                );
+                const removeListener = browserHistory.listenSearchParam<any>(
+                  persistenceKey,
+                  (data: any) => {
+                    if (isEmpty(data)) {
+                      // @ts-ignore
+                      originalMethods.reset();
+                    } else {
+                      // @ts-ignore
+                      originalMethods.update(data);
+                    }
+                  },
+                  ['PUSH'],
+                );
+
+                funcs.push(removeListener);
+              }
             }
+          });
+
+          if (config.box.persist) {
+            const boxPersistenceKey = `${keyNamePrefix}.${createVisualizationStatePrefix(
+              visualizationName,
+            )}.box`;
+
+            const boxStateFromStorage =
+              getStateFromLocalStorage(boxPersistenceKey);
+            const originalMethods = { ...boxMethods };
+
+            if (!isEmpty(boxStateFromStorage)) {
+              boxMethods.update(boxStateFromStorage);
+            } else {
+              boxMethods.reset();
+            }
+
+            boxMethods.reset = () => {
+              originalMethods.reset();
+              localStorage.removeItem(boxPersistenceKey);
+            };
+
+            boxMethods.update = (newValue: Partial<BoxState>) => {
+              originalMethods.update(newValue);
+              localStorage.setItem(boxPersistenceKey, encode(newValue));
+            };
           }
-        });
 
-        if (config.box.persist) {
-          const boxPersistenceKey = `${keyNamePrefix}.${createVisualizationStatePrefix(
-            visualizationName,
-          )}.box`;
-
-          const boxStateFromStorage =
-            getStateFromLocalStorage(boxPersistenceKey);
-          const originalMethods = { ...boxMethods };
-
-          if (!isEmpty(boxStateFromStorage)) {
-            boxMethods.update(boxStateFromStorage);
-          } else {
-            boxMethods.reset();
-          }
-
-          boxMethods.reset = () => {
-            originalMethods.reset();
-            localStorage.removeItem(boxPersistenceKey);
-          };
-
-          boxMethods.update = (newValue: Partial<BoxState>) => {
-            originalMethods.update(newValue);
-            localStorage.setItem(boxPersistenceKey, encode(newValue));
+          return () => {
+            funcs.forEach((func) => func());
           };
         }
-
-        return () => {
-          funcs.forEach((func) => func());
-        };
+        return () => {};
       },
     },
   };
@@ -250,6 +257,7 @@ function createVisualizationEngine<TStore>(
 function createVisualizationsEngine<TStore>(
   config: VisualizationsConfig,
   store: any,
+  persist?: boolean, // TODO later use StatePersistOption,
 ) {
   const defaultACC = {
     state: {},
@@ -265,6 +273,7 @@ function createVisualizationsEngine<TStore>(
         config[name],
         name,
         store,
+        persist,
       );
 
       // @ts-ignore

@@ -75,10 +75,7 @@ function BoardConsole({
       side={ResizableSideEnum.TOP}
       useLocalStorage={true}
       onMount={handleResizeElementMount}
-      initialSizes={{
-        ...BOARD_CONSOLE_SIZES.INITIAL_SIZES,
-        width: vizContainer.current?.offsetWidth,
-      }}
+      initialSizes={BOARD_CONSOLE_SIZES.INITIAL_SIZES}
       onResizeEnd={onResizeEnd}
       onResizeStart={onResizeStart}
     >

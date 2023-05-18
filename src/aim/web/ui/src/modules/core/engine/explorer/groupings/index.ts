@@ -149,7 +149,7 @@ function createGroupingsEngine(
       }
 
       const persistenceKey = ['gr', name].join('-');
-      const persistenceType = config[name].state?.persist;
+      const persistenceType = persist ? config[name].state?.persist : undefined;
       const overrideMethods = setStatePersistence(
         persistenceKey,
         persistenceType as PersistenceTypesEnum,
