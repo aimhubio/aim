@@ -94,7 +94,7 @@ class ContainerCollection(ContainerCollectionBase['Container']):
         def type_match(hash_) -> bool:
             return type_utils.is_subtype(type_infos.get(hash_, ''), required_typename)
 
-        self.hashes = filter(type_match, self.query_context['storage'].container_hashes())
+        self.hashes = filter(type_match, self.query_context['repo'].container_hashes)
 
     def __iter_meta__(self) -> Iterator[str]:
         yield from self.hashes

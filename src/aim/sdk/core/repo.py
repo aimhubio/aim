@@ -1,5 +1,3 @@
-import pathlib
-import weakref
 import logging
 
 from collections import defaultdict
@@ -12,66 +10,29 @@ from aim.sdk.core.container import Container
 from aim.sdk.core.sequence import Sequence
 from aim.sdk.core.collections import ContainerCollection, SequenceCollection
 from aim.sdk.core.query_utils import construct_query_expression
-from aim.sdk.core.constants import ContainerOpenMode, KeyNames
+from aim.sdk.core.constants import KeyNames
 # from aim.sdk.core.exceptions import AmbiguousQueryTypeError, UnknownQueryTypeError
 
-from aim.sdk.reporter import RunStatusReporter, ScheduledStatusReporter
-from aim.sdk.reporter.file_manager import LocalFileManager
-from aim.sdk.remote_run_reporter import RemoteRunHeartbeatReporter, RemoteFileManager
+from aim.sdk.core.storage_engine import StorageEngine
+from aim.sdk.core.local_storage import LocalStorage
+from aim.sdk.core.remote_storage import RemoteStorage
 
 from aim.ext.system_info.resource_tracker import ResourceTracker
 
 logger = logging.getLogger(__name__)
 
 
-class StorageEngine:
-    def __init__(self, repo: LegacyRepo):
-        self.repo = weakref.ref(repo)
-
-    @property
-    def url(self):
-        return self.repo().root_path
-
-    def container_hashes(self):
-        return self.repo()._all_run_hashes()
-
-    def tree(self, path, hash_, read_only):
-        return self.repo().request_tree(name=path, sub=hash_, read_only=read_only, from_union=True).subtree(path)
-
-    def lock(self, hash_: str, mode: ContainerOpenMode):
-        lock = self.repo().request_run_lock(hash_)
-        lock.lock(force=(mode == ContainerOpenMode.FORCEWRITE))
-        return lock
-
-    def status_reporter(self, hash_: str) -> RunStatusReporter:
-        if self.repo().is_remote_repo:
-            return RunStatusReporter(hash_, RemoteFileManager(self.repo()._client, hash_))
-        else:
-            return RunStatusReporter(hash_, LocalFileManager(self.repo().path))
-
-    def heartbeat_reporter(self, hash_: str, status_reporter: RunStatusReporter):
-        if self.repo().is_remote_repo:
-            return RemoteRunHeartbeatReporter(self.repo()._client, hash_)
-        else:
-            progress_flag_path = pathlib.Path(self.repo().path) / 'meta' / 'progress' / hash_
-            return ScheduledStatusReporter(status_reporter, touch_path=progress_flag_path)
-
-    def task_queue(self, hash_: str):
-        if self.repo().is_remote_repo:
-            return self.repo()._client.get_queue(hash_)
-        else:
-            return None
-
-    def remove_queue(self, hash_: str):
-        if self.repo().is_remote_repo:
-            self.repo()._client.remove_queue(hash_)
-
-
 class Repo(LegacyRepo):
     def __init__(self, path: str, *, read_only: Optional[bool] = None, init: Optional[bool] = False):
         super().__init__(path, read_only=read_only, init=init)
-        self._storage_engine = StorageEngine(self)
+
+        if self.is_remote_path(path):
+            self._storage_engine = RemoteStorage(path, read_only=read_only)
+        else:
+            self._storage_engine = LocalStorage(path, read_only=read_only)
+
         self._system_tracker = None
+        self._meta_tree = self._storage_engine.tree(hash_=None, name='meta', read_only=True)
 
     @property
     def storage_engine(self) -> StorageEngine:
@@ -83,11 +44,15 @@ class Repo(LegacyRepo):
             self._system_tracker = ResourceTracker()
         return self._system_tracker
 
+    @property
+    def container_hashes(self):
+        return list(self._meta_tree.subtree('chunks').keys())
+
     def tracked_container_types(self) -> List[str]:
-        return list(self.meta_tree.subtree('containers').keys())
+        return list(self._meta_tree.subtree('containers').keys())
 
     def tracked_sequence_types(self) -> List[str]:
-        return list(self.meta_tree.subtree('sequences').keys())
+        return list(self._meta_tree.subtree('sequences').keys())
 
     def registered_container_types(self) -> List[str]:
         return list(Container.registry.keys())
@@ -107,7 +72,7 @@ class Repo(LegacyRepo):
             'repo': self,
             'storage': self.storage_engine,
             'var_name': var_name,
-            'meta_tree': self.storage_engine.tree('meta', None, read_only=True),
+            'meta_tree': self._meta_tree,
             'query_cache': defaultdict(dict),
         }
 

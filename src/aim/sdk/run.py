@@ -26,7 +26,6 @@ from aim.core.storage import treeutils
 
 from aim.ext.system_info import (
     ResourceTracker,
-    DEFAULT_SYSTEM_TRACKING_INT,
     get_environment_variables,
     get_installed_packages,
     get_git_info,

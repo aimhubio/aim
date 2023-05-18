@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 from aim.core.transport.message_utils import pack_args
 from aim.core.transport.remote_resource import RemoteResourceAutoClean
 
-from aim.core.storage.locking import RunLock
+from aim.core.storage.locking import ContainerLock
 from aim.core.storage.treeutils import encode_tree
 
 if TYPE_CHECKING:
@@ -14,7 +14,7 @@ class ProxyLockAutoClean(RemoteResourceAutoClean):
     PRIORITY = 45
 
 
-class ProxyLock(RunLock):
+class ProxyLock(ContainerLock):
     def __init__(self, client: 'Client',
                  run_hash: str):
         self._resources: ProxyLockAutoClean = None

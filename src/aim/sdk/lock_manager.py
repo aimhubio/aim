@@ -14,7 +14,7 @@ from dateutil.relativedelta import relativedelta
 from filelock import UnixFileLock, SoftFileLock, Timeout
 
 from aim.sdk.errors import RunLockingError
-from aim.core.storage.locking import RunLock
+from aim.core.storage.locking import ContainerLock
 
 logger = logging.getLogger(__name__)
 
@@ -50,7 +50,7 @@ class LockInfo:
                 return f'~{getattr(delta, attr)} {attr[:-1]}'
 
 
-class SFRunLock(RunLock):
+class SFRunLock(ContainerLock):
     def __init__(self, lock_manager: 'LockManager', run_hash: str, path: Path, timeout: int):
         self.run_hash = run_hash
         self._lock_manager = weakref.ref(lock_manager)
@@ -112,7 +112,7 @@ class LockManager(object):
 
         return LockInfo(run_hash=run_hash, locked=locked, created_at=created_at, version=lock_version, type=lock_type)
 
-    def get_run_lock(self, run_hash: str, timeout: int = 10) -> RunLock:
+    def get_run_lock(self, run_hash: str, timeout: int = 10) -> ContainerLock:
         lock_path = self.locks_path / self.softlock_fname(run_hash)
         return SFRunLock(self, run_hash, lock_path, timeout=timeout)
 

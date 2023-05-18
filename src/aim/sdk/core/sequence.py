@@ -15,7 +15,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from aim.core.storage.treeview import TreeView
     from aim.sdk.core.container import Container
-
+    from aim.sdk.core.storage_engine import StorageEngine
 
 _ContextInfo = Union[Dict, Context, int]
 
@@ -76,6 +76,7 @@ class Sequence(Generic[ItemType], ABCSequence):
         cls.registry[typename].append(cls)
 
     def __init__(self, container: 'Container', *, name: str, context: _ContextInfo):
+        self.storage: StorageEngine = container.storage
         self._container: 'Container' = container
         self._container_hash: str = container.hash
         self._meta_tree = container._meta_tree
@@ -102,6 +103,7 @@ class Sequence(Generic[ItemType], ABCSequence):
     @classmethod
     def from_storage(cls, storage, meta_tree: 'TreeView', *, hash_: str, name: str, context: _ContextInfo):
         self = cls.__new__(cls)
+        self.storage = storage
         self._container = None
         self._container_hash = hash_
         self._meta_tree = meta_tree
@@ -197,47 +199,48 @@ class Sequence(Generic[ItemType], ABCSequence):
             step = self._info.next_step
 
         axis_names = set(axis.keys())
-        if self._info.empty:
-            self._tree[KeyNames.INFO_PREFIX, 'creation_time'] = utc_timestamp()
-            self._tree[KeyNames.INFO_PREFIX, 'version'] = self.version
-            self._tree[KeyNames.INFO_PREFIX, KeyNames.OBJECT_CATEGORY] = self.object_category
-            self._tree[KeyNames.INFO_PREFIX, 'first_step'] = self._info.first_step = step
-            self._tree[KeyNames.INFO_PREFIX, 'last_step'] = self._info.last_step = step
-            self._tree[KeyNames.INFO_PREFIX, 'axis'] = tuple(axis_names)
-            self._tree[KeyNames.INFO_PREFIX, KeyNames.VALUE_TYPE] = self._info.dtype = value_type
-            self._tree[KeyNames.INFO_PREFIX, KeyNames.SEQUENCE_TYPE] = self.get_full_typename()
+        with self.storage.write_batch(self._container_hash):
+            if self._info.empty:
+                self._tree[KeyNames.INFO_PREFIX, 'creation_time'] = utc_timestamp()
+                self._tree[KeyNames.INFO_PREFIX, 'version'] = self.version
+                self._tree[KeyNames.INFO_PREFIX, KeyNames.OBJECT_CATEGORY] = self.object_category
+                self._tree[KeyNames.INFO_PREFIX, 'first_step'] = self._info.first_step = step
+                self._tree[KeyNames.INFO_PREFIX, 'last_step'] = self._info.last_step = step
+                self._tree[KeyNames.INFO_PREFIX, 'axis'] = tuple(axis_names)
+                self._tree[KeyNames.INFO_PREFIX, KeyNames.VALUE_TYPE] = self._info.dtype = value_type
+                self._tree[KeyNames.INFO_PREFIX, KeyNames.SEQUENCE_TYPE] = self.get_full_typename()
 
-            self._meta_tree[KeyNames.CONTEXTS, self._ctx_idx] = self._context.to_dict()
-            self._container_tree[KeyNames.CONTEXTS, self._ctx_idx] = self._context.to_dict()
-            self._meta_tree[KeyNames.SEQUENCES, self.get_typename()] = 1
-            # self._container_tree[KeyNames.SEQUENCES, self.get_typename()] = 1
+                self._meta_tree[KeyNames.CONTEXTS, self._ctx_idx] = self._context.to_dict()
+                self._container_tree[KeyNames.CONTEXTS, self._ctx_idx] = self._context.to_dict()
+                self._meta_tree[KeyNames.SEQUENCES, self.get_typename()] = 1
+                # self._container_tree[KeyNames.SEQUENCES, self.get_typename()] = 1
 
-            self._tree['first_value'] = value
-            self._tree['last_value'] = value
-            self._tree['axis_last_values'] = axis
-            self._info.axis_names = axis_names
-            self._info.empty = False
+                self._tree['first_value'] = value
+                self._tree['last_value'] = value
+                self._tree['axis_last_values'] = axis
+                self._info.axis_names = axis_names
+                self._info.empty = False
 
-        if step > self._info.last_step:
-            self._tree[KeyNames.INFO_PREFIX, 'last_step'] = self._info.last_step = step
-            self._tree['last_value'] = value
-            self._tree['axis_last_values'] = axis
-        if step < self._info.first_step:
-            self._tree[KeyNames.INFO_PREFIX, 'first_step'] = self._info.first_step = step
-            self._tree['first_value'] = value
-        if not type_utils.is_subtype(value_type, self._info.dtype):
-            dtype = type_utils.get_common_typename((value_type, self._info.dtype))
-            self._tree[KeyNames.INFO_PREFIX, KeyNames.VALUE_TYPE] = self._info.dtype = dtype
-        if not axis_names.issubset(self._info.axis_names):
-            self._info.axis_names.update(axis_names)
-            self._tree[KeyNames.INFO_PREFIX, 'axis'] = tuple(self._info.axis_names)
-        if self._values is None:
-            self._values = self._data.array('val').allocate()
+            if step > self._info.last_step:
+                self._tree[KeyNames.INFO_PREFIX, 'last_step'] = self._info.last_step = step
+                self._tree['last_value'] = value
+                self._tree['axis_last_values'] = axis
+            if step < self._info.first_step:
+                self._tree[KeyNames.INFO_PREFIX, 'first_step'] = self._info.first_step = step
+                self._tree['first_value'] = value
+            if not type_utils.is_subtype(value_type, self._info.dtype):
+                dtype = type_utils.get_common_typename((value_type, self._info.dtype))
+                self._tree[KeyNames.INFO_PREFIX, KeyNames.VALUE_TYPE] = self._info.dtype = dtype
+            if not axis_names.issubset(self._info.axis_names):
+                self._info.axis_names.update(axis_names)
+                self._tree[KeyNames.INFO_PREFIX, 'axis'] = tuple(self._info.axis_names)
+            if self._values is None:
+                self._values = self._data.array('val').allocate()
 
-        val = {k: v for k, v in axis.items()}
-        val['val'] = value
-        self._values[step] = val
-        self._info.next_step = self._info.last_step + 1
+            val = {k: v for k, v in axis.items()}
+            val['val'] = value
+            self._values[step] = val
+            self._info.next_step = self._info.last_step + 1
 
     def __iter__(self) -> Iterator[Tuple[int, Tuple[Any, ...]]]:
         data_iterator = zip(self.items(), zip(map(self.axis, self.axis_names)))

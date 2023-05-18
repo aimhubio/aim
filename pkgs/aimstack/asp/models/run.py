@@ -46,9 +46,6 @@ class Run(Container, Caller):
             self.description = ''
             self.archived = False
 
-        self._prev_logs_end = None
-        self._logs = None
-
     def enable_system_monitoring(self):
         self.repo.resource_tracker.register(self)
         self.repo.resource_tracker.start()
@@ -118,7 +115,7 @@ class Run(Container, Caller):
 
     @property
     def logs(self) -> LogStream:
-        if self._logs is None:
+        if getattr(self, '_logs', None) is None:
             self._logs = LogStream(self, name='logs', context={})
             self._prev_logs_end = self._logs.next_step
         return self._logs

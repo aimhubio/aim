@@ -46,7 +46,6 @@ class ContainerAutoClean(AutoClean['Container']):
         self.storage = instance.storage
 
         self._status_reporter = instance._status_reporter
-        self._heartbeat = instance._heartbeat
         self._lock = instance._lock
 
     def _set_end_time(self):
@@ -76,8 +75,6 @@ class ContainerAutoClean(AutoClean['Container']):
 
         self._wait_for_empty_queue()
         self._set_end_time()
-        if self._heartbeat is not None:
-            self._heartbeat.stop()
         if self._status_reporter is not None:
             self._status_reporter.close()
         if self._lock:
@@ -119,7 +116,7 @@ class Container(ABCContainer):
             else:
                 raise MissingContainerError(hash_, mode)
         else:
-            if hash_ in self.storage.container_hashes():
+            if hash_ in repo.container_hashes:
                 self.hash = hash_
             else:
                 raise MissingContainerError(hash_, mode)
@@ -128,14 +125,15 @@ class Container(ABCContainer):
         self._hash = self._calc_hash()
         self._lock = None
         self._status_reporter = None
-        self._heartbeat = None
 
         if not self._is_readonly:
             self._lock = self.storage.lock(self.hash, self.mode)
             self._status_reporter = self.storage.status_reporter(self.hash)
-            self._heartbeat = self.storage.heartbeat_reporter(self.hash, self._status_reporter)
 
-        self._meta_tree: TreeView = self.storage.tree('meta', self.hash, read_only=self._is_readonly)
+        if self._is_readonly:
+            self._meta_tree: TreeView = repo._meta_tree
+        else:
+            self._meta_tree: TreeView = self.storage.tree('meta', self.hash, read_only=self._is_readonly)
 
         self.__storage_init__()
 
@@ -165,7 +163,6 @@ class Container(ABCContainer):
         self._hash = self._calc_hash()
         self._lock = None
         self._status_reporter = None
-        self._heartbeat = None
         self._meta_tree = meta_tree
 
         self.__storage_init__()
@@ -202,7 +199,6 @@ class Container(ABCContainer):
 
     def __delitem__(self, key):
         del self._attrs_tree[key]
-        del self._meta_attrs_tree[key]
 
     def get(self, key, default: Any = None, strict: bool = False):
         try:

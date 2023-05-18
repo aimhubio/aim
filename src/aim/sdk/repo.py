@@ -9,7 +9,6 @@ from cachetools.func import ttl_cache
 from typing import Dict, Tuple, Iterator, NamedTuple, Optional, List, Set, TYPE_CHECKING
 from weakref import WeakValueDictionary
 
-from aim.core.sshfs import mount_remote_path, unmount_remote_path
 from aim.ext.task_queue.queue import TaskQueue
 from aim.core.cleanup import AutoClean
 from aim.core.transport import Client
@@ -19,10 +18,9 @@ from aim.sdk.errors import RepoIntegrityError
 from aim.sdk.run import Run
 from aim.sdk.utils import search_aim_repo, clean_repo_path
 from aim.sdk.sequence import Sequence
-from aim.sdk.types import QueryReportMode
 from aim.sdk.data_version import DATA_VERSION
 from aim.sdk.remote_repo_proxy import RemoteRepoProxy
-from aim.sdk.lock_manager import LockManager, RunLock
+from aim.sdk.lock_manager import LockManager, ContainerLock
 
 from aim.core.storage.locking import SoftFileLock
 from aim.core.storage.container import Container
@@ -73,16 +71,12 @@ class RepoAutoClean(AutoClean):
         super().__init__(instance)
         self.root_path = instance.root_path
         self._client = instance._client
-        self._mount_root = instance._mount_root
 
     def _close(self) -> None:
         """Close the `Repo` and unmount the remote repository."""
         if self._client:
             self._client._heartbeat_sender.stop()
             self._client.disconnect()
-        if self._mount_root:
-            logger.debug(f'Unmounting remote repository at {self._mount_root}')
-            unmount_remote_path(self.root_path, self._mount_root)
 
 
 # TODO make this api thread-safe
@@ -109,12 +103,9 @@ class Repo:
 
         self._resources = None
         self.read_only = read_only
-        self._mount_root = None
         self._client: Client = None
         self._lock_manager: LockManager = None
-        if path.startswith('ssh://'):
-            self._mount_root, self.root_path = mount_remote_path(path)
-        elif self.is_remote_path(path):
+        if self.is_remote_path(path):
             remote_path = path.replace('aim://', '')
             self._client = Client(remote_path)
             self._remote_repo_proxy = RemoteRepoProxy(self._client)
@@ -127,8 +118,6 @@ class Repo:
             os.makedirs(self.path, exist_ok=True)
             os.makedirs(os.path.join(self.path, 'locks'), exist_ok=True)
         if not self.is_remote_repo and not os.path.exists(self.path):
-            if self._mount_root:
-                unmount_remote_path(self.root_path, self._mount_root)
             raise RuntimeError(f'Cannot find repository \'{self.path}\'. Please init first.')
 
         self.container_pool: Dict[ContainerConfig, Container] = WeakValueDictionary()
@@ -373,7 +362,7 @@ class Repo:
 
         return _props
 
-    def request_run_lock(self, hash_: str, timeout: int = 10) -> 'RunLock':
+    def request_run_lock(self, hash_: str, timeout: int = 10) -> 'ContainerLock':
         if self.is_remote_repo:
             return ProxyLock(self._client, hash_)
         assert self._lock_manager

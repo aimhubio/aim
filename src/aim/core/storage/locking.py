@@ -230,7 +230,7 @@ class NoopLock:
         pass
 
 
-class RunLock:
+class ContainerLock:
     """Interface for locking/releasing Run locks."""
     def lock(self, force: bool = False) -> None:
         raise NotImplementedError
