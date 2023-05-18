@@ -12,6 +12,14 @@ const DataFrameVizElement = React.lazy(
       /* webpackPrefetch: true, webpackChunkName: "DataFrame" */ './DataFrameVizElement'
     ),
 );
+
+const TableVizElement = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "Table" */ './TableVizElement'
+    ),
+);
+
 const FiguresVizElement = React.lazy(
   () =>
     import(
@@ -178,7 +186,8 @@ export type VizElementKey =
   | 'Checkbox'
   | 'ToggleButton'
   | 'Header'
-  | 'SubHeader';
+  | 'SubHeader'
+  | 'Table';
 
 const VizElementsMap: Record<VizElementKey, React.FunctionComponent<any>> = {
   // input elements
@@ -197,6 +206,7 @@ const VizElementsMap: Record<VizElementKey, React.FunctionComponent<any>> = {
   // data display elements
   Plotly: PlotlyVizElement,
   DataFrame: DataFrameVizElement,
+  Table: TableVizElement,
   JSON: JSONVizElement,
   HTML: HTMLVizElement,
   Text: TextVizElement,

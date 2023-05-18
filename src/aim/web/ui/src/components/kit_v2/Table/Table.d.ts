@@ -6,6 +6,8 @@ export interface TableProps {
   withSelect?: boolean;
   selectedIndices?: number[];
   focusedRowIndex?: number;
+  onRowSelect?: (rowDict: Record<string, any>[]) => void;
+  onRowFocus?: (focusedRow: Record<string, any>) => void;
 }
 
 export interface TableRowProps

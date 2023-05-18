@@ -205,6 +205,7 @@ const BoardConsoleElement = styled('pre', {
   fontMono: 14,
   p: '$5',
   overflow: 'auto',
+  height: 'calc(100% - 28px)',
 });
 
 const BoardComponentsViz = styled('div', {
