@@ -12,6 +12,14 @@ const DataFrameVizElement = React.lazy(
       /* webpackPrefetch: true, webpackChunkName: "DataFrame" */ './DataFrameVizElement'
     ),
 );
+
+const TableVizElement = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "Table" */ './TableVizElement'
+    ),
+);
+
 const FiguresVizElement = React.lazy(
   () =>
     import(
@@ -151,13 +159,6 @@ const ToggleButtonVizElement = React.lazy(
     ),
 );
 
-const TableVizElement = React.lazy(
-  () =>
-    import(
-      /* webpackPrefetch: true, webpackChunkName: "Table" */ './TableVizElement'
-    ),
-);
-
 export type VizElementKey =
   | 'LineChart'
   | 'DataFrame'
@@ -201,11 +202,11 @@ const VizElementsMap: Record<VizElementKey, React.FunctionComponent<any>> = {
   Radio: RadioVizElement,
   Checkbox: CheckboxVizElement,
   ToggleButton: ToggleButtonVizElement,
-  Table: TableVizElement,
 
   // data display elements
   Plotly: PlotlyVizElement,
   DataFrame: DataFrameVizElement,
+  Table: TableVizElement,
   JSON: JSONVizElement,
   HTML: HTMLVizElement,
   Text: TextVizElement,

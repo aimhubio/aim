@@ -346,16 +346,27 @@ class Component(Element):
                 self.parent_block["id"]
             ] if (self.board_id in state and self.parent_block["id"] in state[self.board_id]) else {}
 
+            component_state_slice = state_slice[self.key] if self.key in state_slice else {
+            }
+
+            component_state_slice.update(value)
+
             state_slice.update({
-                self.key: value
+                self.key: component_state_slice
             })
 
             set_state({
                 self.parent_block["id"]: state_slice
             }, self.board_id)
         else:
+            state_slice = state[self.board_id][
+                self.key
+            ] if (self.board_id in state and self.key in state[self.board_id]) else {}
+
+            state_slice.update(value)
+
             set_state({
-                self.key: value
+                self.key: state_slice
             }, self.board_id)
 
     def render(self):
@@ -630,6 +641,39 @@ class DataFrame(Component):
         self.data = data.to_json(orient="records")
 
         self.render()
+
+
+class Table(Component):
+    def __init__(self, data, key=None, block=None):
+        component_type = "Table"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type, block)
+
+        self.data = data
+
+        self.callbacks = {
+            "on_row_select": self.on_row_select,
+            'on_row_focus': self.on_row_focus
+        }
+        self.options = {
+            "data": data
+        }
+
+        self.render()
+
+    @property
+    def selected_rows(self):
+        return self.state["selected_rows"] if "selected_rows" in self.state else None
+
+    @property
+    def focused_row(self):
+        return self.state["focused_row"] if "focused_row" in self.state else None
+
+    async def on_row_select(self, val):
+        self.set_state({"selected_rows": val.to_py()})
+
+    async def on_row_focus(self, val):
+        self.set_state({"focused_row": val.to_py()})
 
 
 class HTML(Component):
@@ -1128,21 +1172,6 @@ class SubHeader(TypographyComponent):
         super().__init__(text, "SubHeader", options, key, block)
 
 
-class Table(Component):
-    def __init__(self, data, key=None, block=None):
-        component_type = "Table"
-        component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type, block)
-
-        self.data = data
-
-        self.options = {
-            "data": data
-        }
-
-        self.render()
-
-
 class UI:
     def __init__(self):
         self.block_context = None
@@ -1235,6 +1264,10 @@ class UI:
         dataframe = DataFrame(*args, **kwargs, block=self.block_context)
         return dataframe
 
+    def table(self, *args, **kwargs):
+        table = Table(*args, **kwargs, block=self.block_context)
+        return table
+
     def html(self, *args, **kwargs):
         html = HTML(*args, **kwargs, block=self.block_context)
         return html
@@ -1250,10 +1283,6 @@ class UI:
     def subheader(self, *args, **kwargs):
         subheader = SubHeader(*args, **kwargs, block=self.block_context)
         return subheader
-
-    def table(self, *args, **kwargs):
-        table = Table(*args, **kwargs, block=self.block_context)
-        return table
 
     # Aim sequence viz components
     def line_chart(self, *args, **kwargs):
