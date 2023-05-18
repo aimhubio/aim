@@ -71,6 +71,13 @@ const BoardVisualizerComponentsPane = styled(SplitPaneItem, {
         borderRight: 'none',
       },
     },
+    '.Board': {
+      height: '100%',
+
+      '.BoardVisualizer': {
+        height: '100%',
+      },
+    },
   },
   '.ResizeElement': {
     zIndex: 9,
@@ -136,7 +143,6 @@ const BoardVisualizerComponentsPane = styled(SplitPaneItem, {
     display: 'flex',
     fd: 'row',
     width: '100%',
-    jc: 'center',
     ai: 'center',
     gap: '$9',
     fw: 'wrap',

@@ -157,6 +157,12 @@ const BoardVizElement = React.lazy(
       /* webpackPrefetch: true, webpackChunkName: "BoardEmbed" */ './BoardVizElement'
     ),
 );
+const BoardLinkVizElement = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "BoardLink" */ './BoardLinkVizElement'
+    ),
+);
 
 export type VizElementKey =
   | 'LineChart'
@@ -186,7 +192,8 @@ export type VizElementKey =
   | 'ToggleButton'
   | 'Header'
   | 'SubHeader'
-  | 'Board';
+  | 'Board'
+  | 'BoardLink';
 
 const VizElementsMap: Record<VizElementKey, React.FunctionComponent<any>> = {
   // input elements
@@ -226,6 +233,7 @@ const VizElementsMap: Record<VizElementKey, React.FunctionComponent<any>> = {
 
   // Super components
   Board: BoardVizElement,
+  BoardLink: BoardLinkVizElement,
 };
 
 export default VizElementsMap;

@@ -1150,6 +1150,24 @@ class Board(Component):
         return state[self.data] if self.data in state else None
 
 
+class BoardLink(Component):
+    def __init__(self, id=None, text='Go To Board', new_tab=False, state=None, block=None, key=None):
+        component_type = "BoardLink"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type, block)
+
+        self.data = id
+
+        self.options = {
+            "text": text,
+            "new_tab": new_tab
+        }
+
+        set_state(state or {}, id)
+
+        self.render()
+
+
 class UI:
     def __init__(self):
         self.block_context = None
@@ -1297,9 +1315,12 @@ class UI:
         return run_notes
 
     # Super components
-
     def board(self, *args, **kwargs):
         board = Board(*args, **kwargs, block=self.block_context)
+        return board
+
+    def board_link(self, *args, **kwargs):
+        board = BoardLink(*args, **kwargs, block=self.block_context)
         return board
 
 
