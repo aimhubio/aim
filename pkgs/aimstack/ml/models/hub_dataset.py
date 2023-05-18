@@ -1,10 +1,10 @@
-from aim.core.storage.object import CustomObject
+from aim.sdk.core.object import Object
 import hub
 
 
-@CustomObject.alias('hub.dataset')
-class HubDataset(CustomObject):
-    AIM_NAME = 'hub.dataset'
+@Object.alias('hub.Dataset')
+class HubDataset(Object):
+    AIM_NAME = 'hub.Dataset'
 
     def __init__(self, dataset: hub.Dataset):
         super().__init__()

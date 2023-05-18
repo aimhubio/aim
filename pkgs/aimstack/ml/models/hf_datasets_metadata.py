@@ -1,13 +1,14 @@
 from datasets import Dataset, DatasetDict
-from aim.core.storage.object import CustomObject
 from logging import getLogger
+
+from aim.sdk.core.object import Object
 
 logger = getLogger(__name__)
 
 
-@CustomObject.alias("hf_datasets.metadata")
-class HFDataset(CustomObject):
-    AIM_NAME = "hf_datasets.metadata"
+@Object.alias("hf_datasets.Metadata")
+class HFDataset(Object):
+    AIM_NAME = "hf_datasets.Metadata"
     DEFAULT_KEY = "train"
 
     def __init__(self, dataset: DatasetDict):

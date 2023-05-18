@@ -1,7 +1,8 @@
-from aim.core.storage.object import CustomObject
 import logging
 from pathlib import Path
 import yaml
+
+from aim.sdk.core.object import Object
 
 try:
     from dvc.repo import Repo
@@ -10,13 +11,13 @@ except ImportError:
     raise ImportError("module dvc could not be imported")
 
 
-@CustomObject.alias('dvc.metadata')
-class DvcData(CustomObject):
+@Object.alias('dvc.Metadata')
+class DvcData(Object):
     """
     Wrapper over DVC's LIST interface.
     Find DVC tracked files and stores the list into aim storage.
     """
-    AIM_NAME = 'dvc.metadata'
+    AIM_NAME = 'dvc.Metadata'
 
     def __init__(self, url='.', path=None, rev=None, recursive=False, dvc_only=False):
         """

@@ -1,8 +1,9 @@
-from aim.core.storage.object import CustomObject
 import deeplake
 import warnings
 import logging
 from deeplake.util.exceptions import ReadOnlyModeError
+
+from aim.sdk.core.object import Object
 
 logger = logging.getLogger(__name__)
 
@@ -15,8 +16,8 @@ class ViewOnUncommittedDatasetWarning(UserWarning):
     pass
 
 
-@CustomObject.alias('deeplake.dataset')
-class DeeplakeDataset(CustomObject):
+@Object.alias('deeplake.Dataset')
+class DeeplakeDataset(Object):
     """
     Track Activeloop Deeplake Dataset with versioning.
 
@@ -50,7 +51,7 @@ class DeeplakeDataset(CustomObject):
         run = Run(system_tracking_interval=None)
         run['deeplake_ds'] = DeeplakeDataset(ds)
     """
-    AIM_NAME = 'deeplake.dataset'
+    AIM_NAME = 'deeplake.Dataset'
 
     def __init__(self, dataset: deeplake.Dataset, auto_commit: bool = False, auto_save_view: bool = False):
         super().__init__()
