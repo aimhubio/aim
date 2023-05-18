@@ -391,26 +391,37 @@ class RocksContainer(Container):
 
     def items(
         self,
-        prefix: ContainerKey = b''
+        begin: ContainerKey = b'',
+        end: ContainerKey = b'',
     ) -> Iterator[Tuple[ContainerKey, ContainerValue]]:
         """Iterate over all the key-value records in the prefix key range.
 
         The iteration is always performed in lexiographic order w.r.t keys.
-        If `prefix` is provided, iterate only over those records that have key
-        starting with the `prefix`.
+        If `begin` is provided, iterate only over those records that have key
+        starting with the `begin`. If `end` is provided, iterate only over
+        those records lexigraphically strictly smaller than `end`.
 
-        For example, if `prefix == b'meta.'`, and the Container consists of:
+        For example, if `begin == b'meta.'`, and the Container consists of:
         `{
             b'e.y': b'012',
             b'meta.x': b'123',
             b'meta.z': b'x',
-            b'zzz': b'oOo'
+            b'zza': b'oOo',
+            b'zzb': b'x',
+            b'zzc': b'yf'
         }`, the method will yield `(b'meta.x', b'123')` and `(b'meta.z', b'x')`
+        in this order. However, if `end == b'zzb'`, the method will include the
+        `(b'zza', b'oOo')` record in the iteration.
 
         Args:
-            prefix (:obj:`bytes`): the prefix that defines the key range
+            begin (:obj:`bytes`): the prefix that defines the key range of the
+                iteration. The iteration will start from the first key that
+                comes after `begin` in lexicographic order, including `begin`.
+            end (:obj:`bytes`): the prefix that defines the key range of the
+                iteration. The iteration will end at the first key that comes
+                after `end` in lexicographic order, excluding `end`.
         """
-        return RocksContainerItemsIterator(container=self, prefix=prefix)
+        return RocksContainerItemsIterator(container=self, begin=begin, end=end)
 
     def walk(
         self,
@@ -582,15 +593,29 @@ def prepare_lock_path(path: Path):
 
 
 class RocksContainerItemsIterator(ContainerItemsIterator):
+    """
+    RocksContainerItemsIterator is an iterator over the items in a RocksContainer.
+
+    Args:
+        container (:obj:`RocksContainer`): the container to iterate over.
+        begin (:obj:`ContainerKey`, optional): the key to start iterating from.
+            Defaults to the first key in the container.
+        end (:obj:`ContainerKey`, optional): the key to stop iterating at.
+            Defaults to the last key in the container. Not inclusive.
+            If `None`, the `begin` will be treated as a prefix and the iterator
+            will stop at the first key that doesn't start with `begin`.
+    """
     def __init__(
         self,
         container: RocksContainer,
-        prefix: ContainerKey = b''
+        begin: ContainerKey = b'',
+        end: ContainerKey = b'',
     ):
         self.container = container
-        self.prefix = prefix
+        self.begin = begin
+        self.end = end
         self.it = self.container.db.iteritems()
-        self.it.seek(prefix)
+        self.it.seek(begin)
 
     def next(self):
         item = self.it.next()
@@ -601,7 +626,10 @@ class RocksContainerItemsIterator(ContainerItemsIterator):
         key = item[0]
         value = item[1]
 
-        if not key.startswith(self.prefix):
+        if self.end:
+            if key >= self.end:
+                return None
+        elif not key.startswith(self.begin):
             return None
 
         if value == BLOB_SENTINEL:

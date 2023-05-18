@@ -16,7 +16,7 @@ cdef class Container:
     cpdef void set(self, bytes key, object value, store_batch = *)
     cpdef void delete_range(self, bytes begin, bytes end, store_batch = *)
 
-    cpdef ContainerItemsIterator items(self, bytes prefix = *)
+    cpdef ContainerItemsIterator items(self, bytes begin = *, bytes end = *)
 
     cpdef bytes next_key(self, bytes key = *)
     cpdef object next_value(self, bytes key = *)

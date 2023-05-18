@@ -5,6 +5,7 @@ from aim.storage.types import AimObject, AimObjectKey, AimObjectPath
 from aim.storage.utils import ArrayFlag, CustomObjectFlagType
 from aim.storage.container import Container
 from aim.storage import treeutils
+from aim.storage.arrayview import ArrayView
 from aim.storage.treearrayview import TreeArrayView
 
 from typing import Any, Iterator, Tuple, Union
@@ -197,3 +198,19 @@ class ContainerTreeView(TreeView):
         if not p:
             raise KeyError
         return p[0]
+
+    def reservoir(
+        self,
+        path: Union[AimObjectKey, AimObjectPath] = (),
+    ) -> 'ArrayView':
+        """
+        Returns a array view of the reservoir at the given path.
+        By default, KhashView is used as reservoir implementation for underlying
+        container, based on `khash` package.
+        """
+        # TODO (mahnerak): add salt to khash
+        try:
+            from khash.tree import KhashArrayView
+        except ImportError:
+            raise ImportError('khash is not installed. Reservoir is not available.')
+        return KhashArrayView(self.subtree(path))
