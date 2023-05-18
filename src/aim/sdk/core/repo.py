@@ -19,6 +19,8 @@ from aim.sdk.reporter import RunStatusReporter, ScheduledStatusReporter
 from aim.sdk.reporter.file_manager import LocalFileManager
 from aim.sdk.remote_run_reporter import RemoteRunHeartbeatReporter, RemoteFileManager
 
+from aim.ext.system_info.resource_tracker import ResourceTracker
+
 logger = logging.getLogger(__name__)
 
 
@@ -69,10 +71,17 @@ class Repo(LegacyRepo):
     def __init__(self, path: str, *, read_only: Optional[bool] = None, init: Optional[bool] = False):
         super().__init__(path, read_only=read_only, init=init)
         self._storage_engine = StorageEngine(self)
+        self._system_tracker = None
 
     @property
     def storage_engine(self) -> StorageEngine:
         return self._storage_engine
+
+    @property
+    def resource_tracker(self) -> ResourceTracker:
+        if self._system_tracker is None:
+            self._system_tracker = ResourceTracker()
+        return self._system_tracker
 
     def tracked_container_types(self) -> List[str]:
         return list(self.meta_tree.subtree('containers').keys())
