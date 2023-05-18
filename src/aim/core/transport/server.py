@@ -1,12 +1,18 @@
-import os
-import time
+from fastapi import FastAPI
 
-from typing import Optional
-from concurrent import futures
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.exceptions import HTTPException
+from fastapi.responses import JSONResponse
 
-from aim.core.cleanup import AutoClean
+from aim.core.transport.router import ClientRouter
+from aim.core.transport.tracking import TrackingRouter, ResourceTypeRegistry
+from aim.core.transport.heartbeat import HeartbeatWatcher
 
-from aim.core.transport.config import AIM_RT_MAX_MESSAGE_SIZE, AIM_RT_DEFAULT_MAX_MESSAGE_SIZE
+from fastapi import WebSocket, WebSocketDisconnect
+
+import aim.core.transport.message_utils as utils
+from aim.core.storage.treeutils import encode_tree, decode_tree
+
 from aim.core.transport.handlers import (
     get_tree,
     get_structured_run,
@@ -15,66 +21,6 @@ from aim.core.transport.handlers import (
     get_run_heartbeat,
     get_file_manager
 )
-from aim.core.transport.heartbeat import RPCHeartbeatWatcher
-from aim.core.transport.worker import RemoteWorker, LocalWorker
-from aim.core.transport.health import HealthServicer
-from aim.core.transport.proto import health_pb2_grpc
-from aim.core.transport.router import RemoteRouterServicer, router_pb2_grpc
-from aim.core.transport.remote_tracking import ResourceTypeRegistry
-from aim.core.transport.remote_tracking import RemoteTrackingServicer, tracking_pb2_grpc
-
-
-def _wait_forever():
-    while True:
-        time.sleep(24 * 60 * 60)  # sleep for a day
-
-
-class RPCServerAutoClean(AutoClean['RPCServer']):
-    PRIORITY = 150
-
-    def __init__(self, instance: 'RPCServer'):
-        super().__init__(instance)
-        self.server = instance.server
-
-    def _close(self):
-        self.server.stop(grace=None)
-
-
-class RPCServer:
-    def __init__(self):
-        import grpc  # temporary workaround for M1 build
-
-        self._resources: Optional[RPCServerAutoClean] = None
-        self._server = grpc.server(futures.ThreadPoolExecutor(), options=self._get_grpc_server_options())
-        self.resource = RPCServerAutoClean(self)
-
-    def start(self, host, port, ssl_keyfile, ssl_certfile):
-        import grpc  # temporary workaround for M1 build
-
-        if ssl_keyfile and ssl_certfile:
-            with open(ssl_keyfile, 'rb') as f:
-                private_key = f.read()
-            with open(ssl_certfile, 'rb') as f:
-                certificate_chain = f.read()
-            server_credentials = grpc.ssl_server_credentials([(private_key, certificate_chain,)])
-            self._server.add_secure_port(f'{host}:{port}', server_credentials)
-        else:
-            self._server.add_insecure_port(f'{host}:{port}')
-
-        self._server.start()
-
-    @staticmethod
-    def _get_grpc_server_options():
-        msg_max_size = int(os.getenv(AIM_RT_MAX_MESSAGE_SIZE, AIM_RT_DEFAULT_MAX_MESSAGE_SIZE))
-        options = [
-            ('grpc.max_send_message_length', msg_max_size),
-            ('grpc.max_receive_message_length', msg_max_size)
-        ]
-        return options
-
-    @property
-    def server(self):
-        return self._server
 
 
 def prepare_resource_registry():
@@ -88,55 +34,97 @@ def prepare_resource_registry():
     return registry
 
 
-def run_router(host, port, workers=1, ssl_keyfile=None, ssl_certfile=None):
-    # start workers
-    worker_pool = []
+async def http_exception_handler(request, exc):
+    message = str(exc.detail)
+    detail = None
 
-    if workers == 1:
-        worker = LocalWorker(lambda: None, host=host, port=port, index=0,
-                             ssl_keyfile=ssl_keyfile, ssl_certfile=ssl_certfile)
-        worker_pool.append(worker)
+    if isinstance(exc.detail, dict):
+        message = exc.detail.pop('message', message)
+        detail = exc.detail.pop('detail', None)
+
+    response = {'message': message}
+    if detail:
+        response.update({'detail': detail})
     else:
-        for i in range(1, workers + 1):
-            worker_port = port + i
-            worker = RemoteWorker(run_worker, host=host, port=worker_port, index=i,
-                                  ssl_keyfile=ssl_keyfile, ssl_certfile=ssl_certfile)
-            worker_pool.append(worker)
-            worker.start()
-
-    # start routing RPC server
-    server = RPCServer()
-    router_pb2_grpc.add_RemoteRouterServiceServicer_to_server(RemoteRouterServicer(worker_pool), server.server)
-    health_pb2_grpc.add_HealthServicer_to_server(HealthServicer(), server.server)
-
-    if workers == 1:
-        # add worker servicers to router as well
-        registry = prepare_resource_registry()
-        tracking_pb2_grpc.add_RemoteTrackingServiceServicer_to_server(RemoteTrackingServicer(registry), server.server)
-
-    server.start(host, port, ssl_keyfile, ssl_certfile)
-
-    # start client heartbeat service
-    heartbeat_watcher = RPCHeartbeatWatcher(
-        RemoteRouterServicer.client_heartbeat_pool,
-        worker_pool,
-    )
-    heartbeat_watcher.start()
-
-    _wait_forever()
+        response.update({'detail': str(exc)})
+    return JSONResponse(response, status_code=exc.status_code)
 
 
-def run_worker(host, port, ssl_keyfile=None, ssl_certfile=None):
-    # register resource handlers
-    registry = prepare_resource_registry()
-
-    # start tracking RPC server
-    server = RPCServer()
-    tracking_pb2_grpc.add_RemoteTrackingServiceServicer_to_server(RemoteTrackingServicer(registry), server.server)
-    server.start(host, port, ssl_keyfile, ssl_certfile)
-
-    _wait_forever()
+async def fallback_exception_handler(request, exc):
+    response = {
+        'message': f'\'{type(exc)}\' exception raised!',
+        'detail': str(exc)
+    }
+    return JSONResponse(response, status_code=500)
 
 
-# alias for running router servicer
-start_server = run_router
+app = FastAPI(title=__name__)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=['*'],
+    allow_methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'HEAD'],
+    allow_headers=['Origin', 'X-Requested-With',
+                   'Content-Type', 'Accept', 'Authorization', 'X-Timezone-Offset'],
+    allow_credentials=True,
+    max_age=86400
+)
+
+registry = prepare_resource_registry()
+
+client_router = ClientRouter()
+tracking_router = TrackingRouter(registry)
+
+app.include_router(client_router.router, prefix='/client')
+app.include_router(tracking_router.router, prefix='/tracking')
+app.add_exception_handler(HTTPException, http_exception_handler)
+app.add_exception_handler(Exception, fallback_exception_handler)
+
+heartbeat_watcher = HeartbeatWatcher(
+    ClientRouter.client_heartbeat_pool,
+)
+heartbeat_watcher.start()
+
+
+@app.websocket('/tracking/{client_uri}/write-instruction/')
+async def run_write_instructions(websocket: WebSocket, client_uri: str):
+    await TrackingRouter.manager.connect(websocket)
+
+    try:
+        while True:
+            raw_message = await websocket.receive_bytes()
+            write_instructions = decode_tree(utils.unpack_args(raw_message))
+            for instruction in write_instructions:
+                resource_handler, method_name, args = instruction
+                TrackingRouter._verify_resource_handler(resource_handler, client_uri)
+                checked_args = []
+                for arg in args:
+                    if isinstance(arg, utils.ResourceObject):
+                        handler = arg.storage['handler']
+                        TrackingRouter._verify_resource_handler(handler, client_uri)
+                        checked_args.append(TrackingRouter.resource_pool[handler][1].ref)
+                    else:
+                        checked_args.append(arg)
+
+                resource = TrackingRouter.resource_pool[resource_handler][1].ref
+                if method_name.endswith('.setter'):
+                    attr_name = method_name.split('.')[0]
+                    setattr(resource, attr_name, checked_args[0])
+                else:
+                    attr = getattr(resource, method_name)
+                    assert callable(attr)
+                    attr(*checked_args)
+
+            await websocket.send_bytes(b'OK')
+    except WebSocketDisconnect:
+        TrackingRouter.manager.disconnect(websocket)
+
+    except Exception as e:
+        await websocket.send_bytes(utils.pack_args(encode_tree(utils.build_exception(e))))
+
+
+def start_server(host, port, ssl_keyfile=None, ssl_certfile=None, log_level='info'):
+    import uvicorn
+    uvicorn.run(app, host=host, port=port,
+                ssl_keyfile=ssl_keyfile, ssl_certfile=ssl_certfile,
+                log_level=log_level)
