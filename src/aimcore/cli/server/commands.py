@@ -13,7 +13,6 @@ from aim.core.utils.tracking import analytics
 @click.command()
 @click.option('-h', '--host', default=AIM_SERVER_DEFAULT_HOST, type=str)
 @click.option('-p', '--port', default=AIM_SERVER_DEFAULT_PORT, type=int)
-@click.option('-w', '--workers', default=1, type=int)
 @click.option('--repo', required=False, type=click.Path(exists=True,
                                                         file_okay=False,
                                                         dir_okay=True,
@@ -28,7 +27,7 @@ from aim.core.utils.tracking import analytics
                                                                 readable=True))
 @click.option('--log-level', required=False, default='', type=str)
 @click.option('-y', '--yes', is_flag=True, help='Automatically confirm prompt')
-def server(host, port, workers,
+def server(host, port,
            repo, ssl_keyfile, ssl_certfile,
            log_level, yes):
     # TODO [MV, AT] remove code duplication with aim up cmd implementation
@@ -78,7 +77,7 @@ def server(host, port, workers,
     analytics.track_event(event_name='[Aim Remote Tracking] Start server')
 
     try:
-        start_server(host, port, workers, ssl_keyfile, ssl_certfile)
+        start_server(host, port, ssl_keyfile, ssl_certfile)
     except Exception:
         click.echo('Failed to run Aim Tracking Server. '
                    'Please see the logs for details.')
