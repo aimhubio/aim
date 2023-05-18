@@ -3,7 +3,7 @@ from tempfile import TemporaryDirectory
 
 import click
 
-from aim import Run, Image, Text, Audio
+# from aim import Run, Image, Text, Audio
 
 IMAGE_EXTENSIONS = ('jpg', 'bmp', 'jpeg', 'png', 'gif', 'svg')
 HTML_EXTENSIONS = ('html',)
