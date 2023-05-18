@@ -32,10 +32,15 @@ class ContextDictView:
 
 
 class ContainerQueryProxy:
-    def __init__(self, cont_tree: 'TreeView', cache: Dict):
+    def __init__(self, cont_hash: str, cont_tree: 'TreeView', cache: Dict):
+        self._hash = cont_hash
         self._cache = cache
         self._cont_tree = cont_tree
         self._attrs_tree = cont_tree.subtree('attrs')
+
+    @property
+    def hash(self):
+        return self._hash
 
     def __getattr__(self, item):
         return self[item]  # fallback to __getitem__

@@ -72,7 +72,7 @@ class ContainerFilterCollection(ContainerCollectionBase['Container']):
         for hash_ in self.base_collection.__iter_meta__():
             cont_tree: 'TreeView' = self.query_context['meta_tree'].subtree('chunks').subtree(hash_)
 
-            proxy = ContainerQueryProxy(cont_tree, query_cache[hash_])
+            proxy = ContainerQueryProxy(hash_, cont_tree, query_cache[hash_])
             query_params = {p: proxy for p in alias_names}
             if self.query.check(**query_params):
                 yield hash_
@@ -164,7 +164,7 @@ class SequenceFilterCollection(SequenceCollectionBase['Sequence']):
             seq_tree: 'TreeView' = cont_tree.subtree((KeyNames.SEQUENCES, ctx_idx, name))
 
             proxy = SequenceQueryProxy(name, self._context_from_idx, ctx_idx, seq_tree, query_cache[hash_])
-            c_proxy = ContainerQueryProxy(cont_tree, query_cache[hash_])
+            c_proxy = ContainerQueryProxy(hash_, cont_tree, query_cache[hash_])
             query_params = {p: proxy for p in alias_names}
 
             query_params.update({cp: c_proxy for cp in container_alias_names})
