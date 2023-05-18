@@ -1128,6 +1128,21 @@ class SubHeader(TypographyComponent):
         super().__init__(text, "SubHeader", options, key, block)
 
 
+class Table(Component):
+    def __init__(self, data, key=None, block=None):
+        component_type = "Table"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type, block)
+
+        self.data = data
+
+        self.options = {
+            "data": data
+        }
+
+        self.render()
+
+
 class UI:
     def __init__(self):
         self.block_context = None
@@ -1235,6 +1250,10 @@ class UI:
     def subheader(self, *args, **kwargs):
         subheader = SubHeader(*args, **kwargs, block=self.block_context)
         return subheader
+
+    def table(self, *args, **kwargs):
+        table = Table(*args, **kwargs, block=self.block_context)
+        return table
 
     # Aim sequence viz components
     def line_chart(self, *args, **kwargs):
