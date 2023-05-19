@@ -49,8 +49,6 @@ def create_app():
         max_age=86400
     )
 
-    from aimcore.web.api.tags.views import tags_router
-    from aimcore.web.api.experiments.views import experiment_router
     from aimcore.web.api.dashboard_apps.views import dashboard_apps_router
     from aimcore.web.api.dashboards.views import dashboards_router
     from aimcore.web.api.projects.views import projects_router
@@ -76,9 +74,7 @@ def create_app():
     api_app.include_router(dashboard_apps_router, prefix='/apps')
     api_app.include_router(dashboards_router, prefix='/dashboards')
     api_app.include_router(boards_router, prefix='/boards')
-    api_app.include_router(experiment_router, prefix='/experiments')
     api_app.include_router(projects_router, prefix='/projects')
-    api_app.include_router(tags_router, prefix='/tags')
     api_app.include_router(query_router, prefix='/data')
 
     base_path = os.environ.get(AIM_UI_BASE_PATH, '')
