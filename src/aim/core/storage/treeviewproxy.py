@@ -333,7 +333,7 @@ class ProxyKhashArrayView(TreeArrayView):
         yield from self.values_list()
 
     def items(self) -> Iterator[Tuple[int, Any]]:
-        yield from zip(self.indices_list(), self.values_list())
+        yield from zip(*self.sparse_list())
 
     def __len__(self) -> int:
         return self._rpc_client.run_instruction(self._hash, self._handler, '__len__')
@@ -352,6 +352,9 @@ class ProxyKhashArrayView(TreeArrayView):
         assert isinstance(idx, int)
         return self._rpc_client.run_instruction(self._hash, self._handler, '__setitem__', (idx, val),
                                                 is_write_only=True)
+
+    def sparse_list(self) -> Tuple[List[int], List[Any]]:
+        return self._rpc_client.run_instruction(self._hash, self._handler, 'sparse_list')
 
     def indices_list(self) -> List[int]:
         return self._rpc_client.run_instruction(self._hash, self._handler, 'indices_list')
