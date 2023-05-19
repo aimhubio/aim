@@ -53,3 +53,31 @@ export interface BoardData {
    */
   code?: string;
 }
+
+export interface TemplateData {
+  /**
+   * The template_id
+   * @type {string}
+   */
+  template_id: string;
+  /**
+   * The name of the template
+   * @type {string}
+   */
+  name: string;
+  /**
+   * The description of the template
+   * @type {string}
+   */
+  description: string;
+  /**
+   * The package of the template
+   * @type {string}
+   */
+  package: string;
+  /**
+   * The version of the template
+   * @type {string}
+   */
+  version: string;
+}

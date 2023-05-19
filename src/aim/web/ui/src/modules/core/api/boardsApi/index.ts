@@ -3,7 +3,7 @@ import { getAPIHost } from 'config/config';
 import ENDPOINTS from 'services/api/endpoints';
 import NetworkService from 'services/NetworkService';
 
-import { BoardData, BoardsRequestBody } from './types.d';
+import { BoardData, BoardsRequestBody, TemplateData } from './types.d';
 
 const api = new NetworkService(`${getAPIHost()}${ENDPOINTS.BOARDS.BASE}`);
 
@@ -87,8 +87,24 @@ async function resetBoardById(id: string): Promise<BoardData> {
 /**
  * function fetchBoardsTemplates
  * this call is used for fetching boards templates.
- * @returns {Promise<BoardData[]>}
+ * @returns {Promise<TemplateData[]>}
  */
+
+async function fetchBoardsTemplates(): Promise<TemplateData> {
+  return (await api.makeAPIGetRequest(ENDPOINTS.BOARDS.TEMPLATES)).body;
+}
+
+/**
+ * function fetchTemplate by id
+ * this call is used for fetching a template by id.
+ * @param id - id of template
+ * @returns {Promise<TemplateData>}
+ */
+
+async function fetchTemplate(id: string): Promise<TemplateData> {
+  return (await api.makeAPIGetRequest(`${ENDPOINTS.BOARDS.TEMPLATES}/${id}`))
+    .body;
+}
 
 export * from './types.d';
 export {
@@ -97,4 +113,7 @@ export {
   createBoard,
   updateBoard,
   deleteBoard,
+  resetBoardById,
+  fetchBoardsTemplates,
+  fetchTemplate,
 };
