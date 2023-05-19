@@ -1,18 +1,17 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import _ from 'lodash-es';
 
 import Editor from '@monaco-editor/react';
-import { IconPencil } from '@tabler/icons-react';
 
 import { Spinner } from 'components/kit';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 import ResizingFallback from 'components/ResizingFallback';
-import { Box, Button, Link, Tabs, Breadcrumb } from 'components/kit_v2';
+import { Box, Button, Link, Tabs } from 'components/kit_v2';
 
 import { PathEnum } from 'config/enums/routesEnum';
-import { TopBar } from 'config/stitches/foundations/layout';
 
 import usePyodide from 'services/pyodide/usePyodide';
 
@@ -39,7 +38,6 @@ function Board({
   isLoading,
   editMode,
   newMode,
-  previewMode,
   notifyData,
   onNotificationDelete,
   saveBoard,
@@ -83,7 +81,7 @@ function Board({
         packagesListProxy.destroy();
 
         for await (const lib of packagesList) {
-          if (lib !== 'js') {
+          if (!['js', 'ml'].includes(lib)) {
             await pyodide?.loadPackage('micropip');
             try {
               const micropip = pyodide?.pyimport('micropip');
@@ -123,7 +121,11 @@ function Board({
 block_context = {
   "current": 0,
 }
-board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
+current_layout = []
+board_id = ${boardId === undefined ? 'None' : `"${boardId}"`}
+session_state = state[board_id] if board_id in state else {}
+def set_session_state(state_slice):
+  set_state(state_slice, board_id)
 `;
         const code =
           resetCode +
@@ -234,64 +236,45 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
     },
   );
 
+  const tobBarRef = document.querySelector('#app-top-bar')!;
+
   return (
     <ErrorBoundary>
       <Box as='section' height='100vh' className='Board'>
-        {!previewMode && (
-          <TopBar>
-            <Box flex='1 100%'>
-              <Breadcrumb
-                customRouteValues={{
-                  [`/boards/${boardId}`]: data.name,
-                }}
-              />
-            </Box>
-            {editMode || newMode ? (
-              <Box
-                className='Board__appBar__controls'
-                display='flex'
-                ai='center'
-                gap='$5'
+        {(editMode || newMode) &&
+          tobBarRef &&
+          createPortal(
+            <Box
+              className='Board__appBar__controls'
+              display='flex'
+              ai='center'
+              gap='$5'
+            >
+              <Button
+                color='primary'
+                variant='contained'
+                size='xs'
+                onClick={execute}
               >
-                <Button
-                  color='primary'
-                  variant='contained'
-                  size='xs'
-                  onClick={execute}
-                >
-                  Run
-                </Button>
-                <SaveBoard
-                  saveBoard={saveBoard}
-                  getEditorValue={() => editorRef.current?.getValue() ?? ''}
-                  initialState={data}
-                />
-                <Link
-                  css={{ display: 'flex' }}
-                  to={PathEnum.Board.replace(
-                    ':boardId',
-                    newMode ? '' : boardId,
-                  )}
-                  underline={false}
-                >
-                  <Button variant='outlined' size='xs'>
-                    Cancel
-                  </Button>
-                </Link>
-              </Box>
-            ) : (
+                Run
+              </Button>
+              <SaveBoard
+                saveBoard={saveBoard}
+                getEditorValue={() => editorRef.current?.getValue() ?? ''}
+                initialState={data}
+              />
               <Link
                 css={{ display: 'flex' }}
-                to={PathEnum.Board_Edit.replace(':boardId', boardId)}
+                to={`${PathEnum.App}/view/${boardId}`}
                 underline={false}
               >
-                <Button variant='outlined' size='xs' rightIcon={<IconPencil />}>
-                  Edit
+                <Button variant='outlined' size='xs'>
+                  Cancel
                 </Button>
               </Link>
-            )}
-          </TopBar>
-        )}
+            </Box>,
+            tobBarRef,
+          )}
         <BusyLoaderWrapper
           isLoading={pyodideIsLoading || isLoading}
           height={'100%'}

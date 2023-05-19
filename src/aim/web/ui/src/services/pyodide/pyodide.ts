@@ -2,6 +2,8 @@ import { getBasePath } from 'config/config';
 
 import { search } from 'pages/Board/search';
 
+import { getItem, setItem } from 'utils/storage';
+
 import pyodideEngine from './store';
 
 // @ts-ignore
@@ -47,15 +49,30 @@ window.updateLayout = (elements: any, boardId: undefined | string) => {
 };
 
 // @ts-ignore
-window.setState = (update: any, boardId: undefined | string) => {
+window.setState = (update: any, boardId: string, persist = false) => {
   let stateUpdate = update.toJs();
   update.destroy();
   let state = toObject(stateUpdate);
 
+  // This section add persistence for state through saving it to URL and localStorage
+
+  if (persist) {
+    const stateStr = JSON.stringify(state);
+    const boardStateStr = JSON.stringify(state[boardId]);
+    const prevStateStr = getItem('app_state');
+
+    if (stateStr !== prevStateStr) {
+      setItem('app_state', stateStr);
+      const url = new URL(window.location as any);
+      url.searchParams.set('state', boardStateStr);
+      window.history.pushState({}, '', url as any);
+    }
+  }
+
   pyodideEngine.events.fire(
     boardId as string,
     {
-      state: state[boardId as string],
+      state: state[boardId],
     },
     { savePayload: false },
   );
@@ -86,10 +103,23 @@ export async function loadPyodideInstance() {
   });
 
   const namespace = pyodide.toPy({});
-  const mock = await fetch(`${getBasePath()}/static-files/aim_ui_core.py`);
-  const mockText = await mock.text();
+  const coreFile = await fetch(`${getBasePath()}/static-files/aim_ui_core.py`);
+  const coreCode = await coreFile.text();
 
-  await pyodide.runPythonAsync(mockText, { globals: namespace });
+  pyodide.runPython(coreCode, { globals: namespace });
+
+  let ml = {
+    Metric: {
+      filter: (query: string) => {
+        let val = pyodide.runPython(
+          `query_filter('Metric', ${JSON.stringify(query)})`,
+          { globals: namespace },
+        );
+        return val;
+      },
+    },
+  };
+  pyodide.registerJsModule('ml', ml);
 
   pyodideEngine.setPyodide({
     current: pyodide,

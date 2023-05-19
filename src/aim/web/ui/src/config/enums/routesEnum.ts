@@ -15,6 +15,7 @@ enum PathEnum {
   Board_Edit = '/boards/:boardId/edit',
   Reports = '/reports',
   Report = '/reports/:reportId',
+  App = '/app',
   Report_Edit = '/reports/:reportId/edit',
   Scatters = '/explorers/scatters',
   Scatters_Id = '/explorers/scatters/:appId',
