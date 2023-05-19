@@ -124,6 +124,8 @@ class Client:
         return response
 
     def disconnect(self):
+        self._heartbeat_sender.stop()
+
         endpoint = f'http://{self._client_endpoint}/disconnect/{self.uri}/'
         response = requests.get(endpoint)
         response_json = response.json()

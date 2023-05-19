@@ -16,10 +16,7 @@ from aim.core.storage.treeutils import encode_tree, decode_tree
 from aim.core.transport.handlers import (
     get_tree,
     get_khash_array,
-    get_structured_run,
-    get_repo,
     get_lock,
-    get_run_heartbeat,
     get_file_manager
 )
 
@@ -28,10 +25,7 @@ def prepare_resource_registry():
     registry = ResourceTypeRegistry()
     registry.register('TreeView', get_tree)
     registry.register('KhashArrayView', get_khash_array)
-    registry.register('StructuredRun', get_structured_run)
-    registry.register('Repo', get_repo)
     registry.register('Lock', get_lock)
-    registry.register('RunHeartbeat', get_run_heartbeat)
     registry.register('FileManager', get_file_manager)
     return registry
 
