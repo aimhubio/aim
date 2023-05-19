@@ -19,7 +19,6 @@ import pyodideEngine from '../../services/pyodide/store';
 
 import SaveBoard from './components/SaveBoard';
 import GridCell from './components/GridCell';
-import useBoardStore from './BoardStore';
 import BoardLeavingGuard from './components/BoardLeavingGuard';
 import {
   BoardBlockTab,
@@ -32,10 +31,11 @@ import {
 } from './Board.style';
 import BoardConsole from './components/BoardConsole';
 import FormVizElement from './components/VisualizationElements/FormVizElement';
+import useBoardStore from './BoardStore';
 
 function Board({
   data,
-  isLoading,
+  isLoading = false,
   editMode,
   newMode,
   notifyData,
@@ -47,11 +47,10 @@ function Board({
   const vizContainer = React.useRef<any>(null);
   const boxContainer = React.useRef<any>(null);
   const setEditorValue = useBoardStore((state) => state.setEditorValue);
-  const destroyBoardStore = useBoardStore((state) => state.destroy);
 
-  const boardId = data.id;
+  const boardId = data.board_id;
 
-  const editorValue = React.useRef(data.code);
+  const editorValue = React.useRef(data.code || '');
   const timerId = React.useRef(0);
 
   const [state, setState] = React.useState<any>({
@@ -74,7 +73,7 @@ function Board({
           ...s,
           isProcessing: true,
         }));
-        const code = editorRef.current?.getValue() || data.code;
+        const code = editorRef.current?.getValue() || data.code || '';
 
         const packagesListProxy = pyodide?.pyodide_py.code.find_imports(code);
         const packagesList = packagesListProxy.toJs();
@@ -209,7 +208,6 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
     return () => {
       window.clearTimeout(timerId.current);
       unsubscribe();
-      destroyBoardStore();
     };
   }, [boardId]);
 
@@ -265,7 +263,7 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
               />
               <Link
                 css={{ display: 'flex' }}
-                to={`${PathEnum.App}/view/${boardId}`}
+                to={`${PathEnum.App}/${boardId}`}
                 underline={false}
               >
                 <Button variant='outlined' size='xs'>

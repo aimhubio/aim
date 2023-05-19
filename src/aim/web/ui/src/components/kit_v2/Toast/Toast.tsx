@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { IconX } from '@tabler/icons-react';
+
 import { ColorPaletteType } from 'config/stitches/types';
 
 import Button from '../Button';
@@ -87,12 +89,10 @@ const ToastItem = React.forwardRef<typeof ToastRoot, IToastProps>(
               <IconButton
                 css={{ ml: '$4' }}
                 color={status as ColorPaletteType}
-                icon='close'
+                icon={<IconX />}
                 data-testid='delete-toast'
                 onClick={() => onDelete(id)}
-              >
-                Delete
-              </IconButton>
+              />
             ) : null}
           </ToastAction>
         ) : null}

@@ -23,8 +23,8 @@ async function fetchBoardsList(): Promise<BoardData[]> {
  * @returns {Promise<BoardData>}
  */
 
-async function fetchBoardById(id: string): Promise<BoardData[]> {
-  return (await api.makeAPIGetRequest(`${ENDPOINTS.BOARDS.GET}/${id}`)).body;
+async function fetchBoardById(id: string): Promise<BoardData> {
+  return (await api.makeAPIGetRequest(`${ENDPOINTS.BOARDS.GET}${id}`)).body;
 }
 
 /**
@@ -55,7 +55,7 @@ async function updateBoard(
   reqBody: BoardsRequestBody,
 ): Promise<BoardData> {
   return (
-    await api.makeAPIPutRequest(`${ENDPOINTS.BOARDS.UPDATE}/${id}`, {
+    await api.makeAPIPutRequest(`${ENDPOINTS.BOARDS.UPDATE}${id}`, {
       body: reqBody,
     })
   ).body;
@@ -90,7 +90,7 @@ async function resetBoardById(id: string): Promise<BoardData> {
  * @returns {Promise<TemplateData[]>}
  */
 
-async function fetchBoardsTemplates(): Promise<TemplateData> {
+async function fetchBoardsTemplates(): Promise<TemplateData[]> {
   return (await api.makeAPIGetRequest(ENDPOINTS.BOARDS.TEMPLATES)).body;
 }
 
@@ -101,7 +101,7 @@ async function fetchBoardsTemplates(): Promise<TemplateData> {
  * @returns {Promise<TemplateData>}
  */
 
-async function fetchTemplate(id: string): Promise<TemplateData> {
+async function fetchTemplateById(id: string): Promise<TemplateData> {
   return (await api.makeAPIGetRequest(`${ENDPOINTS.BOARDS.TEMPLATES}/${id}`))
     .body;
 }
@@ -115,5 +115,5 @@ export {
   deleteBoard,
   resetBoardById,
   fetchBoardsTemplates,
-  fetchTemplate,
+  fetchTemplateById,
 };

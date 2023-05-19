@@ -14,8 +14,9 @@ export interface BoardsRequestBody {
   /**
    * The template
    * @type {string}
+   * @optional
    */
-  from_template: string;
+  from_template?: string;
   /**
    * The code of the board
    * @type {string}
