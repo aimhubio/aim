@@ -5,6 +5,7 @@ import tqdm
 from multiprocessing.pool import ThreadPool
 from psutil import cpu_count
 
+import aim.sdk.utils
 from aimcore.cli.runs.utils import match_runs, make_zip_archive, upload_repo_runs
 from aim.sdk.repo import Repo
 
@@ -25,7 +26,7 @@ def runs(ctx, repo):
 def list_runs(ctx):
     """List Runs available in Repo."""
     repo_path = ctx.obj['repo']
-    if not Repo.is_remote_path(repo_path):
+    if not aim.sdk.utils.is_remote_path(repo_path):
         if not Repo.exists(repo_path):
             click.echo(f'\'{repo_path}\' is not a valid aim repo.')
             exit(1)
