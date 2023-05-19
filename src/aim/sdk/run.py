@@ -298,8 +298,7 @@ class BasicRun(BaseRun, StructuredRunMixin):
         if not read_only:
             if not self.repo.is_remote_repo:
                 self._checkins = RunStatusReporter(self.hash, LocalFileManager(self.repo.path))
-                progress_flag_path = pathlib.Path(self.repo.path) / 'meta' / 'progress' / self.hash
-                self._heartbeat = ScheduledStatusReporter(self._checkins, touch_path=progress_flag_path)
+                self._heartbeat = ScheduledStatusReporter(self._checkins)
             else:
                 self._checkins = RunStatusReporter(self.hash, RemoteFileManager(self.repo._client, self.hash))
                 self._heartbeat = RemoteRunHeartbeatReporter(self.repo._client, self.hash)

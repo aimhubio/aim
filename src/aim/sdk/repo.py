@@ -118,9 +118,7 @@ class Repo:
         if not self.is_remote_repo and not os.path.exists(self.path):
             raise RuntimeError(f'Cannot find repository \'{self.path}\'. Please init first.')
 
-        self.container_pool: Dict[ContainerConfig, Container] = WeakValueDictionary()
-        self.persistent_pool: Dict[ContainerConfig, Container] = dict()
-        self.container_view_pool: Dict[ContainerConfig, Container] = WeakValueDictionary()
+        # self._container = self._get_index_container('meta', timeout=10, read_only=self.read_only)
 
         self._run_props_cache_hint = None
         self._encryption_key = None
@@ -143,7 +141,7 @@ class Repo:
 
     @property
     def meta_tree(self):
-        return self.request_tree('meta', read_only=True, from_union=True).subtree('meta')
+        return self.get_meta_tree(read_only=True)
 
     def __repr__(self) -> str:
         return f'<Repo#{hash(self)} path={self.path} read_only={self.read_only}>'
@@ -254,89 +252,90 @@ class Repo:
     def is_remote_path(cls, path: str):
         return path.startswith('aim://')
 
-    def _get_container(
-            self, name: str, read_only: bool, from_union: bool = False
-    ) -> Container:
-        if self.read_only and not read_only:
-            raise ValueError('Repo is read-only')
+    # def _get_container(
+    #         self, name: str, read_only: bool, from_union: bool = False
+    # ) -> Container:
+    #     if self.read_only and not read_only:
+    #         raise ValueError('Repo is read-only')
+    #
+    #     container_config = ContainerConfig(name, None, read_only=read_only)
+    #     container = self.container_pool.get(container_config)
+    #     if container is None:
+    #         path = os.path.join(self.path, name)
+    #         if from_union:
+    #             container = RocksUnionContainer(path, read_only=read_only)
+    #             self.persistent_pool[container_config] = container
+    #         else:
+    #             container = RocksContainer(path, read_only=read_only)
+    #         self.container_pool[container_config] = container
+    #
+    #     return container
 
-        container_config = ContainerConfig(name, None, read_only=read_only)
-        container = self.container_pool.get(container_config)
-        if container is None:
-            path = os.path.join(self.path, name)
-            if from_union:
-                container = RocksUnionContainer(path, read_only=read_only)
-                self.persistent_pool[container_config] = container
-            else:
-                container = RocksContainer(path, read_only=read_only)
-            self.container_pool[container_config] = container
+    def get_meta_tree(self, read_only, hash_=''):
+        return self._get_index_tree('meta', hash_, read_only=read_only, ).subtree('meta')
 
-        return container
-
-    def _get_index_tree(self, name: str, timeout: int):
+    def _get_index_tree(self, name: str, hash_: str = '', read_only: bool = False):
         if not self.is_remote_repo:
-            return self._get_index_container(name, timeout).tree()
+            return self._container.tree()
         else:
-            return ProxyTree(self._client, name, '', read_only=False, index=True, timeout=timeout)
+            return ProxyTree(self._client, name, hash_, read_only=read_only)
 
-    def _get_index_container(self, name: str, timeout: int) -> Container:
-        if self.read_only:
-            raise ValueError('Repo is read-only')
-
+    def _get_index_container(self, name: str, timeout: int = 10, read_only: bool = False) -> Container:
         name = name + '/index'
-        container_config = ContainerConfig(name, None, read_only=True)
-        container = self.container_pool.get(container_config)
-        if container is None:
-            path = os.path.join(self.path, name)
-            container = RocksContainer(path, read_only=False, timeout=timeout)
-            self.container_pool[container_config] = container
-
+        path = os.path.join(self.path, name)
+        container = RocksContainer(path, read_only=read_only, timeout=timeout)
         return container
 
-    def request_tree(
-        self,
-        name: str,
-        sub: str = None,
-        *,
-        read_only: bool,
-        from_union: bool = False,  # TODO maybe = True by default
-        no_cache: bool = False,
-    ):
-        if not self.is_remote_repo:
-            return self.request(name, sub, read_only=read_only, from_union=from_union, no_cache=no_cache).tree()
-        else:
-            return ProxyTree(self._client, name, sub, read_only=read_only, from_union=from_union, no_cache=no_cache)
+    def get_sequence_tree(self, read_only, hash_=''):
+        return self._get_index_tree('meta', hash_, read_only=read_only, ).subtree('seqs')
 
-    def request(
-            self,
-            name: str,
-            sub: str = None,
-            *,
-            read_only: bool,
-            from_union: bool = False,  # TODO maybe = True by default
-            no_cache: bool = False,
-    ):
+    # def request_tree(
+    #     self,
+    #     name: str,
+    #     sub: str = None,
+    #     *,
+    #     read_only: bool,
+    #     from_union: bool = False,  # TODO maybe = True by default
+    #     no_cache: bool = False,
+    # ):
+    #     if not self.is_remote_repo:
+    #         return self.request(name, sub, read_only=read_only, from_union=from_union, no_cache=no_cache)
+    #     else:
+    #         return ProxyTree(self._client, name, sub, read_only=read_only, from_union=from_union, no_cache=no_cache)
 
-        container_config = ContainerConfig(name, sub, read_only)
-        container_view = self.container_view_pool.get(container_config)
-        if container_view is None or no_cache:
-            if read_only:
-                if from_union:
-                    path = name
-                else:
-                    assert sub is not None
-                    path = os.path.join(name, 'chunks', sub)
-                container = self._get_container(path, read_only=True, from_union=from_union)
-            else:
-                assert sub is not None
-                path = os.path.join(name, 'chunks', sub)
-                container = self._get_container(path, read_only=False, from_union=False)
-
-            container_view = container
-            if not no_cache:
-                self.container_view_pool[container_config] = container_view
-
-        return container_view
+    # def request(
+    #         self,
+    #         name: str,
+    #         sub: str = None,
+    #         *,
+    #         read_only: bool,
+    #         from_union: bool = False,  # TODO maybe = True by default
+    #         no_cache: bool = False,
+    # ):
+    #     if sub is None:
+    #         return self._get_index_tree(name='meta', timeout=10, read_only=read_only).subtree(name)
+    #     else:
+    #         return self._get_index_tree(name='meta', timeout=10, read_only=read_only).subtree((name, 'chunks', sub))
+    #     # container_config = ContainerConfig(name, sub, read_only)
+    #     # container_view = self.container_view_pool.get(container_config)
+    #     # if container_view is None or no_cache:
+    #     #     if read_only:
+    #     #         if from_union:
+    #     #             path = name
+    #     #         else:
+    #     #             assert sub is not None
+    #     #             path = os.path.join(name, 'chunks', sub)
+    #     #         container = self._get_container(path, read_only=True, from_union=from_union)
+    #     #     else:
+    #     #         assert sub is not None
+    #     #         path = os.path.join(name, 'chunks', sub)
+    #     #         container = self._get_container(path, read_only=False, from_union=False)
+    #     #
+    #     #     container_view = container
+    #     #     if not no_cache:
+    #     #         self.container_view_pool[container_config] = container_view
+    #     #
+    #     # return container_view
 
     def request_props(self, hash_: str, read_only: bool, created_at: 'datetime' = None):
         if self.is_remote_repo:
@@ -398,11 +397,7 @@ class Repo:
         if self.is_remote_repo:
             return set(self._remote_repo_proxy.list_all_runs())
         else:
-            chunks_dir = os.path.join(self.path, 'meta', 'chunks')
-            if os.path.exists(chunks_dir):
-                return set(os.listdir(chunks_dir))
-            else:
-                return set()
+            return set(self.meta_tree.subtree('chunks').keys())
 
     def list_all_runs(self) -> List[str]:
         return list(self._all_run_hashes())
@@ -569,11 +564,6 @@ class Repo:
 
         return encryption_key
 
-    def _get_meta_tree(self):
-        return self.request_tree(
-            'meta', read_only=True, from_union=True
-        ).subtree('meta')
-
     @staticmethod
     def available_sequence_types():
         return Sequence.registry.keys()
@@ -595,7 +585,7 @@ class Repo:
         Returns:
             :obj:`dict`: Tree of sequences and their contexts groupped by sequence type.
         """
-        meta_tree = self._get_meta_tree()
+        meta_tree = self.meta_tree
         sequence_traces = {}
         if isinstance(sequence_types, str):
             sequence_types = (sequence_types,)
@@ -634,7 +624,7 @@ class Repo:
         Returns:
             :obj:`dict`: All runs meta-parameters.
         """
-        meta_tree = self._get_meta_tree()
+        meta_tree = self.meta_tree
         try:
             return meta_tree.collect('attrs', strict=False)
         except KeyError:
@@ -692,24 +682,16 @@ class Repo:
     def _copy_run(self, run_hash, dest_repo):
         def copy_trees():
             # copy run meta tree
-            source_meta_tree = self.request_tree(
-                'meta', run_hash, read_only=True, from_union=False, no_cache=True
-            ).subtree('meta')
-            dest_meta_tree = dest_repo.request_tree(
-                'meta', run_hash, read_only=False, from_union=False, no_cache=True
-            ).subtree('meta')
+            source_meta_tree = self.get_meta_tree(read_only=True)
+            dest_meta_tree = dest_repo.get_meta_tree(read_only=False)
             dest_meta_run_tree = dest_meta_tree.subtree('chunks').subtree(run_hash)
             dest_meta_tree[...] = source_meta_tree[...]
             dest_index = dest_repo._get_index_tree('meta', timeout=10).view(())
             dest_meta_run_tree.finalize(index=dest_index)
 
             # copy run series tree
-            source_series_run_tree = self.request_tree(
-                'seqs', run_hash, read_only=True, no_cache=True
-            ).subtree('seqs')
-            dest_series_run_tree = dest_repo.request_tree(
-                'seqs', run_hash, read_only=False, no_cache=True
-            ).subtree('seqs')
+            source_series_run_tree = self.get_sequence_tree(read_only=True).subtree('chunks').subtree(run_hash)
+            dest_series_run_tree = dest_repo.get_sequence_tree(read_only=False).subtree('chunks').subtree(run_hash)
 
             # copy v2 sequences
             source_v2_tree = source_series_run_tree.subtree(('v2', 'chunks', run_hash))

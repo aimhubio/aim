@@ -165,13 +165,14 @@ class RepoIndexManager:
         return os.path.exists(self.progress_dir / run_hash)
 
     def index(self, run_hash, ) -> bool:
-        lock = RefreshLock(self._index_lock_path(), timeout=10)
-        with self.lock_index(lock):
-            index = self.repo._get_index_tree('meta', 0).view(())
-            meta_tree = self.repo.request_tree(
-                'meta', run_hash, read_only=True, from_union=False, no_cache=True).subtree('meta')
-            meta_run_tree = meta_tree.subtree('chunks').subtree(run_hash)
-            meta_run_tree.finalize(index=index)
-            if meta_run_tree.get('end_time') is None:
-                index['meta', 'chunks', run_hash, 'end_time'] = datetime.datetime.now(pytz.utc).timestamp()
-            return True
+        pass
+        # lock = RefreshLock(self._index_lock_path(), timeout=10)
+        # with self.lock_index(lock):
+        #     index = self.repo._get_index_tree('meta', 0).view(())
+        #     meta_tree = self.repo.request_tree(
+        #         'meta', run_hash, read_only=True, from_union=False, no_cache=True).subtree('meta')
+        #     meta_run_tree = meta_tree.subtree('chunks').subtree(run_hash)
+        #     meta_run_tree.finalize(index=index)
+        #     if meta_run_tree.get('end_time') is None:
+        #         index['meta', 'chunks', run_hash, 'end_time'] = datetime.datetime.now(pytz.utc).timestamp()
+        #     return True

@@ -97,7 +97,7 @@ def up(dev, host, port, workers, uds,
         click.secho('aim init', fg='yellow')
         return
     else:
-        repo_inst = Repo.from_path(repo_path)
+        repo_inst = Repo.from_path(repo_path, read_only=True)
 
     os.environ[AIM_UI_MOUNTED_REPO_PATH] = repo_inst.path
 

@@ -17,9 +17,10 @@ class Project:
         self.repo = Repo.from_path(self.repo_path, read_only=True)
 
     def cleanup_repo_pools(self):
-        self.repo.container_pool.clear()
-        self.repo.container_view_pool.clear()
-        self.repo.persistent_pool.clear()
+        pass
+        # self.repo.container_pool.clear()
+        # self.repo.container_view_pool.clear()
+        # self.repo.persistent_pool.clear()
 
     def exists(self):
         """

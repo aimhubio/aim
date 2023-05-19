@@ -127,7 +127,7 @@ class Container(ABCContainer):
         self._status_reporter = None
 
         if not self._is_readonly:
-            self._lock = self.storage.lock(self.hash, self.mode)
+            self._lock = self.storage.lock(self.hash, 0)
             self._status_reporter = self.storage.status_reporter(self.hash)
 
         if self._is_readonly:

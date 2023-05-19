@@ -166,7 +166,6 @@ class Client:
 
     def release_resource(self, queue_id, resource_handler):
         endpoint = f'http://{self._tracking_endpoint}/{self.uri}/release-resource/{resource_handler}/'
-
         if queue_id != -1:
             self.get_queue(queue_id).wait_for_finish()
 
@@ -207,7 +206,7 @@ class Client:
         if queue_id != -1:
             self.get_queue(queue_id).wait_for_finish()
 
-        response = requests.post(endpoint, json=request_data)
+        response = requests.post(endpoint, json=request_data, stream=True)
 
         if response.status_code == 400:
             raise_exception(response.json().get('exception'))

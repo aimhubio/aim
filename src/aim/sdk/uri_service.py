@@ -31,7 +31,7 @@ class URIService:
         to_be_encrypted = f'{run_name}{URIService.SEPARATOR}{sub_name}'
         if resource_path:
             to_be_encrypted = f'{to_be_encrypted}{URIService.SEPARATOR}{resource_path}'
-
+        print(resource_path)
         return encryptor.encrypt(to_be_encrypted.encode()).decode()
 
     @classmethod
@@ -51,30 +51,13 @@ class URIService:
             self.runs_pool[run_name].append((uri, sub_name, resource_path))
 
         for run_name in self.runs_pool.keys():
-            run_containers = {}
             for uri, sub_name, resource_path in self.runs_pool[run_name]:
-                container = run_containers.get(sub_name)
-                if not container:
-                    container = self._get_container(run_name, sub_name)
-                    run_containers[sub_name] = container
-
+                container_tree = self.repo._get_index_tree('meta', read_only=True)
                 resource_path = decode_path(bytes.fromhex(resource_path))
-
-                # TODO: [MV] change to some other implementation of view when available
-                #  which won't collect in case of custom objects
-                data = container.tree().subtree(resource_path).collect()
+                data = container_tree.subtree(resource_path).collect()
                 if isinstance(data, BLOB):
                     data = data.load()
                 yield {uri: data}
-            del run_containers
 
         # clear runs pool
         self.runs_pool.clear()
-
-    def _get_container(self, run_name: str, sub_name: str):
-        if sub_name == 'meta':
-            container = self.repo.request(sub_name, run_name, from_union=True, read_only=True)
-        else:
-            container = self.repo.request(sub_name, run_name, read_only=True)
-
-        return container

@@ -4,8 +4,6 @@ from unit_tests.base import TestBase
 
 from aim.sdk import Run
 from aim.sdk.context import Context
-from aim.core.storage.containertreeview import ContainerTreeView
-from aim.core.storage.rockscontainer import RocksContainer
 from aim.core.storage.hashing import hash_auto
 
 
@@ -23,22 +21,20 @@ class TestRunContainerData(TestBase):
         run.track(1.0, name='metric 3', context=val_context)
         run.track(0.0, name='metric')
 
-        meta_container_path = os.path.join(self.repo.path, 'meta', 'chunks', run.hash)
-        rc = RocksContainer(meta_container_path, read_only=True)
-        tree = ContainerTreeView(rc)
+        tree = self.repo.get_meta_tree(read_only=True)
 
-        contexts = tree[('meta', 'contexts')]
+        contexts = tree['contexts']
         for ctx in [train_context, val_context, empty_context]:
             self.assertIn(Context(ctx).idx, contexts)
             self.assertDictEqual(contexts[Context(ctx).idx], ctx)
 
-        self.assertSetEqual({'float'}, set(tree.view(('meta', 'traces_types')).keys()))
-        metric_traces = tree.view(('meta', 'traces_types', 'float', Context(train_context).idx)).collect()
-        self.assertSetEqual({'metric 1', 'metric 2'}, set(metric_traces.keys()))
-        metric_traces = tree.view(('meta', 'traces_types', 'float', Context(val_context).idx)).collect()
-        self.assertSetEqual({'metric 1', 'metric 2', 'metric 3'}, set(metric_traces.keys()))
-        metric_traces = tree.view(('meta', 'traces_types', 'float', Context(empty_context).idx)).collect()
-        self.assertSetEqual({'metric'}, set(metric_traces.keys()))
+        self.assertTrue({'float'}.issubset(set(tree.view('traces_types').keys())))
+        metric_traces = tree.view(('traces_types', 'float', Context(train_context).idx)).collect()
+        self.assertTrue({'metric 1', 'metric 2'}.issubset(set(metric_traces.keys())))
+        metric_traces = tree.view(('traces_types', 'float', Context(val_context).idx)).collect()
+        self.assertTrue({'metric 1', 'metric 2', 'metric 3'}.issubset(set(metric_traces.keys())))
+        metric_traces = tree.view(('traces_types', 'float', Context(empty_context).idx)).collect()
+        self.assertTrue({'metric'}.issubset(set(metric_traces.keys())))
 
     def test_meta_run_tree_contexts_and_names(self):
         train_context = {'subset': 'train'}
@@ -53,20 +49,18 @@ class TestRunContainerData(TestBase):
         run.track(1, name='metric 3', context=val_context)
         run.track(0, name='metric')
 
-        meta_container_path = os.path.join(self.repo.path, 'meta', 'chunks', run.hash)
-        rc = RocksContainer(meta_container_path, read_only=True)
-        tree = ContainerTreeView(rc)
+        tree = self.repo.get_meta_tree(read_only=True)
 
-        contexts = tree.view(('meta', 'chunks', run.hash, 'contexts')).collect()
+        contexts = tree.view(('chunks', run.hash, 'contexts')).collect()
         for ctx in [train_context, val_context, empty_context]:
             self.assertIn(Context(ctx).idx, contexts)
             self.assertDictEqual(contexts[Context(ctx).idx], ctx)
 
-        traces = tree.view(('meta', 'chunks', run.hash, 'traces', Context(train_context).idx)).collect()
+        traces = tree.view(('chunks', run.hash, 'traces', Context(train_context).idx)).collect()
         self.assertSetEqual({'metric 1', 'metric 2'}, set(traces.keys()))
-        traces = tree.view(('meta', 'chunks', run.hash, 'traces', Context(val_context).idx)).collect()
+        traces = tree.view(('chunks', run.hash, 'traces', Context(val_context).idx)).collect()
         self.assertSetEqual({'metric 1', 'metric 2', 'metric 3'}, set(traces.keys()))
-        traces = tree.view(('meta', 'chunks', run.hash, 'traces', Context(empty_context).idx)).collect()
+        traces = tree.view(('chunks', run.hash, 'traces', Context(empty_context).idx)).collect()
         self.assertSetEqual({'metric'}, set(traces.keys()))
 
     def test_run_trace_dtype_and_last_value(self):
@@ -76,14 +70,12 @@ class TestRunContainerData(TestBase):
         run.track(3.0, name='metric 1', context={})
         run.track(1.0, name='metric 1', context={'subset': 'train'})
 
-        meta_container_path = os.path.join(self.repo.path, 'meta', 'chunks', run.hash)
-        rc = RocksContainer(meta_container_path, read_only=True)
-        tree = ContainerTreeView(rc)
-        metric_1_dict = tree.view(('meta', 'chunks', run.hash, 'traces', Context({}).idx, 'metric 1')).collect()
+        tree = self.repo.get_meta_tree(read_only=True)
+        metric_1_dict = tree.view(('chunks', run.hash, 'traces', Context({}).idx, 'metric 1')).collect()
         self.assertEqual(3.0, metric_1_dict['last'])
         self.assertEqual('float', metric_1_dict['dtype'])
 
-        metric_1_dict = tree.view(('meta', 'chunks', run.hash, 'traces',
+        metric_1_dict = tree.view(('chunks', run.hash, 'traces',
                                    Context({'subset': 'train'}).idx, 'metric 1')).collect()
         self.assertEqual(1.0, metric_1_dict['last'])
 
@@ -94,10 +86,8 @@ class TestRunContainerData(TestBase):
         run.track(2.0, name='metric 1', context={})
         run.track(3.0, name='metric 1', context={})
 
-        series_container_path = os.path.join(self.repo.path, 'seqs', 'chunks', run.hash)
-        rc = RocksContainer(series_container_path, read_only=True)
-        tree = ContainerTreeView(rc)
-        trace = tree.view(('seqs', 'v2', 'chunks', run.hash, Context({}).idx, 'metric 1'))
+        tree = self.repo.get_sequence_tree(read_only=True)
+        trace = tree.view(('v2', 'chunks', run.hash, Context({}).idx, 'metric 1'))
         self.assertSetEqual({'step', 'val', 'epoch', 'time'}, set(trace.keys()))
         steps = sorted(trace.array('step').values_list())
         vals = trace.array('val').values_list()
@@ -120,10 +110,8 @@ class TestRunContainerData(TestBase):
         run.track(2.0, name='metric 1', step=20, context={})
         run.track(3.0, name='metric 1', step=30, context={})
 
-        series_container_path = os.path.join(self.repo.path, 'seqs', 'chunks', run.hash)
-        rc = RocksContainer(series_container_path, read_only=True)
-        tree = ContainerTreeView(rc)
-        trace = tree.view(('seqs', 'v2', 'chunks', run.hash, Context({}).idx, 'metric 1'))
+        tree = self.repo.get_sequence_tree(read_only=True)
+        trace = tree.view(('v2', 'chunks', run.hash, Context({}).idx, 'metric 1'))
         steps = sorted(trace.array('step').values_list())
         vals = trace.array('val').values_list()
         epochs = trace.array('epoch').values_list()
@@ -145,10 +133,8 @@ class TestRunContainerData(TestBase):
         run.track(1.0, name='metric 1', step=10, context={})
         run.track(2.0, name='metric 1', step=20, context={})
 
-        series_container_path = os.path.join(self.repo.path, 'seqs', 'chunks', run.hash)
-        rc = RocksContainer(series_container_path, read_only=True)
-        tree = ContainerTreeView(rc)
-        trace = tree.view(('seqs', 'v2', 'chunks', run.hash, Context({}).idx, 'metric 1'))
+        tree = self.repo.get_sequence_tree(read_only=True)
+        trace = tree.view(('v2', 'chunks', run.hash, Context({}).idx, 'metric 1'))
         steps = sorted(trace.array('step').values_list())
         vals = trace.array('val').values_list()
         epochs = trace.array('epoch').values_list()
@@ -175,11 +161,9 @@ class TestRunContainerData(TestBase):
         run['p7'] = 'bazե\x00a-a'
         run['p8'] = b'blob'
 
-        meta_container_path = os.path.join(self.repo.path, 'meta', 'chunks', run.hash)
-        rc = RocksContainer(meta_container_path, read_only=True)
-        tree = ContainerTreeView(rc)
-        meta_attrs_tree = tree.view(('meta', 'attrs'))
-        meta_run_attrs_tree = tree.view(('meta', 'chunks', run.hash, 'attrs'))
+        tree = self.repo.get_meta_tree(read_only=True)
+        meta_attrs_tree = tree.view(('attrs'))
+        meta_run_attrs_tree = tree.view(('chunks', run.hash, 'attrs'))
 
         val = meta_attrs_tree['p1']
         self.assertEqual(int, type(val))

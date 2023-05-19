@@ -49,9 +49,7 @@ class BaseRun:
             self._lock = self.repo.request_run_lock(self.hash)
             self._lock.lock(force=force_resume)
 
-        self.meta_tree: TreeView = self.repo.request_tree(
-            'meta', self.hash, read_only=read_only, from_union=True
-        ).subtree('meta')
+        self.meta_tree: TreeView = self.repo.get_meta_tree(read_only=read_only)
         self.meta_run_tree: TreeView = self.meta_tree.subtree('chunks').subtree(self.hash)
 
         self._series_run_trees: Dict[int, TreeView] = None
@@ -67,9 +65,7 @@ class BaseRun:
     @property
     def series_run_trees(self) -> Dict[int, TreeView]:
         if self._series_run_trees is None:
-            series_tree = self.repo.request_tree(
-                'seqs', self.hash, read_only=self.read_only
-            ).subtree('seqs')
+            series_tree = self.repo.get_sequence_tree(read_only=self.read_only)
             self._series_run_trees = {}
             for version in STEP_HASH_FUNCTIONS.keys():
                 if version == 1:

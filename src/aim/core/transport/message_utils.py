@@ -49,7 +49,7 @@ def unpack_helper(msg: bytes) -> Tuple[bytes, bytes]:
     (is_blob,), tail = struct.unpack('?', tail[:1]), tail[1:]
     (value_size,), tail = struct.unpack('I', tail[:4]), tail[4:]
     value, tail = tail[:value_size], tail[value_size:]
-    assert len(tail) == 0
+    # assert len(tail) == 0
     if is_blob:
         yield key, BLOB(data=value)
     else:

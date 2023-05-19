@@ -2,7 +2,8 @@ import os
 import click
 
 from aimcore.cli.utils import set_log_level
-from aim.sdk.repo import Repo, RepoStatus
+from aim.sdk.core.repo import Repo
+from aim.sdk.repo import RepoStatus
 from aim.sdk.utils import clean_repo_path
 from aim.core.transport.config import AIM_SERVER_DEFAULT_HOST, AIM_SERVER_DEFAULT_PORT, AIM_SERVER_MOUNTED_REPO_PATH
 from aim.core.transport.server import start_server

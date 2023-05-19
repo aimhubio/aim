@@ -13,10 +13,11 @@ from aim.sdk.remote_run_reporter import RemoteFileManager
 
 
 class RemoteStorage(StorageEngine):
-    def __init__(self, path: str):
+    def __init__(self, path: str, read_only: bool = False):
         self.path = path
         remote_path = path.replace('aim://', '')
         self._client = Client(remote_path)
+        self._read_only = read_only
 
     @property
     def url(self) -> str:

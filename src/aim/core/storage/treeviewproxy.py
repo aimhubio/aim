@@ -17,16 +17,16 @@ class ProxyTreeAutoClean(RemoteResourceAutoClean):
     PRIORITY = 60
 
 
+class ProxyKhashArrayAutoClean(RemoteResourceAutoClean):
+    PRIORITY = 70
+
+
 class ProxyTree(TreeView):
     def __init__(self, client: 'Client',
                  name: str,
                  sub: str,
                  *,
-                 read_only: bool,
-                 from_union: bool = False,
-                 no_cache: bool = False,
-                 index=False,
-                 timeout=None):
+                 read_only: bool,):
         self._resources: ProxyTreeAutoClean = None
 
         self._rpc_client = client
@@ -36,10 +36,6 @@ class ProxyTree(TreeView):
             'name': name,
             'sub': sub,
             'read_only': read_only,
-            'from_union': from_union,
-            'index': index,
-            'timeout': timeout,
-            'no_cache': no_cache,
         }
         self.init_args = pack_args(encode_tree(kwargs))
         self.resource_type = 'TreeView'
@@ -167,6 +163,12 @@ class ProxyTree(TreeView):
     ):
         self._rpc_client.run_instruction(self._hash, self._handler, 'finalize', (ResourceObject(index._handler),))
 
+    def reservoir(
+            self,
+            path: Union[AimObjectKey, AimObjectPath] = (),
+    ):
+        return ProxyKhashArrayView(self._rpc_client, self, path)
+
 
 class SubtreeView(TreeView):
     def __init__(self, tree: TreeView, path: Union[AimObjectKey, AimObjectPath]):
@@ -279,3 +281,101 @@ class SubtreeView(TreeView):
         index: 'SubtreeView'
     ):
         self.tree.finalize(index=index.tree)
+
+    def reservoir(
+        self,
+        path: Union[AimObjectKey, AimObjectPath] = (),
+    ):
+        return self.tree.reservoir(self.absolute_path(path))
+
+
+class ProxyKhashArrayView(TreeArrayView):
+    def __init__(self, client: 'Client', tree: ProxyTree, path: AimObjectPath):
+        self._resources: ProxyKhashArrayAutoClean = None
+        self._rpc_client = client
+        self._hash = tree._hash
+        self.resource_type = 'KhashArrayView'
+
+        kwargs = {
+            'tree': ResourceObject(tree._handler),
+            'path': path
+        }
+        self.init_args = pack_args(encode_tree(kwargs))
+        handler = self._rpc_client.get_resource_handler(self, self.resource_type, args=self.init_args)
+
+        self._resources = ProxyKhashArrayAutoClean(self)
+        self._resources.hash = self._hash
+        self._resources.rpc_client = client
+        self._resources.handler = handler
+        self._handler = handler
+
+    def sample(
+        self,
+        num_samples: int = 512,
+        begin: int = None,
+        end: int = None,
+    ) -> List[Tuple[
+        int,
+        Any
+    ]]:
+        return self._rpc_client.run_instruction(self._hash, self._handler, 'sample', (num_samples, begin, end))
+
+    def __iter__(self) -> Iterator[Any]:
+        yield from self.values_list()
+
+    def keys(self) -> Iterator[int]:
+        yield from self.indices_list()
+
+    def indices(self) -> Iterator[int]:
+        yield from self.indices_list()
+
+    def values(self) -> Iterator[Any]:
+        yield from self.values_list()
+
+    def items(self) -> Iterator[Tuple[int, Any]]:
+        yield from zip(self.indices_list(), self.values_list())
+
+    def __len__(self) -> int:
+        return self._rpc_client.run_instruction(self._hash, self._handler, '__len__')
+
+    def __getitem__(
+        self,
+        idx: Union[int, slice]
+    ) -> Any:
+        return self._rpc_client.run_instruction(self._hash, self._handler, '__getitem__', (idx,))
+
+    def __setitem__(
+        self,
+        idx: int,
+        val: Any
+    ):
+        assert isinstance(idx, int)
+        return self._rpc_client.run_instruction(self._hash, self._handler, '__setitem__', (idx, val),
+                                                is_write_only=True)
+
+    def indices_list(self) -> List[int]:
+        return self._rpc_client.run_instruction(self._hash, self._handler, 'indices_list')
+
+    def values_list(self) -> List[Any]:
+        return self._rpc_client.run_instruction(self._hash, self._handler, 'values_list')
+
+    def tolist(self) -> List[Any]:
+        return self._rpc_client.run_instruction(self._hash, self._handler, 'tolist')
+
+    def first(self) -> Tuple[int, Any]:
+        return self._rpc_client.run_instruction(self._hash, self._handler, 'first')
+
+    def first_idx(self) -> int:
+        return self._rpc_client.run_instruction(self._hash, self._handler, 'first_idx')
+
+    def first_value(self) -> Any:
+        return self._rpc_client.run_instruction(self._hash, self._handler, 'first_value')
+
+    def last(self) -> Tuple[int, Any]:
+        return self._rpc_client.run_instruction(self._hash, self._handler, 'last')
+
+    def last_idx(self) -> int:
+        return self._rpc_client.run_instruction(self._hash, self._handler, 'last_idx')
+
+    def last_value(self) -> Any:
+        return self._rpc_client.run_instruction(self._hash, self._handler, 'last_value')
