@@ -159,12 +159,19 @@ async def project_status_api():
 
 
 @projects_router.get('/packages/')
-async def project_packages_api():
+async def project_packages_api(include_types: Optional[bool] = False):
     from aim.sdk.core.package_utils import Package
-    return list(Package.pool.keys())
+    if include_types:
+        return {
+            pkg.name: {
+                'containers': pkg.registered_containers,
+                'sequences': pkg.registered_sequences
+            } for pkg in Package.pool.values()}
+    else:
+        return list(Package.pool.keys())
 
 
-@projects_router.get('/sequences/')
+@projects_router.get('/sequence-types/')
 async def project_sequence_types_api(only_tracked: Optional[bool] = False):
     project = Project()
 
@@ -177,7 +184,7 @@ async def project_sequence_types_api(only_tracked: Optional[bool] = False):
         return project.repo.registered_sequence_types()
 
 
-@projects_router.get('/containers/')
+@projects_router.get('/container-types/')
 async def project_container_types_api(only_tracked: Optional[bool] = False):
     project = Project()
 

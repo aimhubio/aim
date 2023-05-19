@@ -49,20 +49,20 @@ async def container_search_result_streamer(query_collection: Iterable[Container]
         yield collect_streamable_data(encoded_tree)
 
 
-def container_query_response(repo, query: str, type_: str):
+def container_query_response(repo, query: Optional[str], type_: str):
     qresult = repo.containers(query, type_)
     streamer = container_search_result_streamer(qresult)
     return StreamingResponse(streamer)
 
 
-def sequence_query_response(repo, query: str, type_: str, sample_count: int):
+def sequence_query_response(repo, query: Optional[str], type_: str, sample_count: int):
     qresult = repo.sequences(query, type_)
     streamer = sequence_search_result_streamer(qresult, sample_count)
     return StreamingResponse(streamer)
 
 
 @query_router.get('/fetch/', responses={400: {'model': QuerySyntaxErrorOut}})
-def search_api(type_: str, q: Optional[str], p: Optional[int]):
+def data_fetch_api(type_: str, q: Optional[str] = None, p: Optional[int] = 500):
     repo = get_project_repo()
     query = checked_query(q)
     if type_ in Container.registry:
