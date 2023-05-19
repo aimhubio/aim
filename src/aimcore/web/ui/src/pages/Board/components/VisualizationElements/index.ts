@@ -12,6 +12,14 @@ const DataFrameVizElement = React.lazy(
       /* webpackPrefetch: true, webpackChunkName: "DataFrame" */ './DataFrameVizElement'
     ),
 );
+
+const TableVizElement = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "Table" */ './TableVizElement'
+    ),
+);
+
 const FiguresVizElement = React.lazy(
   () =>
     import(
@@ -151,6 +159,19 @@ const ToggleButtonVizElement = React.lazy(
     ),
 );
 
+const BoardVizElement = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "BoardEmbed" */ './BoardVizElement'
+    ),
+);
+const BoardLinkVizElement = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "BoardLink" */ './BoardLinkVizElement'
+    ),
+);
+
 export type VizElementKey =
   | 'LineChart'
   | 'DataFrame'
@@ -178,7 +199,10 @@ export type VizElementKey =
   | 'Checkbox'
   | 'ToggleButton'
   | 'Header'
-  | 'SubHeader';
+  | 'SubHeader'
+  | 'Table'
+  | 'Board'
+  | 'BoardLink';
 
 const VizElementsMap: Record<VizElementKey, React.FunctionComponent<any>> = {
   // input elements
@@ -197,6 +221,7 @@ const VizElementsMap: Record<VizElementKey, React.FunctionComponent<any>> = {
   // data display elements
   Plotly: PlotlyVizElement,
   DataFrame: DataFrameVizElement,
+  Table: TableVizElement,
   JSON: JSONVizElement,
   HTML: HTMLVizElement,
   Text: TextVizElement,
@@ -215,6 +240,10 @@ const VizElementsMap: Record<VizElementKey, React.FunctionComponent<any>> = {
   RunMessages: RunMessagesVizElement,
   RunLogs: RunLogsVizElement,
   RunNotes: RunNotesVizElement,
+
+  // Super components
+  Board: BoardVizElement,
+  BoardLink: BoardLinkVizElement,
 };
 
 export default VizElementsMap;

@@ -22,6 +22,8 @@ function Table({
   withSelect = true,
   selectedIndices,
   focusedRowIndex,
+  onRowSelect,
+  onRowFocus,
   ...rest
 }: TableProps) {
   const [focusedRow, setFocusedRow] = React.useState<number | undefined>(
@@ -48,19 +50,6 @@ function Table({
   }, [data]);
 
   React.useEffect(() => {
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
-
-  const handleClickOutside = (event: any) => {
-    if (tableRef.current && !tableRef.current.contains(event.target)) {
-      setFocusedRow(undefined);
-    }
-  };
-
-  React.useEffect(() => {
     if (focusedRowIndex !== focusedRow) {
       setFocusedRow(focusedRowIndex);
     }
@@ -70,21 +59,37 @@ function Table({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedIndices, focusedRowIndex]);
 
-  function onRowClick(e: React.MouseEvent<HTMLTableRowElement>) {
+  function handleRowFocus(e: React.MouseEvent<HTMLTableRowElement>) {
     const { index } = e.currentTarget.dataset;
-    if (index) {
+
+    if (Number(index) === focusedRow) {
+      setFocusedRow(undefined);
+      if (onRowFocus) {
+        onRowFocus({});
+      }
+      return;
+    } else {
       setFocusedRow(Number(index));
+      if (onRowFocus) {
+        onRowFocus({ ...transformedData[Number(index)], rowIndex: index });
+      }
     }
   }
 
-  function onRowSelect(checked: CheckedState | undefined, index: number) {
+  function handleRowSelect(checked: CheckedState | undefined, index: number) {
     let selectedList: number[] = [];
     if (checked) {
-      selectedList = [...selectedRows, index];
+      selectedList = [...(selectedRows || []), index];
     } else {
       selectedList = selectedRows.filter((i) => i !== index);
     }
     setSelectedRows(selectedList);
+    if (onRowSelect) {
+      const selectedListDict = selectedList.map((i: number) => {
+        return { ...transformedData[i], rowIndex: i };
+      });
+      onRowSelect(selectedListDict);
+    }
   }
 
   return (
@@ -109,15 +114,17 @@ function Table({
                 focusedRow !== undefined ? focusedRow === index : false
               }
               data-index={index}
-              onClick={onRowClick}
+              onClick={handleRowFocus}
               key={index}
             >
               {withSelect ? (
                 <TableCell>
                   <Checkbox
                     data-index={index}
-                    checked={selectedRows.includes(index)}
-                    onCheckedChange={(checked) => onRowSelect(checked, index)}
+                    checked={selectedRows?.includes(index)}
+                    onCheckedChange={(checked) =>
+                      handleRowSelect(checked, index)
+                    }
                     onClick={(e: any) => e.stopPropagation()}
                   />
                 </TableCell>

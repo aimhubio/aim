@@ -50,6 +50,7 @@ const BoardVisualizerComponentsPane = styled(SplitPaneItem, {
     width: '100%',
     height: '100%',
     minHeight: '300px',
+    maxHeight: '100%',
     minWidth: '200px',
     display: 'flex',
     ai: 'center',
@@ -68,6 +69,14 @@ const BoardVisualizerComponentsPane = styled(SplitPaneItem, {
       '.RunDetailLogsTab': {
         borderLeft: 'none',
         borderRight: 'none',
+      },
+    },
+    '.Board': {
+      height: '100%',
+      width: '100%',
+
+      '.BoardVisualizer': {
+        height: '100%',
       },
     },
   },
@@ -135,7 +144,6 @@ const BoardVisualizerComponentsPane = styled(SplitPaneItem, {
     display: 'flex',
     fd: 'row',
     width: '100%',
-    jc: 'center',
     ai: 'center',
     gap: '$9',
     fw: 'wrap',
@@ -205,6 +213,7 @@ const BoardConsoleElement = styled('pre', {
   fontMono: 14,
   p: '$5',
   overflow: 'auto',
+  height: 'calc(100% - 28px)',
 });
 
 const BoardComponentsViz = styled('div', {

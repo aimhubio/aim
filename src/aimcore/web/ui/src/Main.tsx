@@ -20,7 +20,7 @@ import { inIframe } from 'utils/helper';
 
 import usePyodide from './services/pyodide/usePyodide';
 
-import './App.scss';
+import './Main.scss';
 
 const basePath = getBasePath(false);
 
@@ -33,7 +33,7 @@ loader.config({
   },
 });
 
-function App(): React.FunctionComponentElement<React.ReactNode> {
+function Main(): React.FunctionComponentElement<React.ReactNode> {
   const { loadPyodide } = usePyodide();
 
   React.useEffect(() => {
@@ -94,4 +94,4 @@ function App(): React.FunctionComponentElement<React.ReactNode> {
   );
 }
 
-export default App;
+export default Main;
