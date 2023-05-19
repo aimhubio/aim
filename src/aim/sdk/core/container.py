@@ -87,13 +87,6 @@ class ContainerAutoClean(AutoClean['Container']):
 class Container(ABCContainer):
     version = '1.0.0'
 
-    def __init_subclass__(cls, **kwargs):
-        super().__init_subclass__(**kwargs)
-        typename = cls.get_typename()
-        if typename in cls.registry:  # check for name conflicts
-            logger.warning(f'Container registry already has typename \'{typename}\' registered.')
-        cls.registry[typename].append(cls)
-
     def __init__(self, hash_: Optional[str] = None, *,
                  repo: Optional[Union[str, 'Repo']] = None,
                  mode: Optional[Union[str, ContainerOpenMode]] = ContainerOpenMode.WRITE):
