@@ -19,7 +19,7 @@ import pyodideEngine from '../../services/pyodide/store';
 
 import SaveBoard from './components/SaveBoard';
 import GridCell from './components/GridCell';
-import useBoardStore from './BoardSore';
+import useBoardStore from './BoardStore';
 import BoardLeavingGuard from './components/BoardLeavingGuard';
 import {
   BoardBlockTab,

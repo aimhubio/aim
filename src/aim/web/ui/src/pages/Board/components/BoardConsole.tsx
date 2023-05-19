@@ -15,7 +15,7 @@ import {
   BoardConsolePanel,
   BoardConsoleElement,
 } from '../Board.style';
-import useBoardStore from '../BoardSore';
+import useBoardStore from '../BoardStore';
 
 const BOARD_CONSOLE_SIZES = {
   MIN_HEIGHT: 24,
