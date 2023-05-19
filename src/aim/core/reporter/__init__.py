@@ -99,17 +99,13 @@ import math
 import time
 import queue
 import threading
+from abc import abstractmethod
 from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import ClassVar, Dict, Optional, Tuple, Set, Union, TYPE_CHECKING
+from typing import ClassVar, Dict, Optional, Tuple, Set, Union
 
 from cachetools import LRUCache
-
-from aim.sdk.reporter.file_manager import FileManager
-
-if TYPE_CHECKING:
-    from aim.sdk import Run
 
 import logging
 
@@ -125,6 +121,16 @@ PLAN_ADVANCE_TIME = 10
 MAX_SUSPEND_TIME = 30
 GRACE_PERIOD = 100
 INFINITE_TIME = 1_000_000_000
+
+
+class FileManager(object):
+    @abstractmethod
+    def poll(self, pattern: str) -> Optional[str]:
+        ...
+
+    @abstractmethod
+    def touch(self, filename: str, cleanup_file_pattern: Optional[str] = None):
+        ...
 
 
 @dataclass(frozen=True)
