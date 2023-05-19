@@ -142,22 +142,9 @@ def strip_query(query: str) -> str:
     return stripped_query
 
 
-@lru_cache(maxsize=100)
-def query_add_default_expr(query: str) -> str:
-    default_expression = 'run.archived == False'
-    # add the default expression to the query if needed
-    if not query:
-        return default_expression
-    else:
-        if 'run.archived' not in query:
-            return f'{default_expression} and {query}'
-        else:
-            return query
-
-
 class RestrictedPythonQuery(Query):
 
-    __slots__ = ('_checker', 'run_metadata_cache')
+    __slots__ = ('_checker',)
 
     def __init__(
         self,
@@ -166,7 +153,6 @@ class RestrictedPythonQuery(Query):
         expr = self.query_expression(query)
         super().__init__(expr=expr)
         self._checker = compile_checker(expr)
-        self.run_metadata_cache = None
 
     def __bool__(
         self
