@@ -4,7 +4,6 @@ import click
 from aimcore.cli.utils import set_log_level
 from aimcore.cli.up.utils import build_db_upgrade_command, build_uvicorn_command, get_free_port_num
 from aimcore.web.configs import (
-    AIM_TF_LOGS_PATH_KEY,
     AIM_UI_BASE_PATH,
     AIM_UI_DEFAULT_HOST,
     AIM_UI_DEFAULT_PORT,
@@ -14,7 +13,7 @@ from aimcore.web.configs import (
     AIM_PROFILER_KEY
 )
 from aim.sdk.configs import AIM_ENV_MODE_KEY
-from aim.sdk.repo import Repo, RepoStatus
+from aim.sdk.core.repo import Repo
 from aim.sdk.utils import clean_repo_path
 from aimcore.web.utils import exec_cmd
 from aimcore.web.utils import ShellCommandException
@@ -30,11 +29,10 @@ from aim.core.utils.tracking import analytics
                                                        file_okay=True,
                                                        dir_okay=False,
                                                        readable=True))
-@click.option('--repo', required=False, type=click.Path(exists=True,
-                                                        file_okay=False,
-                                                        dir_okay=True,
-                                                        writable=True))
-@click.option('--tf_logs', type=click.Path(exists=True, readable=True))
+@click.option('--repo', required=False, default=os.getcwd(), type=click.Path(exists=True,
+                                                                             file_okay=False,
+                                                                             dir_okay=True,
+                                                                             writable=True))
 @click.option('--dev', is_flag=True, default=False)
 @click.option('--ssl-keyfile', required=False, type=click.Path(exists=True,
                                                                file_okay=True,
@@ -45,14 +43,14 @@ from aim.core.utils.tracking import analytics
                                                                 dir_okay=False,
                                                                 readable=True))
 @click.option('--base-path', required=False, default='', type=str)
-@click.option('--force-init', is_flag=True, default=False)
 @click.option('--profiler', is_flag=True, default=False)
 @click.option('--log-level', required=False, default='', type=str)
+@click.option('-y', '--yes', is_flag=True, help='Automatically confirm prompt')
 def up(dev, host, port, workers, uds,
-       repo, tf_logs,
+       repo,
        ssl_keyfile, ssl_certfile,
-       base_path, force_init,
-       profiler, log_level):
+       base_path,
+       profiler, log_level, yes):
     if dev:
         os.environ[AIM_ENV_MODE_KEY] = 'dev'
         log_level = log_level or 'debug'
@@ -70,39 +68,16 @@ def up(dev, host, port, workers, uds,
             base_path = f'/{base_path}'
         os.environ[AIM_UI_BASE_PATH] = base_path
 
-    repo_path = clean_repo_path(repo) or Repo.default_repo_path()
-    repo_status = Repo.check_repo_status(repo_path)
-    if repo_status == RepoStatus.MISSING:
-        if not force_init:
-            init_repo = click.confirm(f'\'{repo_path}\' is not a valid Aim repository. Do you want to initialize it?')
-        else:
-            init_repo = True
+    if not Repo.exists(repo):
+        init_repo = yes or click.confirm(f'\'{repo}\' is not a valid Aim repository. Do you want to initialize it?')
         if not init_repo:
             click.echo('To initialize repo please run the following command:')
             click.secho('aim init', fg='yellow')
             return
-        repo_inst = Repo.from_path(repo_path, init=True)
-    elif repo_status == RepoStatus.UPDATE_REQUIRED:
-        # TODO: add version migration handling script(s)
-        upgrade_repo = click.confirm(f'\'{repo_path}\' requires upgrade. Do you want to run upgrade automatically?')
-        if upgrade_repo:
-            pass
-        else:
-            click.echo('To upgrade repo please run the following command:')
-            click.secho(f'aim upgrade --repo {repo_path}', fg='yellow')
-            return
-    elif repo_status == RepoStatus.UNKNOWN:
-        click.echo(f'\'{repo_path}\' is not a valid Aim repository. '
-                   f'To initialize repo please run the following command:')
-        click.secho('aim init', fg='yellow')
-        return
-    else:
-        repo_inst = Repo.from_path(repo_path, read_only=True)
+        Repo.init(repo)
+    repo_inst = Repo.from_path(repo, read_only=True)
 
-    os.environ[AIM_UI_MOUNTED_REPO_PATH] = repo_inst.path
-
-    if tf_logs:
-        os.environ[AIM_TF_LOGS_PATH_KEY] = tf_logs
+    os.environ[AIM_UI_MOUNTED_REPO_PATH] = repo
 
     try:
         db_cmd = build_db_upgrade_command()
@@ -123,7 +98,7 @@ def up(dev, host, port, workers, uds,
                    f'https://aimstack.readthedocs.io/en/latest/community/telemetry.html')
     if dev:
         analytics.dev_mode = True
-    click.echo(click.style('Running Aim UI on repo `{}`'.format(repo_inst), fg='yellow'))
+    click.secho('Running Aim UI on repo `{}`'.format(repo_inst), fg='yellow')
 
     if uds:
         click.echo('Aim UI running on {}'.format(uds))
