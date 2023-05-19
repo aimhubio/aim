@@ -14,6 +14,7 @@ from aimcore.web.api.projects.pydantic_models import (
     ProjectParamsOut,
     ProjectPinnedSequencesApiIn,
     ProjectPinnedSequencesApiOut,
+    ProjectPackagesApiOut
 )
 from aimcore.web.api.utils import object_factory
 from aim.sdk.index_manager import RepoIndexManager
@@ -158,7 +159,7 @@ async def project_status_api():
     return RepoIndexManager.get_index_manager(project.repo).repo_status
 
 
-@projects_router.get('/packages/')
+@projects_router.get('/packages/', response_model=ProjectPackagesApiOut)
 async def project_packages_api(include_types: Optional[bool] = False):
     from aim.sdk.core.package_utils import Package
     if include_types:
