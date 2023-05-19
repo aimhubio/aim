@@ -57,20 +57,15 @@ def create_app():
     from aimcore.web.api.boards.views import boards_router
     from aimcore.web.api.queries.views import query_router
     from aimcore.web.api.views import statics_router
-    from aimcore.web.api.utils import ResourceCleanupMiddleware
     from aimcore.web.configs import AIM_UI_BASE_PATH
 
     from aimcore.web.api.projects.project import Project
-    from aim.sdk.index_manager import RepoIndexManager
 
     # The indexing thread has to run in the same process as the uvicorn app itself.
     # This allows sharing state of indexing using memory instead of process synchronization methods.
-    # index_mng = RepoIndexManager.get_index_manager(Project().repo)
-    # index_mng.start_indexing_thread()
 
     api_app = FastAPI()
     api_app.add_middleware(GZipMiddleware, compresslevel=1)
-    api_app.add_middleware(ResourceCleanupMiddleware)
     api_app.add_exception_handler(HTTPException, http_exception_handler)
     api_app.add_exception_handler(Exception, fallback_exception_handler)
 

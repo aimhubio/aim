@@ -16,7 +16,6 @@ from aimcore.web.api.projects.pydantic_models import (
     ProjectPinnedSequencesApiOut,
 )
 from aimcore.web.api.utils import object_factory
-from aim.sdk.index_manager import RepoIndexManager
 from aim.core.storage.locking import AutoFileLock
 from aim.core.utils.tracking import analytics
 

@@ -16,12 +16,6 @@ class Project:
         self.description = ''
         self.repo = Repo.from_path(self.repo_path, read_only=True)
 
-    def cleanup_repo_pools(self):
-        pass
-        # self.repo.container_pool.clear()
-        # self.repo.container_view_pool.clear()
-        # self.repo.persistent_pool.clear()
-
     def exists(self):
         """
         Checks whether .aim repository is created

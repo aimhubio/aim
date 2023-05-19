@@ -1,14 +1,10 @@
-import datetime
 import struct
 from collections import namedtuple
 from itertools import chain
 
-import pytz
-
-from fastapi import APIRouter as FastAPIRouter, HTTPException
+from fastapi import APIRouter as FastAPIRouter
 from fastapi import HTTPException
 from fastapi.types import DecoratedCallable
-from starlette.types import ASGIApp, Receive, Scope, Send
 
 from typing import Any, Callable, Iterator, Tuple
 
@@ -46,21 +42,6 @@ class APIRouter(FastAPIRouter):
             return add_path(func)
 
         return decorator
-
-
-class ResourceCleanupMiddleware:
-    def __init__(
-        self, app: ASGIApp
-    ) -> None:
-        self.app = app
-
-    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
-        from aimcore.web.api.projects.project import Project
-        await self.app(scope, receive, send)
-
-        # cleanup repo pools after each api call
-        project = Project()
-        project.cleanup_repo_pools()
 
 
 def collect_streamable_data(encoded_tree: Iterator[Tuple[bytes, bytes]]) -> bytes:
