@@ -3,7 +3,6 @@ import shutil
 import tarfile
 import pathlib
 import re
-import uuid
 from contextlib import contextmanager
 from typing import Union, Any, Tuple, Optional, Callable
 
@@ -26,10 +25,6 @@ def search_aim_repo(path) -> Tuple[Any, bool]:
         if path == '/':
             return None, found
         path = os.path.dirname(path)
-
-
-def generate_run_hash(hash_length=24) -> str:
-    return uuid.uuid4().hex[:hash_length]
 
 
 def clean_repo_path(repo_path: Union[str, pathlib.Path]) -> str:
