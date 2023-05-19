@@ -1,5 +1,6 @@
 import logging
 import subprocess
+import sys
 
 logger = logging.getLogger(__name__)
 
@@ -71,3 +72,11 @@ def get_git_info():
     })
 
     return git_info
+
+
+def get_executable():
+    return sys.executable
+
+
+def get_exec_args():
+    return sys.argv
