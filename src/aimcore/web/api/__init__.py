@@ -49,8 +49,6 @@ def create_app():
         max_age=86400
     )
 
-    from aimcore.web.api.runs.views import runs_router
-    from aimcore.web.api.runs.views import add_api_routes
     from aimcore.web.api.tags.views import tags_router
     from aimcore.web.api.experiments.views import experiment_router
     from aimcore.web.api.dashboard_apps.views import dashboard_apps_router
@@ -80,14 +78,11 @@ def create_app():
         api_app.add_middleware(PyInstrumentProfilerMiddleware,
                                repo_path=os.path.join(get_root_path(), get_aim_repo_name()))
 
-    add_api_routes()
-
     api_app.include_router(dashboard_apps_router, prefix='/apps')
     api_app.include_router(dashboards_router, prefix='/dashboards')
     api_app.include_router(boards_router, prefix='/boards')
     api_app.include_router(experiment_router, prefix='/experiments')
     api_app.include_router(projects_router, prefix='/projects')
-    api_app.include_router(runs_router, prefix='/runs')
     api_app.include_router(tags_router, prefix='/tags')
     api_app.include_router(query_router, prefix='/data')
 

@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 
 class Repo(LegacyRepo):
-    def __init__(self, path: str, *, read_only: Optional[bool] = None, init: Optional[bool] = False):
+    def __init__(self, path: str, *, read_only: Optional[bool] = True, init: Optional[bool] = False):
         super().__init__(path, read_only=read_only, init=init)
 
         if self.is_remote_path(path):

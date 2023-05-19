@@ -7,14 +7,12 @@ from typing import TYPE_CHECKING
 from aimcore.web.api.runs.utils import (
     ASYNC_SLEEP_INTERVAL,
     PROGRESS_KEY_SUFFIX,
-    IndexRange,
-    collect_streamable_data,
     get_run_props,
     get_run_params,
 )
+from aimcore.web.api.utils import collect_streamable_data, IndexRange
 from aimcore.web.configs import AIM_PROGRESS_REPORT_INTERVAL
 from aim.sdk.uri_service import URIService, generate_resource_path
-from aim.sdk.sequence_collection import SequenceCollection
 from aim.sdk.sequence import Sequence
 
 from aim.core.storage.treeutils import encode_tree

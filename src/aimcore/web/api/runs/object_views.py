@@ -22,12 +22,10 @@ from aimcore.web.api.runs.pydantic_models import (
     ObjectSequenceBaseView,
 )
 from aimcore.web.api.runs.utils import (
-    checked_query,
-    checked_range,
-    get_project_repo,
     numpy_to_encodable,
     get_run_or_404
 )
+from aimcore.web.api.utils import get_project_repo, checked_query, checked_range
 from aimcore.web.api.runs.object_api_utils import CustomObjectApi, get_blobs_batch
 
 

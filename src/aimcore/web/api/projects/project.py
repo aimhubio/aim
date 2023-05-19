@@ -14,7 +14,7 @@ class Project:
         self.path = root_path
         self.repo_path = repo_path
         self.description = ''
-        self.repo = Repo.from_path(self.repo_path)
+        self.repo = Repo.from_path(self.repo_path, read_only=True)
 
     def cleanup_repo_pools(self):
         self.repo.container_pool.clear()

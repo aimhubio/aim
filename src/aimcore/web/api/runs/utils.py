@@ -1,30 +1,22 @@
 import asyncio
 import numpy as np
 import random
-import struct
 import time
 
-from collections import namedtuple
-from itertools import chain
-from typing import Iterator, Tuple, Optional, List
+from typing import Tuple, Optional, List
 from typing import TYPE_CHECKING
 
 from fastapi import HTTPException
 
 from aim.sdk.context import Context
 from aim.sdk import Run
-from aim.sdk.sequences.metric import Metric
-from aim.sdk.sequence_collection import SequenceCollection
-from aim.sdk.query import syntax_error_check
+from aimcore.web.api.utils import collect_streamable_data, get_project_repo, checked_range
 from aimcore.web.configs import AIM_PROGRESS_REPORT_INTERVAL
-from aimcore.web.api.projects.project import Project
 from aimcore.web.api.runs.pydantic_models import AlignedRunIn, TraceBase
 from aim.core.storage.treeutils import encode_tree
 
 if TYPE_CHECKING:
     from aim.sdk import Repo
-
-IndexRange = namedtuple('IndexRange', ['start', 'stop'])
 
 # added to progress keys to escape buffering due to gzipping responses
 PROGRESS_KEY_SUFFIX = ''.join([str(hash(random.random())) for _ in range(2000)])
@@ -44,14 +36,6 @@ def get_run_or_404(run_id, repo=None):
         raise HTTPException(status_code=404, detail="Run not found.")
 
     return run
-
-
-def str_to_range(range_str: str):
-    defaults = [None, None]
-    slice_values = chain(range_str.strip().split(':'), defaults)
-
-    start, stop, step, *_ = map(lambda x: int(x) if x else None, slice_values)
-    return IndexRange(start, stop)
 
 
 def convert_nan_and_inf_to_str(tree):
@@ -140,11 +124,6 @@ def collect_x_axis_data(x_trace: Metric, iters: np.ndarray) -> Tuple[Optional[di
         numpy_to_encodable(np.array(x_axis_iters, dtype='float64')),
         numpy_to_encodable(np.array(x_axis_values, dtype='float64'))
     )
-
-
-def collect_streamable_data(encoded_tree: Iterator[Tuple[bytes, bytes]]) -> bytes:
-    result = [struct.pack('I', len(key)) + key + struct.pack('I', len(val)) + val for key, val in encoded_tree]
-    return b''.join(result)
 
 
 async def custom_aligned_metrics_streamer(requested_runs: List[AlignedRunIn], x_axis: str, repo: 'Repo') -> bytes:
@@ -417,38 +396,3 @@ async def run_log_records_streamer(run: Run, record_range: str) -> bytes:
         pass
 
 
-def get_project():
-    project = Project()
-    if not project.exists():
-        raise HTTPException(status_code=404)
-    return project
-
-
-def get_project_repo():
-    project = get_project()
-    return project.repo
-
-
-def checked_query(q: str):
-    query = q.strip()
-    try:
-        syntax_error_check(query)
-    except SyntaxError as se:
-        raise HTTPException(status_code=400, detail={
-            'message': 'SyntaxError',
-            'detail': {
-                'statement': se.text,
-                'line': se.lineno,
-                'offset': se.offset,
-                'end_offset': getattr(se, 'end_offset', 0)
-            }
-        })
-    return query
-
-
-def checked_range(range_: str = ''):
-    try:
-        range_ = str_to_range(range_)
-    except ValueError:
-        raise HTTPException(status_code=400, detail='Invalid range format')
-    return range_

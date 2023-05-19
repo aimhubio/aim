@@ -2,24 +2,14 @@ from fastapi import Depends, HTTPException, Query, Header
 from fastapi.responses import JSONResponse, StreamingResponse
 from starlette import status
 
-from aimcore.web.api.runs.object_views import (
-    ImageApiConfig,
-    TextApiConfig,
-    DistributionApiConfig,
-    AudioApiConfig,
-    FigureApiConfig,
-    Figure3DApiConfig
-)
-from aimcore.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
+from aimcore.web.api.utils import APIRouter, get_project_repo, checked_query  # wrapper for fastapi.APIRouter
 from typing import Optional, Tuple
 
 from aim.sdk.types import QueryReportMode
 from aimcore.web.api.runs.utils import (
-    checked_query,
     collect_requested_metric_traces,
     convert_nan_and_inf_to_str,
     custom_aligned_metrics_streamer,
-    get_project_repo,
     get_run_or_404,
     get_run_params,
     get_run_props,
@@ -406,12 +396,3 @@ async def get_log_records_api(run_id: str, record_range: Optional[str] = ''):
     run = get_run_or_404(run_id, repo=repo)
 
     return StreamingResponse(run_log_records_streamer(run, record_range))
-
-
-def add_api_routes():
-    ImageApiConfig.register_endpoints(runs_router)
-    TextApiConfig.register_endpoints(runs_router)
-    DistributionApiConfig.register_endpoints(runs_router)
-    AudioApiConfig.register_endpoints(runs_router)
-    FigureApiConfig.register_endpoints(runs_router)
-    Figure3DApiConfig.register_endpoints(runs_router)

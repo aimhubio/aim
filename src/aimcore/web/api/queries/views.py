@@ -3,43 +3,38 @@ from fastapi.responses import StreamingResponse
 from typing import Optional, Iterable
 
 from aimcore.web.api.runs.pydantic_models import QuerySyntaxErrorOut
-from aimcore.web.api.runs.utils import get_project_repo, checked_query, collect_streamable_data
-from aimcore.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
-from aimcore.web.api.runs.views import runs_search_fn, metrics_search_fn
-from aimcore.web.api.runs.object_views import (
-    ImageApiConfig,
-    TextApiConfig,
-    AudioApiConfig,
-    DistributionApiConfig,
-    FigureApiConfig)
+from aimcore.web.api.utils import APIRouter, collect_streamable_data, get_project_repo, \
+    checked_query  # wrapper for fastapi.APIRouter
 
 from aim.sdk.core.container import Container
 from aim.sdk.core.sequence import Sequence
+
 from aim.core.storage.treeutils import encode_tree
 
 query_router = APIRouter()
 
-_legacy_object_types = {
-    'Run': runs_search_fn,
-    'Metric': metrics_search_fn,
-    'Images': ImageApiConfig.sequence_search_fn,
-    'Texts': TextApiConfig.sequence_search_fn,
-    'Audios': AudioApiConfig.sequence_search_fn,
-    'Distributions': DistributionApiConfig.sequence_search_fn,
-    'Figures': FigureApiConfig.sequence_search_fn
-}
 
-
-async def sequence_search_result_streamer(query_collection):
+async def sequence_search_result_streamer(query_collection, sample_count):
     for sequence in query_collection:
         seq_dict = {
             'name': sequence.name,
             'context': sequence.context,
             'item_type': sequence.item_type,
             'axis_names': sequence.axis_names,
-            'steps': list(sequence.steps()),
-            'values': list(sequence.values())
+            'axis': {}
         }
+        if sample_count is not None:
+            seq_dict['steps'] = list(sequence.steps()),
+            seq_dict['values'] = list(sequence.values())
+            for axis_name in sequence.axis_names:
+                seq_dict['axis'][axis_name] = sequence.axis(axis_name)
+        else:
+            steps, value_dicts = list(zip(*sequence.sample(sample_count)))
+            value_lists = {k:  [d[k] for d in value_dicts] for k in value_dicts[0]}
+            seq_dict['steps'] = steps
+            seq_dict['values'] = value_lists.pop('val')
+            sequence['axis'] = value_lists
+
         encoded_tree = encode_tree(seq_dict)
         yield collect_streamable_data(encoded_tree)
 
@@ -60,20 +55,17 @@ def container_query_response(repo, query: str, type_: str):
     return StreamingResponse(streamer)
 
 
-def sequence_query_response(repo, query: str, type_: str):
+def sequence_query_response(repo, query: str, type_: str, sample_count: int):
     qresult = repo.sequences(query, type_)
-    streamer = sequence_search_result_streamer(qresult)
+    streamer = sequence_search_result_streamer(qresult, sample_count)
     return StreamingResponse(streamer)
 
 
 @query_router.get('/fetch/', responses={400: {'model': QuerySyntaxErrorOut}})
-def search_api(type_: str, q: Optional[str]):
+def search_api(type_: str, q: Optional[str], p: Optional[int]):
     repo = get_project_repo()
     query = checked_query(q)
-    if type_ in _legacy_object_types:
-        endpoint_fn = _legacy_object_types[type_]
-        return endpoint_fn(repo, query)
-    elif type_ in Container.registry:
+    if type_ in Container.registry:
         return container_query_response(repo, query, type_)
     elif type_ in Sequence.registry:
-        return sequence_query_response(repo, query, type_)
+        return sequence_query_response(repo, query, type_, p)
