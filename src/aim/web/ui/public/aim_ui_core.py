@@ -3,7 +3,8 @@
 ####################
 
 from pyodide.ffi import create_proxy
-from js import search
+from js import search, localStorage
+import json
 import hashlib
 
 
@@ -249,17 +250,23 @@ def group(name, data, options, key=None):
 current_layout = []
 
 
+saved_state_str = localStorage.getItem("app_state")
+
 state = {}
 
+if saved_state_str:
+    state = json.loads(saved_state_str)
 
-def set_state(update, board_id):
+
+def set_state(update, board_id, persist=False):
     from js import setState
 
     if board_id not in state:
         state[board_id] = {}
 
     state[board_id].update(update)
-    setState(state, board_id)
+
+    setState(state, board_id, persist)
 
 
 block_context = {
@@ -478,23 +485,20 @@ class LineChart(AimSequenceComponent):
     def focused_point(self):
         return self.state["focused_point"] if "focused_point" in self.state else None
 
-    async def on_active_point_change(self, val, is_active):
-        if val is not None:
-            data = create_proxy(val.to_py())
-            item = self.data[data["key"]]
+    async def on_active_point_change(self, point, is_active):
+        if point is not None:
+            item = self.data[point.key]
 
             if is_active:
                 self.set_state({
                     "focused_line": item,
-                    "focused_point": data,
+                    "focused_point": point,
                 })
             else:
                 self.set_state({
                     "active_line": item,
-                    "active_point": data,
+                    "active_point": point,
                 })
-
-            data.destroy()
 
 
 class ImagesList(AimSequenceComponent):
@@ -1172,6 +1176,42 @@ class SubHeader(TypographyComponent):
         super().__init__(text, "SubHeader", options, key, block)
 
 
+# Super components
+
+class Board(Component):
+    def __init__(self, id=None, state=None, block=None, key=None):
+        component_type = "Board"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type, block)
+
+        self.data = id
+
+        set_state(state or {}, id)
+
+        self.render()
+
+    def get_state(self):
+        return state[self.data] if self.data in state else None
+
+
+class BoardLink(Component):
+    def __init__(self, id=None, text='Go To Board', new_tab=False, state=None, block=None, key=None):
+        component_type = "BoardLink"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type, block)
+
+        self.data = id
+
+        self.options = {
+            "text": text,
+            "new_tab": new_tab
+        }
+
+        set_state(state or {}, id)
+
+        self.render()
+
+
 class UI:
     def __init__(self):
         self.block_context = None
@@ -1321,6 +1361,15 @@ class UI:
     def run_notes(self, *args, **kwargs):
         run_notes = RunNotes(*args, **kwargs, block=self.block_context)
         return run_notes
+
+    # Super components
+    def board(self, *args, **kwargs):
+        board = Board(*args, **kwargs, block=self.block_context)
+        return board
+
+    def board_link(self, *args, **kwargs):
+        board = BoardLink(*args, **kwargs, block=self.block_context)
+        return board
 
 
 class Row(Block, UI):
