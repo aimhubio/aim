@@ -30,7 +30,7 @@ async def sequence_search_result_streamer(query_collection, sample_count):
                 seq_dict['axis'][axis_name] = list(sequence.axis(axis_name))
         else:
             steps, value_dicts = list(zip(*sequence.sample(sample_count)))
-            value_lists = {k:  [d[k] for d in value_dicts] for k in value_dicts[0]}
+            value_lists = {k: [d[k] for d in value_dicts] for k in value_dicts[0]}
             seq_dict['steps'] = steps
             seq_dict['values'] = value_lists.pop('val')
             seq_dict['axis'] = value_lists

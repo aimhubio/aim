@@ -14,7 +14,7 @@ from aimcore.web.configs import (
 )
 from aim.sdk.configs import AIM_ENV_MODE_KEY
 from aim.sdk.core.repo import Repo
-from aim.sdk.utils import clean_repo_path
+
 from aimcore.web.utils import exec_cmd
 from aimcore.web.utils import ShellCommandException
 

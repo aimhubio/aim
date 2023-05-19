@@ -1,6 +1,6 @@
 from aim.core.storage.types import AimObject, AimObjectKey, AimObjectPath
 
-from typing import TYPE_CHECKING, Any, Iterator, Tuple, Union, List
+from typing import TYPE_CHECKING, Any, Iterator, Tuple, Union
 
 if TYPE_CHECKING:
     from aim.core.storage.arrayview import ArrayView

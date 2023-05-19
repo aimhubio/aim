@@ -65,7 +65,7 @@ class Run(Container, Caller):
     @events.on.logs_collected
     def track_terminal_logs(self, log_lines: List[Tuple[str, int]], **kwargs):
         for (line, line_num) in log_lines:
-            self.logs.track(LogLine(line), step=line_num+self._prev_logs_end)
+            self.logs.track(LogLine(line), step=line_num + self._prev_logs_end)
 
     @events.on.system_resource_stats_collected
     def track_system_resources(self, stats: Dict[str, Any], context: Dict, **kwargs):

@@ -125,7 +125,6 @@ class Repo(object):
 
         return encryption_key
 
-
     def tracked_container_types(self) -> List[str]:
         return list(self._meta_tree.subtree('containers').keys())
 

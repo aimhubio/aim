@@ -13,6 +13,10 @@ from aim.sdk.query import syntax_error_check
 from aim.sdk.uri_service import URIService
 from aimcore.web.api.projects.project import Project
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from aim.sdk.core import Repo
+
 
 def object_factory():
     from aimcore.web.api.projects.project import Project
