@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 
 
 class ProjectApiOut(BaseModel):
@@ -39,3 +39,13 @@ class ProjectPinnedSequencesApiOut(BaseModel):
 
 class ProjectPinnedSequencesApiIn(BaseModel):
     sequences: List[Sequence]
+
+
+class PackageRegisteredModels(BaseModel):
+    sequences: List[str]
+    containers: List[str]
+
+
+ProjectNamesList = List[str]
+ProjectPackageRegisteredModels = Dict[str, PackageRegisteredModels]
+ProjectPackagesApiOut = Union[ProjectNamesList, ProjectPackageRegisteredModels]

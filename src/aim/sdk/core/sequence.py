@@ -68,13 +68,6 @@ ItemType = TypeVar('ItemType')
 class Sequence(Generic[ItemType], ABCSequence):
     version = '1.0.0'
 
-    def __init_subclass__(cls, **kwargs):
-        super().__init_subclass__(**kwargs)
-        typename = cls.get_typename()
-        if typename in cls.registry:  # check for name conflicts
-            logger.warning(f'Sequence registry already has typename \'{typename}\' registered.')
-        cls.registry[typename].append(cls)
-
     def __init__(self, container: 'Container', *, name: str, context: _ContextInfo):
         self.storage: StorageEngine = container.storage
         self._container: 'Container' = container

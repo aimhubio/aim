@@ -14,6 +14,7 @@ from aimcore.web.api.projects.pydantic_models import (
     ProjectParamsOut,
     ProjectPinnedSequencesApiIn,
     ProjectPinnedSequencesApiOut,
+    ProjectPackagesApiOut
 )
 from aimcore.web.api.utils import object_factory
 from aim.core.storage.locking import AutoFileLock
@@ -157,13 +158,20 @@ async def project_status_api():
     return RepoIndexManager.get_index_manager(project.repo).repo_status
 
 
-@projects_router.get('/packages/')
-async def project_packages_api():
+@projects_router.get('/packages/', response_model=ProjectPackagesApiOut)
+async def project_packages_api(include_types: Optional[bool] = False):
     from aim.sdk.core.package_utils import Package
-    return list(Package.pool.keys())
+    if include_types:
+        return {
+            pkg.name: {
+                'containers': pkg.registered_containers,
+                'sequences': pkg.registered_sequences
+            } for pkg in Package.pool.values()}
+    else:
+        return list(Package.pool.keys())
 
 
-@projects_router.get('/sequences/')
+@projects_router.get('/sequence-types/')
 async def project_sequence_types_api(only_tracked: Optional[bool] = False):
     project = Project()
 
@@ -176,7 +184,7 @@ async def project_sequence_types_api(only_tracked: Optional[bool] = False):
         return project.repo.registered_sequence_types()
 
 
-@projects_router.get('/containers/')
+@projects_router.get('/container-types/')
 async def project_container_types_api(only_tracked: Optional[bool] = False):
     project = Project()
 
