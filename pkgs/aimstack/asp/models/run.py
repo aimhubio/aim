@@ -8,7 +8,9 @@ from functools import partialmethod
 
 from aim.sdk.core.container import Container
 from aim.sdk.core.utils import utc_timestamp
+from aim.sdk.core import type_utils
 from aim.core.callbacks import Caller, events
+from aim.ext.system_info import utils as system_utils
 from aim.sdk.core.constants import ContainerOpenMode, KeyNames
 
 from .logging import (
@@ -35,6 +37,7 @@ if TYPE_CHECKING:
     from aim.sdk.core.repo import Repo
 
 
+@type_utils.query_alias('run')
 class Run(Container, Caller):
     def __init__(self, hash_: Optional[str] = None, *,
                  repo: Optional[Union[str, 'Repo']] = None,
@@ -47,8 +50,17 @@ class Run(Container, Caller):
             self.archived = False
 
     def enable_system_monitoring(self):
-        self.repo.resource_tracker.register(self)
-        self.repo.resource_tracker.start()
+        if not self._is_readonly:
+            self['__system_params'] = {
+                'packages': system_utils.get_installed_packages(),
+                'env_variables': system_utils.get_environment_variables(),
+                'git_info': system_utils.get_git_info(),
+                'executable': system_utils.get_executable(),
+                'arguments': system_utils.get_exec_args()
+            }
+
+            self.repo.resource_tracker.register(self)
+            self.repo.resource_tracker.start()
 
     @events.on.logs_collected
     def track_terminal_logs(self, log_lines: List[Tuple[str, int]], **kwargs):
@@ -133,6 +145,9 @@ class Run(Container, Caller):
     log_warning = partialmethod(_log_message, logging.WARNING)
     log_info = partialmethod(_log_message, logging.INFO)
     log_debug = partialmethod(_log_message, logging.DEBUG)
+
+    def log_records(self) -> LogRecordSequence:
+        return LogRecordSequence(self, name='__log_records', context={})
 
     def track(self, value, name: str, step: int = None, context: dict = None, **axis):
         context = {} if context is None else context

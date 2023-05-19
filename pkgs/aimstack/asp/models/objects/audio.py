@@ -3,9 +3,10 @@ import logging
 import os.path
 
 from aim.sdk.num_utils import inst_has_typename
-from aim.sdk.objects.io import wavfile
 from aim.sdk.core.object import Object
 from aim.core.storage.types import BLOB
+
+from .io import wavfile
 
 logger = logging.getLogger(__name__)
 
