@@ -19,21 +19,21 @@ async def sequence_search_result_streamer(query_collection, sample_count):
         seq_dict = {
             'name': sequence.name,
             'context': sequence.context,
-            'item_type': sequence.item_type,
+            'item_type': sequence.type,
             'axis_names': sequence.axis_names,
             'axis': {}
         }
-        if sample_count is not None:
-            seq_dict['steps'] = list(sequence.steps()),
+        if sample_count is None:
+            seq_dict['steps'] = list(sequence.steps())
             seq_dict['values'] = list(sequence.values())
             for axis_name in sequence.axis_names:
-                seq_dict['axis'][axis_name] = sequence.axis(axis_name)
+                seq_dict['axis'][axis_name] = list(sequence.axis(axis_name))
         else:
             steps, value_dicts = list(zip(*sequence.sample(sample_count)))
             value_lists = {k:  [d[k] for d in value_dicts] for k in value_dicts[0]}
             seq_dict['steps'] = steps
             seq_dict['values'] = value_lists.pop('val')
-            sequence['axis'] = value_lists
+            seq_dict['axis'] = value_lists
 
         encoded_tree = encode_tree(seq_dict)
         yield collect_streamable_data(encoded_tree)
