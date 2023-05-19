@@ -6,9 +6,11 @@ from fastapi import APIRouter as FastAPIRouter
 from fastapi import HTTPException
 from fastapi.types import DecoratedCallable
 
-from typing import Any, Callable, Iterator, Tuple
+from typing import Any, Callable, Iterator, Tuple, List
 
+from aim.core.storage.treeutils import encode_tree
 from aim.sdk.query import syntax_error_check
+from aim.sdk.uri_service import URIService
 from aimcore.web.api.projects.project import Project
 
 
@@ -95,3 +97,10 @@ def str_to_range(range_str: str):
 
 
 IndexRange = namedtuple('IndexRange', ['start', 'stop'])
+
+
+def get_blobs_batch(uri_batch: List[str], repo: 'Repo') -> Iterator[bytes]:
+    uri_service = URIService(repo=repo)
+    batch_iterator = uri_service.request_batch(uri_batch=uri_batch)
+    for it in batch_iterator:
+        yield collect_streamable_data(encode_tree(it))
