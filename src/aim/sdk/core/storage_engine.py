@@ -1,11 +1,12 @@
 import contextlib
 from abc import abstractmethod
 
-from typing import TYPE_CHECKING
+from typing import Optional, TYPE_CHECKING
+
 if TYPE_CHECKING:
     from aim.core.storage.treeview import TreeView
     from aim.core.storage.locking import ContainerLock
-    from aim.sdk.reporter import RunStatusReporter
+    from aim.core.reporter import RunStatusReporter
 
 
 class StorageEngine(object):
@@ -15,11 +16,11 @@ class StorageEngine(object):
         ...
 
     @abstractmethod
-    def tree(self, hash_: str, name: str, read_only: bool) -> 'TreeView':
+    def tree(self, hash_: Optional[str], name: str, read_only: bool) -> 'TreeView':
         ...
 
     @abstractmethod
-    def lock(self, hash_: str, timeout: int) -> 'ContainerLock':
+    def lock(self, hash_: str, timeout: int = 10) -> 'ContainerLock':
         ...
 
     @abstractmethod

@@ -103,7 +103,7 @@ class Container(ABCContainer):
 
         if repo is None:
             from aim.sdk.core.repo import Repo
-            repo = Repo.default_repo()
+            repo = Repo.default()
         elif isinstance(repo, str):
             from aim.sdk.core.repo import Repo
             repo = Repo.from_path(repo)
