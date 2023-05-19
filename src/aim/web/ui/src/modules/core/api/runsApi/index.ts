@@ -9,7 +9,7 @@ import {
   RunsSearchQueryParams,
   RunsSearchResult,
   IAlignMetricsData,
-} from './types';
+} from './types.d';
 
 const api = new NetworkService(`${getAPIHost()}${ENDPOINTS.RUNS.BASE}`);
 
@@ -191,4 +191,4 @@ export {
   createRunLogRecordsRequest,
   alignMetricsRequest,
 };
-export * from './types';
+export * from './types.d';

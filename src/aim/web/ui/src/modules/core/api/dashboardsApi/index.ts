@@ -3,7 +3,7 @@ import { getAPIHost } from 'config/config';
 import ENDPOINTS from 'services/api/endpoints';
 import NetworkService from 'services/NetworkService';
 
-import { IDashboardData, IDashboardRequestBody } from './types';
+import { IDashboardData, IDashboardRequestBody } from './types.d';
 
 const api = new NetworkService(`${getAPIHost()}${ENDPOINTS.DASHBOARDS.BASE}`);
 
@@ -74,4 +74,4 @@ export {
   updateDashboard,
   deleteDashboard,
 };
-export * from './types';
+export * from './types.d';

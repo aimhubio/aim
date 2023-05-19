@@ -7,7 +7,7 @@ import {
   GetParamsQueryOptions,
   GetParamsResult,
   GetProjectContributionsResult,
-} from './types';
+} from './types.d';
 
 const api = new NetworkService(`${getAPIHost()}${ENDPOINTS.PROJECTS.BASE}`);
 
@@ -35,4 +35,4 @@ async function getProjectContributions(): Promise<GetProjectContributionsResult>
 }
 
 export { getParams, getProjectContributions };
-export * from './types';
+export * from './types.d';

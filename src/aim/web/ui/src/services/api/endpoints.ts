@@ -49,6 +49,15 @@ const ENDPOINTS = {
     GET: '',
     GET_BY_TAG_NAME: 'tags',
   },
+  BOARDS: {
+    BASE: '/boards',
+    GET: '',
+    CREATE: '',
+    UPDATE: '',
+    DELETE: '',
+    TEMPLATES: '/templates',
+    RESET: '/reset',
+  },
 };
 
 export default ENDPOINTS;
