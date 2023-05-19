@@ -6,14 +6,14 @@ import { createRoot } from 'react-dom/client';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
-import App from './App';
+import Main from './Main';
 import reportWebVitals from './reportWebVitals';
 
 const root = createRoot(document.getElementById('root')!);
 root.render(
   <React.Fragment>
     <ErrorBoundary>
-      <App />
+      <Main />
     </ErrorBoundary>
   </React.Fragment>,
 );
