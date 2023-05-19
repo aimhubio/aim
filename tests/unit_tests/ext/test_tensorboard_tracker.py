@@ -9,7 +9,7 @@ from tensorboard.compat.proto.event_pb2 import Event
 from torch.utils.tensorboard.summary import image, scalar
 
 from aim import Image
-from aim.ext.tensorboard_tracker.tracker import TensorboardFolderTracker
+from aimstack.tensorboard_tracker.tracker import TensorboardFolderTracker
 
 from unit_tests.base import TestBase
 
