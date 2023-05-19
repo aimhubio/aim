@@ -99,11 +99,11 @@ class RocksContainer(Container):
 
         self._resources = RocksAutoClean(self)
 
-        progress_dir = self.path.parent.parent / 'progress'
-        self._progress_path = progress_dir / self.path.name
-        if not self.read_only:
-            progress_dir.mkdir(parents=True, exist_ok=True)
-            self._progress_path.touch(exist_ok=True)
+        # progress_dir = self.path.parent.parent / 'progress'
+        # self._progress_path = progress_dir / self.path.name
+        # if not self.read_only:
+        #     progress_dir.mkdir(parents=True, exist_ok=True)
+        #     self._progress_path.touch(exist_ok=True)
 
         self.db
         # TODO check if Containers are reopenable
