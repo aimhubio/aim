@@ -87,6 +87,7 @@ export const ToastViewPort = styled(Toast.Viewport, {
   padding: '$8',
   gap: '$5',
   maxWidth: '50vw',
+  zIndex: '$max',
   minWidth: '300px',
   margin: 0,
   listStyle: 'none',

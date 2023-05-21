@@ -9,7 +9,7 @@ import {
   GetExperimentNoteResult,
   IExperimentData,
   UpdateExperimentByIdReqBodyType,
-} from './types';
+} from './types.d';
 
 const api = new NetworkService(`${getAPIHost()}${ENDPOINTS.EXPERIMENTS.BASE}`);
 
@@ -208,4 +208,4 @@ export {
   createExperimentNote,
   createSearchExperimentRunsRequest,
 };
-export * from './types';
+export * from './types.d';

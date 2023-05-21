@@ -1,23 +1,41 @@
 import React from 'react';
-import { useModel } from 'hooks';
+import { useHistory, useLocation } from 'react-router-dom';
 
-import boardsAppModel from 'services/models/boards/boardsAppModel';
+import useBoardStore from 'pages/Board/BoardStore';
 
 function useApp() {
-  const appData = useModel(boardsAppModel);
+  const boardsList = useBoardStore((state) => state.boardsList);
+  const fetchBoardsList = useBoardStore((state) => state.fetchBoardList);
+  const isLoading = useBoardStore((state) => state.isLoading);
+  const updateBoard = useBoardStore((state) => state.editBoard);
+  const fetchBoard = useBoardStore((state) => state.fetchBoard);
+  const boardData = useBoardStore((state) => state.board);
+  const notifications = useBoardStore((state) => state.notifyData);
+  const destroy = useBoardStore((state) => state.destroy);
+  const history = useHistory();
+  const location = useLocation();
 
   React.useEffect(() => {
-    if (appData.isLoading) {
-      boardsAppModel.initialize();
-    }
+    fetchBoardsList();
     return () => {
-      boardsAppModel.destroy();
+      destroy();
     };
   }, []);
 
+  React.useEffect(() => {
+    if (!isLoading && boardsList.length > 0 && location.pathname === '/app') {
+      const firstBoardId = boardsList[0].board_id; // replace this with the correct property if different
+      history.push(`/app/${firstBoardId}`);
+    }
+  }, [boardsList]);
+
   return {
-    data: appData.listData,
-    isLoading: appData.isLoading,
+    data: boardsList,
+    updateBoard,
+    isLoading,
+    fetchBoard,
+    boardData,
+    notifications,
   };
 }
 
