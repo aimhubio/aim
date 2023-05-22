@@ -10,10 +10,10 @@ from copy import deepcopy
 from typing import Tuple
 from websockets.sync.client import connect
 
-from aim.core.transport.message_utils import raise_exception, pack_args, unpack_stream, unpack_args
-from aim.core.transport.rpc_queue import RpcQueueWithRetry
-from aim.core.transport.heartbeat import HeartbeatSender
-from aim.core.transport.config import (
+from aimcore.transport.message_utils import raise_exception, pack_args, unpack_stream, unpack_args
+from aimcore.transport.rpc_queue import RpcQueueWithRetry
+from aimcore.transport.heartbeat import HeartbeatSender
+from aimcore.transport.config import (
     AIM_CLIENT_QUEUE_MAX_MEMORY,
 )
 from aim.core.storage.treeutils import encode_tree, decode_tree

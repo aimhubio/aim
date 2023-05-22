@@ -6,7 +6,7 @@ import aimrocks
 
 from typing import Iterator, Optional, Tuple
 
-from aim.core.cleanup import AutoClean
+from aimcore.cleanup import AutoClean
 from aim.ext.exception_resistant import exception_resistant
 from aim.core.storage.locking import SoftFileLock, NoopLock
 from aim.core.storage.types import BLOB

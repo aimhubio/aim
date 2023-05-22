@@ -1,11 +1,11 @@
 import os
 import uuid
 
-from aim.core.transport.config import AIM_SERVER_MOUNTED_REPO_PATH
+from aimcore.transport.config import AIM_SERVER_MOUNTED_REPO_PATH
 
 from aim.sdk.core import Repo
 from aim.sdk.core.local_storage import LocalFileManager
-from aim.core.cleanup import AutoClean
+from aimcore.cleanup import AutoClean
 
 
 class ResourceRefAutoClean(AutoClean['ResourceRef']):

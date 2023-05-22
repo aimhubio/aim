@@ -9,7 +9,8 @@ from functools import partialmethod
 from aim.sdk.core.container import Container
 from aim.sdk.core.utils import utc_timestamp
 from aim.sdk.core import type_utils
-from aim.core.callbacks import Caller, events
+from aimcore.callbacks import Caller
+from aimcore.callbacks import events
 from aim.ext.system_info import utils as system_utils
 from aim.sdk.core.constants import ContainerOpenMode, KeyNames
 

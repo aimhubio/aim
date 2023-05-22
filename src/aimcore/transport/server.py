@@ -4,16 +4,16 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import HTTPException
 from fastapi.responses import JSONResponse
 
-from aim.core.transport.router import ClientRouter
-from aim.core.transport.tracking import TrackingRouter, ResourceTypeRegistry
-from aim.core.transport.heartbeat import HeartbeatWatcher
+from aimcore.transport.router import ClientRouter
+from aimcore.transport.tracking import TrackingRouter, ResourceTypeRegistry
+from aimcore.transport.heartbeat import HeartbeatWatcher
 
 from fastapi import WebSocket, WebSocketDisconnect
 
-import aim.core.transport.message_utils as utils
+import aimcore.transport.message_utils as utils
 from aim.core.storage.treeutils import encode_tree, decode_tree
 
-from aim.core.transport.handlers import (
+from aimcore.transport.handlers import (
     get_tree,
     get_khash_array,
     get_lock,

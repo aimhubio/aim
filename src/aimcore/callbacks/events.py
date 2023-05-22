@@ -2,7 +2,7 @@
 
 from typing import Callable
 
-from aim.core.callbacks.helpers import (
+from .helpers import (
     add_handler_event_name,
     check_handler_method_params,
 )

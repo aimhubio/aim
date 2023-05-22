@@ -6,7 +6,7 @@ from typing import Optional, TYPE_CHECKING
 if TYPE_CHECKING:
     from aim.core.storage.treeview import TreeView
     from aim.core.storage.locking import ContainerLock
-    from aim.core.reporter import RunStatusReporter
+    from aimcore.reporter import RunStatusReporter
 
 
 class StorageEngine(object):

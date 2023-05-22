@@ -1,7 +1,7 @@
 from typing import Dict, Any
 
 from aimstack.asp import Run
-from aim.core.callbacks import Caller, event
+from aimcore.callbacks import Caller, event
 
 
 # TODO [AT]: This is a draft version. Final list of methods/signatures TBD.

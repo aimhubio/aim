@@ -5,7 +5,7 @@ from typing import Dict, Union
 from fastapi import WebSocket, Request, APIRouter
 from fastapi.responses import StreamingResponse, JSONResponse
 
-import aim.core.transport.message_utils as utils
+import aimcore.transport.message_utils as utils
 from aim.core.storage.treeutils import encode_tree, decode_tree
 
 

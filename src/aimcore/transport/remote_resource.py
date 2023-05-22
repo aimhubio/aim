@@ -1,4 +1,4 @@
-from aim.core.cleanup import AutoClean
+from aimcore.cleanup import AutoClean
 from .client import Client
 
 

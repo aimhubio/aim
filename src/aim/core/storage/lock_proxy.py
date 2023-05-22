@@ -1,13 +1,13 @@
 from typing import TYPE_CHECKING
 
-from aim.core.transport.message_utils import pack_args
-from aim.core.transport.remote_resource import RemoteResourceAutoClean
+from aimcore.transport.message_utils import pack_args
+from aimcore.transport.remote_resource import RemoteResourceAutoClean
 
 from aim.core.storage.locking import ContainerLock
 from aim.core.storage.treeutils import encode_tree
 
 if TYPE_CHECKING:
-    from aim.core.transport import Client
+    from aimcore.transport import Client
 
 
 class ProxyLockAutoClean(RemoteResourceAutoClean):

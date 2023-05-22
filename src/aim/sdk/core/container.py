@@ -17,7 +17,7 @@ from aim.sdk.core.collections import ContainerSequenceCollection
 from aim.sdk.core.constants import ContainerOpenMode, KeyNames
 from aim.sdk.core.exceptions import MissingContainerError
 
-from aim.core.cleanup import AutoClean
+from aimcore.cleanup import AutoClean
 
 from aim.core.storage.hashing import hash_auto
 from aim.sdk.query import RestrictedPythonQuery

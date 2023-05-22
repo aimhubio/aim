@@ -142,8 +142,8 @@ class HeartbeatWatcher:
 
     def _release_client_resources(self, dead_client_uri):
         logger.warning(f'Cleaning up resources for client `{dead_client_uri}`.')
-        from aim.core.transport.tracking import TrackingRouter
-        from aim.core.transport.router import ClientRouter
+        from aimcore.transport.tracking import TrackingRouter
+        from aimcore.transport.router import ClientRouter
         TrackingRouter.cleanup_client_resources(dead_client_uri)
         ClientRouter.remove_client(dead_client_uri)
 

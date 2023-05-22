@@ -1,21 +1,21 @@
 import contextlib
 from typing import Optional
 
-from aim.core.transport.message_utils import pack_args
-from aim.core.transport.remote_resource import RemoteResourceAutoClean
+from aimcore.transport.message_utils import pack_args
+from aimcore.transport.remote_resource import RemoteResourceAutoClean
 
 from aim.sdk.core.storage_engine import StorageEngine
 
-from aim.core.transport import Client
+from aimcore.transport import Client
 
-from aim.core.cleanup import AutoClean
+from aimcore.cleanup import AutoClean
 
 from aim.core.storage.treeview import TreeView
 from aim.core.storage.locking import ContainerLock
 from aim.core.storage.lock_proxy import ProxyLock
 from aim.core.storage.treeviewproxy import ProxyTree
 from aim.core.storage.treeutils import encode_tree
-from aim.core.reporter import RunStatusReporter, FileManager
+from aimcore.reporter import RunStatusReporter, FileManager
 
 
 class RemoteStorageAutoClean(AutoClean['RemoteStorage']):

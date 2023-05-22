@@ -11,7 +11,7 @@ from weakref import WeakValueDictionary
 
 from aim.ext.system_info.configs import AIM_RESOURCE_METRIC_PREFIX
 from aim.ext.system_info.stat import Stat
-from aim.core.callbacks import Caller, event
+from aimcore.callbacks import Caller, event
 
 logger = logging.getLogger(__name__)
 

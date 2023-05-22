@@ -11,7 +11,7 @@ from aim.core.storage.rockscontainer import RocksContainer
 from aim.core.storage.container import Container as StorageContainer
 from aim.core.storage.locking import ContainerLock
 from aim.sdk.lock_manager import LockManager
-from aim.core.reporter import RunStatusReporter, FileManager
+from aimcore.reporter import RunStatusReporter, FileManager
 
 logger = logging.getLogger(__name__)
 
