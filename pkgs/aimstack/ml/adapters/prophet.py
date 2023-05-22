@@ -1,8 +1,7 @@
 from typing import Any, Dict, Optional, TypeVar
 
-from aim import Run
+from aimstack.asp import Run
 from aim.ext.system_info import DEFAULT_SYSTEM_TRACKING_INT
-from aim.core.storage.types import AimObject
 
 Prophet = TypeVar('Prophet')
 
@@ -84,7 +83,7 @@ class AimLogger:
     def track_metrics(
         self,
         metrics: Dict[str, float],
-        context: AimObject = None,
+        context: Dict = None,
     ) -> None:
         """
         Since Prophet doesn't compute loss during training,

@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from pandas import DataFrame
 
-from aim.sdk.core.sequence import Sequence
+from aim.sdk.sequence import Sequence
 
 from .objects.text import Text
 from .objects.image import Image
@@ -52,7 +52,7 @@ class Metric(Sequence[numbers.Number]):
         if include_name:
             data['metric.name'] = [self.name] * len(indices)
         if include_context:
-            from aim.core.storage import treeutils
+            from aim._core.storage import treeutils
             for path, val in treeutils.unfold_tree(self.context,
                                                    unfold_array=False,
                                                    depth=3):

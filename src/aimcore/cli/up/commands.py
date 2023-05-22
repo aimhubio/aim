@@ -13,12 +13,12 @@ from aimcore.web.configs import (
     AIM_PROFILER_KEY
 )
 from aim.sdk.configs import AIM_ENV_MODE_KEY
-from aim.sdk.core.repo import Repo
+from aim.sdk.repo import Repo
 
 from aimcore.web.utils import exec_cmd
 from aimcore.web.utils import ShellCommandException
 
-from aim.core.utils.tracking import analytics
+from aim.ext.tracking import analytics
 
 
 @click.command()

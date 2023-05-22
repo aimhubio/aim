@@ -12,7 +12,7 @@ from aim.ext.notifier.utils import has_watcher_config, set_default_config
 from aim.sdk.run_status_watcher import RunStatusWatcher
 from aim.sdk.repo import Repo
 
-from aim.core.utils.tracking import analytics
+from aim.ext.tracking import analytics
 
 core._verify_python3_env = lambda: None
 DEFAULT_MESSAGE_TEMPLATE = "❗️ Something wrong with Run '{run.hash}'. Please check. ❗️"

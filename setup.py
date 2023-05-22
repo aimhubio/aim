@@ -33,7 +33,6 @@ def package_files(directory):
 
 
 aimcore_migration_files = package_files('src/aimcore/web/migrations')
-aim_migration_files = package_files('src/aim/core/storage/migrations')
 notifier_files = package_files('src/aim/ext/notifier')
 version_files = ['../aim/VERSION', ]
 
@@ -131,23 +130,23 @@ COMPILE_ARGS = [
     '-fPIC'
 ]
 CYTHON_SCRITPS = [
-    ('aim.core.storage.hashing.c_hash', 'src/aim/core/storage/hashing/c_hash.pyx'),
-    ('aim.core.storage.hashing.hashing', 'src/aim/core/storage/hashing/hashing.py'),
-    ('aim.core.storage.hashing', 'src/aim/core/storage/hashing/__init__.py'),
-    ('aim.core.storage.encoding.encoding_native', 'src/aim/core/storage/encoding/encoding_native.pyx'),
-    ('aim.core.storage.encoding.encoding', 'src/aim/core/storage/encoding/encoding.pyx'),
-    ('aim.core.storage.encoding', 'src/aim/core/storage/encoding/__init__.py'),
-    ('aim.core.storage.treeutils', 'src/aim/core/storage/treeutils.pyx'),
-    ('aim.core.storage.rockscontainer', 'src/aim/core/storage/rockscontainer.pyx'),
-    ('aim.core.storage.union', 'src/aim/core/storage/union.pyx'),
-    ('aim.core.storage.arrayview', 'src/aim/core/storage/arrayview.py'),
-    ('aim.core.storage.treearrayview', 'src/aim/core/storage/treearrayview.py'),
-    ('aim.core.storage.treeview', 'src/aim/core/storage/treeview.py'),
-    ('aim.core.storage.utils', 'src/aim/core/storage/utils.py'),
-    ('aim.core.storage.container', 'src/aim/core/storage/container.py'),
-    ('aim.core.storage.containertreeview', 'src/aim/core/storage/containertreeview.py'),
-    ('aim.core.storage.inmemorytreeview', 'src/aim/core/storage/inmemorytreeview.py'),
-    ('aim.core.storage.prefixview', 'src/aim/core/storage/prefixview.py'),
+    ('aim._core.storage.hashing.c_hash', 'src/aim/_core/storage/hashing/c_hash.pyx'),
+    ('aim._core.storage.hashing.hashing', 'src/aim/_core/storage/hashing/hashing.py'),
+    ('aim._core.storage.hashing', 'src/aim/_core/storage/hashing/__init__.py'),
+    ('aim._core.storage.encoding.encoding_native', 'src/aim/_core/storage/encoding/encoding_native.pyx'),
+    ('aim._core.storage.encoding.encoding', 'src/aim/_core/storage/encoding/encoding.pyx'),
+    ('aim._core.storage.encoding', 'src/aim/_core/storage/encoding/__init__.py'),
+    ('aim._core.storage.treeutils', 'src/aim/_core/storage/treeutils.pyx'),
+    ('aim._core.storage.rockscontainer', 'src/aim/_core/storage/rockscontainer.pyx'),
+    ('aim._core.storage.union', 'src/aim/_core/storage/union.pyx'),
+    ('aim._core.storage.arrayview', 'src/aim/_core/storage/arrayview.py'),
+    ('aim._core.storage.treearrayview', 'src/aim/_core/storage/treearrayview.py'),
+    ('aim._core.storage.treeview', 'src/aim/_core/storage/treeview.py'),
+    ('aim._core.storage.utils', 'src/aim/_core/storage/utils.py'),
+    ('aim._core.storage.container', 'src/aim/_core/storage/container.py'),
+    ('aim._core.storage.containertreeview', 'src/aim/_core/storage/containertreeview.py'),
+    ('aim._core.storage.inmemorytreeview', 'src/aim/_core/storage/inmemorytreeview.py'),
+    ('aim._core.storage.prefixview', 'src/aim/_core/storage/prefixview.py'),
 ]
 
 
@@ -191,7 +190,7 @@ setup(
     ),
     package_dir={'aim': 'src/aim', 'aimcore': 'src/aimcore', 'aimstack': 'pkgs/aimstack'},
     package_data={
-        'aim': aim_migration_files + notifier_files + version_files,
+        'aim': notifier_files + version_files,
         'aimcore': aimcore_migration_files
     },
     include_package_data=True,

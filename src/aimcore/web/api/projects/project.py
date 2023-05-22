@@ -1,6 +1,6 @@
 import os
 
-from aim.sdk.core.repo import Repo
+from aim.sdk.repo import Repo
 from aim.sdk.configs import get_aim_repo_name
 from aimcore.web.utils import get_root_path
 

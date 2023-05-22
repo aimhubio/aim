@@ -13,8 +13,7 @@ from dataclasses import dataclass, field
 from dateutil.relativedelta import relativedelta
 from filelock import UnixFileLock, SoftFileLock, Timeout
 
-from aim.sdk.errors import RunLockingError
-from aim.core.storage.locking import ContainerLock
+from aim._core.storage.locking import ContainerLock
 
 logger = logging.getLogger(__name__)
 
@@ -27,6 +26,10 @@ class LockingVersion(Enum):
 class LockType(Enum):
     SOFT_LOCK = 0
     UNIX_LOCK = 1
+
+
+class RunLockingError(RuntimeError):
+    pass
 
 
 @dataclass(frozen=True)

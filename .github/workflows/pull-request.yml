@@ -11,7 +11,7 @@ on:
       - 'src/aim/ext/**'
       - 'src/aim/sdk/**'
       - 'src/aimcore/web/api/**'
-      - 'src/aim/core/storage/**'
+      - 'src/aim/_core/storage/**'
       - 'src/aim/utils/**'
       - '.github/workflows/pull-request.yml'
       - 'tests/**'

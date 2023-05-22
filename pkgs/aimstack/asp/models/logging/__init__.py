@@ -4,9 +4,9 @@ import logging
 from inspect import getframeinfo, currentframe
 from typing import Optional, Tuple
 
-from aim.core.storage.hashing import hash_auto
-from aim.sdk.core.object import Object
-from aim.sdk.core.sequence import Sequence
+from aim._core.storage.hashing import hash_auto
+from aim.sdk.object import Object
+from aim.sdk.sequence import Sequence
 from aimstack.asp.models.objects.text import Text
 
 

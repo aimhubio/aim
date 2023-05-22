@@ -6,7 +6,7 @@ from fastapi import WebSocket, Request, APIRouter
 from fastapi.responses import StreamingResponse, JSONResponse
 
 import aimcore.transport.message_utils as utils
-from aim.core.storage.treeutils import encode_tree, decode_tree
+from aim._core.storage.treeutils import encode_tree, decode_tree
 
 
 def get_handler():

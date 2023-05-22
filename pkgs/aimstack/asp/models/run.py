@@ -6,13 +6,13 @@ import logging
 
 from functools import partialmethod
 
-from aim.sdk.core.container import Container
+from aim.sdk.container import Container
 from aim.sdk.utils import utc_timestamp
-from aim.sdk.core import type_utils
+from aim.sdk import type_utils
 from aimcore.callbacks import Caller
 from aimcore.callbacks import events
 from aim.ext.system_info import utils as system_utils
-from aim.sdk.core.constants import ContainerOpenMode, KeyNames
+from aim.sdk.constants import ContainerOpenMode, KeyNames
 
 from .logging import (
     LogLine,
@@ -35,7 +35,7 @@ from typing import Optional, Union, List, Tuple, Dict, Any
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from aim.sdk.core.repo import Repo
+    from aim.sdk.repo import Repo
 
 
 @type_utils.query_alias('run')
@@ -205,7 +205,7 @@ class Run(Container, Caller):
             data['duration'] = self.duration
 
         if include_params:
-            from aim.core.storage import treeutils
+            from aim._core.storage import treeutils
             for path, val in treeutils.unfold_tree(self[...],
                                                    unfold_array=False,
                                                    depth=3):

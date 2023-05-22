@@ -1,1 +1,1 @@
-import aim.sdk.core
+import aim.sdk

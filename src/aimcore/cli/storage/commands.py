@@ -117,15 +117,3 @@ def prune(ctx):
     repo_path = ctx.obj['repo']
     repo = Repo.from_path(repo_path)
     repo.prune()
-
-
-@storage.command('reindex')
-@click.option('--finalize-only', required=False, is_flag=True, default=False)
-@click.pass_context
-def reindex(ctx, finalize_only):
-    """ Process runs left in 'in progress' state. """
-    from aim.core.utils.deprecation import deprecation_warning
-
-    deprecation_warning(remove_version='3.16', msg='`aim storage reindex` is deprecated! '
-                                                   'Use `aim runs close` command instead.')
-    return

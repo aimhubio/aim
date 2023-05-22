@@ -13,7 +13,7 @@ from aim.sdk import Run
 from aimcore.web.api.utils import collect_streamable_data, get_project_repo, checked_range
 from aimcore.web.configs import AIM_PROGRESS_REPORT_INTERVAL
 from aimcore.web.api.runs.pydantic_models import AlignedRunIn, TraceBase
-from aim.core.storage.treeutils import encode_tree
+from aim._core.storage.treeutils import encode_tree
 
 if TYPE_CHECKING:
     from aim.sdk import Repo

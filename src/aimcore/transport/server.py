@@ -11,7 +11,7 @@ from aimcore.transport.heartbeat import HeartbeatWatcher
 from fastapi import WebSocket, WebSocketDisconnect
 
 import aimcore.transport.message_utils as utils
-from aim.core.storage.treeutils import encode_tree, decode_tree
+from aim._core.storage.treeutils import encode_tree, decode_tree
 
 from aimcore.transport.handlers import (
     get_tree,

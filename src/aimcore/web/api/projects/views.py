@@ -17,8 +17,8 @@ from aimcore.web.api.projects.pydantic_models import (
     ProjectPackagesApiOut
 )
 from aimcore.web.api.utils import object_factory
-from aim.core.storage.locking import AutoFileLock
-from aim.core.utils.tracking import analytics
+from aim._core.storage.locking import AutoFileLock
+from aim.ext.tracking import analytics
 
 projects_router = APIRouter()
 
@@ -160,7 +160,7 @@ async def project_status_api():
 
 @projects_router.get('/packages/', response_model=ProjectPackagesApiOut)
 async def project_packages_api(include_types: Optional[bool] = False):
-    from aim.sdk.core.package_utils import Package
+    from aim.sdk.package_utils import Package
     if include_types:
         return {
             pkg.name: {

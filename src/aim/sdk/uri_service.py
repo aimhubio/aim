@@ -2,13 +2,13 @@ from cryptography.fernet import Fernet
 from typing import Iterator, List, Dict
 from typing import TYPE_CHECKING
 
-from aim.core.storage.encoding import encode_path, decode_path
-from aim.core.storage.types import BLOB
+from aim._core.storage.encoding import encode_path, decode_path
+from aim._core.storage.types import BLOB
 
 if TYPE_CHECKING:
-    from aim.core.storage.types import AimObjectPath
-    from aim.core.storage.prefixview import PrefixView
-    from aim.sdk.core.repo import Repo
+    from aim._core.storage.types import AimObjectPath
+    from aim._core.storage.prefixview import PrefixView
+    from aim.sdk.repo import Repo
 
 
 class URIService:

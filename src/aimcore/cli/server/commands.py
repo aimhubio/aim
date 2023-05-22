@@ -2,11 +2,11 @@ import os
 import click
 
 from aimcore.cli.utils import set_log_level
-from aim.sdk.core.repo import Repo
+from aim.sdk.repo import Repo
 from aimcore.transport.config import AIM_SERVER_DEFAULT_HOST, AIM_SERVER_DEFAULT_PORT, AIM_SERVER_MOUNTED_REPO_PATH
 from aimcore.transport.server import start_server
 
-from aim.core.utils.tracking import analytics
+from aim.ext.tracking import analytics
 
 
 @click.command()

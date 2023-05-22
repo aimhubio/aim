@@ -1,7 +1,7 @@
 from datasets import Dataset, DatasetDict
 from logging import getLogger
 
-from aim.sdk.core.object import Object
+from aim.sdk.object import Object
 
 logger = getLogger(__name__)
 

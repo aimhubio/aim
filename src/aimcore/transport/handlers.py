@@ -3,8 +3,8 @@ import uuid
 
 from aimcore.transport.config import AIM_SERVER_MOUNTED_REPO_PATH
 
-from aim.sdk.core import Repo
-from aim.sdk.core.local_storage import LocalFileManager
+from aim.sdk import Repo
+from aim.sdk.local_storage import LocalFileManager
 from aimcore.cleanup import AutoClean
 
 

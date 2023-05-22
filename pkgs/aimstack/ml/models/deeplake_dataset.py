@@ -3,7 +3,7 @@ import warnings
 import logging
 from deeplake.util.exceptions import ReadOnlyModeError
 
-from aim.sdk.core.object import Object
+from aim.sdk.object import Object
 
 logger = logging.getLogger(__name__)
 

@@ -1,4 +1,3 @@
 include README.md LICENSE src/aim/VERSION
-recursive-include src/aim/core/storage *.h *.hpp *.cpp *.cxx *.pxd *.pyx
-recursive-include src/aim/core/storage/migrations *
+recursive-include src/aim/_core/storage *.h *.hpp *.cpp *.cxx *.pxd *.pyx
 recursive-include src/aimcore/web/migrations *
