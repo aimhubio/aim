@@ -7,7 +7,7 @@ import logging
 from functools import partialmethod
 
 from aim.sdk.core.container import Container
-from aim.sdk.core.utils import utc_timestamp
+from aim.sdk.utils import utc_timestamp
 from aim.sdk.core import type_utils
 from aimcore.callbacks import Caller
 from aimcore.callbacks import events

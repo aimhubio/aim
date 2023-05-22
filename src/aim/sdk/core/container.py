@@ -11,7 +11,7 @@ from aim.sdk.core.sequence import Sequence
 from aim.sdk.core.interfaces.sequence import SequenceMap, SequenceCollection
 
 from aim.sdk.core import type_utils
-from aim.sdk.core.utils import generate_hash, utc_timestamp
+from aim.sdk.utils import generate_hash, utc_timestamp
 from aim.sdk.core.query_utils import ContainerQueryProxy, construct_query_expression
 from aim.sdk.core.collections import ContainerSequenceCollection
 from aim.sdk.core.constants import ContainerOpenMode, KeyNames

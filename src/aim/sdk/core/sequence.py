@@ -3,7 +3,7 @@ import logging
 from typing import TypeVar, Generic, Any, Optional, Dict, Union, Tuple, List, Set, Iterator, Callable
 
 from aim.sdk.core import type_utils
-from aim.sdk.core.utils import utc_timestamp
+from aim.sdk.utils import utc_timestamp
 from aim.sdk.core.interfaces.sequence import Sequence as ABCSequence
 from aim.sdk.core.query_utils import SequenceQueryProxy, ContainerQueryProxy
 from aim.sdk.core.constants import KeyNames
