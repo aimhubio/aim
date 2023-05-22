@@ -1,6 +1,6 @@
 import RouteLeavingGuard from 'components/RouteLeavingGuard';
 
-import useBoardStore from '../BoardSore';
+import useBoardStore from '../BoardStore';
 
 function BoardLeavingGuard(props: any) {
   const editorValue = useBoardStore((state) => state.editorValue);

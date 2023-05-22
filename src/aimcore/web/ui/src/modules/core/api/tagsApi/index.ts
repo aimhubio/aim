@@ -9,7 +9,7 @@ import {
   IGetTagRunsResult,
   ITagData,
   IUpdateTagBody,
-} from './types';
+} from './types.d';
 
 const api = new NetworkService(`${getAPIHost()}${ENDPOINTS.TAGS.BASE}`);
 
@@ -103,6 +103,7 @@ async function deleteTag(id: string): Promise<any> {
     .body;
 }
 
+export * from './types.d';
 export {
   fetchTagsList,
   getTagRuns,
