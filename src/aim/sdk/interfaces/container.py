@@ -3,7 +3,7 @@ from typing import Iterable, Iterator, TypeVar, List, Any
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from aim.sdk.core.interfaces.sequence import SequenceCollection
+    from .sequence import SequenceCollection
 
 
 class Container(object):
