@@ -187,7 +187,7 @@ class Stat(object):
                     pass
                 gpus.append(gpu_info)
             nvml.nvmlShutdown()
-        except (nvml.NVMLError_LibraryNotFound, nvml.NVMLError_NotSupported):
+        except nvml.NVMLError:
             pass
 
         return system, gpus

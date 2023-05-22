@@ -1,5 +1,7 @@
 # Changelog
 
+## 3.17.5
+- Fix gpu stat collection when driver is not loaded (mihran113)
 - Fix issue with overflowing box content in full-view mode in Base Explorers (KaroMourad)
 
 ## 3.17.4  May 4, 2023
