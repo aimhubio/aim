@@ -1,6 +1,7 @@
 # Changelog
 
 - Fix issue with overflowing box content in full-view mode in Base Explorers (KaroMourad)
+- Resolve tags list visibility issue in tags page (arsengit)
 
 ## 3.17.4  May 4, 2023
 
