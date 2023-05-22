@@ -38,14 +38,12 @@ class BaseRun:
             assert run_hash is not None
             self.hash = run_hash
         else:
-            if run_hash is None:
-                self.hash = generate_run_hash()
+            if run_hash is None or not self.repo.run_exists(run_hash):
+                self.hash = run_hash or generate_run_hash()
                 analytics.track_event(event_name='[Run] Create new run')
-            elif self.repo.run_exists(run_hash):
+            else:
                 self.hash = run_hash
                 analytics.track_event(event_name='[Run] Resume run')
-            else:
-                raise MissingRunError(f'Cannot find Run {run_hash} in aim Repo {self.repo.path}.')
             self._lock = self.repo.request_run_lock(self.hash)
             self._lock.lock(force=force_resume)
 
