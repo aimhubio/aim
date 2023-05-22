@@ -125,6 +125,7 @@ export interface IBaseComponentProps {
 }
 
 export interface IWidgetRendererProps {
+  appContainerNode?: HTMLDivElement;
   boxContainer: React.MutableRefObject<HTMLDivElement>;
   vizContainer: React.MutableRefObject<HTMLDivElement>;
 }

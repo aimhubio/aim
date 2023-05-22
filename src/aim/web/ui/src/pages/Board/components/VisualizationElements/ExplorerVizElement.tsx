@@ -1,6 +1,8 @@
 import * as React from 'react';
+import produce from 'immer';
 
 import renderer from 'modules/BaseExplorer';
+import { ExplorerConfiguration } from 'modules/BaseExplorer/types';
 
 import { metricsExplorerConfig } from 'pages/Explorers/MetricsExplorer';
 import { figuresExplorerConfig } from 'pages/Explorers/FiguresExplorer';
@@ -25,8 +27,11 @@ function ExplorerVizElement(props: any) {
 
   const Component = React.useMemo(() => {
     const explorer = ExplorersMap[props.data?.toLowerCase()];
-    return explorer ? explorer(state) : null;
-  }, []);
+    const appContainerNode = document.querySelector(
+      '.BoardVisualizer__main__components__viz',
+    );
+    return explorer ? explorer(state, appContainerNode) : null;
+  }, [props.data]);
 
   Component?.setState(state);
 
@@ -39,39 +44,48 @@ function ExplorerVizElement(props: any) {
     </div>
   ) : null;
 }
+
+const getStaticConfig = (configuration: ExplorerConfiguration) => {
+  return produce(configuration, (draft) => {
+    draft.persist = false;
+    draft.hideExplorerBar = true;
+    draft.hideQueryForm = true;
+  });
+};
+
 const ExplorersMap: Record<string, any> = {
-  metrics: (state: Record<string, any>) =>
-    renderer({
-      ...metricsExplorerConfig,
-      persist: false,
-      initialState: state,
-      hideExplorerBar: true,
-      hideQueryForm: true,
-    }),
-  figures: (state: Record<string, any>) =>
-    renderer({
-      ...figuresExplorerConfig,
-      persist: false,
-      initialState: state,
-      hideExplorerBar: true,
-      hideQueryForm: true,
-    }),
-  audios: (state: Record<string, any>) =>
-    renderer({
-      ...audiosExplorerConfig,
-      persist: false,
-      initialState: state,
-      hideExplorerBar: true,
-      hideQueryForm: true,
-    }),
-  texts: (state: Record<string, any>) =>
-    renderer({
-      ...textExplorerConfig,
-      persist: false,
-      initialState: state,
-      hideExplorerBar: true,
-      hideQueryForm: true,
-    }),
+  metrics: (state: Record<string, any>, appContainerNode: HTMLDivElement) => {
+    const config = produce(getStaticConfig(metricsExplorerConfig), (draft) => {
+      draft.initialState = state;
+      draft.visualizations.vis1.widgets!.tooltip.props!.appContainerNode =
+        appContainerNode;
+    });
+    return renderer(config);
+  },
+  figures: (state: Record<string, any>, appContainerNode: HTMLDivElement) => {
+    const config = produce(getStaticConfig(figuresExplorerConfig), (draft) => {
+      draft.initialState = state;
+      draft.visualizations.vis1.widgets!.tooltip.props!.appContainerNode =
+        appContainerNode;
+    });
+    return renderer(config);
+  },
+  audios: (state: Record<string, any>, appContainerNode: HTMLDivElement) => {
+    const config = produce(getStaticConfig(audiosExplorerConfig), (draft) => {
+      draft.initialState = state;
+      draft.visualizations.vis1.widgets!.tooltip.props!.appContainerNode =
+        appContainerNode;
+    });
+    return renderer(config);
+  },
+  texts: (state: Record<string, any>, appContainerNode: HTMLDivElement) => {
+    const config = produce(getStaticConfig(textExplorerConfig), (draft) => {
+      draft.initialState = state;
+      draft.visualizations.vis1.widgets!.tooltip.props!.appContainerNode =
+        appContainerNode;
+    });
+    return renderer(config);
+  },
 };
 
 export default ExplorerVizElement;

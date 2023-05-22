@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash-es';
 
 import ErrorBoundary from 'components/ErrorBoundary';
 import VisualizationTooltip from 'components/VisualizationTooltip';
@@ -20,6 +21,7 @@ function VisualizerTooltip(props: IVisualizerTooltipProps) {
     engine,
     engine: { useStore, pipeline },
     visualizationName,
+    appContainerNode,
   } = props;
   const vizEngine = engine.visualizations[visualizationName];
   const controls = vizEngine.controls;
@@ -40,6 +42,8 @@ function VisualizerTooltip(props: IVisualizerTooltipProps) {
   const objectBase: AimFlatObjectBase = dataState.find(
     (item: AimFlatObjectBase) => item.key === activeElement.key,
   );
+
+  const [openPopover, setOpenPopover] = React.useState(false);
 
   const renderHeader = () => {
     return TooltipContentHeader ? (
@@ -66,6 +70,32 @@ function VisualizerTooltip(props: IVisualizerTooltipProps) {
     [boxContainer.current],
   );
 
+  const popoverIsOpen = React.useMemo(
+    () => !zoom?.active && tooltip?.display,
+    [zoom?.active, tooltip?.display],
+  );
+
+  React.useEffect(() => {
+    setOpenPopover(popoverIsOpen);
+  }, [popoverIsOpen]);
+
+  React.useEffect(() => {
+    if (appContainerNode) {
+      const onScrollEnd = _.debounce(() => setOpenPopover(popoverIsOpen), 200);
+      const onScroll = _.debounce(() => setOpenPopover(false), 100, {
+        leading: true,
+        trailing: false,
+      });
+
+      appContainerNode.addEventListener('scroll', onScroll);
+      appContainerNode.addEventListener('scroll', onScrollEnd);
+      return () => {
+        appContainerNode?.removeEventListener('scroll', onScroll);
+        appContainerNode?.removeEventListener('scroll', onScrollEnd);
+      };
+    }
+  }, [appContainerNode, popoverIsOpen]);
+
   /**
    * elementRect - is the rect of the active element, which taken into account the container rect
    * do not memoize the value, since the "activeElement.rect" state is changing on every mouse move
@@ -84,7 +114,7 @@ function VisualizerTooltip(props: IVisualizerTooltipProps) {
         key={visualizationName + '-visualizerTooltip'}
         containerNode={boxContainer.current}
         elementRect={elementRect}
-        open={!zoom?.active && tooltip?.display}
+        open={openPopover}
         forceOpen={focusedState.active}
         tooltipAppearance={tooltip?.appearance}
       >

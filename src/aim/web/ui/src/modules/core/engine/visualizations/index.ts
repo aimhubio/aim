@@ -46,7 +46,7 @@ export type WidgetsConfig = Record<
   string,
   {
     component: FunctionComponent<any>;
-    props?: object;
+    props?: Record<string, any>;
   }
 >;
 

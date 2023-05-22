@@ -51,21 +51,15 @@ function BoardConsole({
   function handleResizeElementMount(resizeElement: any) {
     resizeElementRef.current = resizeElement.current;
     const height = resizeElementRef.current?.offsetHeight;
-    const sizes = JSON.parse(getItem('board-ResizeElement')!);
     setConsoleOpen(height > BOARD_CONSOLE_SIZES.MIN_HEIGHT);
-    vizContainer.current.style.marginBottom = `${
-      sizes?.height || `${BOARD_CONSOLE_SIZES.INITIAL_SIZES.height}px`
-    }`;
   }
 
   function handleOpenConsole() {
     const height = resizeElementRef.current?.offsetHeight;
     if (height > BOARD_CONSOLE_SIZES.MIN_HEIGHT) {
       resizeElementRef.current.style.height = `${BOARD_CONSOLE_SIZES.MIN_HEIGHT}px`;
-      vizContainer.current.style.marginBottom = `${BOARD_CONSOLE_SIZES.MIN_HEIGHT}px`;
     } else {
       resizeElementRef.current.style.height = `${BOARD_CONSOLE_SIZES.INITIAL_SIZES.maxHeight}px`;
-      vizContainer.current.style.marginBottom = `${BOARD_CONSOLE_SIZES.INITIAL_SIZES.maxHeight}px`;
     }
   }
 

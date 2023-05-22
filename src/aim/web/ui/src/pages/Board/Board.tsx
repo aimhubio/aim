@@ -46,8 +46,12 @@ function Board({
 }: any): React.FunctionComponentElement<React.ReactNode> {
   const { isLoading: pyodideIsLoading, pyodide, namespace } = usePyodide();
   const editorRef = React.useRef<any>(null);
-  const vizContainer = React.useRef<any>(null);
-  const boxContainer = React.useRef<any>(null);
+  const vizContainer = React.useRef<HTMLDivElement>(
+    document.createElement('div'),
+  );
+  const boxContainer = React.useRef<HTMLDivElement>(
+    document.createElement('div'),
+  );
   const setEditorValue = useBoardStore((state) => state.setEditorValue);
   const destroyBoardStore = useBoardStore((state) => state.destroy);
 
