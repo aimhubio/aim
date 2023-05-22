@@ -213,17 +213,14 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
 
   function handleEditorMount(editor: any) {
     editorRef.current = editor;
-    editorRef.current?.onKeyDown(onKeyDown);
+    editorRef.current?.onKeyDown(updateEditorValue);
   }
 
-  function onKeyDown() {
-    const updateEditorValue = _.debounce(() => {
-      setEditorValue(editorRef.current?.getValue());
-    }, 40);
+  const updateEditorValue = _.debounce(() => {
+    setEditorValue(editorRef.current?.getValue());
+  }, 40);
 
-    updateEditorValue();
-  }
-
+  updateEditorValue();
   const tree = constructTree(
     state.layout.blocks.concat(state.layout.components),
     {
