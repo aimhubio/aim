@@ -81,7 +81,7 @@ jobs:
       - name: Capture aim version
         id: capture-version
         run: |
-          AIM_VERSION=$(< ./src/aim/VERSION)
+          AIM_VERSION=$(< ./src/py-sdk/aim/VERSION)
           echo "::set-output name=AIM_VERSION::$AIM_VERSION"
 
       - name: Setup python
