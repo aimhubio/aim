@@ -4,30 +4,30 @@ import cachetools.func
 from collections import defaultdict
 from typing import Optional, Type, Union, Dict, Callable, Iterator, Tuple, Any
 
-from aim.sdk.interfaces.container import (
+from aim._sdk.interfaces.container import (
     Container as ABCContainer
 )
-from aim.sdk.sequence import Sequence
-from aim.sdk.interfaces.sequence import SequenceMap, SequenceCollection
+from aim._sdk.sequence import Sequence
+from aim._sdk.interfaces.sequence import SequenceMap, SequenceCollection
 
-from aim.sdk import type_utils
-from aim.sdk.utils import generate_hash, utc_timestamp
-from aim.sdk.query_utils import ContainerQueryProxy, construct_query_expression
-from aim.sdk.collections import ContainerSequenceCollection
-from aim.sdk.constants import ContainerOpenMode, KeyNames
-from aim.sdk.exceptions import MissingContainerError
+from aim._sdk import type_utils
+from aim._sdk.utils import generate_hash, utc_timestamp
+from aim._sdk.query_utils import ContainerQueryProxy, construct_query_expression
+from aim._sdk.collections import ContainerSequenceCollection
+from aim._sdk.constants import ContainerOpenMode, KeyNames
+from aim._sdk.exceptions import MissingContainerError
 
 from aimcore.cleanup import AutoClean
 
 from aim._core.storage.hashing import hash_auto
-from aim.sdk.query import RestrictedPythonQuery
-from aim.sdk.context import Context
+from aim._sdk.query import RestrictedPythonQuery
+from aim._sdk.context import Context
 
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from aim._core.storage.treeview import TreeView
-    from aim.sdk.repo import Repo
+    from aim._sdk.repo import Repo
 
 
 logger = logging.getLogger(__name__)
@@ -95,10 +95,10 @@ class Container(ABCContainer):
         self.mode = mode
 
         if repo is None:
-            from aim.sdk.repo import Repo
+            from aim._sdk.repo import Repo
             repo = Repo.default()
         elif isinstance(repo, str):
-            from aim.sdk.repo import Repo
+            from aim._sdk.repo import Repo
             repo = Repo.from_path(repo)
         self.repo = repo
         self.storage = repo.storage_engine

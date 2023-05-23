@@ -23,7 +23,7 @@ boards_router = APIRouter()
 def _update_board_templates_from_packages(session):
     db_board_templates = {(t.package, t.name): t for t in session.query(BoardTemplate)}
 
-    from aim.sdk.package_utils import Package
+    from aim._sdk.package_utils import Package
 
     for package_name, package in Package.pool.items():
         for board_name, board_info in package.board_templates.items():

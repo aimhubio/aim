@@ -5,7 +5,7 @@ import uuid
 from typing import Dict
 from pathlib import Path
 
-from aim.ext.notifier.utils import get_empty_config_path
+from aim._ext.notifier.utils import get_empty_config_path
 
 
 class Config:

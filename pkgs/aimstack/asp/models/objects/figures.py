@@ -2,9 +2,9 @@ import io
 import logging
 import os.path
 
-from aim.sdk.object import Object
-from aim.sdk.num_utils import inst_has_typename
-from aim.sdk.blob import BLOB
+from aim import Object
+from aim._sdk.num_utils import inst_has_typename
+from aim._sdk.blob import BLOB
 
 
 logger = logging.getLogger(__name__)

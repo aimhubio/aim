@@ -4,13 +4,13 @@ import logging
 from pathlib import Path
 from typing import Union, Optional
 
-from aim.sdk.storage_engine import StorageEngine
+from aim._sdk.storage_engine import StorageEngine
 
 from aim._core.storage.treeview import TreeView
 from aim._core.storage.rockscontainer import RocksContainer
 from aim._core.storage.container import Container as StorageContainer
 from aim._core.storage.locking import ContainerLock
-from aim.sdk.lock_manager import LockManager
+from aim._sdk.lock_manager import LockManager
 from aimcore.reporter import RunStatusReporter, FileManager
 
 logger = logging.getLogger(__name__)

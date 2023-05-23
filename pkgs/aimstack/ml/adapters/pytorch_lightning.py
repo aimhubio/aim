@@ -25,10 +25,10 @@ except ImportError:
         'Please install it with command: \n pip install pytorch-lightning'
     )
 
-from aim.sdk.run import Run
-from aim.sdk.repo import Repo
-from aim.sdk.utils import clean_repo_path, get_aim_repo_name
-from aim.ext.system_info import DEFAULT_SYSTEM_TRACKING_INT
+from aim._sdk.run import Run
+from aim._sdk.repo import Repo
+from aim._sdk.utils import clean_repo_path, get_aim_repo_name
+from aim._ext.system_info import DEFAULT_SYSTEM_TRACKING_INT
 
 
 class AimLogger(Logger):

@@ -3,8 +3,8 @@ import os
 import click
 from click import ClickException
 
-from aim.sdk.repo import Repo
-from aim.sdk.utils import clean_repo_path
+from aim._sdk.repo import Repo
+from aim._sdk.utils import clean_repo_path
 from aimcore.cli.convert.processors import (
     parse_tb_logs,
     parse_mlflow_logs,

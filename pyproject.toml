@@ -18,7 +18,7 @@ exclude_lines = [
     "@(abc.)?abstractmethod",
     "except ImportError:"
 ]
-include = ["src/aimcore/web/*", "src/aim/_core/*", "src/aim/sdk/*"]
+include = ["src/aimcore/web/*", "src/aim/_core/*", "src/aim/_sdk/*"]
 omit = ["src/aimcore/web/migrations/*"]
 
 [tool.flake8]

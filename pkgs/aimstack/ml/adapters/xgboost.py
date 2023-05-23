@@ -1,7 +1,7 @@
 from typing import Optional
 
-from aim.ext.system_info import DEFAULT_SYSTEM_TRACKING_INT
-from aim.sdk.run import Run
+from aim._ext.system_info import DEFAULT_SYSTEM_TRACKING_INT
+from aim._sdk.run import Run
 
 try:
     from xgboost.callback import TrainingCallback

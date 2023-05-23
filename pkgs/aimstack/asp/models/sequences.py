@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from pandas import DataFrame
 
-from aim.sdk.sequence import Sequence
+from aim import Sequence
 
 from .objects.text import Text
 from .objects.image import Image

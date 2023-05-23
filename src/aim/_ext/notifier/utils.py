@@ -12,7 +12,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 def get_working_directory(base_dir: Union[str, Path]) -> Path:
     if not isinstance(base_dir, Path):
         base_dir = Path(base_dir)
-    work_dir = base_dir / 'ext' / 'notifications'
+    work_dir = base_dir / '_ext' / 'notifications'
     work_dir.mkdir(parents=True, exist_ok=True)
     return work_dir
 

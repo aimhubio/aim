@@ -9,13 +9,13 @@ from fastapi.types import DecoratedCallable
 from typing import Any, Callable, Iterator, Tuple, List
 
 from aim._core.storage.treeutils import encode_tree
-from aim.sdk.query import syntax_error_check
-from aim.sdk.uri_service import URIService
+from aim._sdk.query import syntax_error_check
+from aim._sdk.uri_service import URIService
 from aimcore.web.api.projects.project import Project
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from aim.sdk import Repo
+    from aim import Repo
 
 
 def object_factory():

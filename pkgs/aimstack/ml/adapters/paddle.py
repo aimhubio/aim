@@ -1,7 +1,7 @@
 from paddle.hapi.callbacks import Callback
 from typing import Optional
-from aim.sdk.run import Run
-from aim.ext.system_info import DEFAULT_SYSTEM_TRACKING_INT
+from aim._sdk.run import Run
+from aim._ext.system_info import DEFAULT_SYSTEM_TRACKING_INT
 
 
 class AimCallback(Callback):

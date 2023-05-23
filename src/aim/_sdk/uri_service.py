@@ -8,7 +8,7 @@ from aim._core.storage.types import BLOB
 if TYPE_CHECKING:
     from aim._core.storage.types import AimObjectPath
     from aim._core.storage.prefixview import PrefixView
-    from aim.sdk.repo import Repo
+    from aim._sdk.repo import Repo
 
 
 class URIService:

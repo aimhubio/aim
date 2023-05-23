@@ -2,7 +2,7 @@ from sys import stdout
 from typing import Optional
 
 from aim import Run
-from aim.ext.system_info import DEFAULT_SYSTEM_TRACKING_INT
+from aim._ext.system_info import DEFAULT_SYSTEM_TRACKING_INT
 
 
 class AimLogger:

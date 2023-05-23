@@ -17,11 +17,11 @@ except ImportError:
         return None
 
 
-from aim.sdk.object import Object
+from aim._sdk.object import Object
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from aim.sdk.sequence import Sequence
+    from aim._sdk.sequence import Sequence
 
 
 def get_typename(type_: Type, inner_type: Optional[Type] = None) -> str:

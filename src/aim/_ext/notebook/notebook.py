@@ -1,6 +1,6 @@
 import shlex
 
-import aim.ext.notebook.manager as manager
+import aim._ext.notebook.manager as manager
 
 # Error message prefix for aim commands
 ERROR_MSG_PREFIX = b'Error:'

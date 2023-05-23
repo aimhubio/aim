@@ -3,8 +3,8 @@ import uuid
 
 from aimcore.transport.config import AIM_SERVER_MOUNTED_REPO_PATH
 
-from aim.sdk import Repo
-from aim.sdk.local_storage import LocalFileManager
+from aim import Repo
+from aim._sdk.local_storage import LocalFileManager
 from aimcore.cleanup import AutoClean
 
 
@@ -58,7 +58,7 @@ def get_lock(**kwargs):
     repo = Repo.from_path(repo_path)
     run_hash = kwargs['run_hash']
     # TODO Do we need to import SFRunLock here?
-    from aim.sdk.lock_manager import SFRunLock
+    from aim._sdk.lock_manager import SFRunLock
     return ResourceRef(repo.storage_engine.lock(run_hash), SFRunLock.release)
 
 

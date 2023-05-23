@@ -1,17 +1,16 @@
-import requests
+import logging
 from typing import Optional
 
-from aim.ext.notifier.base_notifier import BaseNotifier
+from aim._ext.notifier.base_notifier import BaseNotifier
 
 
-class SlackNotifier(BaseNotifier):
+class LoggingNotifier(BaseNotifier):
     def __init__(self, _id: str, config: dict):
         super().__init__(_id)
         self.message_template = config['message']
-
-        self.url = config['url']
+        self.logger = logging.getLogger('notifier')
 
     def notify(self, message: Optional[str] = None, **kwargs):
         message_template = message or self.message_template
         msg = message_template.format(**kwargs)
-        requests.post(self.url, json={'text': msg})
+        self.logger.error(msg)

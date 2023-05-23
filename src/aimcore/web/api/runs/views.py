@@ -5,7 +5,7 @@ from starlette import status
 from aimcore.web.api.utils import APIRouter, get_project_repo, checked_query  # wrapper for fastapi.APIRouter
 from typing import Optional, Tuple
 
-from aim.sdk.types import QueryReportMode
+from aim._sdk.types import QueryReportMode
 from aimcore.web.api.runs.utils import (
     collect_requested_metric_traces,
     convert_nan_and_inf_to_str,
@@ -57,7 +57,7 @@ def runs_search_fn(repo,
                    exclude_traces: Optional[bool] = False,
                    x_timezone_offset: int = Header(default=0)):
 
-    from aim.sdk.sequence_collection import QueryRunSequenceCollection
+    from aim._sdk.sequence_collection import QueryRunSequenceCollection
     repo._prepare_runs_cache()
     runs = QueryRunSequenceCollection(repo=repo,
                                       query=query,
@@ -109,8 +109,8 @@ def metrics_search_fn(repo,
                       skip_system: Optional[bool] = True,
                       report_progress: Optional[bool] = True,
                       x_timezone_offset: int = Header(default=0),):
-    from aim.sdk.sequences.metric import Metric
-    from aim.sdk.sequence_collection import QuerySequenceCollection
+    from aim._sdk.sequences.metric import Metric
+    from aim._sdk.sequence_collection import QuerySequenceCollection
 
     steps_num = p
 

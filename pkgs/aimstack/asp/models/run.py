@@ -6,13 +6,13 @@ import logging
 
 from functools import partialmethod
 
-from aim.sdk.container import Container
-from aim.sdk.utils import utc_timestamp
-from aim.sdk import type_utils
+from aim import Container
+from aim._sdk.utils import utc_timestamp
+from aim._sdk import type_utils
 from aimcore.callbacks import Caller
 from aimcore.callbacks import events
-from aim.ext.system_info import utils as system_utils
-from aim.sdk.constants import ContainerOpenMode, KeyNames
+from aim._ext.system_info import utils as system_utils
+from aim._sdk.constants import ContainerOpenMode, KeyNames
 
 from .logging import (
     LogLine,
@@ -35,7 +35,7 @@ from typing import Optional, Union, List, Tuple, Dict, Any
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from aim.sdk.repo import Repo
+    from aim import Repo
 
 
 @type_utils.query_alias('run')
