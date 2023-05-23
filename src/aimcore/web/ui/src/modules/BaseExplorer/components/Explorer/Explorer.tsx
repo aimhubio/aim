@@ -23,19 +23,23 @@ function Explorer({ configuration, engineInstance }: ExplorerProps) {
   // @TODO handle error for networks
   return !isLoading ? (
     <div className='Explorer'>
-      <ExplorerBar
-        engine={engineInstance}
-        explorerName={configuration.name}
-        documentationLink={configuration.documentationLink}
-      />
+      {configuration.hideExplorerBar ? null : (
+        <ExplorerBar
+          engine={engineInstance}
+          explorerName={configuration.name}
+          documentationLink={configuration.documentationLink}
+        />
+      )}
       <ExplorerNotifications engine={engineInstance} />
-      {/* @ts-ignore*/}
-      <configuration.components.queryForm engine={engineInstance} />
+      {configuration.hideQueryForm ? null : (
+        /* @ts-ignore*/
+        <configuration.components.queryForm engine={engineInstance} />
+      )}
       <Visualizations
         forceRenderVisualizations={
           configuration.forceRenderVisualizations ?? false
         }
-        displayProgress={configuration.displayProgress ?? true}
+        displayProgress={!configuration.hideProgress}
         getStaticContent={configuration.getStaticContent}
         visualizers={configuration.visualizations}
         engine={engineInstance}

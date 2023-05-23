@@ -10,35 +10,34 @@ import { getTextDefaultConfig } from './textConfig';
 
 const defaultConfig = getTextDefaultConfig();
 
-const TextExplorer = renderer(
-  {
-    name: 'Text Explorer',
-    sequenceName: SequenceTypesEnum.Texts,
-    basePath: 'text',
-    persist: true,
-    adapter: {
-      objectDepth: AimObjectDepths.Index,
-    },
-    groupings: defaultConfig.groupings,
-    visualizations: {
-      vis1: {
-        component: defaultConfig.Visualizer as FunctionComponent,
-        controls: defaultConfig.controls,
-        box: {
-          ...defaultConfig.box,
-          component: TextBox,
-          initialState: defaultConfig.box.initialState,
-        },
-        widgets: {
-          legends: {
-            component: VisualizerLegends,
-          },
+export const textExplorerConfig = {
+  name: 'Text Explorer',
+  sequenceName: SequenceTypesEnum.Texts,
+  basePath: 'text',
+  persist: true,
+  adapter: {
+    objectDepth: AimObjectDepths.Index,
+  },
+  groupings: defaultConfig.groupings,
+  visualizations: {
+    vis1: {
+      component: defaultConfig.Visualizer as FunctionComponent,
+      controls: defaultConfig.controls,
+      box: {
+        ...defaultConfig.box,
+        component: TextBox,
+        initialState: defaultConfig.box.initialState,
+      },
+      widgets: {
+        legends: {
+          component: VisualizerLegends,
         },
       },
     },
-    getStaticContent: defaultConfig.getStaticContent,
   },
-  __DEV__,
-);
+  getStaticContent: defaultConfig.getStaticContent,
+};
+
+const TextExplorer = renderer(textExplorerConfig, __DEV__);
 
 export default TextExplorer;

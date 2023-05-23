@@ -44,8 +44,12 @@ function Board({
 }: any): React.FunctionComponentElement<React.ReactNode> {
   const { isLoading: pyodideIsLoading, pyodide, namespace } = usePyodide();
   const editorRef = React.useRef<any>(null);
-  const vizContainer = React.useRef<any>(null);
-  const boxContainer = React.useRef<any>(null);
+  const vizContainer = React.useRef<HTMLDivElement>(
+    document.createElement('div'),
+  );
+  const boxContainer = React.useRef<HTMLDivElement>(
+    document.createElement('div'),
+  );
   const setEditorValue = useBoardStore((state) => state.setEditorValue);
 
   const boardId = data.board_id;
@@ -278,7 +282,7 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
           height={'100%'}
         >
           <BoardVisualizerContainer className='BoardVisualizer'>
-            <BoardVisualizerPane id='BoardVisualizer'>
+            <BoardVisualizerPane id='BoardVisualizer' useLocalStorage={true}>
               {editMode || newMode ? (
                 <BoardVisualizerEditorPane className='BoardVisualizer__main__editor'>
                   <Editor
@@ -410,6 +414,13 @@ function constructTree(elems: any, tree: any) {
       if (!elem.parent_block) {
         tree.root.elements[elem.key] = elem;
       } else {
+        if (!tree.hasOwnProperty(elem.parent_block.id)) {
+          tree[elem.parent_block.id] = {
+            id: elem.parent_block.id,
+            elements: {},
+            data: elem.data,
+          };
+        }
         tree[elem.parent_block.id].elements[elem.key] = elem;
       }
     }
