@@ -7,7 +7,7 @@ from aim._core.storage.types import AimObjectKey, AimObjectPath, AimObject
 from aimcore.transport.message_utils import pack_args, ResourceObject
 from aimcore.transport.remote_resource import RemoteResourceAutoClean
 
-from aim.sdk.storage_engine import StorageEngine
+from aim._sdk.storage_engine import StorageEngine
 
 from aimcore.transport import Client
 

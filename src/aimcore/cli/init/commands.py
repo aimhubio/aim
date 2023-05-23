@@ -1,9 +1,9 @@
 import click
 import os
 
-from aim.sdk.repo import Repo
+from aim._sdk.repo import Repo
 
-from aim.ext.tracking import analytics
+from aim._ext.tracking import analytics
 
 
 @click.command()

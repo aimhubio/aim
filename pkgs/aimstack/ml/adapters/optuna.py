@@ -8,8 +8,8 @@ from optuna.study.study import ObjectiveFuncType
 
 
 with try_import() as _imports:
-    from aim.sdk.run import Run
-    from aim.ext.system_info import DEFAULT_SYSTEM_TRACKING_INT
+    from aim._sdk.run import Run
+    from aim._ext.system_info import DEFAULT_SYSTEM_TRACKING_INT
 
 
 @experimental_class('2.9.0')

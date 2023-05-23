@@ -2,7 +2,7 @@ import psutil
 import json
 from typing import List
 
-import aim.ext.system_info.pynvml as nvml
+import aim._ext.system_info.pynvml as nvml
 
 
 class StatDict(object):

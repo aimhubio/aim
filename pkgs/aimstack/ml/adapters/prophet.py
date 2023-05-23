@@ -1,7 +1,7 @@
 from typing import Any, Dict, Optional, TypeVar
 
 from aimstack.asp import Run
-from aim.ext.system_info import DEFAULT_SYSTEM_TRACKING_INT
+from aim._ext.system_info import DEFAULT_SYSTEM_TRACKING_INT
 
 Prophet = TypeVar('Prophet')
 

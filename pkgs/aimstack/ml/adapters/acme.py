@@ -1,6 +1,6 @@
 from typing import Optional, Dict
 from aimstack.asp import Run
-from aim.ext.system_info.configs import DEFAULT_SYSTEM_TRACKING_INT
+from aim._ext.system_info.configs import DEFAULT_SYSTEM_TRACKING_INT
 from acme.utils.loggers.base import Logger, LoggingData
 
 

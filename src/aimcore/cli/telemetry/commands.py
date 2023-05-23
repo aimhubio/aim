@@ -1,6 +1,6 @@
 import click
 
-from aim.ext.tracking import analytics
+from aim._ext.tracking import analytics
 
 
 @click.group('telemetry', hidden=True)

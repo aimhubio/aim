@@ -1,8 +1,8 @@
 from logging import getLogger
 from typing import Optional
-from aim.sdk.run import Run
+from aim._sdk.run import Run
 
-from aim.ext.system_info import DEFAULT_SYSTEM_TRACKING_INT
+from aim._ext.system_info import DEFAULT_SYSTEM_TRACKING_INT
 
 try:
     from fastai.learner import Callback

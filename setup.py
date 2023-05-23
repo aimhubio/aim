@@ -33,8 +33,7 @@ def package_files(directory):
 
 
 aimcore_migration_files = package_files('src/aimcore/web/migrations')
-notifier_files = package_files('src/aim/ext/notifier')
-version_files = ['../aim/VERSION', ]
+notifier_files = package_files('src/aim/_ext/notifier')
 
 readme_file = 'README.md'
 readme_text = open('/'.join((here, readme_file)), encoding="utf-8").read()
@@ -190,8 +189,9 @@ setup(
     ),
     package_dir={'aim': 'src/aim', 'aimcore': 'src/aimcore', 'aimstack': 'pkgs/aimstack'},
     package_data={
-        'aim': notifier_files + version_files,
-        'aimcore': aimcore_migration_files
+        'aim': notifier_files,
+        'aimcore': aimcore_migration_files,
+        'aimstack': []
     },
     include_package_data=True,
     classifiers=[

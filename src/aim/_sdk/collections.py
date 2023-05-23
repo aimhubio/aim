@@ -1,21 +1,21 @@
 from abc import abstractmethod
 from typing import Iterator, Dict, Tuple, Type
 
-from aim.sdk import type_utils
-from aim.sdk.query_utils import ContainerQueryProxy, SequenceQueryProxy
+from aim._sdk import type_utils
+from aim._sdk.query_utils import ContainerQueryProxy, SequenceQueryProxy
 
-from aim.sdk.constants import KeyNames
+from aim._sdk.constants import KeyNames
 
-from aim.sdk.interfaces.container import ContainerCollection as ABCContainerCollection, ContainerType
-from aim.sdk.interfaces.sequence import SequenceCollection as ABCSequenceCollection, SequenceType
+from aim._sdk.interfaces.container import ContainerCollection as ABCContainerCollection, ContainerType
+from aim._sdk.interfaces.sequence import SequenceCollection as ABCSequenceCollection, SequenceType
 
-from aim.sdk.query import RestrictedPythonQuery
-from aim.sdk.context import Context, cached_context
+from aim._sdk.query import RestrictedPythonQuery
+from aim._sdk.context import Context, cached_context
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from aim.sdk.container import Container
-    from aim.sdk.sequence import Sequence
+    from aim._sdk.container import Container
+    from aim._sdk.sequence import Sequence
     from aim._core.storage.treeview import TreeView
 
 

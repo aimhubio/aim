@@ -5,7 +5,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declared_attr
 
 from aimcore.web.api.db import Base
-from aim.sdk.utils import utc_now
+from aim._sdk.utils import utc_now
 
 
 class AppMixin(object):

@@ -4,8 +4,8 @@ from tqdm import tqdm
 
 from aimcore.cli.runs.utils import match_runs
 
-from aim.sdk.utils import backup_run, restore_run_backup
-from aim.sdk.repo import Repo
+from aim._sdk.utils import backup_run, restore_run_backup
+from aim._sdk.repo import Repo
 
 
 @click.group()

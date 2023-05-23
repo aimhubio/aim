@@ -1,7 +1,7 @@
 import numpy as np
 
-from aim.sdk.object import Object
-from aim.sdk.blob import BLOB
+from aim import Object
+from aim._sdk.blob import BLOB
 
 
 @Object.alias('aim.Distribution')

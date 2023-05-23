@@ -7,7 +7,7 @@ from logging.config import fileConfig
 from alembic import context
 from alembic.config import Config
 
-from aim.sdk.configs import AIM_ENV_MODE_KEY
+from aim._sdk.configs import AIM_ENV_MODE_KEY
 from aimcore.web.api.db import engine
 from aimcore.web.utils import get_db_url
 from aimcore.web.api.db import Base

@@ -9,8 +9,8 @@ from threading import Thread
 from typing import Union
 from weakref import WeakValueDictionary
 
-from aim.ext.system_info.configs import AIM_RESOURCE_METRIC_PREFIX
-from aim.ext.system_info.stat import Stat
+from aim._ext.system_info.configs import AIM_RESOURCE_METRIC_PREFIX
+from aim._ext.system_info.stat import Stat
 from aimcore.callbacks import Caller, event
 
 logger = logging.getLogger(__name__)

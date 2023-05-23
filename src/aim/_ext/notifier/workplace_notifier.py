@@ -1,7 +1,7 @@
 import requests
 from typing import Optional
 
-from aim.ext.notifier.base_notifier import BaseNotifier
+from aim._ext.notifier.base_notifier import BaseNotifier
 
 
 class WorkplaceNotifier(BaseNotifier):

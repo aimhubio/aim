@@ -6,8 +6,7 @@ from aimcore.web.api.runs.pydantic_models import QuerySyntaxErrorOut
 from aimcore.web.api.utils import APIRouter, collect_streamable_data, get_project_repo, \
     checked_query  # wrapper for fastapi.APIRouter
 
-from aim.sdk.container import Container
-from aim.sdk.sequence import Sequence
+from aim import Container, Sequence
 
 from aim._core.storage.treeutils import encode_tree
 

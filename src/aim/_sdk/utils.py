@@ -6,7 +6,7 @@ import pytz
 
 from typing import Union, Any, Tuple
 
-from aim.sdk.configs import get_aim_repo_name
+from aim._sdk.configs import get_aim_repo_name
 
 from logging import getLogger
 

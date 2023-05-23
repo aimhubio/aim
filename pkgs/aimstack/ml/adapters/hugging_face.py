@@ -3,9 +3,9 @@ from typing import Optional, List, Dict
 from difflib import SequenceMatcher
 from collections import defaultdict
 
-from aim.ext.system_info import DEFAULT_SYSTEM_TRACKING_INT
-from aim.sdk.num_utils import is_number
-from aim.sdk.run import Run
+from aim._ext.system_info import DEFAULT_SYSTEM_TRACKING_INT
+from aim._sdk.num_utils import is_number
+from aim._sdk.run import Run
 
 try:
     from transformers.trainer_callback import TrainerCallback

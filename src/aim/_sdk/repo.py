@@ -6,22 +6,22 @@ from collections import defaultdict
 from typing import Union, Type, List, Optional
 from weakref import WeakValueDictionary
 
-from aim.sdk.configs import get_aim_repo_name
-from aim.sdk.utils import clean_repo_path
+from aim._sdk.configs import get_aim_repo_name
+from aim._sdk.utils import clean_repo_path
 
-from aim.sdk import type_utils
-from aim.sdk.container import Container
-from aim.sdk.sequence import Sequence
-from aim.sdk.collections import ContainerCollection, SequenceCollection
-from aim.sdk.query_utils import construct_query_expression
-from aim.sdk.constants import KeyNames
-# from aim.sdk.exceptions import AmbiguousQueryTypeError, UnknownQueryTypeError
+from aim._sdk import type_utils
+from aim._sdk.container import Container
+from aim._sdk.sequence import Sequence
+from aim._sdk.collections import ContainerCollection, SequenceCollection
+from aim._sdk.query_utils import construct_query_expression
+from aim._sdk.constants import KeyNames
+# from aim._sdk.exceptions import AmbiguousQueryTypeError, UnknownQueryTypeError
 
-from aim.sdk.storage_engine import StorageEngine
-from aim.sdk.local_storage import LocalStorage
-from aim.sdk.remote_storage import RemoteStorage
+from aim._sdk.storage_engine import StorageEngine
+from aim._sdk.local_storage import LocalStorage
+from aim._sdk.remote_storage import RemoteStorage
 
-from aim.ext.system_info.resource_tracker import ResourceTracker
+from aim._ext.system_info.resource_tracker import ResourceTracker
 
 logger = logging.getLogger(__name__)
 

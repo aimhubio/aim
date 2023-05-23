@@ -8,8 +8,8 @@ on:
       - feature/**
     paths:
       - 'src/aimcore/cli/**'
-      - 'src/aim/ext/**'
-      - 'src/aim/sdk/**'
+      - 'src/aim/_ext/**'
+      - 'src/aim/_sdk/**'
       - 'src/aimcore/web/api/**'
       - 'src/aim/_core/storage/**'
       - 'src/aim/utils/**'

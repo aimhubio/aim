@@ -3,8 +3,8 @@ import os
 import subprocess
 
 from aimcore.web.configs import AIM_UI_MOUNTED_REPO_PATH
-from aim.sdk.configs import get_aim_repo_name
-from aim.sdk.utils import clean_repo_path
+from aim._sdk.configs import get_aim_repo_name
+from aim._sdk.utils import clean_repo_path
 
 
 class ShellCommandException(Exception):

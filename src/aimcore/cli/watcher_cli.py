@@ -7,12 +7,12 @@ from click import core
 from collections import OrderedDict
 from typing import Optional, Mapping
 
-from aim.ext.notifier import get_config
-from aim.ext.notifier.utils import has_watcher_config, set_default_config
-from aim.sdk.run_status_watcher import RunStatusWatcher
-from aim.sdk.repo import Repo
+from aim._ext.notifier import get_config
+from aim._ext.notifier.utils import has_watcher_config, set_default_config
+from aim._sdk.run_status_watcher import RunStatusWatcher
+from aim._sdk.repo import Repo
 
-from aim.ext.tracking import analytics
+from aim._ext.tracking import analytics
 
 core._verify_python3_env = lambda: None
 DEFAULT_MESSAGE_TEMPLATE = "❗️ Something wrong with Run '{run.hash}'. Please check. ❗️"

@@ -1,4 +1,4 @@
-from aim.sdk.object import Object
+from aim._sdk.object import Object
 import hub
 
 

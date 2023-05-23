@@ -1,12 +1,12 @@
 from typing import Optional, Union
 
-from aim.sdk.run import Run as SdkRun
+from aim._sdk.run import Run as SdkRun
 from aimstack.tensorboard_tracker.tracker import TensorboardTracker
 
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from aim.sdk.repo import Repo
+    from aim._sdk.repo import Repo
 
 
 class Run(SdkRun):

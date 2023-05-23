@@ -2,20 +2,20 @@ import logging
 
 from typing import TypeVar, Generic, Any, Optional, Dict, Union, Tuple, List, Set, Iterator, Callable
 
-from aim.sdk import type_utils
-from aim.sdk.utils import utc_timestamp
-from aim.sdk.interfaces.sequence import Sequence as ABCSequence
-from aim.sdk.query_utils import SequenceQueryProxy, ContainerQueryProxy
-from aim.sdk.constants import KeyNames
+from aim._sdk import type_utils
+from aim._sdk.utils import utc_timestamp
+from aim._sdk.interfaces.sequence import Sequence as ABCSequence
+from aim._sdk.query_utils import SequenceQueryProxy, ContainerQueryProxy
+from aim._sdk.constants import KeyNames
 
-from aim.sdk.context import Context, cached_context
-from aim.sdk.query import RestrictedPythonQuery
+from aim._sdk.context import Context, cached_context
+from aim._sdk.query import RestrictedPythonQuery
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from aim._core.storage.treeview import TreeView
-    from aim.sdk.container import Container
-    from aim.sdk.storage_engine import StorageEngine
+    from aim._sdk.container import Container
+    from aim._sdk.storage_engine import StorageEngine
 
 _ContextInfo = Union[Dict, Context, int]
 
@@ -275,7 +275,7 @@ class Sequence(Generic[ItemType], ABCSequence):
         if self._container is not None:
             container_alias_names = self._container.default_aliases
         else:
-            from aim.sdk.container import Container
+            from aim._sdk.container import Container
             container_alias_names = Container.default_aliases
 
         query_params = {p: proxy for p in alias_names}
