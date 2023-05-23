@@ -85,6 +85,7 @@ export async function loadPyodideInstance() {
     current: null,
     namespace: null,
     isLoading: true,
+    registeredPackages: [],
   });
   // @ts-ignore
   const pyodide = await window.loadPyodide({
@@ -110,12 +111,15 @@ export async function loadPyodideInstance() {
   pyodide.runPython(coreCode, { globals: namespace });
 
   const availablePackages = await fetchPackages();
+
   Object.keys(availablePackages).forEach((packageName) => {
     let packageData = availablePackages[packageName];
 
     let jsModule: Record<string, {}> = {};
     packageData.sequences.forEach((sequenceName: string) => {
-      jsModule[sequenceName] = {
+      let dataTypeName = sequenceName.slice(`${packageName}.`.length);
+
+      jsModule[dataTypeName] = {
         filter: (query: string) => {
           let val = pyodide.runPython(
             `query_filter('${sequenceName}', ${JSON.stringify(query)})`,
@@ -127,7 +131,9 @@ export async function loadPyodideInstance() {
     });
 
     packageData.containers.forEach((containerName: string) => {
-      jsModule[containerName] = {
+      let dataTypeName = containerName.slice(`${packageName}.`.length);
+
+      jsModule[dataTypeName] = {
         filter: (query: string) => {
           let val = pyodide.runPython(
             `query_filter('${containerName}', ${JSON.stringify(query)})`,
@@ -137,12 +143,15 @@ export async function loadPyodideInstance() {
         },
       };
     });
+
     pyodide.registerJsModule(packageName, jsModule);
   });
+
   pyodideEngine.setPyodide({
     current: pyodide,
     namespace,
     isLoading: false,
+    registeredPackages: Object.keys(availablePackages),
   });
 }
 
