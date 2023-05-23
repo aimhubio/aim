@@ -145,3 +145,19 @@ export type GetProjectContributionsResult = {
    */
   activity_map: Record<string, number>;
 };
+
+export type PackagesListType = Record<
+  string,
+  {
+    /**
+     * The sequences list of package
+     * i.e. ['asp.Metric', 'asp.Distribution', 'asp.Image', 'asp.Figure', 'asp.Audio', 'asp.Figure3D']
+     */
+    sequences: string[];
+    /**
+     * The containers list of package
+     * i.e. ['asp.Run']
+     */
+    containers: string[];
+  }
+>;

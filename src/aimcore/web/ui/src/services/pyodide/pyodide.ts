@@ -113,7 +113,7 @@ export async function loadPyodideInstance() {
   Object.keys(availablePackages).forEach((packageName) => {
     let packageData = availablePackages[packageName];
 
-    let jsModule: any = {};
+    let jsModule: Record<string, {}> = {};
     packageData.sequences.forEach((sequenceName: string) => {
       jsModule[sequenceName] = {
         filter: (query: string) => {

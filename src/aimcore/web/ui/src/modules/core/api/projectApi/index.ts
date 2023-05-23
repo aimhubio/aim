@@ -7,6 +7,7 @@ import {
   GetParamsQueryOptions,
   GetParamsResult,
   GetProjectContributionsResult,
+  PackagesListType,
 } from './types.d';
 
 const api = new NetworkService(`${getAPIHost()}${ENDPOINTS.PROJECTS.BASE}`);
@@ -38,7 +39,7 @@ async function getProjectContributions(): Promise<GetProjectContributionsResult>
  * function fetchPackages - get project packages
  * This call is used to fetch project packages data
  */
-async function fetchPackages(includeTypes = true): Promise<any> {
+async function fetchPackages(includeTypes = true): Promise<PackagesListType> {
   return (
     await api.makeAPIGetRequest(
       `${ENDPOINTS.PROJECTS.GET_PACKAGES}?include_types=${includeTypes}`,
