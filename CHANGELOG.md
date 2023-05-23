@@ -15,6 +15,8 @@
 - Extend `aim.ext.tensorboard_tracker.run.Run` to allow stdout logging and system stats and parameter logging (alansaul)
 - Switch to patched version of official pynvml(mihran113)
 - Discover and register aimstack directory sub-modules as Aim packages (alberttorosyan)
+- Aim core & standard package separation (alberttorosyan)
+- Storage and tracking server unification (mihran113)
 
 ### Fixes
 
