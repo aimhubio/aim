@@ -10,6 +10,7 @@ const ENDPOINTS = {
     GET: '',
     GET_ACTIVITY: 'activity',
     GET_PARAMS: 'params',
+    GET_PACKAGES: 'packages',
   },
 
   RUNS: {

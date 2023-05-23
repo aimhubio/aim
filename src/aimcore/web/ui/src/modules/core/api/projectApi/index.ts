@@ -34,5 +34,17 @@ async function getProjectContributions(): Promise<GetProjectContributionsResult>
   return (await api.makeAPIGetRequest(ENDPOINTS.PROJECTS.GET_ACTIVITY)).body;
 }
 
-export { getParams, getProjectContributions };
+/**
+ * function fetchPackages - get project packages
+ * This call is used to fetch project packages data
+ */
+async function fetchPackages(includeTypes = true): Promise<any> {
+  return (
+    await api.makeAPIGetRequest(
+      `${ENDPOINTS.PROJECTS.GET_PACKAGES}/include_types=${includeTypes}`,
+    )
+  ).body;
+}
+
+export { getParams, getProjectContributions, fetchPackages };
 export * from './types.d';
