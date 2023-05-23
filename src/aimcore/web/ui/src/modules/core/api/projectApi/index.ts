@@ -41,7 +41,7 @@ async function getProjectContributions(): Promise<GetProjectContributionsResult>
 async function fetchPackages(includeTypes = true): Promise<any> {
   return (
     await api.makeAPIGetRequest(
-      `${ENDPOINTS.PROJECTS.GET_PACKAGES}/include_types=${includeTypes}`,
+      `${ENDPOINTS.PROJECTS.GET_PACKAGES}?include_types=${includeTypes}`,
     )
   ).body;
 }

@@ -1,5 +1,7 @@
 import { getBasePath } from 'config/config';
 
+import { fetchPackages } from 'modules/core/api/projectApi';
+
 import { search } from 'pages/Board/search';
 
 import { getItem, setItem } from 'utils/storage';
@@ -105,22 +107,38 @@ export async function loadPyodideInstance() {
   const namespace = pyodide.toPy({});
   const coreFile = await fetch(`${getBasePath()}/static-files/aim_ui_core.py`);
   const coreCode = await coreFile.text();
-
   pyodide.runPython(coreCode, { globals: namespace });
 
-  let ml = {
-    Metric: {
-      filter: (query: string) => {
-        let val = pyodide.runPython(
-          `query_filter('Metric', ${JSON.stringify(query)})`,
-          { globals: namespace },
-        );
-        return val;
-      },
-    },
-  };
-  pyodide.registerJsModule('ml', ml);
+  const availablePackages = await fetchPackages();
+  Object.keys(availablePackages).forEach((packageName) => {
+    let packageData = availablePackages[packageName];
 
+    let jsModule: any = {};
+    packageData.sequences.forEach((sequenceName: string) => {
+      jsModule[sequenceName] = {
+        filter: (query: string) => {
+          let val = pyodide.runPython(
+            `query_filter('${sequenceName}', ${JSON.stringify(query)})`,
+            { globals: namespace },
+          );
+          return val;
+        },
+      };
+    });
+
+    packageData.containers.forEach((containerName: string) => {
+      jsModule[containerName] = {
+        filter: (query: string) => {
+          let val = pyodide.runPython(
+            `query_filter('${containerName}', ${JSON.stringify(query)})`,
+            { globals: namespace },
+          );
+          return val;
+        },
+      };
+    });
+    pyodide.registerJsModule(packageName, jsModule);
+  });
   pyodideEngine.setPyodide({
     current: pyodide,
     namespace,
