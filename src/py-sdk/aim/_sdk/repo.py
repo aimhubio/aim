@@ -137,6 +137,39 @@ class Repo(object):
     def registered_sequence_types(self) -> List[str]:
         return list(Sequence.registry.keys())
 
+    def get_container(self, hash_) -> Container:
+        return Container(hash_, repo=self, mode='READONLY')
+
+    def containers(self,
+                   query_: Optional[str] = None,
+                   type_: Union[str, Type[Container]] = Container,
+                   **kwargs) -> ContainerCollection:
+        q = construct_query_expression('container', query_, **kwargs)
+
+        if isinstance(type_, str):
+            cont_types = Container.registry.get(type_)
+            if len(cont_types) > 1:
+                raise ValueError(f'Multiple matching container types for type name \'{type_}\'. '
+                                 f'Please include container package name.')
+            type_ = cont_types[0]
+
+        return self._select(type_).filter(q) if q else self._select(type_)
+
+    def sequences(self,
+                  query_: Optional[str] = None,
+                  type_: Union[str, Type[Sequence]] = Sequence,
+                  **kwargs) -> SequenceCollection:
+        q = construct_query_expression('sequence', query_, **kwargs)
+
+        if isinstance(type_, str):
+            seq_types = Sequence.registry.get(type_)
+            if len(seq_types) > 1:
+                raise ValueError(f'Multiple matching sequence types for type name \'{type_}\'. '
+                                 f'Please include sequence package name.')
+            type_ = seq_types[0]
+
+        return self._select(type_).filter(q) if q else self._select(type_)
+
     def _select(self, type_: Type = None, **kwargs):
         if type_ is None:
             assert len(kwargs) == 1
@@ -170,33 +203,3 @@ class Repo(object):
                 'required_typename': type_.get_full_typename(),
             })
             return SequenceCollection[type_](query_context=query_context)
-
-    def containers(self,
-                   query_: Optional[str] = None,
-                   type_: Union[str, Type[Container]] = Container,
-                   **kwargs) -> ContainerCollection:
-        q = construct_query_expression('container', query_, **kwargs)
-
-        if isinstance(type_, str):
-            cont_types = Container.registry.get(type_)
-            if len(cont_types) > 1:
-                raise ValueError(f'Multiple matching container types for type name \'{type_}\'. '
-                                 f'Please include container package name.')
-            type_ = cont_types[0]
-
-        return self._select(type_).filter(q) if q else self._select(type_)
-
-    def sequences(self,
-                  query_: Optional[str] = None,
-                  type_: Union[str, Type[Sequence]] = Sequence,
-                  **kwargs) -> SequenceCollection:
-        q = construct_query_expression('sequence', query_, **kwargs)
-
-        if isinstance(type_, str):
-            seq_types = Sequence.registry.get(type_)
-            if len(seq_types) > 1:
-                raise ValueError(f'Multiple matching sequence types for type name \'{type_}\'. '
-                                 f'Please include sequence package name.')
-            type_ = seq_types[0]
-
-        return self._select(type_).filter(q) if q else self._select(type_)
