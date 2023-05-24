@@ -7,29 +7,28 @@ import { getAudiosDefaultConfig } from './config';
 
 const defaultConfig = getAudiosDefaultConfig();
 
-const AudiosExplorer = renderer(
-  {
-    name: 'Audios Explorer',
-    sequenceName: SequenceTypesEnum.Audios,
-    basePath: 'audios',
-    persist: true,
-    adapter: {
-      objectDepth: AimObjectDepths.Index,
-    },
-    groupings: defaultConfig.groupings,
-    visualizations: {
-      vis1: {
-        component: defaultConfig.Visualizer,
-        controls: defaultConfig.controls,
-        box: {
-          ...defaultConfig.box,
-          component: AudioBox,
-        },
+export const audiosExplorerConfig = {
+  name: 'Audios Explorer',
+  sequenceName: SequenceTypesEnum.Audios,
+  basePath: 'audios',
+  persist: true,
+  adapter: {
+    objectDepth: AimObjectDepths.Index,
+  },
+  groupings: defaultConfig.groupings,
+  visualizations: {
+    vis1: {
+      component: defaultConfig.Visualizer,
+      controls: defaultConfig.controls,
+      box: {
+        ...defaultConfig.box,
+        component: AudioBox,
       },
     },
-    getStaticContent: defaultConfig.getStaticContent,
   },
-  __DEV__,
-);
+  getStaticContent: defaultConfig.getStaticContent,
+};
+
+const AudiosExplorer = renderer(audiosExplorerConfig, __DEV__);
 
 export default AudiosExplorer;

@@ -41,7 +41,7 @@ const statisticsInitialMap: Record<string, IProjectStatistic> = {
     icon: 'images',
     count: 0,
     iconBgColor: '#F17922',
-    navLink: routes.IMAGE_EXPLORE.path,
+    navLink: routes.IMAGES_EXPLORER.path,
   },
   [SequenceTypesEnum.Audios]: {
     label: 'Audios',

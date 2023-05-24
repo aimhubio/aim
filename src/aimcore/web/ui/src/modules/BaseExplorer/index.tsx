@@ -90,9 +90,19 @@ function createExplorer(
     const Container: React.FunctionComponent<ExplorerProps<typeof engine>> =
       rootContainer as React.FunctionComponent<ExplorerProps<typeof engine>>;
 
-    return () => (
-      <Container configuration={hydration} engineInstance={engine} />
-    );
+    function Renderable() {
+      return <Container configuration={hydration} engineInstance={engine} />;
+    }
+
+    Renderable.getState = function () {
+      return engine.useStore.getState();
+    };
+
+    Renderable.setState = function (state: Record<string, any>) {
+      return engine.useStore.setState({ ...state });
+    };
+
+    return Renderable;
   }
 
   return _rendererImpl;

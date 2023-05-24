@@ -16,7 +16,9 @@ const SplitPaneItem = React.forwardRef(function SplitPaneItem(
   const { resizing } = React.useContext(SplitPaneContext);
 
   const childrenElement = React.useMemo(() => {
-    return typeof children === 'function' ? children(resizing) : children;
+    return typeof children === 'function'
+      ? children(resizing)
+      : children || null;
   }, [children, resizing]);
   return (
     <div

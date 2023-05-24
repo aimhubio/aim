@@ -86,18 +86,12 @@ function VisualizationTooltip(props: IVisualizationTooltipProps) {
     if (containerNode) {
       const onScrollEnd = _.debounce(
         () => setOpenPopover(!!elementRect && open),
-        300,
-      );
-      const onScroll = _.debounce(
-        () => {
-          setOpenPopover(false);
-        },
         200,
-        {
-          leading: true,
-          trailing: false,
-        },
       );
+      const onScroll = _.debounce(() => setOpenPopover(false), 100, {
+        leading: true,
+        trailing: false,
+      });
 
       containerNode.addEventListener('scroll', onScroll);
       containerNode.addEventListener('scroll', onScrollEnd);

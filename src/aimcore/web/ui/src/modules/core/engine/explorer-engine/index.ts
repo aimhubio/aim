@@ -146,6 +146,7 @@ function getVisualizationsEngine(
       setState: set,
       getState: get,
     },
+    config.persist,
   );
 
   state['visualizations'] = visualizations.state.visualizations;
@@ -186,6 +187,26 @@ function getNotificationsEngine(
   return notifications.engine;
 }
 
+function getCustomStatesEngine(
+  config: ExplorerEngineConfiguration,
+  set: any,
+  get: any,
+) {
+  const customStates = createCustomStatesEngine(
+    config,
+    {
+      setState: set,
+      getState: get,
+    },
+    config.persist,
+  );
+
+  return {
+    initialState: customStates.state.customStates,
+    engine: customStates.engine,
+  };
+}
+
 function createEngine<TObject = any>(
   config: ExplorerEngineConfiguration,
   basePath: string,
@@ -201,7 +222,7 @@ function createEngine<TObject = any>(
 
   let visualizations: any;
 
-  let customStatesEngine: CustomStatesEngine;
+  let customStates: CustomStatesEngine;
   let events: IEventSystemEngine['engine'];
   let blobURI: IBlobURISystemEngine['engine'];
   let query: any;
@@ -217,23 +238,16 @@ function createEngine<TObject = any>(
     /**
      * Custom states
      */
-    const customStates = createCustomStatesEngine(
-      {
-        setState: set,
-        getState: get,
-      },
-      config.states,
-    );
+    const {
+      initialState: customStatesInitialState,
+      engine: customStatesEngine,
+    } = getCustomStatesEngine(config, set, get);
 
     initialState = {
       ...initialState,
-      ...customStates.state.initialState,
+      ...customStatesInitialState,
     };
-    // @ts-ignore
-    customStatesEngine = {
-      ...customStates.engine,
-      initialize: customStates.initialize,
-    };
+    customStates = customStatesEngine;
 
     /**
      * Explorer Additional, includes query and groupings
@@ -313,7 +327,7 @@ function createEngine<TObject = any>(
     const finalizeGrouping = groupings.initialize();
     const finalizePipeline = pipeline.initialize();
     const finalizeVisualizations = visualizations.initialize(name);
-    const finalizeCustomStates = customStatesEngine.initialize();
+    const finalizeCustomStates = customStates.initialize();
 
     // subscribe to history
     instructions
@@ -331,6 +345,14 @@ function createEngine<TObject = any>(
               true,
             );
           }
+        } else if (config.initialState?.query) {
+          pipeline.search(
+            getQueryParamsFromState(
+              config.initialState.query,
+              config.sequenceName,
+            ),
+            true,
+          );
         }
       })
       // eslint-disable-next-line no-console
@@ -387,7 +409,7 @@ function createEngine<TObject = any>(
     instructions,
     visualizations,
     // @ts-ignore
-    ...customStatesEngine,
+    ...customStates,
     query,
     groupings,
     // @ts-ignore

@@ -747,7 +747,6 @@ class Link(Component):
 
 # AimHighLevelComponents
 
-
 class RunMessages(Component):
     def __init__(self, run_hash, key=None, block=None):
         component_type = "RunMessages"
@@ -780,6 +779,19 @@ class RunNotes(Component):
 
         self.render()
 
+class Explorer(Component):
+    def __init__(self, name, query='', key=None, block=None):
+        component_type = "Explorer"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type, block)
+
+        self.data = name
+
+        self.options = {
+            "query": query
+        }
+
+        self.render()
 
 # InputComponents
 
@@ -1379,6 +1391,10 @@ class UI:
     def run_notes(self, *args, **kwargs):
         run_notes = RunNotes(*args, **kwargs, block=self.block_context)
         return run_notes
+
+    def explorer(self, *args, **kwargs):
+        explorer = Explorer(*args, **kwargs, block=self.block_context)
+        return explorer
 
     # Super components
     def board(self, *args, **kwargs):

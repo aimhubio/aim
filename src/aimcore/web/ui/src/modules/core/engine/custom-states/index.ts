@@ -2,12 +2,12 @@ import { isEmpty, omit } from 'lodash-es';
 
 import {
   createStateSlices,
-  CustomStates,
   PreCreatedStateSlice,
 } from 'modules/core/utils/store';
 import getUrlSearchParam from 'modules/core/utils/getUrlSearchParam';
 import browserHistory from 'modules/core/services/browserHistory';
 import setStatePersistence from 'modules/core/utils/setStatePersistence';
+import { ExplorerEngineConfiguration } from 'modules/BaseExplorer/types';
 
 import {
   PersistenceTypesEnum,
@@ -16,14 +16,18 @@ import {
 } from '../types';
 
 export type CustomStatesEngine = {
-  [key: string]: Omit<PreCreatedStateSlice, 'methods'> & StoreSliceMethods;
-} & {
+  // @ts-ignore
   initialize: () => () => void;
+  [key: string]: Omit<PreCreatedStateSlice, 'methods'> & StoreSliceMethods;
 };
 
-function createCustomStatesEngine(store: any, config: CustomStates = {}) {
+function createCustomStatesEngine(
+  config: ExplorerEngineConfiguration,
+  store: any,
+  persist?: boolean, // TODO later use StatePersistOption
+) {
   const customStates: Record<string, PreCreatedStateSlice> = createStateSlices(
-    config || {},
+    config.states || {},
   );
 
   const engine: Record<
@@ -39,7 +43,7 @@ function createCustomStatesEngine(store: any, config: CustomStates = {}) {
     initialState[name] = state.initialState;
     const originalMethods = state.methods(store.setState, store.getState);
     const persistenceKey = ['cs', name].join('-');
-    const persistenceType = config[name].persist;
+    const persistenceType = persist ? config.states?.[name].persist : undefined;
     const overrideMethods = setStatePersistence(
       persistenceKey,
       persistenceType as PersistenceTypesEnum,
@@ -56,7 +60,7 @@ function createCustomStatesEngine(store: any, config: CustomStates = {}) {
         persistenceKey,
         originalMethods.update,
         originalMethods.reset,
-        config[name].persist,
+        persistenceType,
       ),
     );
   });
@@ -103,27 +107,30 @@ function createCustomStatesEngine(store: any, config: CustomStates = {}) {
     };
   }
 
-  const initialize = () => {
-    const finalizers: Function[] = [];
-    // call initializers
-    initializers.forEach((init) => {
-      const finalizer = init();
-      finalizers.push(finalizer);
-    });
-    // call finalizers
-    return () => {
-      finalizers.forEach((finalizer) => {
-        finalizer();
+  function initialize() {
+    if (persist) {
+      const finalizers: Function[] = [];
+      // call initializers
+      initializers.forEach((init) => {
+        const finalizer = init();
+        finalizers.push(finalizer);
       });
-    };
-  };
+      // call finalizers
+      return () => {
+        finalizers.forEach((f) => f());
+      };
+    }
+    return () => {};
+  }
 
   return {
     state: {
-      initialState,
+      customStates: initialState,
     },
-    engine,
-    initialize,
+    engine: {
+      initialize,
+      ...engine,
+    } as CustomStatesEngine,
   };
 }
 
