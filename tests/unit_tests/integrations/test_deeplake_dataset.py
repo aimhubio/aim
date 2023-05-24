@@ -9,7 +9,7 @@ class TestDeeplakeDatasetIntegration(TestBase):
     def test_dataset_as_run_param(self):
         import deeplake
 
-        from aim.sdk.objects.plugins.deeplake_dataset import DeeplakeDataset
+        from aimstack.ml.models.deeplake_dataset import DeeplakeDataset
         from aim.sdk import Run
 
         # create dataset object

@@ -1,0 +1,1 @@
+from aim._core.storage.types import BLOB  # noqa

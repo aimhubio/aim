@@ -9,7 +9,7 @@ class TestHubDatasetIntegration(TestBase):
     def test_dataset_as_run_param(self):
         import hub
 
-        from aim.sdk.objects.plugins.hub_dataset import HubDataset
+        from aimstack.ml.models.hub_dataset import HubDataset
         from aim.sdk import Run
 
         # create dataset object
