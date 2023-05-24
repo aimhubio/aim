@@ -138,3 +138,31 @@ export function filterSingleRunMetricsData(run: IRunBatch) {
     }),
   };
 }
+
+export function filterMetricsValues(data: {
+  values: number[];
+  steps: number[];
+}) {
+  if (!data?.values?.length || !data?.steps?.length) {
+    return {
+      values: [],
+      steps: [],
+    };
+  }
+
+  const invalidIndices = {
+    values: getInvalidIndices(data.values),
+    steps: getInvalidIndices(data.steps),
+  };
+
+  return {
+    values: getFilteredMetricValues({
+      data: data.values,
+      invalidIndicesArray: [invalidIndices.steps, invalidIndices.values],
+    }),
+    steps: getFilteredMetricValues({
+      data: data.steps,
+      invalidIndicesArray: [invalidIndices.steps, invalidIndices.values],
+    }),
+  };
+}
