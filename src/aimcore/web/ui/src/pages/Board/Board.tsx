@@ -42,7 +42,12 @@ function Board({
   onNotificationDelete,
   saveBoard,
 }: any): React.FunctionComponentElement<React.ReactNode> {
-  const { isLoading: pyodideIsLoading, pyodide, namespace } = usePyodide();
+  const {
+    isLoading: pyodideIsLoading,
+    pyodide,
+    namespace,
+    registeredPackages,
+  } = usePyodide();
   const editorRef = React.useRef<any>(null);
   const vizContainer = React.useRef<any>(null);
   const boxContainer = React.useRef<any>(null);
@@ -80,7 +85,7 @@ function Board({
         packagesListProxy.destroy();
 
         for await (const lib of packagesList) {
-          if (!['js', 'ml'].includes(lib)) {
+          if (!registeredPackages.concat(['js']).includes(lib)) {
             await pyodide?.loadPackage('micropip');
             try {
               const micropip = pyodide?.pyimport('micropip');
@@ -111,7 +116,7 @@ function Board({
         console.log(ex);
       }
     }
-  }, [pyodide, pyodideIsLoading, editorValue, namespace]);
+  }, [pyodide, pyodideIsLoading, editorValue, namespace, registeredPackages]);
 
   const runParsedCode = React.useCallback(async () => {
     if (pyodide !== null && pyodideIsLoading === false) {
