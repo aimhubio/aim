@@ -4,8 +4,8 @@ from fastapi import HTTPException
 from typing import Optional, Iterable, Dict
 
 from aimcore.web.api.runs.pydantic_models import QuerySyntaxErrorOut
-from aimcore.web.api.utils import APIRouter, collect_streamable_data, get_project_repo, \
-    checked_query  # wrapper for fastapi.APIRouter
+from aimcore.web.api.utils import checked_query, collect_streamable_data, get_project_repo, \
+      APIRouter  # wrapper for fastapi.APIRouter
 
 from aim import Container, Sequence
 
