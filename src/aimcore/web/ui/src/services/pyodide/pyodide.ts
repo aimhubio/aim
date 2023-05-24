@@ -31,6 +31,23 @@ window.updateLayout = (elements: any, boardId: undefined | string) => {
     if (item.element === 'block') {
       blocks[boardId].push(item);
     } else {
+      if (item.parent_block?.type === 'table_cell') {
+        let tabelCell = null;
+        for (let elem of blocks[boardId]) {
+          if (elem.block_context.id === item.parent_block.id) {
+            tabelCell = elem;
+          }
+        }
+
+        if (tabelCell) {
+          for (let elem of layout) {
+            if (elem.key === tabelCell.options.table) {
+              elem.data[tabelCell.options.column][tabelCell.options.row] = item;
+            }
+          }
+        }
+      }
+
       components[boardId].push(item);
     }
   }
