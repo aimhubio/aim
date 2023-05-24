@@ -648,7 +648,7 @@ class DataFrame(Component):
 
 
 class Table(Component):
-    def __init__(self, data, key=None, block=None):
+    def __init__(self, data, renderer=None, key=None, block=None):
         component_type = "Table"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
@@ -660,8 +660,26 @@ class Table(Component):
             'on_row_focus': self.on_row_focus
         }
         self.options = {
-            "data": data
+            "data": data,
+            "with_renderer": renderer is not None
         }
+
+        if renderer:
+            for col in renderer:
+                cell_renderer = renderer[col]
+                for i, cell_content in enumerate(data[col]):
+                    cell = Block('table_cell', block=block)
+
+                    cell.options = {
+                        "table": component_key,
+                        "column": col,
+                        "row": i
+                    }
+
+                    cell.render()
+
+                    with cell:
+                        cell_renderer(cell_content)
 
         self.render()
 

@@ -42,7 +42,12 @@ function Board({
   onNotificationDelete,
   saveBoard,
 }: any): React.FunctionComponentElement<React.ReactNode> {
-  const { isLoading: pyodideIsLoading, pyodide, namespace } = usePyodide();
+  const {
+    isLoading: pyodideIsLoading,
+    pyodide,
+    namespace,
+    registeredPackages,
+  } = usePyodide();
   const editorRef = React.useRef<any>(null);
   const vizContainer = React.useRef<HTMLDivElement>(
     document.createElement('div'),
@@ -84,7 +89,7 @@ function Board({
         packagesListProxy.destroy();
 
         for await (const lib of packagesList) {
-          if (!['js', 'ml'].includes(lib)) {
+          if (!registeredPackages.concat(['js']).includes(lib)) {
             await pyodide?.loadPackage('micropip');
             try {
               const micropip = pyodide?.pyimport('micropip');
@@ -115,7 +120,7 @@ function Board({
         console.log(ex);
       }
     }
-  }, [pyodide, pyodideIsLoading, editorValue, namespace]);
+  }, [pyodide, pyodideIsLoading, editorValue, namespace, registeredPackages]);
 
   const runParsedCode = React.useCallback(async () => {
     if (pyodide !== null && pyodideIsLoading === false) {
@@ -290,6 +295,7 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
                     height='100%'
                     value={editorRef.current?.getValue() ?? data.code}
                     onMount={handleEditorMount}
+                    onChange={(v) => setEditorValue(v!)}
                     loading={<span />}
                     options={{
                       tabSize: 4,
@@ -468,6 +474,34 @@ function renderTree(tree: any, elements: any) {
         <FormVizElement key={element.type + i} {...element}>
           {renderTree(tree, tree[element.id].elements)}
         </FormVizElement>
+      );
+    }
+
+    if (element.type === 'table_cell') {
+      return null;
+    }
+
+    if (element.type === 'Table' && element.options.with_renderer) {
+      const vizData: Record<string, any[]> = {};
+      for (let col in element.data) {
+        vizData[col] = [];
+        for (let i = 0; i < element.data[col].length; i++) {
+          if (element.data[col][i]?.type) {
+            vizData[col][i] = <GridCell key={i} viz={element.data[col][i]} />;
+          } else {
+            vizData[col][i] = element.data[col][i];
+          }
+        }
+      }
+
+      return (
+        <GridCell
+          key={i}
+          viz={{
+            ...element,
+            data: vizData,
+          }}
+        />
       );
     }
 

@@ -23,6 +23,7 @@ type Pyodide = {
   isLoading: null | boolean;
   isRunning: null | boolean;
   namespace: null | any;
+  registeredPackages: string[];
 };
 
 type Layout = {
@@ -51,6 +52,10 @@ type Selectors = {
   pyodideIsLoadingSelector: SelectorCreator<State, Pyodide['isLoading']>;
   pyodideIsRunningSelector: SelectorCreator<State, Pyodide['isRunning']>;
   pyodideNamespaceSelector: SelectorCreator<State, Pyodide['namespace']>;
+  pyodideRegisteredPackagesSelector: SelectorCreator<
+    State,
+    Pyodide['registeredPackages']
+  >;
   // Layout state actions
   layoutSelector: SelectorCreator<State, Layout>;
   layoutBlocksSelector: SelectorCreator<State, Layout['blocks']>;
@@ -64,6 +69,7 @@ type GetMethods = {
   getPyodideIsLoading: () => Pyodide['isLoading'];
   getPyodideIsRunning: () => Pyodide['isRunning'];
   getPyodideNamespace: () => Pyodide['namespace'];
+  getPyodideRegisteredPackages: () => Pyodide['registeredPackages'];
   getLayout: () => Layout;
   getLayoutBlocks: () => Layout['blocks'];
   getLayoutComponents: () => Layout['components'];
@@ -78,6 +84,9 @@ type SetMethods = {
   setPyodideIsLoading: (isLoading: Pyodide['isLoading']) => void;
   setPyodideIsRunning: (isRunning: Pyodide['isRunning']) => void;
   setPyodideNamespace: (namespace: Pyodide['namespace']) => void;
+  setPyodideRegisteredPackages: (
+    registeredPackages: Pyodide['registeredPackages'],
+  ) => void;
   // Layout state actions
   setLayout: (layout: Partial<Layout>) => void;
   setLayoutBlocks: (blocks: Layout['blocks']) => void;
@@ -92,6 +101,7 @@ const initialState: State = {
     isLoading: null,
     isRunning: null,
     namespace: null,
+    registeredPackages: [],
   },
   layout: {
     blocks: {},
@@ -186,6 +196,8 @@ function generateSelectors(): Selectors {
     pyodideIsLoadingSelector: (state) => state.pyodide.isLoading,
     pyodideIsRunningSelector: (state) => state.pyodide.isRunning,
     pyodideNamespaceSelector: (state) => state.pyodide.namespace,
+    pyodideRegisteredPackagesSelector: (state) =>
+      state.pyodide.registeredPackages,
     // Layout state actions
     layoutSelector: (state) => state.layout,
     layoutBlocksSelector: (state) => state.layout.blocks,
@@ -201,6 +213,7 @@ function generateGetMethods(get: Get<State>): GetMethods {
     getPyodideIsLoading: () => get().pyodide.isLoading,
     getPyodideIsRunning: () => get().pyodide.isRunning,
     getPyodideNamespace: () => get().pyodide.namespace,
+    getPyodideRegisteredPackages: () => get().pyodide.registeredPackages,
     getLayout: () => get().layout,
     getLayoutBlocks: () => get().layout.blocks,
     getLayoutComponents: () => get().layout.components,
@@ -253,6 +266,16 @@ function generateSetMethods(set: Set<State>): SetMethods {
       set(
         produce((draft_state: Draft<State>) => {
           draft_state.pyodide.namespace = namespace;
+        }),
+        false,
+      );
+    },
+    setPyodideRegisteredPackages: (
+      registeredPackages: Pyodide['registeredPackages'],
+    ) => {
+      set(
+        produce((draft_state: Draft<State>) => {
+          draft_state.pyodide.registeredPackages = registeredPackages;
         }),
         false,
       );

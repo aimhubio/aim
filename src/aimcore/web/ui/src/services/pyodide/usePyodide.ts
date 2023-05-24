@@ -7,6 +7,9 @@ function usePyodide() {
   const namespace = usePyodideEngine(pyodideEngine.pyodideNamespaceSelector);
   const pyodide = usePyodideEngine(pyodideEngine.pyodideCurrentSelector);
   const isLoading = usePyodideEngine(pyodideEngine.pyodideIsLoadingSelector);
+  const registeredPackages = usePyodideEngine(
+    pyodideEngine.pyodideRegisteredPackagesSelector,
+  );
 
   const loadPyodide = React.useCallback(() => {
     if (pyodide !== null) {
@@ -25,6 +28,7 @@ function usePyodide() {
   return {
     namespace,
     isLoading,
+    registeredPackages,
     pyodide,
     loadPyodide,
   };

@@ -1,5 +1,7 @@
 import { getBasePath } from 'config/config';
 
+import { fetchPackages } from 'modules/core/api/projectApi';
+
 import { search } from 'pages/Board/search';
 
 import { getItem, setItem } from 'utils/storage';
@@ -29,6 +31,23 @@ window.updateLayout = (elements: any, boardId: undefined | string) => {
     if (item.element === 'block') {
       blocks[boardId].push(item);
     } else {
+      if (item.parent_block?.type === 'table_cell') {
+        let tabelCell = null;
+        for (let elem of blocks[boardId]) {
+          if (elem.block_context.id === item.parent_block.id) {
+            tabelCell = elem;
+          }
+        }
+
+        if (tabelCell) {
+          for (let elem of layout) {
+            if (elem.key === tabelCell.options.table) {
+              elem.data[tabelCell.options.column][tabelCell.options.row] = item;
+            }
+          }
+        }
+      }
+
       components[boardId].push(item);
     }
   }
@@ -83,6 +102,7 @@ export async function loadPyodideInstance() {
     current: null,
     namespace: null,
     isLoading: true,
+    registeredPackages: [],
   });
   // @ts-ignore
   const pyodide = await window.loadPyodide({
@@ -105,26 +125,50 @@ export async function loadPyodideInstance() {
   const namespace = pyodide.toPy({});
   const coreFile = await fetch(`${getBasePath()}/static-files/aim_ui_core.py`);
   const coreCode = await coreFile.text();
-
   pyodide.runPython(coreCode, { globals: namespace });
 
-  let ml = {
-    Metric: {
-      filter: (query: string) => {
-        let val = pyodide.runPython(
-          `query_filter('Metric', ${JSON.stringify(query)})`,
-          { globals: namespace },
-        );
-        return val;
-      },
-    },
-  };
-  pyodide.registerJsModule('ml', ml);
+  const availablePackages = await fetchPackages();
+
+  Object.keys(availablePackages).forEach((packageName) => {
+    let packageData = availablePackages[packageName];
+
+    let jsModule: Record<string, {}> = {};
+    packageData.sequences.forEach((sequenceName: string) => {
+      let dataTypeName = sequenceName.slice(`${packageName}.`.length);
+
+      jsModule[dataTypeName] = {
+        filter: (query: string) => {
+          let val = pyodide.runPython(
+            `query_filter('${sequenceName}', ${JSON.stringify(query)})`,
+            { globals: namespace },
+          );
+          return val;
+        },
+      };
+    });
+
+    packageData.containers.forEach((containerName: string) => {
+      let dataTypeName = containerName.slice(`${packageName}.`.length);
+
+      jsModule[dataTypeName] = {
+        filter: (query: string) => {
+          let val = pyodide.runPython(
+            `query_filter('${containerName}', ${JSON.stringify(query)})`,
+            { globals: namespace },
+          );
+          return val;
+        },
+      };
+    });
+
+    pyodide.registerJsModule(packageName, jsModule);
+  });
 
   pyodideEngine.setPyodide({
     current: pyodide,
     namespace,
     isLoading: false,
+    registeredPackages: Object.keys(availablePackages),
   });
 }
 
