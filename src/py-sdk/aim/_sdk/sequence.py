@@ -208,8 +208,8 @@ class Sequence(Generic[ItemType], ABCSequence):
 
                 self._meta_tree[KeyNames.CONTEXTS, self._ctx_idx] = self._context.to_dict()
                 self._container_tree[KeyNames.CONTEXTS, self._ctx_idx] = self._context.to_dict()
-                self._meta_tree[KeyNames.SEQUENCES, self.get_typename()] = 1
-                # self._container_tree[KeyNames.SEQUENCES, self.get_typename()] = 1
+                for typename in self.get_full_typename().split('->'):
+                    self._meta_tree[KeyNames.SEQUENCES, typename, self._ctx_idx, self.name] = 1
 
                 self._tree['first_value'] = value
                 self._tree['last_value'] = value

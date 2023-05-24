@@ -3,7 +3,7 @@ import os
 import shutil
 
 from collections import defaultdict
-from typing import Union, Type, List, Optional
+from typing import Union, Type, List, Dict, Optional
 from weakref import WeakValueDictionary
 
 from aim._sdk.configs import get_aim_repo_name
@@ -126,10 +126,30 @@ class Repo(object):
         return encryption_key
 
     def tracked_container_types(self) -> List[str]:
-        return list(self._meta_tree.subtree('containers').keys())
+        return list(self._meta_tree.subtree(KeyNames.CONTAINERS).keys())
 
     def tracked_sequence_types(self) -> List[str]:
-        return list(self._meta_tree.subtree('sequences').keys())
+        return list(self._meta_tree.subtree(KeyNames.SEQUENCES).keys())
+
+    def tracked_sequence_infos(self, sequence_type: str) -> Dict[str, List]:
+        if sequence_type not in Sequence.registry:
+            raise ValueError(f'Unknown sequence type \'{sequence_type}\'.')
+        try:
+            infos = self._meta_tree[KeyNames.SEQUENCES, sequence_type]
+        except KeyError:
+            return {}
+        seq_infos = defaultdict(list)
+        for ctx_idx, names in infos.items():
+            context_dict = self._meta_tree[KeyNames.CONTEXTS, ctx_idx]
+            for seq_name in names.keys():
+                seq_infos[seq_name].append(context_dict)
+        return seq_infos
+
+    def tracked_params(self) -> Dict:
+        try:
+            return self._meta_tree.collect('attrs', strict=False)
+        except KeyError:
+            return {}
 
     def registered_container_types(self) -> List[str]:
         return list(Container.registry.keys())
