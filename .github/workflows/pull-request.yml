@@ -7,12 +7,12 @@ on:
       - release/**
       - feature/**
     paths:
-      - 'src/aim/cli/**'
-      - 'src/aim/ext/**'
-      - 'src/aim/sdk/**'
-      - 'src/aim/web/api/**'
-      - 'src/aim/core/storage/**'
-      - 'src/aim/utils/**'
+      - 'src/aimcore/cli/**'
+      - 'src/py-sdk/aim/_ext/**'
+      - 'src/py-sdk/aim/_sdk/**'
+      - 'src/aimcore/web/api/**'
+      - 'src/py-sdk/aim/_core/storage/**'
+      - 'src/py-sdk/aim/utils/**'
       - '.github/workflows/pull-request.yml'
       - 'tests/**'
       - 'setup.py'

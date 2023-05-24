@@ -9,7 +9,7 @@ from aimrocks import lib_utils
 # TODO This `setup.py` assumes that `Cython` and `aimrocks` are installed.
 # This is okay for now as users are expected to install `aim` from wheels.
 
-version_file = 'src/aim/VERSION'
+version_file = 'src/py-sdk/aim/VERSION'
 
 with open(version_file) as vf:
     __version__ = vf.read().strip()
@@ -32,10 +32,8 @@ def package_files(directory):
     return paths
 
 
-migration_files = package_files('src/aim/web/migrations')
-storage_migration_files = package_files('src/aim/core/storage/migrations')
-notifier_files = package_files('src/aim/ext/notifier')
-version_files = ['../aim/VERSION', ]
+aimcore_migration_files = package_files('src/aimcore/web/migrations')
+notifier_files = package_files('src/py-sdk/aim/_ext/notifier')
 
 readme_file = 'README.md'
 readme_text = open('/'.join((here, readme_file)), encoding="utf-8").read()
@@ -49,6 +47,7 @@ SETUP_REQUIRED = [
 REQUIRED = [
     f'aim-ui=={__version__}',
     'aimrocks==0.4.0',
+    'khash==0.5.0a5',
     'cachetools>=4.0.0',
     'click>=7.0',
     'cryptography>=3.0',
@@ -131,23 +130,23 @@ COMPILE_ARGS = [
     '-fPIC'
 ]
 CYTHON_SCRITPS = [
-    ('aim.core.storage.hashing.c_hash', 'src/aim/core/storage/hashing/c_hash.pyx'),
-    ('aim.core.storage.hashing.hashing', 'src/aim/core/storage/hashing/hashing.py'),
-    ('aim.core.storage.hashing', 'src/aim/core/storage/hashing/__init__.py'),
-    ('aim.core.storage.encoding.encoding_native', 'src/aim/core/storage/encoding/encoding_native.pyx'),
-    ('aim.core.storage.encoding.encoding', 'src/aim/core/storage/encoding/encoding.pyx'),
-    ('aim.core.storage.encoding', 'src/aim/core/storage/encoding/__init__.py'),
-    ('aim.core.storage.treeutils', 'src/aim/core/storage/treeutils.pyx'),
-    ('aim.core.storage.rockscontainer', 'src/aim/core/storage/rockscontainer.pyx'),
-    ('aim.core.storage.union', 'src/aim/core/storage/union.pyx'),
-    ('aim.core.storage.arrayview', 'src/aim/core/storage/arrayview.py'),
-    ('aim.core.storage.treearrayview', 'src/aim/core/storage/treearrayview.py'),
-    ('aim.core.storage.treeview', 'src/aim/core/storage/treeview.py'),
-    ('aim.core.storage.utils', 'src/aim/core/storage/utils.py'),
-    ('aim.core.storage.container', 'src/aim/core/storage/container.py'),
-    ('aim.core.storage.containertreeview', 'src/aim/core/storage/containertreeview.py'),
-    ('aim.core.storage.inmemorytreeview', 'src/aim/core/storage/inmemorytreeview.py'),
-    ('aim.core.storage.prefixview', 'src/aim/core/storage/prefixview.py'),
+    ('aim._core.storage.hashing.c_hash', 'src/py-sdk/aim/_core/storage/hashing/c_hash.pyx'),
+    ('aim._core.storage.hashing.hashing', 'src/py-sdk/aim/_core/storage/hashing/hashing.py'),
+    ('aim._core.storage.hashing', 'src/py-sdk/aim/_core/storage/hashing/__init__.py'),
+    ('aim._core.storage.encoding.encoding_native', 'src/py-sdk/aim/_core/storage/encoding/encoding_native.pyx'),
+    ('aim._core.storage.encoding.encoding', 'src/py-sdk/aim/_core/storage/encoding/encoding.pyx'),
+    ('aim._core.storage.encoding', 'src/py-sdk/aim/_core/storage/encoding/__init__.py'),
+    ('aim._core.storage.treeutils', 'src/py-sdk/aim/_core/storage/treeutils.pyx'),
+    ('aim._core.storage.rockscontainer', 'src/py-sdk/aim/_core/storage/rockscontainer.pyx'),
+    ('aim._core.storage.union', 'src/py-sdk/aim/_core/storage/union.pyx'),
+    ('aim._core.storage.arrayview', 'src/py-sdk/aim/_core/storage/arrayview.py'),
+    ('aim._core.storage.treearrayview', 'src/py-sdk/aim/_core/storage/treearrayview.py'),
+    ('aim._core.storage.treeview', 'src/py-sdk/aim/_core/storage/treeview.py'),
+    ('aim._core.storage.utils', 'src/py-sdk/aim/_core/storage/utils.py'),
+    ('aim._core.storage.container', 'src/py-sdk/aim/_core/storage/container.py'),
+    ('aim._core.storage.containertreeview', 'src/py-sdk/aim/_core/storage/containertreeview.py'),
+    ('aim._core.storage.inmemorytreeview', 'src/py-sdk/aim/_core/storage/inmemorytreeview.py'),
+    ('aim._core.storage.prefixview', 'src/py-sdk/aim/_core/storage/prefixview.py'),
 ]
 
 
@@ -186,10 +185,19 @@ setup(
     install_requires=REQUIRED,
     packages=(
         find_packages(where='src', exclude=('web.ui',)) +
+        find_packages(where='src/py-sdk') +
         find_packages(where='pkgs')
     ),
-    package_dir={'aim': 'src/aim', 'aimstack': 'pkgs/aimstack'},
-    package_data={'aim': migration_files + storage_migration_files + notifier_files + version_files},
+    package_dir={
+        'aim': 'src/py-sdk/aim',
+        'aimcore': 'src/aimcore',
+        'aimstack': 'pkgs/aimstack'
+    },
+    package_data={
+        'aim': notifier_files,
+        'aimcore': aimcore_migration_files,
+        'aimstack': []
+    },
     include_package_data=True,
     classifiers=[
         'License :: OSI Approved :: Apache Software License',
@@ -205,8 +213,8 @@ setup(
     ext_modules=cytonize_extensions(),
     entry_points={
         'console_scripts': [
-            'aim=aim.cli.cli:cli_entry_point',
-            'aim-watcher=aim.cli.watcher_cli:cli_entry_point',
+            'aim=aimcore.cli.cli:cli_entry_point',
+            'aim-watcher=aimcore.cli.watcher_cli:cli_entry_point',
         ],
     },
     cmdclass={

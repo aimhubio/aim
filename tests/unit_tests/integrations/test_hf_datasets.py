@@ -12,7 +12,7 @@ class TestHFDatasetsIntegration(TestBase):
     def test_datasets_as_run_param(self):
         from datasets import load_dataset
 
-        from aim.sdk.objects.plugins.hf_datasets_metadata import HFDataset
+        from aimstack.ml.models.hf_datasets_metadata import HFDataset
         from aim.sdk import Run
 
         # create dataset object

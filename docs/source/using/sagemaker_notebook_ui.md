@@ -7,7 +7,7 @@ So we have built a script to update the proxying package on SageMaker notebook i
 In order to work with Aim UI, please follow the steps below:
 
 - Create a lifecycle configuration on your SageMaker Service.
-- Copy and paste the [script](https://github.com/aimhubio/aim/blob/main/src/aim/scripts/sagemaker/on-start.sh) in your configuration's `Start Notebook` phase.
+- Copy and paste the [script](https://github.com/aimhubio/aim/blob/main/src/aim/ext/notebook/sagemaker/on-start.sh) in your configuration's `Start Notebook` phase.
 
 <img style="border: 1px solid #1d2253" src="../_static/images/using/jupyter/create-configuration.png" />
 For more information how to create a lifecycle configuration on AWS SageMaker Service, please go through the [AWS SageMaker Documentation](https://docs.aws.amazon.com/sagemaker/latest/dg/notebook-lifecycle-config.html).
