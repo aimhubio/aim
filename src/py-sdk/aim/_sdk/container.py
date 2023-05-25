@@ -215,7 +215,7 @@ class Container(ABCContainer):
         return query.check(**query_params)
 
     @property
-    def sequences(self) -> 'SequenceMap':
+    def sequences(self) -> 'ContainerSequenceMap':
         return self._sequence_map
 
     def __repr__(self) -> str:
@@ -270,8 +270,11 @@ class ContainerSequenceMap(SequenceMap[Sequence]):
 
         return self._sequence(name, Context(context))
 
+    def typed_sequence(self, sequence_type: Type[Sequence], name: str, context: Dict):
+        return self._sequence(name, Context(context), sequence_type=sequence_type)
+
     @cachetools.func.ttl_cache()
-    def _sequence(self, name: str, context: Context) -> Sequence:
+    def _sequence(self, name: str, context: Context, *, sequence_type: Optional[Type[Sequence]] = None) -> Sequence:
         ctx_idx = context.idx
         try:
             self._sequence_tree.subtree((ctx_idx, name)).last_key()
@@ -282,7 +285,8 @@ class ContainerSequenceMap(SequenceMap[Sequence]):
         if self._container._is_readonly and not exists:
             raise ValueError('Cannot create sequence from a readonly container.')
 
-        return self._sequence_cls(self._container, name=name, context=context)
+        seq_cls = sequence_type or self._sequence_cls
+        return seq_cls(self._container, name=name, context=context)
 
     def __delitem__(self, item: Union[str, Tuple[str, Dict]]):
         if self._container._is_readonly:
