@@ -17,7 +17,7 @@ async def board_list_api(package=Depends(get_root_package)):
     return JSONResponse(result)
 
 
-@boards_router.get('/{board_path}', response_model=BoardListOut)
+@boards_router.get('/{board_path:path}', response_model=BoardListOut)
 async def board_get_api(board_path: str, package=Depends(get_root_package)):
     board: pathlib.Path = package.boards_directory / board_path
     if not board.exists():
