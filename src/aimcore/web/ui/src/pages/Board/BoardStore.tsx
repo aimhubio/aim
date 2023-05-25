@@ -23,7 +23,7 @@ interface BoardStore {
   editorValue: string;
   consoleOpen: boolean;
   boardsList: string[];
-  board: BoardData | null;
+  boards: Record<string, BoardData> | null;
   template: TemplateData | null;
   templatesList: TemplateData[];
   notifyData: IToastProps[];
@@ -32,7 +32,7 @@ interface BoardStore {
   fetchBoardList: () => Promise<void>;
   onNotificationDelete: (id: string) => void;
   addNotifyData: ({ status, message, icon }: any) => void;
-  fetchBoard: (id: string) => Promise<void>;
+  fetchBoard: (path: string) => Promise<void>;
   addBoard: (boardBody: BoardsRequestBody) => Promise<void>;
   editBoard: (id: string, boardBody: BoardsRequestBody) => Promise<void>;
   removeBoard: (id: string) => Promise<void>;
@@ -47,7 +47,7 @@ const useBoardStore = create<BoardStore>((set, get) => ({
   boardsList: [],
   templatesList: [],
   notifyData: [],
-  board: null,
+  boards: null,
   template: null,
   addNotifyData: ({ status = 'success', message = '', icon = null }: any) => {
     const id = Math.random().toString(36).substr(2, 9);
@@ -90,11 +90,16 @@ const useBoardStore = create<BoardStore>((set, get) => ({
   },
   fetchBoard: async (boardPath: string) => {
     try {
-      const board = await fetchBoardByPath(boardPath);
-      set({ board, isLoading: false });
+      const boards = await fetchBoardByPath(boardPath);
+      set({
+        boards: {
+          ...get().boards,
+          [boardPath]: boards,
+        },
+        isLoading: false,
+      });
     } catch (err: any) {
-      set({ board: null });
-      console.log('fetchBoard', err);
+      set({ boards: null });
       get().addNotifyData({
         status: 'danger',
         message: err.message,
@@ -131,7 +136,7 @@ const useBoardStore = create<BoardStore>((set, get) => ({
       });
       set({
         boardsList,
-        board: data,
+        // board: data,
       });
     } catch (err: any) {
       get().addNotifyData({
@@ -202,7 +207,7 @@ const useBoardStore = create<BoardStore>((set, get) => ({
     }
   },
   destroy: () => {
-    set({ editorValue: '', isLoading: true, boardsList: [], board: null });
+    set({ editorValue: '', isLoading: true, boardsList: [], boards: null });
   },
 }));
 

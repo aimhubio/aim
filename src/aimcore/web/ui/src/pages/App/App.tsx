@@ -84,16 +84,16 @@ function App(): React.FunctionComponentElement<React.ReactNode> {
 }
 
 function AppWrapper({ boardPath, editMode, boardList }: AppWrapperProps) {
-  const board = useBoardStore((state) => state.board);
+  const board = useBoardStore((state) => state.boards?.[boardPath]);
   const fetchBoard = useBoardStore((state) => state.fetchBoard);
   const updateBoard = useBoardStore((state) => state.editBoard);
 
   React.useEffect(() => {
-    if (boardPath) {
+    if (boardPath && !board) {
       const path = editMode ? boardPath?.replace('/edit', '') : boardPath;
       fetchBoard(path);
     }
-  }, [boardPath]);
+  }, [boardPath, board]);
 
   const saveBoard = (board: any) => {
     updateBoard(boardPath, {

@@ -9,7 +9,6 @@ function useApp() {
   const isLoading = useBoardStore((state) => state.isLoading);
   const updateBoard = useBoardStore((state) => state.editBoard);
   const fetchBoard = useBoardStore((state) => state.fetchBoard);
-  const boardData = useBoardStore((state) => state.board);
   const notifications = useBoardStore((state) => state.notifyData);
   const destroy = useBoardStore((state) => state.destroy);
   const history = useHistory();
@@ -35,7 +34,6 @@ function useApp() {
     updateBoard,
     isLoading,
     fetchBoard,
-    boardData,
     notifications,
   };
 }
