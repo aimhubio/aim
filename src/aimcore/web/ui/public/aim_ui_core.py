@@ -49,14 +49,14 @@ def memoize(func):
 query_result_cache = {}
 
 
-def query_filter(type_, query="", isSequence=False):
-    query_key = f'{type_}_{query}'
+def query_filter(type_, query="", count=None, start=None, stop=None, isSequence=False):
+    query_key = f'{type_}_{query}_{count}_{start}_{stop}'
 
     if query_key in query_result_cache:
         return query_result_cache[query_key]
 
     try:
-        data = search(board_path, type_, query, isSequence)
+        data = search(board_path, type_, query, count, start, stop, isSequence)
         data = create_proxy(data.to_py())
         items = []
         i = 0
@@ -76,14 +76,14 @@ def query_filter(type_, query="", isSequence=False):
 
 class Sequence():
     @classmethod
-    def filter(self, query=""):
-        return query_filter('Sequence', query, isSequence=True)
+    def filter(self, query="", count=None, start=None, stop=None):
+        return query_filter('Sequence', query, count, start, stop, isSequence=True)
 
 
 class Container():
     @classmethod
     def filter(self, query=""):
-        return query_filter('Container', query, isSequence=False)
+        return query_filter('Container', query, None, None, None, isSequence=False)
 
 
 ####################
