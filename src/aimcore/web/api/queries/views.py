@@ -18,6 +18,9 @@ def _sequence_data(sequence: Sequence, sample_count: Optional[int]) -> Dict:
     data = {
         'name': sequence.name,
         'context': sequence.context,
+        'container': {
+            'hash': sequence._container_hash
+        },
         'item_type': sequence.type,
         'axis_names': sequence.axis_names,
         'axis': {}
