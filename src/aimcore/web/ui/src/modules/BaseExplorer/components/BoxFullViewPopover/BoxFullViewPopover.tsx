@@ -24,13 +24,13 @@ import './BoxFullViewPopover.scss';
 
 function BoxFullViewPopover({
   onClose,
-  sequenceName,
+  sequenceType,
   itemGroupInfo,
   children,
   item,
 }: IBoxFullViewPopoverProps) {
   const data = React.useMemo(() => {
-    const { run: runData, [sequenceName]: sequenceData } = item;
+    const { run: runData, [sequenceType]: sequenceData } = item;
     let runInfo: { icon: string; value: string | React.ReactElement }[] = [];
     let sequence: { label: string; value: string | React.ReactElement }[] = [];
     if (runData) {
@@ -103,7 +103,7 @@ function BoxFullViewPopover({
       sequence,
       groups: itemGroupInfo,
     };
-  }, [item, sequenceName, itemGroupInfo]);
+  }, [item, sequenceType, itemGroupInfo]);
 
   return (
     <ErrorBoundary>
@@ -150,7 +150,7 @@ function BoxFullViewPopover({
             )} */}
             <div className='BoxFullViewPopover__container__detail-section'>
               <Text weight={600} size={18} tint={100} component='h3'>
-                {sequenceName}
+                {sequenceType}
               </Text>
               {data.sequence.map((item: any, index: number) => (
                 <div className='flex' key={index}>

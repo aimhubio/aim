@@ -39,14 +39,3 @@ export interface RecordRanges {
   record_range_total?: [number, number];
   record_range_used?: [number, number];
 }
-
-export interface RunSearchRunView {
-  hash: string;
-  values: Array<any>;
-  params: Params;
-  traces: Array<SequenceFullView>;
-  props: RunProps;
-  ranges?: IndexRanges & RecordRanges;
-}
-
-export interface Container extends RunSearchRunView {}

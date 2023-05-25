@@ -21,20 +21,25 @@ import ConfigureTooltip from 'modules/BaseExplorer/components/Controls/Configure
 import Legends from 'modules/BaseExplorer/components/Controls/Legends';
 import { StyleApplierCallbackArgs } from 'modules/core/engine/explorer/groupings';
 
+import { GetSequenceName, SequenceType } from 'types/core/enums';
+
 import getMetricsExplorerStaticContent from './getStaticContent';
 
 export const getMetricsDefaultConfig = (): typeof defaultHydration => {
   const defaultConfig = getDefaultHydration();
+  const sequenceName = GetSequenceName(SequenceType.Metric);
 
   const groupings = produce(defaultConfig.groupings, (draft: any) => {
     draft[GroupType.COLUMN].defaultApplications.orders = [Order.ASC];
-    draft[GroupType.COLUMN].defaultApplications.fields = ['metric.name'];
+    draft[GroupType.COLUMN].defaultApplications.fields = [
+      `${sequenceName}.name`,
+    ];
 
     draft[GroupType.ROW].defaultApplications.orders = [Order.ASC];
     draft[GroupType.ROW].defaultApplications.fields = ['run.hash'];
 
     draft[GroupType.GRID].defaultApplications.orders = [Order.ASC];
-    draft[GroupType.GRID].defaultApplications.fields = ['metric.name'];
+    draft[GroupType.GRID].defaultApplications.fields = [`${sequenceName}.name`];
 
     draft[GroupType.COLOR] = {
       component: React.memo((props: IBaseComponentProps) => (

@@ -7,7 +7,7 @@ import { QueryFormState } from 'modules/core/engine/explorer/query/state';
 import getQueryParamsFromState from 'modules/core/utils/getQueryParamsFromState';
 import { IQueryableData } from 'modules/core/pipeline';
 
-import { SequenceTypesEnum } from 'types/core/enums';
+import { GetSequenceName, SequenceType } from 'types/core/enums';
 
 import { getRecordState } from './helpers';
 import RangePanelItem from './RangePanelItem';
@@ -22,7 +22,8 @@ function RangePanel(props: IRangePanelProps) {
     engine,
     engine: { pipeline, query, useStore },
   } = props;
-  const sequenceName: SequenceTypesEnum = pipeline.getSequenceName();
+  const sequenceType: SequenceType = pipeline.getSequenceType();
+  const sequenceName = GetSequenceName(sequenceType);
   const queryFormState: QueryFormState = useStore(query.form.stateSelector);
   const rangeState = useStore(query.ranges.stateSelector);
   const isFetching: boolean = useStore(pipeline.stateSelector) === 'fetching';
@@ -37,17 +38,14 @@ function RangePanel(props: IRangePanelProps) {
         isApplyButtonDisabled: true,
       });
       pipeline.search({
-        ...getQueryParamsFromState(
-          {
-            ranges: rangeState,
-            form: queryFormState,
-          },
-          sequenceName,
-        ),
+        ...getQueryParamsFromState({
+          ranges: rangeState,
+          form: queryFormState,
+        }),
         report_progress: true,
       });
     }
-  }, [query, pipeline, isFetching, queryFormState, sequenceName, rangeState]);
+  }, [query, pipeline, isFetching, queryFormState, rangeState]);
 
   const stepItemConfig = React.useMemo(
     () => ({

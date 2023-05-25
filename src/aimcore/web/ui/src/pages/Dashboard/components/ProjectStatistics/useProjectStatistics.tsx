@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import routes from 'routes/routes';
 
-import { SequenceTypesEnum } from 'types/core/enums';
+import { SequenceType } from 'types/core/enums';
 
 import { encode } from 'utils/encoder/encoder';
 
@@ -12,7 +12,7 @@ import { IProjectStatistic } from './ProjectStatistics.d';
 import projectStatisticsEngine from './ProjectStatisticsStore';
 
 const statisticsInitialMap: Record<string, IProjectStatistic> = {
-  // [SequenceTypesEnum.Metric]: {
+  // [SequenceType.Metric]: {
   //   label: 'Metrics',
   //   count: 0,
   //   icon: 'metrics',
@@ -29,21 +29,21 @@ const statisticsInitialMap: Record<string, IProjectStatistic> = {
   //     advancedMode: true,
   //   })}`,
   // },
-  [SequenceTypesEnum.Figures]: {
+  [SequenceType.Figure]: {
     label: 'Figures',
     icon: 'figures',
     count: 0,
     iconBgColor: '#18AB6D',
     navLink: routes.FIGURES_EXPLORER.path,
   },
-  // [SequenceTypesEnum.Images]: {
+  // [SequenceType.Image]: {
   //   label: 'Images',
   //   icon: 'images',
   //   count: 0,
   //   iconBgColor: '#F17922',
   //   navLink: routes.IMAGES_EXPLORER.path,
   // },
-  [SequenceTypesEnum.Audios]: {
+  [SequenceType.Audio]: {
     label: 'Audios',
     icon: 'audios',
     count: 0,
@@ -54,7 +54,7 @@ const statisticsInitialMap: Record<string, IProjectStatistic> = {
       style: { backgroundColor: '#1473e6', color: '#fff' },
     },
   },
-  [SequenceTypesEnum.Texts]: {
+  [SequenceType.Text]: {
     label: 'Texts',
     icon: 'text',
     count: 0,
@@ -65,7 +65,7 @@ const statisticsInitialMap: Record<string, IProjectStatistic> = {
       style: { backgroundColor: '#1473e6', color: '#fff' },
     },
   },
-  [SequenceTypesEnum.Distributions]: {
+  [SequenceType.Distribution]: {
     label: 'Distributions',
     icon: 'distributions',
     count: 0,
@@ -127,8 +127,10 @@ function useProjectStatistics() {
       let sequenceItemsCount = 0;
       for (let [itemKey, itemData] of Object.entries(seqData)) {
         if (itemKey.startsWith('__system__')) {
+          // @ts-ignore
           systemMetricsCount += itemData.length;
         } else {
+          // @ts-ignore
           sequenceItemsCount += itemData.length;
         }
       }

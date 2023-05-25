@@ -4,7 +4,7 @@ import * as _ from 'lodash-es';
 import DepthSlider, { IDepthSliderProps } from 'components/DepthSlider';
 import { Button, Icon, Text } from 'components/kit';
 
-import { SequenceTypesEnum } from 'types/core/enums';
+import { SequenceType } from 'types/core/enums';
 import { AimFlatObjectBase } from 'types/core/AimObjects';
 
 import CaptionBox from '../CaptionBox';
@@ -28,7 +28,7 @@ function BoxWithStacking(props: IBoxWithStackingProps<AimFlatObjectBase>) {
 
   const vizEngine = engine.visualizations[visualizationName];
   const boxConfig = engine.useStore(vizEngine.box.stateSelector);
-  const sequenceName: SequenceTypesEnum = engine.pipeline.getSequenceName();
+  const sequenceType: SequenceType = engine.pipeline.getSequenceType();
 
   const foundGroups = engine.useStore(engine.pipeline.foundGroupsSelector);
   const [fullView, setFullView] = React.useState<boolean>(false);
@@ -126,7 +126,7 @@ function BoxWithStacking(props: IBoxWithStackingProps<AimFlatObjectBase>) {
         <BoxFullViewPopover
           onClose={() => setFullView(false)}
           itemGroupInfo={itemGroupInfo}
-          sequenceName={sequenceName}
+          sequenceType={sequenceType}
           item={currentItem}
         >
           <div className='BoxWrapper__fullViewContent'>

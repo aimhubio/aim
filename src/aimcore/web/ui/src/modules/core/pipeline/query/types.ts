@@ -1,15 +1,14 @@
-import {
-  IRunProgressObject,
-  RunsSearchQueryParams,
-} from 'modules/core/api/runsApi';
+import { IRunProgressObject } from 'modules/core/api/runsApi';
 
-import { RunSearchRunView } from 'types/core/AimObjects';
+import { GroupedSequence } from 'types/core/AimObjects/GroupedSequences';
+
+import { GroupedSequencesSearchQueryParams } from '../../api/dataFetchApi/types';
 
 export type Query = {
   execute: (
-    query: RunsSearchQueryParams,
+    query: GroupedSequencesSearchQueryParams,
     ignoreCache: boolean,
-  ) => Promise<RunSearchRunView[]>;
+  ) => Promise<Array<GroupedSequence>>;
   cancel: () => void;
   clearCache: () => void;
 };

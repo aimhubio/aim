@@ -1,6 +1,6 @@
-import { GetParamsResult } from 'modules/core/api/projectApi';
+import { GetProjectsInfoResult } from 'modules/core/api/projectApi';
 
-function removeExampleTypesFromProjectData(params: GetParamsResult) {
+function removeExampleTypesFromProjectData(params: GetProjectsInfoResult) {
   for (let paramKey in params) {
     // @ts-ignore
     const param = params[paramKey];

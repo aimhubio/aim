@@ -2,10 +2,14 @@ import _ from 'lodash-es';
 
 import { buildObjectHash } from 'modules/core/utils/hashing';
 
-import { RunSearchRunView } from 'types/core/AimObjects';
-import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
+import {
+  AimObjectDepths,
+  GetSequenceName,
+  SequenceType,
+} from 'types/core/enums';
 import { Record } from 'types/core/shared';
 import { AimFlatObjectBase } from 'types/core/AimObjects/AimFlatObjectBase';
+import { GroupedSequence } from 'types/core/AimObjects/GroupedSequences';
 
 import getObjectPaths from 'utils/object/getObjectPaths';
 
@@ -14,10 +18,11 @@ import { ObjectHashCreator, ProcessedData } from './types';
 import collectQueryableData from './collectQueryableData';
 
 export function storageDataToFlatList(
-  runs: RunSearchRunView[] = [],
-  sequenceName: SequenceTypesEnum,
+  groupedSeqs: GroupedSequence[] = [],
+  sequenceType: SequenceType,
   objectDepth: AimObjectDepths,
 ): ProcessedData {
+  const sequenceName = GetSequenceName(sequenceType);
   const objectList: AimFlatObjectBase[] = []; // @CHECK make by hash function
   let params: string[] = [];
   let sequenceInfo: string[] = [];
@@ -36,9 +41,9 @@ export function storageDataToFlatList(
 
   const depthInterceptor = depthInterceptors[objectDepth];
 
-  const queryable_data = collectQueryableData(runs[0]);
+  const queryable_data = collectQueryableData(groupedSeqs[0]);
 
-  runs.forEach((item) => {
+  groupedSeqs.forEach((item: GroupedSequence) => {
     params = params.concat(getObjectPaths(item.params, 'run', '.'));
     let collectedDataByDepth: Omit<AimFlatObjectBase, 'data'> = {};
     let objectHashCreator: ObjectHashCreator = {
@@ -46,17 +51,17 @@ export function storageDataToFlatList(
     };
     /** ️⬇⬇⬇ depth 0 ⬇⬇⬇ */ // Container
     let run = {
-      ..._.omit(item.props, ['experiment, creation_time']),
+      // ..._.omit(item.props, ['experiment, creation_time']),
       hash: item.hash,
-      active: !item.props.end_time, // @TODO change to active
-      experiment: item.props.experiment?.name,
-      experimentId: item.props.experiment?.id,
+      // active: !item.props.end_time, // @TODO change to active
+      // experiment: item.props.experiment?.name,
+      // experimentId: item.props.experiment?.id,
       ...item.params,
     };
 
     // depth 0, add run data,
     // in every depth some keys will be added to this object
-    // if it need to stop walking for some depth, the current value of this object
+    // if it needs to stop walking for some depth, the current value of this object
     //    will include additional keys for every depth passed before
     collectedDataByDepth = {
       ...collectedDataByDepth,
@@ -77,12 +82,12 @@ export function storageDataToFlatList(
     /** ⬆⬆⬆ depth 0 ⬆⬆⬆ */
     if (objectDepth > 0) {
       // for readability
-      item.traces.forEach((trace: any, traceIndex: number) => {
+      item.sequences.forEach((seq: any, seqIndex: number) => {
         /** ⬇⬇⬇ depth 1 ⬇⬇⬇ */ // Sequence
         const trace_context = {
           [sequenceName]: {
-            name: trace.name,
-            context: trace.context,
+            name: seq.name,
+            context: seq.context,
           },
         };
 
@@ -102,6 +107,7 @@ export function storageDataToFlatList(
         sequenceInfo = sequenceInfo.concat(
           getObjectPaths(trace_context[sequenceName], sequenceName),
         );
+
         // depth 1, add context data
         collectedDataByDepth = {
           ...collectedDataByDepth,
@@ -115,7 +121,7 @@ export function storageDataToFlatList(
             key: buildObjectHash(objectHashCreator),
             ...collectedDataByDepth,
             ...sequenceData,
-            data: depthInterceptor(trace, traceIndex).data,
+            data: depthInterceptor(seq, seqIndex).data,
           };
           objectList.push(object);
           return;
@@ -123,10 +129,10 @@ export function storageDataToFlatList(
         /** ⬆⬆⬆ depth 1 ⬆⬆⬆  */
         if (objectDepth > 1) {
           // for readability
-          trace.values.forEach((sequence: any, stepIndex: number) => {
+          seq.values.forEach((sequence: any, stepIndex: number) => {
             /** ⬇⬇⬇ depth 2 ⬇⬇⬇ */ // STEP
             let record_data: Record = {
-              step: trace.iters[stepIndex],
+              step: seq.values[stepIndex],
             };
 
             // Generating unique hash creator obj for the AimObject using sequence name, sequence context, step

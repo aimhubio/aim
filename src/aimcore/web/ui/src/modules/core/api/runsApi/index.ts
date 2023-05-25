@@ -3,7 +3,7 @@ import { getAPIHost } from 'config/config';
 import ENDPOINTS from 'services/api/endpoints';
 import NetworkService, { RequestInstance } from 'services/NetworkService';
 
-import { SequenceTypesEnum } from 'types/core/enums';
+import { SequenceType } from 'types/core/enums';
 
 import {
   RunsSearchQueryParams,
@@ -20,7 +20,7 @@ const api = new NetworkService(`${getAPIHost()}${ENDPOINTS.RUNS.BASE}`);
  * @param queryParams
  */
 async function searchRuns(
-  sequenceType: SequenceTypesEnum,
+  sequenceType: SequenceType,
   queryParams: RunsSearchQueryParams,
 ): Promise<RunsSearchResult> {
   return (
@@ -30,9 +30,7 @@ async function searchRuns(
   ).body;
 }
 
-function createSearchRunsRequest(
-  sequenceType: SequenceTypesEnum,
-): RequestInstance {
+function createSearchRunsRequest(sequenceType: SequenceType): RequestInstance {
   const controller = new AbortController();
   const signal = controller.signal;
 
@@ -108,9 +106,7 @@ function createRunLogRecordsRequest(): RequestInstance {
   };
 }
 
-function createBlobsRequest(
-  sequenceType: `${SequenceTypesEnum}`,
-): RequestInstance {
+function createBlobsRequest(sequenceType: `${SequenceType}`): RequestInstance {
   const controller = new AbortController();
   const signal = controller.signal;
 

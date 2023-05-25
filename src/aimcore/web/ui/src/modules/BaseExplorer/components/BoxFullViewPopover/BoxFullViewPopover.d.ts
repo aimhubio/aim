@@ -8,6 +8,6 @@ export interface IBoxFullViewPopoverProps {
   onClose: () => void;
   item: AimFlatObjectBase;
   children: React.ReactNode;
-  sequenceName: string;
+  sequenceType: string;
   itemGroupInfo: Record<string, IGroupInfo>;
 }

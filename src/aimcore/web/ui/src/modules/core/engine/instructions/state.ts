@@ -1,10 +1,13 @@
 import { StoreApi } from 'zustand';
 import produce, { Draft } from 'immer';
 
-import { GetParamsResult } from 'modules/core/api/projectApi';
+import {
+  GetProjectsInfoResult,
+  GetProjectsInfoSequencesResult,
+} from 'modules/core/api/projectApi';
 import { AimErrorType, SelectorCreator } from 'modules/core/engine/types';
 
-import { SequenceTypesEnum } from 'types/core/enums';
+import { SequenceType } from 'types/core/enums';
 
 type Status = {
   isLoading: boolean;
@@ -14,27 +17,27 @@ type Status = {
 /**
  * the state type useful for initial data for explorer
  */
-export interface IInstructionsState<SequenceName extends SequenceTypesEnum> {
+export interface IInstructionsState<SequenceName extends SequenceType> {
   status: Status;
   /**
    * queryable data
    */
-  project_params_info: GetParamsResult | null;
+  project_params_info: GetProjectsInfoSequencesResult | null;
   /**
    * select_form data
    */
-  project_sequence_info: GetParamsResult[SequenceName] | null;
+  project_sequence_info: GetProjectsInfoSequencesResult[SequenceName] | null;
 }
 
-type ExtractState<TStore, SequenceName extends SequenceTypesEnum> = {
+type ExtractState<TStore, SequenceName extends SequenceType> = {
   instructions: IInstructionsState<SequenceName>;
 } & TStore;
 
-type Selectors<T, SequenceName extends SequenceTypesEnum> = {
-  paramsInfoSelector: SelectorCreator<T, GetParamsResult | null>;
+type Selectors<T, SequenceName extends SequenceType> = {
+  paramsInfoSelector: SelectorCreator<T, GetProjectsInfoSequencesResult | null>;
   sequenceInfoSelector: SelectorCreator<
     T,
-    GetParamsResult[SequenceName] | null
+    GetProjectsInfoSequencesResult[SequenceName] | null
   >;
   statusSelector: SelectorCreator<T, Status>;
   stateSelector: SelectorCreator<T, QueryableInfo<SequenceName>>;
@@ -42,26 +45,26 @@ type Selectors<T, SequenceName extends SequenceTypesEnum> = {
 
 export type InstructionsStateBridge<
   TStore,
-  SequenceName extends SequenceTypesEnum,
+  SequenceName extends SequenceType,
 > = {
   initialState: IInstructionsState<SequenceName>;
   setInfo: (
-    params_info: GetParamsResult,
-    sequence_info: GetParamsResult[SequenceName],
+    params_info: GetProjectsInfoSequencesResult,
+    sequence_info: GetProjectsInfoSequencesResult[SequenceName],
   ) => void;
   setError: (error: AimErrorType | null) => void;
   getStatus: () => Status;
-  getParamsInfo: () => GetParamsResult | null;
+  getParamsInfo: () => GetProjectsInfoSequencesResult | null;
 } & {
   selectors: Selectors<ExtractState<TStore, SequenceName>, SequenceName>;
 };
 
-type QueryableInfo<SequenceName extends SequenceTypesEnum> = {
-  queryable_data: GetParamsResult | null;
-  project_sequence_info: GetParamsResult[SequenceName] | null;
+type QueryableInfo<SequenceName extends SequenceType> = {
+  queryable_data: GetProjectsInfoSequencesResult | null;
+  project_sequence_info: GetProjectsInfoSequencesResult[SequenceName] | null;
 };
 
-function createState<TStore, SequenceName extends SequenceTypesEnum>(
+function createState<TStore, SequenceName extends SequenceType>(
   store: StoreApi<ExtractState<TStore, SequenceName>>,
   initialState: IInstructionsState<SequenceName> = {
     status: {
@@ -80,10 +83,11 @@ function createState<TStore, SequenceName extends SequenceTypesEnum>(
   > = {
     paramsInfoSelector: (
       state: ExtractState<TStore, SequenceName>,
-    ): GetParamsResult | null => state.instructions.project_params_info,
+    ): GetProjectsInfoSequencesResult | null =>
+      state.instructions.project_params_info,
     sequenceInfoSelector: (
       state: ExtractState<TStore, SequenceName>,
-    ): GetParamsResult[SequenceName] | null =>
+    ): GetProjectsInfoSequencesResult[SequenceName] | null =>
       state.instructions.project_sequence_info,
     statusSelector: (state: ExtractState<TStore, SequenceName>): Status =>
       state.instructions.status,
@@ -100,8 +104,8 @@ function createState<TStore, SequenceName extends SequenceTypesEnum>(
     'selectors' | 'initialState'
   > = {
     setInfo: (
-      params_info: GetParamsResult,
-      sequence_info: GetParamsResult[SequenceName],
+      params_info: GetProjectsInfoSequencesResult,
+      sequence_info: GetProjectsInfoSequencesResult[SequenceName],
     ): void => {
       store.setState(
         produce<Store>((draft_state: Draft<Store>) => {

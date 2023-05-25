@@ -1,14 +1,14 @@
 import { AimObjectDepths } from 'types/core/enums';
-import { SequenceFullView, Container } from 'types/core/AimObjects';
+import { SequenceFullView } from 'types/core/AimObjects';
 import { Record } from 'types/core/shared';
 
 import { DepthInterceptors } from './types';
 
 const depthInterceptors: DepthInterceptors = {
-  [AimObjectDepths.Container]: (container: Container) => {
+  [AimObjectDepths.Container]: (container) => {
     return {
       data: {
-        traces: (container as Container).traces,
+        traces: container.traces,
       },
     };
   },
@@ -17,9 +17,9 @@ const depthInterceptors: DepthInterceptors = {
       data: sequence,
     };
   },
-  [AimObjectDepths.Step]: (sequenceBase: SequenceFullView) => {
+  [AimObjectDepths.Step]: (sequence: SequenceFullView) => {
     return {
-      data: sequenceBase,
+      data: sequence,
     };
   },
   [AimObjectDepths.Index]: (record: Record) => {

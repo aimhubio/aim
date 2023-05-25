@@ -2,7 +2,7 @@ import { RunsSearchQueryParams } from 'modules/core/api/runsApi';
 
 import { RequestInstance } from 'services/NetworkService';
 
-import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
+import { AimObjectDepths, SequenceType } from 'types/core/enums';
 
 import createGrouping, { Grouping } from './grouping';
 import createQuery, { Query, RequestProgressCallback } from './query';
@@ -18,7 +18,7 @@ import PipelineError from './PipelineError';
 import { IQueryableData, ProcessedData } from './adapter/types';
 
 export type PipelineOptions = {
-  sequenceName: SequenceTypesEnum;
+  sequenceType: SequenceType;
   callbacks: {
     statusChangeCallback?: StatusChangeCallback;
     exceptionCallback?: () => void;
@@ -83,7 +83,7 @@ export type PipelineResult = {
 
 /**
  *
- * @param {SequenceTypesEnum} sequenceName
+ * @param {SequenceType} sequenceType
  * @param query
  * @param adapter
  * @param grouping
@@ -91,7 +91,7 @@ export type PipelineResult = {
  * @param callbacks
  */
 function createPipeline({
-  sequenceName,
+  sequenceType,
   query,
   adapter,
   grouping,
@@ -124,7 +124,7 @@ function createPipeline({
 
   function createQueryInstance(config: any) {
     phases.query = createQuery(
-      config.sequenceName,
+      config.sequenceType,
       config.query.useCache,
       _callbacks.statusChangeCallback,
       _callbacks.requestProgressCallback,
@@ -186,8 +186,8 @@ function createPipeline({
 
   // request progress callback is not included since it is not used in the pipeline
   setCallbacks(callbacks);
-  createQueryInstance({ query, sequenceName });
-  createAdapterInstance({ ...adapter, sequenceName });
+  createQueryInstance({ query, sequenceType });
+  createAdapterInstance({ ...adapter, sequenceType });
   createCustomPhaseInstance({ ...custom });
   createGroupingInstance({ ...grouping, useCache: false });
 

@@ -31,7 +31,7 @@ import {
 import getQueryParamsFromState from 'modules/core/utils/getQueryParamsFromState';
 
 import { ISelectOption } from 'types/services/models/explorer/createAppModel';
-import { SequenceTypesEnum } from 'types/core/enums';
+import { GetSequenceName, SequenceType } from 'types/core/enums';
 
 import getAdvancedSuggestion from 'utils/getAdvancedSuggestions';
 import removeSyntaxErrBrackets from 'utils/removeSyntaxErrBrackets';
@@ -44,7 +44,6 @@ type StatusCheckResult = {
   isExecuting: boolean;
   isInsufficientResources: boolean;
 };
-
 function QueryForm(props: IQueryFormProps) {
   const [anchorEl, setAnchorEl] = React.useState<any>(null);
   const [searchValue, setSearchValue] = React.useState<string>('');
@@ -52,7 +51,8 @@ function QueryForm(props: IQueryFormProps) {
 
   const updateQuery = React.useRef(engine.query.form.update);
   const queryable = engine.useStore(engine.instructions.stateSelector);
-  const sequenceName: SequenceTypesEnum = engine.pipeline.getSequenceName();
+  const sequenceType: SequenceType = engine.pipeline.getSequenceType();
+  const sequenceName = GetSequenceName(sequenceType);
 
   const query: QueryFormState = engine.useStore(
     engine.query.form.stateSelector,
@@ -116,34 +116,31 @@ function QueryForm(props: IQueryFormProps) {
       return;
     } else {
       engine.pipeline.search({
-        ...getQueryParamsFromState(
-          {
-            form: query,
-            ranges,
-          },
-          sequenceName,
-        ),
+        ...getQueryParamsFromState({
+          form: query,
+          ranges,
+        }),
         report_progress: true,
       });
     }
-  }, [engine, isExecuting, query, sequenceName, ranges]);
+  }, [engine, isExecuting, query, sequenceType, ranges]);
 
   const autocompleteContext: {
     suggestions: Record<string | number | symbol, unknown>;
     advancedSuggestions: Record<string | number | symbol, unknown>;
   } = React.useMemo(() => {
     let suggestions = getSuggestionsByExplorer(
-      sequenceName as any,
+      sequenceType as any,
       queryable.queryable_data,
     );
     let advancedSuggestions = {};
     if (props.hasAdvancedMode) {
       let contextData = getAdvancedSuggestion(
-        queryable.queryable_data?.[sequenceName] || {},
+        queryable.queryable_data?.[sequenceType] || {},
       );
       advancedSuggestions = {
         ...suggestions,
-        [sequenceName]: {
+        [sequenceType]: {
           name: '',
           context: _.isEmpty(contextData)
             ? ''
@@ -154,11 +151,10 @@ function QueryForm(props: IQueryFormProps) {
       };
     }
     return { suggestions, advancedSuggestions };
-  }, [props.hasAdvancedMode, queryable, sequenceName]);
+  }, [props.hasAdvancedMode, queryable, sequenceType]);
 
   const onToggleAdvancedMode: () => void = React.useCallback(() => {
-    let q =
-      query.advancedInput || getQueryStringFromSelect(query, sequenceName);
+    let q = query.advancedInput || getQueryStringFromSelect(query);
     if (q === '()') {
       q = '';
     }
@@ -167,7 +163,7 @@ function QueryForm(props: IQueryFormProps) {
       advancedModeOn: !query.advancedModeOn,
       advancedInput: q,
     });
-  }, [query, sequenceName]);
+  }, [query]);
 
   const options = React.useMemo(() => {
     const optionsData: ISelectOption[] = getSelectFormOptions(
@@ -240,10 +236,8 @@ function QueryForm(props: IQueryFormProps) {
   );
 
   const onQueryCopy: () => void = React.useCallback(() => {
-    navigator.clipboard.writeText(
-      getQueryStringFromSelect(query, sequenceName),
-    );
-  }, [query, sequenceName]);
+    navigator.clipboard.writeText(getQueryStringFromSelect(query));
+  }, [query]);
 
   return (
     <ErrorBoundary>
