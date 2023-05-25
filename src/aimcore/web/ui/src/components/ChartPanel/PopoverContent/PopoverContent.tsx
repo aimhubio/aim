@@ -338,7 +338,7 @@ const PopoverContent = React.forwardRef(function PopoverContent(
             )}
           >
             {renderPopoverHeader()}
-            {isPopoverPinned && renderTags()}
+            {/* {isPopoverPinned && renderTags()} */}
           </div>
           {!_.isEmpty(selectedProps) || !_.isEmpty(groupConfig) ? (
             <div
@@ -419,7 +419,7 @@ const PopoverContent = React.forwardRef(function PopoverContent(
                   </div>
                 </ErrorBoundary>
               )}
-              {!isPopoverPinned && renderTags()}
+              {/* {!isPopoverPinned && renderTags()} */}
             </div>
           ) : null}
         </div>
