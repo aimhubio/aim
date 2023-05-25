@@ -1,5 +1,6 @@
 import os
 import sys
+import pkgutil
 
 from aim._sdk.configs import AIM_ENV_MODE_KEY
 
@@ -15,7 +16,7 @@ def build_db_upgrade_command():
     return [sys.executable, '-m', 'alembic', '-c', ini_file, 'upgrade', 'head']
 
 
-def build_uvicorn_command(host, port, num_workers, uds_path, ssl_keyfile, ssl_certfile, log_level):
+def build_uvicorn_command(host, port, num_workers, uds_path, ssl_keyfile, ssl_certfile, log_level, package):
     cmd = [sys.executable, '-m', 'uvicorn',
            '--host', host, '--port', f'{port}',
            '--workers', f'{num_workers}']
@@ -25,10 +26,14 @@ def build_uvicorn_command(host, port, num_workers, uds_path, ssl_keyfile, ssl_ce
         import aim
         import aimstack
         from aimcore import web as aim_web
+        aim_ui_pkg = pkgutil.get_loader(package)
+
         cmd += ['--reload']
         cmd += ['--reload-dir', os.path.dirname(aim.__file__)]
         cmd += ['--reload-dir', os.path.dirname(aim_web.__file__)]
         cmd += ['--reload-dir', os.path.dirname(aimstack.__file__)]
+        if aim_ui_pkg:
+            cmd += ['--reload-dir', os.path.dirname(aim_ui_pkg.get_filename())]
         log_level = log_level or 'debug'
     if uds_path:
         cmd += ['--uds', uds_path]
