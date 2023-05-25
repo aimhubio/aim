@@ -29,7 +29,14 @@ function AudioBox({
   const [processing, setProcessing] = React.useState<boolean>(false);
   let [src, setSrc] = React.useState<string>('');
   let [blobData, setBlobData] = React.useState<string>(
-    blobsURIModel.getState()[blob_uri] ?? null,
+    additionalProperties.useData
+      ? btoa(
+          data.data.reduce(
+            (acc: any, current: any) => acc + String.fromCharCode(current),
+            '',
+          ),
+        )
+      : blobsURIModel.getState()[blob_uri] ?? null,
   );
   let [muted, setMuted] = React.useState<boolean>(true);
 
@@ -154,12 +161,12 @@ function AudioBox({
   }
 
   function handleDownload(): void {
-    const { index, format, context, step, caption, audio_name } = data;
+    const { index, format, context, step, caption, name } = data;
     const contextName =
       contextToString(context) === '' ? '' : `_${contextToString(context)}`;
-    const name = `${audio_name}${contextName}_${caption}_${step}_${index}`;
+    const fileName = `${name}${contextName}_${caption}_${step}_${index}`;
 
-    downloadLink(`data:audio/${format};base64,${blobData}`, name);
+    downloadLink(`data:audio/${format};base64,${blobData}`, fileName);
   }
 
   return (

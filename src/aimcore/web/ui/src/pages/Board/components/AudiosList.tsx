@@ -70,7 +70,10 @@ function AudiosList(props: any) {
           <AudioBox
             data={item}
             style={{}}
-            additionalProperties={{ getAudiosBlobsData: getBlobsData }}
+            additionalProperties={{
+              getAudiosBlobsData: getBlobsData,
+              useData: true,
+            }}
           />
         </div>
       ))}

@@ -34,90 +34,90 @@ function ImagesList(props: any) {
     ...image.record,
   }));
 
-  function addUriToList(blobUrl: string) {
-    if (!blobsURIModel.getState()[blobUrl]) {
-      blobUriArray.current.push(blobUrl);
-      getBatch();
-    }
-  }
+  // function addUriToList(blobUrl: string) {
+  //   if (!blobsURIModel.getState()[blobUrl]) {
+  //     blobUriArray.current.push(blobUrl);
+  //     getBatch();
+  //   }
+  // }
 
-  function getBlobsData(uris: string[]) {
-    const request = imagesExploreService.getImagesByURIs(uris);
-    return {
-      abort: request.abort,
-      call: () => {
-        return request
-          .call()
-          .then(async (stream) => {
-            let bufferPairs = decodeBufferPairs(stream);
-            let decodedPairs = decodePathsVals(bufferPairs);
-            let objects = iterFoldTree(decodedPairs, 1);
-            for await (let [keys, val] of objects) {
-              const URI = keys[0];
-              blobsURIModel.emit(URI as string, {
-                [URI]: arrayBufferToBase64(val as ArrayBuffer) as string,
-              });
-            }
-          })
-          .catch((ex) => {
-            if (ex.name === 'AbortError') {
-              // Abort Error
-            } else {
-              // eslint-disable-next-line no-console
-              console.log('Unhandled error: ');
-            }
-          });
-      },
-    };
-  }
+  // function getBlobsData(uris: string[]) {
+  //   const request = imagesExploreService.getImagesByURIs(uris);
+  //   return {
+  //     abort: request.abort,
+  //     call: () => {
+  //       return request
+  //         .call()
+  //         .then(async (stream) => {
+  //           let bufferPairs = decodeBufferPairs(stream);
+  //           let decodedPairs = decodePathsVals(bufferPairs);
+  //           let objects = iterFoldTree(decodedPairs, 1);
+  //           for await (let [keys, val] of objects) {
+  //             const URI = keys[0];
+  //             blobsURIModel.emit(URI as string, {
+  //               [URI]: arrayBufferToBase64(val as ArrayBuffer) as string,
+  //             });
+  //           }
+  //         })
+  //         .catch((ex) => {
+  //           if (ex.name === 'AbortError') {
+  //             // Abort Error
+  //           } else {
+  //             // eslint-disable-next-line no-console
+  //             console.log('Unhandled error: ');
+  //           }
+  //         });
+  //     },
+  //   };
+  // }
 
-  const getBatch = _.throttle(() => {
-    if (timeoutID.current) {
-      window.clearTimeout(timeoutID.current);
-    }
-    timeoutID.current = window.setTimeout(() => {
-      if (!_.isEmpty(blobUriArray.current)) {
-        requestRef.current = getBlobsData(blobUriArray.current);
-        requestRef.current.call().then(() => {
-          blobUriArray.current = [];
-        });
-      }
-    }, BATCH_SEND_DELAY);
-  }, BATCH_SEND_DELAY);
+  // const getBatch = _.throttle(() => {
+  //   if (timeoutID.current) {
+  //     window.clearTimeout(timeoutID.current);
+  //   }
+  //   timeoutID.current = window.setTimeout(() => {
+  //     if (!_.isEmpty(blobUriArray.current)) {
+  //       requestRef.current = getBlobsData(blobUriArray.current);
+  //       requestRef.current.call().then(() => {
+  //         blobUriArray.current = [];
+  //       });
+  //     }
+  //   }, BATCH_SEND_DELAY);
+  // }, BATCH_SEND_DELAY);
 
-  React.useEffect(() => {
-    let timeoutID: number;
+  // React.useEffect(() => {
+  //   let timeoutID: number;
 
-    let subscriptions: any[] = [];
-    for (let i = 0; i < data.length; i++) {
-      let image = data[i];
-      if (!blobsURIModel.getState()[image.blob_uri]) {
-        let subscription = blobsURIModel.subscribe(image.blob_uri, (data) => {
-          setRenderKey(Date.now());
-          subscription.unsubscribe();
-        });
-        timeoutID = window.setTimeout(() => {
-          if (blobsURIModel.getState()[image.blob_uri]) {
-            setRenderKey(Date.now());
-            subscription.unsubscribe();
-          } else {
-            addUriToList(image.blob_uri);
-          }
-        }, BATCH_COLLECT_DELAY);
+  //   let subscriptions: any[] = [];
+  //   for (let i = 0; i < data.length; i++) {
+  //     let image = data[i];
+  //     if (!blobsURIModel.getState()[image.blob_uri]) {
+  //       let subscription = blobsURIModel.subscribe(image.blob_uri, (data) => {
+  //         setRenderKey(Date.now());
+  //         subscription.unsubscribe();
+  //       });
+  //       timeoutID = window.setTimeout(() => {
+  //         if (blobsURIModel.getState()[image.blob_uri]) {
+  //           setRenderKey(Date.now());
+  //           subscription.unsubscribe();
+  //         } else {
+  //           addUriToList(image.blob_uri);
+  //         }
+  //       }, BATCH_COLLECT_DELAY);
 
-        subscriptions.push(subscription);
-      }
-    }
+  //       subscriptions.push(subscription);
+  //     }
+  //   }
 
-    return () => {
-      if (timeoutID) {
-        clearTimeout(timeoutID);
-      }
-      if (subscriptions) {
-        subscriptions.forEach((sub: any) => sub.unsubscribe);
-      }
-    };
-  }, []);
+  //   return () => {
+  //     if (timeoutID) {
+  //       clearTimeout(timeoutID);
+  //     }
+  //     if (subscriptions) {
+  //       subscriptions.forEach((sub: any) => sub.unsubscribe);
+  //     }
+  //   };
+  // }, []);
 
   return (
     <div
@@ -135,13 +135,18 @@ function ImagesList(props: any) {
             flex: 1,
           }}
         >
-          {blobsURIModel.getState()[item.blob_uri] ? (
+          {/* {blobsURIModel.getState()[item.blob_uri] ? ( */}
+          {item.data ? (
             <img
               style={{ maxHeight: '100%', maxWidth: '100%' }}
-              src={`data:image/${item.format};base64, ${
-                blobsURIModel.getState()[item.blob_uri]
-              }`}
-              alt={data.caption}
+              src={`data:image/${item.format};base64, ${btoa(
+                item.data.reduce(
+                  (acc: any, current: any) =>
+                    acc + String.fromCharCode(current),
+                  '',
+                ),
+              )}`}
+              alt={item.caption}
             />
           ) : (
             <div style={{ height: '100%' }}>
