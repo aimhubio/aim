@@ -36,7 +36,7 @@ function Explorers(): React.FunctionComponentElement<React.ReactNode> {
     <Box display='flex' fd='column'>
       <TopBar jc='space-between'>
         <Breadcrumb />
-        <ExplorerBookmarkLink to={PathEnum.Bookmarks}>
+        {/* <ExplorerBookmarkLink to={PathEnum.Bookmarks}>
           <Button
             leftIcon={<IconBookmark color='#161717' />}
             horizontalSpacing='compact'
@@ -46,7 +46,7 @@ function Explorers(): React.FunctionComponentElement<React.ReactNode> {
           >
             <Text>Bookmarks</Text>
           </Button>
-        </ExplorerBookmarkLink>
+        </ExplorerBookmarkLink> */}
       </TopBar>
       <ExplorersContentContainer>
         <Box display='flex' fd='column'>

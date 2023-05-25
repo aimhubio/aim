@@ -63,12 +63,12 @@ const TooltipContent = React.forwardRef(function TooltipContent(
             <div className='PinnedSection'>
               <div className='ScrollBar__hidden'>
                 {renderHeader && renderHeader()}
-                {focused && (
+                {/* {focused && (
                   <RunAdditionalInfo
                     runHash={run?.hash}
                     experimentId={run?.experimentId}
                   />
-                )}
+                )} */}
               </div>
               <Divider orientation='vertical' />
               <div className='ScrollBar__hidden'>
@@ -87,12 +87,12 @@ const TooltipContent = React.forwardRef(function TooltipContent(
                 isPopoverPinned={isPopoverPinned}
               />
               <SelectedGroupingFields fields={selectedGroupingProps} />
-              {focused && (
+              {/* {focused && (
                 <RunAdditionalInfo
                   runHash={run?.hash}
                   experimentId={run?.experimentId}
                 />
-              )}
+              )} */}
             </div>
           )}
         </div>

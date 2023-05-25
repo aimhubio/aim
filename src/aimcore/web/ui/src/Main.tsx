@@ -84,7 +84,7 @@ function Main(): React.FunctionComponentElement<React.ReactNode> {
                     </Route>
                   );
                 })}
-                <Redirect to='/' />
+                <Redirect to='/app' />
               </Switch>
             </React.Suspense>
           </div>
