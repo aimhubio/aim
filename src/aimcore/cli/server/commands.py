@@ -3,6 +3,7 @@ import click
 
 from aimcore.cli.utils import set_log_level
 from aim._sdk.repo import Repo
+from aim._sdk.package_utils import Package
 from aimcore.transport.config import AIM_SERVER_DEFAULT_HOST, AIM_SERVER_DEFAULT_PORT, AIM_SERVER_MOUNTED_REPO_PATH
 from aimcore.transport.server import start_server
 
@@ -16,6 +17,7 @@ from aim._ext.tracking import analytics
                                                                              file_okay=False,
                                                                              dir_okay=True,
                                                                              writable=True))
+@click.option('--package', '--pkg', required=False, default='asp', type=str)
 @click.option('--ssl-keyfile', required=False, type=click.Path(exists=True,
                                                                file_okay=True,
                                                                dir_okay=False,
@@ -27,7 +29,7 @@ from aim._ext.tracking import analytics
 @click.option('--log-level', required=False, default='', type=str)
 @click.option('-y', '--yes', is_flag=True, help='Automatically confirm prompt')
 def server(host, port,
-           repo, ssl_keyfile, ssl_certfile,
+           repo, package, ssl_keyfile, ssl_certfile,
            log_level, yes):
     # TODO [MV, AT] remove code duplication with aim up cmd implementation
     if log_level:
@@ -42,6 +44,9 @@ def server(host, port,
         Repo.init(repo)
     repo_inst = Repo.from_path(repo, read_only=False)
     os.environ[AIM_SERVER_MOUNTED_REPO_PATH] = repo
+
+    if package not in Package.pool:
+        Package.load_package(package)
 
     click.secho('Running Aim Server on repo `{}`'.format(repo_inst), fg='yellow')
     click.echo('Server is mounted on {}:{}'.format(host, port), err=True)
