@@ -6,25 +6,35 @@ import Board from 'pages/Board/Board';
 import useApp from 'pages/App/useApp';
 
 function BoardVizElement(props: any) {
-  const { data, isLoading } = useApp();
+  const { boards, isLoading, fetchBoard } = useApp();
   const boardPath = props.data;
 
-  const board = data.find((path: any) => path === boardPath);
+  let [code, setCode] = React.useState(boards?.[boardPath]?.code ?? null);
+
+  React.useEffect(() => {
+    if (code === null) {
+      if (!boards?.hasOwnProperty(boardPath)) {
+        fetchBoard(boardPath);
+      } else {
+        setCode(boards?.[boardPath]?.code!);
+      }
+    }
+  }, [code, boards]);
 
   return (
     <div className='VizComponentContainer' style={{ flex: 1, padding: 0 }}>
-      {isLoading ? (
+      {isLoading || code === null ? (
         <Spinner />
-      ) : board ? (
+      ) : (
         <Board
           data={{
-            code: board,
+            code,
             path: boardPath,
           }}
           editMode={false}
           previewMode
         />
-      ) : null}
+      )}
     </div>
   );
 }

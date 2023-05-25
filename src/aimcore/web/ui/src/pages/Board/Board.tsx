@@ -132,7 +132,6 @@ block_context = {
 current_layout = []
 board_path = ${boardPath === undefined ? 'None' : `"${boardPath}"`}
 session_state = state[board_path] if board_path in state else {}
-print(board_path)
 def set_session_state(state_slice):
   set_state(state_slice, board_path)
 `;

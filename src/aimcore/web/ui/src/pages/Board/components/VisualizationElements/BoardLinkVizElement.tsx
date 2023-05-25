@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { useRouteMatch } from 'react-router-dom';
 
 import { IconLayout2, IconExternalLink } from '@tabler/icons-react';
 
@@ -7,7 +6,6 @@ import { Link, Button, Text } from 'components/kit_v2';
 
 function BoardLinkVizElement(props: any) {
   const boardPath = props.data;
-  const { path } = useRouteMatch();
 
   return (
     <Link
@@ -17,7 +15,7 @@ function BoardLinkVizElement(props: any) {
         textDecoration: 'underline',
         textDecorationColor: '$textPrimary50',
       }}
-      to={path.replace(':boardPath', boardPath)}
+      to={`/app/${boardPath}`}
       target={props.options.new_tab ? '_blank' : undefined}
     >
       <Button

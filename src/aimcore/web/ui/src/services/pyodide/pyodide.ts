@@ -19,8 +19,6 @@ window.updateLayout = (elements: any, boardPath: undefined | string) => {
   let layout = toObject(elements.toJs());
   elements.destroy();
 
-  console.log(layout, boardPath);
-
   let blocks: Record<string, any[]> = {};
   let components: Record<string, any[]> = {};
 

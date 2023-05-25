@@ -5,4 +5,4 @@ metrics = Metric.filter('')
 
 linechart = ui.line_chart(metrics, x='steps', y='values')
 
-ui.board('metrics/loss/run.py')
+ui.board_link('metrics/loss/run.py')

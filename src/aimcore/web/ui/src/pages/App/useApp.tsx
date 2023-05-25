@@ -9,16 +9,13 @@ function useApp() {
   const isLoading = useBoardStore((state) => state.isLoading);
   const updateBoard = useBoardStore((state) => state.editBoard);
   const fetchBoard = useBoardStore((state) => state.fetchBoard);
+  const boards = useBoardStore((state) => state.boards);
   const notifications = useBoardStore((state) => state.notifyData);
-  const destroy = useBoardStore((state) => state.destroy);
   const history = useHistory();
   const location = useLocation();
 
   React.useEffect(() => {
     fetchBoardsList();
-    return () => {
-      destroy();
-    };
   }, []);
 
   React.useEffect(() => {
@@ -32,6 +29,7 @@ function useApp() {
   return {
     data: boardsList,
     updateBoard,
+    boards,
     isLoading,
     fetchBoard,
     notifications,
