@@ -42,6 +42,10 @@ class ContainerQueryProxy:
     def hash(self):
         return self._hash
 
+    @property
+    def type(self):
+        return self._cont_tree['info_', 'cont_type']
+
     def __getattr__(self, item):
         return self[item]  # fallback to __getitem__
 

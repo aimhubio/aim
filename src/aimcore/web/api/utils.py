@@ -55,14 +55,14 @@ def collect_streamable_data(encoded_tree: Iterator[Tuple[bytes, bytes]]) -> byte
     return b''.join(result)
 
 
-def get_project():
+def get_project() -> Project:
     project = Project()
     if not project.exists():
         raise HTTPException(status_code=404)
     return project
 
 
-def get_project_repo():
+def get_project_repo() -> 'Repo':
     project = get_project()
     return project.repo
 
