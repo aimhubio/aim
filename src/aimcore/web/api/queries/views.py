@@ -40,7 +40,11 @@ def _process_values(repo: 'Repo', values_list: list) -> list:
     return processed_values
 
 
-def _sequence_data(repo: 'Repo', sequence: Sequence, sample_count: Optional[int]) -> Dict:
+def _sequence_data(repo: 'Repo',
+                   sequence: Sequence,
+                   p: Optional[int],
+                   start: Optional[int],
+                   stop: Optional[int]) -> Dict:
     data = {
         'name': sequence.name,
         'context': sequence.context,
@@ -51,13 +55,13 @@ def _sequence_data(repo: 'Repo', sequence: Sequence, sample_count: Optional[int]
         'axis_names': sequence.axis_names,
         'axis': {}
     }
-    if sample_count is None:
+    if p is None and start is None and stop is None:
         data['steps'] = list(sequence.steps())
         data['values'] = _process_values(repo, list(sequence.values()))
         for axis_name in sequence.axis_names:
             data['axis'][axis_name] = list(sequence.axis(axis_name))
     else:
-        steps, value_dicts = list(zip(*sequence.sample(sample_count)))
+        steps, value_dicts = list(zip(*sequence[start:stop].sample(p)))
         value_lists = {k: [d[k] for d in value_dicts] for k in value_dicts[0]}
         data['steps'] = steps
         data['values'] = _process_values(repo, value_lists.pop('val'))
@@ -73,9 +77,13 @@ def _container_data(container: Container) -> Dict:
     return data
 
 
-async def sequence_search_result_streamer(repo: 'Repo', query_collection, sample_count: Optional[int]):
+async def sequence_search_result_streamer(repo: 'Repo',
+                                          query_collection,
+                                          p: Optional[int],
+                                          start: Optional[int],
+                                          stop: Optional[int]):
     for sequence in query_collection:
-        seq_data = _sequence_data(repo, sequence, sample_count)
+        seq_data = _sequence_data(repo, sequence, p, start, stop)
         encoded_tree = encode_tree(seq_data)
         yield collect_streamable_data(encoded_tree)
 
@@ -87,24 +95,15 @@ async def container_search_result_streamer(query_collection: Iterable[Container]
         yield collect_streamable_data(encoded_tree)
 
 
-def container_query_response(repo, query: Optional[str], type_: str):
-    qresult = repo.containers(query, type_)
-    streamer = container_search_result_streamer(qresult)
-    return StreamingResponse(streamer)
-
-
-def sequence_query_response(repo, query: Optional[str], type_: str, sample_count: Optional[int]):
-    qresult = repo.sequences(query, type_)
-    streamer = sequence_search_result_streamer(repo, qresult, sample_count)
-    return StreamingResponse(streamer)
-
-
-def sequence_query_grouped_response(repo: 'Repo', query: Optional[str], type_: str, sample_count: Optional[int]):
+def sequence_query_grouped_response(repo: 'Repo',
+                                    query_collection,
+                                    p: Optional[int],
+                                    start: Optional[int],
+                                    stop: Optional[int]):
     #  TODO: V4 use repo query methods and grouping instead
-    qresult = repo.sequences(query, type_)
     containers_data = {}
-    for sequence in qresult:
-        seq_data = _sequence_data(repo, sequence, sample_count)
+    for sequence in query_collection:
+        seq_data = _sequence_data(repo, sequence, p, start, stop)
 
         cont_hash = sequence._container_hash
         if cont_hash not in containers_data:
@@ -126,21 +125,29 @@ def sequence_query_grouped_response(repo: 'Repo', query: Optional[str], type_: s
 @query_router.get('/fetch/', responses={400: {'model': QuerySyntaxErrorOut}})
 async def data_fetch_api(type_: str,
                          q: Optional[str] = '',
-                         p: Optional[int] = 500):
+                         p: Optional[int] = 500,
+                         start: Optional[int] = None,
+                         stop: Optional[int] = None):
     repo = get_project_repo()
     query = checked_query(q)
     if type_ in Container.registry:
-        return container_query_response(repo, query, type_)
+        qresult = repo.containers(query, type_)
+        streamer = container_search_result_streamer(qresult)
     elif type_ in Sequence.registry:
-        return sequence_query_response(repo, query, type_, p)
-    raise HTTPException(status_code=400, detail=f'Unknown type \'{type_}\'.')
+        qresult = repo.sequences(query, type_)
+        streamer = sequence_search_result_streamer(repo, qresult, p, start, stop)
+    else:
+        raise HTTPException(status_code=400, detail=f'Unknown type \'{type_}\'.')
+    return StreamingResponse(streamer)
 
 
 @query_router.get('/grouped-sequences/')
 async def grouped_data_fetch_api(seq_type: Optional[str] = 'Sequence',
                                  cont_type: Optional[str] = 'Container',
                                  q: Optional[str] = '',
-                                 p: Optional[int] = 500):
+                                 p: Optional[int] = 500,
+                                 start: Optional[int] = None,
+                                 stop: Optional[int] = None):
     repo = get_project_repo()
     query = checked_query(q)
     if seq_type not in Sequence.registry:
@@ -151,7 +158,8 @@ async def grouped_data_fetch_api(seq_type: Optional[str] = 'Sequence',
         query = f'(container.type.startswith("{Container.registry[cont_type][0].get_full_typename()}")) and {query}'
     else:
         query = f'container.type.startswith("{Container.registry[cont_type][0].get_full_typename()}")'
-    return sequence_query_grouped_response(repo, query, seq_type, p)
+    qresult = repo.sequences(query, seq_type)
+    return sequence_query_grouped_response(repo, qresult, p, start, stop)
 
 
 URIBatchIn = List[str]

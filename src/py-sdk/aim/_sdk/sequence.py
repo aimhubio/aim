@@ -288,8 +288,8 @@ class Sequence(Generic[ItemType], ABCSequence):
 
 class SequenceView(object):
     def __init__(self, sequence: Sequence, *, columns: Tuple[str], start: int = None, stop: int = None):
-        self._start: int = start
-        self._stop: int = stop
+        self._start: int = start if start is not None else sequence._info.first_step
+        self._stop: int = stop if stop is not None else sequence._info.next_step
         self._columns: Set[str] = set(columns)
         self._sequence = sequence
 
@@ -322,9 +322,10 @@ class SequenceView(object):
             columns = tuple(self._columns.intersection(item))
             return SequenceView(self._sequence, start=self.start, stop=self.stop, columns=columns)
 
-    def sample(self, k: int) -> List[Any]:
+    def sample(self, k: Optional[int] = None) -> List[Any]:
         def get_columns(item):
             return [item[0], {k: v for k, v in item[1].items() if k in self._columns}]
-
+        if k is None:
+            k = self.stop - self.start
         samples = self._sequence._data.reservoir().sample(k, begin=self.start, end=self.stop)
         return sorted(map(get_columns, samples), key=lambda x: x[0])
