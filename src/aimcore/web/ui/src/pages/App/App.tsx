@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Route, useLocation } from 'react-router-dom';
 
-import { IconBrandPython } from '@tabler/icons-react';
+import { IconBrandPython, IconPencil } from '@tabler/icons-react';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import {
@@ -12,6 +12,8 @@ import {
   Tree,
   Icon,
   Text,
+  Link,
+  Button,
 } from 'components/kit_v2';
 
 import { TopBar } from 'config/stitches/foundations/layout';
@@ -27,13 +29,14 @@ import { AppContainer, BoardWrapper, BoardLink } from './App.style';
 interface Node {
   title: string | React.ReactNode;
   key: string;
-  value?: string;
+  value: string;
   children?: Node[];
-  isLeaf?: boolean;
-  icon?: React.ReactNode;
 }
 
-const AppStructure: React.FC<any> = ({ boards }: AppStructureProps) => {
+const AppStructure: React.FC<any> = ({
+  boards,
+  editMode,
+}: AppStructureProps) => {
   const location = useLocation();
 
   function makeTreeData(list: string[]): Node[] {
@@ -52,7 +55,8 @@ const AppStructure: React.FC<any> = ({ boards }: AppStructureProps) => {
 
     // Step 1: Create nodes and build a lookup
     for (let i = 0; i < sortedList.length; i++) {
-      const isActive = location.pathname === `${PathEnum.App}/${sortedList[i]}`;
+      const packagePath = `${PathEnum.App}/${sortedList[i]}`;
+      const isActive = location.pathname.replace('/edit', '') === packagePath;
       let path = sortedList[i].split('/');
       for (let j = 0; j < path.length; j++) {
         const isLast = j === path.length - 1;
@@ -63,7 +67,7 @@ const AppStructure: React.FC<any> = ({ boards }: AppStructureProps) => {
               <BoardLink
                 isActive={isActive}
                 key={path[j]}
-                to={`${PathEnum.App}/${sortedList[i]}`}
+                to={`${packagePath}${editMode ? '/edit' : ''}`}
               >
                 <Icon size='md' icon={<IconBrandPython />} />
                 <Text css={{ ml: '$4' }}>{path[j]}</Text>
@@ -71,7 +75,6 @@ const AppStructure: React.FC<any> = ({ boards }: AppStructureProps) => {
             ) : (
               <Text>{path[j]}</Text>
             ),
-            isLeaf: isLast,
             value: path[j],
             key: `${i}-${j}`,
             ...(!isLast && { children: [] }),
@@ -127,7 +130,7 @@ function App(): React.FunctionComponentElement<React.ReactNode> {
             return (
               <AppWrapper
                 boardList={data}
-                boardPath={encodeURI(boardPath || '')}
+                boardPath={boardPath}
                 editMode={editMode!}
               />
             );
@@ -156,22 +159,22 @@ function App(): React.FunctionComponentElement<React.ReactNode> {
 }
 
 function AppWrapper({ boardPath, editMode, boardList }: AppWrapperProps) {
-  const board = useBoardStore((state) => state.boards?.[boardPath]);
+  const path = boardPath?.replace('/edit', '');
+  const board = useBoardStore((state) => state.boards?.[path]);
   const fetchBoard = useBoardStore((state) => state.fetchBoard);
-  const updateBoard = useBoardStore((state) => state.editBoard);
+  // const updateBoard = useBoardStore((state) => state.editBoard);
 
   React.useEffect(() => {
     if (boardPath && !board) {
-      const path = editMode ? boardPath?.replace('/edit', '') : boardPath;
       fetchBoard(path);
     }
-  }, [boardPath, board]);
+  }, [boardPath]);
 
-  const saveBoard = (board: any) => {
-    updateBoard(boardPath, {
-      ...board,
-    });
-  };
+  // const saveBoard = (board: any) => {
+  //   updateBoard(boardPath, {
+  //     ...board,
+  //   });
+  // };
 
   return (
     <AppContainer>
@@ -187,17 +190,27 @@ function AppWrapper({ boardPath, editMode, boardList }: AppWrapperProps) {
             ]}
           />
         </Box>
+        {board && !editMode && (
+          <Link
+            css={{ display: 'flex' }}
+            to={`${PathEnum.App}/${boardPath}/edit`}
+            underline={false}
+          >
+            <Button variant='outlined' size='xs' rightIcon={<IconPencil />}>
+              Edit
+            </Button>
+          </Link>
+        )}
       </TopBar>
       <Box display='flex' height='calc(100% - 28px)'>
-        <AppStructure boards={boardList} />
+        <AppStructure boards={boardList} editMode={editMode} />
         <BoardWrapper>
           {board && (
             <Board
-              key={board.path}
+              key={board.path + editMode}
               data={board}
-              previewMode={true}
-              saveBoard={saveBoard}
-              isLading={false}
+              editMode={editMode}
+              // saveBoard={saveBoard}
             />
           )}
         </BoardWrapper>

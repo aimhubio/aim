@@ -17,9 +17,9 @@ import usePyodide from 'services/pyodide/usePyodide';
 
 import pyodideEngine from '../../services/pyodide/store';
 
-import SaveBoard from './components/SaveBoard';
+// import SaveBoard from './components/SaveBoard';
 import GridCell from './components/GridCell';
-import BoardLeavingGuard from './components/BoardLeavingGuard';
+// import BoardLeavingGuard from './components/BoardLeavingGuard';
 import {
   BoardBlockTab,
   BoardComponentsViz,
@@ -40,8 +40,9 @@ function Board({
   newMode,
   notifyData,
   onNotificationDelete,
-  saveBoard,
-}: any): React.FunctionComponentElement<React.ReactNode> {
+}: // saveBoard,
+any): React.FunctionComponentElement<React.ReactNode> {
+  const [mounted, setMounted] = React.useState(false);
   const {
     isLoading: pyodideIsLoading,
     pyodide,
@@ -59,7 +60,6 @@ function Board({
 
   const boardPath = data.path;
 
-  const editorValue = React.useRef(data.code || '');
   const timerId = React.useRef(0);
 
   const [state, setState] = React.useState<any>({
@@ -120,7 +120,7 @@ function Board({
         console.log(ex);
       }
     }
-  }, [pyodide, pyodideIsLoading, editorValue, namespace, registeredPackages]);
+  }, [pyodide, pyodideIsLoading, data.code, namespace, registeredPackages]);
 
   const runParsedCode = React.useCallback(async () => {
     if (pyodide !== null && pyodideIsLoading === false) {
@@ -216,13 +216,24 @@ board_path=${boardPath === undefined ? 'None' : `"${boardPath}"`}
     );
     return () => {
       window.clearTimeout(timerId.current);
+      if (editorRef.current) {
+        editorRef.current = null;
+      }
       unsubscribe();
     };
   }, [boardPath]);
 
+  React.useEffect(() => {
+    if (!mounted) {
+      setMounted(true);
+    }
+  }, [mounted]);
+
   function handleEditorMount(editor: any) {
     editorRef.current = editor;
-    editorRef.current?.onKeyDown(updateEditorValue);
+    if (editorRef.current) {
+      editorRef.current?.onKeyDown(updateEditorValue);
+    }
   }
 
   const updateEditorValue = _.debounce(() => {
@@ -261,11 +272,11 @@ board_path=${boardPath === undefined ? 'None' : `"${boardPath}"`}
               >
                 Run
               </Button>
-              <SaveBoard
+              {/* <SaveBoard
                 saveBoard={saveBoard}
                 getEditorValue={() => editorRef.current?.getValue() ?? ''}
                 initialState={data}
-              />
+              /> */}
               <Link
                 css={{ display: 'flex' }}
                 to={`${PathEnum.App}/${boardPath}`}
@@ -279,17 +290,17 @@ board_path=${boardPath === undefined ? 'None' : `"${boardPath}"`}
             tobBarRef,
           )}
         <BusyLoaderWrapper
-          isLoading={pyodideIsLoading || isLoading}
+          isLoading={pyodideIsLoading || isLoading || !mounted}
           height={'100%'}
         >
           <BoardVisualizerContainer className='BoardVisualizer'>
             <BoardVisualizerPane id='BoardVisualizer' useLocalStorage={true}>
-              {editMode || newMode ? (
+              {(editMode || newMode) && mounted ? (
                 <BoardVisualizerEditorPane className='BoardVisualizer__main__editor'>
                   <Editor
                     language='python'
                     height='100%'
-                    value={editorRef.current?.getValue() ?? data.code}
+                    value={editorRef.current?.getValue() ?? (data.code || '')}
                     onMount={handleEditorMount}
                     loading={<span />}
                     options={{
@@ -343,7 +354,7 @@ board_path=${boardPath === undefined ? 'None' : `"${boardPath}"`}
                       </div>
                     )}
 
-                    <BoardLeavingGuard data={data.code} />
+                    {/* <BoardLeavingGuard data={data.code} /> */}
                   </>
                 ) : (
                   <BoardComponentsViz
