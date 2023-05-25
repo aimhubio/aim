@@ -12,7 +12,7 @@ const api = new NetworkService(`${getAPIHost()}${ENDPOINTS.BOARDS.BASE}`);
  * this call is used for fetching boards list.
  * @returns {Promise<BoardData[]>}
  */
-async function fetchBoardsList(): Promise<BoardData[]> {
+async function fetchBoardsList(): Promise<string[]> {
   return (await api.makeAPIGetRequest(ENDPOINTS.BOARDS.GET)).body;
 }
 
@@ -23,8 +23,8 @@ async function fetchBoardsList(): Promise<BoardData[]> {
  * @returns {Promise<BoardData>}
  */
 
-async function fetchBoardById(id: string): Promise<BoardData> {
-  return (await api.makeAPIGetRequest(`${ENDPOINTS.BOARDS.GET}${id}`)).body;
+async function fetchBoardByPath(path: string): Promise<BoardData> {
+  return (await api.makeAPIGetRequest(`${ENDPOINTS.BOARDS.GET}${path}`)).body;
 }
 
 /**
@@ -109,7 +109,7 @@ async function fetchTemplateById(id: string): Promise<TemplateData> {
 export * from './types.d';
 export {
   fetchBoardsList,
-  fetchBoardById,
+  fetchBoardByPath,
   createBoard,
   updateBoard,
   deleteBoard,

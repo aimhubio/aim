@@ -8,14 +8,13 @@ import AdapterError from 'modules/core/pipeline/adapter/AdapterError';
 import pyodideEngine from 'services/pyodide/store';
 
 import { parseStream } from 'utils/encoder/streamEncoding';
-import { AlignmentOptionsEnum } from 'utils/d3';
 import { filterMetricsValues } from 'utils/app/filterMetricData';
 
 const seachRequests = createFetchDataRequest();
 
 const queryResultCacheMap: Record<string, any> = {};
 
-export function search(boardId: string, sequenceName: string, query: string) {
+export function search(boardPath: string, sequenceName: string, query: string) {
   const queryKey = `${sequenceName}_${query}`;
 
   if (queryResultCacheMap.hasOwnProperty(queryKey)) {
@@ -52,7 +51,7 @@ export function search(boardId: string, sequenceName: string, query: string) {
             queryResultCacheMap[queryKey] = result;
 
             pyodideEngine.events.fire(
-              boardId as string,
+              boardPath as string,
               {
                 query: queryKey,
               },

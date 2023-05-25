@@ -9,32 +9,29 @@ function useApp() {
   const isLoading = useBoardStore((state) => state.isLoading);
   const updateBoard = useBoardStore((state) => state.editBoard);
   const fetchBoard = useBoardStore((state) => state.fetchBoard);
-  const boardData = useBoardStore((state) => state.board);
+  const boards = useBoardStore((state) => state.boards);
   const notifications = useBoardStore((state) => state.notifyData);
-  const destroy = useBoardStore((state) => state.destroy);
   const history = useHistory();
   const location = useLocation();
 
   React.useEffect(() => {
     fetchBoardsList();
-    return () => {
-      destroy();
-    };
   }, []);
 
   React.useEffect(() => {
     if (!isLoading && boardsList.length > 0 && location.pathname === '/app') {
-      const firstBoardId = boardsList[0].board_id; // replace this with the correct property if different
-      history.push(`/app/${firstBoardId}`);
+      const firstBoardPath = boardsList[0]; // replace this with the correct property if different
+      history.push(`/app/${firstBoardPath}`);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [boardsList]);
 
   return {
     data: boardsList,
     updateBoard,
+    boards,
     isLoading,
     fetchBoard,
-    boardData,
     notifications,
   };
 }
