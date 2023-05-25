@@ -497,23 +497,25 @@ export async function parseStream<T extends Array>(
       for await (let [keys, val] of objects) {
         const object: T =
           level === 0 ? val : { ...(val as any), hash: keys[0] };
-        if (object.hash?.startsWith?.('progress')) {
-          // maybe typeof progressCallback === 'function'
-          if (options?.progressCallback) {
-            options.progressCallback(object as IRunProgress);
-            const { 0: checked, 1: trackedRuns } = object;
+        if (object) {
+          if (object.hash?.startsWith?.('progress')) {
+            // maybe typeof progressCallback === 'function'
+            if (options?.progressCallback) {
+              options.progressCallback(object as IRunProgress);
+              const { 0: checked, 1: trackedRuns } = object;
 
-            options.progressCallback({
-              matched: data.length,
-              checked,
-              trackedRuns,
-            });
+              options.progressCallback({
+                matched: data.length,
+                checked,
+                trackedRuns,
+              });
+            }
+          } else {
+            if (options?.callback) {
+              options.callback({ value: val, hash: keys[0] });
+            }
+            data.push(object);
           }
-        } else {
-          if (options?.callback) {
-            options.callback({ value: val, hash: keys[0] });
-          }
-          data.push(object);
         }
       }
     } catch (e) {
