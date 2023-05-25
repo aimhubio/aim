@@ -63,7 +63,6 @@ def query_filter(type_, query=""):
         for item in data:
             d = item
             d["type"] = type_
-            d["key"] = i
             i = i + 1
             items.append(d)
         data.destroy()
@@ -75,40 +74,16 @@ def query_filter(type_, query=""):
         return []
 
 
-class Metric():
+class Sequence():
     @classmethod
     def filter(self, query=""):
-        return query_filter('Metric', query)
+        return query_filter('Sequence', query)
 
 
-class Images():
+class Container():
     @classmethod
     def filter(self, query=""):
-        return query_filter('Images', query)
-
-
-class Audios():
-    @classmethod
-    def filter(self, query=""):
-        return query_filter('Audios', query)
-
-
-class Texts():
-    @classmethod
-    def filter(self, query=""):
-        return query_filter('Texts', query)
-
-
-class Figures():
-    @classmethod
-    def filter(self, query=""):
-        return query_filter('Figures', query)
-
-
-class Distributions():
-    @classmethod
-    def filter(self, query=""):
-        return query_filter('Distributions', query)
+        return query_filter('Container', query)
 
 
 ####################

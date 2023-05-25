@@ -59,6 +59,7 @@ const BoardVisualizerComponentsPane = styled(SplitPaneItem, {
     p: '$5',
     border: '1px solid $border30',
     br: '$3',
+    bc: '#fff',
     '.Explorer': {
       height: '100%',
     },

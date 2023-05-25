@@ -92,13 +92,13 @@ def get_sequence_value_types(seq_type: Type['Sequence']) -> Tuple[str, ...]:
 
 def auto_registry(cls):
     @classmethod
-    def get_typename_fn(cls_):
+    def get_typename_fn(cls_) -> str:
         if hasattr(cls_, '__aim_package__'):
             return f'{cls_.__aim_package__}.{cls_.__name__}'
         return cls_.__name__
 
     @classmethod
-    def get_full_typename_fn(cls_):
+    def get_full_typename_fn(cls_) -> str:
         if cls_ == cls:
             return cls_.get_typename()
         for base in cls_.__bases__:
