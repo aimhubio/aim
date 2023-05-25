@@ -18,9 +18,12 @@ export function search(
   boardPath: string,
   type_: string,
   query: string,
+  count: number,
+  start: number,
+  stop: number,
   isSequence: boolean,
 ) {
-  const queryKey = `${type_}_${query}`;
+  const queryKey = `${type_}_${query}_${count}_${start}_${stop}`;
 
   if (queryResultCacheMap.hasOwnProperty(queryKey)) {
     return queryResultCacheMap[queryKey];
@@ -30,6 +33,9 @@ export function search(
     .call({
       q: query,
       type_: type_,
+      p: count,
+      start: start,
+      stop: stop,
       report_progress: false,
     })
     .then((data) => {
@@ -104,15 +110,15 @@ export function search(
               { savePayload: false },
             );
           } catch (err: any) {
-            throw new AdapterError(err.message || err, err.detail);
+            // throw new AdapterError(err.message || err, err.detail);
           }
         })
         .catch((err: any) => {
-          throw new DecodingError(err.message || err, err.detail);
+          // throw new DecodingError(err.message || err, err.detail);
         });
     })
     .catch((err: any) => {
-      throw new FetchingError(err.message || err, err.detail);
+      // throw new FetchingError(err.message || err, err.detail);
     });
 
   throw 'WAIT_FOR_QUERY_RESULT';
