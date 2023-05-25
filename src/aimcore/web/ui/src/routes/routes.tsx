@@ -56,7 +56,7 @@ const ImagesExplore = React.lazy(
       /* webpackChunkName: "images" */ 'pages/Explorers/ImagesExplore/ImagesExplore'
     ),
 );
-const FiguresExplore = React.lazy(
+const FiguresExplorer = React.lazy(
   () =>
     import(/* webpackChunkName: "figures" */ 'pages/Explorers/FiguresExplorer'),
 );
@@ -185,8 +185,8 @@ export const explorersRoutes: { [key: string]: IRoute } = {
     color: '#1473E6',
     category: ExplorersCatsEnum.Prompts,
   },
-  IMAGE_EXPLORE: {
-    path: PathEnum.Images_Explore,
+  IMAGES_EXPLORER: {
+    path: PathEnum.Images_Explorer,
     component: ImagesExplore,
     showInSidebar: false,
     displayName: 'Images',
@@ -200,7 +200,7 @@ export const explorersRoutes: { [key: string]: IRoute } = {
   },
   FIGURES_EXPLORER: {
     path: PathEnum.Figures_Explorer,
-    component: FiguresExplore,
+    component: FiguresExplorer,
     showInSidebar: false,
     icon: 'figures',
     displayName: 'Figures',
@@ -358,8 +358,8 @@ const routes: { [key: string]: any } = {
     isExact: true,
     title: pageTitlesEnum.PARAMS_EXPLORER,
   },
-  IMAGE_EXPLORE_ID: {
-    path: PathEnum.Images_Explore_Id,
+  IMAGE_EXPLORER_ID: {
+    path: PathEnum.Images_Explorer_Id,
     component: ImagesExplore,
     showInSidebar: false,
     displayName: 'ImagesId',

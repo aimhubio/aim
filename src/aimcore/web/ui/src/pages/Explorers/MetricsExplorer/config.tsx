@@ -31,7 +31,7 @@ export const getMetricsDefaultConfig = (): typeof defaultHydration => {
     draft[GroupType.COLUMN].defaultApplications.fields = ['metric.name'];
 
     draft[GroupType.ROW].defaultApplications.orders = [Order.ASC];
-    draft[GroupType.ROW].defaultApplications.fields = ['metric.context.subset'];
+    draft[GroupType.ROW].defaultApplications.fields = ['run.hash'];
 
     draft[GroupType.GRID].defaultApplications.orders = [Order.ASC];
     draft[GroupType.GRID].defaultApplications.fields = ['metric.name'];

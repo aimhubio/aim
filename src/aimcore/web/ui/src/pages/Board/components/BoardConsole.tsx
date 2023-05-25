@@ -8,14 +8,13 @@ import ResizeElement, {
 } from 'components/ResizeElement';
 import { Box, IconButton, Text, Tooltip } from 'components/kit_v2';
 
-import { getItem } from 'utils/storage';
+import useBoardStore from 'pages/Board/BoardStore';
 
 import {
   BoardConsoleWrapper,
   BoardConsolePanel,
   BoardConsoleElement,
 } from '../Board.style';
-import useBoardStore from '../BoardStore';
 
 const BOARD_CONSOLE_SIZES = {
   MIN_HEIGHT: 24,
@@ -51,21 +50,15 @@ function BoardConsole({
   function handleResizeElementMount(resizeElement: any) {
     resizeElementRef.current = resizeElement.current;
     const height = resizeElementRef.current?.offsetHeight;
-    const sizes = JSON.parse(getItem('board-ResizeElement')!);
     setConsoleOpen(height > BOARD_CONSOLE_SIZES.MIN_HEIGHT);
-    vizContainer.current.style.marginBottom = `${
-      sizes?.height || `${BOARD_CONSOLE_SIZES.INITIAL_SIZES.height}px`
-    }`;
   }
 
   function handleOpenConsole() {
     const height = resizeElementRef.current?.offsetHeight;
     if (height > BOARD_CONSOLE_SIZES.MIN_HEIGHT) {
       resizeElementRef.current.style.height = `${BOARD_CONSOLE_SIZES.MIN_HEIGHT}px`;
-      vizContainer.current.style.marginBottom = `${BOARD_CONSOLE_SIZES.MIN_HEIGHT}px`;
     } else {
       resizeElementRef.current.style.height = `${BOARD_CONSOLE_SIZES.INITIAL_SIZES.maxHeight}px`;
-      vizContainer.current.style.marginBottom = `${BOARD_CONSOLE_SIZES.INITIAL_SIZES.maxHeight}px`;
     }
   }
 
@@ -75,10 +68,7 @@ function BoardConsole({
       side={ResizableSideEnum.TOP}
       useLocalStorage={true}
       onMount={handleResizeElementMount}
-      initialSizes={{
-        ...BOARD_CONSOLE_SIZES.INITIAL_SIZES,
-        width: vizContainer.current?.offsetWidth,
-      }}
+      initialSizes={BOARD_CONSOLE_SIZES.INITIAL_SIZES}
       onResizeEnd={onResizeEnd}
       onResizeStart={onResizeStart}
     >

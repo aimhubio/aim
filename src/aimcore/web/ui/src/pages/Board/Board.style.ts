@@ -59,6 +59,9 @@ const BoardVisualizerComponentsPane = styled(SplitPaneItem, {
     p: '$5',
     border: '1px solid $border30',
     br: '$3',
+    '.Explorer': {
+      height: '100%',
+    },
     '.RunLogRecords': {
       p: 0,
       '&__contentWrapper': {
@@ -74,7 +77,6 @@ const BoardVisualizerComponentsPane = styled(SplitPaneItem, {
     '.Board': {
       height: '100%',
       width: '100%',
-
       '.BoardVisualizer': {
         height: '100%',
       },
@@ -84,7 +86,7 @@ const BoardVisualizerComponentsPane = styled(SplitPaneItem, {
     zIndex: 9,
     bc: '#fff',
     minHeight: '$3',
-    width: '100% !important',
+    width: '100%',
   },
   '.ResizeElement__gutter__top': {
     bs: 'inset 0 1px 0 0 $colors$border30',

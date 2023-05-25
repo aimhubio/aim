@@ -86,6 +86,12 @@ const RunNotesVizElement = React.lazy(
       /* webpackPrefetch: true, webpackChunkName: "RunNotes" */ './RunNotesVizElement'
     ),
 );
+const ExplorerVizElement = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "Explorer" */ './ExplorerVizElement'
+    ),
+);
 const PlotlyVizElement = React.lazy(
   () =>
     import(
@@ -198,6 +204,7 @@ export type VizElementKey =
   | 'Radio'
   | 'Checkbox'
   | 'ToggleButton'
+  | 'Explorer'
   | 'Header'
   | 'SubHeader'
   | 'Table'
@@ -240,6 +247,7 @@ const VizElementsMap: Record<VizElementKey, React.FunctionComponent<any>> = {
   RunMessages: RunMessagesVizElement,
   RunLogs: RunLogsVizElement,
   RunNotes: RunNotesVizElement,
+  Explorer: ExplorerVizElement,
 
   // Super components
   Board: BoardVizElement,

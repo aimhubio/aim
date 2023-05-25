@@ -125,6 +125,7 @@ export interface IBaseComponentProps {
 }
 
 export interface IWidgetRendererProps {
+  appContainerNode?: HTMLDivElement;
   boxContainer: React.MutableRefObject<HTMLDivElement>;
   vizContainer: React.MutableRefObject<HTMLDivElement>;
 }
@@ -182,6 +183,11 @@ export declare interface ExplorerEngineConfiguration {
    * @default value is {}
    */
   states?: CustomStates;
+
+  /**
+   * Explorer level initial state
+   */
+  initialState?: Record<string, any>;
 }
 
 export declare interface ExplorerVisualizationsConfiguration
@@ -246,7 +252,7 @@ export declare interface ExplorerConfiguration
   readonly states?: CustomStates;
 
   /**
-   * Do not check for pipeline status and skip rendering the illustrration block
+   * Do not check for pipeline status and skip rendering the illustration block
    * @optional
    * @default value is false
    */
@@ -255,10 +261,29 @@ export declare interface ExplorerConfiguration
   /**
    * Check whether to render the progress bar for the search query
    * @optional
-   * @default value is true
+   * @default value is false
    */
-  displayProgress?: boolean;
+  hideProgress?: boolean;
+
+  /**
+   * Get static content
+   * @param type - type of static content
+   */
   getStaticContent?: (type: string) => React.ReactNode;
+
+  /**
+   * Hide explorer bar
+   * @optional
+   * @default value is false
+   */
+  hideExplorerBar?: boolean;
+
+  /**
+   * Hide query form
+   * @optional
+   * @default value is false
+   */
+  hideQueryForm?: boolean;
 }
 
 export declare interface ExplorerProps<
