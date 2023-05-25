@@ -14,44 +14,65 @@ import { BreadCrumbProps } from './BreadCrumb.d';
  */
 function Breadcrumb({
   customRouteValues,
+  items = [],
   ...rest
 }: BreadCrumbProps): React.FunctionComponentElement<React.ReactNode> {
   const location = useLocation();
   const pathnames = location.pathname.split('/').filter((x: string) => x);
 
+  function renderBreadcrumb({
+    path,
+    name,
+    isLast,
+  }: {
+    path: string;
+    name: string;
+    isLast: boolean;
+  }) {
+    return (
+      <React.Fragment key={path}>
+        {isLast ? (
+          <BreadcrumbLastItem>{name}</BreadcrumbLastItem>
+        ) : (
+          <BreadcrumbItem
+            to={path}
+            isActive={(m, location) => {
+              return location.pathname === path;
+            }}
+          >
+            {name}
+            <Text size='$3' css={{ mx: '$2' }} color='$textPrimary50'>
+              /
+            </Text>
+          </BreadcrumbItem>
+        )}
+      </React.Fragment>
+    );
+  }
   return (
     <Box display='flex' ai='center' {...rest}>
-      {pathnames?.map((val: string, index: number) => {
-        const currentPath = `/${pathnames.slice(0, index + 1).join('/')}`;
-        const route = Object.values(routes).find(
-          (r: IRoute) => r.path === currentPath,
-        );
+      {items.length > 0
+        ? items.map((item, index) => {
+            const isLast = index === items.length - 1;
+            return renderBreadcrumb({ ...item, isLast });
+          })
+        : pathnames?.map((val: string, index: number) => {
+            const currentPath = `/${pathnames.slice(0, index + 1).join('/')}`;
+            const route = Object.values(routes).find(
+              (r: IRoute) => r.path === currentPath,
+            );
 
-        const displayName = route
-          ? route.displayName
-          : customRouteValues?.[currentPath] || val;
+            const displayName = route
+              ? route.displayName
+              : customRouteValues?.[currentPath] || val;
 
-        const isLast = index === pathnames.length - 1;
-        return (
-          <React.Fragment key={currentPath}>
-            {isLast ? (
-              <BreadcrumbLastItem>{displayName}</BreadcrumbLastItem>
-            ) : (
-              <BreadcrumbItem
-                to={currentPath}
-                isActive={(m, location) => {
-                  return location.pathname === route?.path;
-                }}
-              >
-                {displayName}
-                <Text size='$3' css={{ mx: '$2' }} color='$textPrimary50'>
-                  /
-                </Text>
-              </BreadcrumbItem>
-            )}
-          </React.Fragment>
-        );
-      })}
+            const isLast = index === pathnames.length - 1;
+            return renderBreadcrumb({
+              path: currentPath,
+              name: displayName,
+              isLast,
+            });
+          })}
     </Box>
   );
 }

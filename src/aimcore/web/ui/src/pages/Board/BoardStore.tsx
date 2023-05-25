@@ -10,7 +10,7 @@ import {
   TemplateData,
   createBoard,
   deleteBoard,
-  fetchBoardById,
+  fetchBoardByPath,
   fetchBoardsList,
   fetchBoardsTemplates,
   fetchTemplateById,
@@ -22,8 +22,8 @@ interface BoardStore {
   isLoading: boolean;
   editorValue: string;
   consoleOpen: boolean;
-  boardsList: BoardData[];
-  board: BoardData | null;
+  boardsList: string[];
+  boards: Record<string, BoardData> | null;
   template: TemplateData | null;
   templatesList: TemplateData[];
   notifyData: IToastProps[];
@@ -32,7 +32,7 @@ interface BoardStore {
   fetchBoardList: () => Promise<void>;
   onNotificationDelete: (id: string) => void;
   addNotifyData: ({ status, message, icon }: any) => void;
-  fetchBoard: (id: string) => Promise<void>;
+  fetchBoard: (path: string) => Promise<void>;
   addBoard: (boardBody: BoardsRequestBody) => Promise<void>;
   editBoard: (id: string, boardBody: BoardsRequestBody) => Promise<void>;
   removeBoard: (id: string) => Promise<void>;
@@ -47,7 +47,7 @@ const useBoardStore = create<BoardStore>((set, get) => ({
   boardsList: [],
   templatesList: [],
   notifyData: [],
-  board: null,
+  boards: null,
   template: null,
   addNotifyData: ({ status = 'success', message = '', icon = null }: any) => {
     const id = Math.random().toString(36).substr(2, 9);
@@ -88,11 +88,18 @@ const useBoardStore = create<BoardStore>((set, get) => ({
       set({ isLoading: false });
     }
   },
-  fetchBoard: async (id: string) => {
+  fetchBoard: async (boardPath: string) => {
     try {
-      const board = await fetchBoardById(id);
-      set({ board, isLoading: false });
+      const boards = await fetchBoardByPath(boardPath);
+      set({
+        boards: {
+          ...get().boards,
+          [boardPath]: boards,
+        },
+        isLoading: false,
+      });
     } catch (err: any) {
+      set({ boards: null });
       get().addNotifyData({
         status: 'danger',
         message: err.message,
@@ -108,7 +115,7 @@ const useBoardStore = create<BoardStore>((set, get) => ({
         message: 'Board created successfully',
         icon: <IconCheck />,
       });
-      set({ boardsList });
+      // set({ boardsList });
     } catch (err: any) {
       get().addNotifyData({
         status: 'danger',
@@ -116,12 +123,12 @@ const useBoardStore = create<BoardStore>((set, get) => ({
       });
     }
   },
-  editBoard: async (id: string, boardBody: BoardsRequestBody) => {
+  editBoard: async (path: string, boardBody: BoardsRequestBody) => {
     try {
-      const data = await updateBoard(id, boardBody);
+      const data = await updateBoard(path, boardBody);
       const boardsList = [...get().boardsList];
-      const index = boardsList.findIndex((board) => board.board_id === id);
-      boardsList[index] = data;
+      const index = boardsList.findIndex((boardPath) => boardPath === path);
+      // boardsList[index] = data;
       get().addNotifyData({
         status: 'success',
         message: 'Board updated successfully',
@@ -129,7 +136,7 @@ const useBoardStore = create<BoardStore>((set, get) => ({
       });
       set({
         boardsList,
-        board: data,
+        // board: data,
       });
     } catch (err: any) {
       get().addNotifyData({
@@ -138,11 +145,11 @@ const useBoardStore = create<BoardStore>((set, get) => ({
       });
     }
   },
-  removeBoard: async (id: string) => {
+  removeBoard: async (path: string) => {
     try {
-      deleteBoard(id);
+      deleteBoard(path);
       const boardsList = [...get().boardsList].filter(
-        (board) => board.board_id !== id,
+        (boardPath) => boardPath !== path,
       );
       get().addNotifyData({
         status: 'success',
@@ -161,8 +168,8 @@ const useBoardStore = create<BoardStore>((set, get) => ({
     try {
       const data = await resetBoardById(id);
       const boardsList = [...get().boardsList];
-      const index = boardsList.findIndex((board) => board.board_id === id);
-      boardsList[index] = data;
+      const index = boardsList.findIndex((boardPath) => boardPath === id);
+      // boardsList[index] = data;
       get().addNotifyData({
         status: 'success',
         message: 'Board reset successfully',
@@ -200,7 +207,7 @@ const useBoardStore = create<BoardStore>((set, get) => ({
     }
   },
   destroy: () => {
-    set({ editorValue: '', isLoading: true, boardsList: [], board: null });
+    set({ editorValue: '', isLoading: true, boardsList: [], boards: null });
   },
 }));
 

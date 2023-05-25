@@ -1,12 +1,12 @@
 import { BoardData } from 'modules/core/api/boardsApi';
 
 export interface AppStructureProps {
-  boards: BoardData[];
+  boards: string[];
   editMode: boolean;
 }
 
 export interface AppWrapperProps {
-  boardId: string;
+  boardPath: string;
   editMode: boolean;
-  boardList: BoardData[];
+  boardList: string[];
 }

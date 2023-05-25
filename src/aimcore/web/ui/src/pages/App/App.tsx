@@ -1,13 +1,9 @@
 import * as React from 'react';
 import { Route } from 'react-router-dom';
 
-import { IconPencil } from '@tabler/icons-react';
-
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import {
   Box,
-  Button,
-  Link,
   ListItem,
   Breadcrumb,
   ToastProvider,
@@ -24,10 +20,7 @@ import { AppStructureProps, AppWrapperProps } from './App.d';
 import useApp from './useApp';
 import { AppContainer, BoardWrapper, BoardLink } from './App.style';
 
-const AppStructure: React.FC<any> = ({
-  boards,
-  editMode,
-}: AppStructureProps) => {
+const AppStructure: React.FC<any> = ({ boards }: AppStructureProps) => {
   return (
     <Box
       width={200}
@@ -37,12 +30,9 @@ const AppStructure: React.FC<any> = ({
         p: '$3 $4',
       }}
     >
-      {boards.map((board) => (
-        <BoardLink
-          key={board.board_id}
-          to={`${PathEnum.App}/${board.board_id}/${editMode ? 'edit' : ''}`}
-        >
-          <ListItem>{board.name}</ListItem>
+      {boards.map((boardPath) => (
+        <BoardLink key={boardPath} to={`${PathEnum.App}/${boardPath}`}>
+          <ListItem>{boardPath}</ListItem>
         </BoardLink>
       ))}
     </Box>
@@ -55,19 +45,17 @@ function App(): React.FunctionComponentElement<React.ReactNode> {
   return (
     <ErrorBoundary>
       {isLoading ? null : (
-        <Route
-          path={[`${PathEnum.App}/:boardId`, `${PathEnum.App}/:boardId/edit`]}
-          exact
-        >
-          {(props) => {
-            const boardId = props.match?.params?.boardId;
-            const editMode = props.match?.path.includes(
-              `${PathEnum.App}/:boardId/edit`,
-            );
+        <Route path={[`${PathEnum.App}/*`, `${PathEnum.App}/*/edit`]} exact>
+          {(props: any) => {
+            let boardPath = '';
+            if (props.match?.params?.[0]) {
+              boardPath = props.match.params[0];
+            }
+            const editMode = props.location.pathname.endsWith('/edit');
             return (
               <AppWrapper
                 boardList={data}
-                boardId={boardId!}
+                boardPath={encodeURI(boardPath || '')}
                 editMode={editMode!}
               />
             );
@@ -95,19 +83,20 @@ function App(): React.FunctionComponentElement<React.ReactNode> {
   );
 }
 
-function AppWrapper({ boardId, editMode, boardList }: AppWrapperProps) {
-  const board = useBoardStore((state) => state.board);
+function AppWrapper({ boardPath, editMode, boardList }: AppWrapperProps) {
+  const board = useBoardStore((state) => state.boards?.[boardPath]);
   const fetchBoard = useBoardStore((state) => state.fetchBoard);
   const updateBoard = useBoardStore((state) => state.editBoard);
 
   React.useEffect(() => {
-    if (boardId) {
-      fetchBoard(boardId);
+    if (boardPath && !board) {
+      const path = editMode ? boardPath?.replace('/edit', '') : boardPath;
+      fetchBoard(path);
     }
-  }, [boardId]);
+  }, [boardPath, board]);
 
   const saveBoard = (board: any) => {
-    updateBoard(boardId, {
+    updateBoard(boardPath, {
       ...board,
     });
   };
@@ -117,31 +106,24 @@ function AppWrapper({ boardId, editMode, boardList }: AppWrapperProps) {
       <TopBar id='app-top-bar'>
         <Box flex='1 100%'>
           <Breadcrumb
-            customRouteValues={{
-              [`/app/${boardId}`]: board?.name || ' ',
-            }}
+            items={[
+              {
+                name: 'App',
+                path: '/app',
+              },
+              { name: boardPath, path: `/app/${boardPath}` },
+            ]}
           />
         </Box>
-        {board && !editMode && (
-          <Link
-            css={{ display: 'flex' }}
-            to={`${PathEnum.App}/${boardId}/edit`}
-            underline={false}
-          >
-            <Button variant='outlined' size='xs' rightIcon={<IconPencil />}>
-              Edit
-            </Button>
-          </Link>
-        )}
       </TopBar>
       <Box display='flex' height='calc(100% - 28px)'>
-        <AppStructure boards={boardList} editMode={editMode} />
+        <AppStructure boards={boardList} />
         <BoardWrapper>
           {board && (
             <Board
-              key={board.board_id + editMode}
+              key={board.path}
               data={board}
-              editMode={editMode}
+              previewMode={true}
               saveBoard={saveBoard}
               isLading={false}
             />

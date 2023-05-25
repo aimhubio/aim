@@ -26,11 +26,11 @@ export interface BoardsRequestBody {
 
 export interface BoardData {
   /**
-   * The board_id
+   * The board_path
    * @type {string}
    * @optional
    */
-  board_id: string;
+  board_path: string;
   /**
    * The name of the board
    * @type {string}
@@ -53,6 +53,12 @@ export interface BoardData {
    * @type {string}
    */
   code?: string;
+  /**
+   * The path of the board
+   * @type {string}
+   * @example '/projects/1/boards/1'
+   */
+  path: string;
 }
 
 export interface TemplateData {
