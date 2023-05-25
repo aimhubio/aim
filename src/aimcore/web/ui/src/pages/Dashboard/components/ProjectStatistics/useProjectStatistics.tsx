@@ -12,13 +12,13 @@ import { IProjectStatistic } from './ProjectStatistics.d';
 import projectStatisticsEngine from './ProjectStatisticsStore';
 
 const statisticsInitialMap: Record<string, IProjectStatistic> = {
-  // [SequenceType.Metric]: {
-  //   label: 'Metrics',
-  //   count: 0,
-  //   icon: 'metrics',
-  //   iconBgColor: '#7A4CE0',
-  //   navLink: routes.METRICS.path,
-  // },
+  [SequenceType.Metric]: {
+    label: 'Metrics',
+    count: 0,
+    icon: 'metrics',
+    iconBgColor: '#7A4CE0',
+    navLink: routes.METRICS_EXPLORER.path,
+  },
   // systemMetrics: {
   //   label: 'Sys. metrics',
   //   count: 0,

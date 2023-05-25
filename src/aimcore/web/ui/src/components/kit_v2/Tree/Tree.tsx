@@ -10,7 +10,8 @@ import 'antd/es/tree/style/index.css';
 
 type DataNode = {
   key: string;
-  title?: React.ReactNode | ((data: DataNode) => React.ReactNode);
+  title?: React.ReactNode | ((data: DataNode) => React.ReactNode) | string;
+  value?: string;
   children?: DataNode[];
 };
 
@@ -72,11 +73,12 @@ const TreeList = ({ searchValue = '', data = [], ...props }: ITreeProps) => {
   const treeData = React.useMemo(() => {
     const processTreeData = (d: DataNode[]): DataNode[] =>
       d.map((item) => {
-        const strTitle = item.key as string;
+        let strTitle: string =
+          typeof item.title === 'string' ? item.title : item.value || '';
         const index = strTitle.indexOf(searchValue);
         const beforeStr = strTitle.substring(0, index);
         const afterStr = strTitle.slice(index + searchValue.length);
-        const title =
+        const searchedTitle =
           index > -1 ? (
             <Text>
               {beforeStr}
@@ -89,7 +91,7 @@ const TreeList = ({ searchValue = '', data = [], ...props }: ITreeProps) => {
         if (item.children) {
           return {
             ...item,
-            title,
+            title: searchValue ? searchedTitle : item.title,
             key: item.key,
             children: processTreeData(item.children),
           };
@@ -97,7 +99,7 @@ const TreeList = ({ searchValue = '', data = [], ...props }: ITreeProps) => {
 
         return {
           ...item,
-          title,
+          title: searchValue ? searchedTitle : item.title,
           key: item.key,
         };
       });
@@ -110,6 +112,7 @@ const TreeList = ({ searchValue = '', data = [], ...props }: ITreeProps) => {
       <TreeComponent
         {...props}
         height={props.height || 300}
+        showIcon
         onExpand={onExpand}
         expandedKeys={expandedKeys}
         autoExpandParent={autoExpandParent}

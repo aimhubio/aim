@@ -180,7 +180,6 @@ function createPipelineEngine<TStore, TObject>(
         custom: state.getCurrentCustomPhaseArgs(),
       })
       .then((res) => {
-        console.log('res', res);
         // collect result
         const { additionalData, data, queryableData, foundGroups } = res;
 

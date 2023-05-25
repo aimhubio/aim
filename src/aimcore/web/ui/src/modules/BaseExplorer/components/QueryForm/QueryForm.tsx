@@ -123,7 +123,7 @@ function QueryForm(props: IQueryFormProps) {
         report_progress: true,
       });
     }
-  }, [engine, isExecuting, query, sequenceType, ranges]);
+  }, [engine, isExecuting, query, ranges]);
 
   const autocompleteContext: {
     suggestions: Record<string | number | symbol, unknown>;
@@ -345,7 +345,7 @@ function QueryForm(props: IQueryFormProps) {
                   />
                   {query.selections.length === 0 && (
                     <Text tint={50} size={14} weight={400}>
-                      No {sequenceName} are selected
+                      No {sequenceName}s are selected
                     </Text>
                   )}
                   <div className='QueryForm__tags ScrollBar__hidden'>
