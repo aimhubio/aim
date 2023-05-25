@@ -49,14 +49,14 @@ def memoize(func):
 query_result_cache = {}
 
 
-def query_filter(type_, query=""):
+def query_filter(type_, query="", isSequence=False):
     query_key = f'{type_}_{query}'
 
     if query_key in query_result_cache:
         return query_result_cache[query_key]
 
     try:
-        data = search(board_path, type_, query)
+        data = search(board_path, type_, query, isSequence)
         data = create_proxy(data.to_py())
         items = []
         i = 0
@@ -77,13 +77,13 @@ def query_filter(type_, query=""):
 class Sequence():
     @classmethod
     def filter(self, query=""):
-        return query_filter('Sequence', query)
+        return query_filter('Sequence', query, isSequence=True)
 
 
 class Container():
     @classmethod
     def filter(self, query=""):
-        return query_filter('Container', query)
+        return query_filter('Container', query, isSequence=False)
 
 
 ####################
@@ -548,10 +548,8 @@ class FiguresList(AimSequenceComponent):
         figures = []
 
         for i, item in enumerate(data):
-            figure = {
-                "key": i,
-                "data": item.to_json(),
-            }
+            figure = item
+            figure["key"] = i
 
             figures.append(figure)
 

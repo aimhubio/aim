@@ -137,9 +137,9 @@ export async function loadPyodideInstance() {
       let dataTypeName = sequenceType.slice(`${packageName}.`.length);
 
       jsModule[dataTypeName] = {
-        filter: (query: string) => {
+        filter: (query: string = '') => {
           let val = pyodide.runPython(
-            `query_filter('${sequenceType}', ${JSON.stringify(query)})`,
+            `query_filter('${sequenceType}', ${JSON.stringify(query)}, True)`,
             { globals: namespace },
           );
           return val;
@@ -151,9 +151,9 @@ export async function loadPyodideInstance() {
       let dataTypeName = containerType.slice(`${packageName}.`.length);
 
       jsModule[dataTypeName] = {
-        filter: (query: string) => {
+        filter: (query: string = '') => {
           let val = pyodide.runPython(
-            `query_filter('${containerType}', ${JSON.stringify(query)})`,
+            `query_filter('${containerType}', ${JSON.stringify(query)}, False)`,
             { globals: namespace },
           );
           return val;

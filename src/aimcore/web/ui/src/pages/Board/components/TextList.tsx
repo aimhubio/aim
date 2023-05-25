@@ -13,6 +13,7 @@ function TextList(props: any) {
       style={{
         height: '100%',
         overflow: 'auto',
+        flex: 1,
       }}
     >
       {data.map((item: any, i: number) => (
