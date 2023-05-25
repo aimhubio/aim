@@ -85,6 +85,7 @@ class Repo(object):
     def init(cls, path: str):
         aim_repo_path = os.path.join(clean_repo_path(path), get_aim_repo_name())
         os.makedirs(aim_repo_path, exist_ok=True)
+        return cls.from_path(aim_repo_path, read_only=False)
 
     @classmethod
     def rm(cls, path: str):

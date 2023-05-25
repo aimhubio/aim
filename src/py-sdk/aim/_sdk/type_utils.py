@@ -44,7 +44,10 @@ def get_typename(type_: Type, inner_type: Optional[Type] = None) -> str:
 
 
 def get_object_typename(obj: Any) -> str:
-    return get_typename(type(obj))
+    if isinstance(obj, list) and len(obj) > 0:
+        return get_typename(type(obj), type(obj[0]))
+    else:
+        return get_typename(type(obj))
 
 
 def get_common_typename(types: Iterator[str]) -> str:

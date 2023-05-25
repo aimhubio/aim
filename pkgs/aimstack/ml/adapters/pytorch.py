@@ -1,53 +1,40 @@
-def track_params_dists(model, run):
-    from aim import Distribution
+from aimstack.asp import Run
+
+
+def track_params_dists(model, run: Run):
+    from aimstack.asp.models.objects.distribution import Distribution
 
     data_hist = get_model_layers(model, 'data')
 
     for name, params in data_hist.items():
         if 'weight' in params:
-            run.track(
-                Distribution(params['weight']),
-                name=name,
-                context={
+            run.get_distribution_sequence(name, {
                     'type': 'data',
                     'params': 'weights',
-                },
-            )
+                }).track(Distribution(params['weight']))
         if 'bias' in params:
-            run.track(
-                Distribution(params['bias']),
-                name=name,
-                context={
+            run.get_distribution_sequence(name, {
                     'type': 'data',
                     'params': 'biases',
-                },
-            )
+                }).track(Distribution(params['bias']))
 
 
 def track_gradients_dists(model, run):
-    from aim import Distribution
+    from aimstack.asp.models.objects.distribution import Distribution
 
     grad_hist = get_model_layers(model, 'grad')
 
     for name, params in grad_hist.items():
         if 'weight' in params:
-            run.track(
-                Distribution(params['weight']),
-                name=name,
-                context={
+            run.get_distribution_sequence(name, {
                     'type': 'gradients',
                     'params': 'weights',
-                },
-            )
+                }).track(Distribution(params['weight']))
         if 'bias' in params:
-            run.track(
-                Distribution(params['bias']),
-                name=name,
-                context={
+            run.get_distribution_sequence(name, {
                     'type': 'gradients',
                     'params': 'biases',
-                },
-            )
+                }).track(Distribution(params['bias']))
 
 
 def get_model_layers(model, dt, parent_name=None):
