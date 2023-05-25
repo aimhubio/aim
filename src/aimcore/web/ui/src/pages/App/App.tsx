@@ -1,13 +1,17 @@
 import * as React from 'react';
-import { Route } from 'react-router-dom';
+import { Route, useLocation } from 'react-router-dom';
+
+import { IconBrandPython } from '@tabler/icons-react';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import {
   Box,
-  ListItem,
   Breadcrumb,
   ToastProvider,
   Toast,
+  Tree,
+  Icon,
+  Text,
 } from 'components/kit_v2';
 
 import { TopBar } from 'config/stitches/foundations/layout';
@@ -20,7 +24,79 @@ import { AppStructureProps, AppWrapperProps } from './App.d';
 import useApp from './useApp';
 import { AppContainer, BoardWrapper, BoardLink } from './App.style';
 
+interface Node {
+  title: string | React.ReactNode;
+  key: string;
+  value?: string;
+  children?: Node[];
+  isLeaf?: boolean;
+  icon?: React.ReactNode;
+}
+
 const AppStructure: React.FC<any> = ({ boards }: AppStructureProps) => {
+  const location = useLocation();
+
+  function makeTreeData(list: string[]): Node[] {
+    let tree: Node[] = [];
+    let lookup: Record<string, Node> = {};
+
+    // Sort the input list alphabetically
+    list.sort();
+
+    // Separate directories and files
+    let dirs = list.filter((path) => path.includes('/'));
+    let files = list.filter((path) => !path.includes('/'));
+
+    // Prioritize directories, then files
+    let sortedList = [...dirs, ...files];
+
+    // Step 1: Create nodes and build a lookup
+    for (let i = 0; i < sortedList.length; i++) {
+      const isActive = location.pathname === `${PathEnum.App}/${sortedList[i]}`;
+      let path = sortedList[i].split('/');
+      for (let j = 0; j < path.length; j++) {
+        const isLast = j === path.length - 1;
+        let part = path.slice(0, j + 1).join('/');
+        if (!lookup[part]) {
+          let node: Node = {
+            title: isLast ? (
+              <BoardLink
+                isActive={isActive}
+                key={path[j]}
+                to={`${PathEnum.App}/${sortedList[i]}`}
+              >
+                <Icon size='md' icon={<IconBrandPython />} />
+                <Text css={{ ml: '$4' }}>{path[j]}</Text>
+              </BoardLink>
+            ) : (
+              <Text>{path[j]}</Text>
+            ),
+            isLeaf: isLast,
+            value: path[j],
+            key: `${i}-${j}`,
+            ...(!isLast && { children: [] }),
+          };
+          lookup[part] = node;
+        }
+      }
+    }
+
+    // Step 2: Build the tree
+    for (let path in lookup) {
+      let node = lookup[path];
+      if (path.indexOf('/') !== -1) {
+        let parentPath = path.substring(0, path.lastIndexOf('/'));
+        lookup[parentPath].children?.push(node);
+      } else {
+        tree.push(node);
+      }
+    }
+
+    return tree;
+  }
+
+  const data: Node[] = makeTreeData(boards.sort());
+
   return (
     <Box
       width={200}
@@ -30,11 +106,7 @@ const AppStructure: React.FC<any> = ({ boards }: AppStructureProps) => {
         p: '$3 $4',
       }}
     >
-      {boards.map((boardPath) => (
-        <BoardLink key={boardPath} to={`${PathEnum.App}/${boardPath}`}>
-          <ListItem>{boardPath}</ListItem>
-        </BoardLink>
-      ))}
+      <Tree defaultExpandAll={true} data={data} />
     </Box>
   );
 };

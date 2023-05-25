@@ -8,10 +8,14 @@ const TreeListWrapper = styled('div', {
       display: 'flex',
       ai: 'center',
       width: '100%',
+      br: '$3',
       p: 0,
       '&:hover': {
         bc: '#EFF0F2',
       },
+    },
+    '.ant-tree-switcher-noop': {
+      width: '0 !important', // Set the margin to your preferred value
     },
     '.ant-tree-switcher': {
       size: '$1',
@@ -30,6 +34,11 @@ const TreeListWrapper = styled('div', {
       },
       '&:hover': {
         bc: 'unset',
+      },
+      '.ant-tree-iconEle': {
+        display: 'flex',
+        ai: 'center',
+        jc: 'center',
       },
     },
   },

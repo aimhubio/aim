@@ -16,8 +16,19 @@ const BoardWrapper = styled(Box, {
 });
 
 const BoardLink = styled(NavLink, {
-  display: 'block',
+  display: 'flex',
+  padding: '0 $4',
+  ai: 'center',
+  color: 'unset',
   textDecoration: 'none',
+  borderRadius: '$3',
+  variants: {
+    isActive: {
+      true: {
+        backgroundColor: '#EFF0F2',
+      },
+    },
+  },
 });
 
 export { AppContainer, BoardWrapper, BoardLink };
