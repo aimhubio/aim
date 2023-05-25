@@ -6,7 +6,7 @@ import { IconLayout2, IconExternalLink } from '@tabler/icons-react';
 import { Link, Button, Text } from 'components/kit_v2';
 
 function BoardLinkVizElement(props: any) {
-  const boardId = props.data;
+  const boardPath = props.data;
   const { path } = useRouteMatch();
 
   return (
@@ -17,7 +17,7 @@ function BoardLinkVizElement(props: any) {
         textDecoration: 'underline',
         textDecorationColor: '$textPrimary50',
       }}
-      to={path.replace(':boardId', boardId)}
+      to={path.replace(':boardPath', boardPath)}
       target={props.options.new_tab ? '_blank' : undefined}
     >
       <Button

@@ -12,28 +12,30 @@ import pyodideEngine from './store';
 window.search = search;
 
 let layoutUpdateTimer: number;
-let prevBoardId: undefined | string;
+let prevBoardPath: undefined | string;
 
 // @ts-ignore
-window.updateLayout = (elements: any, boardId: undefined | string) => {
+window.updateLayout = (elements: any, boardPath: undefined | string) => {
   let layout = toObject(elements.toJs());
   elements.destroy();
+
+  console.log(layout, boardPath);
 
   let blocks: Record<string, any[]> = {};
   let components: Record<string, any[]> = {};
 
   for (let item of layout) {
-    let boardId = item.board_id;
-    if (!blocks.hasOwnProperty(boardId)) {
-      blocks[boardId] = [];
-      components[boardId] = [];
+    let boardPath = item.board_path;
+    if (!blocks.hasOwnProperty(boardPath)) {
+      blocks[boardPath] = [];
+      components[boardPath] = [];
     }
     if (item.element === 'block') {
-      blocks[boardId].push(item);
+      blocks[boardPath].push(item);
     } else {
       if (item.parent_block?.type === 'table_cell') {
         let tabelCell = null;
-        for (let elem of blocks[boardId]) {
+        for (let elem of blocks[boardPath]) {
           if (elem.block_context.id === item.parent_block.id) {
             tabelCell = elem;
           }
@@ -48,19 +50,19 @@ window.updateLayout = (elements: any, boardId: undefined | string) => {
         }
       }
 
-      components[boardId].push(item);
+      components[boardPath].push(item);
     }
   }
 
-  if (prevBoardId === boardId) {
+  if (prevBoardPath === boardPath) {
     window.clearTimeout(layoutUpdateTimer);
   }
 
-  prevBoardId = boardId;
+  prevBoardPath = boardPath;
 
   layoutUpdateTimer = window.setTimeout(() => {
     pyodideEngine.events.fire(
-      boardId as string,
+      boardPath as string,
       { blocks, components },
       { savePayload: false },
     );
@@ -68,7 +70,7 @@ window.updateLayout = (elements: any, boardId: undefined | string) => {
 };
 
 // @ts-ignore
-window.setState = (update: any, boardId: string, persist = false) => {
+window.setState = (update: any, boardPath: string, persist = false) => {
   let stateUpdate = update.toJs();
   update.destroy();
   let state = toObject(stateUpdate);
@@ -77,7 +79,7 @@ window.setState = (update: any, boardId: string, persist = false) => {
 
   if (persist) {
     const stateStr = JSON.stringify(state);
-    const boardStateStr = JSON.stringify(state[boardId]);
+    const boardStateStr = JSON.stringify(state[boardPath]);
     const prevStateStr = getItem('app_state');
 
     if (stateStr !== prevStateStr) {
@@ -89,9 +91,9 @@ window.setState = (update: any, boardId: string, persist = false) => {
   }
 
   pyodideEngine.events.fire(
-    boardId as string,
+    boardPath as string,
     {
-      state: state[boardId],
+      state: state[boardPath],
     },
     { savePayload: false },
   );

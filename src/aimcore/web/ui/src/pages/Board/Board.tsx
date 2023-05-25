@@ -57,7 +57,7 @@ function Board({
   );
   const setEditorValue = useBoardStore((state) => state.setEditorValue);
 
-  const boardId = data.board_id;
+  const boardPath = data.path;
 
   const editorValue = React.useRef(data.code || '');
   const timerId = React.useRef(0);
@@ -130,10 +130,11 @@ block_context = {
   "current": 0,
 }
 current_layout = []
-board_id = ${boardId === undefined ? 'None' : `"${boardId}"`}
-session_state = state[board_id] if board_id in state else {}
+board_path = ${boardPath === undefined ? 'None' : `"${boardPath}"`}
+session_state = state[board_path] if board_path in state else {}
+print(board_path)
 def set_session_state(state_slice):
-  set_state(state_slice, board_id)
+  set_state(state_slice, board_path)
 `;
         const code =
           resetCode +
@@ -141,7 +142,7 @@ def set_session_state(state_slice):
             /Repo.filter(\((.|\n)*?\))/g,
             (match: string) => {
               return `${match}
-board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
+board_path=${boardPath === undefined ? 'None' : `"${boardPath}"`}
 `;
             },
           );
@@ -163,7 +164,7 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
         }));
       }
     }
-  }, [pyodide, pyodideIsLoading, boardId, state.execCode, namespace]);
+  }, [pyodide, pyodideIsLoading, boardPath, state.execCode, namespace]);
 
   React.useEffect(() => {
     if (pyodide !== null && pyodideIsLoading === false) {
@@ -195,14 +196,14 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
   React.useEffect(() => {
     setEditorValue(data.code);
     const unsubscribe = pyodideEngine.events.on(
-      boardId,
+      boardPath,
       ({ blocks, components, state, query }) => {
         if (components) {
           setState((s: any) => ({
             ...s,
             layout: {
-              blocks: blocks[boardId] ?? [],
-              components: components[boardId],
+              blocks: blocks[boardPath] ?? [],
+              components: components[boardPath],
             },
           }));
         }
@@ -218,7 +219,7 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
       window.clearTimeout(timerId.current);
       unsubscribe();
     };
-  }, [boardId]);
+  }, [boardPath]);
 
   function handleEditorMount(editor: any) {
     editorRef.current = editor;
@@ -268,7 +269,7 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
               />
               <Link
                 css={{ display: 'flex' }}
-                to={`${PathEnum.App}/${boardId}`}
+                to={`${PathEnum.App}/${boardPath}`}
                 underline={false}
               >
                 <Button variant='outlined' size='xs'>

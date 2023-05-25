@@ -7,9 +7,9 @@ import useApp from 'pages/App/useApp';
 
 function BoardVizElement(props: any) {
   const { data, isLoading } = useApp();
-  const boardId = props.data;
+  const boardPath = props.data;
 
-  const board = data.find((boardPath: any) => boardPath === boardId);
+  const board = data.find((path: any) => path === boardPath);
 
   return (
     <div className='VizComponentContainer' style={{ flex: 1, padding: 0 }}>
@@ -19,7 +19,7 @@ function BoardVizElement(props: any) {
         <Board
           data={{
             code: board,
-            id: boardId,
+            path: boardPath,
           }}
           editMode={false}
           previewMode

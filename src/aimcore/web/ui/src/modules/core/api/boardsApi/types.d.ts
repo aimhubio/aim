@@ -26,11 +26,11 @@ export interface BoardsRequestBody {
 
 export interface BoardData {
   /**
-   * The board_id
+   * The board_path
    * @type {string}
    * @optional
    */
-  board_id: string;
+  board_path: string;
   /**
    * The name of the board
    * @type {string}

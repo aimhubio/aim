@@ -8,7 +8,7 @@ import json
 import hashlib
 
 
-board_id = None
+board_path = None
 
 
 def deep_copy(obj):
@@ -56,7 +56,7 @@ def query_filter(type_, query=""):
         return query_result_cache[query_key]
 
     try:
-        data = search(board_id, type_, query)
+        data = search(board_path, type_, query)
         data = create_proxy(data.to_py())
         items = []
         i = 0
@@ -233,15 +233,15 @@ if saved_state_str:
     state = json.loads(saved_state_str)
 
 
-def set_state(update, board_id, persist=False):
+def set_state(update, board_path, persist=False):
     from js import setState
 
-    if board_id not in state:
-        state[board_id] = {}
+    if board_path not in state:
+        state[board_path] = {}
 
-    state[board_id].update(update)
+    state[board_path].update(update)
 
-    setState(state, board_id, persist)
+    setState(state, board_path, persist)
 
 
 block_context = {
@@ -261,13 +261,13 @@ def render_to_layout(data):
     if is_found == False:
         current_layout.append(data)
 
-    updateLayout(current_layout, data["board_id"])
+    updateLayout(current_layout, data["board_path"])
 
 
 class Element:
     def __init__(self, block=None):
         self.parent_block = block
-        self.board_id = board_id
+        self.board_path = board_path
 
 
 class Block(Element):
@@ -292,7 +292,7 @@ class Block(Element):
             "block_context": self.block_context,
             "key": self.key,
             "parent_block": self.parent_block,
-            "board_id": self.board_id,
+            "board_path": self.board_path,
             "data": self.data,
             "options": self.options,
             "callbacks": self.callbacks,
@@ -316,7 +316,7 @@ class Component(Element):
         self.data = None
         self.callbacks = {}
         self.options = {}
-        self.state = state[board_id][key] if board_id in state and key in state[board_id] else {
+        self.state = state[board_path][key] if board_path in state and key in state[board_path] else {
         }
         self.no_facet = True
 
@@ -324,9 +324,9 @@ class Component(Element):
         should_batch = self.parent_block is not None and self.parent_block["type"] == "form"
 
         if should_batch:
-            state_slice = state[self.board_id][
+            state_slice = state[self.board_path][
                 self.parent_block["id"]
-            ] if (self.board_id in state and self.parent_block["id"] in state[self.board_id]) else {}
+            ] if (self.board_path in state and self.parent_block["id"] in state[self.board_path]) else {}
 
             component_state_slice = state_slice[self.key] if self.key in state_slice else {
             }
@@ -339,17 +339,17 @@ class Component(Element):
 
             set_state({
                 self.parent_block["id"]: state_slice
-            }, self.board_id)
+            }, self.board_path)
         else:
-            state_slice = state[self.board_id][
+            state_slice = state[self.board_path][
                 self.key
-            ] if (self.board_id in state and self.key in state[self.board_id]) else {}
+            ] if (self.board_path in state and self.key in state[self.board_path]) else {}
 
             state_slice.update(value)
 
             set_state({
                 self.key: state_slice
-            }, self.board_id)
+            }, self.board_path)
 
     def render(self):
         component_data = {
@@ -360,7 +360,7 @@ class Component(Element):
             "options": self.options,
             "parent_block": self.parent_block,
             "no_facet": self.no_facet,
-            "board_id": self.board_id
+            "board_path": self.board_path
         }
 
         component_data.update(self.state)
@@ -776,9 +776,9 @@ def get_component_batch_state(key, parent_block=None):
     if parent_block is None:
         return None
 
-    if board_id in state and parent_block["id"] in state[board_id]:
-        if key in state[board_id][parent_block["id"]]:
-            return state[board_id][parent_block["id"]][key]
+    if board_path in state and parent_block["id"] in state[board_path]:
+        if key in state[board_path][parent_block["id"]]:
+            return state[board_path][parent_block["id"]][key]
 
     return None
 
@@ -1424,8 +1424,8 @@ class Form(Block, UI):
 
     def submit(self):
         batch_id = self.block_context["id"]
-        state_update = state[board_id][batch_id]
-        set_state(state_update, board_id=self.board_id)
+        state_update = state[board_path][batch_id]
+        set_state(state_update, board_path=self.board_path)
 
 
 ui = UI()
