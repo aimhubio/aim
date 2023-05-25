@@ -754,6 +754,7 @@ class RunNotes(Component):
 
         self.render()
 
+
 class Explorer(Component):
     def __init__(self, name, query='', key=None, block=None):
         component_type = "Explorer"

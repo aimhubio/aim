@@ -53,6 +53,12 @@ export interface BoardData {
    * @type {string}
    */
   code?: string;
+  /**
+   * The path of the board
+   * @type {string}
+   * @example '/projects/1/boards/1'
+   */
+  path: string;
 }
 
 export interface TemplateData {
