@@ -33,7 +33,7 @@ class Object(AimStorageObject):
         return decorator
 
     def dump(self, repo, resolve_blobs=None):
-        # TODO: [MV] handle nested blob values
+        # TODO: V4 handle nested blob values
         uri_service = URIService(repo)
         data = self.storage[...]
 
