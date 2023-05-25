@@ -153,7 +153,7 @@ export async function loadPyodideInstance() {
               queryArgs[0] ?? queryArgs['query'],
             )}, ${queryArgs[1] ?? queryArgs['count'] ?? 'None'}, ${
               queryArgs[2] ?? queryArgs['start'] ?? 'None'
-            }, ${queryArgs[3] ?? queryArgs['end'] ?? 'None'}, True)`,
+            }, ${queryArgs[3] ?? queryArgs['stop'] ?? 'None'}, True)`,
             { globals: namespace },
           );
           return val;
