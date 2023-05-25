@@ -37,12 +37,12 @@ const AppStructure: React.FC<any> = ({
         p: '$3 $4',
       }}
     >
-      {boards.map((board) => (
+      {boards.map((boardPath) => (
         <BoardLink
-          key={board.board_id}
-          to={`${PathEnum.App}/${board.board_id}/${editMode ? 'edit' : ''}`}
+          key={boardPath}
+          to={`${PathEnum.App}/${boardPath}${editMode ? '/edit' : ''}`}
         >
-          <ListItem>{board.name}</ListItem>
+          <ListItem>{boardPath}</ListItem>
         </BoardLink>
       ))}
     </Box>
@@ -55,19 +55,18 @@ function App(): React.FunctionComponentElement<React.ReactNode> {
   return (
     <ErrorBoundary>
       {isLoading ? null : (
-        <Route
-          path={[`${PathEnum.App}/:boardId`, `${PathEnum.App}/:boardId/edit`]}
-          exact
-        >
-          {(props) => {
-            const boardId = props.match?.params?.boardId;
-            const editMode = props.match?.path.includes(
-              `${PathEnum.App}/:boardId/edit`,
-            );
+        <Route path={[`${PathEnum.App}/*`, `${PathEnum.App}/*/edit`]} exact>
+          {(props: any) => {
+            let boardPath = '';
+            if (props.match.params[0]) {
+              boardPath = props.match.params[0];
+            }
+            console.log(props);
+            const editMode = props.location.pathname.endsWith('/edit');
             return (
               <AppWrapper
                 boardList={data}
-                boardId={boardId!}
+                boardPath={encodeURI(boardPath || '')}
                 editMode={editMode!}
               />
             );
@@ -95,19 +94,20 @@ function App(): React.FunctionComponentElement<React.ReactNode> {
   );
 }
 
-function AppWrapper({ boardId, editMode, boardList }: AppWrapperProps) {
+function AppWrapper({ boardPath, editMode, boardList }: AppWrapperProps) {
   const board = useBoardStore((state) => state.board);
   const fetchBoard = useBoardStore((state) => state.fetchBoard);
   const updateBoard = useBoardStore((state) => state.editBoard);
 
   React.useEffect(() => {
-    if (boardId) {
-      fetchBoard(boardId);
+    console.log('boardPath', boardPath);
+    if (boardPath && !editMode) {
+      fetchBoard(boardPath);
     }
-  }, [boardId]);
+  }, [boardPath]);
 
   const saveBoard = (board: any) => {
-    updateBoard(boardId, {
+    updateBoard(boardPath, {
       ...board,
     });
   };
@@ -118,14 +118,14 @@ function AppWrapper({ boardId, editMode, boardList }: AppWrapperProps) {
         <Box flex='1 100%'>
           <Breadcrumb
             customRouteValues={{
-              [`/app/${boardId}`]: board?.name || ' ',
+              [`/app/${boardPath}`]: board?.name || ' ',
             }}
           />
         </Box>
         {board && !editMode && (
           <Link
             css={{ display: 'flex' }}
-            to={`${PathEnum.App}/${boardId}/edit`}
+            to={`${PathEnum.App}/${boardPath}/edit`}
             underline={false}
           >
             <Button variant='outlined' size='xs' rightIcon={<IconPencil />}>

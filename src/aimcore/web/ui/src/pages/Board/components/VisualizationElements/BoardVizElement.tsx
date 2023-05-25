@@ -9,7 +9,7 @@ function BoardVizElement(props: any) {
   const { data, isLoading } = useApp();
   const boardId = props.data;
 
-  const board = data.find((b: any) => b.id === boardId);
+  const board = data.find((boardPath: any) => boardPath === boardId);
 
   return (
     <div className='VizComponentContainer' style={{ flex: 1, padding: 0 }}>
@@ -18,7 +18,7 @@ function BoardVizElement(props: any) {
       ) : board ? (
         <Board
           data={{
-            code: board.code,
+            code: board,
             id: boardId,
           }}
           editMode={false}

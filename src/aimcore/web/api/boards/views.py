@@ -73,13 +73,14 @@ async def board_list_api(package=Depends(get_root_package)):
     return JSONResponse(result)
 
 
-@boards_router.get('/{board_path}')
+@boards_router.get('/{board_path:path}')
 async def board_get_api(board_path: str, package=Depends(get_root_package)):
     board: pathlib.Path = package.boards_directory / board_path
     if not board.exists():
         raise HTTPException(status_code=404)
     if not board.is_file():
-        raise HTTPException(status_code=400, detail=f'\'{board_path}\' is not valid board.')
+        raise HTTPException(
+            status_code=400, detail=f'\'{board_path}\' is not valid board.')
 
     result = {
         'path': board_path

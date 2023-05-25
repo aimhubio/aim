@@ -24,9 +24,10 @@ function useApp() {
 
   React.useEffect(() => {
     if (!isLoading && boardsList.length > 0 && location.pathname === '/app') {
-      const firstBoardId = boardsList[0].board_id; // replace this with the correct property if different
+      const firstBoardId = boardsList[0]; // replace this with the correct property if different
       history.push(`/app/${firstBoardId}`);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [boardsList]);
 
   return {
