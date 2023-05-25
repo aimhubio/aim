@@ -1,9 +1,9 @@
+import pathlib
 import pkgutil
 import importlib
-import hashlib
 import logging
 
-from typing import Iterable, Dict
+from typing import Iterable, Dict, List
 
 logger = logging.getLogger(__name__)
 
@@ -13,22 +13,28 @@ class Package:
 
     def __init__(self, name, pkg):
         self.name = name
-        self._boards = {}
+        self._path = pathlib.Path(pkg.__path__[0])
+        self._boards_dir: pathlib.Path = None
+        self._boards: List[str] = []
         self._registered_containers = []
         self._registered_sequences = []
         self.register_aim_package_classes(name, pkg)
-        self.load_aim_package_boards(pkg)
+        self.register_aim_package_boards(pkg)
 
     @property
-    def board_templates(self):
+    def boards_directory(self) -> pathlib.Path:
+        return self._boards_dir
+
+    @property
+    def boards(self) -> List[str]:
         return self._boards
 
     @property
-    def registered_containers(self):
+    def containers(self) -> List:
         return self._registered_containers
 
     @property
-    def registered_sequences(self):
+    def sequences(self) -> List:
         return self._registered_sequences
 
     @staticmethod
@@ -41,6 +47,11 @@ class Package:
         for name in package_list:
             pkg = importlib.import_module(f'{base_pkg.__name__}.{name}')
             Package.pool[name] = Package(name, pkg)
+
+    @staticmethod
+    def load_package(package_name: str):
+        pkg = importlib.import_module(package_name)
+        Package.pool[package_name] = Package(package_name, pkg)
 
     def register_aim_package_classes(self, name, pkg):
         if not hasattr(pkg, '__aim_types__'):
@@ -57,17 +68,11 @@ class Package:
             if issubclass(aim_type, Sequence):
                 self._registered_sequences.append(aim_type.get_typename())
 
-    def load_aim_package_boards(self, pkg):
-        if not hasattr(pkg, '__aim_board_templates__'):
-            return
-        logger.debug(f'Loading board templates for Aim package \'{pkg}\'.')
-        package_path = pkg.__path__[0]
-        for board_name, board_path in pkg.__aim_board_templates__.items():
-            board_full_path = f'{package_path}/{board_path}'
-            with open(board_full_path, 'r') as f:
-                code = f.read()
-                checksum = hashlib.md5(code.encode('utf-8')).hexdigest()
-                self._boards[board_name] = (code, checksum)
+    def register_aim_package_boards(self, pkg):
+        boards_path = getattr(pkg, '__aim_boards__', 'boards')
+        self._boards_dir: pathlib.Path = self._path / boards_path
+        if self._boards_dir.exists():
+            self._boards = list(map(lambda p: p.relative_to(self._boards_dir), self._boards_dir.glob('**/*.py')))
 
 
 def register_aimstack_packages():
