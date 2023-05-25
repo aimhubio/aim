@@ -50,3 +50,5 @@ class Object(AimStorageObject):
                     data['BLOBS'][key] = uri_service.generate_uri(resource_path)
                     del data[key]
 
+        return data
+
