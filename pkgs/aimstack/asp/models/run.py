@@ -157,31 +157,31 @@ class Run(Container, Caller):
 
     def get_metric(self, name: str, context: Optional[dict] = None) -> Metric:
         context = {} if context is None else context
-        return Metric(self, name=name, context=context)
+        return self.sequences.typed_sequence(Metric, name, context)
 
     def get_text_sequence(self, name: str, context: Optional[dict] = None) -> TextSequence:
         context = {} if context is None else context
-        return TextSequence(self, name=name, context=context)
+        return self.sequences.typed_sequence(TextSequence, name, context)
 
     def get_image_sequence(self, name: str, context: Optional[dict] = None) -> ImageSequence:
         context = {} if context is None else context
-        return ImageSequence(self, name=name, context=context)
+        return self.sequences.typed_sequence(ImageSequence, name, context)
 
     def get_audio_sequence(self, name: str, context: Optional[dict] = None) -> AudioSequence:
         context = {} if context is None else context
-        return AudioSequence(self, name=name, context=context)
+        return self.sequences.typed_sequence(AudioSequence, name, context)
 
     def get_distribution_sequence(self, name: str, context: Optional[dict] = None) -> DistributionSequence:
         context = {} if context is None else context
-        return DistributionSequence(self, name=name, context=context)
+        return self.sequences.typed_sequence(DistributionSequence, name, context)
 
     def get_figure_sequence(self, name: str, context: Optional[dict] = None) -> FigureSequence:
         context = {} if context is None else context
-        return FigureSequence(self, name=name, context=context)
+        return self.sequences.typed_sequence(FigureSequence, name, context)
 
     def get_figure3d_sequence(self, name: str, context: Optional[dict] = None) -> Figure3DSequence:
         context = {} if context is None else context
-        return Figure3DSequence(self, name=name, context=context)
+        return self.sequences.typed_sequence(Figure3DSequence, name, context)
 
     def dataframe(
         self,

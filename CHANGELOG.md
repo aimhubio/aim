@@ -17,6 +17,7 @@
 - Discover and register aimstack directory sub-modules as Aim packages (alberttorosyan)
 - Aim core & standard package separation (alberttorosyan)
 - Storage and tracking server unification (mihran113)
+- Serve boards from Aim package (alberttorosyan)
 
 ### Fixes
 

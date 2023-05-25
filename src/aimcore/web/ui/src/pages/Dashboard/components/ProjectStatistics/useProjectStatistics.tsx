@@ -12,23 +12,23 @@ import { IProjectStatistic } from './ProjectStatistics.d';
 import projectStatisticsEngine from './ProjectStatisticsStore';
 
 const statisticsInitialMap: Record<string, IProjectStatistic> = {
-  [SequenceTypesEnum.Metric]: {
-    label: 'Metrics',
-    count: 0,
-    icon: 'metrics',
-    iconBgColor: '#7A4CE0',
-    navLink: routes.METRICS.path,
-  },
-  systemMetrics: {
-    label: 'Sys. metrics',
-    count: 0,
-    icon: 'metrics',
-    iconBgColor: '#AF4EAB',
-    navLink: `${routes.METRICS.path}?select=${encode({
-      advancedQuery: "metric.name.startswith('__system__') == True",
-      advancedMode: true,
-    })}`,
-  },
+  // [SequenceTypesEnum.Metric]: {
+  //   label: 'Metrics',
+  //   count: 0,
+  //   icon: 'metrics',
+  //   iconBgColor: '#7A4CE0',
+  //   navLink: routes.METRICS.path,
+  // },
+  // systemMetrics: {
+  //   label: 'Sys. metrics',
+  //   count: 0,
+  //   icon: 'metrics',
+  //   iconBgColor: '#AF4EAB',
+  //   navLink: `${routes.METRICS.path}?select=${encode({
+  //     advancedQuery: "metric.name.startswith('__system__') == True",
+  //     advancedMode: true,
+  //   })}`,
+  // },
   [SequenceTypesEnum.Figures]: {
     label: 'Figures',
     icon: 'figures',
@@ -36,13 +36,13 @@ const statisticsInitialMap: Record<string, IProjectStatistic> = {
     iconBgColor: '#18AB6D',
     navLink: routes.FIGURES_EXPLORER.path,
   },
-  [SequenceTypesEnum.Images]: {
-    label: 'Images',
-    icon: 'images',
-    count: 0,
-    iconBgColor: '#F17922',
-    navLink: routes.IMAGES_EXPLORER.path,
-  },
+  // [SequenceTypesEnum.Images]: {
+  //   label: 'Images',
+  //   icon: 'images',
+  //   count: 0,
+  //   iconBgColor: '#F17922',
+  //   navLink: routes.IMAGES_EXPLORER.path,
+  // },
   [SequenceTypesEnum.Audios]: {
     label: 'Audios',
     icon: 'audios',
@@ -83,7 +83,7 @@ const runsCountingInitialMap: Record<'archived' | 'runs', IProjectStatistic> = {
     icon: 'runs',
     count: 0,
     iconBgColor: '#1473E6',
-    navLink: routes.RUNS.path,
+    // navLink: routes.RUNS.path,
   },
   archived: {
     label: 'archived',
