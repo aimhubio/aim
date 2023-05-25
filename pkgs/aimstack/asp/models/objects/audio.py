@@ -25,6 +25,7 @@ class Audio(Object):
     """
 
     AIM_NAME = 'aim.Audio'
+    RESOLVE_BLOBS = False
 
     # supported audio formats
     UNKNOWN = ''

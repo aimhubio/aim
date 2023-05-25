@@ -14,7 +14,28 @@ from aim._core.storage.treeutils import encode_tree
 query_router = APIRouter()
 
 
-def _sequence_data(sequence: Sequence, sample_count: Optional[int]) -> Dict:
+def _process_values(repo, values_list):
+    processed_values = []
+    for val in values_list:
+        if isinstance(val, list):
+            processed_val = []
+            for nested_val in val:
+                try:
+                    processed_nested_val = nested_val.dump(repo)
+                except AttributeError:
+                    processed_nested_val = nested_val
+                processed_val.append(processed_nested_val)
+        else:
+            try:
+                processed_val = val.dump(repo)
+            except AttributeError:
+                processed_val = val
+        processed_values.append(processed_val)
+
+    return processed_values
+
+
+def _sequence_data(repo, sequence: Sequence, sample_count: Optional[int]) -> Dict:
     data = {
         'name': sequence.name,
         'context': sequence.context,
@@ -24,14 +45,14 @@ def _sequence_data(sequence: Sequence, sample_count: Optional[int]) -> Dict:
     }
     if sample_count is None:
         data['steps'] = list(sequence.steps())
-        data['values'] = list(sequence.values())
+        data['values'] = _process_values(repo, list(sequence.values()))
         for axis_name in sequence.axis_names:
             data['axis'][axis_name] = list(sequence.axis(axis_name))
     else:
         steps, value_dicts = list(zip(*sequence.sample(sample_count)))
         value_lists = {k: [d[k] for d in value_dicts] for k in value_dicts[0]}
         data['steps'] = steps
-        data['values'] = value_lists.pop('val')
+        data['values'] = _process_values(repo, value_lists.pop('val'))
         data['axis'] = value_lists
     return data
 
@@ -44,9 +65,9 @@ def _container_data(container: Container) -> Dict:
     return data
 
 
-async def sequence_search_result_streamer(query_collection, sample_count: Optional[int]):
+async def sequence_search_result_streamer(repo, query_collection, sample_count: Optional[int]):
     for sequence in query_collection:
-        seq_data = _sequence_data(sequence, sample_count)
+        seq_data = _sequence_data(repo, sequence, sample_count)
         encoded_tree = encode_tree(seq_data)
         yield collect_streamable_data(encoded_tree)
 
@@ -66,7 +87,7 @@ def container_query_response(repo, query: Optional[str], type_: str):
 
 def sequence_query_response(repo, query: Optional[str], type_: str, sample_count: Optional[int]):
     qresult = repo.sequences(query, type_)
-    streamer = sequence_search_result_streamer(qresult, sample_count)
+    streamer = sequence_search_result_streamer(repo, qresult, sample_count)
     return StreamingResponse(streamer)
 
 
