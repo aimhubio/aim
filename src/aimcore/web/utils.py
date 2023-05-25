@@ -2,9 +2,10 @@ from importlib import import_module
 import os
 import subprocess
 
-from aimcore.web.configs import AIM_UI_MOUNTED_REPO_PATH
+from aimcore.web.configs import AIM_UI_MOUNTED_REPO_PATH, AIM_UI_PACKAGE_NAME
 from aim._sdk.configs import get_aim_repo_name
 from aim._sdk.utils import clean_repo_path
+from aim._sdk.package_utils import Package
 
 
 class ShellCommandException(Exception):
@@ -91,6 +92,12 @@ def ls_dir(path):
 
 def get_root_path():
     return clean_repo_path(os.getenv(AIM_UI_MOUNTED_REPO_PATH, os.getcwd()))
+
+
+def get_root_package():
+    ui_pkg_name = os.environ.get(AIM_UI_PACKAGE_NAME)
+    assert ui_pkg_name in Package.pool
+    return Package.pool[ui_pkg_name]
 
 
 def get_db_url():

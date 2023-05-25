@@ -164,8 +164,8 @@ async def project_packages_api(include_types: Optional[bool] = False):
     if include_types:
         return {
             pkg.name: {
-                'containers': pkg.registered_containers,
-                'sequences': pkg.registered_sequences
+                'containers': pkg.containers,
+                'sequences': pkg.sequences
             } for pkg in Package.pool.values()}
     else:
         return list(Package.pool.keys())
