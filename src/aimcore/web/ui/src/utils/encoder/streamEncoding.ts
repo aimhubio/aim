@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import { isEqual } from 'lodash-es';
+import { cloneDeep } from 'lodash-es';
 
 import struct from '@aksel/structjs';
 
@@ -255,15 +255,32 @@ export async function* iterFoldTree(
       first_records = [];
     }
     for (let [keys, val] of records) {
-      while (!isEqual(path, keys.slice(0, path.length))) {
+      let idx = 0;
+      while (idx < path.length) {
+        if (keys[idx] !== path[idx]) {
+          break;
+        }
+        idx += 1;
+      }
+
+      while (idx < path.length) {
         let lastState = stack.pop();
         if (stack.length === level) {
           yield [path.slice(), lastState];
+        } else if (level === 0 && path.length === 2 && keys.length === 1) {
+          lastState = cloneDeep(stack[0]);
+          yield [[], lastState];
         }
+
         path.pop();
       }
 
       node = valToNode(val);
+
+      if (keys.length === path.length) {
+        stack.pop();
+        path.pop();
+      }
 
       if (keys.length !== path.length + 1) {
         throw new Error('Assertion Error');
@@ -465,10 +482,12 @@ export async function parseStream<T extends Array>(
     callback?: (item: any) => void;
     dataProcessor?: (keys: any, value: any) => any;
   },
+  level?: number,
 ): Promise<T> {
   let buffer_pairs = decodeBufferPairs(stream);
   let decodedPairs = decodePathsVals(buffer_pairs);
-  let objects = iterFoldTree(decodedPairs, 1);
+  let objects = iterFoldTree(decodedPairs, level ?? 1);
+
   if (options?.dataProcessor) {
     return options.dataProcessor(objects);
   } else {
@@ -476,24 +495,27 @@ export async function parseStream<T extends Array>(
 
     try {
       for await (let [keys, val] of objects) {
-        const object: T = { ...(val as any), hash: keys[0] };
-        if (object.hash?.startsWith?.('progress')) {
-          // maybe typeof progressCallback === 'function'
-          if (options?.progressCallback) {
-            options.progressCallback(object as IRunProgress);
-            const { 0: checked, 1: trackedRuns } = object;
+        const object: T =
+          level === 0 ? val : { ...(val as any), hash: keys[0] };
+        if (object) {
+          if (object.hash?.startsWith?.('progress')) {
+            // maybe typeof progressCallback === 'function'
+            if (options?.progressCallback) {
+              options.progressCallback(object as IRunProgress);
+              const { 0: checked, 1: trackedRuns } = object;
 
-            options.progressCallback({
-              matched: data.length,
-              checked,
-              trackedRuns,
-            });
+              options.progressCallback({
+                matched: data.length,
+                checked,
+                trackedRuns,
+              });
+            }
+          } else {
+            if (options?.callback) {
+              options.callback({ value: val, hash: keys[0] });
+            }
+            data.push(object);
           }
-        } else {
-          if (options?.callback) {
-            options.callback({ value: val, hash: keys[0] });
-          }
-          data.push(object);
         }
       }
     } catch (e) {

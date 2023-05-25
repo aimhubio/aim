@@ -4,42 +4,23 @@ import {
   FetchingError,
 } from 'modules/core/pipeline/query/QueryError';
 import AdapterError from 'modules/core/pipeline/adapter/AdapterError';
-import processor from 'modules/core/pipeline/adapter/processor';
 
 import pyodideEngine from 'services/pyodide/store';
 
-import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
-import { RunSearchRunView } from 'types/core/AimObjects';
-
 import { parseStream } from 'utils/encoder/streamEncoding';
 import { AlignmentOptionsEnum } from 'utils/d3';
-import { filterMetricsData } from 'utils/app/filterMetricData';
+import { filterMetricsValues } from 'utils/app/filterMetricData';
 
 const seachRequests = createFetchDataRequest();
 
-const objectDepths: any = {
-  [SequenceTypesEnum.Metric]: AimObjectDepths.Sequence,
-  [SequenceTypesEnum.Images]: AimObjectDepths.Index,
-  [SequenceTypesEnum.Audios]: AimObjectDepths.Index,
-  [SequenceTypesEnum.Figures]: AimObjectDepths.Step,
-  [SequenceTypesEnum.Texts]: AimObjectDepths.Index,
-  [SequenceTypesEnum.Distributions]: AimObjectDepths.Index,
-};
-
 const queryResultCacheMap: Record<string, any> = {};
 
-export function search(
-  boardId: string,
-  sequenceName: SequenceTypesEnum,
-  query: string,
-) {
+export function search(boardId: string, sequenceName: string, query: string) {
   const queryKey = `${sequenceName}_${query}`;
 
   if (queryResultCacheMap.hasOwnProperty(queryKey)) {
     return queryResultCacheMap[queryKey];
   }
-
-  const lowerCasedSequenceName = sequenceName.toLowerCase();
 
   seachRequests
     .call({
@@ -48,30 +29,20 @@ export function search(
       report_progress: false,
     })
     .then((data) => {
-      parseStream<Array<RunSearchRunView>>(data)
-        .then((runs) => {
+      parseStream<Array<any>>(data, undefined, 0)
+        .then((objectList) => {
           try {
             let result;
-            let { objectList } = processor(
-              runs,
-              lowerCasedSequenceName as SequenceTypesEnum,
-              objectDepths[lowerCasedSequenceName],
-            );
-
-            if (lowerCasedSequenceName === SequenceTypesEnum.Metric) {
+            if (
+              sequenceName.includes('.Metric') ||
+              sequenceName === 'Sequence'
+            ) {
               result = objectList.map((item: any) => {
-                const { values, steps, epochs, timestamps } = filterMetricsData(
-                  item.data,
-                  AlignmentOptionsEnum.STEP,
-                );
+                const { values, steps } = filterMetricsValues(item);
                 return {
-                  ...item.data,
+                  ...item,
                   values: [...values],
                   steps: [...steps],
-                  epochs: [...epochs],
-                  timestamps: [...timestamps],
-                  run: item.run,
-                  sequence: item.sequence,
                 };
               });
             } else {
