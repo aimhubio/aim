@@ -18,8 +18,5 @@
     "jsx": "react-jsx",
     "downlevelIteration": true
   },
-  "include": [
-    "src",
-    "node_modules/immer/src/types/globals.d.ts"
-  ]
+  "include": ["src", "node_modules/immer/src/types/globals.d.ts"]
 }

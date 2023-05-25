@@ -222,16 +222,12 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
 
   function handleEditorMount(editor: any) {
     editorRef.current = editor;
-    editorRef.current?.onKeyDown(onKeyDown);
+    editorRef.current?.onKeyDown(updateEditorValue);
   }
 
-  function onKeyDown() {
-    const updateEditorValue = _.debounce(() => {
-      setEditorValue(editorRef.current?.getValue());
-    }, 40);
-
-    updateEditorValue();
-  }
+  const updateEditorValue = _.debounce(() => {
+    setEditorValue(editorRef.current?.getValue());
+  }, 1000);
 
   const tree = constructTree(
     state.layout.blocks.concat(state.layout.components),
@@ -295,7 +291,6 @@ board_id=${boardId === undefined ? 'None' : `"${boardId}"`}
                     height='100%'
                     value={editorRef.current?.getValue() ?? data.code}
                     onMount={handleEditorMount}
-                    onChange={(v) => setEditorValue(v!)}
                     loading={<span />}
                     options={{
                       tabSize: 4,

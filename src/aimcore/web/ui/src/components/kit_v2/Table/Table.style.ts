@@ -1,7 +1,7 @@
 import { styled } from 'config/stitches';
 
 const TableCellStyled = styled('td', {
-  p: '0 $7',
+  p: '$3 $7',
   height: '$3',
   border: '1px solid  rgba(180, 191, 202, 0.3)',
   verticalAlign: 'middle',
