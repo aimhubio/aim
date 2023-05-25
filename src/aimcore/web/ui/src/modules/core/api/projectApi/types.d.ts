@@ -1,50 +1,16 @@
-import { SequenceTypesUnion } from 'types/core/enums';
+import { SequenceType, SequenceTypeUnion } from 'types/core/enums';
 import { Context } from 'types/core/shared';
 
 /**
- * type GetParamsQueryOptions
- * The request query options type of GET /projects/params
- */
-export type GetParamsQueryOptions = {
-  /**
-   * Sequence: array of sequence names or one of 'metric' | 'distributions' | 'images' | 'figures' | 'audio' etc. .
-   */
-  sequence: SequenceTypesUnion | SequenceTypesUnion[];
-  /**
-   * Exclude 'params' from the response
-   */
-  exclude_params?: boolean;
-};
-
-/**
- * type GetProjectsResult
- * The response type of GET /projects
- */
-export type GetProjectsResult = {
-  /**
-   * The name of project
-   */
-  name: string;
-  /**
-   * The path of project
-   */
-  path: string;
-  /**
-   * The description of project
-   */
-  description: string;
-  /**
-   * This flag indicates is analytics tracking enabled by `aim up` command or not
-   */
-  telemetry_enabled: string;
-};
-
-/**
- * type GetParamsResult
- * The response type of GET /projects/params
+ * type GetProjectsInfoResult
+ * The response type of GET /projects/info
  * This data is used by autosuggestions etc.
  */
-export type GetParamsResult = {
+export type GetProjectsInfoResult = {
+  sequences: GetProjectsInfoSequencesResult;
+};
+
+export type GetProjectsInfoSequencesResult = {
   /**
    * Tracked params for all runs
    * ```python
@@ -63,7 +29,7 @@ export type GetParamsResult = {
    *    run.track(1, name="metric", context = {"subset": "val"})
    * ```
    */
-  metric?: Record<string, Array<Context>>;
+  [SequenceType.Metric]?: Record<string, Array<Context>>;
   /**
    * Context of tracked images sequences by passing name of sequence as`images`
    * This generates by calling
@@ -74,7 +40,7 @@ export type GetParamsResult = {
    * i.e. {labels: [{"subset": "test"}], images: , [{"subset": "val"}]}
    * Note: Examples of records for the rest of sequences will follow to this example
    */
-  images?: Record<string, Array<Context>>;
+  [SequenceType.Image]?: Record<string, Array<Context>>;
   /**
    * Context of tracked texts sequences by passing name of sequence as`texts`
    * This generates by calling
@@ -82,7 +48,7 @@ export type GetParamsResult = {
    *    run.track([, , , aim.Text(...)], name="...", context = {"subset": "test"})
    * ```
    */
-  texts?: Record<string, Array<Context>>;
+  [SequenceType.Text]?: Record<string, Array<Context>>;
   /**
    * Context of tracked figures sequences by passing name of sequence as`figures`
    * This generates by calling
@@ -90,7 +56,7 @@ export type GetParamsResult = {
    *    run.track([, , , aim.Figure(...)], name="...", context = {"subset": "test"})
    * ```
    */
-  figures?: Record<string, Array<Context>>;
+  [SequenceType.Figure]?: Record<string, Array<Context>>;
   /**
    * Context of tracked distributions sequences by passing name of sequence as`distributions`
    * This generates by calling
@@ -98,7 +64,7 @@ export type GetParamsResult = {
    *    run.track([, , , aim.Distribution(...)], name="...", context = {"subset": "test"})
    * ```
    */
-  distributions?: Record<string, Array<Context>>;
+  [SequenceType.Distribution]?: Record<string, Array<Context>>;
   /**
    * Context of tracked audios sequences by passing name of sequence as`audios`
    * This generates by calling
@@ -106,7 +72,7 @@ export type GetParamsResult = {
    *    run.track([, , , aim.Audio(...)], name="...", context = {"subset": "test"})
    * ```
    */
-  audios?: Record<string, Array<Context>>;
+  [SequenceType.Audio]?: Record<string, Array<Context>>;
   /**
    * Context of tracked figures3d sequences by passing name of sequence as`audios`
    * This generates by calling
@@ -114,7 +80,7 @@ export type GetParamsResult = {
    *    run.track([, , , aim.Figure3D(...)], name="...", context = {"subset": "test"})
    * ```
    */
-  figures3d?: Record<string, Array<Context>>;
+  [SequenceType.Figure3d]?: Record<string, Array<Context>>;
 };
 
 /**
@@ -161,3 +127,19 @@ export type PackagesListType = Record<
     containers: string[];
   }
 >;
+
+/**
+ * type GetProjectsInfoQueryOptions
+ * The request query options type of GET /projects/info
+ */
+export type GetProjectsInfoQueryOptions = {
+  /**
+   * Sequence: array of sequence types
+   * i.e. ['asp.Metric', 'asp.TextSequence', 'asp.ImageSequence', 'asp.AudioSequence' etc.]
+   */
+  sequence: SequenceTypeUnion[];
+  /**
+   * include tracked attributes/params too (False by default)
+   */
+  params?: boolean;
+};

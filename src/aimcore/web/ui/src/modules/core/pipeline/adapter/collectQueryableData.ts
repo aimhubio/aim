@@ -1,12 +1,9 @@
-import {
-  IndexRanges,
-  RecordRanges,
-  RunSearchRunView,
-} from 'types/core/AimObjects';
+import { IndexRanges, RecordRanges } from 'types/core/AimObjects';
+import { GroupedSequence } from 'types/core/AimObjects/GroupedSequences';
 
 import { IQueryableData } from './types';
 
-function collectQueryableData(run: RunSearchRunView): IQueryableData {
+function collectQueryableData(run: GroupedSequence): IQueryableData {
   let queryable_data: {
     ranges?: RecordRanges & IndexRanges;
   } = {};

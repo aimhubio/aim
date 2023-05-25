@@ -3,6 +3,7 @@ const ENDPOINTS = {
     BASE: '/data',
     GET: '',
     FETCH: 'fetch',
+    GET_GROUPED_SEQUENCES: 'grouped-sequences',
   },
 
   PROJECTS: {
@@ -11,6 +12,7 @@ const ENDPOINTS = {
     GET_ACTIVITY: 'activity',
     GET_PARAMS: 'params',
     GET_PACKAGES: 'packages',
+    GET_INFO: 'info',
   },
 
   RUNS: {

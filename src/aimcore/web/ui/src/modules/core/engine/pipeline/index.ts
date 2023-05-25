@@ -17,13 +17,14 @@ import getUpdatedUrl from 'modules/core/utils/getUpdatedUrl';
 import browserHistory from 'modules/core/services/browserHistory';
 import getQueryParamsFromState from 'modules/core/utils/getQueryParamsFromState';
 
-import { SequenceTypesEnum } from 'types/core/enums';
+import { SequenceType } from 'types/core/enums';
 
 import { encode } from 'utils/encoder/encoder';
 
 import { PipelineStatusEnum, ProgressState } from '../types';
 import { QueryState } from '../explorer/query';
 import { INotificationsEngine } from '../notifications';
+import { GroupedSequencesSearchQueryParams } from '../../api/dataFetchApi/types';
 
 import createState, {
   CurrentGrouping,
@@ -39,7 +40,7 @@ export interface IPipelineEngine<TObject, TStore> {
   engine: {
     search: (params: RunsSearchQueryParams, isInternal?: boolean) => void;
     group: (config: CurrentGrouping, isInternal?: boolean) => void;
-    getSequenceName: () => SequenceTypesEnum;
+    getSequenceType: () => SequenceType;
     destroy: () => void;
     reset: () => void;
     initialize: () => () => void;
@@ -126,11 +127,11 @@ function createPipelineEngine<TStore, TObject>(
    * Function search, used to execute pipeline started from search
    * @example
    *    pipeline.engine.search({ q: "run.hparams.batch_size>32"})
-   * @param {RunsSearchQueryParams} params
+   * @param {GroupedSequencesSearchQueryParams} params
    * @param isInternal - indicates does it need to update current query or not
    */
   function search(
-    params: RunsSearchQueryParams,
+    params: GroupedSequencesSearchQueryParams,
     isInternal: boolean = false,
   ): void {
     // @TODO add a "customMetric" to the query params dynamically
@@ -305,10 +306,7 @@ function createPipelineEngine<TStore, TObject>(
             if (!_.isEmpty(query)) {
               search(
                 {
-                  ...getQueryParamsFromState(
-                    query as QueryState,
-                    options.sequenceName,
-                  ),
+                  ...getQueryParamsFromState(query as QueryState),
                   report_progress: true,
                 },
                 true,
@@ -368,7 +366,7 @@ function createPipelineEngine<TStore, TObject>(
     engine: {
       ..._.omit(state, ['selectors']),
       ...state.selectors,
-      getSequenceName: () => options.sequenceName,
+      getSequenceType: () => options.sequenceType,
       search,
       group,
       reset,

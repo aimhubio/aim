@@ -11,7 +11,7 @@ import {
 import { EngineNew } from 'modules/core/engine/explorer-engine';
 import { PipelineStatusEnum } from 'modules/core/engine/types';
 
-import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
+import { AimObjectDepths, SequenceType } from 'types/core/enums';
 
 export interface IEngineStates {
   [key: string]: {
@@ -21,7 +21,7 @@ export interface IEngineStates {
 
 export interface IOptionalEngineConfig {
   useCache?: boolean;
-  sequenceName: SequenceTypesEnum;
+  sequenceType: SequenceType;
   adapter: {
     depth: AimObjectDepths;
     objectCreator?: () => any;
@@ -35,7 +35,7 @@ export interface IOptionalEngineConfig {
 
 export type IEngineConfig = {
   useCache: boolean;
-  sequenceName: SequenceTypesEnum;
+  sequenceType: SequenceType;
   adapter: {
     objectDepth: AimObjectDepths;
     objectCreator?: () => any;
@@ -148,9 +148,9 @@ export declare interface ExplorerEngineConfiguration {
   enablePipelineCache?: boolean;
 
   /**
-   * Sequence name
+   * Sequence type
    */
-  sequenceName: SequenceTypesEnum;
+  sequenceType: SequenceType;
 
   /**
    * Pipeline Adapter phase config
@@ -287,10 +287,10 @@ export declare interface ExplorerConfiguration
 }
 
 export declare interface ExplorerProps<
-  TEngineInstance extends EngineNew<any, any, SequenceTypesEnum> = EngineNew<
+  TEngineInstance extends EngineNew<any, any, SequenceType> = EngineNew<
     any,
     any,
-    SequenceTypesEnum
+    SequenceType
   >,
 > {
   configuration: ExplorerConfiguration;

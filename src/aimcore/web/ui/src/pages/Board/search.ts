@@ -10,21 +10,21 @@ import pyodideEngine from 'services/pyodide/store';
 import { parseStream } from 'utils/encoder/streamEncoding';
 import { filterMetricsValues } from 'utils/app/filterMetricData';
 
-const seachRequests = createFetchDataRequest();
+const searchRequests = createFetchDataRequest();
 
 const queryResultCacheMap: Record<string, any> = {};
 
-export function search(boardPath: string, sequenceName: string, query: string) {
-  const queryKey = `${sequenceName}_${query}`;
+export function search(boardPath: string, sequenceType: string, query: string) {
+  const queryKey = `${sequenceType}_${query}`;
 
   if (queryResultCacheMap.hasOwnProperty(queryKey)) {
     return queryResultCacheMap[queryKey];
   }
 
-  seachRequests
+  searchRequests
     .call({
       q: query,
-      type_: sequenceName,
+      type_: sequenceType,
       report_progress: false,
     })
     .then((data) => {
@@ -33,8 +33,8 @@ export function search(boardPath: string, sequenceName: string, query: string) {
           try {
             let result;
             if (
-              sequenceName.includes('.Metric') ||
-              sequenceName === 'Sequence'
+              sequenceType.includes('.Metric') ||
+              sequenceType === 'Sequence'
             ) {
               result = objectList.map((item: any) => {
                 const { values, steps } = filterMetricsValues(item);

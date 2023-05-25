@@ -25,12 +25,12 @@ function ConfigureAxesPopover(props: IConfigureAxesPopoverProps) {
   return (
     <ErrorBoundary>
       <div className='ConfigureAxesPopover'>
-        <Alignment
-          engine={engine}
-          visualizationName={visualizationName}
-          alignmentConfig={axesProps.alignment}
-        />
-        <Divider className='ConfigureAxesPopover__divider' />
+        {/*<Alignment*/}
+        {/*  engine={engine}*/}
+        {/*  visualizationName={visualizationName}*/}
+        {/*  alignmentConfig={axesProps.alignment}*/}
+        {/*/>*/}
+        {/*<Divider className='ConfigureAxesPopover__divider' />*/}
         <AxesRange
           engine={engine}
           visualizationName={visualizationName}

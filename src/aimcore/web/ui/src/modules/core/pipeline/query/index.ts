@@ -3,19 +3,17 @@
 // @TODO complete typings
 
 import createInlineCache, { InlineCache } from 'modules/core/cache/inlineCache';
-import {
-  createSearchRunsRequest,
-  RunsSearchQueryParams,
-} from 'modules/core/api/runsApi';
+import { createFetchGroupedSequencesRequest } from 'modules/core/api/dataFetchApi';
 
 import { RequestInstance } from 'services/NetworkService';
 
-import { RunSearchRunView } from 'types/core/AimObjects';
-import { SequenceTypesEnum } from 'types/core/enums';
+import { ContainerType, SequenceType } from 'types/core/enums';
+import { GroupedSequence } from 'types/core/AimObjects/GroupedSequences';
 
 import { parseStream } from 'utils/encoder/streamEncoding';
 
 import { PipelinePhasesEnum, StatusChangeCallback } from '../types';
+import { GroupedSequencesSearchQueryParams } from '../../api/dataFetchApi/types';
 
 import { Query, RequestProgressCallback } from './types';
 import { DecodingError, FetchingError } from './QueryError';
@@ -23,20 +21,20 @@ import { DecodingError, FetchingError } from './QueryError';
 type QueryInternalConfig = {
   cache?: InlineCache;
   currentQueryRequest?: RequestInstance;
-  currentSequenceType?: SequenceTypesEnum;
+  currentSequenceType?: SequenceType;
   statusChangeCallback?: StatusChangeCallback;
   requestProgressCallback?: RequestProgressCallback;
 };
 
 /**
  *
- * @param {SequenceTypesEnum} sequenceType - sequence name
+ * @param {SequenceType} sequenceType - sequence name
  * @param {Boolean} useCache - boolean value to indicate query need to be  cached or not
  * @param statusChangeCallback - sends status change to callee
  * @param requestProgressCallback
  */
 function createQuery(
-  sequenceType: SequenceTypesEnum,
+  sequenceType: SequenceType,
   useCache: boolean = false,
   statusChangeCallback?: StatusChangeCallback,
   requestProgressCallback?: RequestProgressCallback,
@@ -44,9 +42,9 @@ function createQuery(
   const config: QueryInternalConfig = {};
 
   async function executeBaseQuery(
-    query: RunsSearchQueryParams,
+    query: GroupedSequencesSearchQueryParams,
     ignoreCache: boolean = false,
-  ): Promise<RunSearchRunView[]> {
+  ): Promise<Array<GroupedSequence>> {
     if (config.cache && !ignoreCache) {
       const cachedResult = config.cache.get(query);
       if (cachedResult) {
@@ -72,7 +70,7 @@ function createQuery(
     const progressCallback: RequestProgressCallback | undefined =
       query.report_progress ? config.requestProgressCallback : undefined;
     try {
-      const result = parseStream<Array<RunSearchRunView>>(data, {
+      const result = parseStream<Array<GroupedSequence>>(data, {
         progressCallback,
       });
       if (config.cache) {
@@ -84,7 +82,7 @@ function createQuery(
     }
   }
 
-  function setCurrentSequenceType(sequenceType: SequenceTypesEnum): void {
+  function setCurrentSequenceType(sequenceType: SequenceType): void {
     config.currentSequenceType = sequenceType;
   }
 
@@ -93,8 +91,9 @@ function createQuery(
   }
 
   function createQueryRequest(): void {
-    config.currentQueryRequest = createSearchRunsRequest(
-      config?.currentSequenceType || SequenceTypesEnum.Images, // @TODO write better typing to avoid using default values
+    config.currentQueryRequest = createFetchGroupedSequencesRequest(
+      config.currentSequenceType!,
+      ContainerType.Run, // @TODO add container type to config
     );
   }
 

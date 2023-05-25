@@ -1,10 +1,13 @@
 import _ from 'lodash-es';
 
-import { getParams, GetParamsResult } from 'modules/core/api/projectApi';
+import {
+  getProjectsInfo,
+  GetProjectsInfoResult,
+} from 'modules/core/api/projectApi';
 import { INotificationsEngine } from 'modules/core/engine/notifications';
 import AimError from 'modules/core/AimError';
 
-import { SequenceTypesEnum } from 'types/core/enums';
+import { SequenceType } from 'types/core/enums';
 
 import createState, {
   IInstructionsState,
@@ -13,7 +16,7 @@ import createState, {
 
 export interface IInstructionsEngine<
   TStore,
-  SequenceName extends SequenceTypesEnum,
+  SequenceName extends SequenceType,
 > {
   state: {
     instructions: IInstructionsState<SequenceName>;
@@ -29,17 +32,18 @@ export interface IInstructionsEngine<
 
 function createInstructionsEngine<TStore>(
   store: any,
-  options: { sequenceName: SequenceTypesEnum },
+  options: { sequenceType: SequenceType },
   notificationsEngine?: INotificationsEngine<TStore>['engine'],
-): IInstructionsEngine<TStore, typeof options.sequenceName> {
-  const state = createState<TStore, typeof options.sequenceName>(store);
+): IInstructionsEngine<TStore, typeof options.sequenceType> {
+  const state = createState<TStore, typeof options.sequenceType>(store);
 
   const getInstructions = (): Promise<boolean> => {
     return new Promise((resolve, reject) => {
-      getParams({ sequence: options.sequenceName })
-        .then((params: GetParamsResult) => {
-          state.setInfo(params, params[options.sequenceName]);
-          resolve(_.isEmpty(params[options.sequenceName]));
+      getProjectsInfo({ sequence: [options.sequenceType] })
+        .then((info: GetProjectsInfoResult) => {
+          const { sequences } = info;
+          state.setInfo(sequences, sequences[options.sequenceType]);
+          resolve(_.isEmpty(sequences[options.sequenceType]));
         })
         .catch((e) => {
           const aimError = new AimError(e.message || e, e.detail).getError();

@@ -1,7 +1,7 @@
 import { memoize } from 'modules/core/cache';
 
-import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
-import { RunSearchRunView } from 'types/core/AimObjects/Run';
+import { AimObjectDepths, SequenceType } from 'types/core/enums';
+import { GroupedSequence } from 'types/core/AimObjects/GroupedSequences';
 
 import { PipelinePhasesEnum, StatusChangeCallback } from '../types';
 
@@ -11,29 +11,29 @@ import AdapterError from './AdapterError';
 
 export type AdapterConfigOptions = {
   objectDepth: AimObjectDepths;
-  sequenceName: SequenceTypesEnum;
+  sequenceType: SequenceType;
   customInterceptor?: ProcessInterceptor;
   useCache?: boolean;
   statusChangeCallback?: (status: string) => void;
 };
 
 export type Adapter = {
-  execute: (data: RunSearchRunView[]) => Promise<ProcessedData>;
+  execute: (data: Array<GroupedSequence>) => Promise<ProcessedData>;
 };
 
 let adapterConfig: {
   objectDepth: AimObjectDepths;
   customInterceptor: ProcessInterceptor;
-  sequenceName: SequenceTypesEnum;
+  sequenceType: SequenceType;
   useCache: boolean;
   statusChangeCallback?: StatusChangeCallback;
 };
 
 function setAdapterConfig(options: AdapterConfigOptions): void {
-  const { objectDepth, useCache, customInterceptor, sequenceName } = options;
+  const { objectDepth, useCache, customInterceptor, sequenceType } = options;
   adapterConfig = {
     ...options,
-    sequenceName,
+    sequenceType,
     objectDepth,
     useCache: !!useCache,
     customInterceptor:
@@ -41,11 +41,11 @@ function setAdapterConfig(options: AdapterConfigOptions): void {
   };
 }
 
-function baseProcessor(runs: RunSearchRunView[]): Promise<ProcessedData> {
-  const { sequenceName, objectDepth } = adapterConfig;
+function baseProcessor(seqs: Array<GroupedSequence>): Promise<ProcessedData> {
+  const { sequenceType, objectDepth } = adapterConfig;
   adapterConfig.statusChangeCallback?.(PipelinePhasesEnum.Adopting);
   try {
-    return Promise.resolve(processor(runs, sequenceName, objectDepth));
+    return Promise.resolve(processor(seqs, sequenceType, objectDepth));
   } catch (e) {
     throw new AdapterError(e.message || e, e.detail).getError();
   }
@@ -53,7 +53,7 @@ function baseProcessor(runs: RunSearchRunView[]): Promise<ProcessedData> {
 
 function createAdapter({
   objectDepth,
-  sequenceName,
+  sequenceType,
   useCache = false,
   customInterceptor,
   statusChangeCallback,
@@ -62,12 +62,12 @@ function createAdapter({
     objectDepth,
     useCache,
     customInterceptor,
-    sequenceName,
+    sequenceType,
     statusChangeCallback,
   });
 
   const execute = useCache
-    ? memoize<RunSearchRunView[], Promise<ProcessedData>>(baseProcessor)
+    ? memoize<Array<GroupedSequence>, Promise<ProcessedData>>(baseProcessor)
     : baseProcessor;
   return {
     execute,

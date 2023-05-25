@@ -4,7 +4,7 @@ import renderer from 'modules/BaseExplorer';
 import TextBox from 'modules/BaseExplorer/components/TextBox/TextBox';
 import { VisualizerLegends } from 'modules/BaseExplorer/components/Widgets';
 
-import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
+import { AimObjectDepths, SequenceType } from 'types/core/enums';
 
 import { getTextDefaultConfig } from './textConfig';
 
@@ -13,7 +13,7 @@ const defaultConfig = getTextDefaultConfig();
 const PromptsExplorer = renderer(
   {
     name: 'Prompts Explorer',
-    sequenceName: SequenceTypesEnum.Texts,
+    sequenceType: SequenceType.Text,
     basePath: 'prompts',
     persist: true,
     adapter: {

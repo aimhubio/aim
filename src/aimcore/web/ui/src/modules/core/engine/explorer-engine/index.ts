@@ -11,7 +11,7 @@ import browserHistory from 'modules/core/services/browserHistory';
 import getQueryParamsFromState from 'modules/core/utils/getQueryParamsFromState';
 
 import { AimFlatObjectBase } from 'types/core/AimObjects';
-import { SequenceTypesEnum } from 'types/core/enums';
+import { SequenceType } from 'types/core/enums';
 
 import createPipelineEngine, { IPipelineEngine } from '../pipeline';
 import createInstructionsEngine, { IInstructionsEngine } from '../instructions';
@@ -37,11 +37,7 @@ type State = {
   notifications?: INotificationsState;
 };
 
-export type EngineNew<
-  TStore,
-  TObject,
-  SequenceName extends SequenceTypesEnum,
-> = {
+export type EngineNew<TStore, TObject, SequenceName extends SequenceType> = {
   // sub engines
   pipeline: IPipelineEngine<TObject, TStore>['engine'];
   instructions: IInstructionsEngine<TStore, SequenceName>['engine'];
@@ -70,7 +66,7 @@ function getPipelineEngine(
   // const defaultControls = config.controls || {};
 
   const pipelineOptions: Omit<PipelineOptions, 'callbacks'> = {
-    sequenceName: config.sequenceName,
+    sequenceType: config.sequenceType,
     adapter: {
       objectDepth: config.adapter.objectDepth,
       useCache,
@@ -108,7 +104,7 @@ function getInstructionsEngine(
 ) {
   const instructions = createInstructionsEngine<object>(
     { setState: set, getState: get },
-    { sequenceName: config.sequenceName },
+    { sequenceType: config.sequenceType },
     notificationsEngine,
   );
 
@@ -167,7 +163,7 @@ function getEventSystemEngine(
 }
 
 function getBlobURIEngine(config: ExplorerEngineConfiguration) {
-  const blobURI = createBlobURISystemEngine(config.sequenceName);
+  const blobURI = createBlobURISystemEngine(config.sequenceType);
 
   return blobURI.engine;
 }
@@ -212,12 +208,12 @@ function createEngine<TObject = any>(
   basePath: string,
   name: string = 'ExplorerEngine',
   devtool: boolean = false,
-): EngineNew<object, AimFlatObjectBase<TObject>, typeof config.sequenceName> {
+): EngineNew<object, AimFlatObjectBase<TObject>, typeof config.sequenceType> {
   let notifications: INotificationsEngine<State>['engine'];
   let pipeline: IPipelineEngine<AimFlatObjectBase<TObject>, object>['engine'];
   let instructions: IInstructionsEngine<
     object,
-    typeof config.sequenceName
+    typeof config.sequenceType
   >['engine'];
 
   let visualizations: any;
@@ -340,17 +336,11 @@ function createEngine<TObject = any>(
         } else if (config.persist) {
           const stateFromStorage = getUrlSearchParam('query') || {};
           if (stateFromStorage.form && stateFromStorage.ranges) {
-            pipeline.search(
-              getQueryParamsFromState(stateFromStorage, config.sequenceName),
-              true,
-            );
+            pipeline.search(getQueryParamsFromState(stateFromStorage), true);
           }
         } else if (config.initialState?.query) {
           pipeline.search(
-            getQueryParamsFromState(
-              config.initialState.query,
-              config.sequenceName,
-            ),
+            getQueryParamsFromState(config.initialState.query),
             true,
           );
         }
@@ -401,7 +391,7 @@ function createEngine<TObject = any>(
   const engine: EngineNew<
     object,
     AimFlatObjectBase<TObject>,
-    typeof config.sequenceName
+    typeof config.sequenceType
   > = {
     useStore: useReactStore,
     subscribeToStore: useReactStore.subscribe,

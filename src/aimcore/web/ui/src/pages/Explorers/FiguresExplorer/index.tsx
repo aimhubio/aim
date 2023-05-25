@@ -1,7 +1,7 @@
 import renderer from 'modules/BaseExplorer';
 import Figures from 'modules/BaseExplorer/components/Figures';
 
-import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
+import { AimObjectDepths, SequenceType } from 'types/core/enums';
 
 import { getFiguresDefaultConfig } from './config';
 
@@ -9,7 +9,7 @@ const defaultConfig = getFiguresDefaultConfig();
 
 export const figuresExplorerConfig = {
   name: 'Figures Explorer',
-  sequenceName: SequenceTypesEnum.Figures,
+  sequenceType: SequenceType.Figure,
   basePath: 'figures',
   persist: true,
   adapter: {
