@@ -17,7 +17,6 @@ const pageTitles = {
   FIGURES_EXPLORER_NEW: 'New Figures',
   BOARDS: 'Boards',
   BOARD: 'Board',
-  METRICS_EXPLORER_V2: 'Metrics Explorer v2',
   REPORTS: 'Reports',
   REPORT: 'Report',
   APP: 'App',

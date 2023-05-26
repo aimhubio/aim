@@ -14,7 +14,7 @@ import TooltipContentHeader from './TooltipContentHeader';
 const defaultConfig = getMetricsDefaultConfig();
 
 export const metricsExplorerConfig = {
-  name: 'Metrics Explorer V2',
+  name: 'Metrics Explorer',
   sequenceType: SequenceType.Metric,
   basePath: 'metrics_v2',
   persist: true,
