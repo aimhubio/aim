@@ -83,14 +83,14 @@ async def sequence_search_result_streamer(repo: 'Repo',
                                           start: Optional[int],
                                           stop: Optional[int]):
     for sequence in query_collection:
-        seq_data = _sequence_data(repo, sequence, p, start, stop)
+        seq_data = {hash(sequence): _sequence_data(repo, sequence, p, start, stop)}
         encoded_tree = encode_tree(seq_data)
         yield collect_streamable_data(encoded_tree)
 
 
 async def container_search_result_streamer(query_collection: Iterable[Container]):
     for container in query_collection:
-        cont_data = _container_data(container)
+        cont_data = {container.hash: _container_data(container)}
         encoded_tree = encode_tree(cont_data)
         yield collect_streamable_data(encoded_tree)
 

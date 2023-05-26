@@ -57,6 +57,7 @@ class ContainerQueryProxy:
                 except Exception:
                     res = SafeNone()
                 self._cache[item] = res
+                return res
             else:
                 return self._cache[item]
 
