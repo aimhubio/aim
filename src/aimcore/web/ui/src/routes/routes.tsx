@@ -13,100 +13,105 @@ import { PathEnum } from 'config/enums/routesEnum';
 import { ExplorersCatsEnum } from 'config/enums/explorersCatsEnum';
 import pageTitlesEnum from 'config/pageTitles/pageTitles';
 
-const Runs = React.lazy(
-  () => import(/* webpackChunkName: "runs" */ 'pages/Runs/RunsContainer'),
-);
-const RunDetail = React.lazy(
-  () => import(/* webpackChunkName: "run" */ 'pages/RunDetail/RunDetail'),
-);
-const Experiment = React.lazy(
-  () =>
-    import(/* webpackChunkName: "experiment" */ 'pages/Experiment/Experiment'),
-);
-const Metrics = React.lazy(
-  () =>
-    import(
-      /* webpackChunkName: "metrics" */ 'pages/Explorers/Metrics/MetricsContainer'
-    ),
-);
-const Params = React.lazy(
-  () =>
-    import(
-      /* webpackChunkName: "params" */ 'pages/Explorers/Params/ParamsContainer'
-    ),
-);
+// const Runs = React.lazy(
+//   () => import(/* webpackChunkName: "runs" */ 'pages/Runs/RunsContainer'),
+// );
+// const RunDetail = React.lazy(
+//   () => import(/* webpackChunkName: "run" */ 'pages/RunDetail/RunDetail'),
+// );
+// const Experiment = React.lazy(
+//   () =>
+//     import(/* webpackChunkName: "experiment" */ 'pages/Experiment/Experiment'),
+// );
+// const Metrics = React.lazy(
+//   () =>
+//     import(
+//       /* webpackChunkName: "metrics" */ 'pages/Explorers/Metrics/MetricsContainer'
+//     ),
+// );
+// const Params = React.lazy(
+//   () =>
+//     import(
+//       /* webpackChunkName: "params" */ 'pages/Explorers/Params/ParamsContainer'
+//     ),
+// );
+// const Dashboard = React.lazy(
+//   () => import(/* webpackChunkName: "dashboard" */ 'pages/Dashboard/Dashboard'),
+// );
+// const TagsContainer = React.lazy(
+//   () => import(/* webpackChunkName: "tags" */ 'pages/Tags/TagsContainer'),
+// );
+// const Scatters = React.lazy(
+//   () =>
+//     import(
+//       /* webpackChunkName: "scatters" */ 'pages/Explorers/Scatters/ScattersContainer'
+//     ),
+// );
+// const ImagesExplore = React.lazy(
+//   () =>
+//     import(
+//       /* webpackChunkName: "images" */ 'pages/Explorers/ImagesExplore/ImagesExplore'
+//     ),
+// );
+// const Bookmarks = React.lazy(
+//   () => import(/* webpackChunkName: "bookmarks" */ 'pages/Explorers/Bookmarks'),
+// );
+// const Boards = React.lazy(
+//   () => import(/* webpackChunkName: "boards" */ 'pages/Boards/Boards'),
+// );
+// const Board = React.lazy(
+//   () => import(/* webpackChunkName: "board" */ 'pages/Board/BoardContainer'),
+// );
 
-const Dashboard = React.lazy(
-  () => import(/* webpackChunkName: "dashboard" */ 'pages/Dashboard/Dashboard'),
-);
-const TagsContainer = React.lazy(
-  () => import(/* webpackChunkName: "tags" */ 'pages/Tags/TagsContainer'),
-);
-
-const Scatters = React.lazy(
-  () =>
-    import(
-      /* webpackChunkName: "scatters" */ 'pages/Explorers/Scatters/ScattersContainer'
-    ),
-);
-
-const ImagesExplore = React.lazy(
-  () =>
-    import(
-      /* webpackChunkName: "images" */ 'pages/Explorers/ImagesExplore/ImagesExplore'
-    ),
-);
 const FiguresExplorer = React.lazy(
   () =>
-    import(/* webpackChunkName: "figures" */ 'pages/Explorers/FiguresExplorer'),
+    import(
+      /* webpackChunkName: "FiguresExplorer" */ 'pages/Explorers/FiguresExplorer'
+    ),
 );
+
 const AudiosExplorer = React.lazy(
   () =>
-    import(/* webpackChunkName: "audios" */ 'pages/Explorers/AudiosExplorer'),
+    import(
+      /* webpackChunkName: "AudiosExplorer" */ 'pages/Explorers/AudiosExplorer'
+    ),
 );
 
 const MetricsExplorer = React.lazy(
   () =>
     import(
-      /* webpackChunkName: "metrics_v2" */ 'pages/Explorers/MetricsExplorer'
+      /* webpackChunkName: "MetricsExplorer" */ 'pages/Explorers/MetricsExplorer'
     ),
 );
 
 const TextExplorer = React.lazy(
-  () => import(/* webpackChunkName: "text" */ 'pages/Explorers/TextExplorer'),
+  () =>
+    import(
+      /* webpackChunkName: "TextExplorer" */ 'pages/Explorers/TextExplorer'
+    ),
 );
 
 const PromptsExplorer = React.lazy(
   () =>
-    import(/* webpackChunkName: "text" */ 'pages/Explorers/PromptsExplorer'),
+    import(
+      /* webpackChunkName: "PromptsExplorer" */ 'pages/Explorers/PromptsExplorer'
+    ),
 );
 
 const Explorers = React.lazy(
-  () => import(/* webpackChunkName: "explorers" */ 'pages/Explorers'),
-);
-
-const Bookmarks = React.lazy(
-  () => import(/* webpackChunkName: "bookmarks" */ 'pages/Explorers/Bookmarks'),
-);
-
-const Boards = React.lazy(
-  () => import(/* webpackChunkName: "boards" */ 'pages/Boards/Boards'),
-);
-
-const Board = React.lazy(
-  () => import(/* webpackChunkName: "board" */ 'pages/Board/BoardContainer'),
+  () => import(/* webpackChunkName: "Explorers" */ 'pages/Explorers'),
 );
 
 const Reports = React.lazy(
-  () => import(/* webpackChunkName: "reports" */ 'pages/Reports'),
+  () => import(/* webpackChunkName: "Reports" */ 'pages/Reports'),
 );
 
 const Report = React.lazy(
-  () => import(/* webpackChunkName: "report" */ 'pages/Report/ReportContainer'),
+  () => import(/* webpackChunkName: "Report" */ 'pages/Report/ReportContainer'),
 );
 
 const App = React.lazy(
-  () => import(/* webpackChunkName: "app" */ 'pages/App/App'),
+  () => import(/* webpackChunkName: "App" */ 'pages/App/App'),
 );
 
 export interface IRoute {
