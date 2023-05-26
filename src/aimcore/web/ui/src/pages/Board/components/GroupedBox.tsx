@@ -203,7 +203,15 @@ function GroupedBox(props: any) {
     .sort((a, b) => a - b);
 
   return (
-    <div className='BoxVirtualizer'>
+    <div
+      className='BoxVirtualizer'
+      style={{
+        minHeight:
+          rowsAxisItems.length === 1
+            ? boxSize.height + 30 + 2
+            : boxSize.height * 1.5 + 30 + 2,
+      }}
+    >
       {rowsAxisItems && rowsAxisItems.length > 0 && (
         <div className='BoxVirtualizer__placeholder' />
       )}
