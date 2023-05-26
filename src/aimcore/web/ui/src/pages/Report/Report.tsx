@@ -125,7 +125,6 @@ function Report({
               useLocalStorage={true}
               className='ReportVisualizer__main'
               sizes={editMode || newMode ? [40, 60] : [100, 0]}
-              minSize={[400, 400]}
             >
               {editMode || newMode ? (
                 <SplitPaneItem className='ReportVisualizer__main__editor'>

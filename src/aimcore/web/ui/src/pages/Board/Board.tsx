@@ -291,10 +291,14 @@ board_path=${boardPath === undefined ? 'None' : `"${boardPath}"`}
           )}
         <BusyLoaderWrapper
           isLoading={pyodideIsLoading || isLoading || !mounted}
-          height={'100%'}
+          height='100%'
         >
           <BoardVisualizerContainer className='BoardVisualizer'>
-            <BoardVisualizerPane id='BoardVisualizer' useLocalStorage={true}>
+            <BoardVisualizerPane
+              id='BoardVisualizer'
+              useLocalStorage={true}
+              sizes={(editMode || newMode) && mounted ? [40, 60] : [0, 100]}
+            >
               {(editMode || newMode) && mounted ? (
                 <BoardVisualizerEditorPane className='BoardVisualizer__main__editor'>
                   <Editor
