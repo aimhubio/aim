@@ -39,7 +39,7 @@ export function search(
       report_progress: false,
     })
     .then((data) => {
-      parseStream<Array<any>>(data, undefined, 0)
+      parseStream<Array<any>>(data)
         .then((objectList) => {
           try {
             let result;
