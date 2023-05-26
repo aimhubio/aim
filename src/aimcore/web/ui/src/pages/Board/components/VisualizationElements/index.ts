@@ -59,7 +59,7 @@ const HTMLVizElement = React.lazy(
 const TextVizElement = React.lazy(
   () =>
     import(
-      /* webpackPrefetch: true, webpackChunkName: "Text" */ './TextVizElement'
+      /* webpackPrefetch: true, webpackChunkName: "Typography" */ './TextVizElement'
     ),
 );
 const SelectVizElement = React.lazy(
