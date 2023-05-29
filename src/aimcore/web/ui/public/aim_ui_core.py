@@ -1183,14 +1183,14 @@ class SubHeader(TypographyComponent):
 # Super components
 
 class Board(Component):
-    def __init__(self, id=None, state=None, block=None, key=None):
+    def __init__(self, path=None, state=None, block=None, key=None):
         component_type = "Board"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
 
-        self.data = id
+        self.data = path
 
-        set_state(state or {}, id)
+        set_state(state or {}, path)
 
         self.render()
 
@@ -1199,21 +1199,29 @@ class Board(Component):
 
 
 class BoardLink(Component):
-    def __init__(self, id=None, text='Go To Board', new_tab=False, state=None, block=None, key=None):
+    def __init__(self, path=None, text='Go To Board', new_tab=False, state=None, block=None, key=None):
         component_type = "BoardLink"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
 
-        self.data = id
+        self.data = path
+
+        self.board_state = state
 
         self.options = {
             "text": text,
             "new_tab": new_tab
         }
 
-        set_state(state or {}, id)
+        self.callbacks = {
+            "on_navigation": self.on_navigation
+        }
 
         self.render()
+
+    def on_navigation(self):
+        if self.board_state != None:
+            set_state(self.board_state, self.data)
 
 
 class UI:
