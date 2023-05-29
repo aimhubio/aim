@@ -51,8 +51,8 @@ const AppStructure: React.FC<any> = ({
 
     // Step 1: Create nodes and build a lookup
     for (let i = 0; i < boards.length; i++) {
-      const packagePath = `${PathEnum.App}/${boards[i]}`;
-      const isActive = location.pathname.replace('/edit', '') === packagePath;
+      const boardPath = `${PathEnum.App}/${boards[i]}`;
+      const isActive = location.pathname.replace('/edit', '') === boardPath;
       let path = boards[i].split('/');
       for (let j = 0; j < path.length; j++) {
         const isLast = j === path.length - 1;
@@ -68,7 +68,7 @@ const AppStructure: React.FC<any> = ({
             title: isLast ? (
               <BoardLink
                 key={path[j]}
-                to={`${packagePath}${editMode ? '/edit' : ''}`}
+                to={`${boardPath}${editMode ? '/edit' : ''}`}
               >
                 <Icon size='md' icon={<IconBrandPython />} />
                 <Text css={{ ml: '$4' }}>{path[j]}</Text>
