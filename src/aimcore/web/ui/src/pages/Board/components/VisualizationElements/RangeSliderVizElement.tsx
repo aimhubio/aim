@@ -22,6 +22,7 @@ function RangeSliderVizElement(props: any) {
         max={props.options.max}
         value={props.options.value}
         step={props.options.step}
+        disabled={props.options.disabled}
         onValueChange={onChange}
       />
     </div>
