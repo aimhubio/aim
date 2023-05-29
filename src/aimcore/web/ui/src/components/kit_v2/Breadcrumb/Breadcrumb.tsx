@@ -26,7 +26,7 @@ function Breadcrumb({
     isLast,
   }: {
     path: string;
-    name: string;
+    name: string | React.ReactNode;
     isLast: boolean;
   }) {
     return (

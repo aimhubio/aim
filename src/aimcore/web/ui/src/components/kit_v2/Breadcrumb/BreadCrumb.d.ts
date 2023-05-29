@@ -1,5 +1,6 @@
-import { IBoxProps } from '../Box';
+import * as React from 'react';
 
+import { IBoxProps } from '../Box';
 interface BreadCrumbProps extends IBoxProps {
   /**
    * @description The custom name of the route to be displayed in the breadcrumb.
@@ -13,5 +14,5 @@ interface BreadCrumbProps extends IBoxProps {
    * @default undefined
    * @example
    */
-  items?: { name: string; path: string }[];
+  items?: { name: string | React.ReactNode; path: string }[];
 }

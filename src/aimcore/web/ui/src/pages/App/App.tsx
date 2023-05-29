@@ -39,35 +39,36 @@ const AppStructure: React.FC<any> = ({
 }: AppStructureProps) => {
   const location = useLocation();
 
-  function makeTreeData(list: string[]): Node[] {
+  const treeData = React.useMemo((): {
+    tree: Node[];
+    expandedKeys: string[];
+    selectedKeys: string[];
+  } => {
     let tree: Node[] = [];
+    let expandedKeys: string[] = [];
+    let selectedKeys: string[] = [];
     let lookup: Record<string, Node> = {};
 
-    // Sort the input list alphabetically
-    list.sort();
-
-    // Separate directories and files
-    let dirs = list.filter((path) => path.includes('/'));
-    let files = list.filter((path) => !path.includes('/'));
-
-    // Prioritize directories, then files
-    let sortedList = [...dirs, ...files];
-
     // Step 1: Create nodes and build a lookup
-    for (let i = 0; i < sortedList.length; i++) {
-      const packagePath = `${PathEnum.App}/${sortedList[i]}`;
-      const isActive = location.pathname.replace('/edit', '') === packagePath;
-      let path = sortedList[i].split('/');
+    for (let i = 0; i < boards.length; i++) {
+      const boardPath = `${PathEnum.App}/${boards[i]}`;
+      const isActive = location.pathname.replace('/edit', '') === boardPath;
+      let path = boards[i].split('/');
       for (let j = 0; j < path.length; j++) {
         const isLast = j === path.length - 1;
         let part = path.slice(0, j + 1).join('/');
+        if (isActive) {
+          expandedKeys.push(`${i}-${j}`);
+          if (isLast) {
+            selectedKeys.push(`${i}-${j}`);
+          }
+        }
         if (!lookup[part]) {
           let node: Node = {
             title: isLast ? (
               <BoardLink
-                isActive={isActive}
                 key={path[j]}
-                to={`${packagePath}${editMode ? '/edit' : ''}`}
+                to={`${boardPath}${editMode ? '/edit' : ''}`}
               >
                 <Icon size='md' icon={<IconBrandPython />} />
                 <Text css={{ ml: '$4' }}>{path[j]}</Text>
@@ -94,11 +95,8 @@ const AppStructure: React.FC<any> = ({
         tree.push(node);
       }
     }
-
-    return tree;
-  }
-
-  const data: Node[] = makeTreeData(boards.sort());
+    return { tree, expandedKeys, selectedKeys };
+  }, [boards, editMode, location.pathname]);
 
   return (
     <Box
@@ -109,7 +107,11 @@ const AppStructure: React.FC<any> = ({
         p: '$3 $4',
       }}
     >
-      <Tree defaultExpandAll={true} data={data} />
+      <Tree
+        selectedKeys={treeData.selectedKeys}
+        expandedKeys={treeData.expandedKeys}
+        data={treeData.tree}
+      />
     </Box>
   );
 };
@@ -176,19 +178,45 @@ function AppWrapper({ boardPath, editMode, boardList }: AppWrapperProps) {
   //   });
   // };
 
+  const breadcrumbItems = React.useMemo(() => {
+    const splitPath = path.split('/');
+    let items = [
+      {
+        name: 'App',
+        path: '/app',
+      },
+      {
+        name: splitPath.map((path, index) => {
+          const isLast = index === splitPath.length - 1;
+          return (
+            <Text
+              color={editMode ? '$textPrimary50' : '$textPrimary'}
+              key={index}
+              size='$3'
+              css={{ mx: '$2' }}
+            >
+              {isLast ? path.slice(0, path.length - 3) : `${path} /`}
+            </Text>
+          );
+        }),
+        path: `/app/${path}`,
+      },
+    ];
+    if (editMode) {
+      items.push({
+        name: 'Edit',
+        path: `/app/${path}/edit`,
+      });
+    }
+
+    return items;
+  }, [editMode, path]);
+
   return (
     <AppContainer>
       <TopBar id='app-top-bar'>
         <Box flex='1 100%'>
-          <Breadcrumb
-            items={[
-              {
-                name: 'App',
-                path: '/app',
-              },
-              { name: boardPath, path: `/app/${boardPath}` },
-            ]}
-          />
+          <Breadcrumb items={breadcrumbItems} />
         </Box>
         {board && !editMode && (
           <Link
