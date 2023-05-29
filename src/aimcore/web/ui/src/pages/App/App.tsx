@@ -178,34 +178,45 @@ function AppWrapper({ boardPath, editMode, boardList }: AppWrapperProps) {
   //   });
   // };
 
-  const breadcrumbItem = React.useCallback((boardPath: string) => {
-    const splitPath = boardPath.split('/');
-    return {
-      name: splitPath.map((path, index) => {
-        const isLast = index === splitPath.length - 1;
-        return (
-          <Text key={index} size='$3' css={{ mx: '$2' }}>
-            {isLast ? path.slice(0, path.length - 3) : `${path} /`}
-          </Text>
-        );
-      }),
-      path: `/app/${boardPath}`,
-    };
-  }, []);
+  const breadcrumbItems = React.useMemo(() => {
+    const splitPath = path.split('/');
+    let items = [
+      {
+        name: 'App',
+        path: '/app',
+      },
+      {
+        name: splitPath.map((path, index) => {
+          const isLast = index === splitPath.length - 1;
+          return (
+            <Text
+              color={editMode ? '$textPrimary50' : '$textPrimary'}
+              key={index}
+              size='$3'
+              css={{ mx: '$2' }}
+            >
+              {isLast ? path.slice(0, path.length - 3) : `${path} /`}
+            </Text>
+          );
+        }),
+        path: `/app/${path}`,
+      },
+    ];
+    if (editMode) {
+      items.push({
+        name: 'Edit',
+        path: `/app/${path}/edit`,
+      });
+    }
+
+    return items;
+  }, [editMode, path]);
 
   return (
     <AppContainer>
       <TopBar id='app-top-bar'>
         <Box flex='1 100%'>
-          <Breadcrumb
-            items={[
-              {
-                name: 'App',
-                path: '/app',
-              },
-              breadcrumbItem(boardPath),
-            ]}
-          />
+          <Breadcrumb items={breadcrumbItems} />
         </Box>
         {board && !editMode && (
           <Link
