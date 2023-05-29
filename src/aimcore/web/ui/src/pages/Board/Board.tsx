@@ -49,12 +49,16 @@ any): React.FunctionComponentElement<React.ReactNode> {
     namespace,
     registeredPackages,
   } = usePyodide();
+
   const editorRef = React.useRef<any>(null);
   const vizContainer = React.useRef<HTMLDivElement>(
     document.createElement('div'),
   );
   const boxContainer = React.useRef<HTMLDivElement>(
     document.createElement('div'),
+  );
+  const tobBarRef = React.useRef<HTMLDivElement>(
+    document.querySelector('#app-top-bar'),
   );
   const setEditorValue = useBoardStore((state) => state.setEditorValue);
 
@@ -63,10 +67,7 @@ any): React.FunctionComponentElement<React.ReactNode> {
   const timerId = React.useRef(0);
 
   const [state, setState] = React.useState<any>({
-    layout: {
-      blocks: [],
-      components: [],
-    },
+    layoutTree: null,
     isProcessing: null,
     error: null,
     execCode: '',
@@ -108,10 +109,7 @@ any): React.FunctionComponentElement<React.ReactNode> {
 
         setState((s: any) => ({
           ...s,
-          layout: {
-            blocks: [],
-            components: [],
-          },
+          layoutTree: null,
           execCode: code,
           executionCount: s.executionCount + 1,
         }));
@@ -196,14 +194,11 @@ board_path=${boardPath === undefined ? 'None' : `"${boardPath}"`}
     setEditorValue(data.code);
     const unsubscribe = pyodideEngine.events.on(
       boardPath,
-      ({ blocks, components, state, query }) => {
-        if (components) {
+      ({ layoutTree, state, query }) => {
+        if (layoutTree) {
           setState((s: any) => ({
             ...s,
-            layout: {
-              blocks: blocks[boardPath] ?? [],
-              components: components[boardPath],
-            },
+            layoutTree,
           }));
         }
         if (state || query) {
@@ -240,23 +235,11 @@ board_path=${boardPath === undefined ? 'None' : `"${boardPath}"`}
     setEditorValue(editorRef.current?.getValue());
   }, 1000);
 
-  const tree = constructTree(
-    state.layout.blocks.concat(state.layout.components),
-    {
-      root: {
-        id: 0,
-        elements: {},
-      },
-    },
-  );
-
-  const tobBarRef = document.querySelector('#app-top-bar')!;
-
   return (
     <ErrorBoundary>
       <Box as='section' height='100vh' className='Board'>
         {(editMode || newMode) &&
-          tobBarRef &&
+          tobBarRef.current &&
           createPortal(
             <Box
               className='Board__appBar__controls'
@@ -287,7 +270,7 @@ board_path=${boardPath === undefined ? 'None' : `"${boardPath}"`}
                 </Button>
               </Link>
             </Box>,
-            tobBarRef,
+            tobBarRef.current,
           )}
         <BusyLoaderWrapper
           isLoading={pyodideIsLoading || isLoading || !mounted}
@@ -326,44 +309,10 @@ board_path=${boardPath === undefined ? 'None' : `"${boardPath}"`}
                     <Spinner />
                   </BoardSpinner>
                 )}
-                {newMode || editMode ? (
-                  <>
-                    <Box height='100%' css={{ overflow: 'auto' }}>
-                      <BoardComponentsViz
-                        ref={vizContainer}
-                        className='BoardVisualizer__main__components__viz'
-                        key={`${state.isProcessing}`}
-                      >
-                        {state.error ? (
-                          <Box
-                            as='pre'
-                            css={{ fontMono: 14 }}
-                            color='$danger100'
-                            p='$5'
-                          >
-                            {state.error}
-                          </Box>
-                        ) : (
-                          renderTree(tree, tree.root.elements)
-                        )}
-                      </BoardComponentsViz>
-                    </Box>
-                    {state.isProcessing !== null && (
-                      <div ref={boxContainer}>
-                        <BoardConsole
-                          key={'board-console'}
-                          boxContainer={boxContainer}
-                          vizContainer={vizContainer}
-                        />
-                      </div>
-                    )}
-
-                    {/* <BoardLeavingGuard data={data.code} /> */}
-                  </>
-                ) : (
+                <Box height='100%' css={{ overflow: 'auto' }}>
                   <BoardComponentsViz
-                    className='BoardVisualizer__main__components__viz'
                     ref={vizContainer}
+                    className='BoardVisualizer__main__components__viz'
                     key={`${state.isProcessing}`}
                   >
                     {state.error ? (
@@ -376,10 +325,25 @@ board_path=${boardPath === undefined ? 'None' : `"${boardPath}"`}
                         {state.error}
                       </Box>
                     ) : (
-                      renderTree(tree, tree.root.elements)
+                      state.layoutTree &&
+                      renderTree(
+                        state.layoutTree,
+                        state.layoutTree.get('root').elements,
+                      )
                     )}
                   </BoardComponentsViz>
+                </Box>
+                {(newMode || editMode) && state.isProcessing !== null && (
+                  <div ref={boxContainer}>
+                    <BoardConsole
+                      key={'board-console'}
+                      boxContainer={boxContainer}
+                      vizContainer={vizContainer}
+                    />
+                  </div>
                 )}
+
+                {/* <BoardLeavingGuard data={data.code} /> */}
               </BoardVisualizerComponentsPane>
             </BoardVisualizerPane>
           </BoardVisualizerContainer>
@@ -397,80 +361,35 @@ board_path=${boardPath === undefined ? 'None' : `"${boardPath}"`}
 
 export default Board;
 
-function constructTree(elems: any, tree: any) {
-  for (let i = 0; i < elems.length; i++) {
-    let elem = elems[i];
-    if (elem.element === 'block') {
-      if (!elem.parent_block) {
-        tree.root.elements[elem.block_context.id] = {
-          ...elem.block_context,
-          elements: {},
-          ...elem,
-        };
-      } else {
-        if (!tree.hasOwnProperty(elem.parent_block.id)) {
-          tree[elem.parent_block.id] = {
-            id: elem.parent_block.id,
-            elements: {},
-            ...elem,
-          };
-        }
-        tree[elem.parent_block.id].elements[elem.block_context.id] = {
-          ...elem.block_context,
-          elements: {},
-          ...elem,
-        };
-      }
-      tree[elem.block_context.id] = {
-        ...elem.block_context,
-        elements: {},
-        ...elem,
-      };
-    } else {
-      if (!elem.parent_block) {
-        tree.root.elements[elem.key] = elem;
-      } else {
-        if (!tree.hasOwnProperty(elem.parent_block.id)) {
-          tree[elem.parent_block.id] = {
-            id: elem.parent_block.id,
-            elements: {},
-            data: elem.data,
-          };
-        }
-        tree[elem.parent_block.id].elements[elem.key] = elem;
-      }
-    }
-  }
-
-  return tree;
-}
-
 function renderTree(tree: any, elements: any) {
-  return Object.values(elements).map((element: any, i: number) => {
+  if (elements.size === 0) {
+    return null;
+  }
+  return [...elements].map(([key, element]) => {
     if (element.type === 'row' || element.type === 'column') {
       return (
-        <div key={element.type + i} className={`block--${element.type}`}>
-          {renderTree(tree, tree[element.id].elements)}
+        <div key={element.type + key} className={`block--${element.type}`}>
+          {renderTree(tree, tree.get(element.id).elements)}
         </div>
       );
     }
 
     if (element.type === 'tabs') {
       const tabs = [];
-      for (const tabIndex in tree[element.id].elements) {
-        const tab = tree[element.id].elements[tabIndex];
+      for (const tabIndex of tree.get(element.id).elements.keys()) {
+        const tab = tree.get(element.id).elements.get(tabIndex);
         tabs.push({
           label: tab.data,
           value: tab.data,
           content: (
-            <BoardBlockTab key={element.type + i} className={'block--tab'}>
-              {renderTree(tree, tree[tab.id].elements)}
+            <BoardBlockTab key={element.type + key} className={'block--tab'}>
+              {renderTree(tree, tree.get(tab.id).elements)}
             </BoardBlockTab>
           ),
         });
       }
       return (
-        <Box width='100%' key={element.type + i} className={'block--tabs'}>
+        <Box width='100%' key={element.type + key} className={'block--tabs'}>
           <Tabs tabs={tabs} />
         </Box>
       );
@@ -481,8 +400,8 @@ function renderTree(tree: any, elements: any) {
 
     if (element.type === 'form') {
       return (
-        <FormVizElement key={element.type + i} {...element}>
-          {renderTree(tree, tree[element.id].elements)}
+        <FormVizElement key={element.type + key} {...element}>
+          {renderTree(tree, tree.get(element.id).elements)}
         </FormVizElement>
       );
     }
@@ -506,7 +425,7 @@ function renderTree(tree: any, elements: any) {
 
       return (
         <GridCell
-          key={i}
+          key={key}
           viz={{
             ...element,
             data: vizData,
@@ -515,6 +434,6 @@ function renderTree(tree: any, elements: any) {
       );
     }
 
-    return <GridCell key={i} viz={element} />;
+    return <GridCell key={key} viz={element} />;
   });
 }
