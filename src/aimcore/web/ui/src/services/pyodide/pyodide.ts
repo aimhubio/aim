@@ -15,26 +15,27 @@ let layoutUpdateTimer: number;
 let prevBoardPath: undefined | string;
 
 // @ts-ignore
-window.updateLayout = (elements: any, boardPath: undefined | string) => {
-  let layout = toObject(elements.toJs());
-  elements.destroy();
+window.updateLayout = (items: any, boardPath: undefined | string) => {
+  let layout = toObject(items.toJs());
+  items.destroy();
 
-  let blocks: Record<string, any[]> = {};
-  let components: Record<string, any[]> = {};
+  let elements: Record<string, any[]> = {};
 
   for (let item of layout) {
     let boardPath = item.board_path;
-    if (!blocks.hasOwnProperty(boardPath)) {
-      blocks[boardPath] = [];
-      components[boardPath] = [];
+    if (!elements.hasOwnProperty(boardPath)) {
+      elements[boardPath] = [];
     }
     if (item.element === 'block') {
-      blocks[boardPath].push(item);
+      elements[boardPath].push(item);
     } else {
       if (item.parent_block?.type === 'table_cell') {
         let tabelCell = null;
-        for (let elem of blocks[boardPath]) {
-          if (elem.block_context.id === item.parent_block.id) {
+        for (let elem of elements[boardPath]) {
+          if (
+            elem.element === 'block' &&
+            elem.block_context.id === item.parent_block.id
+          ) {
             tabelCell = elem;
           }
         }
@@ -48,7 +49,7 @@ window.updateLayout = (elements: any, boardPath: undefined | string) => {
         }
       }
 
-      components[boardPath].push(item);
+      elements[boardPath].push(item);
     }
   }
 
@@ -59,9 +60,18 @@ window.updateLayout = (elements: any, boardPath: undefined | string) => {
   prevBoardPath = boardPath;
 
   layoutUpdateTimer = window.setTimeout(() => {
+    const treeMap = new Map();
+
+    treeMap.set('root', {
+      id: 0,
+      elements: new Map(),
+    });
+
+    const tree = constructTree(elements[boardPath!], treeMap);
+
     pyodideEngine.events.fire(
       boardPath as string,
-      { blocks, components },
+      { layoutTree: tree },
       { savePayload: false },
     );
   }, 50);
@@ -216,4 +226,56 @@ const toObjectDict = {
 function toObject(x: any): any {
   const cb = toObjectDict[x?.constructor.name];
   return cb ? cb(x) : x;
+}
+
+function constructTree(elems: any, tree: any) {
+  for (let i = 0; i < elems.length; i++) {
+    let elem = elems[i];
+    if (elem.element === 'block') {
+      if (!elem.parent_block) {
+        let root = tree.get('root');
+        root.elements.set(elem.block_context.id, {
+          ...elem.block_context,
+          elements: new Map(),
+          ...elem,
+        });
+      } else {
+        if (!tree.has(elem.parent_block.id)) {
+          tree.set(elem.parent_block.id, {
+            id: elem.parent_block.id,
+            elements: new Map(),
+            ...elem,
+          });
+        }
+        let block = tree.get(elem.parent_block.id);
+        block.elements.set(elem.block_context.id, {
+          ...elem.block_context,
+          elements: new Map(),
+          ...elem,
+        });
+      }
+      tree.set(elem.block_context.id, {
+        ...elem.block_context,
+        elements: new Map(),
+        ...elem,
+      });
+    } else {
+      if (!elem.parent_block) {
+        let root = tree.get('root');
+        root.elements.set(elem.key, elem);
+      } else {
+        if (!tree.has(elem.parent_block.id)) {
+          tree.set(elem.parent_block.id, {
+            id: elem.parent_block.id,
+            elements: new Map(),
+            data: elem.data,
+          });
+        }
+        let block = tree.get(elem.parent_block.id);
+        block.elements.set(elem.key, elem);
+      }
+    }
+  }
+
+  return tree;
 }

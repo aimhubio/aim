@@ -27,8 +27,7 @@ type Pyodide = {
 };
 
 type Layout = {
-  blocks: Record<string, any[]>;
-  components: Record<string, any[]>;
+  tree: Map<string, any> | null;
   state: Record<string, any>;
 };
 
@@ -58,8 +57,7 @@ type Selectors = {
   >;
   // Layout state actions
   layoutSelector: SelectorCreator<State, Layout>;
-  layoutBlocksSelector: SelectorCreator<State, Layout['blocks']>;
-  layoutComponentsSelector: SelectorCreator<State, Layout['components']>;
+  layoutTreeSelector: SelectorCreator<State, Layout['tree']>;
   layoutStateSelector: SelectorCreator<State, Layout['state']>;
 };
 
@@ -71,8 +69,7 @@ type GetMethods = {
   getPyodideNamespace: () => Pyodide['namespace'];
   getPyodideRegisteredPackages: () => Pyodide['registeredPackages'];
   getLayout: () => Layout;
-  getLayoutBlocks: () => Layout['blocks'];
-  getLayoutComponents: () => Layout['components'];
+  getLayoutTree: () => Layout['tree'];
   getLayoutState: () => Layout['state'];
 };
 
@@ -89,8 +86,7 @@ type SetMethods = {
   ) => void;
   // Layout state actions
   setLayout: (layout: Partial<Layout>) => void;
-  setLayoutBlocks: (blocks: Layout['blocks']) => void;
-  setLayoutComponents: (components: Layout['components']) => void;
+  setLayoutTree: (layoutTree: Layout['tree']) => void;
   setLayoutState: (state: Layout['state']) => void;
 };
 
@@ -104,8 +100,7 @@ const initialState: State = {
     registeredPackages: [],
   },
   layout: {
-    blocks: {},
-    components: {},
+    tree: null,
     state: {},
   },
   events: {},
@@ -200,8 +195,7 @@ function generateSelectors(): Selectors {
       state.pyodide.registeredPackages,
     // Layout state actions
     layoutSelector: (state) => state.layout,
-    layoutBlocksSelector: (state) => state.layout.blocks,
-    layoutComponentsSelector: (state) => state.layout.components,
+    layoutTreeSelector: (state) => state.layout.tree,
     layoutStateSelector: (state) => state.layout.state,
   };
 }
@@ -215,8 +209,7 @@ function generateGetMethods(get: Get<State>): GetMethods {
     getPyodideNamespace: () => get().pyodide.namespace,
     getPyodideRegisteredPackages: () => get().pyodide.registeredPackages,
     getLayout: () => get().layout,
-    getLayoutBlocks: () => get().layout.blocks,
-    getLayoutComponents: () => get().layout.components,
+    getLayoutTree: () => get().layout.tree,
     getLayoutState: () => get().layout.state,
   };
 }
@@ -292,18 +285,10 @@ function generateSetMethods(set: Set<State>): SetMethods {
         false,
       );
     },
-    setLayoutBlocks: (blocks: Layout['blocks']) => {
+    setLayoutTree: (tree: Layout['tree']) => {
       set(
         produce((draft_state: Draft<State>) => {
-          draft_state.layout.blocks = blocks;
-        }),
-        false,
-      );
-    },
-    setLayoutComponents: (components: Layout['components']) => {
-      set(
-        produce((draft_state: Draft<State>) => {
-          draft_state.layout.components = components;
+          draft_state.layout.tree = tree;
         }),
         false,
       );

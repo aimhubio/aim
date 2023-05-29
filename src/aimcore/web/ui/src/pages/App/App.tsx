@@ -51,8 +51,8 @@ const AppStructure: React.FC<any> = ({
 
     // Step 1: Create nodes and build a lookup
     for (let i = 0; i < boards.length; i++) {
-      const packagePath = `${PathEnum.App}/${boards[i]}`;
-      const isActive = location.pathname.replace('/edit', '') === packagePath;
+      const boardPath = `${PathEnum.App}/${boards[i]}`;
+      const isActive = location.pathname.replace('/edit', '') === boardPath;
       let path = boards[i].split('/');
       for (let j = 0; j < path.length; j++) {
         const isLast = j === path.length - 1;
@@ -68,7 +68,7 @@ const AppStructure: React.FC<any> = ({
             title: isLast ? (
               <BoardLink
                 key={path[j]}
-                to={`${packagePath}${editMode ? '/edit' : ''}`}
+                to={`${boardPath}${editMode ? '/edit' : ''}`}
               >
                 <Icon size='md' icon={<IconBrandPython />} />
                 <Text css={{ ml: '$4' }}>{path[j]}</Text>
@@ -178,34 +178,45 @@ function AppWrapper({ boardPath, editMode, boardList }: AppWrapperProps) {
   //   });
   // };
 
-  const breadcrumbItem = React.useCallback((boardPath: string) => {
-    const splitPath = boardPath.split('/');
-    return {
-      name: splitPath.map((path, index) => {
-        const isLast = index === splitPath.length - 1;
-        return (
-          <Text key={index} size='$3' css={{ mx: '$2' }}>
-            {isLast ? path.slice(0, path.length - 3) : `${path} /`}
-          </Text>
-        );
-      }),
-      path: `/app/${boardPath}`,
-    };
-  }, []);
+  const breadcrumbItems = React.useMemo(() => {
+    const splitPath = path.split('/');
+    let items = [
+      {
+        name: 'App',
+        path: '/app',
+      },
+      {
+        name: splitPath.map((path, index) => {
+          const isLast = index === splitPath.length - 1;
+          return (
+            <Text
+              color={editMode ? '$textPrimary50' : '$textPrimary'}
+              key={index}
+              size='$3'
+              css={{ mx: '$2' }}
+            >
+              {isLast ? path.slice(0, path.length - 3) : `${path} /`}
+            </Text>
+          );
+        }),
+        path: `/app/${path}`,
+      },
+    ];
+    if (editMode) {
+      items.push({
+        name: 'Edit',
+        path: `/app/${path}/edit`,
+      });
+    }
+
+    return items;
+  }, [editMode, path]);
 
   return (
     <AppContainer>
       <TopBar id='app-top-bar'>
         <Box flex='1 100%'>
-          <Breadcrumb
-            items={[
-              {
-                name: 'App',
-                path: '/app',
-              },
-              breadcrumbItem(boardPath),
-            ]}
-          />
+          <Breadcrumb items={breadcrumbItems} />
         </Box>
         {board && !editMode && (
           <Link
