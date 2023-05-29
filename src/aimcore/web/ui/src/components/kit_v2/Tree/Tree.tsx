@@ -31,7 +31,9 @@ const getParentKey = (key: React.Key, tree: DataNode[]): React.Key => {
 };
 
 const TreeList = ({ searchValue = '', data = [], ...props }: ITreeProps) => {
-  const [expandedKeys, setExpandedKeys] = React.useState<React.Key[]>([]);
+  const [expandedKeys, setExpandedKeys] = React.useState<React.Key[]>(
+    props.expandedKeys || [],
+  );
   const [autoExpandParent, setAutoExpandParent] = React.useState(true);
 
   const dataList = React.useMemo(() => {

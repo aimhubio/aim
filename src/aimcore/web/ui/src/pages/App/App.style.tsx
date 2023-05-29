@@ -8,6 +8,12 @@ const AppContainer = styled('div', {
   height: '100vh',
   width: '100%',
   overflow: 'hidden',
+  '.ant-tree-node-content-wrapper': {
+    position: 'unset !important',
+  },
+  '.ant-tree-treenode-selected': {
+    backgroundColor: '#EFF0F2 !important',
+  },
 });
 
 const BoardWrapper = styled(Box, {
@@ -22,12 +28,13 @@ const BoardLink = styled(NavLink, {
   color: 'unset',
   textDecoration: 'none',
   borderRadius: '$3',
-  variants: {
-    isActive: {
-      true: {
-        backgroundColor: '#EFF0F2',
-      },
-    },
+  '&:after': {
+    position: 'absolute',
+    content: '""',
+    display: 'block',
+    width: '187px',
+    height: '28px',
+    left: '0',
   },
 });
 
