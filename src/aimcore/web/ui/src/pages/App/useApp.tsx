@@ -14,20 +14,31 @@ function useApp() {
   const history = useHistory();
   const location = useLocation();
 
+  const sortedList = React.useMemo(() => {
+    const list = boardsList.sort();
+    // Separate directories and files
+    let dirs = list.filter((path) => path.includes('/'));
+    let files = list.filter((path) => !path.includes('/'));
+    // Prioritize directories, then files
+    return [...dirs, ...files];
+  }, [boardsList]);
+
   React.useEffect(() => {
-    fetchBoardsList();
+    if (boardsList.length === 0) {
+      fetchBoardsList();
+    }
   }, []);
 
   React.useEffect(() => {
-    if (!isLoading && boardsList.length > 0 && location.pathname === '/app') {
-      const firstBoardPath = boardsList[0]; // replace this with the correct property if different
+    if (!isLoading && sortedList.length > 0 && location.pathname === '/app') {
+      const firstBoardPath = sortedList[0]; // replace this with the correct property if different
       history.push(`/app/${firstBoardPath}`);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [boardsList]);
+  }, [boardsList, location]);
 
   return {
-    data: boardsList,
+    data: sortedList,
     updateBoard,
     boards,
     isLoading,

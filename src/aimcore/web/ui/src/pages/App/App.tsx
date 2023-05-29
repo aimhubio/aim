@@ -39,33 +39,34 @@ const AppStructure: React.FC<any> = ({
 }: AppStructureProps) => {
   const location = useLocation();
 
-  function makeTreeData(list: string[]): Node[] {
+  const treeData = React.useMemo((): {
+    tree: Node[];
+    expandedKeys: string[];
+    selectedKeys: string[];
+  } => {
     let tree: Node[] = [];
+    let expandedKeys: string[] = [];
+    let selectedKeys: string[] = [];
     let lookup: Record<string, Node> = {};
 
-    // Sort the input list alphabetically
-    list.sort();
-
-    // Separate directories and files
-    let dirs = list.filter((path) => path.includes('/'));
-    let files = list.filter((path) => !path.includes('/'));
-
-    // Prioritize directories, then files
-    let sortedList = [...dirs, ...files];
-
     // Step 1: Create nodes and build a lookup
-    for (let i = 0; i < sortedList.length; i++) {
-      const packagePath = `${PathEnum.App}/${sortedList[i]}`;
+    for (let i = 0; i < boards.length; i++) {
+      const packagePath = `${PathEnum.App}/${boards[i]}`;
       const isActive = location.pathname.replace('/edit', '') === packagePath;
-      let path = sortedList[i].split('/');
+      let path = boards[i].split('/');
       for (let j = 0; j < path.length; j++) {
         const isLast = j === path.length - 1;
         let part = path.slice(0, j + 1).join('/');
+        if (isActive) {
+          expandedKeys.push(`${i}-${j}`);
+          if (isLast) {
+            selectedKeys.push(`${i}-${j}`);
+          }
+        }
         if (!lookup[part]) {
           let node: Node = {
             title: isLast ? (
               <BoardLink
-                isActive={isActive}
                 key={path[j]}
                 to={`${packagePath}${editMode ? '/edit' : ''}`}
               >
@@ -94,11 +95,8 @@ const AppStructure: React.FC<any> = ({
         tree.push(node);
       }
     }
-
-    return tree;
-  }
-
-  const data: Node[] = makeTreeData(boards.sort());
+    return { tree, expandedKeys, selectedKeys };
+  }, [boards, editMode, location.pathname]);
 
   return (
     <Box
@@ -109,7 +107,11 @@ const AppStructure: React.FC<any> = ({
         p: '$3 $4',
       }}
     >
-      <Tree defaultExpandAll={true} data={data} />
+      <Tree
+        selectedKeys={treeData.selectedKeys}
+        expandedKeys={treeData.expandedKeys}
+        data={treeData.tree}
+      />
     </Box>
   );
 };
@@ -176,6 +178,21 @@ function AppWrapper({ boardPath, editMode, boardList }: AppWrapperProps) {
   //   });
   // };
 
+  const breadcrumbItem = React.useCallback((boardPath: string) => {
+    const splitPath = boardPath.split('/');
+    return {
+      name: splitPath.map((path, index) => {
+        const isLast = index === splitPath.length - 1;
+        return (
+          <Text key={index} size='$3' css={{ mx: '$2' }}>
+            {isLast ? path.slice(0, path.length - 3) : `${path} /`}
+          </Text>
+        );
+      }),
+      path: `/app/${boardPath}`,
+    };
+  }, []);
+
   return (
     <AppContainer>
       <TopBar id='app-top-bar'>
@@ -186,7 +203,7 @@ function AppWrapper({ boardPath, editMode, boardList }: AppWrapperProps) {
                 name: 'App',
                 path: '/app',
               },
-              { name: boardPath, path: `/app/${boardPath}` },
+              breadcrumbItem(boardPath),
             ]}
           />
         </Box>
