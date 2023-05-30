@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <!-- Replaceable with base path -->
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta
+      name="viewport"
+      content="minimum-scale=1, initial-scale=1, width=device-width"
+    />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="description"
+      content="Open-source, self-hosted AI experiment tracking tool"
+    />
+
+    <!-- Load pyodide -->
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.23.2/full/pyodide.js"></script>
+    
+    <!--
+      manifest.json provides metadata used when your web app is installed on a
+      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
+    -->
+    <style>
+      .preloader {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        background-color: #fff;
+        z-index: 1000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .preloader-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .preloader svg {
+        transform: scale(1.5);
+      }
+
+      .progress-bar {
+        height: 4px;
+        border-radius: 1px;
+        background-color: #f2f5fa;
+        overflow: hidden;
+        margin-top: 50px;
+        width: 100px;
+      }
+
+      .progress-bar-value {
+        width: 100%;
+        height: 100%;
+        background-color: #4b9bff;
+        animation: progress-animation 1s infinite linear;
+        transform-origin: 0% 50%;
+      }
+
+      @keyframes progress-animation {
+        0% {
+          transform: translateX(0) scaleX(0);
+        }
+
+        40% {
+          transform: translateX(0) scaleX(0.4);
+        }
+
+        100% {
+          transform: translateX(100%) scaleX(0.5);
+        }
+      }
+    </style>
+    <script>
+      document.write(`<div id='preload-spinner' class='preloader'>
+        <div class='preloader-wrapper'>
+        <svg overflow='overlay' id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" width="56.71503" height="56.50146">
+  <g id="Logo">
+    <path fill="#57aeea" class="cls-1" d="M43.8887,2.55052A4.37315,4.37315,0,1,0,37.704,8.73494l10.98239,10.983a4.373,4.373,0,1,0,6.18471-6.18411Z"/>
+    <path fill="#7869d0" class="cls-2" d="M11.46467,5.38778a4.37283,4.37283,0,1,0-6.18411,6.18411l39.472,39.472A4.37314,4.37314,0,0,0,50.9373,44.8595Z"/>
+    <path fill="#688bdd" class="cls-3" d="M24.98757,1.2809a4.37293,4.37293,0,1,0-6.18411,6.18441l30.44626,30.446a4.37293,4.37293,0,1,0,6.18411-6.18441Z"/>
+    <path fill="#8946c2" class="cls-4" d="M7.463,19.01562A4.37314,4.37314,0,1,0,1.27833,25.2L31.29946,55.22055a4.37314,4.37314,0,1,0,6.18471-6.18441Z"/>
+    <path fill="#9923b5" class="cls-5" d="M8.62889,37.81033a4.37315,4.37315,0,1,0-6.18471,6.18442l10.98239,10.983a4.373,4.373,0,1,0,6.18471-6.18411Z"/>
+  </g>
+</svg>
+  <div class="progress-bar">
+    <div class="progress-bar-value"></div>
+  </div>
+</div>
+    </div>`);
+    </script>
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <!--
+      Notice the use of %PUBLIC_URL% in the tags above.
+      It will be replaced with the URL of the `public` folder during the build.
+      Only files inside the `public` folder can be referenced from the HTML.
+
+      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
+      work correctly both with client-side routing and a non-root public URL.
+      Learn how to configure a non-root public URL by running `npm run build`.
+    -->
+    <link
+      rel="preload"
+      as="script"
+      href="%PUBLIC_URL%/vs/editor/editor.main.js"
+      crossorigin
+    />
+
+    <link
+      rel="preload"
+      as="font"
+      href="%PUBLIC_URL%/assets/inter/fonts/Inter.ttf"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      as="font"
+      href="%PUBLIC_URL%/assets/inconsolata/fonts/Inconsolata.ttf"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      as="font"
+      href="%PUBLIC_URL%/assets/icomoon/fonts/icomoon.eot"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      as="font"
+      href="%PUBLIC_URL%/assets/icomoon/fonts/icomoon.ttf"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      as="font"
+      href="%PUBLIC_URL%/assets/icomoon/fonts/icomoon.woff"
+      crossorigin
+    />
+
+    <link rel="stylesheet" href="%PUBLIC_URL%/assets/inter/inter.css" />
+    <link
+      rel="stylesheet"
+      href="%PUBLIC_URL%/assets/inconsolata/inconsolata.css"
+    />
+    <link
+      rel="stylesheet"
+      href="%PUBLIC_URL%/assets/icomoon/icomoonIcons.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+    />
+    <title>Aim</title>
+
+    <script>
+      !(function () {
+        var analytics = (window.analytics = window.analytics || []);
+        if (!analytics.initialize)
+          if (analytics.invoked)
+            window.console &&
+              console.error &&
+              console.error('Segment snippet included twice.');
+          else {
+            analytics.invoked = !0;
+            analytics.methods = [
+              'trackSubmit',
+              'trackClick',
+              'trackLink',
+              'trackForm',
+              'pageview',
+              'identify',
+              'reset',
+              'group',
+              'track',
+              'ready',
+              'alias',
+              'debug',
+              'page',
+              'once',
+              'off',
+              'on',
+              'addSourceMiddleware',
+              'addIntegrationMiddleware',
+              'setAnonymousId',
+              'addDestinationMiddleware',
+            ];
+            analytics.factory = function (e) {
+              return function () {
+                var t = Array.prototype.slice.call(arguments);
+                t.unshift(e);
+                analytics.push(t);
+                return analytics;
+              };
+            };
+            for (var e = 0; e < analytics.methods.length; e++) {
+              var key = analytics.methods[e];
+              analytics[key] = analytics.factory(key);
+            }
+            analytics.load = function (key, e) {
+              var t = document.createElement('script');
+              t.type = 'text/javascript';
+              t.async = !0;
+              t.src =
+                'https://cdn.segment.com/analytics.js/v1/' +
+                key +
+                '/analytics.min.js';
+              var n = document.getElementsByTagName('script')[0];
+              n.parentNode.insertBefore(t, n);
+              analytics._loadOptions = e;
+            };
+            analytics.SNIPPET_VERSION = '4.15.3';
+          }
+      })();
+    </script>
+    <script>
+      window.API_BASE_PATH = '{{ base_path }}';
+      window.externalPublicPath = '%PUBLIC_URL%/';
+    </script>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <!--
+      This HTML file is a template.
+      If you open it directly in the browser, you will see an empty page.
+
+      You can add webfonts, meta tags, or analytics to this file.
+      The build step will place the bundled scripts into the <body> tag.
+
+      To begin the development, run `npm start` or `yarn start`.
+      To create a production bundle, use `npm run build` or `yarn build`.
+    -->
+  </body>
+</html>
