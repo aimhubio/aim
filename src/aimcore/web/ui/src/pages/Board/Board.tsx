@@ -13,9 +13,14 @@ import { Box, Button, Link, Tabs } from 'components/kit_v2';
 
 import { PathEnum } from 'config/enums/routesEnum';
 
-import usePyodide from 'services/pyodide/usePyodide';
+import { search } from 'pages/Board/search';
 
-import pyodideEngine from '../../services/pyodide/store';
+import usePyodide from 'services/pyodide/usePyodide';
+import pyodideEngine from 'services/pyodide/store';
+import {
+  getQueryResultsCacheMap,
+  clearQueryResultsCache,
+} from 'services/pyodide/pyodide';
 
 // import SaveBoard from './components/SaveBoard';
 import GridCell from './components/GridCell';
@@ -32,6 +37,8 @@ import {
 import BoardConsole from './components/BoardConsole';
 import FormVizElement from './components/VisualizationElements/FormVizElement';
 import useBoardStore from './BoardStore';
+
+const liveUpdateInterval = 5000;
 
 function Board({
   data,
@@ -223,6 +230,59 @@ board_path=${boardPath === undefined ? 'None' : `"${boardPath}"`}
       setMounted(true);
     }
   }, [mounted]);
+
+  let liveUpdateIntervalRef = React.useRef<number>();
+
+  const startLiveUpdate = React.useCallback(() => {
+    window.clearInterval(liveUpdateIntervalRef.current);
+
+    liveUpdateIntervalRef.current = window.setInterval(() => {
+      if (getQueryResultsCacheMap().get(boardPath)?.size > 0) {
+        for (let key of getQueryResultsCacheMap().get(boardPath).keys()) {
+          const {
+            boardPath: queryBoardPath,
+            type_,
+            query,
+            count,
+            start,
+            stop,
+            isSequence,
+          } = getQueryResultsCacheMap().get(boardPath).get(key).params;
+
+          try {
+            getQueryResultsCacheMap().get(boardPath).delete(key);
+            search(
+              queryBoardPath,
+              type_,
+              query,
+              count,
+              start,
+              stop,
+              isSequence,
+              () => {
+                clearQueryResultsCache(queryBoardPath, key);
+              },
+            );
+          } catch (ex) {
+            if (ex === 'WAIT_FOR_QUERY_RESULT') {
+              return;
+            }
+            // eslint-disable-next-line no-console
+            console.error(ex);
+          }
+        }
+      }
+    }, liveUpdateInterval);
+  }, [boardPath]);
+
+  React.useEffect(() => {
+    startLiveUpdate();
+
+    return () => {
+      window.clearInterval(liveUpdateIntervalRef.current);
+      clearQueryResultsCache();
+    };
+  }, [boardPath]);
 
   function handleEditorMount(editor: any) {
     editorRef.current = editor;

@@ -1,18 +1,17 @@
 import { createFetchDataRequest } from 'modules/core/api/dataFetchApi';
-import {
-  DecodingError,
-  FetchingError,
-} from 'modules/core/pipeline/query/QueryError';
-import AdapterError from 'modules/core/pipeline/adapter/AdapterError';
+// import {
+//   DecodingError,
+//   FetchingError,
+// } from 'modules/core/pipeline/query/QueryError';
+// import AdapterError from 'modules/core/pipeline/adapter/AdapterError';
 
 import pyodideEngine from 'services/pyodide/store';
+import { getQueryResultsCacheMap } from 'services/pyodide/pyodide';
 
 import { parseStream } from 'utils/encoder/streamEncoding';
 import { filterMetricsValues } from 'utils/app/filterMetricData';
 
-const searchRequests = createFetchDataRequest();
-
-const queryResultCacheMap: Record<string, any> = {};
+const searchRequest = createFetchDataRequest();
 
 export function search(
   boardPath: string,
@@ -22,14 +21,18 @@ export function search(
   start: number,
   stop: number,
   isSequence: boolean,
+  cb?: () => void,
 ) {
   const queryKey = `${type_}_${query}_${count}_${start}_${stop}`;
 
-  if (queryResultCacheMap.hasOwnProperty(queryKey)) {
-    return queryResultCacheMap[queryKey];
+  if (
+    getQueryResultsCacheMap().has(boardPath) &&
+    getQueryResultsCacheMap().get(boardPath).has(queryKey)
+  ) {
+    return getQueryResultsCacheMap().get(boardPath).get(queryKey).data;
   }
 
-  searchRequests
+  searchRequest
     .call({
       q: query,
       type_: type_,
@@ -100,7 +103,28 @@ export function search(
               result = objectList;
             }
 
-            queryResultCacheMap[queryKey] = result;
+            if (cb) {
+              cb();
+            }
+
+            const queryParams = {
+              boardPath,
+              type_,
+              query,
+              count,
+              start,
+              stop,
+              isSequence,
+            };
+
+            if (!getQueryResultsCacheMap().has(boardPath)) {
+              getQueryResultsCacheMap().set(boardPath, new Map());
+            }
+
+            getQueryResultsCacheMap().get(boardPath).set(queryKey, {
+              data: result,
+              params: queryParams,
+            });
 
             pyodideEngine.events.fire(
               boardPath as string,
