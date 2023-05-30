@@ -7,6 +7,7 @@
 - Fix issue on git stat collection (mihran113)
 - Import `Image` and `Audio` for `TensorboardFolderTracker` (alansaul)
 - Extend `aim.ext.tensorboard_tracker.run.Run` to allow stdout logging and system stats and parameter logging (alansaul)
+- Add the ability for `TensorboardFolderTracker` to track `Histogram`'s as Aim `Distribution`'s (alansaul)
 
 ## 3.17.4  May 4, 2023
 
