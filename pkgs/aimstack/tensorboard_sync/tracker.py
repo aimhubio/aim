@@ -27,9 +27,9 @@ def _decode_histogram(value):
     if (len(bin_counts) <= 2) or (len(bucket_limits) < 2) or (bucket_limits[0] == bucket_limits[-1]):
         return None
 
-    # This is a bit weird. It seems the histogram counts is padded by 0 as tensorboard only stores
-    # the right limits? This needs further checking
-    # See thttps://github.com/pytorch/pytorch/blob/7d2a18da0b3427fcbe44b461a0aa508194535885/torch/utils/tensorboard/summary.py#L390
+    # This is a bit weird but it seems the histogram counts is usually padded by 0 as tensorboard
+    # only stores the right limits?
+    # See https://github.com/pytorch/pytorch/blob/7d2a18da0b3427fcbe44b461a0aa508194535885/torch/utils/tensorboard/summary.py#L390
     bin_counts = bin_counts[1:]
 
     bin_range = (bucket_limits[0], bucket_limits[-1])
