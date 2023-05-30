@@ -782,25 +782,33 @@ def get_component_batch_state(key, parent_block=None):
 
 # Type checker helper functions
 
+
 def is_num(value):
     return isinstance(value, int) or isinstance(value, float)
+
 
 def is_str(value):
     return isinstance(value, str)
 
+
 def is_bool(value):
     return isinstance(value, bool)
+
 
 def is_list(value):
     return isinstance(value, list)
 
+
 def is_dict(value):
     return isinstance(value, dict)
+
 
 def is_tuple(value):
     return isinstance(value, tuple)
 
 # check if value is a number, otherwise raise an exception
+
+
 def safe_num(value):
     if (is_num(value)):
         return value
@@ -808,6 +816,8 @@ def safe_num(value):
         raise Exception("Value must be a number")
 
  # check if value is a string, otherwise raise an exception
+
+
 def safe_str(value):
     if (is_str(value)):
         return value
@@ -815,13 +825,17 @@ def safe_str(value):
         raise Exception("Value must be a string")
 
  # check if value is a boolean, otherwise raise an exception
+
+
 def safe_bool(value):
-     if (is_bool(value)):
-          return value
-     else:
-          raise Exception("Value must be a boolean")
+    if (is_bool(value)):
+        return value
+    else:
+        raise Exception("Value must be a boolean")
 
  # check if value is a list, otherwise raise an exception
+
+
 def safe_list(value):
     if (is_list(value)):
         return value
@@ -829,6 +843,8 @@ def safe_list(value):
         raise Exception("Value must be a list")
 
  # check if value is a dict, otherwise raise an exception
+
+
 def safe_dict(value):
     if (is_dict(value)):
         return value
@@ -836,6 +852,8 @@ def safe_dict(value):
         raise Exception("Value must be a dict")
 
  # check if value is a tuple, otherwise raise an exception
+
+
 def safe_tuple(value):
     if (is_tuple(value)):
         return value
@@ -843,15 +861,19 @@ def safe_tuple(value):
         raise Exception("Value must be a tuple")
 
  # check if all elements in list are numbers, otherwise raise an exception
+
+
 def safe_num_list(value):
-    if(all([is_num(item) for item in value]))
+    if(all([is_num(item) for item in value])):
         return value
     else:
         raise Exception("Value must be a list of numbers")
 
  # check if all elements in tuple are numbers, otherwise raise an exception
+
+
 def safe_num_tuple(value):
-    if(all([is_num(item) for item in value]))
+    if(all([is_num(item) for item in value])):
         return value
     else:
         raise Exception("Value must be a tuple of numbers")
@@ -1106,21 +1128,22 @@ class Switch(Component):
 
 
 class TextArea(Component):
-    def __init__(self, value=None, size=None, resize=None, disabled=None, caption=None, key=None, block=None):
+    def __init__(self, label='', value='', size='md', resize='none', caption='', disabled=False, key=None, block=None):
         component_type = "TextArea"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
 
-        self.data = value
+        self.data = safe_str(value)
 
         batch_state = get_component_batch_state(component_key, block)
 
         self.options = {
+            "label": safe_str(label),
             "value": self.value if batch_state is None else batch_state["value"],
-            "size": size,
-            "resize": resize,
-            "disabled": disabled,
-            "caption": caption
+            "size": safe_str(size),
+            "resize": safe_str(resize),
+            "disabled": safe_bool(disabled),
+            "caption": safe_str(caption),
         }
 
         self.callbacks = {
@@ -1138,7 +1161,7 @@ class TextArea(Component):
 
 
 class Radio(Component):
-    def __init__(self, label=None, options=(), index=0, orientation='vertical', disabled=None, key=None, block=None):
+    def __init__(self, label='', options=(), index=0, orientation='vertical', disabled=False, key=None, block=None):
         component_type = "Radio"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
