@@ -783,88 +783,24 @@ def get_component_batch_state(key, parent_block=None):
 # Type checker helper functions
 
 
-def is_num(value):
-    return isinstance(value, int) or isinstance(value, float)
+def check_type(value, type_):
+    if isinstance(value, type_):
+        return True
+    return False
 
 
-def is_str(value):
-    return isinstance(value, str)
-
-
-def is_bool(value):
-    return isinstance(value, bool)
-
-
-def is_list(value):
-    return isinstance(value, list)
-
-
-def is_dict(value):
-    return isinstance(value, dict)
-
-
-def is_tuple(value):
-    return isinstance(value, tuple)
-
-# check if value is a number, otherwise raise an exception
-
-
-def safe_num(value):
-    if (is_num(value)):
+# validate value type, otherwise raise an exception
+def validate(value, type, prop_name):
+    if (check_type(value, type)):
         return value
     else:
-        raise Exception("Value must be a number")
-
- # check if value is a string, otherwise raise an exception
-
-
-def safe_str(value):
-    if (is_str(value)):
-        return value
-    else:
-        raise Exception("Value must be a string")
-
- # check if value is a boolean, otherwise raise an exception
-
-
-def safe_bool(value):
-    if (is_bool(value)):
-        return value
-    else:
-        raise Exception("Value must be a boolean")
-
- # check if value is a list, otherwise raise an exception
-
-
-def safe_list(value):
-    if (is_list(value)):
-        return value
-    else:
-        raise Exception("Value must be a list")
-
- # check if value is a dict, otherwise raise an exception
-
-
-def safe_dict(value):
-    if (is_dict(value)):
-        return value
-    else:
-        raise Exception("Value must be a dict")
-
- # check if value is a tuple, otherwise raise an exception
-
-
-def safe_tuple(value):
-    if (is_tuple(value)):
-        return value
-    else:
-        raise Exception("Value must be a tuple")
+        raise Exception(f"Type of {prop_name} must be a {type.__name__}")
 
  # check if all elements in list are numbers, otherwise raise an exception
 
 
 def safe_num_list(value):
-    if(all([is_num(item) for item in value])):
+    if(all([check_type(item, (int, float)) for item in value])):
         return value
     else:
         raise Exception("Value must be a list of numbers")
@@ -873,7 +809,7 @@ def safe_num_list(value):
 
 
 def safe_num_tuple(value):
-    if(all([is_num(item) for item in value])):
+    if(all([check_type(item, (int, float)) for item in value])):
         return value
     else:
         raise Exception("Value must be a tuple of numbers")
@@ -885,17 +821,16 @@ class Slider(Component):
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
 
-        self.data = safe_num(value)
-
+        self.data = validate(value, (int, float), "value")
         batch_state = get_component_batch_state(component_key, block)
 
         self.options = {
             "value": self.value if batch_state is None else batch_state["value"][0],
-            "label": safe_str(label),
-            "min": safe_num(min),
-            "max": safe_num(max),
+            "label": validate(label, str, "label"),
+            "min": validate(min, (int, float), "min"),
+            "max": validate(max, (int, float), "max"),
             "step": self._get_step(self.data, step),
-            "disabled": safe_bool(disabled),
+            "disabled": validate(disabled, bool, "disabled"),
         }
 
         self.callbacks = {
@@ -906,7 +841,7 @@ class Slider(Component):
 
     def _get_step(self, initial_value, step):
         if (step):
-            return safe_num(step)
+            return validate(step, (int, float), "step")
         elif isinstance(initial_value, float):
             return 0.01
         else:
@@ -932,11 +867,11 @@ class RangeSlider(Component):
 
         self.options = {
             "value": self.value if batch_state is None else batch_state["value"],
-            "label": safe_str(label),
-            "min": safe_num(min),
-            "max": safe_num(max),
+            "label": validate(label, str, "label"),
+            "min": validate(min, (int, float), "min"),
+            "max": validate(max, (int, float), "max"),
             "step": self._get_step(self.data, step),
-            "disabled": safe_bool(disabled),
+            "disabled": validate(disabled, bool, "disabled"),
         }
 
         self.callbacks = {
@@ -947,7 +882,7 @@ class RangeSlider(Component):
 
     def _get_step(self, initial_range, step):
         if (step):
-            return safe_num(step)
+            return validate(step, (int, float), "step")
         elif any(isinstance(n, float) for n in initial_range):
             return 0.01
         else:
@@ -968,14 +903,14 @@ class TextInput(Component):
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
 
-        self.data = safe_str(value)
+        self.data = validate(value, str, "value")
 
         batch_state = get_component_batch_state(component_key, block)
 
         self.options = {
             "value": self.value if batch_state is None else batch_state["value"],
-            "label": safe_str(label),
-            "disabled": safe_bool(disabled),
+            "label": validate(label, str, "label"),
+            "disabled": validate(disabled, bool, "disabled"),
         }
 
         self.callbacks = {
@@ -998,17 +933,17 @@ class NumberInput(Component):
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
 
-        self.data = safe_num(value)
+        self.data = validate(value, (int, float), "value")
 
         batch_state = get_component_batch_state(component_key, block)
 
         self.options = {
             "value": self.value if batch_state is None else batch_state["value"],
-            "label": safe_str(label),
-            "min": min if is_num(min) else None,
-            "max": max if is_num(min) else None,
+            "label": validate(label, str, "label"),
+            "min": min if check_type(min, (int, float)) else None,
+            "max": max if check_type(max, (int, float)) else None,
             "step": self._get_step(self.value, step),
-            "disabled": safe_bool(disabled),
+            "disabled": validate(disabled, bool, "disabled"),
         }
 
         self.callbacks = {
@@ -1019,7 +954,7 @@ class NumberInput(Component):
 
     def _get_step(self, value, step):
         if (step):
-            return safe_num(step)
+            return validate(step, (int, float), "step")
         elif isinstance(value, float):
             return 0.01
         else:
@@ -1133,17 +1068,17 @@ class TextArea(Component):
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
 
-        self.data = safe_str(value)
+        self.data = validate(value, str, "value")
 
         batch_state = get_component_batch_state(component_key, block)
 
         self.options = {
-            "label": safe_str(label),
+            "label": validate(label, str, "label"),
             "value": self.value if batch_state is None else batch_state["value"],
-            "size": safe_str(size),
-            "resize": safe_str(resize),
-            "disabled": safe_bool(disabled),
-            "caption": safe_str(caption),
+            "size": validate(size, str, "size"),
+            "resize": validate(resize, str, "resize"),
+            "disabled": validate(disabled, bool, "disabled"),
+            "caption": validate(caption, str, "caption"),
         }
 
         self.callbacks = {
