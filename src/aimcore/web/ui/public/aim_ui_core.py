@@ -1035,7 +1035,7 @@ class MultiSelect(Component):
 
 
 class Switch(Component):
-    def __init__(self, checked=None, size=None, defaultChecked=None, disabled=None, key=None, block=None):
+    def __init__(self, label='', checked=False, size='md', disabled=False, key=None, block=None):
         component_type = "Switch"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
@@ -1043,9 +1043,9 @@ class Switch(Component):
         self.data = checked
 
         self.options = {
-            "size": size,
-            "defaultChecked": defaultChecked,
-            "disabled": disabled,
+            "label": validate(label, str, "label"),
+            "size": validate(size, str, "size"),
+            "disabled": validate(disabled, bool, "disabled"),
         }
 
         self.callbacks = {
@@ -1054,9 +1054,11 @@ class Switch(Component):
 
         self.render()
 
-    @property
     def value(self):
-        return self.state["value"] if "value" in self.state else self.data
+        if "value" in self.state:
+            return self.state["value"]
+        else:
+            return self.data
 
     async def on_change(self, val):
         self.set_state({"value": val})
