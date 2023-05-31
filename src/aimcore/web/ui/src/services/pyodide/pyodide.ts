@@ -17,16 +17,17 @@ export function getQueryResultsCacheMap() {
   return queryResultsCacheMap;
 }
 
-export function clearQueryResultsCache(boardPath?: string, key?: string) {
+export function clearQueryResultsCache(key?: string) {
   let pyodide = pyodideEngine.getPyodideCurrent();
   let namespace = pyodideEngine.getPyodideNamespace();
 
   if (pyodide) {
-    if (boardPath && key) {
+    if (key) {
       pyodide.runPython(`query_results_cache.pop('${key}', None)`, {
         globals: namespace,
       });
-      queryResultsCacheMap.get(boardPath).delete(key);
+
+      queryResultsCacheMap.delete(key);
     } else {
       pyodide.runPython('query_results_cache.clear()', { globals: namespace });
       queryResultsCacheMap = new Map();

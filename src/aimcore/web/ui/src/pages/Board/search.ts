@@ -23,13 +23,12 @@ export function search(
   isSequence: boolean,
   cb?: () => void,
 ) {
-  const queryKey = `${type_}_${query}_${count}_${start}_${stop}`;
+  const queryKey = `${type_}_${query ?? 'None'}_${count ?? 'None'}_${
+    start ?? 'None'
+  }_${stop ?? 'None'}`;
 
-  if (
-    getQueryResultsCacheMap().has(boardPath) &&
-    getQueryResultsCacheMap().get(boardPath).has(queryKey)
-  ) {
-    return getQueryResultsCacheMap().get(boardPath).get(queryKey).data;
+  if (getQueryResultsCacheMap().has(queryKey)) {
+    return getQueryResultsCacheMap().get(queryKey).data;
   }
 
   searchRequest
@@ -117,11 +116,7 @@ export function search(
               isSequence,
             };
 
-            if (!getQueryResultsCacheMap().has(boardPath)) {
-              getQueryResultsCacheMap().set(boardPath, new Map());
-            }
-
-            getQueryResultsCacheMap().get(boardPath).set(queryKey, {
+            getQueryResultsCacheMap().set(queryKey, {
               data: result,
               params: queryParams,
             });
@@ -129,7 +124,7 @@ export function search(
             pyodideEngine.events.fire(
               boardPath as string,
               {
-                query: queryKey,
+                queryKey,
               },
               { savePayload: false },
             );
