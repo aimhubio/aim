@@ -11,6 +11,30 @@ import pyodideEngine from './store';
 // @ts-ignore
 window.search = search;
 
+let queryResultsCacheMap: Map<string, any> = new Map();
+
+export function getQueryResultsCacheMap() {
+  return queryResultsCacheMap;
+}
+
+export function clearQueryResultsCache(key?: string) {
+  let pyodide = pyodideEngine.getPyodideCurrent();
+  let namespace = pyodideEngine.getPyodideNamespace();
+
+  if (pyodide) {
+    if (key) {
+      pyodide.runPython(`query_results_cache.pop('${key}', None)`, {
+        globals: namespace,
+      });
+
+      queryResultsCacheMap.delete(key);
+    } else {
+      pyodide.runPython('query_results_cache.clear()', { globals: namespace });
+      queryResultsCacheMap = new Map();
+    }
+  }
+}
+
 let layoutUpdateTimer: number;
 let prevBoardPath: undefined | string;
 
@@ -123,11 +147,13 @@ export async function loadPyodideInstance() {
           terminal.innerHTML! += `<p>${args.join(', ')}</p>`;
           terminal.scrollTop = terminal.scrollHeight;
         } else {
+          // eslint-disable-next-line no-console
           console.log(...args);
         }
       });
     },
     stderr: (...args: any[]) => {
+      // eslint-disable-next-line no-console
       console.log(...args);
     },
   });

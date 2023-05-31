@@ -18,6 +18,7 @@
 - Aim core & standard package separation (alberttorosyan)
 - Storage and tracking server unification (mihran113)
 - Serve boards from Aim package (alberttorosyan)
+- Add the ability for `TensorboardFolderTracker` to track `Histogram`'s as Aim `Distribution`'s (alansaul)
 
 ### Fixes
 

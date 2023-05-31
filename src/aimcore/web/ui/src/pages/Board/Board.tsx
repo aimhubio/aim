@@ -13,9 +13,14 @@ import { Box, Button, Link, Tabs } from 'components/kit_v2';
 
 import { PathEnum } from 'config/enums/routesEnum';
 
-import usePyodide from 'services/pyodide/usePyodide';
+import { search } from 'pages/Board/search';
 
-import pyodideEngine from '../../services/pyodide/store';
+import usePyodide from 'services/pyodide/usePyodide';
+import pyodideEngine from 'services/pyodide/store';
+import {
+  getQueryResultsCacheMap,
+  clearQueryResultsCache,
+} from 'services/pyodide/pyodide';
 
 // import SaveBoard from './components/SaveBoard';
 import GridCell from './components/GridCell';
@@ -32,6 +37,8 @@ import {
 import BoardConsole from './components/BoardConsole';
 import FormVizElement from './components/VisualizationElements/FormVizElement';
 import useBoardStore from './BoardStore';
+
+const liveUpdateInterval = 5000;
 
 function Board({
   data,
@@ -66,6 +73,16 @@ any): React.FunctionComponentElement<React.ReactNode> {
 
   const timerId = React.useRef(0);
 
+  let liveUpdateTimersRef = React.useRef<Record<string, number>>({});
+  let queryKeysForCacheCleaningRef = React.useRef<Record<string, boolean>>({});
+
+  function clearDataCache() {
+    clearQueryResultsCache();
+    for (let queryKey in liveUpdateTimersRef.current) {
+      window.clearTimeout(liveUpdateTimersRef.current[queryKey]);
+    }
+  }
+
   const [state, setState] = React.useState<any>({
     layoutTree: null,
     isProcessing: null,
@@ -79,6 +96,7 @@ any): React.FunctionComponentElement<React.ReactNode> {
     if (pyodide !== null && pyodideIsLoading === false) {
       try {
         window.clearTimeout(timerId.current);
+        clearDataCache();
         setState((s: any) => ({
           ...s,
           isProcessing: true,
@@ -103,9 +121,6 @@ any): React.FunctionComponentElement<React.ReactNode> {
         }
 
         await pyodide?.loadPackagesFromImports(code);
-
-        let resetLayoutCode = 'current_layout = []';
-        pyodide?.runPython(resetLayoutCode, { globals: namespace });
 
         setState((s: any) => ({
           ...s,
@@ -133,6 +148,13 @@ session_state = state[board_path] if board_path in state else {}
 def set_session_state(state_slice):
   set_state(state_slice, board_path)
 `;
+        for (let queryKey in queryKeysForCacheCleaningRef.current) {
+          if (queryKeysForCacheCleaningRef.current[queryKey]) {
+            resetCode += `query_results_cache.pop('${queryKey}', None)
+`;
+            queryKeysForCacheCleaningRef.current[queryKey] = false;
+          }
+        }
         const code =
           resetCode +
           state.execCode.replace(
@@ -194,23 +216,67 @@ board_path=${boardPath === undefined ? 'None' : `"${boardPath}"`}
     setEditorValue(data.code);
     const unsubscribe = pyodideEngine.events.on(
       boardPath,
-      ({ layoutTree, state, query }) => {
+      ({ layoutTree, state, queryKey }) => {
         if (layoutTree) {
           setState((s: any) => ({
             ...s,
             layoutTree,
           }));
         }
-        if (state || query) {
+        if (state || queryKey) {
           setState((s: any) => ({
             ...s,
             stateUpdateCount: s.stateUpdateCount + 1,
           }));
         }
+
+        if (queryKey) {
+          if (liveUpdateTimersRef.current.hasOwnProperty(queryKey)) {
+            window.clearTimeout(liveUpdateTimersRef.current[queryKey]);
+          }
+
+          liveUpdateTimersRef.current[queryKey] = window.setTimeout(() => {
+            if (!getQueryResultsCacheMap().has(queryKey)) {
+              return;
+            }
+            const {
+              boardPath: queryBoardPath,
+              type_,
+              query,
+              count,
+              start,
+              stop,
+              isSequence,
+            } = getQueryResultsCacheMap().get(queryKey).params;
+
+            try {
+              getQueryResultsCacheMap().delete(queryKey);
+              search(
+                queryBoardPath,
+                type_,
+                query,
+                count,
+                start,
+                stop,
+                isSequence,
+                () => {
+                  queryKeysForCacheCleaningRef.current[queryKey] = true;
+                },
+              );
+            } catch (ex) {
+              if (ex === 'WAIT_FOR_QUERY_RESULT') {
+                return;
+              }
+              // eslint-disable-next-line no-console
+              console.error(ex);
+            }
+          }, liveUpdateInterval);
+        }
       },
     );
     return () => {
       window.clearTimeout(timerId.current);
+      clearDataCache();
       if (editorRef.current) {
         editorRef.current = null;
       }
