@@ -27,6 +27,7 @@
     "@uiw/react-textarea-code-editor": "^1.4.14",
     "antd": "^4.23.6",
     "bs58check": "^2.1.2",
+    "chart.js": "^3.9.1",
     "classnames": "^2.3.1",
     "comlink": "^4.3.1",
     "d3": "^7.0.0",

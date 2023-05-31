@@ -6,6 +6,14 @@ const LineChartVizElement = React.lazy(
       /* webpackPrefetch: true, webpackChunkName: "LineChart" */ './LineChartVizElement'
     ),
 );
+
+const BarChartVizElement = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "BarChart" */ './BarChartVizElement'
+    ),
+);
+
 const DataFrameVizElement = React.lazy(
   () =>
     import(
@@ -209,7 +217,8 @@ export type VizElementKey =
   | 'SubHeader'
   | 'Table'
   | 'Board'
-  | 'BoardLink';
+  | 'BoardLink'
+  | 'BarChart';
 
 const VizElementsMap: Record<VizElementKey, React.FunctionComponent<any>> = {
   // input elements
@@ -242,6 +251,7 @@ const VizElementsMap: Record<VizElementKey, React.FunctionComponent<any>> = {
   Audios: AudiosVizElement,
   Images: ImagesVizElement,
   Texts: TextsVizElement,
+  BarChart: BarChartVizElement,
 
   // Aim high level components
   RunMessages: RunMessagesVizElement,

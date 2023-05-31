@@ -41,6 +41,7 @@ function LineChartVizElement(props: any) {
     }
   }, []);
 
+  console.log(props.data);
   return (
     <div className='VizComponentContainer'>
       <LineChart

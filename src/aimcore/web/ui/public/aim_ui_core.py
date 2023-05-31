@@ -476,6 +476,32 @@ class LineChart(AimSequenceComponent):
                 })
 
 
+class BarChart(AimSequenceComponent):
+    def __init__(self, data, x, y, color=[], options={}, key=None, block=None):
+        component_type = "BarChart"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type, block)
+
+        color_map, color_data = group("color", data, color, component_key)
+        bars = []
+        for i, item in enumerate(data):
+            color_val = apply_group_value_pattern(
+                color_map[color_data[i]["color"]]["order"], colors
+            )
+
+            bar = dict(item)
+            bar["key"] = i
+            bar["data"] = {"x": find(item, x), "y": find(item, y)}
+            bar["color"] = color_val
+
+            bars.append(bar)
+
+        self.data = bars
+        self.options = options
+
+        self.render()
+
+
 class ImagesList(AimSequenceComponent):
     def __init__(self, data, key=None, block=None):
         component_type = "Images"
@@ -1340,6 +1366,10 @@ class UI:
     def line_chart(self, *args, **kwargs):
         line_chart = LineChart(*args, **kwargs, block=self.block_context)
         return line_chart
+
+    def bar_chart(self, *args, **kwargs):
+        bar_chart = BarChart(*args, **kwargs, block=self.block_context)
+        return bar_chart
 
     def images(self, *args, **kwargs):
         images = ImagesList(*args, **kwargs, block=self.block_context)
