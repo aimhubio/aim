@@ -1,6 +1,8 @@
 import * as React from 'react';
 
-import { Checkbox } from 'components/kit_v2';
+import { Box, Checkbox, Text } from 'components/kit_v2';
+
+import generateId from 'utils/generateId';
 
 function CheckboxVizElement(
   props: any,
@@ -19,8 +21,18 @@ function CheckboxVizElement(
     props.callbacks?.on_change(checked);
   }, []);
 
+  const id = React.useMemo(() => generateId(), []);
   return (
-    <Checkbox {...props.options} checked={checked} onCheckedChange={onChange} />
+    <Box flex='1'>
+      <Box display='flex' ai='center'>
+        <Checkbox
+          {...props.options}
+          id={id}
+          checked={checked}
+          onCheckedChange={onChange}
+        />
+      </Box>
+    </Box>
   );
 }
 

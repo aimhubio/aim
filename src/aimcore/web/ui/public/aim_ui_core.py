@@ -1096,7 +1096,7 @@ class TextArea(Component):
 
 
 class Radio(Component):
-    def __init__(self, label='', options=(), index=0, orientation='vertical', disabled=False, key=None, block=None):
+    def __init__(self, label='', options=[], index=0, orientation='vertical', disabled=False, key=None, block=None):
         component_type = "Radio"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
@@ -1105,10 +1105,10 @@ class Radio(Component):
 
         self.options = {
             "value": self.value,
-            "label": label,
-            "options": options,
-            "orientation": orientation,
-            "disabled": disabled,
+            "label": validate(label, str, "label"),
+            "options": validate(options, list, "options"),
+            "orientation": validate(orientation, str, "orientation"),
+            "disabled": validate(disabled, bool, "disabled"),
         }
 
         self.callbacks = {
@@ -1126,15 +1126,16 @@ class Radio(Component):
 
 
 class Checkbox(Component):
-    def __init__(self, checked=False, disabled=None, key=None, block=None):
+    def __init__(self, label='', value=False, key=None, disabled=False, block=None):
         component_type = "Checkbox"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
 
-        self.data = checked
+        self.data = value
 
         self.options = {
-            "disabled": disabled,
+            "label": validate(label, str, "label"),
+            "disabled": validate(disabled, bool, "disabled"),
         }
 
         self.callbacks = {
@@ -1152,19 +1153,19 @@ class Checkbox(Component):
 
 
 class ToggleButton(Component):
-    def __init__(self, left_value="On", right_value="Off", index=0, disabled=None, size=None, block=None, key=None):
+    def __init__(self, left_value="On", right_value="Off", index=0, disabled=False, block=None, key=None):
         component_type = "ToggleButton"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
 
         self.options = {
-            "rightLabel": right_value,
-            "leftLabel": left_value,
-            "rightValue": right_value,
-            "leftValue": left_value,
-            "disabled": disabled,
-            "size": size,
-            "defaultValue": left_value if index == 0 else right_value,
+            "rightLabel": validate(right_value, str, "right_label"),
+            "leftLabel": validate(left_value, str, "left_label"),
+            "rightValue": validate(right_value, str, "right_value"),
+            "leftValue": validate(left_value, str, "left_value"),
+            "index": validate(index, int, "index"),
+            "disabled": validate(disabled, bool, "disabled"),
+            "defaultValue": index == 0 and left_value or right_value
         }
 
         self.callbacks = {
@@ -1175,7 +1176,10 @@ class ToggleButton(Component):
 
     @property
     def value(self):
-        return self.state["value"] if "value" in self.state else self.options["defaultValue"]
+        if "value" in self.state:
+            return self.state["value"]
+        else:
+            return self.options["rightValue"] if self.options["index"] == 0 else self.options["leftValue"]
 
     async def on_change(self, val):
         self.set_state({"value": val})

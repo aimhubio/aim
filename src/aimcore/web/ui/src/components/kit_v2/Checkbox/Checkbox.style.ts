@@ -91,6 +91,14 @@ const StyledCheckbox = styled(CheckboxPrimitive.Root, {
       bs: 'inset 0 0 0 1px $colors$primary100',
     },
   },
+  variants: {
+    hasLabel: {
+      true: {
+        height: 'fit-content',
+        width: 'fit-content',
+      },
+    },
+  },
 });
 
 export { StyledCheckbox, StyledIndicator, IndicatorWrapper, IndeterminateIcon };
