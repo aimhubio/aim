@@ -68,7 +68,6 @@ function getPipelineEngine(
   const pipelineOptions: Omit<PipelineOptions, 'callbacks'> = {
     sequenceType: config.sequenceType,
     adapter: {
-      objectDepth: config.adapter.objectDepth,
       useCache,
     },
     grouping: {

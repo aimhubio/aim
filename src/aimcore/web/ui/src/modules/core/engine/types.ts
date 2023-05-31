@@ -1,7 +1,7 @@
 import { IRunProgressObject } from 'modules/core/api/runsApi';
 import { CustomStates } from 'modules/core/utils/store';
 
-import { AimObjectDepths, SequenceType } from 'types/core/enums';
+import { SequenceType } from 'types/core/enums';
 
 import { GetState, SetState } from 'utils/store/createSlice';
 
@@ -52,9 +52,6 @@ export type CreateStoreSlice = <TStore, TSliceState>(
 export interface IEngineConfigFinal {
   useCache?: boolean;
   sequenceType: SequenceType;
-  adapter: {
-    objectDepth: AimObjectDepths;
-  };
   grouping?: GroupingConfigs;
   controls?: ControlsConfigs;
   defaultBoxConfig: {
@@ -70,7 +67,6 @@ export interface IEngineConfigFinal {
 
 export type ExplorerConfig = {
   sequenceType: SequenceType;
-  objectDepth: AimObjectDepths;
   useCache: boolean;
 };
 

@@ -4,9 +4,9 @@ import renderer from 'modules/BaseExplorer';
 import TextBox from 'modules/BaseExplorer/components/TextBox/TextBox';
 import { VisualizerLegends } from 'modules/BaseExplorer/components/Widgets';
 
-import { AimObjectDepths, SequenceType } from 'types/core/enums';
+import { SequenceType } from 'types/core/enums';
 
-import { getTextDefaultConfig } from './textConfig';
+import { getTextDefaultConfig } from './config';
 
 const defaultConfig = getTextDefaultConfig();
 
@@ -15,9 +15,6 @@ export const textExplorerConfig = {
   sequenceType: SequenceType.Text,
   basePath: 'text',
   persist: true,
-  adapter: {
-    objectDepth: AimObjectDepths.Index,
-  },
   groupings: defaultConfig.groupings,
   visualizations: {
     vis1: {

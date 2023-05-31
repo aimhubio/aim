@@ -9,9 +9,16 @@ export enum SequenceType {
   Distribution = 'asp.DistributionSequence',
   Figure = 'asp.FigureSequence',
   Figure3d = 'asp.Figure3DSequence',
+  // add new sequence type here
 }
-
-const SequenceNameDict = {
+/**
+ * SequenceNameDict is used to get sequence name from SequenceType
+ * SequenceName is used in UI to exclude 'asp.' from SequenceType
+ *
+ * Not recommended to change SequenceNameDict values, they are used as default values for groupings and will be saved in URL
+ * Add corresponding sequence name (SequenceNameDict property) if you will add a new sequence type (SequenceType)
+ */
+const SequenceNameDict: Record<SequenceType, string> = {
   [SequenceType.Metric]: 'metric',
   [SequenceType.Text]: 'text',
   [SequenceType.Image]: 'image',
@@ -19,25 +26,25 @@ const SequenceNameDict = {
   [SequenceType.Distribution]: 'distribution',
   [SequenceType.Figure]: 'figure',
   [SequenceType.Figure3d]: 'figure3d',
+  // add new sequence name here
 };
 
 export const GetSequenceName = (type: SequenceType) => SequenceNameDict[type];
 
 export enum ContainerType {
   Run = 'asp.Run',
+  // add new container type here
 }
+
+const ContainerNameDict: Record<ContainerType, string> = {
+  [ContainerType.Run]: 'run',
+  // add new container name here
+};
+
+export const GetContainerName = (type: ContainerType) =>
+  ContainerNameDict[type];
 
 /**
  * Sequence types as union type
  */
 export type SequenceTypeUnion = `${SequenceType}`;
-
-/**
- * Depths of data coming from api, from which level should get the actual value of visualization data
- */
-export enum AimObjectDepths {
-  Container = 0,
-  Sequence = 1,
-  Step = 2,
-  Index = 3,
-}

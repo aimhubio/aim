@@ -14,6 +14,8 @@ import { IBaseComponentProps } from 'modules/BaseExplorer/types';
 import { PersistenceTypesEnum } from 'modules/core/engine/types';
 import { StyleApplierCallbackArgs } from 'modules/core/engine/explorer/groupings';
 
+import { GetSequenceName, SequenceType } from 'types/core/enums';
+
 import { LegendsModeEnum } from 'utils/d3';
 
 import getTextExplorerStaticContent from './getStaticContent';
@@ -27,16 +29,11 @@ export enum TEXT_RENDERER_MODES {
 
 export const getTextDefaultConfig = (): typeof defaultHydration => {
   const defaultConfig = getDefaultHydration();
+  const sequenceName = GetSequenceName(SequenceType.Text);
 
   const groupings = produce(defaultConfig.groupings, (draft: any) => {
-    draft[GroupType.COLUMN].defaultApplications.orders = [Order.ASC, Order.ASC];
-    draft[GroupType.COLUMN].defaultApplications.fields = [
-      'run.hash',
-      'texts.name',
-    ];
-
-    draft[GroupType.GRID].defaultApplications.orders = [Order.ASC];
-    draft[GroupType.GRID].defaultApplications.fields = ['texts.name'];
+    draft[GroupType.COLUMN].defaultApplications.orders = [Order.ASC];
+    draft[GroupType.COLUMN].defaultApplications.fields = ['run.hash'];
 
     draft[GroupType.COLOR] = {
       component: memo((props: IBaseComponentProps) => (
@@ -69,7 +66,11 @@ export const getTextDefaultConfig = (): typeof defaultHydration => {
         state: {
           initialState: {
             displayBoxCaption: true,
-            selectedFields: ['run.name', 'texts.name', 'texts.context'],
+            selectedFields: [
+              'run.name',
+              `${sequenceName}.name`,
+              `${sequenceName}.context`,
+            ],
           },
           persist: PersistenceTypesEnum.Url,
         },

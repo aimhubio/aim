@@ -1,7 +1,7 @@
 import renderer from 'modules/BaseExplorer';
 import AudioBox from 'modules/BaseExplorer/components/AudioBox';
 
-import { AimObjectDepths, SequenceType } from 'types/core/enums';
+import { SequenceType } from 'types/core/enums';
 
 import { getAudiosDefaultConfig } from './config';
 
@@ -12,9 +12,6 @@ export const audiosExplorerConfig = {
   sequenceType: SequenceType.Audio,
   basePath: 'audios',
   persist: true,
-  adapter: {
-    objectDepth: AimObjectDepths.Index,
-  },
   groupings: defaultConfig.groupings,
   visualizations: {
     vis1: {
