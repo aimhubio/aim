@@ -10,10 +10,63 @@ import os
 import weakref
 import queue
 
-from typing import TYPE_CHECKING, Any
+from typing import Any
+from aim import Audio, Image, Distribution
 
-if TYPE_CHECKING:
-    from aim import Audio, Image
+
+def _decode_histogram(value):
+    """
+    From the tensorflow histogram representation (not plugin), create an aim Distribution
+
+    :param value: value with `histo` property
+    :return: aim Distribution
+    """
+    bin_counts = list(value.histo.bucket)
+    bucket_limits = list(value.histo.bucket_limit)
+
+    if (len(bin_counts) <= 2) or (len(bucket_limits) < 2) or (bucket_limits[0] == bucket_limits[-1]):
+        return None
+
+    # This is a bit weird but it seems the histogram counts is usually padded by 0 as tensorboard
+    # only stores the right limits?
+    # See https://github.com/pytorch/pytorch/blob/7d2a18da0b3427fcbe44b461a0aa508194535885/torch/utils/tensorboard/summary.py#L390 # noqa
+    bin_counts = bin_counts[1:]
+
+    bin_range = (bucket_limits[0], bucket_limits[-1])
+    track_val = Distribution(hist=bin_counts, bin_range=bin_range)
+    return track_val
+
+
+def _decode_histogram_from_plugin(value):
+    """
+    Convert from tensorflow histogram plugin representation of the data as a tensor back into
+    a `aim` `Distribution`
+
+    Representation of histogram given by tf summary is obtained from here:
+    https://github.com/tensorflow/tensorboard/blob/master/tensorboard/plugins/histogram/summary_v2.py
+
+    :param value: value with a tensor that contains three columns, left_edge, right_edge,
+                  bin_values
+    :return: aim Distribution
+    """
+    left_right_bins = tensor_util.make_ndarray(value.tensor)
+    if left_right_bins is None:
+        return None
+
+    left_edge = left_right_bins[:, 0]
+    right_edge = left_right_bins[:, 1]
+    bin_counts = left_right_bins[:, 2]
+
+    bin_range = (left_edge[0], right_edge[-1])
+
+    is_empty = False
+    is_empty |= (left_right_bins.shape[0] == 0)
+    is_empty |= (bin_range[0] == bin_range[1])
+    if is_empty:
+        return None
+
+    track_val = Distribution(hist=bin_counts, bin_range=bin_range)
+    return track_val
 
 
 class TensorboardTracker:
@@ -70,7 +123,7 @@ class TensorboardTracker:
 class TensorboardFolderTracker:
     def __init__(self, tensorboard_event_folder: str, queue: queue.Queue) -> None:
         self.queue = queue
-        self.supported_plugins = ("images", "scalars")
+        self.supported_plugins = ("images", "scalars", "histograms")
         self.unsupported_plugin_noticed = False
         self.folder_name = os.path.basename(tensorboard_event_folder)
         self._thread = threading.Thread(target=self._process_event)
@@ -131,6 +184,8 @@ class TensorboardFolderTracker:
                         track_val = [Image(tf.image.decode_image(t).numpy()) for t in tensor]
                         if len(track_val) == 1:
                             track_val = track_val[0]
+                    elif plugin_name == "histograms":
+                        track_val = _decode_histogram_from_plugin(value)
                     elif plugin_name == "scalars" or plugin_name == "":
                         track_val = create_ndarray(value.tensor)
                     else:
@@ -142,6 +197,8 @@ class TensorboardFolderTracker:
                 elif value.HasField("audio"):
                     tf_audio, sample_rate = tf.audio.decode_wav(value.audio.encoded_audio_string)
                     track_val = Audio(tf_audio.numpy(), rate=sample_rate)
+                elif value.HasField("histo"):
+                    track_val = _decode_histogram(value)
 
             except RuntimeError as exc:
                 # catch all the nasty failures
