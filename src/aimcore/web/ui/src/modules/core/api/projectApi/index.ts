@@ -3,8 +3,6 @@ import { getAPIHost } from 'config/config';
 import ENDPOINTS from 'services/api/endpoints';
 import NetworkService from 'services/NetworkService';
 
-import { SequenceTypeUnion } from '../../../../types/core/enums';
-
 import {
   GetProjectsInfoQueryOptions,
   GetProjectsInfoResult,

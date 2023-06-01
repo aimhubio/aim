@@ -8,7 +8,9 @@ function Figures(props: IBoxContentProps) {
   let [scale, setScale] = React.useState<number | null | undefined>(
     !!props.style ? undefined : null,
   );
-  let containerRef = React.useRef<HTMLDivElement | null>(null);
+  let containerRef = React.useRef<HTMLDivElement>(
+    document.createElement('div'),
+  );
 
   React.useEffect(() => {
     let rafId = window.requestAnimationFrame(() => {
@@ -21,12 +23,12 @@ function Figures(props: IBoxContentProps) {
   React.useEffect(() => {
     if (data && containerRef.current && props.style) {
       let plot = containerRef.current.firstChild;
-      let container = containerRef.current.parentElement;
-      if (plot && container) {
+      let parentElement = containerRef.current.parentElement;
+      if (plot && parentElement) {
         let width = containerRef.current.offsetWidth + 20;
         let height = containerRef.current.offsetHeight + 20;
-        let containerWidth = container.offsetWidth;
-        let containerHeight = container.offsetHeight - 30;
+        let containerWidth = parentElement.offsetWidth;
+        let containerHeight = parentElement.offsetHeight - 30;
 
         let wK = containerWidth / width; // Calculate width ratio
         let hK = containerHeight / height; // Calculate height ratio
@@ -41,24 +43,22 @@ function Figures(props: IBoxContentProps) {
   }, [data, props.style]);
 
   return (
-    data && (
-      <div
-        style={{
-          display: 'inline-block',
-          visibility: scale === undefined ? 'hidden' : 'visible',
-          transform:
-            scale === undefined || scale === null ? '' : `scale(${scale})`,
-        }}
-        ref={containerRef}
-      >
-        <Plot
-          data={data.data}
-          layout={data.layout}
-          frames={data.frames}
-          useResizeHandler={true}
-        />
-      </div>
-    )
+    <div
+      style={{
+        display: 'inline-block',
+        visibility: scale !== undefined && data ? 'visible' : 'hidden',
+        transform:
+          scale === undefined || scale === null ? '' : `scale(${scale})`,
+      }}
+      ref={containerRef}
+    >
+      <Plot
+        data={data?.data || []}
+        layout={{ ...data?.layout }}
+        frames={data?.frames}
+        useResizeHandler={true}
+      />
+    </div>
   );
 }
 

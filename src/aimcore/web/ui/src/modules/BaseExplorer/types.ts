@@ -11,7 +11,7 @@ import {
 import { EngineNew } from 'modules/core/engine/explorer-engine';
 import { PipelineStatusEnum } from 'modules/core/engine/types';
 
-import { AimObjectDepths, SequenceType } from 'types/core/enums';
+import { SequenceType } from 'types/core/enums';
 
 export interface IEngineStates {
   [key: string]: {
@@ -23,7 +23,6 @@ export interface IOptionalEngineConfig {
   useCache?: boolean;
   sequenceType: SequenceType;
   adapter: {
-    depth: AimObjectDepths;
     objectCreator?: () => any;
   };
   grouping?: {
@@ -37,7 +36,6 @@ export type IEngineConfig = {
   useCache: boolean;
   sequenceType: SequenceType;
   adapter: {
-    objectDepth: AimObjectDepths;
     objectCreator?: () => any;
   };
   grouping?: GroupingConfigs;
@@ -152,17 +150,6 @@ export declare interface ExplorerEngineConfiguration {
    */
   sequenceType: SequenceType;
 
-  /**
-   * Pipeline Adapter phase config
-   */
-  adapter: {
-    /**
-     * Object depth indicates the depth of the object inside the sequence
-     * @example
-     *   If sequenceName is Images then the objectDepth should be Index
-     */
-    objectDepth: AimObjectDepths;
-  };
   /**
    * groupings configurations
    * @optional

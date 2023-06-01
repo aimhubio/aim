@@ -1,18 +1,15 @@
 import { memoize } from 'modules/core/cache';
 
-import { AimObjectDepths, SequenceType } from 'types/core/enums';
+import { SequenceType } from 'types/core/enums';
 import { GroupedSequence } from 'types/core/AimObjects/GroupedSequences';
 
 import { PipelinePhasesEnum, StatusChangeCallback } from '../types';
 
-import depthInterceptors from './depthInterceptors';
 import processor, { ProcessedData, ProcessInterceptor } from './processor';
 import AdapterError from './AdapterError';
 
 export type AdapterConfigOptions = {
-  objectDepth: AimObjectDepths;
   sequenceType: SequenceType;
-  customInterceptor?: ProcessInterceptor;
   useCache?: boolean;
   statusChangeCallback?: (status: string) => void;
 };
@@ -22,46 +19,37 @@ export type Adapter = {
 };
 
 let adapterConfig: {
-  objectDepth: AimObjectDepths;
-  customInterceptor: ProcessInterceptor;
   sequenceType: SequenceType;
   useCache: boolean;
   statusChangeCallback?: StatusChangeCallback;
 };
 
 function setAdapterConfig(options: AdapterConfigOptions): void {
-  const { objectDepth, useCache, customInterceptor, sequenceType } = options;
+  const { useCache, sequenceType } = options;
   adapterConfig = {
     ...options,
     sequenceType,
-    objectDepth,
     useCache: !!useCache,
-    customInterceptor:
-      customInterceptor || depthInterceptors[options.objectDepth],
   };
 }
 
 function baseProcessor(seqs: Array<GroupedSequence>): Promise<ProcessedData> {
-  const { sequenceType, objectDepth } = adapterConfig;
+  const { sequenceType } = adapterConfig;
   adapterConfig.statusChangeCallback?.(PipelinePhasesEnum.Adopting);
   try {
-    return Promise.resolve(processor(seqs, sequenceType, objectDepth));
+    return Promise.resolve(processor(seqs, sequenceType));
   } catch (e) {
     throw new AdapterError(e.message || e, e.detail).getError();
   }
 }
 
 function createAdapter({
-  objectDepth,
   sequenceType,
   useCache = false,
-  customInterceptor,
   statusChangeCallback,
 }: AdapterConfigOptions): Adapter {
   setAdapterConfig({
-    objectDepth,
     useCache,
-    customInterceptor,
     sequenceType,
     statusChangeCallback,
   });
