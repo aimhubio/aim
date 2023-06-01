@@ -20,6 +20,7 @@ if TYPE_CHECKING:
 
 
 def _process_values(repo: 'Repo', values_list: list, steps_list: list, sequence: Sequence) -> list:
+    # TODO V4: Move blobs uri handling to dump
     from aim._sdk.uri_service import URIService
     uri_service = URIService(repo)
 
