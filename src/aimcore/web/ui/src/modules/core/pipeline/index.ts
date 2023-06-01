@@ -2,7 +2,7 @@ import { RunsSearchQueryParams } from 'modules/core/api/runsApi';
 
 import { RequestInstance } from 'services/NetworkService';
 
-import { AimObjectDepths, SequenceType } from 'types/core/enums';
+import { SequenceType } from 'types/core/enums';
 
 import createGrouping, { Grouping } from './grouping';
 import createQuery, { Query, RequestProgressCallback } from './query';
@@ -27,7 +27,6 @@ export type PipelineOptions = {
     resultCallback?: () => void;
   };
   adapter: {
-    objectDepth: AimObjectDepths;
     useCache?: boolean;
   };
   query: {

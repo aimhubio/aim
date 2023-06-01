@@ -46,14 +46,14 @@ def memoize(func):
     return wrapper
 
 
-query_result_cache = {}
+query_results_cache = {}
 
 
 def query_filter(type_, query="", count=None, start=None, stop=None, isSequence=False):
     query_key = f'{type_}_{query}_{count}_{start}_{stop}'
 
-    if query_key in query_result_cache:
-        return query_result_cache[query_key]
+    if query_key in query_results_cache:
+        return query_results_cache[query_key]
 
     try:
         data = search(board_path, type_, query, count, start, stop, isSequence)
@@ -67,7 +67,7 @@ def query_filter(type_, query="", count=None, start=None, stop=None, isSequence=
             items.append(d)
         data.destroy()
 
-        query_result_cache[query_key] = items
+        query_results_cache[query_key] = items
 
         return items
     except:  # noqa

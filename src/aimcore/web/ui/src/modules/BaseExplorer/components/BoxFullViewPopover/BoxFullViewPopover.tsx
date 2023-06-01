@@ -1,16 +1,15 @@
 import React from 'react';
 import moment from 'moment';
 import _ from 'lodash-es';
-import { Link as RouteLink } from 'react-router-dom';
 
-import { Dialog, Link, Tooltip } from '@material-ui/core';
+import { Dialog, Tooltip } from '@material-ui/core';
 
 import { Badge, Button, Icon, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
-import AttachedTagsList from 'components/AttachedTagsList/AttachedTagsList';
 
-import { PathEnum } from 'config/enums/routesEnum';
 import { DATE_WITH_SECONDS } from 'config/dates/dates';
+
+import { GetSequenceName } from 'types/core/enums';
 
 import { processDurationTime } from 'utils/processDurationTime';
 import { formatValue } from 'utils/formatValue';
@@ -29,36 +28,25 @@ function BoxFullViewPopover({
   children,
   item,
 }: IBoxFullViewPopoverProps) {
+  const sequenceName = GetSequenceName(sequenceType);
+
   const data = React.useMemo(() => {
-    const { run: runData, [sequenceType]: sequenceData } = item;
+    const { run: runData, [sequenceName]: sequenceData } = item;
     let runInfo: { icon: string; value: string | React.ReactElement }[] = [];
     let sequence: { label: string; value: string | React.ReactElement }[] = [];
     if (runData) {
       runInfo = [
         {
           icon: 'runs',
-          value: (
-            <Link
-              to={PathEnum.Run_Detail.replace(':runHash', runData.hash)}
-              component={RouteLink}
-            >
-              {runData.name}
-            </Link>
-          ),
-        },
-        {
-          icon: 'link',
-          value: (
-            <Link
-              to={PathEnum.Experiment.replace(
-                ':experimentId',
-                runData.experimentId,
-              )}
-              component={RouteLink}
-            >
-              {runData.experiment}
-            </Link>
-          ),
+          value: `${runData.name}`,
+          // value: (
+          //   <Link
+          //     to={PathEnum.Run_Detail.replace(':runHash', runData.hash)}
+          //     component={RouteLink}
+          //   >
+          //     {runData.name}
+          //   </Link>
+          // ),
         },
         {
           icon: 'calendar',
@@ -103,7 +91,7 @@ function BoxFullViewPopover({
       sequence,
       groups: itemGroupInfo,
     };
-  }, [item, sequenceType, itemGroupInfo]);
+  }, [item, sequenceName, itemGroupInfo]);
 
   return (
     <ErrorBoundary>
@@ -150,7 +138,7 @@ function BoxFullViewPopover({
             )} */}
             <div className='BoxFullViewPopover__container__detail-section'>
               <Text weight={600} size={18} tint={100} component='h3'>
-                {sequenceType}
+                {sequenceName}
               </Text>
               {data.sequence.map((item: any, index: number) => (
                 <div className='flex' key={index}>

@@ -22,12 +22,13 @@ function AudioBox(props: IBoxContentProps) {
   const {
     engine: { events, blobURI },
     data: {
-      data: { blob_uri, format, index, caption },
-      audios,
+      data: { data, blob_uri, format, index, caption },
+      sequence,
       record,
     },
     isFullView,
   } = props;
+
   const [isPlaying, setIsPlaying] = React.useState<boolean>(false);
   const [audio, setAudio] = React.useState<any>(null);
   const [processing, setProcessing] = React.useState<boolean>(false);
@@ -77,18 +78,26 @@ function AudioBox(props: IBoxContentProps) {
   }, [processing]);
 
   React.useEffect(() => {
-    if (blobData) {
+    if (data) {
+      // from UInt8Array to DataURI
+      // @TODO - remove it from here after blobURI will be supported
+      const blob_data = btoa(
+        data.reduce(
+          (acc: string, c: number) => acc + String.fromCharCode(c),
+          '',
+        ),
+      );
       const audioRef = new Audio();
       audioRef.autoplay = true;
       audioRef.muted = true;
       audioRef.preload = 'metadata';
-      audioRef.src = `data:audio/${format};base64,${blobData}`;
-      setSrc(`data:audio/${format};base64,${blobData}`);
+      audioRef.src = `data:audio/${format};base64,${blob_data}`;
+      setSrc(`data:audio/${format};base64,${blob_data}`);
       setAudio(audioRef);
       setMuted(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [blobData]);
+  }, [data]);
 
   React.useEffect(() => {
     if (isPlaying) {
@@ -177,12 +186,18 @@ function AudioBox(props: IBoxContentProps) {
 
   function handleDownload(): void {
     const { step } = record;
-    const { context, name: audio_name } = audios;
+    const { context, name: audio_name } = sequence;
     const contextName =
       contextToString(context) === '' ? '' : `_${contextToString(context)}`;
     const name = `${audio_name}${contextName}_${caption}_${step}_${index}`;
 
-    downloadLink(`data:audio/${format};base64,${blobData}`, name);
+    // from UInt8Array to DataURI
+    // @TODO - remove it from here after blobURI will be supported
+    const blob_data = btoa(
+      data.reduce((acc: string, c: number) => acc + String.fromCharCode(c), ''),
+    );
+
+    downloadLink(`data:audio/${format};base64,${blob_data}`, name);
   }
 
   return (
