@@ -3,7 +3,7 @@
 ####################
 
 from pyodide.ffi import create_proxy
-from js import search, localStorage
+from js import search
 import json
 import hashlib
 
@@ -224,13 +224,7 @@ def group(name, data, options, key=None):
 
 current_layout = []
 
-
-saved_state_str = localStorage.getItem("app_state")
-
 state = {}
-
-if saved_state_str:
-    state = json.loads(saved_state_str)
 
 
 def set_state(update, board_path, persist=False):
@@ -240,6 +234,10 @@ def set_state(update, board_path, persist=False):
         state[board_path] = {}
 
     state[board_path].update(update)
+
+    for key in state[board_path]:
+        if state[board_path][key] is None:
+            del state[board_path][key]
 
     setState(state, board_path, persist)
 
@@ -320,7 +318,7 @@ class Component(Element):
         }
         self.no_facet = True
 
-    def set_state(self, value):
+    def set_state(self, value, persist=True):
         should_batch = self.parent_block is not None and self.parent_block["type"] == "form"
 
         if should_batch:
@@ -339,7 +337,7 @@ class Component(Element):
 
             set_state({
                 self.parent_block["id"]: state_slice
-            }, self.board_path)
+            }, self.board_path, persist)
         else:
             state_slice = state[self.board_path][
                 self.key
@@ -349,7 +347,7 @@ class Component(Element):
 
             set_state({
                 self.key: state_slice
-            }, self.board_path)
+            }, self.board_path, persist)
 
     def render(self):
         component_data = {

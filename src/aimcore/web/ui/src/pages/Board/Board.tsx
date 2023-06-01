@@ -37,6 +37,7 @@ import {
 import BoardConsole from './components/BoardConsole';
 import FormVizElement from './components/VisualizationElements/FormVizElement';
 import useBoardStore from './BoardStore';
+import { getBoardStateFromKey } from './stateSync';
 
 const liveUpdateInterval = 5000;
 
@@ -47,6 +48,7 @@ function Board({
   newMode,
   notifyData,
   onNotificationDelete,
+  stateKey,
 }: // saveBoard,
 any): React.FunctionComponentElement<React.ReactNode> {
   const [mounted, setMounted] = React.useState(false);
@@ -90,6 +92,7 @@ any): React.FunctionComponentElement<React.ReactNode> {
     execCode: '',
     stateUpdateCount: 0, // @TODO[optimize perf]: remove, use fired event instead
     executionCount: 0, // @TODO[optimize perf]: remove, use fired event instead
+    boardState: null,
   });
 
   const execute = React.useCallback(async () => {
@@ -121,12 +124,14 @@ any): React.FunctionComponentElement<React.ReactNode> {
         }
 
         await pyodide?.loadPackagesFromImports(code);
+        const boardState = stateKey ? await getBoardStateFromKey(stateKey) : {};
 
         setState((s: any) => ({
           ...s,
           layoutTree: null,
           execCode: code,
           executionCount: s.executionCount + 1,
+          boardState,
         }));
       } catch (ex) {
         // eslint-disable-next-line no-console
@@ -144,6 +149,8 @@ block_context = {
 }
 current_layout = []
 board_path = ${boardPath === undefined ? 'None' : `"${boardPath}"`}
+if board_path not in state:
+  state[board_path] = ${pyodide.toPy(state.boardState)}
 session_state = state[board_path] if board_path in state else {}
 def set_session_state(state_slice):
   set_state(state_slice, board_path)

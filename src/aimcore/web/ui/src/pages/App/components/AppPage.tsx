@@ -8,6 +8,7 @@ function AppPage({ match, location, data }: any) {
     boardPath = match.params[0];
   }
   const editMode = location.pathname.endsWith('/edit');
+  const searchParams = new URLSearchParams(location.search);
 
   React.useEffect(() => {
     if (boardPath) {
@@ -16,7 +17,12 @@ function AppPage({ match, location, data }: any) {
   }, [boardPath]);
 
   return (
-    <AppWrapper boardList={data} boardPath={boardPath} editMode={editMode!} />
+    <AppWrapper
+      boardList={data}
+      boardPath={boardPath}
+      editMode={editMode!}
+      stateKey={searchParams.get('state')}
+    />
   );
 }
 

@@ -3,8 +3,7 @@ import { getBasePath } from 'config/config';
 import { fetchPackages } from 'modules/core/api/projectApi';
 
 import { search } from 'pages/Board/search';
-
-import { getItem, setItem } from 'utils/storage';
+import { getKeyFromBoardState } from 'pages/Board/stateSync';
 
 import pyodideEngine from './store';
 
@@ -102,24 +101,16 @@ window.updateLayout = (items: any, boardPath: undefined | string) => {
 };
 
 // @ts-ignore
-window.setState = (update: any, boardPath: string, persist = false) => {
+window.setState = async (update: any, boardPath: string, persist?: boolean) => {
   let stateUpdate = update.toJs();
   update.destroy();
   let state = toObject(stateUpdate);
 
-  // This section add persistence for state through saving it to URL and localStorage
-
   if (persist) {
-    const stateStr = JSON.stringify(state);
-    const boardStateStr = JSON.stringify(state[boardPath]);
-    const prevStateStr = getItem('app_state');
-
-    if (stateStr !== prevStateStr) {
-      setItem('app_state', stateStr);
-      const url = new URL(window.location as any);
-      url.searchParams.set('state', boardStateStr);
-      window.history.pushState({}, '', url as any);
-    }
+    let persistKey = await getKeyFromBoardState(boardPath, state[boardPath]);
+    const url = new URL(window.location.href);
+    url.searchParams.set('state', persistKey);
+    window.history.pushState({}, '', url.toString());
   }
 
   pyodideEngine.events.fire(
