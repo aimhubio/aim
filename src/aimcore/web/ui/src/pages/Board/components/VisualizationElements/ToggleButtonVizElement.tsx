@@ -27,7 +27,12 @@ function ToggleButtonVizElement(props: any) {
   return (
     <Box>
       {props.options.label && (
-        <Text as='label' htmlFor={id} disabled={props.options.disabled}>
+        <Text
+          as='label'
+          htmlFor={id}
+          lineHeight={1.5}
+          disabled={props.options.disabled}
+        >
           {props.options.label}
         </Text>
       )}
