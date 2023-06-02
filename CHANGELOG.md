@@ -1,7 +1,16 @@
 # Changelog
 
+## 3.17.5
+
+- Fix gpu stat collection when driver is not loaded (mihran113)
 - Fix issue with overflowing box content in full-view mode in Base Explorers (KaroMourad)
 - Resolve tags list visibility issue in tags page (arsengit)
+- Fix issue on git stat collection (mihran113)
+- Import `Image` and `Audio` for `TensorboardFolderTracker` (alansaul)
+- Extend `aim.ext.tensorboard_tracker.run.Run` to allow stdout logging and system stats and parameter logging (alansaul)
+- Add the ability for `TensorboardFolderTracker` to track `Histogram`'s as Aim `Distribution`'s (alansaul)
+- Convert NaNs and Infs in responses to strings (n-gao)
+- Add activeloop deeplake plugin (drahnreb)
 
 ## 3.17.4  May 4, 2023
 

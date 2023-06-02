@@ -54,6 +54,25 @@ def str_to_range(range_str: str):
     return IndexRange(start, stop)
 
 
+def convert_nan_and_inf_to_str(tree):
+    if tree == float('inf'):
+        return 'inf'
+    if tree == float('-inf'):
+        return '-inf'
+    if tree != tree:  # x == x is False for NaN, strings break math.isnan
+        return 'NaN'
+    if isinstance(tree, dict):
+        return {
+            key: convert_nan_and_inf_to_str(value)
+            for key, value in tree.items()
+        }
+    if isinstance(tree, tuple):
+        return tuple(convert_nan_and_inf_to_str(value) for value in tree)
+    if isinstance(tree, list):
+        return [convert_nan_and_inf_to_str(value) for value in tree]
+    return tree
+
+
 def get_run_params(run: Run, *, skip_system: bool):
     params = run.get(..., {}, resolve_objects=True)
     if skip_system and '__system_params' in params:
