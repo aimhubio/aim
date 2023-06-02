@@ -28,14 +28,10 @@ class StorageEngine(object):
         ...
 
     @abstractmethod
-    def task_queue(self, hash_: str):
+    def task_queue(self):
         ...
 
     @abstractmethod
     @contextlib.contextmanager
     def write_batch(self, hash_: str):
-        ...
-
-    @abstractmethod
-    def remove_queue(self, hash_: str):
         ...

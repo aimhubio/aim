@@ -26,8 +26,11 @@ class RemoteStorage(StorageEngine):
         def __init__(self, instance: 'RemoteStorage'):
             super().__init__(instance)
             self._client = instance._client
+            self._queue = instance.task_queue()
 
         def _close(self):
+            self._queue.wait_for_finish()
+            self._queue.stop()
             self._client.disconnect()
 
     def __init__(self, path: str, read_only: bool = False):
@@ -54,15 +57,12 @@ class RemoteStorage(StorageEngine):
 
     @contextlib.contextmanager
     def write_batch(self, hash_: str):
-        self._client.start_instructions_batch()
+        self._client.start_instructions_batch(hash_)
         yield
         self._client.flush_instructions_batch(hash_)
 
-    def task_queue(self, hash_: str):
-        return self._client.get_queue(hash_)
-
-    def remove_queue(self, hash_: str):
-        self._client.remove_queue(hash_)
+    def task_queue(self):
+        return self._client.get_queue()
 
 
 class RemoteFileManagerProxy(FileManager):
