@@ -11,7 +11,6 @@ import AppPage from './components/AppPage';
 
 function App(): React.FunctionComponentElement<React.ReactNode> {
   const { data, isLoading, notifications } = useApp();
-
   return (
     <ErrorBoundary>
       {isLoading ? null : (

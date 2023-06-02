@@ -1,3 +1,5 @@
+import { isDEVModeOn } from 'config/config';
+
 import renderer from 'modules/BaseExplorer';
 import Figures from 'modules/BaseExplorer/components/Figures';
 
@@ -26,6 +28,6 @@ export const figuresExplorerConfig = {
   getStaticContent: defaultConfig.getStaticContent,
 };
 
-const FiguresExplorer = renderer(figuresExplorerConfig, __DEV__);
+const FiguresExplorer = renderer(figuresExplorerConfig, isDEVModeOn);
 
 export default FiguresExplorer;
