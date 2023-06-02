@@ -4,6 +4,7 @@
 
 - Fix gpu stat collection when driver is not loaded (mihran113)
 - Fix issue with overflowing box content in full-view mode in Base Explorers (KaroMourad)
+- Resolve tags list visibility issue in tags page (arsengit)
 - Fix issue on git stat collection (mihran113)
 - Import `Image` and `Audio` for `TensorboardFolderTracker` (alansaul)
 - Extend `aim.ext.tensorboard_tracker.run.Run` to allow stdout logging and system stats and parameter logging (alansaul)
