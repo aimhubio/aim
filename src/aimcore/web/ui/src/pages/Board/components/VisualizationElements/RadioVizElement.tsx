@@ -1,7 +1,8 @@
 import * as React from 'react';
 
-import { Radio, RadioGroup, Text } from 'components/kit_v2';
-import { RadioLabel } from 'components/kit_v2/Radio/Radio.style';
+import { Box, Radio, RadioGroup, Text } from 'components/kit_v2';
+
+import generateId from 'utils/generateId';
 
 function RadioVizElement(props: any) {
   const [value, setValue] = React.useState<string>(`${props.options.value}`);
@@ -27,11 +28,16 @@ function RadioVizElement(props: any) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.options.value]);
 
-  const id = React.useMemo(() => `radio_${Date.now()}`, []);
+  const id = React.useMemo(generateId, []);
   return (
-    <div>
+    <Box>
       {props.options.label && (
-        <Text as='label' htmlFor={id} disabled={props.options.disabled}>
+        <Text
+          as='label'
+          htmlFor={id}
+          lineHeight={1.5}
+          disabled={props.options.disabled}
+        >
           {props.options.label}
         </Text>
       )}
@@ -48,7 +54,7 @@ function RadioVizElement(props: any) {
           </Radio>
         ))}
       </RadioGroup>
-    </div>
+    </Box>
   );
 }
 export default RadioVizElement;

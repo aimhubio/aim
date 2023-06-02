@@ -767,8 +767,8 @@ class Explorer(Component):
 
         self.render()
 
-# InputComponents
 
+# InputComponents
 
 def get_component_batch_state(key, parent_block=None):
     if parent_block is None:
@@ -780,36 +780,30 @@ def get_component_batch_state(key, parent_block=None):
 
     return None
 
+
 # Type checker helper functions
-
-
-def check_type(value, type_):
-    if isinstance(value, type_):
-        return True
-    return False
-
-
 # validate value type, otherwise raise an exception
-def validate(value, type, prop_name):
-    if (check_type(value, type)):
+
+def validate(value, type_, prop_name):
+    if isinstance(value, type_):
         return value
     else:
-        raise Exception(f"Type of {prop_name} must be a {type.__name__}")
-
- # check if all elements in list are numbers, otherwise raise an exception
+        raise Exception(f"Type of {prop_name} must be a {type_.__name__}")
 
 
-def safe_num_list(value):
-    if(all([check_type(item, (int, float)) for item in value])):
+# check if all elements in list are numbers, otherwise raise an exception
+
+def validate_num_list(value):
+    if (all([isinstance(item, (int, float)) for item in value])):
         return value
     else:
         raise Exception("Value must be a list of numbers")
 
- # check if all elements in tuple are numbers, otherwise raise an exception
 
+# check if all elements in tuple are numbers, otherwise raise an exception
 
-def safe_num_tuple(value):
-    if(all([check_type(item, (int, float)) for item in value])):
+def validate_num_tuple(value):
+    if (all([isinstance(item, (int, float)) for item in value])):
         return value
     else:
         raise Exception("Value must be a tuple of numbers")
@@ -821,16 +815,27 @@ class Slider(Component):
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
 
-        self.data = validate(value, (int, float), "value")
         batch_state = get_component_batch_state(component_key, block)
 
+        # validate all arguments passed in
+        label = validate(label, str, "label")
+        value = validate(value, (int, float), "value")
+        min = validate(min, (int, float), "min")
+        max = validate(max, (int, float), "max")
+        step = None if step == None else validate(step, (int, float), "step")
+        disabled = validate(disabled, bool, "disabled")
+
+        # set the initial data for this component
+        self.data = value
+
+        # set the properties/options for this component
         self.options = {
-            "value": self.value if batch_state is None else batch_state["value"][0],
-            "label": validate(label, str, "label"),
-            "min": validate(min, (int, float), "min"),
-            "max": validate(max, (int, float), "max"),
+            "label": label,
+            "min": min,
+            "max": max,
+            "disabled": disabled,
             "step": self._get_step(self.data, step),
-            "disabled": validate(disabled, bool, "disabled"),
+            "value": self.value if batch_state is None else batch_state["value"][0],
         }
 
         self.callbacks = {
@@ -839,10 +844,10 @@ class Slider(Component):
 
         self.render()
 
-    def _get_step(self, initial_value, step):
-        if (step):
-            return validate(step, (int, float), "step")
-        elif isinstance(initial_value, float):
+    def _get_step(self, value, step):
+        if step:
+            return step
+        elif isinstance(value, float):
             return 0.01
         else:
             return 1
@@ -861,17 +866,27 @@ class RangeSlider(Component):
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
 
-        self.data = sorted(safe_num_tuple(value), key=int)
-
         batch_state = get_component_batch_state(component_key, block)
 
+        # validate all arguments passed in
+        label = validate(label, str, "label")
+        value = validate_num_tuple(value)
+        min = validate(min, (int, float), "min")
+        max = validate(max, (int, float), "max")
+        step = None if step == None else validate(step, (int, float), "step")
+        disabled = validate(disabled, bool, "disabled")
+
+        # set the initial data for this component
+        self.data = sorted(value, key=int)
+
+        # set the properties/options for this component
         self.options = {
-            "value": self.value if batch_state is None else batch_state["value"],
-            "label": validate(label, str, "label"),
-            "min": validate(min, (int, float), "min"),
-            "max": validate(max, (int, float), "max"),
+            "label": label,
+            "min": min,
+            "max": max,
+            "disabled": disabled,
             "step": self._get_step(self.data, step),
-            "disabled": validate(disabled, bool, "disabled"),
+            "value": self.value if batch_state is None else batch_state["value"],
         }
 
         self.callbacks = {
@@ -880,18 +895,17 @@ class RangeSlider(Component):
 
         self.render()
 
-    def _get_step(self, initial_range, step):
-        if (step):
-            return validate(step, (int, float), "step")
-        elif any(isinstance(n, float) for n in initial_range):
+    def _get_step(self, value, step):
+        if step != None:
+            return step
+        elif any(isinstance(n, float) for n in value):
             return 0.01
         else:
             return 1
 
     @property
     def value(self):
-        value_state = self.state["value"] if "value" in self.state else self.data
-        return tuple(value_state)
+        return tuple(self.state["value"] if "value" in self.state else self.data)
 
     async def on_change(self, val):
         self.set_state({"value": tuple(val.to_py())})
@@ -903,14 +917,21 @@ class TextInput(Component):
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
 
-        self.data = validate(value, str, "value")
-
         batch_state = get_component_batch_state(component_key, block)
 
+        # validate all arguments passed in
+        label = validate(label, str, "label")
+        value = validate(value, str, "value")
+        disabled = validate(disabled, bool, "disabled")
+
+        # set the initial data for this component
+        self.data = value
+
+        # set the properties/options for this component
         self.options = {
+            "label": label,
+            "disabled": disabled,
             "value": self.value if batch_state is None else batch_state["value"],
-            "label": validate(label, str, "label"),
-            "disabled": validate(disabled, bool, "disabled"),
         }
 
         self.callbacks = {
@@ -933,17 +954,27 @@ class NumberInput(Component):
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
 
-        self.data = validate(value, (int, float), "value")
-
         batch_state = get_component_batch_state(component_key, block)
 
+        # validate all arguments passed in
+        label = validate(label, str, "label")
+        value = validate(value, (int, float), "value")
+        min = None if min == None else validate(min, (int, float), "min")
+        max = None if max == None else validate(max, (int, float), "max")
+        step = None if step == None else validate(step, (int, float), "step")
+        disabled = validate(disabled, bool, "disabled")
+
+        # set the initial data for this component
+        self.data = value
+
+        # set the properties/options for this component
         self.options = {
-            "value": self.value if batch_state is None else batch_state["value"],
-            "label": validate(label, str, "label"),
-            "min": min if check_type(min, (int, float)) else None,
-            "max": max if check_type(max, (int, float)) else None,
+            "label": label,
+            "min": min,
+            "max": max,
+            "disabled": disabled,
             "step": self._get_step(self.value, step),
-            "disabled": validate(disabled, bool, "disabled"),
+            "value": self.value if batch_state is None else batch_state["value"],
         }
 
         self.callbacks = {
@@ -953,8 +984,8 @@ class NumberInput(Component):
         self.render()
 
     def _get_step(self, value, step):
-        if (step):
-            return validate(step, (int, float), "step")
+        if step != None:
+            return step
         elif isinstance(value, float):
             return 0.01
         else:
@@ -969,19 +1000,29 @@ class NumberInput(Component):
 
 
 class Select(Component):
-    def __init__(self, options=(), value=None, key=None, block=None):
+    def __init__(self, label='', options=('option 1', 'option 2'), index=0, disabled=False, key=None, block=None):
         component_type = "Select"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
 
-        self.default = value
-
         batch_state = get_component_batch_state(component_key, block)
 
+        # validate all arguments passed in
+        label = validate(label, str, "label")
+        options = validate(options, tuple, "options")
+        index = validate(index, int, "index")
+        disabled = validate(disabled, bool, "disabled")
+
+        # set the initial data for this component
+        self.data = options[index]
+
+        # set the properties/options for this component
         self.options = {
+            "label": label,
+            "options": options,
+            "disabled": disabled,
             "isMulti": False,
             "value": self.value if batch_state is None else batch_state["value"],
-            "options": options
         }
 
         self.callbacks = {
@@ -992,26 +1033,36 @@ class Select(Component):
 
     @property
     def value(self):
-        return self.state["value"] if "value" in self.state else self.default
+        return self.state["value"] if "value" in self.state else self.data
 
-    async def on_change(self, val, index):
+    async def on_change(self, val):
         self.set_state({"value": val})
 
 
 class MultiSelect(Component):
-    def __init__(self, options=(), value=None, key=None, block=None):
+    def __init__(self, label='', options=('option 1', 'option 2'), index=[0], disabled=False,  key=None, block=None):
         component_type = "Select"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
 
-        self.default = value
-
         batch_state = get_component_batch_state(component_key, block)
 
+        # validate all arguments passed in
+        label = validate(label, str, "label")
+        options = validate(options, tuple, "options")
+        index = validate(index, list, "index")
+        disabled = validate(disabled, bool, "disabled")
+
+        # set the initial data for this component
+        self.data = [options[i] for i in index]
+
+        # set the properties/options for this component
         self.options = {
+            "label": label,
+            "options": options,
+            "disabled": disabled,
             "isMulti": True,
             "value": self.value if batch_state is None else batch_state["value"],
-            "options": options
         }
 
         self.callbacks = {
@@ -1022,10 +1073,10 @@ class MultiSelect(Component):
 
     @property
     def value(self):
-        return self.state["value"] if "value" in self.state else self.default
+        return self.state["value"] if "value" in self.state else self.data
 
-    async def on_change(self, val, index):
-        if type(self.value) is list:
+    async def on_change(self, val):
+        if isinstance(self.value, list):
             if val in self.value:
                 value = list(filter(lambda item: item != val, self.value))
             else:
@@ -1040,12 +1091,23 @@ class Switch(Component):
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
 
+        batch_state = get_component_batch_state(component_key, block)
+
+        # validate all arguments passed in
+        label = validate(label, str, "label")
+        checked = validate(checked, bool, "checked")
+        size = validate(size, str, "size")
+        disabled = validate(disabled, bool, "disabled")
+
+        # set the initial data for this component
         self.data = checked
 
+        # set the properties/options for this component
         self.options = {
-            "label": validate(label, str, "label"),
-            "size": validate(size, str, "size"),
-            "disabled": validate(disabled, bool, "disabled"),
+            "label": label,
+            "size": size,
+            "disabled": disabled,
+            "value": self.value if batch_state is None else batch_state["value"],
         }
 
         self.callbacks = {
@@ -1054,11 +1116,9 @@ class Switch(Component):
 
         self.render()
 
+    @property
     def value(self):
-        if "value" in self.state:
-            return self.state["value"]
-        else:
-            return self.data
+        return self.state["value"] if "value" in self.state else self.data
 
     async def on_change(self, val):
         self.set_state({"value": val})
@@ -1070,17 +1130,27 @@ class TextArea(Component):
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
 
-        self.data = validate(value, str, "value")
-
         batch_state = get_component_batch_state(component_key, block)
 
+        # validate all arguments passed in
+        label = validate(label, str, "label")
+        value = validate(value, str, "value")
+        size = validate(size, str, "size")
+        resize = validate(resize, str, "resize")
+        disabled = validate(disabled, bool, "disabled")
+        caption = validate(caption, str, "caption")
+
+        # set the initial data for this component
+        self.data = value
+
+        # set the properties/options for this component
         self.options = {
-            "label": validate(label, str, "label"),
+            "label": label,
+            "size": size,
+            "resize": resize,
+            "disabled": disabled,
+            "caption": caption,
             "value": self.value if batch_state is None else batch_state["value"],
-            "size": validate(size, str, "size"),
-            "resize": validate(resize, str, "resize"),
-            "disabled": validate(disabled, bool, "disabled"),
-            "caption": validate(caption, str, "caption"),
         }
 
         self.callbacks = {
@@ -1098,19 +1168,30 @@ class TextArea(Component):
 
 
 class Radio(Component):
-    def __init__(self, label='', options=[], index=0, orientation='vertical', disabled=False, key=None, block=None):
+    def __init__(self, label='', options=('option 1', 'option 2'), index=0, orientation='vertical', disabled=False, key=None, block=None):
         component_type = "Radio"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
 
-        self.default = options[index]
+        batch_state = get_component_batch_state(component_key, block)
 
+        # validate all arguments passed in
+        label = validate(label, str, "label")
+        options = validate(options, tuple, "options")
+        orientation = validate(orientation, str, "orientation")
+        disabled = validate(disabled, bool, "disabled")
+        index = validate(index, int, "index")
+
+        # set the initial data for this component
+        self.data = options[index]
+
+        # set the properties/options for this component
         self.options = {
-            "value": self.value,
-            "label": validate(label, str, "label"),
-            "options": validate(options, list, "options"),
-            "orientation": validate(orientation, str, "orientation"),
-            "disabled": validate(disabled, bool, "disabled"),
+            "label": label,
+            "options": options,
+            "orientation": orientation,
+            "disabled": disabled,
+            "value": self.value if batch_state is None else batch_state["value"],
         }
 
         self.callbacks = {
@@ -1121,23 +1202,33 @@ class Radio(Component):
 
     @property
     def value(self):
-        return self.state["value"] if "value" in self.state else self.default
+        return self.state["value"] if "value" in self.state else self.data
 
     async def on_change(self, val):
         self.set_state({"value": val})
 
 
 class Checkbox(Component):
-    def __init__(self, label='', value=False, key=None, disabled=False, block=None):
+    def __init__(self, label='', checked=False, disabled=False, key=None, block=None):
         component_type = "Checkbox"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
 
-        self.data = value
+        batch_state = get_component_batch_state(component_key, block)
 
+        # validate all arguments passed in
+        checked = validate(checked, bool, "checked")
+        label = validate(label, str, "label")
+        disabled = validate(disabled, bool, "disabled")
+
+        # set the initial data for this component
+        self.data = checked
+
+        # set the properties/options for this component
         self.options = {
-            "label": validate(label, str, "label"),
-            "disabled": validate(disabled, bool, "disabled"),
+            "label": label,
+            "disabled": disabled,
+            "value": self.value if batch_state is None else batch_state["value"],
         }
 
         self.callbacks = {
@@ -1155,19 +1246,30 @@ class Checkbox(Component):
 
 
 class ToggleButton(Component):
-    def __init__(self, left_value="On", right_value="Off", index=0, disabled=False, block=None, key=None):
+    def __init__(self, label='', left_value="On", right_value="Off", index=0, disabled=False, block=None, key=None):
         component_type = "ToggleButton"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
 
+        batch_state = get_component_batch_state(component_key, block)
+
+        # validate all arguments passed in
+        label = validate(label, str, "label")
+        rightValue = validate(right_value, str, "right_value")
+        leftValue = validate(left_value, str, "left_value")
+        index = validate(index, int, "index")
+        disabled = validate(disabled, bool, "disabled")
+
+        # set the initial data for this component
+        self.data = right_value if index == 1 else left_value
+
+        # set the properties/options for this component
         self.options = {
-            "rightLabel": validate(right_value, str, "right_label"),
-            "leftLabel": validate(left_value, str, "left_label"),
-            "rightValue": validate(right_value, str, "right_value"),
-            "leftValue": validate(left_value, str, "left_value"),
-            "index": validate(index, int, "index"),
-            "disabled": validate(disabled, bool, "disabled"),
-            "defaultValue": index == 0 and left_value or right_value
+            "label": label,
+            "disabled": disabled,
+            "leftValue": leftValue,
+            "rightValue": rightValue,
+            "value": self.value if batch_state is None else batch_state["value"],
         }
 
         self.callbacks = {
@@ -1178,10 +1280,7 @@ class ToggleButton(Component):
 
     @property
     def value(self):
-        if "value" in self.state:
-            return self.state["value"]
-        else:
-            return self.options["rightValue"] if self.options["index"] == 0 else self.options["leftValue"]
+        return self.state["value"] if "value" in self.state else self.data
 
     async def on_change(self, val):
         self.set_state({"value": val})
@@ -1199,7 +1298,11 @@ class TypographyComponent(Component):
 
 
 class Header(TypographyComponent):
-    def __init__(self, text, key=None, block=None):
+    def __init__(self, text='', key=None, block=None):
+        # validate all arguments passed in
+        text = validate(text, str, "text")
+
+        # set the properties/options for this component
         options = {
             "component": "h2",
             "size": "$9"
@@ -1208,7 +1311,11 @@ class Header(TypographyComponent):
 
 
 class SubHeader(TypographyComponent):
-    def __init__(self, text, key=None, block=None):
+    def __init__(self, text='', key=None, block=None):
+        # validate all arguments passed in
+        text = validate(text, str, "text")
+
+        # set the properties/options for this component
         options = {
             "component": "h3",
             "size": "$6"
@@ -1368,9 +1475,9 @@ class UI:
         header = Header(*args, **kwargs, block=self.block_context)
         return header
 
-    def subheader(self, *args, **kwargs):
-        subheader = SubHeader(*args, **kwargs, block=self.block_context)
-        return subheader
+    def sub_header(self, *args, **kwargs):
+        sub_header = SubHeader(*args, **kwargs, block=self.block_context)
+        return sub_header
 
     # Aim sequence viz components
     def line_chart(self, *args, **kwargs):

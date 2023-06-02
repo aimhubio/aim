@@ -5,20 +5,26 @@ import { Box, Text, Textarea } from 'components/kit_v2';
 import generateId from 'utils/generateId';
 
 function TextAreaVizElement(props: any) {
-  const { label, ...restOption } = props.options;
+  const { label, ...restOptions } = props.options;
   const onChange = React.useCallback(({ target }) => {
     props.callbacks?.on_change(target.value);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const id = generateId();
+  const id = React.useMemo(generateId, []);
   return (
-    <Box flex='1'>
+    <Box>
       {label && (
-        <Text as='label' htmlFor={id} disabled={props.options.disabled}>
+        <Text
+          as='label'
+          htmlFor={id}
+          lineHeight={1.5}
+          disabled={props.options.disabled}
+        >
           {label}
         </Text>
       )}
-      <Textarea {...restOption} onChange={onChange} />
+      <Textarea {...restOptions} onChange={onChange} />
     </Box>
   );
 }

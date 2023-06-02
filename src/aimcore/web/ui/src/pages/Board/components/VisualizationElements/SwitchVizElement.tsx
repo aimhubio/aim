@@ -5,29 +5,29 @@ import { Box, Switch, Text } from 'components/kit_v2';
 import generateId from 'utils/generateId';
 
 function SwitchVizElement(props: any) {
-  const [checked, setChecked] = React.useState(props.value || props.data);
+  const [checked, setChecked] = React.useState(props.options.value);
 
   React.useEffect(() => {
-    if (props.data !== checked) {
-      setChecked(props.data);
+    if (props.options.value !== checked) {
+      setChecked(props.options.value);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.data]);
+  }, [props.options.value]);
 
-  const onChange = React.useCallback((checked) => {
+  const onChange = React.useCallback((checked: boolean) => {
     setChecked(checked);
     props.callbacks?.on_change(checked);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const id = React.useMemo(() => generateId(), []);
+  const id = React.useMemo(generateId, []);
   return (
-    <Box display='flex' ai='center'>
+    <Box display='flex' fd='column'>
       {props.options.label && (
         <Text
-          lineHeight={1}
           as='label'
-          css={{ mr: '$5' }}
           htmlFor={id}
+          lineHeight={1.5}
           disabled={props.options.disabled}
         >
           {props.options.label}
