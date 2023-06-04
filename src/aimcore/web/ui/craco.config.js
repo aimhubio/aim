@@ -14,14 +14,16 @@ module.exports = {
         },
       };
       webpackConfig.optimization.runtimeChunk = true;
-
+      webpackConfig.output.filename = '[name].js';
+      webpackConfig.output.chunkFilename = '[name].js';
       // Output Overrides.
       if (isEnvProduction) {
         // JS static filenames overrides.
-        webpackConfig.output.filename =
-          'static/js/[name].js?version=[contenthash]';
-        webpackConfig.output.chunkFilename =
-          'static/js/[name].js?version=[contenthash]';
+        webpackConfig.configure((config) => {
+          config.output.filename = 'static/js/[name].js?version=[contenthash]';
+          config.output.chunkFilename =
+            'static/js/[name].js?version=[contenthash]';
+        });
       }
 
       // Plugins Overrides.
