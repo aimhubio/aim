@@ -44,7 +44,7 @@
     "memoize-one": "^5.2.1",
     "moment": "^2.29.4",
     "monaco-editor": "^0.33.0",
-    "plotly.js": "^2.7.0",
+    "plotly.js": "^2.23.2",
     "postcss": "^8.4.24",
     "postcss-normalize": "^10.0.1",
     "prop-types": "^15.7.2",
