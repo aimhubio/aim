@@ -3,6 +3,8 @@ import React from 'react';
 import ErrorBoundary from 'components/ErrorBoundary';
 import { Box } from 'components/kit_v2';
 
+import { isDEVModeOn } from 'config/config';
+
 import { IBaseComponentProps } from 'modules/BaseExplorer/types';
 
 import FacetGrouping from '../FacetGrouping';
@@ -32,7 +34,7 @@ function Grouping(props: IBaseComponentProps) {
   const renderGrouping = React.useCallback(
     ([key, grouping]: [string, any]) => {
       const { component: Component } = grouping;
-      if (__DEV__) {
+      if (isDEVModeOn) {
         Component.displayName = 'GroupingComponent';
       }
       return <Component key={key} {...props} />;

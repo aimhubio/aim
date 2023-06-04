@@ -4,6 +4,8 @@ import type { Update } from 'history';
 import createVanilla from 'zustand/vanilla';
 import { devtools, subscribeWithSelector } from 'zustand/middleware';
 
+import { isDEVModeOn } from 'config/config';
+
 import { PipelineOptions } from 'modules/core/pipeline';
 import { ExplorerEngineConfiguration } from 'modules/BaseExplorer/types';
 import getUrlSearchParam from 'modules/core/utils/getUrlSearchParam';
@@ -413,7 +415,7 @@ function createEngine<TObject = any>(
     initialize,
   };
 
-  if (__DEV__) {
+  if (isDEVModeOn) {
     // @ts-ignore
     window[name] = engine;
   }

@@ -1,4 +1,4 @@
-import { version } from '../../package.json';
+import Config from '../../package.json';
 
 interface GlobalScope extends Window {
   API_BASE_PATH?: string;
@@ -37,7 +37,7 @@ function setAPIBasePath(basePath: string) {
     : `${getBasePath()}/api`;
 }
 
-export const AIM_VERSION = version;
+export const AIM_VERSION = Config.version;
 
 const PATHS_TO_SHOW_CACHE_BANNERS = ['notebook', 'aim-sage'];
 

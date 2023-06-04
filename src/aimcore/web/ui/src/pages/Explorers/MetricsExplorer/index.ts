@@ -1,3 +1,5 @@
+import { isDEVModeOn } from 'config/config';
+
 import renderer from 'modules/BaseExplorer';
 import Metrics from 'modules/BaseExplorer/components/Metrics/Metrics';
 import { PersistenceTypesEnum } from 'modules/core/engine/types';
@@ -67,6 +69,6 @@ export const metricsExplorerConfig = {
   getStaticContent: defaultConfig.getStaticContent,
 };
 
-const MetricsExplorer = renderer(metricsExplorerConfig, __DEV__);
+const MetricsExplorer = renderer(metricsExplorerConfig, isDEVModeOn);
 
 export default MetricsExplorer;

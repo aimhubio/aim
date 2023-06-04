@@ -22,13 +22,12 @@
     "@radix-ui/react-tooltip": "^1.0.3",
     "@rowsncolumns/grid": "^8.0.8",
     "@stitches/react": "^1.2.8",
-    "@storybook/react": "^6.5.12",
+    "@storybook/react": "^7.0.18",
     "@tabler/icons-react": "^2.2.0",
     "@uiw/react-textarea-code-editor": "^1.4.14",
     "antd": "^4.23.6",
-    "bs58check": "^2.1.2",
+    "bs58check": "^3.0.1",
     "classnames": "^2.3.1",
-    "comlink": "^4.3.1",
     "d3": "^7.0.0",
     "dot-object": "^2.1.4",
     "file-saver": "^2.0.5",
@@ -46,6 +45,8 @@
     "moment": "^2.29.4",
     "monaco-editor": "^0.33.0",
     "plotly.js": "^2.7.0",
+    "postcss": "^8.4.24",
+    "postcss-normalize": "^10.0.1",
     "prop-types": "^15.7.2",
     "prosemirror-tables": "^1.1.1",
     "react": "^18.2.0",
@@ -55,7 +56,7 @@
     "react-markdown": "^8.0.6",
     "react-plotly.js": "^2.5.1",
     "react-router-dom": "^5.3.0",
-    "react-scripts": "4.0.3",
+    "react-scripts": "^5.0.1",
     "react-select": "^5.5.4",
     "react-split": "^2.0.14",
     "react-use": "^17.4.0",
@@ -64,6 +65,7 @@
     "react-virtualized-tree": "^3.4.1",
     "react-window": "^1.8.6",
     "rich-markdown-editor": "^11.21.3",
+    "stream-browserify": "^3.0.0",
     "styled-components": "^5.3.3",
     "three": "^0.151.3",
     "typeface-roboto": "^1.1.13",
@@ -72,11 +74,11 @@
     "zustand": "^4.1.1"
   },
   "scripts": {
-    "start": "cross-env SKIP_PREFLIGHT_CHECK=true react-app-rewired --max_old_space_size=4096 start",
-    "build": "cross-env SKIP_PREFLIGHT_CHECK=true react-app-rewired --max_old_space_size=4096 build && gzipper c -i js,css,html ./build && node tasks/index-html-template-generator.js",
-    "test": "cross-env SKIP_PREFLIGHT_CHECK=true react-app-rewired test ",
-    "test:coverage": "cross-env SKIP_PREFLIGHT_CHECK=true react-app-rewired test --collectCoverage",
-    "test:watch": "cross-env SKIP_PREFLIGHT_CHECK=true react-app-rewired test --watchAll",
+    "start": "cross-env SKIP_PREFLIGHT_CHECK=true node --no-deprecation node_modules/react-scripts/scripts/start.js craco --max_old_space_size=4096 start",
+    "build": "cross-env SKIP_PREFLIGHT_CHECK=true node --no-deprecation node_modules/react-scripts/scripts/build.js craco --max_old_space_size=4096 build && gzipper c -i js,css,html ./build && node tasks/index-html-template-generator.js",
+    "test": "cross-env SKIP_PREFLIGHT_CHECK=true craco test ",
+    "test:coverage": "cross-env SKIP_PREFLIGHT_CHECK=true craco test --collectCoverage",
+    "test:watch": "cross-env SKIP_PREFLIGHT_CHECK=true craco test --watchAll",
     "eject": "react-scripts eject",
     "lint": "eslint src/. --ext .js,.jsx,.ts,.tsx",
     "format:fix": "eslint src/. --ext .js,.jsx,.ts,.tsx --quiet --fix",
@@ -85,8 +87,8 @@
     "analyze-bundles": "node tasks/bundle-analyzer.js",
     "crc-kit": "func() { node tasks/cli/index.js  create-component --name=\"$1\" --path=./src/components/kit/ --lint; }; func",
     "crc": "func() { node tasks/cli/index.js  create-component --name=\"$1\" --path=./src/components/ --lint; }; func",
-    "storybook": "start-storybook -p 6006 -s public",
-    "build-storybook": "build-storybook -s public"
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "homepage": "/static-files/",
   "browserslist": {
@@ -112,15 +114,13 @@
     ]
   },
   "devDependencies": {
-    "@storybook/addon-actions": "^6.5.12",
-    "@storybook/addon-essentials": "^6.5.12",
-    "@storybook/addon-interactions": "^6.5.12",
-    "@storybook/addon-links": "^6.5.12",
-    "@storybook/builder-webpack4": "^6.5.12",
-    "@storybook/manager-webpack4": "^6.5.12",
-    "@storybook/node-logger": "^6.5.12",
-    "@storybook/preset-create-react-app": "^3.2.0",
-    "@storybook/testing-library": "^0.0.13",
+    "@storybook/addon-essentials": "^7.0.18",
+    "@storybook/addon-interactions": "^7.0.18",
+    "@storybook/addon-links": "^7.0.18",
+    "@storybook/blocks": "^7.0.18",
+    "@storybook/preset-create-react-app": "^7.0.18",
+    "@storybook/react-webpack5": "^7.0.18",
+    "@storybook/testing-library": "^0.0.14-next.2",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/react-hooks": "^7.0.2",
@@ -147,11 +147,10 @@
     "@types/storybook__react": "^5.2.1",
     "@types/styled-components": "^5.1.15",
     "@types/three": "^0.151.0",
-    "@typescript-eslint/eslint-plugin": "^4.28.0",
-    "@typescript-eslint/parser": "^4.28.0",
-    "comlink-loader": "^2.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.59.8",
+    "@typescript-eslint/parser": "^5.59.8",
     "cross-env": "^7.0.3",
-    "eslint": "^7.29.0",
+    "eslint": "^8.41.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-import": "^2.25.2",
     "eslint-plugin-prettier": "^3.4.0",
@@ -163,11 +162,12 @@
     "jss-plugin-template": "^10.7.1",
     "lint-staged": "^11.0.0",
     "node-sass": "^6.0.1",
+    "postcss-flexbugs-fixes": "^5.0.2",
     "prettier": "2.3.1",
     "prettier-eslint": "^12.0.0",
     "progress-bar-webpack-plugin": "^2.1.0",
-    "react-app-rewired": "^2.1.8",
     "sass": "^1.38.1",
+    "storybook": "^7.0.18",
     "typescript": "^4.3.4",
     "webpack-bundle-analyzer": "^4.4.2",
     "webpack-dynamic-public-path": "^1.0.8",
@@ -175,6 +175,14 @@
   },
   "eslintConfig": {
     "overrides": [
+      {
+        "files": [
+          "**/*.stories.*"
+        ],
+        "rules": {
+          "import/no-anonymous-default-export": "off"
+        }
+      },
       {
         "files": [
           "**/*.stories.*"
