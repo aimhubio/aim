@@ -36,15 +36,6 @@ function NivoLineChartVizElement(props: any) {
         lineWidth={1}
         colors={(d) => d.color}
         margin={{ top: 50, right: 90, bottom: 50, left: 60 }}
-        xScale={{
-          type: 'linear',
-          reverse: false,
-        }}
-        yScale={{
-          type: 'linear',
-          reverse: false,
-        }}
-        enableSlices='x'
         sliceTooltip={({ slice }) => {
           return (
             <Box
@@ -75,6 +66,15 @@ function NivoLineChartVizElement(props: any) {
             </Box>
           );
         }}
+        xScale={{
+          type: 'linear',
+          reverse: false,
+        }}
+        yScale={{
+          type: 'linear',
+          reverse: false,
+        }}
+        enableSlices='x'
         enableCrosshair={true}
         axisTop={null}
         axisRight={null}
