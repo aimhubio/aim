@@ -43,11 +43,8 @@ class LocalStorage(StorageEngine):
     def write_batch(self, hash_: str):
         yield
 
-    def task_queue(self, hash_: str):
+    def task_queue(self):
         return None
-
-    def remove_queue(self, hash_: str):
-        pass
 
 
 class LocalFileManager(FileManager):
