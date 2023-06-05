@@ -1,4 +1,3 @@
-from asp import Metric
 import random
 
 
@@ -18,10 +17,16 @@ header = ui.header('Aim UI Charts')
 
 subheader = ui.subheader('Line Chart')
 
-# Create a metric object
-metrics = Metric.filter('')
-
 nivo_line_chart = ui.nivo_line_chart(
+    data,
+    x='x',
+    y='y',
+    color=['name']
+)
+
+subheader = ui.subheader('Scatter Plot')
+
+scatter_plot = ui.scatter_plot(
     data,
     x='x',
     y='y',

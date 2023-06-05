@@ -1,10 +1,33 @@
-import React from 'react';
+import * as React from 'react';
 
-import { ResponsiveLine } from '@nivo/line';
+import { ResponsiveScatterPlot } from '@nivo/scatterplot';
 
 import { Box, Text } from 'components/kit_v2';
 
-function NivoLineChartVizElement(props: any) {
+const CustomNodeComponent = ({
+  node,
+  blendMode,
+  onMouseEnter,
+  onMouseMove,
+  onMouseLeave,
+  onClick,
+}: any) => {
+  return (
+    <g transform={`translate(${node.x},${node.y})`}>
+      <circle
+        r={node.size / 2}
+        fill={node.color}
+        style={{ mixBlendMode: blendMode }}
+        onMouseEnter={(event) => onMouseEnter?.(node, event)}
+        onMouseMove={(event) => onMouseMove?.(node, event)}
+        onMouseLeave={(event) => onMouseLeave?.(node, event)}
+        onClick={(event) => onClick?.(node, event)}
+      />
+    </g>
+  );
+};
+
+function ScatterPlotVizElement(props: any) {
   const modifyData = React.useMemo(() => {
     let maxPointsCount = 0;
     const data = props.data.map((item: any) => {
@@ -28,19 +51,28 @@ function NivoLineChartVizElement(props: any) {
     };
   }, [props.data]);
 
+  console.log(modifyData);
+
   return (
     <div className='VizComponentContainer'>
-      <ResponsiveLine
+      <ResponsiveScatterPlot
         data={modifyData.data}
-        enablePoints={modifyData.maxPointsCount < 100}
-        lineWidth={1}
-        colors={(d) => d.color}
+        layers={[
+          'grid',
+          'axes',
+          'markers',
+          'mesh',
+          'legends',
+          'annotations',
+          'nodes',
+        ]}
         margin={{ top: 50, right: 90, bottom: 50, left: 60 }}
-        enableSlices='x'
-        sliceTooltip={({ slice }) => {
+        xScale={{ type: 'linear' }}
+        yScale={{ type: 'linear' }}
+        tooltip={({ node }) => {
           return (
             <Box
-              key={slice.x}
+              key={node.id}
               css={{
                 background: 'white',
                 br: '$3',
@@ -49,33 +81,30 @@ function NivoLineChartVizElement(props: any) {
               }}
             >
               <Text weight='$4' as='strong'>
-                x: {slice.id}
+                {node.serieId}
               </Text>
-              {slice.points.map((point) => (
-                <Box
-                  key={point.id}
-                  css={{
-                    padding: '3px 0',
-                  }}
-                >
-                  <Text css={{ mr: '$5' }} color={point.serieColor}>
-                    {point.serieId}:
-                  </Text>
-                  <Text>{point.data.y}</Text>
-                </Box>
-              ))}
+              <Box
+                css={{
+                  padding: '3px 0',
+                }}
+              >
+                <Text css={{ mr: '$5' }}>x:</Text>
+                <Text color={node.color}>{node.x}</Text>
+              </Box>
+              <Box
+                css={{
+                  padding: '3px 0',
+                }}
+              >
+                <Text css={{ mr: '$5' }}>y:</Text>
+                <Text color={node.color}>{node.y}</Text>
+              </Box>
             </Box>
           );
         }}
-        xScale={{
-          type: 'linear',
-          reverse: false,
-        }}
-        yScale={{
-          type: 'linear',
-          reverse: false,
-        }}
-        enableCrosshair={true}
+        nodeComponent={CustomNodeComponent}
+        blendMode='color'
+        nodeSize={8}
         axisTop={null}
         axisRight={null}
         axisBottom={{
@@ -92,10 +121,6 @@ function NivoLineChartVizElement(props: any) {
           legendOffset: -55,
           legendPosition: 'middle',
         }}
-        pointSize={4}
-        pointBorderWidth={1}
-        pointLabelYOffset={-12}
-        useMesh={true}
         legends={[
           {
             anchor: 'top-right',
@@ -127,4 +152,4 @@ function NivoLineChartVizElement(props: any) {
   );
 }
 
-export default React.memo(NivoLineChartVizElement);
+export default ScatterPlotVizElement;

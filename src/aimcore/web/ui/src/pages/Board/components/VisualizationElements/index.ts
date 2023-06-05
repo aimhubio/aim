@@ -14,6 +14,13 @@ const NivoLineChartVizElement = React.lazy(
     ),
 );
 
+const ScatterPlotVizElement = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "ScatterPlot" */ './ScatterPlotVizElement'
+    ),
+);
+
 const BarChartVizElement = React.lazy(
   () =>
     import(
@@ -226,7 +233,8 @@ export type VizElementKey =
   | 'Board'
   | 'BoardLink'
   | 'BarChart'
-  | 'NivoLineChart';
+  | 'NivoLineChart'
+  | 'ScatterPlot';
 
 const VizElementsMap: Record<VizElementKey, React.FunctionComponent<any>> = {
   // input elements
@@ -261,6 +269,7 @@ const VizElementsMap: Record<VizElementKey, React.FunctionComponent<any>> = {
   Images: ImagesVizElement,
   Texts: TextsVizElement,
   BarChart: BarChartVizElement,
+  ScatterPlot: ScatterPlotVizElement,
 
   // Aim high level components
   RunMessages: RunMessagesVizElement,

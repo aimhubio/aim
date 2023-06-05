@@ -569,6 +569,73 @@ class NivoLineChart(AimSequenceComponent):
                 })
 
 
+class ScatterPlot(AimSequenceComponent):
+    def __init__(self, data, x, y, color=[], stroke_style=[], options={}, key=None, block=None):
+        component_type = "ScatterPlot"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type, block)
+
+        color_map, color_data = group("color", data, color, component_key)
+        stroke_map, stroke_data = group(
+            "stroke_style", data, stroke_style, component_key)
+        lines = []
+        for i, item in enumerate(data):
+            color_val = apply_group_value_pattern(
+                color_map[color_data[i]["color"]]["order"], colors
+            )
+            stroke_val = apply_group_value_pattern(
+                stroke_map[stroke_data[i]["stroke_style"]
+                           ]["order"], stroke_styles
+            )
+
+            line = dict(item)
+            line["key"] = i
+            line["data"] = {"xValues": find(item, x), "yValues": find(item, y)}
+            line["color"] = color_val
+            line["dasharray"] = stroke_val
+
+            lines.append(line)
+
+        self.data = lines
+        self.options = options
+        self.callbacks = {
+            "on_active_point_change": self.on_active_point_change
+        }
+
+        self.render()
+
+    @property
+    def active_line(self):
+        return self.state["active_line"] if "active_line" in self.state else None
+
+    @property
+    def focused_line(self):
+        return self.state["focused_line"] if "focused_line" in self.state else None
+
+    @property
+    def active_point(self):
+        return self.state["active_point"] if "active_point" in self.state else None
+
+    @property
+    def focused_point(self):
+        return self.state["focused_point"] if "focused_point" in self.state else None
+
+    async def on_active_point_change(self, point, is_active):
+        if point is not None:
+            item = self.data[point.key]
+
+            if is_active:
+                self.set_state({
+                    "focused_line": item,
+                    "focused_point": point,
+                })
+            else:
+                self.set_state({
+                    "active_line": item,
+                    "active_point": point,
+                })
+
+
 class ImagesList(AimSequenceComponent):
     def __init__(self, data, key=None, block=None):
         component_type = "Images"
@@ -1442,6 +1509,10 @@ class UI:
     def bar_chart(self, *args, **kwargs):
         bar_chart = BarChart(*args, **kwargs, block=self.block_context)
         return bar_chart
+
+    def scatter_plot(self, *args, **kwargs):
+        scatter_plot = ScatterPlot(*args, **kwargs, block=self.block_context)
+        return scatter_plot
 
     def images(self, *args, **kwargs):
         images = ImagesList(*args, **kwargs, block=self.block_context)
