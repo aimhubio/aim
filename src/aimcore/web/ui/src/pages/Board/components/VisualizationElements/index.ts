@@ -6,6 +6,28 @@ const LineChartVizElement = React.lazy(
       /* webpackPrefetch: true, webpackChunkName: "LineChart" */ './LineChartVizElement'
     ),
 );
+
+const NivoLineChartVizElement = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "NivoLineChart" */ './NivoLineChartVizElement'
+    ),
+);
+
+const ScatterPlotVizElement = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "ScatterPlot" */ './ScatterPlotVizElement'
+    ),
+);
+
+const BarChartVizElement = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "BarChart" */ './BarChartVizElement'
+    ),
+);
+
 const DataFrameVizElement = React.lazy(
   () =>
     import(
@@ -62,6 +84,14 @@ const TextVizElement = React.lazy(
       /* webpackPrefetch: true, webpackChunkName: "Typography" */ './TextVizElement'
     ),
 );
+
+const CodeVizElement = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "Code" */ './CodeVizElement'
+    ),
+);
+
 const SelectVizElement = React.lazy(
   () =>
     import(
@@ -201,6 +231,7 @@ export type VizElementKey =
   | 'Button'
   | 'Switch'
   | 'TextArea'
+  | 'Code'
   | 'Radio'
   | 'Checkbox'
   | 'ToggleButton'
@@ -209,7 +240,10 @@ export type VizElementKey =
   | 'SubHeader'
   | 'Table'
   | 'Board'
-  | 'BoardLink';
+  | 'BoardLink'
+  | 'BarChart'
+  | 'NivoLineChart'
+  | 'ScatterPlot';
 
 const VizElementsMap: Record<VizElementKey, React.FunctionComponent<any>> = {
   // input elements
@@ -235,13 +269,17 @@ const VizElementsMap: Record<VizElementKey, React.FunctionComponent<any>> = {
   Link: LinkVizElement,
   Header: TextVizElement,
   SubHeader: TextVizElement,
+  Code: CodeVizElement,
 
   // Aim sequence viz components
   LineChart: LineChartVizElement,
+  NivoLineChart: NivoLineChartVizElement,
   Figures: FiguresVizElement,
   Audios: AudiosVizElement,
   Images: ImagesVizElement,
   Texts: TextsVizElement,
+  BarChart: BarChartVizElement,
+  ScatterPlot: ScatterPlotVizElement,
 
   // Aim high level components
   RunMessages: RunMessagesVizElement,

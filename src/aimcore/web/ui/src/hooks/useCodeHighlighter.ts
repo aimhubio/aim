@@ -14,17 +14,17 @@ function useCodeHighlighter(language: string = 'python') {
     }, []);
 
   React.useEffect(() => {
-    monacoConfig.theme.config.colors = {
-      ...monacoConfig.theme.config.colors,
-      'editor.background': '#f2f3f4',
-    };
     if (monaco && preRef.current) {
-      monaco.editor.colorizeElement(preRef.current, { theme: language });
+      monacoConfig.theme.config.colors = {
+        ...monacoConfig.theme.config.colors,
+        'editor.background': '#f2f3f4',
+      };
       monaco.editor.defineTheme(
         monacoConfig.theme.name,
         monacoConfig.theme.config,
       );
       monaco.editor.setTheme(monacoConfig.theme.name);
+      monaco.editor.colorizeElement(preRef.current, { theme: language });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [monaco]);
