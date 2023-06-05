@@ -3,7 +3,7 @@ from fastapi import HTTPException
 
 from typing import Optional, Iterable, Dict, List, Iterator, TYPE_CHECKING
 from aim._sdk.uri_service import URIService
-from aim._core.storage.encoding import encode_path, decode_path
+
 
 from aimcore.web.api.runs.pydantic_models import QuerySyntaxErrorOut
 from aimcore.web.api.utils import checked_query, collect_streamable_data, get_project_repo, \
@@ -19,37 +19,20 @@ if TYPE_CHECKING:
     from aim._sdk.repo import Repo
 
 
-def _process_values(repo: 'Repo', values_list: list, steps_list: list, sequence: Sequence) -> list:
-    # TODO V4: Move blobs uri handling to dump
-    from aim._sdk.uri_service import URIService
-    uri_service = URIService(repo)
-
+def _process_values(repo: 'Repo', values_list: list) -> list:
     processed_values = []
-    for step, val in zip(steps_list, values_list):
+    for val in values_list:
         if isinstance(val, list):
             processed_val = []
-            for idx in range(len(val)):
-                nested_val = val[idx]
+            for nested_val in val:
                 try:
-                    processed_nested_val = nested_val.dump()
-                    if not nested_val.RESOLVE_BLOBS:
-                        khash_view = sequence._data.reservoir().container
-                        khash_step = decode_path(khash_view.to_khash(encode_path(step)))
-                        additional_path = (*khash_step, 'val', idx, 'data')
-                        resource_path = uri_service.generate_resource_path(sequence._data.container, additional_path)
-                        processed_nested_val['blobs'] = {'data': uri_service.generate_uri(resource_path)}
+                    processed_nested_val = nested_val.dump(repo)
                 except AttributeError:
                     processed_nested_val = nested_val
                 processed_val.append(processed_nested_val)
         else:
             try:
-                processed_val = val.dump()
-                if not val.RESOLVE_BLOBS:
-                    khash_view = sequence._data.reservoir().container
-                    khash_step = decode_path(encode_path(khash_view.to_khash(step)))
-                    additional_path = (*khash_step, 'val', 'data')
-                    resource_path = uri_service.generate_resource_path(sequence._data.container, additional_path)
-                    processed_val['blobs'] = {'data': uri_service.generate_uri(resource_path)}
+                processed_val = val.dump(repo)
             except AttributeError:
                 processed_val = val
         processed_values.append(processed_val)
@@ -73,16 +56,15 @@ def _sequence_data(repo: 'Repo',
         'axis': {}
     }
     if p is None and start is None and stop is None:
-        steps_list = list(sequence.steps())
-        data['steps'] = steps_list
-        data['values'] = _process_values(repo, list(sequence.values()), steps_list, sequence)
+        data['steps'] = list(sequence.steps())
+        data['values'] = _process_values(repo, list(sequence.values()))
         for axis_name in sequence.axis_names:
             data['axis'][axis_name] = list(sequence.axis(axis_name))
     else:
         steps, value_dicts = list(zip(*sequence[start:stop].sample(p)))
         value_lists = {k: [d[k] for d in value_dicts] for k in value_dicts[0]}
         data['steps'] = steps
-        data['values'] = _process_values(repo, value_lists.pop('val'), steps, sequence)
+        data['values'] = _process_values(repo, value_lists.pop('val'))
         data['axis'] = value_lists
     return data
 

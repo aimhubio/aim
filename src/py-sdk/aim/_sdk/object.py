@@ -1,5 +1,6 @@
 from aim._core.storage.object import CustomObject as AimStorageObject
 from aim._sdk.blob import BLOB
+from aim._sdk.uri_service import URIService
 
 
 @AimStorageObject.alias('aim.Object')
@@ -31,15 +32,23 @@ class Object(AimStorageObject):
 
         return decorator
 
-    def dump(self):
+    def dump(self, repo, resolve_blobs=None):
         # TODO: V4 handle nested blob values
+        uri_service = URIService(repo)
         data = self.storage[...]
+
+        if resolve_blobs is None:
+            resolve_blobs = self.RESOLVE_BLOBS
 
         keys_list = list(data.keys())
         for key in keys_list:
             if isinstance(data[key], BLOB):
-                if self.RESOLVE_BLOBS:
+                if resolve_blobs:
                     data[key] = data[key].load()
+                else:
+                    resource_path = uri_service.generate_resource_path(self.storage.container, key)
+                    data['BLOBS'][key] = uri_service.generate_uri(resource_path)
+                    del data[key]
 
         return data
 
