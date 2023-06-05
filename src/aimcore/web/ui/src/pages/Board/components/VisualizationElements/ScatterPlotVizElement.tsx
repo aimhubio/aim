@@ -33,8 +33,8 @@ function ScatterPlotVizElement(props: any) {
     let commonProps: any = {
       data: parsedData.data,
       margin: { top: 50, right: 90, bottom: 50, left: 60 },
-      xScale: { type: 'linear' },
-      yScale: { type: 'linear' },
+      xScale: { type: 'linear', reverse: false },
+      yScale: { type: 'linear', reverse: false },
       colors: (d: any) => {
         let point = parsedData.data.find((item: any) => item.id === d.serieId);
         return point?.color ?? '#000';

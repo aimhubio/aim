@@ -16,17 +16,22 @@ const BarChart = (props: any) => {
       };
     });
   }, [props.data]);
+
   return (
     <div className='VizComponentContainer'>
       <ResponsiveBar
         data={parsedData}
         keys={keys}
-        // indexBy={props.options.x}
-        margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
+        margin={{ top: 50, right: 90, bottom: 50, left: 60 }}
         padding={0.3}
-        valueScale={{ type: 'linear' }}
+        valueScale={{ type: 'linear', reverse: false }}
         indexScale={{ type: 'band', round: true }}
-        colors={(d: any) => d.data.color}
+        colors={(d: any) => {
+          let bar = parsedData.find((item: any) => item.id === d.id);
+          return bar?.color ?? '#000';
+        }}
+        groupMode='stacked'
+        colorBy='id'
         axisTop={null}
         axisRight={null}
         axisBottom={{
@@ -63,6 +68,7 @@ const BarChart = (props: any) => {
               {
                 on: 'hover',
                 style: {
+                  itemBackground: 'rgba(0, 0, 0, .03)',
                   itemOpacity: 1,
                 },
               },

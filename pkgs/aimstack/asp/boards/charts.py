@@ -6,7 +6,7 @@ def generate_data(num_items, values_length):
     for _ in range(num_items):
         x_values = [i for i in range(values_length)]
         y_values = [random.randint(1, 10) for _ in range(values_length)]
-        data.append({'x': x_values, 'y': y_values, 'name': 'Num: ' + str(_)})
+        data.append({'x': x_values, 'y': y_values, 'name': 'Num_' + str(_)})
     return data
 
 
