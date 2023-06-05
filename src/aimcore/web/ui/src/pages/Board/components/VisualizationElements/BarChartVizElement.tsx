@@ -24,7 +24,6 @@ const BarChart = (props: any) => {
         // indexBy={props.options.x}
         margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
         padding={0.3}
-        groupMode='stacked'
         valueScale={{ type: 'linear' }}
         indexScale={{ type: 'band', round: true }}
         colors={(d: any) => d.data.color}
@@ -60,7 +59,6 @@ const BarChart = (props: any) => {
             itemDirection: 'left-to-right',
             itemOpacity: 0.75,
             symbolSize: 8,
-            symbolShape: 'circle',
             effects: [
               {
                 on: 'hover',

@@ -100,7 +100,6 @@ function NivoLineChartVizElement(props: any) {
           itemHeight: 20,
           itemOpacity: 0.75,
           symbolSize: 8,
-          symbolShape: 'circle',
           symbolBorderColor: 'rgba(0, 0, 0, .5)',
           effects: [
             {
@@ -117,15 +116,6 @@ function NivoLineChartVizElement(props: any) {
     if (parsedData.pointsCount > 600) {
       return <ResponsiveLineCanvas {...commonProps} />;
     }
-    commonProps['layers'] = [
-      'grid',
-      'axes',
-      'markers',
-      'mesh',
-      'legends',
-      'annotations',
-      'nodes',
-    ];
     return <ResponsiveLine {...commonProps} />;
   }, [parsedData]);
 
