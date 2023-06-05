@@ -36,7 +36,7 @@ import runsService from 'services/api/runs/runsService';
 import createMetricModel from 'services/models/metrics/metricModel';
 import { createRunModel } from 'services/models/metrics/runModel';
 import createModel from 'services/models/model';
-import LiveUpdateService from 'services/live-update/examples/LiveUpdateBridge.example';
+// import LiveUpdateService from 'services/live-update/examples/LiveUpdateBridge.example';
 import projectsService from 'services/api/projects/projectsService';
 
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
@@ -512,7 +512,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       call: (exceptionHandler: (detail: any) => void) => Promise<any>;
       abort: () => void;
     };
-    let liveUpdateInstance: LiveUpdateService | null;
+    // let liveUpdateInstance: LiveUpdateService | null;
 
     function initialize(appId: string): void {
       model.init();
@@ -563,13 +563,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
         });
       const liveUpdateState = model.getState()?.config?.liveUpdate;
 
-      if (liveUpdateState?.enabled) {
-        liveUpdateInstance = new LiveUpdateService(
-          appName,
-          updateData,
-          liveUpdateState.delay,
-        );
-      }
+      // if (liveUpdateState?.enabled) {
+      //   liveUpdateInstance = new LiveUpdateService(
+      //     appName,
+      //     updateData,
+      //     liveUpdateState.delay,
+      //   );
+      // }
     }
 
     function updateData(newData: ISequence<IMetricTrace>[]): void {
@@ -633,7 +633,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 ? {}
                 : model.getState()?.selectedRows,
             });
-            liveUpdateInstance?.stop().then();
+            // liveUpdateInstance?.stop().then();
             try {
               const stream = await metricsRequestRef.call((detail) => {
                 exceptionHandler({ detail, model });
@@ -656,11 +656,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
               }
             }
 
-            liveUpdateInstance?.start({
-              q: query,
-              p: configData?.chart?.densityType,
-              ...(metric && { x_axis: metric }),
-            });
+            // liveUpdateInstance?.start({
+            //   q: query,
+            //   p: configData?.chart?.densityType,
+            //   ...(metric && { x_axis: metric }),
+            // });
           }
         },
         abort: metricsRequestRef.abort,
@@ -1794,19 +1794,19 @@ function createAppModel(appConfig: IAppInitialConfig) {
       let query = getQueryStringFromSelect(configData?.select);
 
       if (!liveUpdateConfig?.enabled && config.enabled && query !== '()') {
-        liveUpdateInstance = new LiveUpdateService(
-          appName,
-          updateData,
-          config.delay || liveUpdateConfig?.delay,
-        );
-        liveUpdateInstance?.start({
-          p: configData?.chart?.densityType,
-          q: query,
-          ...(metric && { x_axis: metric }),
-        });
+        // liveUpdateInstance = new LiveUpdateService(
+        //   appName,
+        //   updateData,
+        //   config.delay || liveUpdateConfig?.delay,
+        // );
+        // liveUpdateInstance?.start({
+        //   p: configData?.chart?.densityType,
+        //   q: query,
+        //   ...(metric && { x_axis: metric }),
+        // });
       } else {
-        liveUpdateInstance?.clear();
-        liveUpdateInstance = null;
+        // liveUpdateInstance?.clear();
+        // liveUpdateInstance = null;
       }
 
       const newLiveUpdateConfig = {
@@ -1829,8 +1829,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
     }
 
     function destroy(): void {
-      liveUpdateInstance?.clear();
-      liveUpdateInstance = null; //@TODO check is this need or not
+      // liveUpdateInstance?.clear();
+      // liveUpdateInstance = null; //@TODO check is this need or not
     }
 
     function archiveRuns(ids: string[], archived: boolean): IApiRequest<void> {
@@ -2192,7 +2192,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         call: (exceptionHandler: (detail: any) => void) => Promise<any>;
         abort: () => void;
       };
-      let liveUpdateInstance: LiveUpdateService | null;
+      // let liveUpdateInstance: LiveUpdateService | null;
       let updateTableTimeoutId: number;
 
       function initialize(appId: string = '') {
@@ -2229,13 +2229,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
               },
             });
           });
-        if (liveUpdateState?.enabled) {
-          liveUpdateInstance = new LiveUpdateService(
-            appName,
-            updateData,
-            liveUpdateState.delay,
-          );
-        }
+        // if (liveUpdateState?.enabled) {
+        //   liveUpdateInstance = new LiveUpdateService(
+        //     appName,
+        //     updateData,
+        //     liveUpdateState.delay,
+        //   );
+        // }
         try {
           getRunsData().call((detail) => {
             exceptionHandler({ detail, model });
@@ -2292,7 +2292,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const query = configData?.select?.query || '';
         const pagination = configData?.pagination;
 
-        liveUpdateInstance?.stop().then();
+        // liveUpdateInstance?.stop().then();
 
         runsRequestRef = runsService.getRunsData(query, 45, pagination?.offset);
         let limit = pagination.limit;
@@ -2388,10 +2388,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
             }
             const rowDataLength = model.getState()?.tableData?.length || 0;
             limit = rowDataLength >= 45 ? rowDataLength : 45;
-            liveUpdateInstance?.start({
-              q: query,
-              limit,
-            });
+            // liveUpdateInstance?.start({
+            //   q: query,
+            //   limit,
+            // });
           },
           abort: runsRequestRef.abort,
         };
@@ -3028,8 +3028,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
       function destroy(): void {
         runsRequestRef.abort();
-        liveUpdateInstance?.clear();
-        liveUpdateInstance = null; //@TODO check is this need or not
+        // liveUpdateInstance?.clear();
+        // liveUpdateInstance = null; //@TODO check is this need or not
         model.setState({
           ...model.getState(),
           selectFormData: {
@@ -3051,18 +3051,18 @@ function createAppModel(appConfig: IAppInitialConfig) {
           const query = configData?.select?.query || '';
           const rowDataLength = model.getState()?.tableData?.length || 0;
           const limit = rowDataLength >= 45 ? rowDataLength : 45;
-          liveUpdateInstance = new LiveUpdateService(
-            appName,
-            updateData,
-            config?.delay || liveUpdateConfig?.delay,
-          );
-          liveUpdateInstance.start({
-            q: query,
-            limit,
-          });
+          // liveUpdateInstance = new LiveUpdateService(
+          //   appName,
+          //   updateData,
+          //   config?.delay || liveUpdateConfig?.delay,
+          // );
+          // liveUpdateInstance.start({
+          //   q: query,
+          //   limit,
+          // });
         } else {
-          liveUpdateInstance?.clear();
-          liveUpdateInstance = null;
+          // liveUpdateInstance?.clear();
+          // liveUpdateInstance = null;
         }
         const newLiveUpdateConfig = {
           ...liveUpdateConfig,
@@ -3294,7 +3294,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         call: (exceptionHandler: (detail: any) => void) => Promise<any>;
         abort: () => void;
       };
-      let liveUpdateInstance: LiveUpdateService | null;
+      // let liveUpdateInstance: LiveUpdateService | null;
 
       function initialize(appId: string): void {
         model.init();
@@ -3332,11 +3332,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const liveUpdateState = model.getState()?.config?.liveUpdate;
 
         if (liveUpdateState?.enabled) {
-          liveUpdateInstance = new LiveUpdateService(
-            appName,
-            updateData,
-            liveUpdateState.delay,
-          );
+          // liveUpdateInstance = new LiveUpdateService(
+          //   appName,
+          //   updateData,
+          //   liveUpdateState.delay,
+          // );
         }
       }
 
@@ -3391,7 +3391,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   ? {}
                   : model.getState()?.selectedRows,
               });
-              liveUpdateInstance?.stop().then();
+              // liveUpdateInstance?.stop().then();
               try {
                 const stream = await runsRequestRef.call((detail) => {
                   exceptionHandler({ detail, model });
@@ -3412,9 +3412,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   console.log('Unhandled error: ', ex);
                 }
               }
-              liveUpdateInstance?.start({
-                q: configData?.select?.query,
-              });
+              // liveUpdateInstance?.start({
+              //   q: configData?.select?.query,
+              // });
             }
           },
           abort: runsRequestRef.abort,
@@ -4496,17 +4496,17 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const query = configData.select?.query;
         const liveUpdateConfig = configData.liveUpdate;
         if (!liveUpdateConfig?.enabled && config.enabled && query !== '()') {
-          liveUpdateInstance = new LiveUpdateService(
-            appName,
-            updateData,
-            config?.delay || liveUpdateConfig?.delay,
-          );
-          liveUpdateInstance?.start({
-            q: query,
-          });
+          // liveUpdateInstance = new LiveUpdateService(
+          //   appName,
+          //   updateData,
+          //   config?.delay || liveUpdateConfig?.delay,
+          // );
+          // liveUpdateInstance?.start({
+          //   q: query,
+          // });
         } else {
-          liveUpdateInstance?.clear();
-          liveUpdateInstance = null;
+          // liveUpdateInstance?.clear();
+          // liveUpdateInstance = null;
         }
 
         const newLiveUpdateConfig = {
@@ -4530,8 +4530,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
       }
 
       function destroy(): void {
-        liveUpdateInstance?.clear();
-        liveUpdateInstance = null; //@TODO check is this need or not
+        // liveUpdateInstance?.clear();
+        // liveUpdateInstance = null; //@TODO check is this need or not
       }
 
       function archiveRuns(
@@ -4883,7 +4883,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         call: (exceptionHandler: (detail: any) => void) => Promise<any>;
         abort: () => void;
       };
-      let liveUpdateInstance: LiveUpdateService | null;
+      // let liveUpdateInstance: LiveUpdateService | null;
 
       function initialize(appId: string): void {
         model.init();
@@ -4922,11 +4922,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
           });
 
         if (liveUpdateState?.enabled) {
-          liveUpdateInstance = new LiveUpdateService(
-            appName,
-            updateData,
-            liveUpdateState.delay,
-          );
+          // liveUpdateInstance = new LiveUpdateService(
+          //   appName,
+          //   updateData,
+          //   liveUpdateState.delay,
+          // );
         }
       }
 
@@ -5759,7 +5759,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   ? {}
                   : model.getState()?.selectedRows,
               });
-              liveUpdateInstance?.stop().then();
+              // liveUpdateInstance?.stop().then();
               try {
                 const stream = await runsRequestRef.call((detail) => {
                   exceptionHandler({ detail, model });
@@ -5772,9 +5772,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 if (shouldUrlUpdate) {
                   updateURL({ configData, appName });
                 }
-                liveUpdateInstance?.start({
-                  q: configData?.select?.query,
-                });
+                // liveUpdateInstance?.start({
+                //   q: configData?.select?.query,
+                // });
                 //Changed the layout/styles of the experiments and tags tables to look more like lists|| Extend the contributions section (add activity feed under the contributions)
               } catch (ex: Error | any) {
                 if (ex.name === 'AbortError') {
@@ -6045,17 +6045,17 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const query = configData.select?.query;
         const liveUpdateConfig = configData.liveUpdate;
         if (!liveUpdateConfig?.enabled && config.enabled && query !== '()') {
-          liveUpdateInstance = new LiveUpdateService(
-            appName,
-            updateData,
-            config?.delay || liveUpdateConfig?.delay,
-          );
-          liveUpdateInstance?.start({
-            q: query,
-          });
+          // liveUpdateInstance = new LiveUpdateService(
+          //   appName,
+          //   updateData,
+          //   config?.delay || liveUpdateConfig?.delay,
+          // );
+          // liveUpdateInstance?.start({
+          //   q: query,
+          // });
         } else {
-          liveUpdateInstance?.clear();
-          liveUpdateInstance = null;
+          // liveUpdateInstance?.clear();
+          // liveUpdateInstance = null;
         }
 
         const newLiveUpdateConfig = {
@@ -6079,8 +6079,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
       }
 
       function destroy(): void {
-        liveUpdateInstance?.clear();
-        liveUpdateInstance = null; //@TODO check is this need or not
+        // liveUpdateInstance?.clear();
+        // liveUpdateInstance = null; //@TODO check is this need or not
       }
 
       function archiveRuns(

@@ -1,12 +1,14 @@
 import type { FunctionComponent } from 'react';
 
+import { isDEVModeOn } from 'config/config';
+
 import renderer from 'modules/BaseExplorer';
 import TextBox from 'modules/BaseExplorer/components/TextBox/TextBox';
 import { VisualizerLegends } from 'modules/BaseExplorer/components/Widgets';
 
-import { AimObjectDepths, SequenceType } from 'types/core/enums';
+import { SequenceType } from 'types/core/enums';
 
-import { getTextDefaultConfig } from './textConfig';
+import { getTextDefaultConfig } from './config';
 
 const defaultConfig = getTextDefaultConfig();
 
@@ -16,9 +18,6 @@ const PromptsExplorer = renderer(
     sequenceType: SequenceType.Text,
     basePath: 'prompts',
     persist: true,
-    adapter: {
-      objectDepth: AimObjectDepths.Index,
-    },
     groupings: defaultConfig.groupings,
     visualizations: {
       vis1: {
@@ -38,7 +37,7 @@ const PromptsExplorer = renderer(
     },
     getStaticContent: defaultConfig.getStaticContent,
   },
-  __DEV__,
+  isDEVModeOn,
 );
 
 export default PromptsExplorer;

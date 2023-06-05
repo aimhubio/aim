@@ -1,3 +1,5 @@
+import { isDEVModeOn } from 'config/config';
+
 import renderer from 'modules/BaseExplorer';
 import Metrics from 'modules/BaseExplorer/components/Metrics/Metrics';
 import { PersistenceTypesEnum } from 'modules/core/engine/types';
@@ -6,7 +8,7 @@ import {
   VisualizerLegends,
 } from 'modules/BaseExplorer/components/Widgets';
 
-import { AimObjectDepths, SequenceType } from 'types/core/enums';
+import { SequenceType } from 'types/core/enums';
 
 import { getMetricsDefaultConfig } from './config';
 import TooltipContentHeader from './TooltipContentHeader';
@@ -18,9 +20,6 @@ export const metricsExplorerConfig = {
   sequenceType: SequenceType.Metric,
   basePath: 'metrics_v2',
   persist: true,
-  adapter: {
-    objectDepth: AimObjectDepths.Sequence,
-  },
   groupings: defaultConfig.groupings,
   visualizations: {
     vis1: {
@@ -70,6 +69,6 @@ export const metricsExplorerConfig = {
   getStaticContent: defaultConfig.getStaticContent,
 };
 
-const MetricsExplorer = renderer(metricsExplorerConfig, __DEV__);
+const MetricsExplorer = renderer(metricsExplorerConfig, isDEVModeOn);
 
 export default MetricsExplorer;

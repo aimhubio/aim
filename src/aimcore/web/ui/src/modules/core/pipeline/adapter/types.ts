@@ -1,4 +1,3 @@
-import { AimObjectDepths } from 'types/core/enums';
 import {
   IndexRanges,
   RecordRanges,
@@ -7,10 +6,6 @@ import {
 import { Context } from 'types/core/shared';
 
 export type ProcessInterceptor = (...arg: any) => any;
-
-export type DepthInterceptors = {
-  [key in AimObjectDepths]: ProcessInterceptor;
-};
 
 export interface IQueryableData {
   ranges?: RecordRanges & IndexRanges;
@@ -27,7 +22,7 @@ export interface ProcessedData {
 }
 
 export type ObjectHashCreator = {
-  runHash: string;
+  hash: string;
   name?: string;
   context?: Context;
   step?: number;

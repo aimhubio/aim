@@ -1,7 +1,9 @@
+import { isDEVModeOn } from 'config/config';
+
 import renderer from 'modules/BaseExplorer';
 import AudioBox from 'modules/BaseExplorer/components/AudioBox';
 
-import { AimObjectDepths, SequenceType } from 'types/core/enums';
+import { SequenceType } from 'types/core/enums';
 
 import { getAudiosDefaultConfig } from './config';
 
@@ -12,9 +14,6 @@ export const audiosExplorerConfig = {
   sequenceType: SequenceType.Audio,
   basePath: 'audios',
   persist: true,
-  adapter: {
-    objectDepth: AimObjectDepths.Index,
-  },
   groupings: defaultConfig.groupings,
   visualizations: {
     vis1: {
@@ -29,6 +28,6 @@ export const audiosExplorerConfig = {
   getStaticContent: defaultConfig.getStaticContent,
 };
 
-const AudiosExplorer = renderer(audiosExplorerConfig, __DEV__);
+const AudiosExplorer = renderer(audiosExplorerConfig, isDEVModeOn);
 
 export default AudiosExplorer;

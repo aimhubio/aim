@@ -6,5 +6,11 @@ module.exports = {
     '@storybook/addon-interactions',
     '@storybook/preset-create-react-app',
   ],
-  framework: '@storybook/react',
+  framework: {
+    name: '@storybook/react-webpack5',
+    options: {},
+  },
+  docs: {
+    autodocs: false,
+  },
 };

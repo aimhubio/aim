@@ -55,15 +55,9 @@ class ContainerAutoClean(AutoClean['Container']):
         self._tree[KeyNames.INFO_PREFIX, 'end_time'] = utc_timestamp()
 
     def _wait_for_empty_queue(self):
-        queue = self.storage.task_queue(self.hash)
+        queue = self.storage.task_queue()
         if queue:
             queue.wait_for_finish()
-
-    def _stop_queue(self):
-        queue = self.storage.task_queue(self.hash)
-        if queue:
-            queue.stop()
-            self.storage.remove_queue(self.hash)
 
     def _close(self) -> None:
         """
@@ -79,7 +73,6 @@ class ContainerAutoClean(AutoClean['Container']):
             self._status_reporter.close()
         if self._lock:
             self._lock.release()
-        self._stop_queue()
 
 
 @type_utils.query_alias('container', 'c')

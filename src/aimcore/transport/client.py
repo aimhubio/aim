@@ -28,10 +28,9 @@ logger = logging.getLogger(__name__)
 class Client:
     _thread_local = threading.local()
 
-    # per run queues. based on run's hash
-    _queues = defaultdict(lambda: RpcQueueWithRetry(
+    _queue = RpcQueueWithRetry(
         'remote_tracker', max_queue_memory=os.getenv(AIM_CLIENT_QUEUE_MAX_MEMORY, 1024 * 1024 * 1024),
-        retry_count=DEFAULT_RETRY_COUNT, retry_interval=DEFAULT_RETRY_INTERVAL))
+        retry_count=DEFAULT_RETRY_COUNT, retry_interval=DEFAULT_RETRY_INTERVAL)
 
     def __init__(self, remote_path: str):
         # temporary workaround for M1 build
@@ -51,7 +50,7 @@ class Client:
 
         self._heartbeat_sender = HeartbeatSender(self)
         self._heartbeat_sender.start()
-        self._thread_local.atomic_instructions = None
+        self._thread_local.atomic_instructions = {}
         self._ws = None
 
     def reinitialize_resource(self, handler):
@@ -169,7 +168,7 @@ class Client:
     def release_resource(self, queue_id, resource_handler):
         endpoint = f'http://{self._tracking_endpoint}/{self.uri}/release-resource/{resource_handler}/'
         if queue_id != -1:
-            self.get_queue(queue_id).wait_for_finish()
+            self.get_queue().wait_for_finish()
 
         response = requests.get(endpoint)
         response_json = response.json()
@@ -182,14 +181,15 @@ class Client:
         args = deepcopy(args)
 
         # self._thread_local can be empty in the 'clean up' phase.
-        if getattr(self._thread_local, 'atomic_instructions', None) is not None:
-            assert is_write_only
-            self._thread_local.atomic_instructions.append((resource, method, args))
-            return
 
         if is_write_only:
             assert queue_id != -1
-            self.get_queue(queue_id).register_task(
+            if getattr(self._thread_local, 'atomic_instructions', None) is not None and \
+                    self._thread_local.atomic_instructions.get(queue_id, None) is not None:
+                self._thread_local.atomic_instructions[queue_id].append((resource, method, args))
+                return
+
+            self.get_queue().register_task(
                 self,
                 self._run_write_instructions, list(encode_tree([(resource, method, args)], strict=False)))
             return
@@ -206,7 +206,7 @@ class Client:
         }
 
         if queue_id != -1:
-            self.get_queue(queue_id).wait_for_finish()
+            self.get_queue().wait_for_finish()
 
         response = requests.post(endpoint, json=request_data, stream=True)
 
@@ -226,17 +226,17 @@ class Client:
         response_json = decode_tree(unpack_args(response))
         raise_exception(response_json)
 
-    def start_instructions_batch(self):
-        self._thread_local.atomic_instructions = []
+    def start_instructions_batch(self, hash_):
+        self._thread_local.atomic_instructions[hash_] = []
 
-    def flush_instructions_batch(self, queue_id):
-        if self._thread_local.atomic_instructions is None:
+    def flush_instructions_batch(self, hash_):
+        if self._thread_local.atomic_instructions.get(hash_) is None:
             return
 
-        self.get_queue(queue_id).register_task(
+        self.get_queue().register_task(
             self,
-            self._run_write_instructions, list(encode_tree(self._thread_local.atomic_instructions)))
-        self._thread_local.atomic_instructions = None
+            self._run_write_instructions, list(encode_tree(self._thread_local.atomic_instructions[hash_])))
+        del self._thread_local.atomic_instructions[hash_]
 
     def refresh_ws(self):
         self._ws = connect(f'ws://{self._tracking_endpoint}/{self.uri}/write-instruction/')
@@ -256,8 +256,5 @@ class Client:
     def remote_path(self):
         return self._remote_path
 
-    def get_queue(self, queue_id):
-        return self._queues[queue_id]
-
-    def remove_queue(self, queue_id):
-        del self._queues[queue_id]
+    def get_queue(self):
+        return self._queue

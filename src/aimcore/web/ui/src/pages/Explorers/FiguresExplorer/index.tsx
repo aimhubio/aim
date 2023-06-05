@@ -1,7 +1,9 @@
+import { isDEVModeOn } from 'config/config';
+
 import renderer from 'modules/BaseExplorer';
 import Figures from 'modules/BaseExplorer/components/Figures';
 
-import { AimObjectDepths, SequenceType } from 'types/core/enums';
+import { SequenceType } from 'types/core/enums';
 
 import { getFiguresDefaultConfig } from './config';
 
@@ -12,9 +14,6 @@ export const figuresExplorerConfig = {
   sequenceType: SequenceType.Figure,
   basePath: 'figures',
   persist: true,
-  adapter: {
-    objectDepth: AimObjectDepths.Step,
-  },
   groupings: defaultConfig.groupings,
   visualizations: {
     vis1: {
@@ -29,6 +28,6 @@ export const figuresExplorerConfig = {
   getStaticContent: defaultConfig.getStaticContent,
 };
 
-const FiguresExplorer = renderer(figuresExplorerConfig, __DEV__);
+const FiguresExplorer = renderer(figuresExplorerConfig, isDEVModeOn);
 
 export default FiguresExplorer;

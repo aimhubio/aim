@@ -3,7 +3,8 @@ import _ from 'lodash-es';
 import { buildObjectHash } from 'modules/core/utils/hashing';
 
 import {
-  AimObjectDepths,
+  ContainerType,
+  GetContainerName,
   GetSequenceName,
   SequenceType,
 } from 'types/core/enums';
@@ -13,190 +14,57 @@ import { GroupedSequence } from 'types/core/AimObjects/GroupedSequences';
 
 import getObjectPaths from 'utils/object/getObjectPaths';
 
-import depthInterceptors from './depthInterceptors';
 import { ObjectHashCreator, ProcessedData } from './types';
 import collectQueryableData from './collectQueryableData';
 
 export function storageDataToFlatList(
   groupedSeqs: GroupedSequence[] = [],
   sequenceType: SequenceType,
-  objectDepth: AimObjectDepths,
+  containerType: ContainerType = ContainerType.Run,
 ): ProcessedData {
-  const sequenceName = GetSequenceName(sequenceType);
+  const containerName = GetContainerName(containerType);
   const objectList: AimFlatObjectBase[] = []; // @CHECK make by hash function
+
+  let modifiers: string[] = [`${containerName}.hash`];
   let params: string[] = [];
   let sequenceInfo: string[] = [];
-  let modifiers: string[] = [
-    'run.hash',
-    'run.name',
-    'run.experiment',
-    'run.creation_time',
-    'run.end_time',
-    'run.archived',
-    'run.active',
-    'run.description',
-  ];
-  //@TODO set a good name for this var
-  let record_info: string[] = [];
-
-  const depthInterceptor = depthInterceptors[objectDepth];
+  let recordInfo: string[] = [];
 
   const queryable_data = collectQueryableData(groupedSeqs[0]);
 
-  groupedSeqs.forEach((item: GroupedSequence) => {
-    params = params.concat(getObjectPaths(item.params, 'run', '.'));
-    let collectedDataByDepth: Omit<AimFlatObjectBase, 'data'> = {};
-    let objectHashCreator: ObjectHashCreator = {
-      runHash: item.hash,
-    };
-    /** ️⬇⬇⬇ depth 0 ⬇⬇⬇ */ // Container
-    let run = {
-      // ..._.omit(item.props, ['experiment, creation_time']),
-      hash: item.hash,
-      // active: !item.props.end_time, // @TODO change to active
-      // experiment: item.props.experiment?.name,
-      // experimentId: item.props.experiment?.id,
-      ...item.params,
-    };
+  function pushToObjectList(object: AimFlatObjectBase) {
+    objectList.push(object);
+  }
 
-    // depth 0, add run data,
-    // in every depth some keys will be added to this object
-    // if it needs to stop walking for some depth, the current value of this object
-    //    will include additional keys for every depth passed before
-    collectedDataByDepth = {
-      ...collectedDataByDepth,
-      run,
-    };
-    if (objectDepth === 0) {
-      const object: AimFlatObjectBase = {
-        key: buildObjectHash(objectHashCreator),
-        ...collectedDataByDepth,
-        data: depthInterceptor(item).data,
-      };
+  function concatParams(seq_params: string[]) {
+    params = params.concat(seq_params);
+  }
 
-      // If the object depth is Container, used run hash as a unique hash for AimObject
-      // since the object is a container, it will be a unique object
-      objectList.push(object);
-      return;
-    }
-    /** ⬆⬆⬆ depth 0 ⬆⬆⬆ */
-    if (objectDepth > 0) {
-      // for readability
-      item.sequences.forEach((seq: any, seqIndex: number) => {
-        /** ⬇⬇⬇ depth 1 ⬇⬇⬇ */ // Sequence
-        const trace_context = {
-          [sequenceName]: {
-            name: seq.name,
-            context: seq.context,
-          },
-        };
+  function concatSequenceInfo(sequence_info: string[]) {
+    sequenceInfo = sequenceInfo.concat(sequence_info);
+  }
 
-        // Generating unique hash creator obj for the AimObject using sequence name, context and container hash
-        objectHashCreator = {
-          ...objectHashCreator,
-          ...trace_context[sequenceName],
-        };
+  function concatRecordInfo(record_info: string[]) {
+    recordInfo = recordInfo.concat(record_info);
+  }
 
-        let sequenceData = {
-          sequence: {
-            ...trace_context[sequenceName],
-            type: sequenceName,
-          },
-        };
+  for (const groupedSeq of groupedSeqs) {
+    concatParams(getObjectPaths(groupedSeq.params, containerName, '.'));
 
-        sequenceInfo = sequenceInfo.concat(
-          getObjectPaths(trace_context[sequenceName], sequenceName),
-        );
-
-        // depth 1, add context data
-        collectedDataByDepth = {
-          ...collectedDataByDepth,
-          ...trace_context,
-          // maybe need to create some key for contexts, to follow the structure
-          // depth0 adding run property, depth1 add "sequence" property, not spread contexts
-        };
-
-        if (objectDepth === 1) {
-          const object: AimFlatObjectBase = {
-            key: buildObjectHash(objectHashCreator),
-            ...collectedDataByDepth,
-            ...sequenceData,
-            data: depthInterceptor(seq, seqIndex).data,
-          };
-          objectList.push(object);
-          return;
-        }
-        /** ⬆⬆⬆ depth 1 ⬆⬆⬆  */
-        if (objectDepth > 1) {
-          // for readability
-          seq.values.forEach((sequence: any, stepIndex: number) => {
-            /** ⬇⬇⬇ depth 2 ⬇⬇⬇ */ // STEP
-            let record_data: Record = {
-              step: seq.values[stepIndex],
-            };
-
-            // Generating unique hash creator obj for the AimObject using sequence name, sequence context, step
-            objectHashCreator = {
-              ...objectHashCreator,
-              ...record_data,
-            };
-            if (objectDepth === 2) {
-              record_info = record_info.concat(['record.step']);
-
-              collectedDataByDepth = {
-                ...collectedDataByDepth,
-                record: record_data,
-              };
-              const object = {
-                key: buildObjectHash(objectHashCreator),
-                ...collectedDataByDepth,
-                ...sequenceData,
-                data: depthInterceptor(sequence).data,
-              };
-
-              objectList.push(object);
-              return;
-            }
-            /** ⬆⬆⬆ depth 2 ⬆⬆⬆  */
-            sequence.forEach((rec: any) => {
-              /** ⬇⬇⬇ depth 3 ⬇⬇⬇ */ // INDEX
-              record_data = {
-                ...record_data,
-                index: rec.index,
-              };
-              objectHashCreator = {
-                ...objectHashCreator,
-                index: record_data.index,
-              };
-              record_info = record_info.concat(['record.step', 'record.index']);
-              collectedDataByDepth = {
-                ...collectedDataByDepth,
-                record: record_data,
-              };
-              const object = {
-                key: buildObjectHash(objectHashCreator),
-                ...collectedDataByDepth,
-                ...sequenceData,
-                data: depthInterceptor(rec).data, // change to just blob_uri similar to Mahnerak' flat list
-              };
-
-              objectList.push(object);
-            });
-          });
-        }
-      });
-    }
-  });
+    sequencesToFlat({
+      groupedSeq,
+      sequenceType,
+      containerType,
+      pushToObjectList,
+      concatSequenceInfo,
+      concatRecordInfo,
+    });
+  }
   params = _.uniq(params).sort();
-
   sequenceInfo = _.uniq(sequenceInfo).sort();
   modifiers = _.uniq(modifiers).sort();
-  modifiers = [
-    ...modifiers,
-    ...params,
-    ..._.uniq(record_info),
-    ...sequenceInfo,
-  ];
+  recordInfo = _.uniq(recordInfo).sort();
+  modifiers = [...modifiers, ...params, ...recordInfo, ...sequenceInfo];
 
   return {
     objectList,
@@ -211,3 +79,134 @@ export function storageDataToFlatList(
 
 export * from './types';
 export default storageDataToFlatList;
+
+function sequencesToFlat({
+  groupedSeq,
+  sequenceType,
+  containerType,
+  pushToObjectList,
+  concatSequenceInfo,
+  concatRecordInfo,
+}: any) {
+  let collectedData: Omit<AimFlatObjectBase, 'data'> = {};
+
+  let hashObject: ObjectHashCreator = { hash: groupedSeq.hash };
+  let container = { hash: groupedSeq.hash, ...groupedSeq.params };
+
+  const sequenceName = GetSequenceName(sequenceType);
+  const containerName = GetContainerName(containerType);
+
+  collectedData = { ...collectedData, [containerName]: container };
+
+  for (let seqIndex = 0; seqIndex < groupedSeq.sequences.length; seqIndex++) {
+    const sequence = groupedSeq.sequences[seqIndex];
+    const context = {
+      [sequenceName]: {
+        name: sequence.name,
+        context: sequence.context,
+      },
+    };
+
+    // Generating unique hash creator obj for the AimObject using sequence name, context and container hash
+    hashObject = {
+      ...hashObject,
+      ...context[sequenceName],
+    };
+
+    let sequenceData = {
+      sequence: {
+        ...context[sequenceName],
+        type: sequenceName,
+      },
+    };
+
+    concatSequenceInfo(getObjectPaths(context[sequenceName], sequenceName));
+
+    collectedData = {
+      ...collectedData,
+      ...context,
+      // maybe need to create some key for contexts, to follow the structure
+      // depth0 adding run property, depth1 add "sequence" property, not spread contexts
+    };
+
+    if (sequenceType === SequenceType.Metric) {
+      pushToObjectList({
+        key: buildObjectHash(hashObject),
+        ...collectedData,
+        ...sequenceData,
+        data: sequence,
+      });
+    } else {
+      valuesToFlat({
+        sequence,
+        sequenceData,
+        collectedData,
+        hashObject,
+        pushToObjectList,
+        concatRecordInfo,
+      });
+    }
+  }
+}
+
+function valuesToFlat({
+  sequence,
+  sequenceData,
+  collectedData,
+  hashObject,
+  pushToObjectList,
+  concatRecordInfo,
+}: any) {
+  for (const stepIndex in sequence.steps) {
+    const step = sequence.steps[stepIndex];
+    const value = sequence.values[stepIndex];
+
+    let record_data: Record = { step };
+
+    // Generating unique hash creator obj for the AimObject using sequence name, sequence context, step
+    hashObject = {
+      ...hashObject,
+      ...record_data,
+    };
+
+    concatRecordInfo(['record.step']);
+
+    collectedData = {
+      ...collectedData,
+      record: record_data,
+    };
+
+    if (Array.isArray(value)) {
+      for (let recIndex = 0; recIndex < value.length; recIndex++) {
+        record_data = {
+          ...record_data,
+          index: recIndex,
+        };
+        hashObject = {
+          ...hashObject,
+          index: record_data.index,
+        };
+
+        concatRecordInfo(['record.step', 'record.index']);
+
+        collectedData = {
+          ...collectedData,
+          record: record_data,
+        };
+        pushToObjectList({
+          key: buildObjectHash(hashObject),
+          ...collectedData,
+          ...sequenceData,
+          data: value[recIndex],
+        });
+      }
+    } else {
+      pushToObjectList({
+        key: buildObjectHash(hashObject),
+        ...collectedData,
+        ...sequenceData,
+        data: value,
+      });
+    }
+  }
+}
