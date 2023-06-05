@@ -113,6 +113,7 @@ aim.sublime-*
 .DS_Store
 .idea
 .vim
+.history
 
 data
 examples/.aim
