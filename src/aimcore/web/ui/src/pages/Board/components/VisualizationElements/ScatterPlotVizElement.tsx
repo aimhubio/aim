@@ -28,7 +28,7 @@ const CustomNodeComponent = ({
 };
 
 function ScatterPlotVizElement(props: any) {
-  const modifyData = React.useMemo(() => {
+  const parsedData = React.useMemo(() => {
     let maxPointsCount = 0;
     const data = props.data.map((item: any) => {
       return {
@@ -54,7 +54,7 @@ function ScatterPlotVizElement(props: any) {
   return (
     <div className='VizComponentContainer'>
       <ResponsiveScatterPlot
-        data={modifyData.data}
+        data={parsedData.data}
         layers={[
           'grid',
           'axes',
