@@ -2,6 +2,8 @@ import React from 'react';
 
 import { ResponsiveLine } from '@nivo/line';
 
+import { Box, Text } from 'components/kit_v2';
+
 function NivoLineChartVizElement(props: any) {
   const modifyData = React.useMemo(() => {
     return props.data.map((item: any) => {
@@ -23,7 +25,35 @@ function NivoLineChartVizElement(props: any) {
         data={modifyData}
         enablePoints={false}
         lineWidth={1}
+        colors={(d) => d.color}
         margin={{ top: 50, right: 90, bottom: 50, left: 60 }}
+        sliceTooltip={({ slice }) => {
+          return (
+            <Box
+              css={{
+                background: 'white',
+                padding: '$6 $8',
+                border: '1px solid #ccc',
+              }}
+            >
+              <Text weight='$4' as='strong'>
+                x: {slice.id}
+              </Text>
+              {slice.points.map((point) => (
+                <Box
+                  key={point.id}
+                  css={{
+                    color: point.serieColor,
+                    padding: '3px 0',
+                  }}
+                >
+                  <Text>{point.serieId}</Text>
+                  <Text color={point.color}>[{point.data.yFormatted}]</Text>
+                </Box>
+              ))}
+            </Box>
+          );
+        }}
         xScale={{
           type: 'linear',
           reverse: false,
@@ -32,6 +62,8 @@ function NivoLineChartVizElement(props: any) {
           type: 'linear',
           reverse: false,
         }}
+        enableSlices='x'
+        enableCrosshair={true}
         yFormat=' >-.2f'
         axisTop={null}
         axisRight={null}
