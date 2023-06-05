@@ -112,7 +112,7 @@ function ScatterPlotVizElement(props: any) {
         },
       ],
     };
-    if (parsedData.pointsCount > 300) {
+    if (parsedData.pointsCount > 600) {
       return <ResponsiveScatterPlotCanvas {...commonProps} />;
     }
     commonProps['layers'] = [
