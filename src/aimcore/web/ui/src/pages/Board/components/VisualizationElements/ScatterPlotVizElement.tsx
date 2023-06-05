@@ -51,8 +51,6 @@ function ScatterPlotVizElement(props: any) {
     };
   }, [props.data]);
 
-  console.log(modifyData);
-
   return (
     <div className='VizComponentContainer'>
       <ResponsiveScatterPlot
@@ -103,7 +101,7 @@ function ScatterPlotVizElement(props: any) {
           );
         }}
         nodeComponent={CustomNodeComponent}
-        blendMode='color'
+        blendMode='darken'
         nodeSize={8}
         axisTop={null}
         axisRight={null}
