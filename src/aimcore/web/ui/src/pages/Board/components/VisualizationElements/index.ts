@@ -84,6 +84,14 @@ const TextVizElement = React.lazy(
       /* webpackPrefetch: true, webpackChunkName: "Typography" */ './TextVizElement'
     ),
 );
+
+const CodeVizElement = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "Code" */ './CodeVizElement'
+    ),
+);
+
 const SelectVizElement = React.lazy(
   () =>
     import(
@@ -223,6 +231,7 @@ export type VizElementKey =
   | 'Button'
   | 'Switch'
   | 'TextArea'
+  | 'Code'
   | 'Radio'
   | 'Checkbox'
   | 'ToggleButton'
@@ -260,6 +269,7 @@ const VizElementsMap: Record<VizElementKey, React.FunctionComponent<any>> = {
   Link: LinkVizElement,
   Header: TextVizElement,
   SubHeader: TextVizElement,
+  Code: CodeVizElement,
 
   // Aim sequence viz components
   LineChart: LineChartVizElement,

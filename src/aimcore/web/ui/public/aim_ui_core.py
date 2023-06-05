@@ -1286,6 +1286,20 @@ class SubHeader(TypographyComponent):
         super().__init__(text, "SubHeader", options, key, block)
 
 
+class Code(Component):
+    def __init__(self, text, language='python',  key=None, block=None):
+        component_type = "Code"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type, block)
+
+        self.data = text
+        self.options = {
+            "language": language
+        }
+    
+        self.render()
+
+
 # Super components
 
 class Board(Component):
@@ -1441,6 +1455,10 @@ class UI:
     def subheader(self, *args, **kwargs):
         subheader = SubHeader(*args, **kwargs, block=self.block_context)
         return subheader
+
+    def code(self, *args, **kwargs):
+        code = Code(*args, **kwargs, block=self.block_context)
+        return code
 
     # Aim sequence viz components
     def line_chart(self, *args, **kwargs):
