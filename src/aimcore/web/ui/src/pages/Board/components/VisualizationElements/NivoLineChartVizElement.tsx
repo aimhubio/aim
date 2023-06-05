@@ -109,7 +109,6 @@ function NivoLineChartVizElement(props: any) {
             itemHeight: 20,
             itemOpacity: 0.75,
             symbolSize: 8,
-            symbolShape: 'circle',
             symbolBorderColor: 'rgba(0, 0, 0, .5)',
             effects: [
               {

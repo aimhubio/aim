@@ -35,6 +35,10 @@ function ScatterPlotVizElement(props: any) {
       margin: { top: 50, right: 90, bottom: 50, left: 60 },
       xScale: { type: 'linear' },
       yScale: { type: 'linear' },
+      colors: (d: any) => {
+        let point = parsedData.data.find((item: any) => item.id === d.serieId);
+        return point?.color ?? '#000';
+      },
       tooltip: ({ node }: any) => {
         return (
           <Box
@@ -98,7 +102,6 @@ function ScatterPlotVizElement(props: any) {
           itemHeight: 20,
           itemOpacity: 0.75,
           symbolSize: 8,
-          symbolShape: 'circle',
           symbolBorderColor: 'rgba(0, 0, 0, .5)',
           effects: [
             {
