@@ -5,7 +5,7 @@ import { ResponsiveLine } from '@nivo/line';
 import { Box, Text } from 'components/kit_v2';
 
 function NivoLineChartVizElement(props: any) {
-  const modifyData = React.useMemo(() => {
+  const parsedData = React.useMemo(() => {
     let maxPointsCount = 0;
     const data = props.data.map((item: any) => {
       return {
@@ -31,8 +31,8 @@ function NivoLineChartVizElement(props: any) {
   return (
     <div className='VizComponentContainer'>
       <ResponsiveLine
-        data={modifyData.data}
-        enablePoints={modifyData.maxPointsCount < 100}
+        data={parsedData.data}
+        enablePoints={parsedData.maxPointsCount < 100}
         lineWidth={1}
         colors={(d) => d.color}
         margin={{ top: 50, right: 90, bottom: 50, left: 60 }}

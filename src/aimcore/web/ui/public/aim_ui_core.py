@@ -476,32 +476,6 @@ class LineChart(AimSequenceComponent):
                 })
 
 
-class BarChart(AimSequenceComponent):
-    def __init__(self, data, x, y, color=[], options={}, key=None, block=None):
-        component_type = "BarChart"
-        component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type, block)
-
-        color_map, color_data = group("color", data, color, component_key)
-        bars = []
-        for i, item in enumerate(data):
-            color_val = apply_group_value_pattern(
-                color_map[color_data[i]["color"]]["order"], colors
-            )
-
-            bar = dict(item)
-            bar["key"] = i
-            bar["data"] = {"x": find(item, x), "y": find(item, y)}
-            bar["color"] = color_val
-
-            bars.append(bar)
-
-        self.data = bars
-        self.options = options
-
-        self.render()
-
-
 class NivoLineChart(AimSequenceComponent):
     def __init__(self, data, x, y, color=[], stroke_style=[], options={}, key=None, block=None):
         component_type = "NivoLineChart"
@@ -531,42 +505,48 @@ class NivoLineChart(AimSequenceComponent):
 
         self.data = lines
         self.options = options
-        self.callbacks = {
-            "on_active_point_change": self.on_active_point_change
-        }
 
         self.render()
 
-    @property
-    def active_line(self):
-        return self.state["active_line"] if "active_line" in self.state else None
 
-    @property
-    def focused_line(self):
-        return self.state["focused_line"] if "focused_line" in self.state else None
+class BarChart(AimSequenceComponent):
+    def __init__(self, data, x, y, color=[], options={}, key=None, block=None):
+        component_type = "BarChart"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type, block)
 
-    @property
-    def active_point(self):
-        return self.state["active_point"] if "active_point" in self.state else None
+        color_map, color_data = group("color", data, color, component_key)
+        bars = []
+        for i, item in enumerate(data):
+            color_val = apply_group_value_pattern(
+                color_map[color_data[i]["color"]]["order"], colors
+            )
 
-    @property
-    def focused_point(self):
-        return self.state["focused_point"] if "focused_point" in self.state else None
+            bar = dict(item)
+            bar["key"] = i
 
-    async def on_active_point_change(self, point, is_active):
-        if point is not None:
-            item = self.data[point.key]
+            x_value = find(item, x)
+            if type(x_value) is list:
+                x_value = x_value[-1]
 
-            if is_active:
-                self.set_state({
-                    "focused_line": item,
-                    "focused_point": point,
-                })
-            else:
-                self.set_state({
-                    "active_line": item,
-                    "active_point": point,
-                })
+            y_value = find(item, y)
+            if type(y_value) is list:
+                y_value = y_value[-1]
+
+            bar["data"] = {"x": x_value, "y": y_value}
+            bar["color"] = color_val
+
+            bars.append(bar)
+
+        self.data = bars
+        self.options = options
+
+        self.options.update({
+            'x': x,
+            'y': y
+        })
+
+        self.render()
 
 
 class ScatterPlot(AimSequenceComponent):
@@ -598,42 +578,8 @@ class ScatterPlot(AimSequenceComponent):
 
         self.data = lines
         self.options = options
-        self.callbacks = {
-            "on_active_point_change": self.on_active_point_change
-        }
 
         self.render()
-
-    @property
-    def active_line(self):
-        return self.state["active_line"] if "active_line" in self.state else None
-
-    @property
-    def focused_line(self):
-        return self.state["focused_line"] if "focused_line" in self.state else None
-
-    @property
-    def active_point(self):
-        return self.state["active_point"] if "active_point" in self.state else None
-
-    @property
-    def focused_point(self):
-        return self.state["focused_point"] if "focused_point" in self.state else None
-
-    async def on_active_point_change(self, point, is_active):
-        if point is not None:
-            item = self.data[point.key]
-
-            if is_active:
-                self.set_state({
-                    "focused_line": item,
-                    "focused_point": point,
-                })
-            else:
-                self.set_state({
-                    "active_line": item,
-                    "active_point": point,
-                })
 
 
 class ImagesList(AimSequenceComponent):
