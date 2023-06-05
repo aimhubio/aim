@@ -40,7 +40,7 @@ class Image(Object):
     DEFAULT_IMG_FORMAT = 'png'
     FLAG_WARN_RGBA_RGB = False
     AIM_NAME = 'aim.Image'
-    RESOLVE_BLOBS = True
+    RESOLVE_BLOBS = False
 
     def __init__(self, image, caption: str = '', format=None, quality=90, optimize=False):
         super().__init__()
