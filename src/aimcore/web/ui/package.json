@@ -8,6 +8,8 @@
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.60",
     "@monaco-editor/react": "4.4.4",
+    "@nivo/core": "^0.83.0",
+    "@nivo/line": "^0.83.0",
     "@radix-ui/primitive": "^1.0.0",
     "@radix-ui/react-checkbox": "^1.0.1",
     "@radix-ui/react-dialog": "^1.0.2",
