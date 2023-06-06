@@ -175,6 +175,9 @@ board_path=${boardPath === undefined ? 'None' : `"${boardPath}"`}
           isProcessing: false,
         }));
       } catch (ex: any) {
+        if (ex.type === 'WaitForQueryError') {
+          return;
+        }
         // eslint-disable-next-line no-console
         console.log(ex);
         setState((s: any) => ({

@@ -49,6 +49,10 @@ def memoize(func):
 query_results_cache = {}
 
 
+class WaitForQueryError(Exception):
+    pass
+
+
 def query_filter(type_, query="", count=None, start=None, stop=None, isSequence=False):
     query_key = f'{type_}_{query}_{count}_{start}_{stop}'
 
@@ -68,10 +72,12 @@ def query_filter(type_, query="", count=None, start=None, stop=None, isSequence=
         data.destroy()
 
         query_results_cache[query_key] = items
-
         return items
-    except:  # noqa
-        return []
+    except Exception as e:
+        if 'WAIT_FOR_QUERY_RESULT' in str(e):
+            raise WaitForQueryError()
+        else:
+            raise e
 
 
 class Sequence():
@@ -1296,7 +1302,7 @@ class Code(Component):
         self.options = {
             "language": language
         }
-    
+
         self.render()
 
 
