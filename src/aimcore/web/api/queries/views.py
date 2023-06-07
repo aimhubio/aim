@@ -46,7 +46,7 @@ def _process_values(repo: 'Repo', values_list: list, steps_list: list, sequence:
                 processed_val = val.dump()
                 if not val.RESOLVE_BLOBS:
                     khash_view = sequence._data.reservoir().container
-                    khash_step = decode_path(encode_path(khash_view.to_khash(step)))
+                    khash_step = decode_path(khash_view.to_khash(encode_path(step)))
                     additional_path = (*khash_step, 'val', 'data')
                     resource_path = uri_service.generate_resource_path(sequence._data.container, additional_path)
                     processed_val['blobs'] = {'data': uri_service.generate_uri(resource_path)}
