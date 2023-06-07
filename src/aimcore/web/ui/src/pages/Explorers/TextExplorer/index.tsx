@@ -1,5 +1,7 @@
 import type { FunctionComponent } from 'react';
 
+import { isDEVModeOn } from 'config/config';
+
 import renderer from 'modules/BaseExplorer';
 import TextBox from 'modules/BaseExplorer/components/TextBox/TextBox';
 import { VisualizerLegends } from 'modules/BaseExplorer/components/Widgets';
@@ -35,6 +37,6 @@ export const textExplorerConfig = {
   getStaticContent: defaultConfig.getStaticContent,
 };
 
-const TextExplorer = renderer(textExplorerConfig, __DEV__);
+const TextExplorer = renderer(textExplorerConfig, isDEVModeOn);
 
 export default TextExplorer;

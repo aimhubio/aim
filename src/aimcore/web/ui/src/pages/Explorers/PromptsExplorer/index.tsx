@@ -1,5 +1,7 @@
 import type { FunctionComponent } from 'react';
 
+import { isDEVModeOn } from 'config/config';
+
 import renderer from 'modules/BaseExplorer';
 import TextBox from 'modules/BaseExplorer/components/TextBox/TextBox';
 import { VisualizerLegends } from 'modules/BaseExplorer/components/Widgets';
@@ -35,7 +37,7 @@ const PromptsExplorer = renderer(
     },
     getStaticContent: defaultConfig.getStaticContent,
   },
-  __DEV__,
+  isDEVModeOn,
 );
 
 export default PromptsExplorer;

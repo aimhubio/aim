@@ -38,6 +38,7 @@ import BoardConsole from './components/BoardConsole';
 import FormVizElement from './components/VisualizationElements/FormVizElement';
 import useBoardStore from './BoardStore';
 
+const liveUpdateEnabled = false;
 const liveUpdateInterval = 5000;
 
 function Board({
@@ -230,7 +231,7 @@ board_path=${boardPath === undefined ? 'None' : `"${boardPath}"`}
           }));
         }
 
-        if (queryKey) {
+        if (liveUpdateEnabled && queryKey) {
           if (liveUpdateTimersRef.current.hasOwnProperty(queryKey)) {
             window.clearTimeout(liveUpdateTimersRef.current[queryKey]);
           }

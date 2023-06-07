@@ -476,6 +476,112 @@ class LineChart(AimSequenceComponent):
                 })
 
 
+class NivoLineChart(AimSequenceComponent):
+    def __init__(self, data, x, y, color=[], stroke_style=[], options={}, key=None, block=None):
+        component_type = "NivoLineChart"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type, block)
+
+        color_map, color_data = group("color", data, color, component_key)
+        stroke_map, stroke_data = group(
+            "stroke_style", data, stroke_style, component_key)
+        lines = []
+        for i, item in enumerate(data):
+            color_val = apply_group_value_pattern(
+                color_map[color_data[i]["color"]]["order"], colors
+            )
+            stroke_val = apply_group_value_pattern(
+                stroke_map[stroke_data[i]["stroke_style"]
+                           ]["order"], stroke_styles
+            )
+
+            line = dict(item)
+            line["key"] = i
+            line["data"] = {"xValues": find(item, x), "yValues": find(item, y)}
+            line["color"] = color_val
+            line["dasharray"] = stroke_val
+
+            lines.append(line)
+
+        self.data = lines
+        self.options = options
+
+        self.render()
+
+
+class BarChart(AimSequenceComponent):
+    def __init__(self, data, x, y, color=[], options={}, key=None, block=None):
+        component_type = "BarChart"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type, block)
+
+        color_map, color_data = group("color", data, color, component_key)
+        bars = []
+        for i, item in enumerate(data):
+            color_val = apply_group_value_pattern(
+                color_map[color_data[i]["color"]]["order"], colors
+            )
+
+            bar = dict(item)
+            bar["key"] = i
+
+            x_value = find(item, x)
+            if type(x_value) is list:
+                x_value = x_value[-1]
+
+            y_value = find(item, y)
+            if type(y_value) is list:
+                y_value = y_value[-1]
+
+            bar["data"] = {"x": x_value, "y": y_value}
+            bar["color"] = color_val
+
+            bars.append(bar)
+
+        self.data = bars
+        self.options = options
+
+        self.options.update({
+            'x': x,
+            'y': y
+        })
+
+        self.render()
+
+
+class ScatterPlot(AimSequenceComponent):
+    def __init__(self, data, x, y, color=[], stroke_style=[], options={}, key=None, block=None):
+        component_type = "ScatterPlot"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type, block)
+
+        color_map, color_data = group("color", data, color, component_key)
+        stroke_map, stroke_data = group(
+            "stroke_style", data, stroke_style, component_key)
+        lines = []
+        for i, item in enumerate(data):
+            color_val = apply_group_value_pattern(
+                color_map[color_data[i]["color"]]["order"], colors
+            )
+            stroke_val = apply_group_value_pattern(
+                stroke_map[stroke_data[i]["stroke_style"]
+                           ]["order"], stroke_styles
+            )
+
+            line = dict(item)
+            line["key"] = i
+            line["data"] = {"xValues": find(item, x), "yValues": find(item, y)}
+            line["color"] = color_val
+            line["dasharray"] = stroke_val
+
+            lines.append(line)
+
+        self.data = lines
+        self.options = options
+
+        self.render()
+
+
 class ImagesList(AimSequenceComponent):
     def __init__(self, data, key=None, block=None):
         component_type = "Images"
@@ -1323,6 +1429,20 @@ class SubHeader(TypographyComponent):
         super().__init__(text, "SubHeader", options, key, block)
 
 
+class Code(Component):
+    def __init__(self, text, language='python',  key=None, block=None):
+        component_type = "Code"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type, block)
+
+        self.data = text
+        self.options = {
+            "language": language
+        }
+    
+        self.render()
+
+
 # Super components
 
 class Board(Component):
@@ -1479,10 +1599,27 @@ class UI:
         sub_header = SubHeader(*args, **kwargs, block=self.block_context)
         return sub_header
 
+    def code(self, *args, **kwargs):
+        code = Code(*args, **kwargs, block=self.block_context)
+        return code
+
     # Aim sequence viz components
     def line_chart(self, *args, **kwargs):
         line_chart = LineChart(*args, **kwargs, block=self.block_context)
         return line_chart
+
+    def nivo_line_chart(self, *args, **kwargs):
+        nivo_line_chart = NivoLineChart(
+            *args, **kwargs, block=self.block_context)
+        return nivo_line_chart
+
+    def bar_chart(self, *args, **kwargs):
+        bar_chart = BarChart(*args, **kwargs, block=self.block_context)
+        return bar_chart
+
+    def scatter_plot(self, *args, **kwargs):
+        scatter_plot = ScatterPlot(*args, **kwargs, block=self.block_context)
+        return scatter_plot
 
     def images(self, *args, **kwargs):
         images = ImagesList(*args, **kwargs, block=self.block_context)

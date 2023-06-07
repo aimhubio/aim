@@ -1,3 +1,5 @@
+import { isDEVModeOn } from 'config/config';
+
 import renderer from 'modules/BaseExplorer';
 import AudioBox from 'modules/BaseExplorer/components/AudioBox';
 
@@ -26,6 +28,6 @@ export const audiosExplorerConfig = {
   getStaticContent: defaultConfig.getStaticContent,
 };
 
-const AudiosExplorer = renderer(audiosExplorerConfig, __DEV__);
+const AudiosExplorer = renderer(audiosExplorerConfig, isDEVModeOn);
 
 export default AudiosExplorer;
