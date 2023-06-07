@@ -107,6 +107,13 @@ class Repo(object):
         return list(self._meta_tree.subtree('chunks').keys())
 
     @property
+    def dev_package_dir(self) -> str:
+        dev_package_dir_path = os.path.join(self.path, 'pkgs')
+        if not os.path.exists(dev_package_dir_path):
+            os.mkdir(dev_package_dir_path)
+        return dev_package_dir_path
+
+    @property
     def encryption_key(self):
         from cryptography.fernet import Fernet
 

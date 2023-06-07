@@ -17,7 +17,8 @@ from aimcore.transport.handlers import (
     get_tree,
     get_khash_array,
     get_lock,
-    get_file_manager
+    get_file_manager,
+    get_dev_package,
 )
 
 
@@ -27,6 +28,7 @@ def prepare_resource_registry():
     registry.register('KhashArrayView', get_khash_array)
     registry.register('Lock', get_lock)
     registry.register('FileManager', get_file_manager)
+    registry.register('Package', get_dev_package)
     return registry
 
 
@@ -119,8 +121,9 @@ async def run_write_instructions(websocket: WebSocket, client_uri: str):
         await websocket.send_bytes(utils.pack_args(encode_tree(utils.build_exception(e))))
 
 
-def start_server(host, port, ssl_keyfile=None, ssl_certfile=None, log_level='info'):
+def start_server(host, port, ssl_keyfile=None, ssl_certfile=None, *, log_level='info', reload=False, reload_dirs=()):
     import uvicorn
-    uvicorn.run(app, host=host, port=port,
+    uvicorn.run('aimcore.transport.server:app', host=host, port=port,
                 ssl_keyfile=ssl_keyfile, ssl_certfile=ssl_certfile,
-                log_level=log_level)
+                log_level=log_level,
+                reload=reload, reload_dirs=reload_dirs)
