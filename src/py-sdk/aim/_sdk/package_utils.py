@@ -40,16 +40,18 @@ class Package:
     @staticmethod
     def discover(base_pkg):
         discovered_packages = (name for _, name, ispkg in pkgutil.iter_modules(base_pkg.__path__) if ispkg)
-        Package.load_packages(base_pkg, discovered_packages)
+        Package._load_packages(base_pkg, discovered_packages)
 
     @staticmethod
-    def load_packages(base_pkg, package_list: Iterable[str]):
+    def _load_packages(base_pkg, package_list: Iterable[str]):
         for name in package_list:
             pkg = importlib.import_module(f'{base_pkg.__name__}.{name}')
             Package.pool[name] = Package(name, pkg)
 
     @staticmethod
     def load_package(package_name: str):
+        if package_name in Package.pool:
+            return
         pkg = importlib.import_module(package_name)
         Package.pool[package_name] = Package(package_name, pkg)
 
@@ -72,6 +74,7 @@ class Package:
         boards_path = getattr(pkg, '__aim_boards__', 'boards')
         self._boards_dir: pathlib.Path = self._path / boards_path
         if self._boards_dir.exists():
+            logger.debug(f'Registering boards for Aim package \'{pkg}\'.')
             self._boards = list(map(lambda p: p.relative_to(self._boards_dir), self._boards_dir.glob('**/*.py')))
 
 
@@ -79,3 +82,7 @@ def register_aimstack_packages():
     logger.debug('Registering Aim packages available at aimstack')
     import aimstack
     Package.discover(aimstack)
+
+
+def register_package(pkg_name: str):
+    Package.load_package(pkg_name)
