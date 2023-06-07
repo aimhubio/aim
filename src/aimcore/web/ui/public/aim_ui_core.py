@@ -582,6 +582,39 @@ class ScatterPlot(AimSequenceComponent):
         self.render()
 
 
+class ParallelPlot(AimSequenceComponent):
+    def __init__(self, data, dimensions='dimensions', values='values', color=[], stroke_style=[], options={}, key=None, block=None):
+        component_type = "ParallelPlot"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type, block)
+
+        color_map, color_data = group("color", data, color, component_key)
+        stroke_map, stroke_data = group(
+            "stroke_style", data, stroke_style, component_key)
+        lines = []
+        for i, item in enumerate(data):
+            color_val = apply_group_value_pattern(
+                color_map[color_data[i]["color"]]["order"], colors)
+            stroke_val = apply_group_value_pattern(
+                stroke_map[stroke_data[i]["stroke_style"]]["order"], stroke_styles)
+
+            line = dict(item)
+            line["key"] = i
+            line["data"] = {
+                "dimensions": find(item, dimensions),
+                "values": find(item, values)
+            }
+            line["color"] = color_val
+            line["dasharray"] = stroke_val
+
+            lines.append(line)
+
+        self.data = lines
+        self.options = options
+
+        self.render()
+
+
 class ImagesList(AimSequenceComponent):
     def __init__(self, data, key=None, block=None):
         component_type = "Images"
@@ -1296,7 +1329,7 @@ class Code(Component):
         self.options = {
             "language": language
         }
-    
+
         self.render()
 
 
@@ -1477,6 +1510,10 @@ class UI:
     def scatter_plot(self, *args, **kwargs):
         scatter_plot = ScatterPlot(*args, **kwargs, block=self.block_context)
         return scatter_plot
+
+    def parallel_plot(self, *args, **kwargs):
+        parallel_plot = ParallelPlot(*args, **kwargs, block=self.block_context)
+        return parallel_plot
 
     def images(self, *args, **kwargs):
         images = ImagesList(*args, **kwargs, block=self.block_context)
