@@ -68,6 +68,7 @@ REQUIRED = [
     'packaging>=15.0',
     'python-dateutil',
     'websockets',
+    'watchdog',
     'requests',
     'segment-analytics-python',
 ]
