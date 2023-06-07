@@ -10,7 +10,7 @@ from aimcore.transport.server import start_server
 from aim._ext.tracking import analytics
 
 
-@click.command()
+@click.command('server')
 @click.option('-h', '--host', default=AIM_SERVER_DEFAULT_HOST, type=str)
 @click.option('-p', '--port', default=AIM_SERVER_DEFAULT_PORT, type=int)
 @click.option('--repo', required=False, default=os.getcwd(), type=click.Path(exists=True,
@@ -27,13 +27,15 @@ from aim._ext.tracking import analytics
                                                                 dir_okay=False,
                                                                 readable=True))
 @click.option('--log-level', required=False, default='', type=str)
+@click.option('--dev', is_flag=True, default=False)
 @click.option('-y', '--yes', is_flag=True, help='Automatically confirm prompt')
 def server(host, port,
            repo, package, ssl_keyfile, ssl_certfile,
-           log_level, yes):
+           log_level, dev, yes):
     # TODO [MV, AT] remove code duplication with aim up cmd implementation
-    if log_level:
-        set_log_level(log_level)
+    if not log_level:
+        log_level = 'debug' if dev else 'warning'
+    set_log_level(log_level)
 
     if not Repo.exists(repo):
         init_repo = yes or click.confirm(f'\'{repo}\' is not a valid Aim repository. Do you want to initialize it?')
@@ -54,7 +56,13 @@ def server(host, port,
     analytics.track_event(event_name='[Aim Remote Tracking] Start server')
 
     try:
-        start_server(host, port, ssl_keyfile, ssl_certfile)
+        if dev:
+            import aim
+            import aimcore
+            reload_dirs = (os.path.dirname(aim.__file__), os.path.dirname(aim.__file__), repo_inst.dev_package_dir)
+            start_server(host, port, ssl_keyfile, ssl_certfile, log_level=log_level, reload=dev, reload_dirs=reload_dirs)
+        else:
+            start_server(host, port, ssl_keyfile, ssl_certfile, log_level=log_level)
     except Exception:
         click.echo('Failed to run Aim Tracking Server. '
                    'Please see the logs for details.')
