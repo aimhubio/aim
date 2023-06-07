@@ -710,6 +710,9 @@ class JSON(Component):
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
 
+        # validate all arguments passed in
+        data = validate(data, dict, "data")
+
         self.data = data
 
         self.render()
@@ -721,16 +724,23 @@ class DataFrame(Component):
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
 
+        # validate all arguments passed in
+        data = validate(data, dict, "data")
+
         self.data = data.to_json(orient="records")
 
         self.render()
 
 
 class Table(Component):
-    def __init__(self, data, renderer=None, key=None, block=None):
+    def __init__(self, data, renderer={}, key=None, block=None):
         component_type = "Table"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
+
+        # validate all arguments passed in
+        data = validate(data, dict, "data")
+        renderer = validate(renderer, dict, "renderer")
 
         self.data = data
 
@@ -783,18 +793,29 @@ class HTML(Component):
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
 
+        # validate all arguments passed in
+        data = validate(data, str, "data")
+
         self.data = data
 
         self.render()
 
 
 class Text(Component):
-    def __init__(self, data, component=None, size=None, weight=None, color=None, mono=None, key=None, block=None):
+    def __init__(self, text, component='span', size='$3', weight='$2', color='$textPrimary', mono=False, key=None, block=None):
         component_type = "Text"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
 
-        self.data = data
+        # validate all arguments passed in
+        text = validate(text, str, "text")
+        component = validate(component, str, "component")
+        size = validate(size, str, "size")
+        weight = validate(weight, str, "weight")
+        color = validate(color, str, "color")
+        mono = validate(mono, bool, "mono")
+
+        self.data = text
 
         self.options = {
             "component": component,
@@ -813,12 +834,72 @@ class Link(Component):
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
 
+        # validate all arguments passed in
+        text = validate(text, str, "text")
+        to = validate(to, str, "to")
+        new_tab = validate(new_tab, bool, "new_tab")
+
         self.data = to
 
         self.options = {
             "text": text,
             "to": to,
             "new_tab": new_tab
+        }
+
+        self.render()
+
+
+class TypographyComponent(Component):
+    def __init__(self, text, component_type, options=None, key=None, block=None):
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type, block)
+
+        self.data = text
+        self.options = options
+
+        self.render()
+
+
+class Header(TypographyComponent):
+    def __init__(self, text='', key=None, block=None):
+        # validate all arguments passed in
+        text = validate(text, str, "text")
+
+        # set the properties/options for this component
+        options = {
+            "component": "h2",
+            "size": "$9"
+        }
+        super().__init__(text, "Header", options, key, block)
+
+
+class SubHeader(TypographyComponent):
+    def __init__(self, text='', key=None, block=None):
+        # validate all arguments passed in
+        text = validate(text, str, "text")
+
+        # set the properties/options for this component
+        options = {
+            "component": "h3",
+            "size": "$6"
+        }
+        super().__init__(text, "SubHeader", options, key, block)
+
+
+class Code(Component):
+    def __init__(self, text='', language='python', key=None, block=None):
+        component_type = "Code"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type, block)
+
+        # validate all arguments passed in
+        text = validate(text, str, "text")
+        language = validate(language, str, "language")
+
+        self.data = text
+        self.options = {
+            "language": language
         }
 
         self.render()
@@ -887,7 +968,6 @@ def get_component_batch_state(key, parent_block=None):
     return None
 
 
-# Type checker helper functions
 # validate value type, otherwise raise an exception
 
 def validate(value, type_, prop_name):
@@ -1392,64 +1472,16 @@ class ToggleButton(Component):
         self.set_state({"value": val})
 
 
-class TypographyComponent(Component):
-    def __init__(self, text, component_type, options=None, key=None, block=None):
-        component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type, block)
-
-        self.data = text
-        self.options = options
-
-        self.render()
-
-
-class Header(TypographyComponent):
-    def __init__(self, text='', key=None, block=None):
-        # validate all arguments passed in
-        text = validate(text, str, "text")
-
-        # set the properties/options for this component
-        options = {
-            "component": "h2",
-            "size": "$9"
-        }
-        super().__init__(text, "Header", options, key, block)
-
-
-class SubHeader(TypographyComponent):
-    def __init__(self, text='', key=None, block=None):
-        # validate all arguments passed in
-        text = validate(text, str, "text")
-
-        # set the properties/options for this component
-        options = {
-            "component": "h3",
-            "size": "$6"
-        }
-        super().__init__(text, "SubHeader", options, key, block)
-
-
-class Code(Component):
-    def __init__(self, text, language='python',  key=None, block=None):
-        component_type = "Code"
-        component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type, block)
-
-        self.data = text
-        self.options = {
-            "language": language
-        }
-    
-        self.render()
-
-
 # Super components
 
 class Board(Component):
-    def __init__(self, path=None, state=None, block=None, key=None):
+    def __init__(self, path='', state=None, block=None, key=None):
         component_type = "Board"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
+
+        # validate all arguments passed in
+        path = validate(path, str, "path")
 
         self.data = path
 
@@ -1462,10 +1494,15 @@ class Board(Component):
 
 
 class BoardLink(Component):
-    def __init__(self, path=None, text='Go To Board', new_tab=False, state=None, block=None, key=None):
+    def __init__(self, path='', text='Go To Board', new_tab=False, state=None, block=None, key=None):
         component_type = "BoardLink"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
+
+        # validate all arguments passed in
+        path = validate(path, str, "path")
+        text = validate(text, str, "text")
+        new_tab = validate(new_tab, bool, "new_tab")
 
         self.data = path
 
