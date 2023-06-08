@@ -15,8 +15,12 @@ data = generate_data(5, 10)
 
 header = ui.header('Aim UI Charts')
 
-line_chart_tab, bar_chart_tab, scatter_plot_tab = ui.tabs(
-    ('Line Chart', 'Bar Chart', 'Scatter Plot'))
+line_chart_tab, bar_chart_tab, scatter_plot_tab, parallel_plot_tab = ui.tabs((
+    'Line Chart',
+    'Bar Chart',
+    'Scatter Plot',
+    'Parallel Plot'
+))
 
 line_chart = line_chart_tab.nivo_line_chart(
     data,
@@ -36,5 +40,41 @@ scatter_plot = scatter_plot_tab.scatter_plot(
     data,
     x='x',
     y='y',
+    color=['name']
+)
+
+
+def generate_parallel_plot_data(num_lines: int = 100, dimensions: list[str] = []):
+    data = []
+    for _ in range(num_lines):
+        line = {}
+        for i, d in enumerate(dimensions):
+            start = random.randint(1, 100)
+            end = random.randint(start, start + _ * i * 100)
+            line[str(d)] = random.randint(start, end)
+        data.append({
+            'name': 'Line: ' + str(_),
+            'values': line,
+            'dimensions': dimensions
+        })
+    return data
+
+
+# Generate 100 lines (dicts), which include each dimension [key, value] pair
+parallel_plot_data = generate_parallel_plot_data(100, [
+    'hparams.batch_size',
+    'hparams.learning_rate',
+    'hparams.num_classes',
+    'hparams.num_epochs',
+    'CPU',
+    'Disk',
+    'Memory'
+])
+
+
+parallel_plot = parallel_plot_tab.parallel_plot(
+    data=parallel_plot_data,
+    dimensions='dimensions',
+    values='values',
     color=['name']
 )

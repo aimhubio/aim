@@ -2,6 +2,9 @@ import React from 'react';
 
 import Icon from 'components/kit/Icon';
 
+import Text from '../Text';
+import Box from '../Box';
+
 import { ICheckboxProps } from './Checkbox.d';
 import {
   IndeterminateIcon,
@@ -61,6 +64,7 @@ export const Checkbox = React.forwardRef<
         {...props}
         checked={isChecked}
         onCheckedChange={handleChange}
+        hasLabel={!!props.label}
         disabled={disabled}
         ref={forwardedRef}
       >
@@ -70,6 +74,11 @@ export const Checkbox = React.forwardRef<
             {isChecked === true ? <Icon fontSize={6} name='check' /> : null}
           </StyledIndicator>
         </IndicatorWrapper>
+        {props.label && (
+          <Box ml='$5' as='label' className='Label' htmlFor={props.id}>
+            <Text>{props.label}</Text>
+          </Box>
+        )}
       </StyledCheckbox>
     );
   },

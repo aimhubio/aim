@@ -45,6 +45,15 @@ function ToggleButton({
     [onChange, disabled],
   );
 
+  React.useEffect(() => {
+    if ([leftValue, rightValue].indexOf(value) === -1) {
+      setSelected(leftValue);
+      if (onChange) {
+        onChange(leftValue);
+      }
+    }
+  }, [leftValue, onChange, rightValue, value]);
+
   return (
     <Container>
       <Button

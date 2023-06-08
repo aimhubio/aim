@@ -1,6 +1,8 @@
 import * as React from 'react';
 
-import { Input, Text } from 'components/kit_v2';
+import { Box, Input, Text } from 'components/kit_v2';
+
+import generateId from 'utils/generateId';
 
 function NumberInputVizElement(props: any) {
   const [value, setValue] = React.useState(props.options.value);
@@ -31,11 +33,16 @@ function NumberInputVizElement(props: any) {
     setErrorMsg(errMsg);
   }, [value, min, max]);
 
-  const id = React.useMemo(() => `number_input_${Date.now()}`, []);
+  const id = React.useMemo(generateId, []);
   return (
-    <div>
+    <Box>
       {props.options.label && (
-        <Text as='label' htmlFor={id} disabled={props.options.disabled}>
+        <Text
+          as='label'
+          htmlFor={id}
+          lineHeight={1.5}
+          disabled={props.options.disabled}
+        >
           {props.options.label}
         </Text>
       )}
@@ -51,7 +58,7 @@ function NumberInputVizElement(props: any) {
         error={error}
         errorMessage={errorMsg}
       />
-    </div>
+    </Box>
   );
 }
 
