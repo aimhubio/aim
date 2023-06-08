@@ -1,6 +1,7 @@
 import random
 
 
+@memoize
 def generate_data(num_items, values_length):
     data = []
     for _ in range(num_items):
