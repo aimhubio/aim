@@ -1,18 +1,26 @@
 import * as React from 'react';
 import * as _ from 'lodash-es';
 
-import { Slider, Text } from 'components/kit_v2';
+import { Box, Slider, Text } from 'components/kit_v2';
+
+import generateId from 'utils/generateId';
 
 function SliderVizElement(props: any) {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const onChange = React.useCallback(
     _.debounce(props.callbacks?.on_change, 100),
     [],
   );
-  const id = React.useMemo(() => `slider_${Date.now()}`, []);
+  const id = React.useMemo(generateId, []);
   return (
-    <div style={{ flex: 1 }}>
+    <Box>
       {props.options.label && (
-        <Text as='label' htmlFor={id} disabled={props.options.disabled}>
+        <Text
+          as='label'
+          htmlFor={id}
+          lineHeight={1.5}
+          disabled={props.options.disabled}
+        >
           {props.options.label}
         </Text>
       )}
@@ -25,7 +33,7 @@ function SliderVizElement(props: any) {
         disabled={props.options.disabled}
         onValueChange={onChange}
       />
-    </div>
+    </Box>
   );
 }
 
