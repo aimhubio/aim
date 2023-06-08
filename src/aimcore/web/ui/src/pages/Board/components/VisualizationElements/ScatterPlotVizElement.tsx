@@ -53,19 +53,11 @@ function ScatterPlotVizElement(props: any) {
             <Text weight='$4' as='strong'>
               {node.serieId}
             </Text>
-            <Box
-              css={{
-                padding: '3px 0',
-              }}
-            >
+            <Box css={{ padding: '3px 0' }}>
               <Text css={{ mr: '$5' }}>x:</Text>
               <Text color={node.color}>{node.x}</Text>
             </Box>
-            <Box
-              css={{
-                padding: '3px 0',
-              }}
-            >
+            <Box css={{ padding: '3px 0' }}>
               <Text css={{ mr: '$5' }}>y:</Text>
               <Text color={node.color}>{node.y}</Text>
             </Box>
