@@ -227,6 +227,8 @@ class Client:
         raise_exception(response_json)
 
     def start_instructions_batch(self, hash_):
+        if getattr(self._thread_local, 'atomic_instructions', None) is None:
+            self._thread_local.atomic_instructions = {}
         self._thread_local.atomic_instructions[hash_] = []
 
     def flush_instructions_batch(self, hash_):
