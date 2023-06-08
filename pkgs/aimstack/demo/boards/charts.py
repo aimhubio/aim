@@ -15,14 +15,22 @@ data = generate_data(5, 10)
 
 header = ui.header('Aim UI Charts')
 
-line_chart_tab, bar_chart_tab, scatter_plot_tab, parallel_plot_tab = ui.tabs((
+line_chart_tab, nivo_line_chart_tab, bar_chart_tab, scatter_plot_tab, parallel_plot_tab = ui.tabs((
     'Line Chart',
+    'Nivo Line Chart',
     'Bar Chart',
     'Scatter Plot',
     'Parallel Plot'
 ))
 
-line_chart = line_chart_tab.nivo_line_chart(
+line_chart_tab.line_chart(
+    data,
+    x='x',
+    y='y',
+    color=['name']
+)
+
+line_chart = nivo_line_chart_tab.nivo_line_chart(
     data,
     x='x',
     y='y',
