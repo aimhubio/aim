@@ -355,6 +355,7 @@ class Component(Element):
         component_data = {
             "type": self.type,
             "key": self.key,
+            "component_key": self.key,
             "data": self.data,
             "callbacks": self.callbacks,
             "options": self.options,
