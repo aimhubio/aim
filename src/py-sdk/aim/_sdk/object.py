@@ -42,4 +42,3 @@ class Object(AimStorageObject):
                     data[key] = data[key].load()
 
         return data
-
