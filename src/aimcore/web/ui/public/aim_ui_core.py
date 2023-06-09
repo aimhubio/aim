@@ -739,6 +739,9 @@ class Plotly(Component):
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
 
+        # validate all arguments passed in
+        fig = validate(fig, dict, "fig")
+
         self.data = fig.to_json()
 
         self.render()
@@ -902,7 +905,7 @@ class TypographyComponent(Component):
 
 
 class Header(TypographyComponent):
-    def __init__(self, text='', key=None, block=None):
+    def __init__(self, text, key=None, block=None):
         # validate all arguments passed in
         text = validate(text, str, "text")
 
@@ -915,7 +918,7 @@ class Header(TypographyComponent):
 
 
 class SubHeader(TypographyComponent):
-    def __init__(self, text='', key=None, block=None):
+    def __init__(self, text, key=None, block=None):
         # validate all arguments passed in
         text = validate(text, str, "text")
 
@@ -928,7 +931,7 @@ class SubHeader(TypographyComponent):
 
 
 class Code(Component):
-    def __init__(self, text='', language='python', key=None, block=None):
+    def __init__(self, text, language='python', key=None, block=None):
         component_type = "Code"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
@@ -1515,13 +1518,14 @@ class ToggleButton(Component):
 
 
 class Board(Component):
-    def __init__(self, path='', state=None, block=None, key=None):
+    def __init__(self, path, state={}, block=None, key=None):
         component_type = "Board"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
 
         # validate all arguments passed in
         path = validate(path, str, "path")
+        state = validate(state, dict, "state")
 
         self.data = path
 
@@ -1534,7 +1538,7 @@ class Board(Component):
 
 
 class BoardLink(Component):
-    def __init__(self, path='', text='Go To Board', new_tab=False, state=None, block=None, key=None):
+    def __init__(self, path, text='Go To Board', new_tab=False, state={}, block=None, key=None):
         component_type = "BoardLink"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
@@ -1543,6 +1547,7 @@ class BoardLink(Component):
         path = validate(path, str, "path")
         text = validate(text, str, "text")
         new_tab = validate(new_tab, bool, "new_tab")
+        state = validate(state, dict, "state")
 
         self.data = path
 
