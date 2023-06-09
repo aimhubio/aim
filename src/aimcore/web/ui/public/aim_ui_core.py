@@ -1672,9 +1672,9 @@ class UI:
         header = Header(*args, **kwargs, block=self.block_context)
         return header
 
-    def sub_header(self, *args, **kwargs):
-        sub_header = SubHeader(*args, **kwargs, block=self.block_context)
-        return sub_header
+    def subheader(self, *args, **kwargs):
+        subheader = SubHeader(*args, **kwargs, block=self.block_context)
+        return subheader
 
     def code(self, *args, **kwargs):
         code = Code(*args, **kwargs, block=self.block_context)

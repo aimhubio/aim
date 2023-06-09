@@ -144,7 +144,7 @@ custom_toggle_button = ui.toggle_button(
 header = ui.header(text='header')
 # print('header', header)
 
-# sub header
-# print('##### sub header')
-sub_header = ui.sub_header(text='sub header')
-# print('sub_header', sub_header)
+# subheader
+# print('##### subheader')
+subheader = ui.subheader(text='subheader')
+# print('subheader', subheader)

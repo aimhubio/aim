@@ -22,7 +22,10 @@ function BoardVizElement(props: any) {
   }, [code, boards]);
 
   return (
-    <div className='VizComponentContainer' style={{ flex: 1, padding: 0 }}>
+    <div
+      className='VizComponentContainer'
+      style={{ flex: 1, padding: 0, border: 'none' }}
+    >
       {isLoading || code === null ? (
         <Spinner />
       ) : (
