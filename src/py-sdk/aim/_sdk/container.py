@@ -28,7 +28,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from aim._core.storage.treeview import TreeView
     from aim._sdk.repo import Repo
-
+    from aim._sdk.collections import ContainerCollection
 
 logger = logging.getLogger(__name__)
 
@@ -156,6 +156,13 @@ class Container(ABCContainer):
         self._resources = ContainerAutoClean(self)
 
         return self
+
+    @classmethod
+    def filter(cls, expr: str = '', repo: 'Repo' = None) -> 'ContainerCollection':
+        if repo is None:
+            from aim._sdk.repo import Repo
+            repo = Repo.active_repo()
+        return repo.containers(query_=expr, type_=cls)
 
     def __storage_init__(self):
         self._tree: TreeView = self._meta_tree.subtree('chunks').subtree(self.hash)
