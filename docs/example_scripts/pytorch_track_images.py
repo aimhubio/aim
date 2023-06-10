@@ -1,5 +1,5 @@
 from aim import Run
-from aim.sdk.objects.image import convert_to_aim_image_list
+from aimstack.asp.models.objects.image import convert_to_aim_image_list
 
 import torch
 import torch.nn as nn

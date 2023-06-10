@@ -326,7 +326,7 @@ parameter and retrieve it later just as any other `Run` param. Here is an exampl
 ```python
 import hub
 
-from aim.sdk.objects.plugins.hub_dataset import HubDataset
+from aimstack.ml.models.hub_dataset import HubDataset
 from aim.sdk import Run
 
 # create dataset object
@@ -345,7 +345,7 @@ datasets info to the tracked experiments. Here is how the code looks like
 
 ```python
 from aim.sdk import Run
-from aim.sdk.objects.plugins.dvc_metadata import DvcData
+from aimstack.ml.models.dvc_metadata import DvcData
 
 run = Run(system_tracking_interval=None)
 

@@ -37,7 +37,8 @@ The below example demonstrates how to implement custom callbacks to check and no
 #### Defining the callbacks
 
 ```python
-from aim.core.callbacks import events
+
+from aimcore.callbacks import events
 
 
 class MyCallbacks:

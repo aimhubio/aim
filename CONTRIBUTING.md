@@ -107,7 +107,7 @@ Before running the Aim UI dev server or building a distributable wheel, install 
 dependencies via:
 
 ```shell
-cd src/aim/web/ui
+cd src/aimcore/web/ui
 npm install
 ```
 

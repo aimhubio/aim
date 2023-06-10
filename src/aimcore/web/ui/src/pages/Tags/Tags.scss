@@ -1,0 +1,374 @@
+@use 'src/styles/abstracts' as *;
+
+.Tags {
+  height: 100vh;
+  overflow: hidden;
+  &__tabPanel {
+    height: calc(100% - 50px);
+    position: relative;
+    padding-bottom: 1.5rem;
+    & > div {
+      height: 100%;
+      position: relative;
+    }
+  }
+  &__tabsContainer {
+    border-radius: 0;
+    padding-left: 1.25rem;
+    box-shadow: none;
+    border: $border-grey;
+    &__tabs {
+      .MuiTab-textColorInherit {
+        opacity: 1;
+        font-weight: $font-500;
+        font-size: $text-md;
+        text-transform: none;
+        &.MuiInputBase-input {
+          font-weight: $font-600;
+        }
+      }
+      .Mui-selected {
+        font-weight: $font-600;
+        color: $pico;
+      }
+    }
+    .PrivateTabIndicator-root-5 {
+      height: 0.1875rem;
+    }
+  }
+  &__TagList {
+    position: relative;
+    height: 100%;
+    border-left: $border-grey;
+    border-right: $border-grey;
+    box-shadow: 0 toRem(1px) toRem(1px) $cuddle-50;
+    border-radius: 0 0 toRem(6px) toRem(6px);
+    .BaseTable {
+      &__body {
+        & > div {
+          width: 100% !important;
+          .BaseTable__row {
+            width: 100% !important;
+          }
+        }
+      }
+      &__row {
+        &-cell {
+          border-right: unset;
+        }
+      }
+      &__header-cell {
+        border-right: unset;
+      }
+    }
+    &__tagListBusyLoader {
+      padding-top: 100px;
+    }
+    &__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem;
+      background: #ffffff;
+      border-bottom: $border-grey;
+      .MuiInputBase-root {
+        height: 2rem;
+        padding-left: 0.8125rem;
+        border-radius: $border-radius-main;
+        i {
+          padding-right: 0.5625rem;
+        }
+        .MuiInputBase-input {
+          font-weight: $font-500;
+          font-size: $text-md;
+          color: #414b6d;
+          &::placeholder {
+            font-weight: $font-500;
+            font-size: $text-md;
+            color: #606986;
+            opacity: 1;
+          }
+        }
+      }
+      &__createButton {
+        text-transform: none;
+        width: 126px;
+        padding: 4px 10px 4px 13px;
+        i {
+          padding-right: 0.5rem;
+        }
+        .MuiButton-label {
+          font-weight: $font-500;
+          font-size: $text-md;
+          justify-content: flex-start;
+        }
+      }
+    }
+    &__tagListBox {
+      height: calc(100vh - 147px);
+      position: relative;
+      overflow: hidden;
+      border-radius: 0 0 toRem(6px) toRem(6px);
+      &__titleBox {
+        position: relative;
+        margin-left: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        height: 40px;
+        background-color: $white;
+        &::before {
+          content: '';
+          width: 34px;
+          height: 3px;
+          background: $primary-color;
+          position: absolute;
+          left: 0;
+          bottom: 0;
+        }
+        &__title {
+          font-weight: $font-600;
+          font-size: $text-md;
+        }
+      }
+    }
+    &__modalContainer {
+      width: 350px;
+      &__titleBox {
+        height: 40px;
+        border-bottom: 1px solid #f2f5fa;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+    }
+    &__overLayContainer {
+      .MuiDrawer-paper {
+        width: 800px;
+        box-shadow: -5px 0px 10px rgba(28, 40, 82, 0.1);
+        top: 50px;
+        height: calc(100% - 40px);
+      }
+      .MuiBackdrop-root {
+        background-color: transparent;
+      }
+    }
+  }
+}
+
+.TagsTable {
+  height: calc(100% - 40px);
+  width: 100%;
+  position: relative;
+  &__commentCell {
+    max-width: 600px;
+    word-break: break-word;
+    z-index: 99900;
+    &__actionsContainer {
+      right: 0;
+      top: 0;
+      height: 100%;
+      position: absolute;
+      align-items: center;
+      display: flex;
+      width: 160px;
+      justify-content: flex-end;
+      padding-right: 20px;
+      background: linear-gradient(
+        90deg,
+        rgba(236, 243, 252, 0) 0%,
+        #ecf3fc 26.41%,
+        #ecf3fc 60.3%
+      );
+    }
+  }
+  &__runDuration {
+    font-weight: $font-500;
+    color: $text-color;
+    font-size: $text-lg;
+    @include monospaceFontFamily(14);
+  }
+  &__runCreatedDate {
+    font-weight: $font-500;
+    color: $text-color;
+    font-size: $text-lg;
+    @include monospaceFontFamily(14);
+  }
+  &__runName {
+    font-weight: $font-500;
+    color: $primary-color;
+    text-decoration: none;
+    font-size: $text-lg;
+    @include monospaceFontFamily(14);
+  }
+  .BaseTable {
+    .BaseTable__table-main .BaseTable__row-cell:first-child {
+      padding-left: $space-unit;
+    }
+    &__body {
+      & > div {
+        width: 100% !important;
+        .BaseTable__row {
+          width: 100% !important;
+        }
+      }
+    }
+    &__table-main {
+      outline: none;
+    }
+    &__header {
+      &-row {
+        background: #ebf0f8;
+        border-bottom: none;
+      }
+      &-cell {
+        border-right: $border-grey;
+        border-bottom: $border-grey;
+        padding: 0 15px;
+        &:last-child {
+          border-right: none;
+        }
+      }
+    }
+    &__row {
+      border-bottom: none;
+      &--hovered {
+        background: #e8f1fc;
+      }
+      &-cell {
+        border-right: $border-grey;
+        border-bottom: $border-grey;
+        padding-left: 15px;
+        padding-right: 15px;
+        position: relative;
+        &:last-child {
+          white-space: unset;
+          border-right: none;
+        }
+        a {
+          text-decoration: none;
+        }
+        .MuiButton-root {
+          text-transform: none;
+        }
+      }
+    }
+  }
+
+  &__runsCell {
+    display: flex;
+    align-items: center;
+    &--iconBox {
+      font-size: 1rem;
+      color: $primary-color;
+      margin-right: $space-xs;
+    }
+  }
+}
+
+.TagDetail {
+  height: 100%;
+  &__headerContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px 0 13px;
+    height: 40px;
+    border-bottom: $border-grey;
+    &__headerActionsBox {
+      display: flex;
+      align-items: center;
+      i {
+        font-size: 1rem;
+      }
+      &__actionsIcon {
+        margin-right: 25px;
+        cursor: pointer;
+        font-size: 1rem;
+        color: $primary-color;
+        &:last-child {
+          margin-right: 0;
+        }
+      }
+    }
+  }
+}
+.TagSoftDelete {
+  &__contentContainer {
+    padding: 25px 20px;
+    display: flex;
+    &__iconContainer {
+      margin-right: 30px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      .MuiSvgIcon-root {
+        width: 4.5rem;
+        height: 3.5rem;
+      }
+    }
+    &__textBox {
+      &__titleText {
+        font-weight: $font-600;
+        font-size: $text-md;
+        margin-bottom: 5px;
+      }
+      &__contentText {
+        font-weight: $font-400;
+        font-size: $text-sm;
+      }
+    }
+  }
+  &__footerBox {
+    border-top: $border-grey;
+    height: 64px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    &__cancelButton {
+      margin-right: 10px;
+    }
+  }
+}
+
+.TagDelete {
+  &__contentContainer {
+    padding: 20px;
+    &__contentBox {
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      justify-content: center;
+      &__warningText {
+        margin: 16px 0 4px 0;
+      }
+      .MuiInputBase-root {
+        margin-bottom: 0;
+      }
+    }
+  }
+  &__footerBox {
+    border-top: $border-grey;
+    height: 64px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    &__cancelButton {
+      margin-right: 10px;
+    }
+  }
+}
+
+.TagDetail__headerContainer__headerActionsBox__actionsIcon__Wrapper {
+  padding: 8px;
+  border-radius: 6px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 5px;
+  color: $primary-color;
+  cursor: pointer;
+  &:hover {
+    background-color: rgba(28, 40, 82, 0.05);
+  }
+}

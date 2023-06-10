@@ -1,5 +1,5 @@
 import tensorflow as tf
-from aim.ext.tensorboard_tracker import Run as AimRun
+from aimstack.tensorboard_tracker import Run as AimRun
 
 
 aim_run = AimRun(sync_tensorboard_log_dir='logs/fit/')
