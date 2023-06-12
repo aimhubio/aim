@@ -134,7 +134,7 @@ class ExperimentDistributionCharts extends React.Component {
           key: this.props.name,
         });
 
-        this.computeHistogram(0);
+        this.computeHistogram(this.props.data.length - 1);
       },
     );
   };
