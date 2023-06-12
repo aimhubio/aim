@@ -164,7 +164,8 @@ async def data_fetch_api(type_: str,
         streamer = container_search_result_streamer(qresult)
     elif type_ in Sequence.registry:
         qresult = repo.sequences(query, type_)
-        streamer = sequence_search_result_streamer(repo, qresult, p, start, stop)
+        sample_seed = f'{query}_{p}_{start}_{stop}'
+        streamer = sequence_search_result_streamer(repo, qresult, p, start, stop, sample_seed)
     else:
         raise HTTPException(status_code=400, detail=f'Unknown type \'{type_}\'.')
     return StreamingResponse(streamer)
@@ -188,7 +189,7 @@ async def grouped_data_fetch_api(seq_type: Optional[str] = 'Sequence',
     else:
         query = f'container.type.startswith("{Container.registry[cont_type][0].get_full_typename()}")'
     qresult = repo.sequences(query, seq_type)
-    sample_seed = '_'.join((query, p, start, stop))
+    sample_seed = f'{query}_{p}_{start}_{stop}'
     return sequence_query_grouped_response(repo, qresult, p, start, stop, sample_seed)
 
 
