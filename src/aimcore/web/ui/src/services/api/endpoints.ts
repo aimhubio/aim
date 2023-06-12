@@ -52,6 +52,7 @@ const ENDPOINTS = {
     GET: '',
     GET_BY_TAG_NAME: 'tags',
   },
+
   BOARDS: {
     BASE: '/boards',
     GET: '',
@@ -60,6 +61,14 @@ const ENDPOINTS = {
     DELETE: '',
     TEMPLATES: '/templates',
     RESET: '/reset',
+  },
+
+  APPS: {
+    BASE: '/apps',
+    GET: '',
+    CREATE: '',
+    UPDATE: '',
+    DELETE: '',
   },
 };
 
