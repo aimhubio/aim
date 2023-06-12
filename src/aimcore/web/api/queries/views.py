@@ -6,8 +6,12 @@ from aim._sdk.uri_service import URIService
 from aim._core.storage.encoding import encode_path, decode_path
 
 from aimcore.web.api.runs.pydantic_models import QuerySyntaxErrorOut
-from aimcore.web.api.utils import checked_query, collect_streamable_data, get_project_repo, \
-      APIRouter  # wrapper for fastapi.APIRouter
+from aimcore.web.api.utils import (
+    checked_query,
+    collect_streamable_data,
+    get_project_repo,
+    APIRouter  # wrapper for fastapi.APIRouter
+)
 
 from aim import Container, Sequence
 

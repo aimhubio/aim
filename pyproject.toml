@@ -25,6 +25,7 @@ omit = ["src/aimcore/web/migrations/*"]
 max-line-length = 120
 ignore = ["E712", "F405"]
 exclude = [
+    "**/build/*",
     "**/node_modules/",
     "**/migrations/",
     "**/legacy/",

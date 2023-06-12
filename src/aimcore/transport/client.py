@@ -5,7 +5,6 @@ import os
 import threading
 import uuid
 import weakref
-from collections import defaultdict
 from copy import deepcopy
 from typing import Tuple
 from websockets.sync.client import connect
