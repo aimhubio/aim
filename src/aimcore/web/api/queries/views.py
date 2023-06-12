@@ -70,6 +70,7 @@ def _sequence_data(repo: 'Repo',
         },
         'item_type': sequence.type,
         'axis_names': sequence.axis_names,
+        'range': (sequence.start, sequence.stop),
         'axis': {}
     }
     if p is None and start is None and stop is None:

@@ -150,6 +150,16 @@ class Sequence(Generic[ItemType], ABCSequence):
         return self._info.empty
 
     @property
+    def start(self) -> int:
+        self._info.preload()
+        return self._info.first_step
+
+    @property
+    def stop(self) -> int:
+        self._info.preload()
+        return self._info.last_step
+
+    @property
     def next_step(self) -> int:
         self._info.preload()
         return self._info.next_step
