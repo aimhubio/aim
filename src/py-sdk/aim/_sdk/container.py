@@ -42,6 +42,7 @@ class ContainerAutoClean(AutoClean['Container']):
         self.mode = instance.mode
         self.hash = instance.hash
 
+        self._state = instance._state
         self._tree = instance._tree
         self.storage = instance.storage
 
@@ -67,6 +68,7 @@ class ContainerAutoClean(AutoClean['Container']):
             logger.debug(f'Run {self.hash} is read-only, skipping cleanup')
             return
 
+        self._state['cleanup'] = True
         self._wait_for_empty_queue()
         self._set_end_time()
         if self._status_reporter is not None:
@@ -111,6 +113,7 @@ class Container(ABCContainer):
         self._hash = self._calc_hash()
         self._lock = None
         self._status_reporter = None
+        self._state = {}
 
         if not self._is_readonly:
             self._lock = self.storage.lock(self.hash, 0)
@@ -149,12 +152,10 @@ class Container(ABCContainer):
         self._hash = self._calc_hash()
         self._lock = None
         self._status_reporter = None
+        self._state = {}
         self._meta_tree = meta_tree
 
         self.__storage_init__()
-
-        self._resources = ContainerAutoClean(self)
-
         return self
 
     @classmethod
