@@ -765,7 +765,7 @@ class DataFrame(Component):
         super().__init__(component_key, component_type, block)
 
         # validate all arguments passed in
-        data = validate(data, dict, "data")
+        # TODO: validate data is a dataframe
 
         self.data = data.to_json(orient="records")
 
@@ -828,13 +828,13 @@ class Table(Component):
 
 
 class HTML(Component):
-    def __init__(self, data, key=None, block=None):
+    def __init__(self, text, key=None, block=None):
         component_type = "HTML"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
 
         # validate all arguments passed in
-        data = validate(data, str, "data")
+        data = validate(text, str, "data")
 
         self.data = data
 
