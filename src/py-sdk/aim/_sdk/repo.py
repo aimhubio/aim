@@ -225,7 +225,8 @@ class Repo(object):
                 KeyNames.CONTAINER_TYPE: type_,
                 'required_typename': type_.get_full_typename(),
             })
-            return ContainerCollection[type_](query_context=query_context)
+            # return ContainerCollection[type_](query_context=query_context)
+            return ContainerCollection(query_context=query_context)
         if issubclass(orig_type, Sequence):
             query_context.update({
                 KeyNames.ALLOWED_VALUE_TYPES: type_utils.get_sequence_value_types(type_),
@@ -233,4 +234,5 @@ class Repo(object):
                 KeyNames.SEQUENCE_TYPE: type_,
                 'required_typename': type_.get_full_typename(),
             })
-            return SequenceCollection[type_](query_context=query_context)
+            # return SequenceCollection[type_](query_context=query_context)
+            return SequenceCollection(query_context=query_context)
