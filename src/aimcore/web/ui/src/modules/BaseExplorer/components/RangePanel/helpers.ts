@@ -26,7 +26,7 @@ export function getRangeAndDensityData(
   // calculating the items count in range
   const rangeTotalCount = total[1] - total[0] === 0 ? 1 : total[1] - total[0];
   // checking if the previous density is bigger then the items in the total range.
-  // setting the density value to the items count otherwise setting the the previous density.
+  // setting the density value to the items count otherwise setting the previous density.
   const density: number =
     prevDensity > rangeTotalCount ? rangeTotalCount : prevDensity;
 
@@ -36,7 +36,6 @@ export function getRangeAndDensityData(
 export function getRecordState(rangesData: any, rangeState: any) {
   const updatedRangesState: {
     record?: { slice: [number, number]; density: number };
-    index?: { slice: [number, number]; density: number };
   } = {};
 
   // checking is record data exist
@@ -46,22 +45,9 @@ export function getRecordState(rangesData: any, rangeState: any) {
     // setting record range slice and density
     updatedRangesState.record = getRangeAndDensityData(
       record_range_total,
-      record_range_used,
+      rangeState.record?.slice ?? record_range_used,
       rangeState.record?.density ?? 50,
     );
   }
-
-  // checking is index data exist
-  if (rangesData?.ranges?.index_range_total) {
-    const { index_range_total, index_range_used } = rangesData?.ranges;
-
-    // setting index range slice and density
-    updatedRangesState.index = getRangeAndDensityData(
-      index_range_total,
-      index_range_used,
-      rangeState.index?.density ?? 5,
-    );
-  }
-
   return updatedRangesState;
 }
