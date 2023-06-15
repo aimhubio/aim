@@ -590,7 +590,17 @@ class ScatterPlot(AimSequenceComponent):
 
 
 class ParallelPlot(AimSequenceComponent):
-    def __init__(self, data, dimensions='dimensions', values='values', color=[], stroke_style=[], options={}, key=None, block=None):
+    def __init__(
+            self,
+            data,
+            dimensions='dimensions',
+            values='values',
+            color=[],
+            stroke_style=[],
+            options={},
+            key=None,
+            block=None
+    ):
         component_type = "ParallelPlot"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
@@ -739,6 +749,9 @@ class Plotly(Component):
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
 
+        # validate all arguments passed in
+        fig = validate(fig, dict, "fig")
+
         self.data = fig.to_json()
 
         self.render()
@@ -842,7 +855,17 @@ class HTML(Component):
 
 
 class Text(Component):
-    def __init__(self, text, component='span', size='$3', weight='$2', color='$textPrimary', mono=False, key=None, block=None):
+    def __init__(
+            self,
+            text,
+            component='span',
+            size='$3',
+            weight='$2',
+            color='$textPrimary',
+            mono=False,
+            key=None,
+            block=None
+    ):
         component_type = "Text"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
@@ -902,7 +925,7 @@ class TypographyComponent(Component):
 
 
 class Header(TypographyComponent):
-    def __init__(self, text='', key=None, block=None):
+    def __init__(self, text, key=None, block=None):
         # validate all arguments passed in
         text = validate(text, str, "text")
 
@@ -915,7 +938,7 @@ class Header(TypographyComponent):
 
 
 class SubHeader(TypographyComponent):
-    def __init__(self, text='', key=None, block=None):
+    def __init__(self, text, key=None, block=None):
         # validate all arguments passed in
         text = validate(text, str, "text")
 
@@ -928,7 +951,7 @@ class SubHeader(TypographyComponent):
 
 
 class Code(Component):
-    def __init__(self, text='', language='python', key=None, block=None):
+    def __init__(self, text, language='python', key=None, block=None):
         component_type = "Code"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
@@ -1048,7 +1071,7 @@ class Slider(Component):
         value = validate(value, (int, float), "value")
         min = validate(min, (int, float), "min")
         max = validate(max, (int, float), "max")
-        step = None if step == None else validate(step, (int, float), "step")
+        step = None if step is None else validate(step, (int, float), "step")
         disabled = validate(disabled, bool, "disabled")
 
         # set the initial data for this component
@@ -1099,7 +1122,7 @@ class RangeSlider(Component):
         value = validate_num_tuple(value)
         min = validate(min, (int, float), "min")
         max = validate(max, (int, float), "max")
-        step = None if step == None else validate(step, (int, float), "step")
+        step = None if step is None else validate(step, (int, float), "step")
         disabled = validate(disabled, bool, "disabled")
 
         # set the initial data for this component
@@ -1122,7 +1145,7 @@ class RangeSlider(Component):
         self.render()
 
     def _get_step(self, value, step):
-        if step != None:
+        if step is not None:
             return step
         elif any(isinstance(n, float) for n in value):
             return 0.01
@@ -1185,9 +1208,9 @@ class NumberInput(Component):
         # validate all arguments passed in
         label = validate(label, str, "label")
         value = validate(value, (int, float), "value")
-        min = None if min == None else validate(min, (int, float), "min")
-        max = None if max == None else validate(max, (int, float), "max")
-        step = None if step == None else validate(step, (int, float), "step")
+        min = None if min is None else validate(min, (int, float), "min")
+        max = None if max is None else validate(max, (int, float), "max")
+        step = None if step is None else validate(step, (int, float), "step")
         disabled = validate(disabled, bool, "disabled")
 
         # set the initial data for this component
@@ -1210,7 +1233,7 @@ class NumberInput(Component):
         self.render()
 
     def _get_step(self, value, step):
-        if step != None:
+        if step is not None:
             return step
         elif isinstance(value, float):
             return 0.01
@@ -1266,7 +1289,7 @@ class Select(Component):
 
 
 class MultiSelect(Component):
-    def __init__(self, label='', options=('option 1', 'option 2'), index=[0], disabled=False,  key=None, block=None):
+    def __init__(self, label='', options=('option 1', 'option 2'), index=[0], disabled=False, key=None, block=None):
         component_type = "Select"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
@@ -1394,7 +1417,16 @@ class TextArea(Component):
 
 
 class Radio(Component):
-    def __init__(self, label='', options=('option 1', 'option 2'), index=0, orientation='vertical', disabled=False, key=None, block=None):
+    def __init__(
+            self,
+            label='',
+            options=('option 1', 'option 2'),
+            index=0,
+            orientation='vertical',
+            disabled=False,
+            key=None,
+            block=None
+    ):
         component_type = "Radio"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
@@ -1515,13 +1547,14 @@ class ToggleButton(Component):
 
 
 class Board(Component):
-    def __init__(self, path='', state=None, block=None, key=None):
+    def __init__(self, path, state={}, block=None, key=None):
         component_type = "Board"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
 
         # validate all arguments passed in
         path = validate(path, str, "path")
+        state = validate(state, dict, "state")
 
         self.data = path
 
@@ -1534,7 +1567,7 @@ class Board(Component):
 
 
 class BoardLink(Component):
-    def __init__(self, path='', text='Go To Board', new_tab=False, state=None, block=None, key=None):
+    def __init__(self, path, text='Go To Board', new_tab=False, state={}, block=None, key=None):
         component_type = "BoardLink"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
@@ -1543,6 +1576,7 @@ class BoardLink(Component):
         path = validate(path, str, "path")
         text = validate(text, str, "text")
         new_tab = validate(new_tab, bool, "new_tab")
+        state = validate(state, dict, "state")
 
         self.data = path
 
@@ -1560,7 +1594,7 @@ class BoardLink(Component):
         self.render()
 
     def on_navigation(self):
-        if self.board_state != None:
+        if self.board_state is not None:
             set_state(self.board_state, self.data)
 
 

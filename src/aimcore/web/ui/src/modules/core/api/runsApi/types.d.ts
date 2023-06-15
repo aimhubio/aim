@@ -24,24 +24,14 @@ export type RunsSearchQueryParams = {
   report_progress?: boolean;
 
   /**
-   * This parameter is used to indicate the range of records by index form index1 to index2 or "index1:index2"
+   * This parameter is used to indicate the start of the range slicing
    */
-  index_range?: Tuple<number> | string;
+  start?: string;
 
   /**
-   * This parameter is used to indicate the range of records by step form index1 to index2 or "index1:index2"
+   * This parameter is used to indicate the end of the range slicing
    */
-  record_range?: Tuple<number> | string;
-
-  /**
-   * This parameter is used to for simple sampling, indicates how many steps want to load including their objects
-   */
-  record_density?: number | string;
-
-  /**
-   * This parameter is used to for simple sampling, indicates how many objects want to load
-   */
-  index_density?: number | string;
+  stop?: string;
 
   exclude_params?: boolean;
   exclude_traces?: boolean;

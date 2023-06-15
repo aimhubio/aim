@@ -23,6 +23,7 @@ from .logging import (
 
 from .sequences import (
     Metric,
+    SystemMetric,
     TextSequence,
     ImageSequence,
     AudioSequence,
@@ -65,13 +66,17 @@ class Run(Container, Caller):
 
     @events.on.logs_collected
     def track_terminal_logs(self, log_lines: List[Tuple[str, int]], **kwargs):
+        if self._state.get('cleanup'):
+            return
         for (line, line_num) in log_lines:
             self.logs.track(LogLine(line), step=line_num + self._prev_logs_end)
 
     @events.on.system_resource_stats_collected
     def track_system_resources(self, stats: Dict[str, Any], context: Dict, **kwargs):
+        if self._state.get('cleanup'):
+            return
         for resource_name, usage in stats.items():
-            self.sequences[resource_name, context].track(usage)
+            self.sequences.typed_sequence(SystemMetric, resource_name, context).track(usage)
 
     @property
     def name(self) -> str:

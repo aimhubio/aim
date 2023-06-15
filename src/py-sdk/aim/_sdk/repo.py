@@ -27,18 +27,18 @@ logger = logging.getLogger(__name__)
 
 
 class Repo(object):
-    _pool = WeakValueDictionary()
+    _pool: Dict[str, 'Repo'] = WeakValueDictionary()
 
     @staticmethod
     def is_remote_path(path: str) -> bool:
         return path.startswith('aim://')
 
     @classmethod
-    def default(cls):
+    def default(cls) -> 'Repo':
         return cls.from_path('aim://127.0.0.1:53800')
 
     @classmethod
-    def from_path(cls, path: str, read_only: bool = True):
+    def from_path(cls, path: str, read_only: bool = True) -> 'Repo':
         """Named constructor for Repo for given path.
 
         Arguments:
@@ -56,6 +56,16 @@ class Repo(object):
             repo = cls(path, read_only=read_only)
             cls._pool[path] = repo
         return repo
+
+    @classmethod
+    def active_repo(cls) -> 'Repo':
+        if len(cls._pool) == 0:
+            return cls.default()
+        elif len(cls._pool) == 1:
+            path = next(cls._pool.keys())
+            return cls._pool[path]
+        else:
+            raise ValueError('Cannot determine active Repo. Please use Repo.from_path() instead.')
 
     def __init__(self, path: str, *, read_only: Optional[bool] = True):
         self.read_only = read_only
@@ -215,7 +225,8 @@ class Repo(object):
                 KeyNames.CONTAINER_TYPE: type_,
                 'required_typename': type_.get_full_typename(),
             })
-            return ContainerCollection[type_](query_context=query_context)
+            # return ContainerCollection[type_](query_context=query_context)
+            return ContainerCollection(query_context=query_context)
         if issubclass(orig_type, Sequence):
             query_context.update({
                 KeyNames.ALLOWED_VALUE_TYPES: type_utils.get_sequence_value_types(type_),
@@ -223,4 +234,5 @@ class Repo(object):
                 KeyNames.SEQUENCE_TYPE: type_,
                 'required_typename': type_.get_full_typename(),
             })
-            return SequenceCollection[type_](query_context=query_context)
+            # return SequenceCollection[type_](query_context=query_context)
+            return SequenceCollection(query_context=query_context)
