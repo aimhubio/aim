@@ -8,19 +8,22 @@ export interface RecordRanges {
   record_range_used?: [number, number];
 }
 
-export interface GroupedSequence<T = any> {
+export interface GroupedSequence<T = SequenceBase> {
   hash: string;
   params: Record<string, any>;
   sequences: Array<T>;
-  ranges?: IndexRanges & RecordRanges;
 }
 
-export interface Sequence_Metric {
+export interface SequenceBase {
+  name: string;
+  item_type: string;
+  range?: [number, number];
+}
+
+export interface Sequence_Metric extends SequenceBase {
   axis: Record<string, unknown>;
   axis_names: Array<string>;
   context: Record<string, unknown>;
-  item_type: string;
-  name: string;
   steps: Array<number>;
   values: Array<number>;
 }
