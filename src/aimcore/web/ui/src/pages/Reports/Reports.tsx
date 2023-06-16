@@ -23,12 +23,10 @@ function Reports(): React.FunctionComponentElement<React.ReactNode> {
   const {
     reports,
     isLoading,
-    notifyData,
     searchValue,
     filteredReports,
     onReportDelete,
     handleSearchChange,
-    onNotificationDelete,
   } = useReports();
 
   return (
@@ -67,7 +65,7 @@ function Reports(): React.FunctionComponentElement<React.ReactNode> {
                 {filteredReports?.length > 0 ? (
                   filteredReports.map((report: any) => (
                     <ReportCard
-                      key={report.id}
+                      key={report?.id}
                       onReportDelete={onReportDelete}
                       {...report}
                     />
@@ -110,12 +108,6 @@ function Reports(): React.FunctionComponentElement<React.ReactNode> {
           )}
         </BusyLoaderWrapper>
       </ReportsContainer>
-      {notifyData?.length > 0 && (
-        <NotificationContainer
-          handleClose={onNotificationDelete}
-          data={notifyData}
-        />
-      )}
     </ErrorBoundary>
   );
 }

@@ -3,7 +3,9 @@ import { getAPIHost } from 'config/config';
 import ENDPOINTS from 'services/api/endpoints';
 import NetworkService from 'services/NetworkService';
 
-const api = new NetworkService(`${getAPIHost()}${ENDPOINTS.APPS.BASE}`);
+import { ReportsProps, ReportsRequestBodyProps } from './types.d';
+
+const api = new NetworkService(`${getAPIHost()}${ENDPOINTS.REPORTS.BASE}`);
 
 /**
  * function fetchReportsList
@@ -12,7 +14,7 @@ const api = new NetworkService(`${getAPIHost()}${ENDPOINTS.APPS.BASE}`);
  */
 
 async function fetchReportsList(): Promise<any[]> {
-  return (await api.makeAPIGetRequest(ENDPOINTS.APPS.GET)).body;
+  return (await api.makeAPIGetRequest(ENDPOINTS.REPORTS.GET)).body;
 }
 
 /**
@@ -21,8 +23,8 @@ async function fetchReportsList(): Promise<any[]> {
  * @param id - id of report
  * @returns {Promise<any>}
  */
-async function fetchReport(id: string): Promise<any[]> {
-  return (await api.makeAPIGetRequest(`${ENDPOINTS.APPS.GET}/${id}`)).body;
+async function fetchReport(id: string): Promise<ReportsProps> {
+  return (await api.makeAPIGetRequest(`${ENDPOINTS.REPORTS.GET}${id}`)).body;
 }
 
 /**
@@ -31,9 +33,11 @@ async function fetchReport(id: string): Promise<any[]> {
  * @param reqBody - query body params
  * @returns {Promise<any>}
  */
-async function createReport(reqBody: any): Promise<any> {
+async function createReport(
+  reqBody: ReportsRequestBodyProps,
+): Promise<ReportsProps> {
   return (
-    await api.makeAPIPostRequest(`${ENDPOINTS.APPS.CREATE}`, {
+    await api.makeAPIPostRequest(`${ENDPOINTS.REPORTS.CREATE}`, {
       body: reqBody,
     })
   ).body;
@@ -48,7 +52,7 @@ async function createReport(reqBody: any): Promise<any> {
  */
 async function updateReport(id: string, reqBody: any): Promise<any> {
   return (
-    await api.makeAPIPutRequest(`${ENDPOINTS.APPS.UPDATE}/${id}`, {
+    await api.makeAPIPutRequest(`${ENDPOINTS.REPORTS.UPDATE}/${id}`, {
       body: reqBody,
     })
   ).body;
@@ -61,7 +65,7 @@ async function updateReport(id: string, reqBody: any): Promise<any> {
  * @returns {Promise<any>}
  */
 async function deleteReport(id: string): Promise<any> {
-  return (await api.makeAPIDeleteRequest(`${ENDPOINTS.APPS.DELETE}/${id}`))
+  return (await api.makeAPIDeleteRequest(`${ENDPOINTS.REPORTS.DELETE}/${id}`))
     .body;
 }
 

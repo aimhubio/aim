@@ -1,8 +1,7 @@
 import create from 'zustand';
 
-import { IconCheck } from '@tabler/icons-react';
-
 import { IToastProps } from 'components/kit_v2/Toast';
+import useNotificationServiceStore from 'components/NotificationServiceContainer/NotificationServiceStore';
 
 import {
   createReport,
@@ -11,8 +10,10 @@ import {
   fetchReportsList,
   updateReport,
 } from 'modules/core/api/reportsApi';
-
-import generateId from 'utils/generateId';
+import {
+  ReportsProps,
+  ReportsRequestBodyProps,
+} from 'modules/core/api/reportsApi/types.d';
 
 // Replace this with your actual IToastProps interface definition
 
@@ -22,10 +23,12 @@ interface ReportsStore {
   notifyData: IToastProps[];
   report: any;
   getReportsData: () => Promise<void>;
-  getReportData: (reportId: string) => Promise<void>;
+  getReportData: (reportId: string) => Promise<void | ReportsProps>;
   onReportDelete: (reportId: string) => Promise<void>;
-  deleteNotification: (id: string) => void;
-  addNotification: ({ status, message, icon }: any) => void;
+  onReportUpdate: (reportId: string, reportBody: any) => Promise<void>;
+  onReportCreate: (
+    reportBody: ReportsRequestBodyProps,
+  ) => Promise<ReportsProps | void>;
   destroy: () => void;
 }
 
@@ -34,62 +37,43 @@ const useReportsStore = create<ReportsStore>((set, get) => ({
   listData: [],
   notifyData: [],
   report: null,
-  addNotification: ({ status = 'success', message = '', icon = null }: any) => {
-    const id = generateId();
-    const notification: IToastProps = {
-      id,
-      icon,
-      status,
-      message,
-      onDelete: (id: any) => {
-        get().deleteNotification(id);
-      },
-    };
-    set({
-      notifyData: [...get().notifyData, notification],
-    });
-  },
-  deleteNotification: (id: string) => {
-    set({
-      notifyData: [...get().notifyData].filter((n) => n.id !== id),
-    });
-  },
   getReportsData: async () => {
+    set({ isLoading: true });
     try {
       const reportsData = await fetchReportsList();
       set({ listData: reportsData, isLoading: false });
     } catch (error: any) {
       set({ isLoading: false });
-      get().addNotification({
+      useNotificationServiceStore.getState().onNotificationAdd({
         status: 'error',
         message: error.message,
-        icon: <IconCheck />,
       });
     }
   },
 
   getReportData: async (reportId: string) => {
+    set({ isLoading: true });
     try {
       const reportData = await fetchReport(reportId);
       set({ report: reportData, isLoading: false });
     } catch (error: any) {
       set({ isLoading: false });
-      get().addNotification({
+      useNotificationServiceStore.getState().onNotificationAdd({
         status: 'error',
         message: error.message,
       });
     }
   },
 
-  onReportCreate: async (reportBody: any) => {
+  onReportCreate: async (reqBody: ReportsRequestBodyProps) => {
     try {
-      await createReport(reportBody);
-      get().addNotification({
+      await createReport(reqBody);
+      useNotificationServiceStore.getState().onNotificationAdd({
         status: 'success',
         message: 'Report created successfully',
       });
     } catch (error: any) {
-      get().addNotification({
+      useNotificationServiceStore.getState().onNotificationAdd({
         status: 'error',
         message: error.message,
       });
@@ -99,12 +83,12 @@ const useReportsStore = create<ReportsStore>((set, get) => ({
   onReportDelete: async (reportId: string) => {
     try {
       await deleteReport(reportId);
-      get().addNotification({
+      useNotificationServiceStore.getState().onNotificationAdd({
         status: 'success',
         message: 'Report deleted successfully',
       });
     } catch (error: any) {
-      get().addNotification({
+      useNotificationServiceStore.getState().onNotificationAdd({
         status: 'error',
         message: error.message,
       });
@@ -114,12 +98,12 @@ const useReportsStore = create<ReportsStore>((set, get) => ({
   onReportUpdate: async (reportId: string, reportBody: any) => {
     try {
       await updateReport(reportId, reportBody);
-      get().addNotification({
+      useNotificationServiceStore.getState().onNotificationAdd({
         status: 'success',
         message: 'Report updated successfully',
       });
     } catch (error: any) {
-      get().addNotification({
+      useNotificationServiceStore.getState().onNotificationAdd({
         status: 'error',
         message: error.message,
       });

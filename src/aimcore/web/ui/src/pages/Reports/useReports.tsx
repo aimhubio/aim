@@ -1,20 +1,21 @@
 import React from 'react';
-import { useModel } from 'hooks';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import * as analytics from 'services/analytics';
 import reportsAppModel from 'services/models/reports/reportsAppModel';
 
+import useReportsStore from './ReportsStore';
+
 function useReports() {
-  const reportsData = useModel(reportsAppModel);
+  const reportsList = useReportsStore((state) => state.listData);
+  const isLoading = useReportsStore((state) => state.isLoading);
+  const notifyData = useReportsStore((state) => state.notifyData);
+  const getReportsData = useReportsStore((state) => state.getReportsData);
 
   React.useEffect(() => {
-    reportsAppModel.initialize();
+    getReportsData();
     analytics.pageView(ANALYTICS_EVENT_KEYS.reports.pageView);
-    return () => {
-      reportsAppModel.destroy();
-    };
   }, []);
 
   const [searchValue, setSearchValue] = React.useState<string>('');
@@ -26,21 +27,21 @@ function useReports() {
 
   const filteredReports = React.useMemo(() => {
     if (!searchValue) {
-      return reportsData?.listData;
+      return reportsList;
     }
 
-    return reportsData?.listData?.filter((report: any) => {
+    return reportsList?.filter((report: any) => {
       return report.name.toLowerCase().includes(searchValue.toLowerCase());
     });
-  }, [reportsData?.listData, searchValue]);
+  }, [reportsList, searchValue]);
 
   return {
     searchValue,
     handleSearchChange,
-    reports: reportsData?.listData!,
+    reports: reportsList,
+    isLoading,
+    notifyData,
     filteredReports,
-    isLoading: reportsData?.isLoading!,
-    notifyData: reportsData?.notifyData,
     onReportDelete: reportsAppModel.onReportDelete,
     onNotificationDelete: reportsAppModel.onReportsNotificationDelete,
   };

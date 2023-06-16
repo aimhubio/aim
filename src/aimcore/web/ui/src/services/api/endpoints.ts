@@ -63,8 +63,8 @@ const ENDPOINTS = {
     RESET: '/reset',
   },
 
-  APPS: {
-    BASE: '/apps',
+  REPORTS: {
+    BASE: '/reports',
     GET: '',
     CREATE: '',
     UPDATE: '',

@@ -9,7 +9,6 @@ import { Spinner } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import CodeBlock from 'components/CodeBlock/CodeBlock';
-import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 import SplitPane, { SplitPaneItem } from 'components/SplitPane';
 import ResizingFallback from 'components/ResizingFallback';
 import RouteLeavingGuard from 'components/RouteLeavingGuard';
@@ -64,15 +63,13 @@ function Report({
   editMode,
   newMode,
   previewMode,
-  notifyData,
-  onNotificationDelete,
   saveReport,
 }: any): React.FunctionComponentElement<React.ReactNode> {
-  const reportId = data.id;
-
+  const reportId = data?.id;
   const { isLoading: pyodideIsLoading } = usePyodide();
-  let [value, setValue] = React.useState(data.code);
+  let [value, setValue] = React.useState(data?.code || '');
 
+  console.log({ newMode });
   return (
     <ErrorBoundary>
       <section className='Report'>
@@ -81,7 +78,7 @@ function Report({
             <Box flex='1 100%'>
               <Breadcrumb
                 customRouteValues={{
-                  [`/reports/${reportId}`]: data.name,
+                  [`/reports/${reportId}`]: data?.name || 'Report',
                 }}
               />
             </Box>
@@ -173,13 +170,7 @@ function Report({
         </BusyLoaderWrapper>
       </section>
       {(editMode || newMode) && (
-        <RouteLeavingGuard when={value !== data.code} />
-      )}
-      {notifyData?.length > 0 && (
-        <NotificationContainer
-          handleClose={onNotificationDelete}
-          data={notifyData}
-        />
+        <RouteLeavingGuard when={value !== data?.code} />
       )}
     </ErrorBoundary>
   );
