@@ -133,6 +133,11 @@ Metric.filter('sequence.name == "loss"').all()
 """)
 
 ui.html("""
+    More examples on how to use Aim SDK type system can be found below:
+""")
+ui.board_link('sdk/aim_types.py', 'Using Aim SDK Type System')
+
+ui.html("""
     The following sections explore Aim core classes interface in depth:
 """)
 
