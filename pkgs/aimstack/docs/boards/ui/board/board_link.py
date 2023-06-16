@@ -24,6 +24,6 @@ ui.table({
 })
 
 ui.subheader('Example')
-ui.code("""ui.board_link('ui/data/json.py', 'See "json" component docs', new_tab=True)""")
+ui.code("""ui.board_link('ui/data_viz/json.py', 'See "json" component docs', new_tab=True)""")
 
-ui.board_link('ui/data/json.py', 'See "json" component docs', new_tab=True)
+ui.board_link('ui/data_viz/json.py', 'See "json" component docs', new_tab=True)
