@@ -16,7 +16,7 @@ from .objects.distribution import Distribution
 from .objects.figures import Figure, Figure3D
 
 
-class Metric(Sequence[numbers.Number]):
+class DataframeMixin:
     def dataframe(
             self,
             include_name: bool = False,
@@ -69,6 +69,14 @@ class Metric(Sequence[numbers.Number]):
         import pandas as pd
         df = pd.DataFrame(data)
         return df
+
+
+class Metric(Sequence[numbers.Number], DataframeMixin):
+    ...
+
+
+class SystemMetric(Sequence[numbers.Number], DataframeMixin):
+    ...
 
 
 class TextSequence(Sequence[Union[Text, List[Text]]]):

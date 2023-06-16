@@ -1,3 +1,5 @@
+import random
+
 from fastapi.responses import StreamingResponse
 from fastapi import HTTPException
 
@@ -6,8 +8,12 @@ from aim._sdk.uri_service import URIService
 from aim._core.storage.encoding import encode_path, decode_path
 
 from aimcore.web.api.runs.pydantic_models import QuerySyntaxErrorOut
-from aimcore.web.api.utils import checked_query, collect_streamable_data, get_project_repo, \
-      APIRouter  # wrapper for fastapi.APIRouter
+from aimcore.web.api.utils import (
+    checked_query,
+    collect_streamable_data,
+    get_project_repo,
+    APIRouter  # wrapper for fastapi.APIRouter
+)
 
 from aim import Container, Sequence
 
@@ -46,7 +52,7 @@ def _process_values(repo: 'Repo', values_list: list, steps_list: list, sequence:
                 processed_val = val.dump()
                 if not val.RESOLVE_BLOBS:
                     khash_view = sequence._data.reservoir().container
-                    khash_step = decode_path(encode_path(khash_view.to_khash(step)))
+                    khash_step = decode_path(khash_view.to_khash(encode_path(step)))
                     additional_path = (*khash_step, 'val', 'data')
                     resource_path = uri_service.generate_resource_path(sequence._data.container, additional_path)
                     processed_val['blobs'] = {'data': uri_service.generate_uri(resource_path)}
@@ -61,7 +67,8 @@ def _sequence_data(repo: 'Repo',
                    sequence: Sequence,
                    p: Optional[int],
                    start: Optional[int],
-                   stop: Optional[int]) -> Dict:
+                   stop: Optional[int],
+                   sample_seed: str) -> Dict:
     data = {
         'name': sequence.name,
         'context': sequence.context,
@@ -70,7 +77,10 @@ def _sequence_data(repo: 'Repo',
         },
         'item_type': sequence.type,
         'axis_names': sequence.axis_names,
-        'axis': {}
+        'range': (sequence.start, sequence.stop),
+        'axis': {},
+        'steps': [],
+        'values': [],
     }
     if p is None and start is None and stop is None:
         steps_list = list(sequence.steps())
@@ -79,11 +89,16 @@ def _sequence_data(repo: 'Repo',
         for axis_name in sequence.axis_names:
             data['axis'][axis_name] = list(sequence.axis(axis_name))
     else:
-        steps, value_dicts = list(zip(*sequence[start:stop].sample(p)))
-        value_lists = {k: [d[k] for d in value_dicts] for k in value_dicts[0]}
-        data['steps'] = steps
-        data['values'] = _process_values(repo, value_lists.pop('val'), steps, sequence)
-        data['axis'] = value_lists
+        random.seed(sample_seed)  # use the query API qparams as sample seed
+        try:
+            steps, value_dicts = list(zip(*sequence[start:stop].sample(p)))
+            value_lists = {k: [d[k] for d in value_dicts] for k in value_dicts[0]}
+            data['steps'] = steps
+            data['values'] = _process_values(repo, value_lists.pop('val'), steps, sequence)
+            data['axis'] = value_lists
+        except Exception:
+            pass
+
     return data
 
 
@@ -99,9 +114,10 @@ async def sequence_search_result_streamer(repo: 'Repo',
                                           query_collection,
                                           p: Optional[int],
                                           start: Optional[int],
-                                          stop: Optional[int]):
+                                          stop: Optional[int],
+                                          sample_seed: str):
     for sequence in query_collection:
-        seq_data = {hash(sequence): _sequence_data(repo, sequence, p, start, stop)}
+        seq_data = {hash(sequence): _sequence_data(repo, sequence, p, start, stop, sample_seed)}
         encoded_tree = encode_tree(seq_data)
         yield collect_streamable_data(encoded_tree)
 
@@ -117,11 +133,12 @@ def sequence_query_grouped_response(repo: 'Repo',
                                     query_collection,
                                     p: Optional[int],
                                     start: Optional[int],
-                                    stop: Optional[int]):
+                                    stop: Optional[int],
+                                    sample_seed: str):
     #  TODO: V4 use repo query methods and grouping instead
     containers_data = {}
     for sequence in query_collection:
-        seq_data = _sequence_data(repo, sequence, p, start, stop)
+        seq_data = _sequence_data(repo, sequence, p, start, stop, sample_seed)
 
         cont_hash = sequence._container_hash
         if cont_hash not in containers_data:
@@ -153,7 +170,8 @@ async def data_fetch_api(type_: str,
         streamer = container_search_result_streamer(qresult)
     elif type_ in Sequence.registry:
         qresult = repo.sequences(query, type_)
-        streamer = sequence_search_result_streamer(repo, qresult, p, start, stop)
+        sample_seed = f'{query}_{p}_{start}_{stop}'
+        streamer = sequence_search_result_streamer(repo, qresult, p, start, stop, sample_seed)
     else:
         raise HTTPException(status_code=400, detail=f'Unknown type \'{type_}\'.')
     return StreamingResponse(streamer)
@@ -177,7 +195,8 @@ async def grouped_data_fetch_api(seq_type: Optional[str] = 'Sequence',
     else:
         query = f'container.type.startswith("{Container.registry[cont_type][0].get_full_typename()}")'
     qresult = repo.sequences(query, seq_type)
-    return sequence_query_grouped_response(repo, qresult, p, start, stop)
+    sample_seed = f'{query}_{p}_{start}_{stop}'
+    return sequence_query_grouped_response(repo, qresult, p, start, stop, sample_seed)
 
 
 URIBatchIn = List[str]

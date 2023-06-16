@@ -15,7 +15,9 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from aim._core.storage.treeview import TreeView
     from aim._sdk.container import Container
+    from aim._sdk.collections import SequenceCollection
     from aim._sdk.storage_engine import StorageEngine
+    from aim._sdk.repo import Repo
 
 _ContextInfo = Union[Dict, Context, int]
 
@@ -114,6 +116,13 @@ class Sequence(Generic[ItemType], ABCSequence):
         self.__storage_init__()
         return self
 
+    @classmethod
+    def filter(cls, expr: str = '', repo: 'Repo' = None) -> 'SequenceCollection':
+        if repo is None:
+            from aim._sdk.repo import Repo
+            repo = Repo.active_repo()
+        return repo.sequences(query_=expr, type_=cls)
+
     def _init_context(self, context: _ContextInfo):
         if isinstance(context, int):
             self._ctx_idx = context
@@ -148,6 +157,16 @@ class Sequence(Generic[ItemType], ABCSequence):
     def is_empty(self) -> bool:
         self._info.preload()
         return self._info.empty
+
+    @property
+    def start(self) -> int:
+        self._info.preload()
+        return self._info.first_step
+
+    @property
+    def stop(self) -> int:
+        self._info.preload()
+        return self._info.last_step
 
     @property
     def next_step(self) -> int:

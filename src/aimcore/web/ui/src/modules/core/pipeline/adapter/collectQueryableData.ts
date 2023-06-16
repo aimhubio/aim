@@ -1,45 +1,41 @@
-import { IndexRanges, RecordRanges } from 'types/core/AimObjects';
+import { RecordRanges } from 'types/core/AimObjects';
 import { GroupedSequence } from 'types/core/AimObjects/GroupedSequences';
 
 import { IQueryableData } from './types';
 
-function collectQueryableData(run: GroupedSequence): IQueryableData {
-  let queryable_data: {
-    ranges?: RecordRanges & IndexRanges;
-  } = {};
+function getTotalRange(groupedSeqs: GroupedSequence[]): [number, number] {
+  const total: [number, number] = [0, 0];
+  for (const groupedSeq of groupedSeqs) {
+    for (const sequence of groupedSeq.sequences) {
+      if (sequence.range) {
+        const [min = 0, max = 0] = sequence.range;
+        if (total[0] > min) {
+          total[0] = min;
+        }
+        if (total[1] < max) {
+          total[1] = max;
+        }
+      }
+    }
+  }
+  return [total[0], total[1] - 1];
+}
 
-  if (run && run.ranges) {
+function collectQueryableData(groupedSeqs: GroupedSequence[]): IQueryableData {
+  let queryable_data: { ranges?: RecordRanges } = {};
+
+  const total = getTotalRange(groupedSeqs);
+
+  if (groupedSeqs) {
     queryable_data = {
       ranges: {
-        // Those changes are made since python has a mathematical interval for ranges [start, end)
-        record_range_total: [
-          run.ranges.record_range_total?.[0] ?? 0,
-          (run.ranges.record_range_total?.[1] || 0) - 1,
-        ],
+        record_range_total: total,
         record_range_used: [
-          run.ranges.record_range_used?.[0] ?? 0,
-          (run.ranges.record_range_used?.[1] || 0) - 1,
+          groupedSeqs?.[0].sequences?.[0].range?.[0] || 0,
+          (groupedSeqs?.[0].sequences?.[0].range?.[1] || 1) - 1,
         ],
       },
     };
-
-    /**
-     * If the run has index ranges, we need to have IndexRanges on queryable_data object
-     *  otherwise the queryable_data object should have only RecordRanges, since this if statement ensures that it has RecordRanges
-     */
-    if (run.ranges.index_range_used && run.ranges.index_range_used.length) {
-      queryable_data.ranges = {
-        ...queryable_data.ranges,
-        index_range_total: [
-          run.ranges.index_range_total?.[0] ?? 0,
-          (run.ranges.index_range_total?.[1] || 0) - 1,
-        ],
-        index_range_used: [
-          run.ranges.index_range_used?.[0],
-          (run.ranges.index_range_used?.[1] || 0) - 1,
-        ],
-      };
-    }
   }
 
   return queryable_data;

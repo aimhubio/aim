@@ -1,6 +1,7 @@
 from .models.run import Run
 from .models.sequences import (
     Metric,
+    SystemMetric,
     TextSequence,
     ImageSequence,
     AudioSequence,
@@ -12,6 +13,7 @@ from .models.sequences import (
 __all__ = ['Run', 'ImageSequence', 'AudioSequence']
 
 __aim_types__ = [
-    Run, Metric, TextSequence, ImageSequence, AudioSequence,
+    Run, Metric, SystemMetric,
+    TextSequence, ImageSequence, AudioSequence,
     DistributionSequence, FigureSequence, Figure3DSequence
 ]

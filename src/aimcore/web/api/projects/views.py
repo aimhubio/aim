@@ -1,4 +1,3 @@
-import os
 from datetime import timedelta
 from typing import Optional, Tuple
 
@@ -7,18 +6,13 @@ from fastapi import Depends, HTTPException, Query, Header
 from aimcore.web.api.utils import get_project_repo, \
     APIRouter  # wrapper for fastapi.APIRouter
 
-from aimcore.web.configs import AIM_PROJECT_SETTINGS_FILE
 from aimcore.web.api.projects.project import Project
 from aimcore.web.api.projects.pydantic_models import (
     ProjectActivityApiOut,
     ProjectApiOut,
-    ProjectParamsOut,
-    ProjectPinnedSequencesApiIn,
-    ProjectPinnedSequencesApiOut,
     ProjectPackagesApiOut
 )
 from aimcore.web.api.utils import object_factory
-from aim._core.storage.locking import AutoFileLock
 from aim._ext.tracking import analytics
 
 projects_router = APIRouter()

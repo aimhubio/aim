@@ -40,6 +40,7 @@ class Object(AimStorageObject):
             if isinstance(data[key], BLOB):
                 if self.RESOLVE_BLOBS:
                     data[key] = data[key].load()
+                else:
+                    del data[key]
 
         return data
-
