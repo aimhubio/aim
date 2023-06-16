@@ -22,6 +22,6 @@ ui.table({
 })
 
 ui.subheader('Example')
-ui.code("""ui.board('ui/data/json.py')""")
+ui.code("""ui.board('ui/data_viz/json.py')""")
 
-ui.board('ui/data/json.py')
+ui.board('ui/data_viz/json.py')
