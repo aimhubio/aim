@@ -52,7 +52,7 @@ async function createReport(
  */
 async function updateReport(id: string, reqBody: any): Promise<any> {
   return (
-    await api.makeAPIPutRequest(`${ENDPOINTS.REPORTS.UPDATE}/${id}`, {
+    await api.makeAPIPutRequest(`${ENDPOINTS.REPORTS.UPDATE}${id}`, {
       body: reqBody,
     })
   ).body;
@@ -65,7 +65,7 @@ async function updateReport(id: string, reqBody: any): Promise<any> {
  * @returns {Promise<any>}
  */
 async function deleteReport(id: string): Promise<any> {
-  return (await api.makeAPIDeleteRequest(`${ENDPOINTS.REPORTS.DELETE}/${id}`))
+  return (await api.makeAPIDeleteRequest(`${ENDPOINTS.REPORTS.DELETE}${id}`))
     .body;
 }
 

@@ -21,8 +21,11 @@ interface ReportsStore {
   isLoading: boolean;
   listData: any[];
   notifyData: IToastProps[];
-  report: any;
+  report: ReportsProps | any;
+  editorValue: string;
+  setEditorValue: (value: string) => void;
   getReportsData: () => Promise<void>;
+  addCatchError: (error: any) => void;
   getReportData: (reportId: string) => Promise<void | ReportsProps>;
   onReportDelete: (reportId: string) => Promise<void>;
   onReportUpdate: (reportId: string, reportBody: any) => Promise<void>;
@@ -36,18 +39,29 @@ const useReportsStore = create<ReportsStore>((set, get) => ({
   isLoading: true,
   listData: [],
   notifyData: [],
-  report: null,
+  editorValue: '',
+  setEditorValue: (value: string) => {
+    set({ editorValue: value });
+  },
+  report: {
+    name: 'New Report',
+    description: '',
+    code: '',
+  },
+  addCatchError: (error: any) => {
+    set({ isLoading: false });
+    useNotificationServiceStore.getState().onNotificationAdd({
+      status: 'danger',
+      message: error.detail,
+    });
+  },
   getReportsData: async () => {
     set({ isLoading: true });
     try {
       const reportsData = await fetchReportsList();
       set({ listData: reportsData, isLoading: false });
     } catch (error: any) {
-      set({ isLoading: false });
-      useNotificationServiceStore.getState().onNotificationAdd({
-        status: 'error',
-        message: error.message,
-      });
+      get().addCatchError(error);
     }
   },
 
@@ -55,62 +69,72 @@ const useReportsStore = create<ReportsStore>((set, get) => ({
     set({ isLoading: true });
     try {
       const reportData = await fetchReport(reportId);
-      set({ report: reportData, isLoading: false });
-    } catch (error: any) {
-      set({ isLoading: false });
-      useNotificationServiceStore.getState().onNotificationAdd({
-        status: 'error',
-        message: error.message,
+      set({
+        report: reportData,
+        isLoading: false,
+        editorValue: reportData.code,
       });
+    } catch (error: any) {
+      get().addCatchError(error);
     }
   },
 
   onReportCreate: async (reqBody: ReportsRequestBodyProps) => {
     try {
-      await createReport(reqBody);
+      const report = await createReport(reqBody);
+      set({ listData: [...get().listData, report] });
       useNotificationServiceStore.getState().onNotificationAdd({
         status: 'success',
         message: 'Report created successfully',
       });
     } catch (error: any) {
-      useNotificationServiceStore.getState().onNotificationAdd({
-        status: 'error',
-        message: error.message,
-      });
+      get().addCatchError(error);
     }
   },
 
   onReportDelete: async (reportId: string) => {
     try {
       await deleteReport(reportId);
+      set({
+        listData: get().listData.filter((report) => report.id !== reportId),
+      });
       useNotificationServiceStore.getState().onNotificationAdd({
         status: 'success',
         message: 'Report deleted successfully',
       });
     } catch (error: any) {
-      useNotificationServiceStore.getState().onNotificationAdd({
-        status: 'error',
-        message: error.message,
-      });
+      get().addCatchError(error);
     }
   },
 
   onReportUpdate: async (reportId: string, reportBody: any) => {
     try {
-      await updateReport(reportId, reportBody);
+      const reportData = await updateReport(reportId, reportBody);
+      set({
+        listData: get().listData.map((report) =>
+          report.id === reportId ? reportData : report,
+        ),
+        report: reportData,
+      });
       useNotificationServiceStore.getState().onNotificationAdd({
         status: 'success',
         message: 'Report updated successfully',
       });
     } catch (error: any) {
-      useNotificationServiceStore.getState().onNotificationAdd({
-        status: 'error',
-        message: error.message,
-      });
+      get().addCatchError(error);
     }
   },
 
-  destroy: () => {},
+  destroy: () => {
+    set({
+      listData: [],
+      report: {
+        name: 'New Report',
+        description: '',
+        code: '',
+      },
+    });
+  },
 }));
 
 export default useReportsStore;

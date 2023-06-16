@@ -1,7 +1,5 @@
-import React from 'react';
+import * as React from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
-
-import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { PathEnum } from 'config/enums/routesEnum';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
@@ -9,17 +7,20 @@ import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 import useReportsStore from 'pages/Reports/ReportsStore';
 
 import * as analytics from 'services/analytics';
+import usePyodide from 'services/pyodide/usePyodide';
 
 import { setDocumentTitle } from 'utils/document/documentTitle';
 
-import Report from './Report';
-
-function ReportContainer(): React.FunctionComponentElement<React.ReactNode> {
+function useReport() {
+  const { isLoading: pyodideIsLoading } = usePyodide();
   const reportData = useReportsStore((state) => state.report);
+  const reportsList = useReportsStore((state) => state.listData);
   const isLoading = useReportsStore((state) => state.isLoading);
   const getReportData = useReportsStore((state) => state.getReportData);
   const createReport = useReportsStore((state) => state.onReportCreate);
   const updateReport = useReportsStore((state) => state.onReportUpdate);
+  const editorValue = useReportsStore((state) => state.editorValue);
+  const setEditorValue = useReportsStore((state) => state.setEditorValue);
   const { params, path } = useRouteMatch<any>();
   const history = useHistory();
 
@@ -27,7 +28,18 @@ function ReportContainer(): React.FunctionComponentElement<React.ReactNode> {
     if (params.reportId === 'new') {
       useReportsStore.setState({ isLoading: false });
     } else {
-      getReportData(params.reportId);
+      const foundReport = reportsList?.find(
+        (report: any) => report?.id === params.reportId,
+      );
+      if (foundReport?.id) {
+        useReportsStore.setState({
+          isLoading: false,
+          report: foundReport,
+          editorValue: foundReport.code,
+        });
+      } else {
+        getReportData(params.reportId);
+      }
     }
     analytics.pageView(ANALYTICS_EVENT_KEYS.report.pageView);
     return () => {
@@ -62,19 +74,30 @@ function ReportContainer(): React.FunctionComponentElement<React.ReactNode> {
     [params.reportId, reportData],
   );
 
-  return (
-    <ErrorBoundary>
-      {!isLoading && (
-        <Report
-          data={reportData}
-          isLoading={isLoading!}
-          editMode={path === PathEnum.Report_Edit}
-          newMode={params.reportId === 'new'}
-          saveReport={saveReport}
-        />
-      )}
-    </ErrorBoundary>
-  );
+  React.useEffect(() => {
+    return () => {
+      useReportsStore.setState({
+        editorValue: '',
+        report: {
+          name: 'New Report',
+          description: '',
+          code: '',
+        },
+      });
+    };
+  }, []);
+
+  return {
+    reportId: params.reportId,
+    data: reportData,
+    isLoading,
+    pyodideIsLoading,
+    editMode: path === PathEnum.Report_Edit,
+    newMode: params.reportId === 'new',
+    editorValue,
+    setEditorValue,
+    saveReport,
+  };
 }
 
-export default ReportContainer;
+export default useReport;

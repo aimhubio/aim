@@ -3,7 +3,6 @@ import React from 'react';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import * as analytics from 'services/analytics';
-import reportsAppModel from 'services/models/reports/reportsAppModel';
 
 import useReportsStore from './ReportsStore';
 
@@ -12,9 +11,12 @@ function useReports() {
   const isLoading = useReportsStore((state) => state.isLoading);
   const notifyData = useReportsStore((state) => state.notifyData);
   const getReportsData = useReportsStore((state) => state.getReportsData);
+  const onReportDelete = useReportsStore((state) => state.onReportDelete);
 
   React.useEffect(() => {
-    getReportsData();
+    if (reportsList?.length === 0) {
+      getReportsData();
+    }
     analytics.pageView(ANALYTICS_EVENT_KEYS.reports.pageView);
   }, []);
 
@@ -42,8 +44,7 @@ function useReports() {
     isLoading,
     notifyData,
     filteredReports,
-    onReportDelete: reportsAppModel.onReportDelete,
-    onNotificationDelete: reportsAppModel.onReportsNotificationDelete,
+    onReportDelete,
   };
 }
 

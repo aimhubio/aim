@@ -4,8 +4,7 @@ import { IconPlus } from '@tabler/icons-react';
 
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
-import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
-import { Box, Button, Input, Link, Text } from 'components/kit_v2';
+import { Box, Breadcrumb, Button, Input, Link, Text } from 'components/kit_v2';
 import Illustration, { ILLUSTRATION_TYPES } from 'components/Illustration';
 
 import { PathEnum } from 'config/enums/routesEnum';
@@ -32,7 +31,14 @@ function Reports(): React.FunctionComponentElement<React.ReactNode> {
   return (
     <ErrorBoundary>
       <TopBar>
-        <Text weight='$3'>Reports</Text>
+        <Breadcrumb
+          items={[
+            {
+              name: 'Reports',
+              path: PathEnum.Reports,
+            },
+          ]}
+        />
       </TopBar>
       <ReportsContainer>
         <BusyLoaderWrapper isLoading={isLoading} height='100%'>

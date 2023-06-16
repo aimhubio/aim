@@ -20,9 +20,8 @@ import { TopBar } from 'config/stitches/foundations/layout';
 
 import Board from 'pages/Board/Board';
 
-import usePyodide from 'services/pyodide/usePyodide';
-
 import SaveReport from './components/SaveReport';
+import useReport from './useReport';
 
 import './Report.scss';
 
@@ -58,18 +57,22 @@ const markdownComponentsOverride = {
 };
 
 function Report({
-  data,
-  isLoading,
-  editMode,
-  newMode,
   previewMode,
-  saveReport,
-}: any): React.FunctionComponentElement<React.ReactNode> {
-  const reportId = data?.id;
-  const { isLoading: pyodideIsLoading } = usePyodide();
-  let [value, setValue] = React.useState(data?.code || '');
+}: {
+  previewMode: boolean;
+}): React.FunctionComponentElement<React.ReactNode> {
+  const {
+    isLoading,
+    pyodideIsLoading,
+    data,
+    reportId,
+    editMode,
+    newMode,
+    editorValue,
+    setEditorValue,
+    saveReport,
+  } = useReport();
 
-  console.log({ newMode });
   return (
     <ErrorBoundary>
       <section className='Report'>
@@ -78,7 +81,7 @@ function Report({
             <Box flex='1 100%'>
               <Breadcrumb
                 customRouteValues={{
-                  [`/reports/${reportId}`]: data?.name || 'Report',
+                  [`/reports/${reportId}`]: data?.name,
                 }}
               />
             </Box>
@@ -86,7 +89,7 @@ function Report({
               <div className='Report__appBar__controls'>
                 <SaveReport
                   saveReport={saveReport}
-                  getEditorValue={() => value}
+                  getEditorValue={() => editorValue}
                   initialState={data}
                 />
                 <Link
@@ -128,8 +131,8 @@ function Report({
                   <Editor
                     language='markdown'
                     height='100%'
-                    value={value}
-                    onChange={(v) => setValue(v!)}
+                    value={editorValue || data?.code}
+                    onChange={(v) => setEditorValue(v!)}
                     loading={<span />}
                     options={{
                       tabSize: 4,
@@ -160,7 +163,7 @@ function Report({
                 >
                   {!pyodideIsLoading && (
                     <ReactMarkdown components={markdownComponentsOverride}>
-                      {value}
+                      {editorValue || data.code}
                     </ReactMarkdown>
                   )}
                 </div>
@@ -170,7 +173,7 @@ function Report({
         </BusyLoaderWrapper>
       </section>
       {(editMode || newMode) && (
-        <RouteLeavingGuard when={value !== data?.code} />
+        <RouteLeavingGuard when={editorValue !== data?.code} />
       )}
     </ErrorBoundary>
   );
