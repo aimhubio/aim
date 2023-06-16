@@ -970,38 +970,6 @@ class Code(Component):
 
 # AimHighLevelComponents
 
-class RunMessages(Component):
-    def __init__(self, run_hash, key=None, block=None):
-        component_type = "RunMessages"
-        component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type, block)
-
-        self.data = run_hash
-
-        self.render()
-
-
-class RunLogs(Component):
-    def __init__(self, run_hash, key=None, block=None):
-        component_type = "RunLogs"
-        component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type, block)
-
-        self.data = run_hash
-
-        self.render()
-
-
-class RunNotes(Component):
-    def __init__(self, run_hash, key=None, block=None):
-        component_type = "RunNotes"
-        component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type, block)
-
-        self.data = run_hash
-
-        self.render()
-
 
 class Explorer(Component):
     def __init__(self, name, query='', key=None, block=None):
@@ -1543,7 +1511,8 @@ class ToggleButton(Component):
     async def on_change(self, val):
         self.set_state({"value": val})
 
-# Super components
+
+# Board components
 
 
 class Board(Component):
@@ -1756,24 +1725,7 @@ class UI:
         union = Union(*args, **kwargs, block=self.block_context)
         return union
 
-    # Aim high level components
-    def run_messages(self, *args, **kwargs):
-        run_messages = RunMessages(*args, **kwargs, block=self.block_context)
-        return run_messages
-
-    def run_logs(self, *args, **kwargs):
-        run_logs = RunLogs(*args, **kwargs, block=self.block_context)
-        return run_logs
-
-    def run_notes(self, *args, **kwargs):
-        run_notes = RunNotes(*args, **kwargs, block=self.block_context)
-        return run_notes
-
-    def explorer(self, *args, **kwargs):
-        explorer = Explorer(*args, **kwargs, block=self.block_context)
-        return explorer
-
-    # Super components
+    # Board components
     def board(self, *args, **kwargs):
         board = Board(*args, **kwargs, block=self.block_context)
         return board
