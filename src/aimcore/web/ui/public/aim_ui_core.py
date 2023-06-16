@@ -764,7 +764,7 @@ class JSON(Component):
         super().__init__(component_key, component_type, block)
 
         # validate all arguments passed in
-        data = validate(data, dict, "data")
+        data = validate(data, (list, dict), "data")
 
         self.data = data
 
@@ -1003,11 +1003,12 @@ def get_component_batch_state(key, parent_block=None):
 # validate value type, otherwise raise an exception
 
 def validate(value, type_, prop_name):
-    if isinstance(value, type_):
-        return value
-    else:
-        raise Exception(f"Type of {prop_name} must be a {type_.__name__}")
-
+    if not isinstance(type_, tuple):
+        type_ = (type_,)
+    for t in type_:
+        if isinstance(value, t):
+            return value
+    raise Exception(f"Type of {prop_name} must be a {type_.__name__}")
 
 # check if all elements in list are numbers, otherwise raise an exception
 
@@ -1227,7 +1228,7 @@ class Select(Component):
 
         # validate all arguments passed in
         label = validate(label, str, "label")
-        options = validate(options, tuple, "options")
+        options = validate(options, (list, tuple), "options")
         index = validate(index, int, "index")
         disabled = validate(disabled, bool, "disabled")
 
