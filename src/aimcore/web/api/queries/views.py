@@ -78,7 +78,9 @@ def _sequence_data(repo: 'Repo',
         'item_type': sequence.type,
         'axis_names': sequence.axis_names,
         'range': (sequence.start, sequence.stop),
-        'axis': {}
+        'axis': {},
+        'steps': [],
+        'values': [],
     }
     if p is None and start is None and stop is None:
         steps_list = list(sequence.steps())
@@ -88,11 +90,15 @@ def _sequence_data(repo: 'Repo',
             data['axis'][axis_name] = list(sequence.axis(axis_name))
     else:
         random.seed(sample_seed)  # use the query API qparams as sample seed
-        steps, value_dicts = list(zip(*sequence[start:stop].sample(p)))
-        value_lists = {k: [d[k] for d in value_dicts] for k in value_dicts[0]}
-        data['steps'] = steps
-        data['values'] = _process_values(repo, value_lists.pop('val'), steps, sequence)
-        data['axis'] = value_lists
+        try:
+            steps, value_dicts = list(zip(*sequence[start:stop].sample(p)))
+            value_lists = {k: [d[k] for d in value_dicts] for k in value_dicts[0]}
+            data['steps'] = steps
+            data['values'] = _process_values(repo, value_lists.pop('val'), steps, sequence)
+            data['axis'] = value_lists
+        except Exception:
+            pass
+
     return data
 
 

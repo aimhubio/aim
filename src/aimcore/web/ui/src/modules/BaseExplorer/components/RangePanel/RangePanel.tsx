@@ -7,8 +7,6 @@ import { QueryFormState } from 'modules/core/engine/explorer/query/state';
 import getQueryParamsFromState from 'modules/core/utils/getQueryParamsFromState';
 import { IQueryableData } from 'modules/core/pipeline';
 
-import { GetSequenceName, SequenceType } from 'types/core/enums';
-
 import { getRecordState } from './helpers';
 import RangePanelItem from './RangePanelItem';
 
@@ -22,8 +20,6 @@ function RangePanel(props: IRangePanelProps) {
     engine,
     engine: { pipeline, query, useStore },
   } = props;
-  const sequenceType: SequenceType = pipeline.getSequenceType();
-  const sequenceName = GetSequenceName(sequenceType);
   const queryFormState: QueryFormState = useStore(query.form.stateSelector);
   const rangeState = useStore(query.ranges.stateSelector);
   const isFetching: boolean = useStore(pipeline.stateSelector) === 'fetching';
@@ -59,17 +55,6 @@ function RangePanel(props: IRangePanelProps) {
     [],
   );
 
-  const indexItemConfig = React.useMemo(
-    () => ({
-      sliderTitle: 'Indices',
-      countInputTitle: 'Indices count',
-      countTitleTooltip: `Number of ${sequenceName} per step`,
-      sliderTitleTooltip: `Index in the list of ${sequenceName} passed to track() call`,
-      type: 'index',
-    }),
-    [sequenceName],
-  );
-
   React.useEffect(() => {
     // creating the empty ranges state
     const updatedRangesState = getRecordState(rangesData, rangeState);
@@ -85,16 +70,13 @@ function RangePanel(props: IRangePanelProps) {
 
   const isOnlyOneStepAndIndexTracked = React.useMemo(() => {
     const ranges = rangesData?.ranges;
-    const isOnlyOneStep =
+    return (
       (ranges?.record_range_total &&
         ranges?.record_range_total[0] === ranges?.record_range_total[1]) ||
-      !ranges?.record_range_total;
-    const isOnlyOneIndex =
-      (ranges?.index_range_total &&
-        ranges?.index_range_total[0] === ranges?.index_range_total[1]) ||
-      !ranges?.index_range_total;
-    return isOnlyOneStep && isOnlyOneIndex;
+      !ranges?.record_range_total
+    );
   }, [rangesData]);
+
   return (
     <form
       className='RangePanel'
@@ -110,16 +92,6 @@ function RangePanel(props: IRangePanelProps) {
               <RangePanelItem
                 sliderName={'record'}
                 itemConfig={stepItemConfig}
-                onSubmit={onSubmit}
-                engine={engine}
-                ranges={rangeState}
-                rangesData={rangesData}
-              />
-            )}
-            {rangeState?.index?.slice && (
-              <RangePanelItem
-                sliderName={'index'}
-                itemConfig={indexItemConfig}
                 onSubmit={onSubmit}
                 engine={engine}
                 ranges={rangeState}

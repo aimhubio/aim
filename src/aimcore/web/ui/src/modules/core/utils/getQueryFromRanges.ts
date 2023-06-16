@@ -1,39 +1,36 @@
-import { IRangesState } from 'modules/BaseExplorer/components/RangePanel/RangePanel.d';
+import { IRangesState } from 'modules/BaseExplorer/components/RangePanel';
 
 /**
  * Returns the density and the slice of the range.
  *
- * @param {IRangesState} ranges The total of hte range.
- * @param {[number, number]} used The used slice of the range.
- * @return { record_range?: string, index_range?: string; record_density?: string, index_density?: string } the query of the ranges.
+ * @param {IRangesState} ranges The total of the range.
  */
 
 export function getQueryFromRanges(ranges: IRangesState): {
-  record_range?: string;
-  index_range?: string;
-  record_density?: string;
-  index_density?: string;
+  start?: string;
+  stop?: string;
+  p?: number;
 } {
   // creating the empty query object
   const queryRanges: {
-    record_range?: string;
-    index_range?: string;
-    record_density?: string;
-    index_density?: string;
+    start?: string;
+    stop?: string;
+    p?: number;
   } = {};
-  // checking if the record slice is exist
+  // check for record slice existence
   if (ranges?.record?.slice) {
     // setting the record range and density in query ranges object
     const slice = ranges.record.slice;
-    queryRanges.record_range = `${slice[0]}:${slice[1] + 1}`;
-    queryRanges.record_density = `${ranges.record?.density}` ?? '50';
-  }
-  // checking if the index slice is exist
-  if (ranges?.index?.slice) {
-    // setting the index range and density in query ranges object
-    const slice = ranges.index.slice;
-    queryRanges.index_range = `${slice[0]}:${slice[1] + 1}`;
-    queryRanges.index_density = `${ranges.index?.density}` ?? '5';
+    const start = slice[0];
+    /**
+      [start, stop), to include slice[1] in the query we need to add 1 to it,
+      since in python the stop is not included in the range
+     */
+    const stop = slice[1] + 1;
+
+    queryRanges.start = `${start}`;
+    queryRanges.stop = `${stop}`;
+    queryRanges.p = ranges.record?.density ?? 50;
   }
 
   return queryRanges;
