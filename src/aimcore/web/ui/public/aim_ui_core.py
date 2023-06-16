@@ -749,8 +749,8 @@ class Plotly(Component):
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
 
-        # validate all arguments passed in
-        fig = validate(fig, dict, "fig")
+        # TODO: validate plotly figure
+        # fig = validate(fig, dict, "fig")
 
         self.data = fig.to_json()
 
