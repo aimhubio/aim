@@ -171,6 +171,9 @@ const BoardVisualizerComponentsPane = styled(SplitPaneItem, {
     fw: 'wrap',
     maxHeight: '100%',
   },
+  ul: {
+    padding: '0 $12',
+  },
   variants: {
     loading: {
       true: {
