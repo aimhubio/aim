@@ -25,16 +25,6 @@ function CheckboxVizElement(
   const id = React.useMemo(generateId, []);
   return (
     <Box>
-      {props.options.label && (
-        <Text
-          as='label'
-          htmlFor={id}
-          lineHeight={1.5}
-          disabled={props.options.disabled}
-        >
-          {props.options.label}
-        </Text>
-      )}
       <Box display='flex' ai='center'>
         <Checkbox
           {...props.options}

@@ -113,7 +113,7 @@ const TreeList = ({ searchValue = '', data = [], ...props }: ITreeProps) => {
     <TreeListWrapper>
       <TreeComponent
         {...props}
-        height={props.height || 300}
+        height={props.height ?? 300}
         showIcon
         onExpand={onExpand}
         expandedKeys={expandedKeys}

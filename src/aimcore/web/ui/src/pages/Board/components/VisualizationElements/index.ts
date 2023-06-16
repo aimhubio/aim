@@ -296,7 +296,7 @@ const VizElementsMap: Record<VizElementKey, React.FunctionComponent<any>> = {
   RunNotes: RunNotesVizElement,
   Explorer: ExplorerVizElement,
 
-  // Super components
+  // Board components
   Board: BoardVizElement,
   BoardLink: BoardLinkVizElement,
 };

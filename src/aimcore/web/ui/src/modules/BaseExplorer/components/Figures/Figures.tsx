@@ -29,10 +29,8 @@ function Figures(props: IBoxContentProps) {
         let height = containerRef.current.offsetHeight + 20;
         let containerWidth = parentElement.offsetWidth;
         let containerHeight = parentElement.offsetHeight - 30;
-
         let wK = containerWidth / width; // Calculate width ratio
         let hK = containerHeight / height; // Calculate height ratio
-
         if (wK < 1 || hK < 1) {
           setScale(Math.min(wK, hK)); // Apply scale based on object-fit: 'contain' pattern
         } else {

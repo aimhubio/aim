@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { useLocation } from 'react-router-dom';
+import { useResizeObserver } from 'hooks';
 
 import { IconBrandPython } from '@tabler/icons-react';
 
@@ -12,6 +13,8 @@ import { BoardLink } from '../App.style';
 
 const AppSidebar: React.FC<any> = ({ boards, editMode }: AppSidebarProps) => {
   const location = useLocation();
+  const sidebarRef = React.useRef<any>(null);
+  const [height, setHeight] = React.useState<number>(0);
 
   const treeData = React.useMemo((): {
     tree: AppSidebarNode[];
@@ -72,8 +75,18 @@ const AppSidebar: React.FC<any> = ({ boards, editMode }: AppSidebarProps) => {
     return { tree, expandedKeys, selectedKeys };
   }, [boards, editMode, location.pathname]);
 
+  const resizeObserverCallback = React.useCallback(
+    (entries: ResizeObserverEntry[]) => {
+      setHeight(entries[0].contentRect.height);
+    },
+    [],
+  );
+
+  useResizeObserver(resizeObserverCallback, sidebarRef);
+
   return (
     <Box
+      ref={sidebarRef}
       width={200}
       css={{
         borderRight: '1px solid $border30',
@@ -82,6 +95,7 @@ const AppSidebar: React.FC<any> = ({ boards, editMode }: AppSidebarProps) => {
       }}
     >
       <Tree
+        height={height}
         selectedKeys={treeData.selectedKeys}
         expandedKeys={treeData.expandedKeys}
         data={treeData.tree}

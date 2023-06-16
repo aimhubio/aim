@@ -749,8 +749,8 @@ class Plotly(Component):
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
 
-        # validate all arguments passed in
-        fig = validate(fig, dict, "fig")
+        # TODO: validate plotly figure
+        # fig = validate(fig, dict, "fig")
 
         self.data = fig.to_json()
 
@@ -764,7 +764,7 @@ class JSON(Component):
         super().__init__(component_key, component_type, block)
 
         # validate all arguments passed in
-        data = validate(data, dict, "data")
+        data = validate(data, (list, dict), "data")
 
         self.data = data
 
@@ -778,7 +778,7 @@ class DataFrame(Component):
         super().__init__(component_key, component_type, block)
 
         # validate all arguments passed in
-        data = validate(data, dict, "data")
+        # TODO: validate data is a dataframe
 
         self.data = data.to_json(orient="records")
 
@@ -786,7 +786,7 @@ class DataFrame(Component):
 
 
 class Table(Component):
-    def __init__(self, data, renderer={}, key=None, block=None):
+    def __init__(self, data, renderer={}, selectable_rows=False, key=None, block=None):
         component_type = "Table"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
@@ -803,7 +803,8 @@ class Table(Component):
         }
         self.options = {
             "data": data,
-            "with_renderer": renderer is not None
+            "with_renderer": renderer is not None,
+            "selectable_rows": selectable_rows
         }
 
         if renderer:
@@ -841,13 +842,13 @@ class Table(Component):
 
 
 class HTML(Component):
-    def __init__(self, data, key=None, block=None):
+    def __init__(self, text, key=None, block=None):
         component_type = "HTML"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
 
         # validate all arguments passed in
-        data = validate(data, str, "data")
+        data = validate(text, str, "data")
 
         self.data = data
 
@@ -970,38 +971,6 @@ class Code(Component):
 
 # AimHighLevelComponents
 
-class RunMessages(Component):
-    def __init__(self, run_hash, key=None, block=None):
-        component_type = "RunMessages"
-        component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type, block)
-
-        self.data = run_hash
-
-        self.render()
-
-
-class RunLogs(Component):
-    def __init__(self, run_hash, key=None, block=None):
-        component_type = "RunLogs"
-        component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type, block)
-
-        self.data = run_hash
-
-        self.render()
-
-
-class RunNotes(Component):
-    def __init__(self, run_hash, key=None, block=None):
-        component_type = "RunNotes"
-        component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type, block)
-
-        self.data = run_hash
-
-        self.render()
-
 
 class Explorer(Component):
     def __init__(self, name, query='', key=None, block=None):
@@ -1034,11 +1003,12 @@ def get_component_batch_state(key, parent_block=None):
 # validate value type, otherwise raise an exception
 
 def validate(value, type_, prop_name):
-    if isinstance(value, type_):
-        return value
-    else:
-        raise Exception(f"Type of {prop_name} must be a {type_.__name__}")
-
+    if not isinstance(type_, tuple):
+        type_ = (type_,)
+    for t in type_:
+        if isinstance(value, t):
+            return value
+    raise Exception(f"Type of {prop_name} must be a {type_.__name__}")
 
 # check if all elements in list are numbers, otherwise raise an exception
 
@@ -1258,7 +1228,7 @@ class Select(Component):
 
         # validate all arguments passed in
         label = validate(label, str, "label")
-        options = validate(options, tuple, "options")
+        options = validate(options, (list, tuple), "options")
         index = validate(index, int, "index")
         disabled = validate(disabled, bool, "disabled")
 
@@ -1543,7 +1513,8 @@ class ToggleButton(Component):
     async def on_change(self, val):
         self.set_state({"value": val})
 
-# Super components
+
+# Board components
 
 
 class Board(Component):
@@ -1706,9 +1677,9 @@ class UI:
         header = Header(*args, **kwargs, block=self.block_context)
         return header
 
-    def sub_header(self, *args, **kwargs):
-        sub_header = SubHeader(*args, **kwargs, block=self.block_context)
-        return sub_header
+    def subheader(self, *args, **kwargs):
+        subheader = SubHeader(*args, **kwargs, block=self.block_context)
+        return subheader
 
     def code(self, *args, **kwargs):
         code = Code(*args, **kwargs, block=self.block_context)
@@ -1756,24 +1727,7 @@ class UI:
         union = Union(*args, **kwargs, block=self.block_context)
         return union
 
-    # Aim high level components
-    def run_messages(self, *args, **kwargs):
-        run_messages = RunMessages(*args, **kwargs, block=self.block_context)
-        return run_messages
-
-    def run_logs(self, *args, **kwargs):
-        run_logs = RunLogs(*args, **kwargs, block=self.block_context)
-        return run_logs
-
-    def run_notes(self, *args, **kwargs):
-        run_notes = RunNotes(*args, **kwargs, block=self.block_context)
-        return run_notes
-
-    def explorer(self, *args, **kwargs):
-        explorer = Explorer(*args, **kwargs, block=self.block_context)
-        return explorer
-
-    # Super components
+    # Board components
     def board(self, *args, **kwargs):
         board = Board(*args, **kwargs, block=self.block_context)
         return board
