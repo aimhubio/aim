@@ -786,7 +786,7 @@ class DataFrame(Component):
 
 
 class Table(Component):
-    def __init__(self, data, renderer={}, key=None, block=None):
+    def __init__(self, data, renderer={}, selectable_rows=False, key=None, block=None):
         component_type = "Table"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
@@ -803,7 +803,8 @@ class Table(Component):
         }
         self.options = {
             "data": data,
-            "with_renderer": renderer is not None
+            "with_renderer": renderer is not None,
+            "selectable_rows": selectable_rows
         }
 
         if renderer:
