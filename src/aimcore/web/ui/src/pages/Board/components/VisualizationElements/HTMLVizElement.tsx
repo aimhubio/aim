@@ -5,9 +5,14 @@ import { Box } from 'components/kit_v2';
 import { styled } from 'config/stitches';
 
 const HtmlVizElementContainer = styled(Box, {
+  width: '100%',
   display: 'flex',
   flexDirection: 'column',
   gap: '$13',
+  color: '$textPrimary',
+  fontFamily: '$inter',
+  fontSize: '$3',
+  fontWeight: '$2',
   '& h3': {
     fontSize: '$6',
     fontWeight: '$2',
@@ -21,16 +26,7 @@ const HtmlVizElementContainer = styled(Box, {
 
 function HTMLVizElement(props: any) {
   return (
-    <HtmlVizElementContainer
-      style={{ width: '100%' }}
-      css={{
-        color: '$textPrimary',
-        fontFamily: '$inter',
-        fontSize: '$3',
-        fontWeight: '$2',
-      }}
-      dangerouslySetInnerHTML={{ __html: props.data }}
-    />
+    <HtmlVizElementContainer dangerouslySetInnerHTML={{ __html: props.data }} />
   );
 }
 
