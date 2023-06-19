@@ -841,20 +841,6 @@ class Table(Component):
         self.set_state({"focused_row": val.to_py()})
 
 
-class HTML(Component):
-    def __init__(self, text, key=None, block=None):
-        component_type = "HTML"
-        component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type, block)
-
-        # validate all arguments passed in
-        data = validate(text, str, "data")
-
-        self.data = data
-
-        self.render()
-
-
 class Text(Component):
     def __init__(
             self,
@@ -969,6 +955,34 @@ class Code(Component):
         self.render()
 
 
+class HTML(Component):
+    def __init__(self, text, key=None, block=None):
+        component_type = "HTML"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type, block)
+
+        # validate all arguments passed in
+        data = validate(text, str, "data")
+
+        self.data = data
+
+        self.render()
+
+
+class Markdown(Component):
+    def __init__(self, text, key=None, block=None):
+        component_type = "Markdown"
+        component_key = update_viz_map(component_type, key)
+        super().__init__(component_key, component_type, block)
+
+        # validate all arguments passed in
+        data = validate(text, str, "data")
+
+        self.data = data
+
+        self.render()
+
+
 # AimHighLevelComponents
 
 
@@ -1011,6 +1025,7 @@ def validate(value, type_, prop_name):
     raise Exception(f"Type of {prop_name} must be a {type_.__name__}")
 
 # check if all elements in list are numbers, otherwise raise an exception
+
 
 def validate_num_list(value):
     if (all([isinstance(item, (int, float)) for item in value])):
@@ -1665,10 +1680,6 @@ class UI:
         table = Table(*args, **kwargs, block=self.block_context)
         return table
 
-    def html(self, *args, **kwargs):
-        html = HTML(*args, **kwargs, block=self.block_context)
-        return html
-
     def link(self, *args, **kwargs):
         link = Link(*args, **kwargs, block=self.block_context)
         return link
@@ -1684,6 +1695,14 @@ class UI:
     def code(self, *args, **kwargs):
         code = Code(*args, **kwargs, block=self.block_context)
         return code
+
+    def html(self, *args, **kwargs):
+        html = HTML(*args, **kwargs, block=self.block_context)
+        return html
+
+    def markdown(self, *args, **kwargs):
+        markdown = Markdown(*args, **kwargs, block=self.block_context)
+        return markdown
 
     # Aim sequence viz components
     def line_chart(self, *args, **kwargs):

@@ -124,7 +124,7 @@ ui.code("""
 ####################################
 
 # Option 1: Use Repo.sequence method
-r.sequences('sequence.name == "loss", Metric).all()
+r.sequences('sequence.name == "loss"', Metric).all()
 
 # Option 2: Use Metric.filter classmethod
 from aimstack.asp import Metric
