@@ -82,11 +82,24 @@ const useReportsStore = create<ReportsStore>((set, get) => ({
   onReportCreate: async (reqBody: ReportsRequestBodyProps) => {
     try {
       const report = await createReport(reqBody);
-      set({ listData: [...get().listData, report] });
+      const listData = get().listData;
+      if (listData.length !== 0) {
+        set({
+          listData: [...listData, report],
+        });
+      }
+      set({
+        report: {
+          name: report.name,
+          description: report.description,
+          code: report.code,
+        },
+      });
       useNotificationServiceStore.getState().onNotificationAdd({
         status: 'success',
         message: 'Report created successfully',
       });
+      return report;
     } catch (error: any) {
       get().addCatchError(error);
     }
