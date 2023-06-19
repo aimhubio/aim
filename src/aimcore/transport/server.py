@@ -85,6 +85,10 @@ def create_app():
     )
     heartbeat_watcher.start()
 
+    @api_app.get('/status/')
+    async def status():
+        return {'status': 'OK'}
+
     @api_app.websocket('/tracking/{client_uri}/write-instruction/')
     async def run_write_instructions(websocket: WebSocket, client_uri: str):
         await TrackingRouter.manager.connect(websocket)
