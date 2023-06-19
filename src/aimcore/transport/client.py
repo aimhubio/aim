@@ -5,7 +5,6 @@ import os
 import threading
 import uuid
 import weakref
-from collections import defaultdict
 from copy import deepcopy
 from typing import Tuple
 from websockets.sync.client import connect
@@ -227,6 +226,8 @@ class Client:
         raise_exception(response_json)
 
     def start_instructions_batch(self, hash_):
+        if getattr(self._thread_local, 'atomic_instructions', None) is None:
+            self._thread_local.atomic_instructions = {}
         self._thread_local.atomic_instructions[hash_] = []
 
     def flush_instructions_batch(self, hash_):

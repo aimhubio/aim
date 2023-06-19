@@ -43,6 +43,7 @@ const Select = ({
   options = [],
   size = 'md',
   height = 256,
+  disabled = false,
 }: ISelectProps) => {
   const [search, setSearch] = React.useState('');
   const onSearchChange = React.useCallback((e) => {
@@ -179,12 +180,15 @@ const Select = ({
           ? trigger(open)
           : trigger || (
               <Button
+                disabled={disabled}
                 variant='outlined'
                 color='secondary'
                 rightIcon={open ? <IconCaretUp /> : <IconCaretDown />}
                 {...triggerProps}
               >
-                <Text css={{ flex: '1' }}>{triggerPlaceholder}</Text>
+                <Text css={{ flex: '1' }} disabled={disabled}>
+                  {triggerPlaceholder}
+                </Text>
               </Button>
             )
       }

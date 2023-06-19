@@ -1,26 +1,39 @@
 import * as React from 'react';
 
-import { Checkbox } from 'components/kit_v2';
+import { Box, Checkbox, Text } from 'components/kit_v2';
+
+import generateId from 'utils/generateId';
 
 function CheckboxVizElement(
   props: any,
 ): React.FunctionComponentElement<React.ReactNode> {
-  const [checked, setChecked] = React.useState(props.value);
+  const [checked, setChecked] = React.useState(props.options.value);
 
   React.useEffect(() => {
-    if (props.value !== checked) {
-      setChecked(props.value);
+    if (props.options.value !== checked) {
+      setChecked(props.options.value);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.data]);
+  }, [props.options.value]);
 
   const onChange = React.useCallback((checked) => {
     setChecked(checked);
     props.callbacks?.on_change(checked);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const id = React.useMemo(generateId, []);
   return (
-    <Checkbox {...props.options} checked={checked} onCheckedChange={onChange} />
+    <Box>
+      <Box display='flex' ai='center'>
+        <Checkbox
+          {...props.options}
+          id={id}
+          checked={checked}
+          onCheckedChange={onChange}
+        />
+      </Box>
+    </Box>
   );
 }
 

@@ -113,7 +113,11 @@ class Container:
         """
         ...
 
-    def items(self, begin: ContainerKey = b'', end: ContainerKey = b'') -> Iterator[Tuple[ContainerKey, ContainerValue]]:
+    def items(
+        self,
+        begin: ContainerKey = b'',
+        end: ContainerKey = b''
+    ) -> Iterator[Tuple[ContainerKey, ContainerValue]]:
         """Iterate over all the key-value records in the prefix key range.
 
         The iteration is always performed in lexiographic order w.r.t keys.

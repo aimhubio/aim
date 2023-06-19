@@ -1,39 +1,55 @@
 import * as React from 'react';
 
-import { Select } from 'components/kit_v2';
+import { Box, Select, Text } from 'components/kit_v2';
+
+import generateId from 'utils/generateId';
 
 function SelectVizElement(props: any) {
-  const options = (props.options.options || []).map((opt: string) => ({
-    value: opt,
-    label: opt,
+  const options: { value: string; label: string }[] = (
+    props.options.options || []
+  ).map((option: string) => ({
+    value: `${option}`,
+    label: `${option}`,
   }));
 
   const onChange = (val: string) => {
     if (typeof props.callbacks?.on_change === 'function') {
-      const index = options.findIndex((opt: any) => opt.value === val);
-      props.callbacks.on_change(val, index);
+      props.callbacks.on_change(val);
     }
   };
 
   const id = React.useMemo(
-    () => `${props.options.isMulti ? 'multi_' : ''}select_${Date.now()}`,
-    [],
+    () => `${props.options.isMulti ? 'multi_' : ''}select_${generateId()}`,
+    [props.options.isMulti],
   );
   return (
-    <Select
-      key={id}
-      multiple={props.options.isMulti}
-      searchable
-      value={props.options.value}
-      popoverProps={{ align: 'start' }}
-      options={[
-        {
-          group: '',
-          options,
-        },
-      ]}
-      onValueChange={onChange}
-    />
+    <Box display='flex' fd='column'>
+      {props.options.label && (
+        <Text
+          as='label'
+          htmlFor={id}
+          lineHeight={1.5}
+          disabled={props.options.disabled}
+        >
+          {props.options.label}
+        </Text>
+      )}
+      <Select
+        key={id}
+        multiple={props.options.isMulti}
+        searchable
+        disabled={props.options.disabled}
+        value={props.options.value}
+        popoverProps={{ align: 'start' }}
+        options={[
+          {
+            group: '',
+            options,
+          },
+        ]}
+        onValueChange={onChange}
+      />
+    </Box>
   );
 }
 

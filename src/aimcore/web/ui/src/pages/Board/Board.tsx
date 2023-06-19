@@ -156,18 +156,9 @@ def set_session_state(state_slice):
             queryKeysForCacheCleaningRef.current[queryKey] = false;
           }
         }
-        const code =
-          resetCode +
-          state.execCode.replace(
-            /Repo.filter(\((.|\n)*?\))/g,
-            (match: string) => {
-              return `${match}
-board_path=${boardPath === undefined ? 'None' : `"${boardPath}"`}
-`;
-            },
-          );
 
-        await pyodide?.runPythonAsync(code, { globals: namespace });
+        pyodide?.runPython(resetCode, { globals: namespace });
+        await pyodide?.runPythonAsync(state.execCode, { globals: namespace });
 
         setState((s: any) => ({
           ...s,
@@ -175,6 +166,9 @@ board_path=${boardPath === undefined ? 'None' : `"${boardPath}"`}
           isProcessing: false,
         }));
       } catch (ex: any) {
+        if (ex.type === 'WaitForQueryError') {
+          return;
+        }
         // eslint-disable-next-line no-console
         console.log(ex);
         setState((s: any) => ({

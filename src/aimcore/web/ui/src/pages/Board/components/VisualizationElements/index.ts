@@ -1,5 +1,12 @@
 import React from 'react';
 
+const ParallelPlotVizElement = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "ParallelPlot" */ './ParallelPlotVizElement'
+    ),
+);
+
 const LineChartVizElement = React.lazy(
   () =>
     import(
@@ -243,7 +250,8 @@ export type VizElementKey =
   | 'BoardLink'
   | 'BarChart'
   | 'NivoLineChart'
-  | 'ScatterPlot';
+  | 'ScatterPlot'
+  | 'ParallelPlot';
 
 const VizElementsMap: Record<VizElementKey, React.FunctionComponent<any>> = {
   // input elements
@@ -280,6 +288,7 @@ const VizElementsMap: Record<VizElementKey, React.FunctionComponent<any>> = {
   Texts: TextsVizElement,
   BarChart: BarChartVizElement,
   ScatterPlot: ScatterPlotVizElement,
+  ParallelPlot: ParallelPlotVizElement,
 
   // Aim high level components
   RunMessages: RunMessagesVizElement,
@@ -287,7 +296,7 @@ const VizElementsMap: Record<VizElementKey, React.FunctionComponent<any>> = {
   RunNotes: RunNotesVizElement,
   Explorer: ExplorerVizElement,
 
-  // Super components
+  // Board components
   Board: BoardVizElement,
   BoardLink: BoardLinkVizElement,
 };
