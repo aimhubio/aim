@@ -213,3 +213,19 @@ def fetch_blobs_batch(repo: 'Repo', uri_batch: List[str]) -> Iterator[bytes]:
 async def fetch_blobs_api(uri_batch: URIBatchIn):
     repo = get_project_repo()
     return StreamingResponse(fetch_blobs_batch(repo, uri_batch))
+
+
+@query_router.post('/run/')
+async def run_function(func_name: str, request_data: Dict):
+    from aim._sdk.function import Function
+    function = Function.registry[func_name]
+    res = function.execute(**request_data)
+    if isinstance(res, Iterable):
+        def result_streamer():
+            for it in res:
+                yield collect_streamable_data(encode_tree(it))
+    else:
+        def result_streamer():
+            yield collect_streamable_data(encode_tree(res))
+
+    return StreamingResponse(result_streamer())

@@ -18,7 +18,9 @@ class Package:
         self._boards: List[str] = []
         self._registered_containers = []
         self._registered_sequences = []
+        self._registered_functions = []
         self.register_aim_package_classes(name, pkg)
+        self.register_aim_package_functions(name, pkg)
         self.register_aim_package_boards(pkg)
 
     @property
@@ -36,6 +38,10 @@ class Package:
     @property
     def sequences(self) -> List:
         return self._registered_sequences
+
+    @property
+    def functions(self) -> List:
+        return self._registered_functions
 
     @staticmethod
     def discover(base_pkg):
@@ -69,6 +75,15 @@ class Package:
                 self._registered_containers.append(aim_type.get_typename())
             if issubclass(aim_type, Sequence):
                 self._registered_sequences.append(aim_type.get_typename())
+
+    def register_aim_package_functions(self, name, pkg):
+        if not hasattr(pkg, '__aim_functions__'):
+            return
+        from aim._sdk.function import Function
+        for func in pkg.__aim_functions__:
+            f = Function(func, name)
+            Function.registry[f.name] = f
+            self._registered_functions.append(f.name)
 
     def register_aim_package_boards(self, pkg):
         boards_path = getattr(pkg, '__aim_boards__', 'boards')
