@@ -1,14 +1,10 @@
-import {
-  IndexRanges,
-  RecordRanges,
-  AimFlatObjectBase,
-} from 'types/core/AimObjects';
+import { RecordRanges, AimFlatObjectBase } from 'types/core/AimObjects';
 import { Context } from 'types/core/shared';
 
 export type ProcessInterceptor = (...arg: any) => any;
 
 export interface IQueryableData {
-  ranges?: RecordRanges & IndexRanges;
+  ranges?: RecordRanges;
 }
 
 export interface ProcessedData {

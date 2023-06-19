@@ -24,17 +24,6 @@ export interface RunProps {
   end_time: number | null;
 }
 
-export interface RunInfo {
-  params: Params;
-  traces: Record<string, Array<SequenceOverview>>;
-  props: RunProps;
-}
-
-export interface IndexRanges {
-  index_range_total?: [number, number];
-  index_range_used?: [number, number];
-}
-
 export interface RecordRanges {
   record_range_total?: [number, number];
   record_range_used?: [number, number];
