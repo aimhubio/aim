@@ -30,7 +30,7 @@ export function storageDataToFlatList(
   let sequenceInfo: string[] = [];
   let recordInfo: string[] = [];
 
-  const queryable_data = collectQueryableData(groupedSeqs);
+  const queryable_data = collectQueryableData(groupedSeqs, sequenceType);
 
   function pushToObjectList(object: AimFlatObjectBase) {
     objectList.push(object);
