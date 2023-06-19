@@ -55,6 +55,7 @@ def create_app():
     from aimcore.web.api.dashboards.views import dashboards_router
     from aimcore.web.api.projects.views import projects_router
     from aimcore.web.api.boards.views import boards_router
+    from aimcore.web.api.reports.views import reports_router
     from aimcore.web.api.queries.views import query_router
     from aimcore.web.api.views import statics_router
     from aimcore.web.configs import AIM_UI_BASE_PATH
@@ -80,6 +81,7 @@ def create_app():
     api_app.include_router(dashboard_apps_router, prefix='/apps')
     api_app.include_router(dashboards_router, prefix='/dashboards')
     api_app.include_router(boards_router, prefix='/boards')
+    api_app.include_router(reports_router, prefix='/reports')
     api_app.include_router(projects_router, prefix='/projects')
     api_app.include_router(query_router, prefix='/data')
 

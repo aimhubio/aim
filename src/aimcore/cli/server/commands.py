@@ -4,7 +4,12 @@ import click
 from aimcore.cli.utils import set_log_level
 from aim._sdk.repo import Repo
 from aim._sdk.package_utils import Package
-from aimcore.transport.config import AIM_SERVER_DEFAULT_HOST, AIM_SERVER_DEFAULT_PORT, AIM_SERVER_MOUNTED_REPO_PATH
+from aimcore.transport.config import (
+    AIM_SERVER_DEFAULT_HOST,
+    AIM_SERVER_DEFAULT_PORT,
+    AIM_SERVER_MOUNTED_REPO_PATH,
+    AIM_SERVER_BASE_PATH
+)
 from aimcore.transport.server import start_server
 
 from aim._ext.tracking import analytics
@@ -26,14 +31,22 @@ from aim._ext.tracking import analytics
                                                                 file_okay=True,
                                                                 dir_okay=False,
                                                                 readable=True))
+@click.option('--base-path', required=False, default='', type=str)
 @click.option('--log-level', required=False, default='', type=str)
 @click.option('-y', '--yes', is_flag=True, help='Automatically confirm prompt')
 def server(host, port,
            repo, package, ssl_keyfile, ssl_certfile,
-           log_level, yes):
+           base_path, log_level, yes):
     # TODO [MV, AT] remove code duplication with aim up cmd implementation
     if log_level:
         set_log_level(log_level)
+
+    if base_path:
+        if base_path.endswith('/'):
+            base_path = base_path[:-1]
+        if not base_path.startswith('/'):
+            base_path = f'/{base_path}'
+        os.environ[AIM_SERVER_BASE_PATH] = base_path
 
     if not Repo.exists(repo):
         init_repo = yes or click.confirm(f'\'{repo}\' is not a valid Aim repository. Do you want to initialize it?')
