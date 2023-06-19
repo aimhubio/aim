@@ -14,7 +14,7 @@ const markdownComponentsOverride = {
   },
 };
 
-function HTMLVizElement(props: any) {
+function MarkdownVizElement(props: any) {
   return (
     <Box
       style={{ width: '100%' }}
@@ -32,4 +32,4 @@ function HTMLVizElement(props: any) {
   );
 }
 
-export default HTMLVizElement;
+export default MarkdownVizElement;
