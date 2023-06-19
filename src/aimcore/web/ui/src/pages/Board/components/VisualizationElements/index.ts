@@ -85,6 +85,12 @@ const HTMLVizElement = React.lazy(
       /* webpackPrefetch: true, webpackChunkName: "HTML" */ './HTMLVizElement'
     ),
 );
+const MarkdownVizElement = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "Markdown" */ './MarkdownVizElement'
+    ),
+);
 const TextVizElement = React.lazy(
   () =>
     import(
@@ -224,6 +230,7 @@ export type VizElementKey =
   | 'Texts'
   | 'JSON'
   | 'HTML'
+  | 'Markdown'
   | 'Text'
   | 'Link'
   | 'Select'
@@ -267,28 +274,33 @@ const VizElementsMap: Record<VizElementKey, React.FunctionComponent<any>> = {
   Checkbox: CheckboxVizElement,
   ToggleButton: ToggleButtonVizElement,
 
-  // data display elements
-  Plotly: PlotlyVizElement,
-  DataFrame: DataFrameVizElement,
-  Table: TableVizElement,
-  JSON: JSONVizElement,
-  HTML: HTMLVizElement,
+  // text elements
   Text: TextVizElement,
-  Link: LinkVizElement,
   Header: TextVizElement,
   SubHeader: TextVizElement,
   Code: CodeVizElement,
+  Link: LinkVizElement,
+  HTML: HTMLVizElement,
+  Markdown: MarkdownVizElement,
+
+  // data display elements
+  DataFrame: DataFrameVizElement,
+  Table: TableVizElement,
+  JSON: JSONVizElement,
+
+  // charts
+  LineChart: LineChartVizElement,
+  Plotly: PlotlyVizElement,
+  NivoLineChart: NivoLineChartVizElement,
+  BarChart: BarChartVizElement,
+  ScatterPlot: ScatterPlotVizElement,
+  ParallelPlot: ParallelPlotVizElement,
 
   // Aim sequence viz components
-  LineChart: LineChartVizElement,
-  NivoLineChart: NivoLineChartVizElement,
   Figures: FiguresVizElement,
   Audios: AudiosVizElement,
   Images: ImagesVizElement,
   Texts: TextsVizElement,
-  BarChart: BarChartVizElement,
-  ScatterPlot: ScatterPlotVizElement,
-  ParallelPlot: ParallelPlotVizElement,
 
   // Aim high level components
   RunMessages: RunMessagesVizElement,
