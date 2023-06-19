@@ -1,6 +1,6 @@
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 
-import { AppNameEnum } from 'services/models/explorer';
+import { AppNameEnum } from 'types/global.d';
 
 export const TABLE_COLUMN_START_COLOR_SCALE = '#F8EF42';
 export const TABLE_COLUMN_END_COLOR_SCALE = '#0FD64F';
@@ -38,22 +38,6 @@ export const SELECTION_COLUMN_WIDTH = 32;
 export const VIEW_PORT_OFFSET = 500;
 
 export const TABLE_DEFAULT_CONFIG: Record<string, any> = {
-  [AppNameEnum.RUNS]: {
-    resizeMode: ResizeModeEnum.Resizable,
-    rowHeight: RowHeightSize.md,
-    sortFields: [],
-    hideSystemMetrics: true,
-    hiddenMetrics: [],
-    hiddenColumns: ['hash', 'description'],
-    nonHidableColumns: new Set(['#', 'run']),
-    columnsWidths: {},
-    columnsOrder: {
-      left: ['run'],
-      middle: [],
-      right: [],
-    },
-    height: '0.5',
-  },
   [AppNameEnum.METRICS]: {
     resizeMode: ResizeModeEnum.Resizable,
     rowHeight: RowHeightSize.md,
@@ -61,53 +45,6 @@ export const TABLE_DEFAULT_CONFIG: Record<string, any> = {
     hiddenMetrics: [],
     hiddenColumns: ['hash', 'description'],
     nonHidableColumns: new Set(['#', 'run', 'actions']),
-    columnsWidths: {},
-    columnsOrder: {
-      left: ['run'],
-      middle: [],
-      right: [],
-    },
-    height: '0.5',
-  },
-  [AppNameEnum.PARAMS]: {
-    resizeMode: ResizeModeEnum.Resizable,
-    rowHeight: RowHeightSize.md,
-    sortFields: [],
-    hiddenMetrics: [],
-    hiddenColumns: ['hash', 'description'],
-    nonHidableColumns: new Set(['#', 'run', 'actions']),
-    hideSystemMetrics: true,
-    columnsWidths: {},
-    columnsOrder: {
-      left: ['run'],
-      middle: [],
-      right: [],
-    },
-    height: '0.5',
-  },
-  [AppNameEnum.IMAGES]: {
-    resizeMode: ResizeModeEnum.Resizable,
-    rowHeight: RowHeightSize.md,
-    sortFields: [],
-    hiddenMetrics: [],
-    hiddenColumns: ['hash', 'description'],
-    nonHidableColumns: new Set(['#', 'run', 'actions']),
-    columnsWidths: {},
-    columnsOrder: {
-      left: ['run'],
-      middle: [],
-      right: [],
-    },
-    height: '0.5',
-  },
-  [AppNameEnum.SCATTERS]: {
-    resizeMode: ResizeModeEnum.Resizable,
-    rowHeight: RowHeightSize.md,
-    sortFields: [],
-    hiddenMetrics: [],
-    hiddenColumns: ['hash', 'description'],
-    nonHidableColumns: new Set(['#', 'run', 'actions']),
-    hideSystemMetrics: true,
     columnsWidths: {},
     columnsOrder: {
       left: ['run'],
@@ -128,66 +65,26 @@ export const AVOID_COLUMNS_TO_HIDE_LIST = new Set([
 ]);
 
 export const EXPLORE_SELECTED_RUNS_CONFIG: Record<string, AppNameEnum[]> = {
-  [AppNameEnum.RUNS]: [
-    AppNameEnum.RUNS,
-    AppNameEnum.METRICS,
-    AppNameEnum.IMAGES,
-    AppNameEnum.FIGURES,
-    AppNameEnum.AUDIOS,
-    AppNameEnum.TEXT,
-  ],
   [AppNameEnum.METRICS]: [
-    AppNameEnum.RUNS,
     AppNameEnum.METRICS,
-    AppNameEnum.IMAGES,
-    AppNameEnum.FIGURES,
-    AppNameEnum.AUDIOS,
-    AppNameEnum.TEXT,
-  ],
-  [AppNameEnum.PARAMS]: [
-    AppNameEnum.RUNS,
-    AppNameEnum.METRICS,
-    AppNameEnum.IMAGES,
-    AppNameEnum.FIGURES,
-    AppNameEnum.AUDIOS,
-    AppNameEnum.TEXT,
-  ],
-  [AppNameEnum.SCATTERS]: [
-    AppNameEnum.RUNS,
-    AppNameEnum.METRICS,
-    AppNameEnum.IMAGES,
-    AppNameEnum.FIGURES,
-    AppNameEnum.AUDIOS,
-    AppNameEnum.TEXT,
-  ],
-  [AppNameEnum.IMAGES]: [
-    AppNameEnum.RUNS,
-    AppNameEnum.METRICS,
-    AppNameEnum.IMAGES,
     AppNameEnum.FIGURES,
     AppNameEnum.AUDIOS,
     AppNameEnum.TEXT,
   ],
   dashboard: [
-    AppNameEnum.RUNS,
     AppNameEnum.METRICS,
-    AppNameEnum.IMAGES,
     AppNameEnum.FIGURES,
     AppNameEnum.AUDIOS,
     AppNameEnum.TEXT,
   ],
   experiment: [
-    AppNameEnum.RUNS,
     AppNameEnum.METRICS,
-    AppNameEnum.IMAGES,
     AppNameEnum.FIGURES,
     AppNameEnum.AUDIOS,
     AppNameEnum.TEXT,
   ],
   run: [
-    AppNameEnum.RUNS,
     AppNameEnum.METRICS,
-    AppNameEnum.IMAGES,
     AppNameEnum.FIGURES,
     AppNameEnum.AUDIOS,
     AppNameEnum.TEXT,
