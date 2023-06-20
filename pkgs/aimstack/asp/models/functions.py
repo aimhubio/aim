@@ -1,19 +1,24 @@
-import random
-import string
+from aim import Repo
 
 
-def random_list(length: int):
-    return [random.random() for _ in range(length)]
+def _get_query_collection_count(coll):
+    return sum(1 for _ in coll)
 
 
-def random_value():
-    return random.random()
+def get_project_stats():
+    repo = Repo.active_repo()
+    container_types = repo.tracked_container_types()
+    sequence_types = repo.tracked_sequence_types()
 
+    container_stats = {}
+    for type_ in container_types:
+        container_stats[type_] = _get_query_collection_count(repo.containers(type_=type_))
 
-def random_generator(length: int = 100):
-    for _ in range(length):
-        yield random.random()
+    sequence_stats = {}
+    for type_ in sequence_types:
+        sequence_stats[type_] = _get_query_collection_count(repo.sequences(type_=type_))
 
-
-def random_string():
-    return ''.join(random.choices(string.ascii_letters, k=10))
+    return {
+        'containers': container_stats,
+        'sequences': sequence_stats
+    }
