@@ -22,5 +22,9 @@ class Function:
     def name(self) -> str:
         return self._name
 
+    @property
+    def is_generator(self) -> bool:
+        return inspect.isgeneratorfunction(self._func)
+
     def execute(self, **kwargs):
         return self._func(**kwargs)

@@ -219,13 +219,14 @@ async def fetch_blobs_api(uri_batch: URIBatchIn):
 async def run_function(func_name: str, request_data: Dict):
     from aim._sdk.function import Function
     function = Function.registry[func_name]
+    is_generator = function.is_generator
     res = function.execute(**request_data)
-    if isinstance(res, str):
-        res = (res,)
-    elif not isinstance(res, Iterable):
-        res = (res,)
+    if is_generator:
+        def result_streamer():
+            for i, it in enumerate(res):
+                yield collect_streamable_data(encode_tree({i: it}))
+    else:
+        def result_streamer():
+            yield collect_streamable_data(encode_tree({0: res}))
 
-    def result_streamer():
-        for i, it in enumerate(res):
-            yield collect_streamable_data(encode_tree({i: it}))
-    return StreamingResponse(result_streamer())
+    return StreamingResponse(result_streamer(), headers={'is_generator': str(is_generator)})
