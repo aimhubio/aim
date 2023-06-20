@@ -224,6 +224,6 @@ async def run_function(func_name: str, request_data: Dict):
         res = (res,)
 
     def result_streamer():
-        for it in res:
-            yield collect_streamable_data(encode_tree(it))
+        for i, it in enumerate(res):
+            yield collect_streamable_data(encode_tree({i: it}))
     return StreamingResponse(result_streamer())
