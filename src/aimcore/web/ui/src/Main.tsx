@@ -9,6 +9,7 @@ import ProjectWrapper from 'components/ProjectWrapper/ProjectWrapper';
 import Theme from 'components/Theme/Theme';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import NotificationServiceContainer from 'components/NotificationServiceContainer/NotificationServiceContainer';
 
 import { checkIsBasePathInCachedEnv, getBasePath } from 'config/config';
 
@@ -88,6 +89,7 @@ function Main(): React.FunctionComponentElement<React.ReactNode> {
               </Switch>
             </React.Suspense>
           </div>
+          <NotificationServiceContainer />
         </div>
       </Theme>
     </BrowserRouter>
