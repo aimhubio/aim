@@ -3,7 +3,7 @@
 ####################
 
 from pyodide.ffi import create_proxy
-from js import search, localStorage
+from js import search, runFunction, localStorage
 import json
 import hashlib
 
@@ -73,6 +73,26 @@ def query_filter(type_, query="", count=None, start=None, stop=None, isSequence=
 
         query_results_cache[query_key] = items
         return items
+    except Exception as e:
+        if 'WAIT_FOR_QUERY_RESULT' in str(e):
+            raise WaitForQueryError()
+        else:
+            raise e
+
+
+def run_function(func_name, params):
+    run_function_key = f'{func_name}_{json.dumps(params)}'
+
+    if run_function_key in query_results_cache:
+        return query_results_cache[run_function_key]
+
+    try:
+        data = runFunction(board_path, func_name, params)
+
+        # data.destroy()
+
+        query_results_cache[run_function_key] = data
+        return data
     except Exception as e:
         if 'WAIT_FOR_QUERY_RESULT' in str(e):
             raise WaitForQueryError()
@@ -764,7 +784,7 @@ class JSON(Component):
         super().__init__(component_key, component_type, block)
 
         # validate all arguments passed in
-        data = validate(data, (list, dict), "data")
+        # TODO validate data is a JSON
 
         self.data = data
 
@@ -1011,6 +1031,7 @@ def validate(value, type_, prop_name):
     raise Exception(f"Type of {prop_name} must be a {type_.__name__}")
 
 # check if all elements in list are numbers, otherwise raise an exception
+
 
 def validate_num_list(value):
     if (all([isinstance(item, (int, float)) for item in value])):

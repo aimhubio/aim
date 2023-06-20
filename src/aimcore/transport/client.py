@@ -53,10 +53,10 @@ class Client:
         self._ws = None
 
     def protocol_probe(self):
-        endpoint = f'https://{self.remote_path}/status/'
+        endpoint = f'http://{self.remote_path}/status/'
         try:
             response = requests.get(endpoint)
-            if response.status_code == 200:
+            if response.url.startswith('https://'):
                 self._protocol = 'https://'
         except Exception:
             pass
