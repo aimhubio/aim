@@ -57,7 +57,15 @@ def server(host, port,
             click.secho('aim init', fg='yellow')
             return
         Repo.init(repo)
-    repo_inst = Repo.from_path(repo, read_only=False)
+    from aimrocks.errors import RocksIOError
+    try:
+        # Check if repo can be opened in write mode
+        repo_inst = Repo.from_path(repo, read_only=False)
+    except RocksIOError:
+        click.secho(
+            f'Cannot open repo `{repo}` in write mode. Repo is already locked.', fg='red'
+        )
+        return
     os.environ[AIM_SERVER_MOUNTED_REPO_PATH] = repo
 
     if package not in Package.pool:
@@ -68,11 +76,15 @@ def server(host, port,
     click.echo('Press Ctrl+C to exit')
     analytics.track_event(event_name='[Aim Remote Tracking] Start server')
 
+    dev_package_dir = repo_inst.dev_package_dir
+    # delete the repo as it needs to be opened in a child process in dev mode
+    del repo_inst
+
     try:
         if dev:
             import aim
             import aimcore
-            reload_dirs = (os.path.dirname(aim.__file__), os.path.dirname(aim.__file__), repo_inst.dev_package_dir)
+            reload_dirs = (os.path.dirname(aim.__file__), os.path.dirname(aim.__file__), dev_package_dir)
             start_server(host, port, ssl_keyfile, ssl_certfile, log_level=log_level, reload=dev, reload_dirs=reload_dirs)
         else:
             start_server(host, port, ssl_keyfile, ssl_certfile, log_level=log_level)
