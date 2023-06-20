@@ -220,7 +220,9 @@ async def run_function(func_name: str, request_data: Dict):
     from aim._sdk.function import Function
     function = Function.registry[func_name]
     res = function.execute(**request_data)
-    if not isinstance(res, Iterable):
+    if isinstance(res, str):
+        res = (res,)
+    elif not isinstance(res, Iterable):
         res = (res,)
 
     def result_streamer():
