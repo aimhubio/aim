@@ -40,10 +40,13 @@ def _process_values(repo: 'Repo', values_list: list, steps_list: list, sequence:
                     processed_nested_val = nested_val.dump()
                     if not nested_val.RESOLVE_BLOBS:
                         khash_view = sequence._data.reservoir().container
-                        khash_step = decode_path(khash_view.to_khash(encode_path(step)))
+                        khash_step = decode_path(
+                            khash_view.to_khash(encode_path(step)))
                         additional_path = (*khash_step, 'val', idx, 'data')
-                        resource_path = uri_service.generate_resource_path(sequence._data.container, additional_path)
-                        processed_nested_val['blobs'] = {'data': uri_service.generate_uri(resource_path)}
+                        resource_path = uri_service.generate_resource_path(
+                            sequence._data.container, additional_path)
+                        processed_nested_val['blobs'] = {
+                            'data': uri_service.generate_uri(resource_path)}
                 except AttributeError:
                     processed_nested_val = nested_val
                 processed_val.append(processed_nested_val)
@@ -52,10 +55,13 @@ def _process_values(repo: 'Repo', values_list: list, steps_list: list, sequence:
                 processed_val = val.dump()
                 if not val.RESOLVE_BLOBS:
                     khash_view = sequence._data.reservoir().container
-                    khash_step = decode_path(khash_view.to_khash(encode_path(step)))
+                    khash_step = decode_path(
+                        khash_view.to_khash(encode_path(step)))
                     additional_path = (*khash_step, 'val', 'data')
-                    resource_path = uri_service.generate_resource_path(sequence._data.container, additional_path)
-                    processed_val['blobs'] = {'data': uri_service.generate_uri(resource_path)}
+                    resource_path = uri_service.generate_resource_path(
+                        sequence._data.container, additional_path)
+                    processed_val['blobs'] = {
+                        'data': uri_service.generate_uri(resource_path)}
             except AttributeError:
                 processed_val = val
         processed_values.append(processed_val)
@@ -85,16 +91,19 @@ def _sequence_data(repo: 'Repo',
     if p is None and start is None and stop is None:
         steps_list = list(sequence.steps())
         data['steps'] = steps_list
-        data['values'] = _process_values(repo, list(sequence.values()), steps_list, sequence)
+        data['values'] = _process_values(repo, list(
+            sequence.values()), steps_list, sequence)
         for axis_name in sequence.axis_names:
             data['axis'][axis_name] = list(sequence.axis(axis_name))
     else:
         random.seed(sample_seed)  # use the query API qparams as sample seed
         try:
             steps, value_dicts = list(zip(*sequence[start:stop].sample(p)))
-            value_lists = {k: [d[k] for d in value_dicts] for k in value_dicts[0]}
+            value_lists = {k: [d[k] for d in value_dicts]
+                           for k in value_dicts[0]}
             data['steps'] = steps
-            data['values'] = _process_values(repo, value_lists.pop('val'), steps, sequence)
+            data['values'] = _process_values(
+                repo, value_lists.pop('val'), steps, sequence)
             data['axis'] = value_lists
         except Exception:
             pass
@@ -117,7 +126,8 @@ async def sequence_search_result_streamer(repo: 'Repo',
                                           stop: Optional[int],
                                           sample_seed: str):
     for sequence in query_collection:
-        seq_data = {hash(sequence): _sequence_data(repo, sequence, p, start, stop, sample_seed)}
+        seq_data = {hash(sequence): _sequence_data(
+            repo, sequence, p, start, stop, sample_seed)}
         encoded_tree = encode_tree(seq_data)
         yield collect_streamable_data(encoded_tree)
 
@@ -171,9 +181,11 @@ async def data_fetch_api(type_: str,
     elif type_ in Sequence.registry:
         qresult = repo.sequences(query, type_)
         sample_seed = f'{query}_{p}_{start}_{stop}'
-        streamer = sequence_search_result_streamer(repo, qresult, p, start, stop, sample_seed)
+        streamer = sequence_search_result_streamer(
+            repo, qresult, p, start, stop, sample_seed)
     else:
-        raise HTTPException(status_code=400, detail=f'Unknown type \'{type_}\'.')
+        raise HTTPException(
+            status_code=400, detail=f'Unknown type \'{type_}\'.')
     return StreamingResponse(streamer)
 
 
@@ -187,9 +199,11 @@ async def grouped_data_fetch_api(seq_type: Optional[str] = 'Sequence',
     repo = get_project_repo()
     query = checked_query(q)
     if seq_type not in Sequence.registry:
-        raise HTTPException(status_code=400, detail=f'\'{seq_type}\' is not a valid Sequence type.')
+        raise HTTPException(
+            status_code=400, detail=f'\'{seq_type}\' is not a valid Sequence type.')
     if cont_type not in Container.registry:
-        raise HTTPException(status_code=400, detail=f'\'{cont_type}\' is not a valid Container type.')
+        raise HTTPException(
+            status_code=400, detail=f'\'{cont_type}\' is not a valid Container type.')
     if query:
         query = f'(container.type.startswith("{Container.registry[cont_type][0].get_full_typename()}")) and {query}'
     else:
@@ -229,4 +243,4 @@ async def run_function(func_name: str, request_data: Dict):
         def result_streamer():
             yield collect_streamable_data(encode_tree({0: res}))
 
-    return StreamingResponse(result_streamer(), headers={'is_generator': str(is_generator)})
+    return StreamingResponse(result_streamer(), headers={'Access-Control-Expose-Headers': 'is-generator', 'Is-Generator': str(is_generator)})

@@ -98,16 +98,20 @@ def create_app():
         try:
             while True:
                 raw_message = await websocket.receive_bytes()
-                write_instructions = decode_tree(utils.unpack_args(raw_message))
+                write_instructions = decode_tree(
+                    utils.unpack_args(raw_message))
                 for instruction in write_instructions:
                     resource_handler, method_name, args = instruction
-                    TrackingRouter._verify_resource_handler(resource_handler, client_uri)
+                    TrackingRouter._verify_resource_handler(
+                        resource_handler, client_uri)
                     checked_args = []
                     for arg in args:
                         if isinstance(arg, utils.ResourceObject):
                             handler = arg.storage['handler']
-                            TrackingRouter._verify_resource_handler(handler, client_uri)
-                            checked_args.append(TrackingRouter.resource_pool[handler][1].ref)
+                            TrackingRouter._verify_resource_handler(
+                                handler, client_uri)
+                            checked_args.append(
+                                TrackingRouter.resource_pool[handler][1].ref)
                         else:
                             checked_args.append(arg)
 

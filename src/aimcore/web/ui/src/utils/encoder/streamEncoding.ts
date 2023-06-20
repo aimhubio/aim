@@ -483,6 +483,8 @@ export async function parseStream<T extends Array>(
     dataProcessor?: (keys: any, value: any) => any;
   },
   level?: number,
+  getOnlyValue?: boolean = false,
+  isGenerator?: boolean = true,
 ): Promise<T> {
   let buffer_pairs = decodeBufferPairs(stream);
   let decodedPairs = decodePathsVals(buffer_pairs);
@@ -496,7 +498,9 @@ export async function parseStream<T extends Array>(
     try {
       for await (let [keys, val] of objects) {
         const object: T =
-          level === 0 ? val : { ...(val as any), hash: keys[0] };
+          level === 0 || getOnlyValue
+            ? val
+            : { ...(val as any), hash: keys[0] };
         if (object) {
           if (object.hash?.startsWith?.('progress')) {
             // maybe typeof progressCallback === 'function'
@@ -513,6 +517,9 @@ export async function parseStream<T extends Array>(
           } else {
             if (options?.callback) {
               options.callback({ value: val, hash: keys[0] });
+            }
+            if (!isGenerator) {
+              return object;
             }
             data.push(object);
           }
