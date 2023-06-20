@@ -25,7 +25,7 @@ const IndicatorWrapper = styled('span', {
   height: 12,
   br: '$round',
   transition: '$main',
-  bs: 'inset 0 0 0 1px $colors$secondary100',
+  bs: 'inset 0 0 0 1px $colors$icon-text-default-soft',
   cursor: 'pointer',
 });
 
@@ -59,12 +59,12 @@ const RadioItem = styled(Item, {
   cursor: 'pointer',
   '&:hover': {
     [`& ${IndicatorWrapper}`]: {
-      bs: 'inset 0 0 0 1px $colors$primary100',
+      bs: 'inset 0 0 0 1px $colors$icon-hover-primary-bold',
     },
   },
   '&[data-state="checked"]': {
     [`& ${IndicatorWrapper}`]: {
-      bs: 'inset 0 0 0 1px $colors$primary100',
+      bs: 'inset 0 0 0 1px $colors$icon-focus-primary-plain',
     },
   },
 });
@@ -74,11 +74,11 @@ const Flex = styled('div', {
   '&[data-disabled]': {
     pointerEvents: 'none',
     [`& ${IndicatorWrapper}`]: {
-      bs: 'inset 0 0 0 1px $colors$secondary50 !important',
+      bs: 'inset 0 0 0 1px $colors$icon-disable-text-pastel !important',
     },
     [`& ${RadioGroupIndicator}`]: {
       '&::after': {
-        bc: '$secondary50',
+        bc: '$icon-disable-text-pastel',
       },
     },
   },
