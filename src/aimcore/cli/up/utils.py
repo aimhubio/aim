@@ -26,14 +26,16 @@ def build_uvicorn_command(host, port, num_workers, uds_path, ssl_keyfile, ssl_ce
         import aimstack
         from aimcore import web as aim_web
 
-        if pkg_name:
-            import importlib
-            pkg = importlib.import_module(pkg_name)
         cmd += ['--reload']
         cmd += ['--reload-dir', os.path.dirname(aim.__file__)]
         cmd += ['--reload-dir', os.path.dirname(aim_web.__file__)]
         cmd += ['--reload-dir', os.path.dirname(aimstack.__file__)]
-        cmd += ['--reload-dir', os.path.dirname(pkg.__file__)]
+
+        from aim._sdk.package_utils import Package
+        if pkg_name not in Package.pool:
+            Package.load_package(pkg_name)
+            pkg = Package.pool[pkg_name]
+            cmd += ['--reload-dir', os.path.dirname(pkg._path)]
 
         log_level = log_level or 'debug'
     if uds_path:
