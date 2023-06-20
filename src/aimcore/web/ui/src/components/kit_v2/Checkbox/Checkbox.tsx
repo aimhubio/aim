@@ -1,6 +1,8 @@
 import React from 'react';
 
-import Icon from 'components/kit/Icon';
+import { IconCheck } from '@tabler/icons-react';
+
+// import Icon from 'components/kit/Icon';
 
 import Text from '../Text';
 import Box from '../Box';
@@ -71,7 +73,7 @@ export const Checkbox = React.forwardRef<
         <IndicatorWrapper>
           <StyledIndicator>
             {isChecked === 'indeterminate' ? <IndeterminateIcon /> : null}
-            {isChecked === true ? <Icon fontSize={6} name='check' /> : null}
+            {isChecked === true ? <IconCheck fontSize={6} /> : null}
           </StyledIndicator>
         </IndicatorWrapper>
         {props.label && (

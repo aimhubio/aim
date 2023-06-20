@@ -25,7 +25,7 @@ const IndicatorWrapper = styled('span', {
   height: 12,
   br: '$round',
   transition: '$main',
-  bs: 'inset 0 0 0 1px $colors$icon-text-default-soft',
+  bs: 'inset 0 0 0 1px $colors$icon-default-text-soft',
   cursor: 'pointer',
 });
 
