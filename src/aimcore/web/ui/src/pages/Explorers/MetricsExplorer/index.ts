@@ -18,7 +18,7 @@ const defaultConfig = getMetricsDefaultConfig();
 export const metricsExplorerConfig = {
   name: 'Metrics Explorer',
   sequenceType: SequenceType.Metric,
-  basePath: 'metrics_v2',
+  basePath: 'metrics',
   persist: true,
   groupings: defaultConfig.groupings,
   visualizations: {

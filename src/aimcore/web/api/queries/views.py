@@ -75,6 +75,8 @@ def _sequence_data(repo: 'Repo',
         'container': {
             'hash': sequence._container_hash
         },
+        'sequence_type': sequence.get_typename(),
+        'sequence_full_type': sequence.get_full_typename(),
         'item_type': sequence.type,
         'axis_names': sequence.axis_names,
         'range': (sequence.start, sequence.stop),
@@ -105,7 +107,9 @@ def _sequence_data(repo: 'Repo',
 def _container_data(container: Container) -> Dict:
     data = {
         'hash': container.hash,
-        'params': container[...]
+        'params': container[...],
+        'container_type': container.get_typename(),
+        'container_full_type': container.get_full_typename(),
     }
     return data
 
