@@ -1,7 +1,5 @@
 import _ from 'lodash-es';
 
-import { throttle } from 'components/Table/utils';
-
 import { createBlobsRequest } from 'modules/core/api/runsApi';
 
 import { SequenceType } from 'types/core/enums';
@@ -99,7 +97,7 @@ function createBlobURISystemEngine(
   /**
    * Function to throttle the batch get request
    */
-  const getBatch = throttle(() => {
+  const getBatch = _.throttle(() => {
     if (timeoutID) {
       window.clearTimeout(timeoutID);
     }

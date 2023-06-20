@@ -1,4 +1,4 @@
-import { AppNameEnum } from 'services/models/explorer';
+import { AppNameEnum } from 'types/global.d';
 
 export interface ICompareSelectedRunsPopoverProps {
   appName: AppNameEnum;

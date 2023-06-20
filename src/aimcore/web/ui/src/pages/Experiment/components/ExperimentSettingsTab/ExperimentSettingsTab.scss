@@ -1,8 +1,0 @@
-@use 'src/styles/abstracts' as *;
-
-.ExperimentSettingsTab {
-  padding: $space-lg 0;
-  &__actionCardsCnt {
-    margin: 0 toRem(164px);
-  }
-}
