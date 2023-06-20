@@ -107,7 +107,7 @@ const Reports = React.lazy(
 );
 
 const Report = React.lazy(
-  () => import(/* webpackChunkName: "Report" */ 'pages/Report/ReportContainer'),
+  () => import(/* webpackChunkName: "Report" */ 'pages/Report/Report'),
 );
 
 const App = React.lazy(
