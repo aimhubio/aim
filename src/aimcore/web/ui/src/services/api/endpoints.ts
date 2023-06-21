@@ -4,6 +4,7 @@ const ENDPOINTS = {
     GET: '',
     FETCH: 'fetch',
     GET_GROUPED_SEQUENCES: 'grouped-sequences',
+    RUN: 'run',
   },
 
   PROJECTS: {

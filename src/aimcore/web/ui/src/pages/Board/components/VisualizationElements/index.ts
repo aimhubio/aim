@@ -111,24 +111,6 @@ const SelectVizElement = React.lazy(
       /* webpackPrefetch: true, webpackChunkName: "Select" */ './SelectVizElement'
     ),
 );
-const RunMessagesVizElement = React.lazy(
-  () =>
-    import(
-      /* webpackPrefetch: true, webpackChunkName: "RunMessages" */ './RunMessagesVizElement'
-    ),
-);
-const RunLogsVizElement = React.lazy(
-  () =>
-    import(
-      /* webpackPrefetch: true, webpackChunkName: "RunLogs" */ './RunLogsVizElement'
-    ),
-);
-const RunNotesVizElement = React.lazy(
-  () =>
-    import(
-      /* webpackPrefetch: true, webpackChunkName: "RunNotes" */ './RunNotesVizElement'
-    ),
-);
 const ExplorerVizElement = React.lazy(
   () =>
     import(
@@ -234,9 +216,6 @@ export type VizElementKey =
   | 'Text'
   | 'Link'
   | 'Select'
-  | 'RunMessages'
-  | 'RunLogs'
-  | 'RunNotes'
   | 'Plotly'
   | 'Slider'
   | 'RangeSlider'
@@ -303,9 +282,6 @@ const VizElementsMap: Record<VizElementKey, React.FunctionComponent<any>> = {
   Texts: TextsVizElement,
 
   // Aim high level components
-  RunMessages: RunMessagesVizElement,
-  RunLogs: RunLogsVizElement,
-  RunNotes: RunNotesVizElement,
   Explorer: ExplorerVizElement,
 
   // Board components

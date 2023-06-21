@@ -13,7 +13,7 @@ import { Box, Button, Link, Tabs } from 'components/kit_v2';
 
 import { PathEnum } from 'config/enums/routesEnum';
 
-import { search } from 'pages/Board/search';
+import { search } from 'pages/Board/serverAPI/search';
 
 import usePyodide from 'services/pyodide/usePyodide';
 import pyodideEngine from 'services/pyodide/store';
@@ -38,7 +38,7 @@ import BoardConsole from './components/BoardConsole';
 import FormVizElement from './components/VisualizationElements/FormVizElement';
 import useBoardStore from './BoardStore';
 
-const liveUpdateEnabled = false;
+const liveUpdateEnabled = true;
 const liveUpdateInterval = 5000;
 
 function Board({
@@ -211,14 +211,14 @@ def set_session_state(state_slice):
     setEditorValue(data.code);
     const unsubscribe = pyodideEngine.events.on(
       boardPath,
-      ({ layoutTree, state, queryKey }) => {
+      ({ layoutTree, state, queryKey, runFunctionKey }) => {
         if (layoutTree) {
           setState((s: any) => ({
             ...s,
             layoutTree,
           }));
         }
-        if (state || queryKey) {
+        if (state || queryKey || runFunctionKey) {
           setState((s: any) => ({
             ...s,
             stateUpdateCount: s.stateUpdateCount + 1,

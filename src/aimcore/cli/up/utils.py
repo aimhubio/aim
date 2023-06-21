@@ -15,7 +15,7 @@ def build_db_upgrade_command():
     return [sys.executable, '-m', 'alembic', '-c', ini_file, 'upgrade', 'head']
 
 
-def build_uvicorn_command(host, port, num_workers, uds_path, ssl_keyfile, ssl_certfile, log_level):
+def build_uvicorn_command(host, port, num_workers, uds_path, ssl_keyfile, ssl_certfile, log_level, pkg_name):
     cmd = [sys.executable, '-m', 'uvicorn',
            '--host', host, '--port', f'{port}',
            '--workers', f'{num_workers}']
@@ -25,10 +25,18 @@ def build_uvicorn_command(host, port, num_workers, uds_path, ssl_keyfile, ssl_ce
         import aim
         import aimstack
         from aimcore import web as aim_web
+
         cmd += ['--reload']
         cmd += ['--reload-dir', os.path.dirname(aim.__file__)]
         cmd += ['--reload-dir', os.path.dirname(aim_web.__file__)]
         cmd += ['--reload-dir', os.path.dirname(aimstack.__file__)]
+
+        from aim._sdk.package_utils import Package
+        if pkg_name not in Package.pool:
+            Package.load_package(pkg_name)
+            pkg = Package.pool[pkg_name]
+            cmd += ['--reload-dir', os.path.dirname(pkg._path)]
+
         log_level = log_level or 'debug'
     if uds_path:
         cmd += ['--uds', uds_path]

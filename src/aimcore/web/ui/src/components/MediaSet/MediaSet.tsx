@@ -8,7 +8,6 @@ import { Tooltip } from '@material-ui/core';
 import MediaList from 'components/MediaList';
 import { JsonViewPopover } from 'components/kit';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
-import { MediaTypeEnum } from 'components/MediaPanel/config';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import DepthDropdown from 'components/DepthDropdown/DepthDropdown';
 import DepthSlider from 'components/DepthSlider/DepthSlider';
@@ -19,6 +18,7 @@ import {
   MEDIA_SET_SLIDER_HEIGHT,
   MEDIA_SET_TITLE_HEIGHT,
   MEDIA_SET_WRAPPER_PADDING_HEIGHT,
+  MediaTypeEnum,
 } from 'config/mediaConfigs/mediaConfigs';
 
 import { formatValue } from 'utils/formatValue';
@@ -143,7 +143,7 @@ const MediaSet = ({
     }
     if (items.length > 0) {
       if (mediaType === MediaTypeEnum.IMAGE) {
-        return MEDIA_SET_SIZE[mediaType]({
+        return MEDIA_SET_SIZE[MediaTypeEnum.IMAGE]({
           maxHeight,
           maxWidth,
           mediaItemHeight,
@@ -154,7 +154,7 @@ const MediaSet = ({
         });
       }
       if (mediaType === MediaTypeEnum.AUDIO) {
-        return MEDIA_SET_SIZE[mediaType]();
+        return MEDIA_SET_SIZE[MediaTypeEnum.AUDIO]();
       }
     }
     return MEDIA_SET_TITLE_HEIGHT + MEDIA_SET_WRAPPER_PADDING_HEIGHT;
@@ -172,16 +172,20 @@ const MediaSet = ({
   );
 
   const mediaItemHeight = React.useMemo(() => {
-    if (mediaType === MediaTypeEnum.AUDIO) {
-      return MEDIA_ITEMS_SIZES[mediaType]()?.height;
-    } else {
-      return MEDIA_ITEMS_SIZES[mediaType]({
-        data,
-        additionalProperties,
-        wrapperOffsetWidth,
-        wrapperOffsetHeight,
-      })?.height;
-    }
+    const dict = {
+      [MediaTypeEnum.AUDIO]: () => {
+        return MEDIA_ITEMS_SIZES[MediaTypeEnum.AUDIO]()?.height;
+      },
+      [MediaTypeEnum.IMAGE]: () => {
+        return MEDIA_ITEMS_SIZES[MediaTypeEnum.IMAGE]({
+          data,
+          additionalProperties,
+          wrapperOffsetWidth,
+          wrapperOffsetHeight,
+        })?.height;
+      },
+    };
+    return dict[mediaType as MediaTypeEnum]();
   }, [
     additionalProperties,
     data,
