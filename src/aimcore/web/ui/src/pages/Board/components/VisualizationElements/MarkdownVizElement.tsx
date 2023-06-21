@@ -4,6 +4,28 @@ import ReactMarkdown from 'react-markdown';
 import { Box } from 'components/kit_v2';
 import CodeBlock from 'components/CodeBlock/CodeBlock';
 
+import { styled } from 'config/stitches';
+
+const MarkdownVizElementContainer = styled(Box, {
+  width: '100%',
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '$13',
+  color: '$textPrimary',
+  fontFamily: '$inter',
+  fontSize: '$3',
+  fontWeight: '$2',
+  '& h3': {
+    fontSize: '$6',
+    fontWeight: '$2',
+    color: '$textPrimary',
+  },
+  '& h2': {
+    fontSize: '$9',
+    fontWeight: '$2',
+  },
+});
+
 const markdownComponentsOverride = {
   code({ inline, children }: any) {
     if (inline) {
@@ -16,19 +38,11 @@ const markdownComponentsOverride = {
 
 function MarkdownVizElement(props: any) {
   return (
-    <Box
-      style={{ width: '100%' }}
-      css={{
-        color: '$textPrimary',
-        fontFamily: '$inter',
-        fontSize: '$3',
-        fontWeight: '$2',
-      }}
-    >
+    <MarkdownVizElementContainer>
       <ReactMarkdown components={markdownComponentsOverride}>
         {props.data}
       </ReactMarkdown>
-    </Box>
+    </MarkdownVizElementContainer>
   );
 }
 

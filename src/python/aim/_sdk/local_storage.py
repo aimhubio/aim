@@ -11,6 +11,7 @@ from aim._core.storage.rockscontainer import RocksContainer
 from aim._core.storage.container import Container as StorageContainer
 from aim._core.storage.locking import ContainerLock
 from aim._sdk.lock_manager import LockManager
+from aim._sdk.dev_package import DevPackage
 from aimcore.reporter import RunStatusReporter, FileManager
 
 logger = logging.getLogger(__name__)
@@ -19,6 +20,7 @@ logger = logging.getLogger(__name__)
 class LocalStorage(StorageEngine):
     def __init__(self, path: str, read_only: bool = True):
         self.root_path: str = path
+        self.pkgs_path: str = f'{path}/pkgs'
         self.path: str = f'{path}/data'
         self._lock_manager = LockManager(self.root_path)
         self.container: StorageContainer = RocksContainer(self.path, read_only=read_only)
@@ -45,6 +47,9 @@ class LocalStorage(StorageEngine):
 
     def task_queue(self):
         return None
+
+    def dev_package(self, name):
+        return DevPackage(self.pkgs_path, name)
 
 
 class LocalFileManager(FileManager):

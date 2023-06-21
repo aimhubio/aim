@@ -6,7 +6,7 @@ from aim._sdk.repo import Repo
 from aim._ext.tracking import analytics
 
 
-@click.command()
+@click.command('init')
 @click.option('--repo', required=False, default=os.getcwd(), type=click.Path(exists=True,
                                                                              file_okay=False,
                                                                              dir_okay=True,
