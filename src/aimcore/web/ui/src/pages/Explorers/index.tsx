@@ -1,8 +1,6 @@
 import React from 'react';
 
-import { IconBookmark } from '@tabler/icons-react';
-
-import { Box, Button, Text } from 'components/kit_v2';
+import { Box, Text } from 'components/kit_v2';
 import Breadcrumb from 'components/kit_v2/Breadcrumb';
 
 import { PathEnum } from 'config/enums/routesEnum';
@@ -11,7 +9,6 @@ import { TopBar } from 'config/stitches/foundations/layout';
 import { getItem } from 'utils/storage';
 
 import {
-  ExplorerBookmarkLink,
   ExplorerCardsWrapper,
   ExplorersContentContainer,
 } from './Explorers.style';
@@ -36,17 +33,6 @@ function Explorers(): React.FunctionComponentElement<React.ReactNode> {
     <Box display='flex' fd='column'>
       <TopBar jc='space-between'>
         <Breadcrumb />
-        {/* <ExplorerBookmarkLink to={PathEnum.Bookmarks}>
-          <Button
-            leftIcon={<IconBookmark color='#161717' />}
-            horizontalSpacing='compact'
-            size='xs'
-            variant='ghost'
-            color='secondary'
-          >
-            <Text>Bookmarks</Text>
-          </Button>
-        </ExplorerBookmarkLink> */}
       </TopBar>
       <ExplorersContentContainer>
         <Box display='flex' fd='column'>

@@ -14,8 +14,9 @@ import { PathEnum } from 'config/enums/routesEnum';
 
 import getUpdatedUrl from 'modules/core/utils/getUpdatedUrl';
 
-import { AppNameEnum } from 'services/models/explorer';
 import * as analytics from 'services/analytics';
+
+import { AppNameEnum } from 'types/global.d';
 
 import { encode } from 'utils/encoder/encoder';
 

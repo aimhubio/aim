@@ -8,11 +8,11 @@ on:
       - feature/**
     paths:
       - 'src/aimcore/cli/**'
-      - 'src/py-sdk/aim/_ext/**'
-      - 'src/py-sdk/aim/_sdk/**'
+      - 'src/python/aim/_ext/**'
+      - 'src/python/aim/_sdk/**'
       - 'src/aimcore/web/api/**'
-      - 'src/py-sdk/aim/_core/storage/**'
-      - 'src/py-sdk/aim/utils/**'
+      - 'src/python/aim/_core/storage/**'
+      - 'src/python/aim/utils/**'
       - '.github/workflows/pull-request.yml'
       - 'tests/**'
       - 'setup.py'
