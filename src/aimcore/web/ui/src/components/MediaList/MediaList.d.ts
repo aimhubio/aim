@@ -1,5 +1,5 @@
 import { IMediaPanelProps } from 'components/MediaPanel';
-import { MediaTypeEnum } from 'components/MediaPanel/config';
+import { MediaTypeEnum } from 'config/mediaConfigs/mediaConfigs';
 
 import {
   IGroupingSelectOption,

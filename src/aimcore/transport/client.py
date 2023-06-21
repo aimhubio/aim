@@ -36,9 +36,9 @@ class Client:
 
         self._id = str(uuid.uuid4())
         self._remote_path = remote_path
-        # self._sub_path = None
-        #
-        # self._request_metadata = [('x-client', self.uri), ('x-project', self._sub_path)]
+
+        self._protocol = 'http://'
+        self.protocol_probe()
 
         self._resource_pool = weakref.WeakValueDictionary()
 
@@ -51,6 +51,15 @@ class Client:
         self._heartbeat_sender.start()
         self._thread_local.atomic_instructions = {}
         self._ws = None
+
+    def protocol_probe(self):
+        endpoint = f'http://{self.remote_path}/status/'
+        try:
+            response = requests.get(endpoint)
+            if response.url.startswith('https://'):
+                self._protocol = 'https://'
+        except Exception:
+            pass
 
     def reinitialize_resource(self, handler):
         # write some request to get a resource on server side with an already given handler
@@ -92,7 +101,7 @@ class Client:
         # further incompatibility list will be added manually
 
     def client_heartbeat(self):
-        endpoint = f'http://{self._client_endpoint}/heartbeat/{self.uri}/'
+        endpoint = f'{self._protocol}{self._client_endpoint}/heartbeat/{self.uri}/'
         response = requests.get(endpoint)
         response_json = response.json()
         if response.status_code != 200:
@@ -101,7 +110,7 @@ class Client:
         return response
 
     def connect(self):
-        endpoint = f'http://{self._client_endpoint}/connect/{self.uri}/'
+        endpoint = f'{self._protocol}{self._client_endpoint}/connect/{self.uri}/'
         response = requests.get(endpoint)
         response_json = response.json()
         if response.status_code != 200:
@@ -110,7 +119,7 @@ class Client:
         return response
 
     def reconnect(self):
-        endpoint = f'http://{self._client_endpoint}/reconnect/{self.uri}/'
+        endpoint = f'{self._protocol}{self._client_endpoint}/reconnect/{self.uri}/'
         response = requests.get(endpoint)
         response_json = response.json()
         if response.status_code != 200:
@@ -124,7 +133,7 @@ class Client:
     def disconnect(self):
         self._heartbeat_sender.stop()
 
-        endpoint = f'http://{self._client_endpoint}/disconnect/{self.uri}/'
+        endpoint = f'{self._protocol}{self._client_endpoint}/disconnect/{self.uri}/'
         response = requests.get(endpoint)
         response_json = response.json()
         if response.status_code != 200:
@@ -133,7 +142,7 @@ class Client:
         return response
 
     def get_version(self,):
-        endpoint = f'http://{self._client_endpoint}/get-version/'
+        endpoint = f'{self._protocol}{self._client_endpoint}/get-version/'
         response = requests.get(endpoint)
         response_json = response.json()
         if response.status_code == 404:
@@ -143,7 +152,7 @@ class Client:
         return response_json.get('version')
 
     def get_resource_handler(self, resource, resource_type, handler='', args=()):
-        endpoint = f'http://{self._tracking_endpoint}/{self.uri}/get-resource/'
+        endpoint = f'{self._protocol}{self._tracking_endpoint}/{self.uri}/get-resource/'
 
         request_data = {
             'resource_handler': handler,
@@ -165,7 +174,7 @@ class Client:
         return handler
 
     def release_resource(self, queue_id, resource_handler):
-        endpoint = f'http://{self._tracking_endpoint}/{self.uri}/release-resource/{resource_handler}/'
+        endpoint = f'{self._protocol}{self._tracking_endpoint}/{self.uri}/release-resource/{resource_handler}/'
         if queue_id != -1:
             self.get_queue().wait_for_finish()
 
@@ -196,7 +205,7 @@ class Client:
         return self._run_read_instructions(queue_id, resource, method, args)
 
     def _run_read_instructions(self, queue_id, resource, method, args):
-        endpoint = f'http://{self._tracking_endpoint}/{self.uri}/read-instruction/'
+        endpoint = f'{self._protocol}{self._tracking_endpoint}/{self.uri}/read-instruction/'
 
         request_data = {
             'resource_handler': resource,

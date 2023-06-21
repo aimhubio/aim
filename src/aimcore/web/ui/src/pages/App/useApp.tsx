@@ -32,7 +32,7 @@ function useApp() {
   React.useEffect(() => {
     if (!isLoading && sortedList.length > 0 && location.pathname === '/app') {
       const firstBoardPath = sortedList[0]; // replace this with the correct property if different
-      history.push(`/app/${firstBoardPath}`);
+      history.replace(`/app/${firstBoardPath}`);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [boardsList, location]);
