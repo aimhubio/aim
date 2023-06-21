@@ -14,7 +14,7 @@ engine = create_engine(
     echo=(logging.INFO >= int(os.environ.get(AIM_LOG_LEVEL_KEY, logging.WARNING))),
     connect_args={"check_same_thread": False}
 )
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+SessionLocal = sessionmaker(autoflush=False, bind=engine)
 Base = declarative_base()
 
 

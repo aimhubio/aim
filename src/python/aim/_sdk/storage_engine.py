@@ -35,3 +35,7 @@ class StorageEngine(object):
     @contextlib.contextmanager
     def write_batch(self, hash_: str):
         ...
+
+    @abstractmethod
+    def dev_package(self, name):
+        ...

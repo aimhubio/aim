@@ -5,6 +5,7 @@ from aimcore.transport.config import AIM_SERVER_MOUNTED_REPO_PATH
 
 from aim import Repo
 from aim._sdk.local_storage import LocalFileManager
+from aim._sdk.dev_package import DevPackage
 from aimcore.cleanup import AutoClean
 
 
@@ -66,3 +67,11 @@ def get_file_manager(**kwargs):
     repo_path = os.environ[AIM_SERVER_MOUNTED_REPO_PATH]
     repo = Repo.from_path(repo_path)
     return ResourceRef(LocalFileManager(repo.path))
+
+
+def get_dev_package(**kwargs):
+    repo_path = os.environ[AIM_SERVER_MOUNTED_REPO_PATH]
+    repo = Repo.from_path(repo_path)
+
+    name = kwargs['name']
+    return ResourceRef(repo.storage_engine.dev_package(name))
