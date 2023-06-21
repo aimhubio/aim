@@ -8,7 +8,7 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { RowHeightSize, TABLE_DEFAULT_CONFIG } from 'config/table/tableConfigs';
 
-import { AppNameEnum } from 'services/models/explorer';
+import { AppNameEnum } from 'types/global.d';
 
 import './RowHeightPopover.scss';
 

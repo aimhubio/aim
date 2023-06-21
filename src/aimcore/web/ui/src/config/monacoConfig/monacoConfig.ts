@@ -1,4 +1,4 @@
-import { AppNameEnum } from 'services/models/explorer';
+import { AppNameEnum } from 'types/global.d';
 
 const WHITE = '#fff';
 const TEXT_COLOR = '#414b6d';
@@ -83,11 +83,7 @@ export const getSuggestionsByExplorer = (
   };
 
   const explorersList = {
-    [AppNameEnum.RUNS]: defaultSuggestions,
     [AppNameEnum.METRICS]: defaultSuggestions,
-    [AppNameEnum.PARAMS]: defaultSuggestions,
-    [AppNameEnum.SCATTERS]: defaultSuggestions,
-    [AppNameEnum.IMAGES]: defaultSuggestions,
     [AppNameEnum.FIGURES]: defaultSuggestions,
     [AppNameEnum.FIGURES3D]: defaultSuggestions,
     [AppNameEnum.AUDIOS]: defaultSuggestions,

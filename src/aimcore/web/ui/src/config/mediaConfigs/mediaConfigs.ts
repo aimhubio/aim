@@ -1,10 +1,13 @@
-import { MediaTypeEnum } from 'components/MediaPanel/config';
-
 import { MediaItemAlignmentEnum } from 'config/enums/imageEnums';
 
 import { IGetImageBoxSizeProps } from 'types/utils/getImageBoxSize';
 import { IGetImageMediaListHeightProps } from 'types/utils/getImageMediaListHeight';
 import { IGetImageMediaSetSizeProps } from 'types/utils/getImageMediaSetSize';
+
+export enum MediaTypeEnum {
+  IMAGE = 'image',
+  AUDIO = 'audio',
+}
 
 export const IMAGE_FIXED_HEIGHT = 110;
 export const ITEM_WRAPPER_HEIGHT = 33;

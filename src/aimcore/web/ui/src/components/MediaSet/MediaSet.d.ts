@@ -1,5 +1,4 @@
 import { IMediaPanelProps } from 'components/MediaPanel';
-import { MediaTypeEnum } from 'components/MediaPanel/config';
 
 import { IGroupingSelectOption } from 'types/services/models/imagesExplore/imagesExploreAppModel';
 import {
@@ -8,6 +7,8 @@ import {
 } from 'types/services/models/metrics/metricsAppModel';
 
 import { SortFields } from 'utils/getSortedFields';
+
+import { MediaTypeEnum } from 'config/mediaConfigs/mediaConfigs';
 
 export interface IMediaSetProps {
   data: { [key: string]: any };
