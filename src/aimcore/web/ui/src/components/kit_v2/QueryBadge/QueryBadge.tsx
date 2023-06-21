@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 
 import { IconEye } from '@tabler/icons-react';
 
@@ -70,4 +70,5 @@ const QueryBadge = React.forwardRef<
 );
 
 QueryBadge.displayName = 'QueryBadge';
+
 export default React.memo(QueryBadge);
