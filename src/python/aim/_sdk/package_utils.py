@@ -22,6 +22,7 @@ class Package:
         self.register_aim_package_classes(name, pkg)
         self.register_aim_package_functions(name, pkg)
         self.register_aim_package_boards(pkg)
+        self._is_root = False
 
     @property
     def boards_directory(self) -> pathlib.Path:
@@ -42,6 +43,14 @@ class Package:
     @property
     def functions(self) -> List:
         return self._registered_functions
+
+    @property
+    def is_root(self) -> bool:
+        return self._is_root
+
+    @is_root.setter
+    def is_root(self, v: bool):
+        self._is_root = v
 
     @staticmethod
     def discover(base_pkg):

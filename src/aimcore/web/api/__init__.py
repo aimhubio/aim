@@ -77,6 +77,7 @@ def create_app():
     ui_pkg_name = os.environ.get(AIM_UI_PACKAGE_NAME)
     if ui_pkg_name not in Package.pool:
         Package.load_package(ui_pkg_name)
+    Package.pool[ui_pkg_name].is_root = True
 
     api_app.include_router(dashboard_apps_router, prefix='/apps')
     api_app.include_router(dashboards_router, prefix='/dashboards')
