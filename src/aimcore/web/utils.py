@@ -100,5 +100,10 @@ def get_root_package():
     return Package.pool[ui_pkg_name]
 
 
+def get_package_by_name(pkg_name):
+    assert pkg_name in Package.pool
+    return Package.pool[pkg_name]
+
+
 def get_db_url():
     return 'sqlite:///{}/{}/aim_db'.format(get_root_path(), get_aim_repo_name())
