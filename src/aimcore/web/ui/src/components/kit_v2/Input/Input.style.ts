@@ -34,7 +34,7 @@ const LeftIcon = styled(Icon, {
     },
     disabled: {
       true: {
-        color: '$text-disable-text-subtle',
+        color: '$text-disable-text-subtle !important',
       },
     },
   },
@@ -54,7 +54,7 @@ const InputWrapper = styled('div', {
       true: {
         cursor: 'not-allowed',
         pointerEvents: 'none',
-        color: '$text-disable-text-pastel',
+        color: '$text-disable-text-subtle',
       },
     },
   },
@@ -71,13 +71,13 @@ const InputContainer: any = styled('input', {
   fontSize: '$3',
   p: 0,
   '&::placeholder': {
-    color: '$textPrimary50',
+    color: '$colors$border-default-neutral-gentle',
   },
   '&:hover': {
-    bs: 'inset 0px 0px 0px 1px $colors$colors$border-default-neutral-soft',
+    bs: 'inset 0px 0px 0px 1px $colors$border-hover-neutral-soft',
   },
   '&:focus': {
-    bs: 'inset 0px 0px 0px 1px $colors$primary100',
+    bs: 'inset 0px 0px 0px 1px $colors$border-focus-primary-soft',
   },
   variants: {
     leftIcon: { true: {} },
@@ -100,12 +100,13 @@ const InputContainer: any = styled('input', {
     },
     error: {
       true: {
-        bs: 'inset 0px 0px 0px 1px $colors$danger100 !important',
+        bs: 'inset 0px 0px 0px 1px $colors$border-default-danger-plain !important',
       },
     },
     disabled: {
       true: {
-        color: '$textPrimary50',
+        color: '$text-disable-text-subtle',
+        bs: 'inset 0px 0px 0px 1px $colors$border-disable-neutral-light',
       },
     },
   },
@@ -147,8 +148,8 @@ const ClearButtonContainer = styled('div', {
     jc: 'center',
     p: '3px',
     '& > i': {
-      background: '$secondary20',
-      color: '#5A667A',
+      background: '$background-default-neutral-plain',
+      color: '#icon-default-text-bold',
       br: '$round',
       height: '100%',
       p: '1px',
@@ -184,16 +185,16 @@ const ClearButtonContainer = styled('div', {
 const Caption = styled('p', {
   fontSize: '$2',
   mt: '2px',
-  color: '$textPrimary50',
+  color: '$text-default-text-muted',
   variants: {
     error: {
       true: {
-        color: '$danger100',
+        color: '$text-default-danger-plain',
       },
     },
     disabled: {
       true: {
-        color: '$secondary30',
+        color: '$text-disable-text-subtle',
       },
     },
   },
