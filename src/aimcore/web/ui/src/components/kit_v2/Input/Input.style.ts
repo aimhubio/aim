@@ -13,7 +13,7 @@ const LeftIcon = styled(Icon, {
   ai: 'center',
   jc: 'center',
   size: '$sizes$1',
-  color: '$secondary50',
+  color: '$text-default-text-soft',
   pointerEvents: 'none',
   variants: {
     inputSize: {
@@ -29,12 +29,12 @@ const LeftIcon = styled(Icon, {
     },
     focused: {
       true: {
-        color: '$textPrimary !important',
+        color: '$text-default-text-deep !important',
       },
     },
     disabled: {
       true: {
-        color: '$secondary30',
+        color: '$text-disable-text-subtle',
       },
     },
   },
@@ -46,7 +46,7 @@ const InputWrapper = styled('div', {
   ai: 'center',
   '&:hover': {
     [`& ${LeftIcon}`]: {
-      color: '$secondary100',
+      color: '$text-default-text-muted',
     },
   },
   variants: {
@@ -54,7 +54,7 @@ const InputWrapper = styled('div', {
       true: {
         cursor: 'not-allowed',
         pointerEvents: 'none',
-        color: '$secondary30',
+        color: '$text-disable-text-pastel',
       },
     },
   },
@@ -66,7 +66,7 @@ const InputContainer: any = styled('input', {
   height: '100%',
   width: '100%',
   color: '$textPrimary',
-  bs: 'inset 0px 0px 0px 1px $colors$secondary50',
+  bs: 'inset 0px 0px 0px 1px $colors$border-default-neutral-gentle',
   br: '$3',
   fontSize: '$3',
   p: 0,
@@ -74,7 +74,7 @@ const InputContainer: any = styled('input', {
     color: '$textPrimary50',
   },
   '&:hover': {
-    bs: 'inset 0px 0px 0px 1px $colors$secondary100',
+    bs: 'inset 0px 0px 0px 1px $colors$colors$border-default-neutral-soft',
   },
   '&:focus': {
     bs: 'inset 0px 0px 0px 1px $colors$primary100',
