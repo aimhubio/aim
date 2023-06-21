@@ -41,12 +41,12 @@ class ProjectPinnedSequencesApiIn(BaseModel):
     sequences: List[Sequence]
 
 
-class PackageRegisteredModels(BaseModel):
-    sequences: List[str]
-    containers: List[str]
-    functions: List[str]
+class PackageInfo(BaseModel):
+    is_root: bool
+    sequences: Optional[List[str]] = None
+    containers: Optional[List[str]] = None
+    functions: Optional[List[str]] = None
+    boards: Optional[List[str]] = None
 
 
-ProjectNamesList = List[str]
-ProjectPackageRegisteredModels = Dict[str, PackageRegisteredModels]
-ProjectPackagesApiOut = Union[ProjectNamesList, ProjectPackageRegisteredModels]
+ProjectPackagesApiOut = Dict[str, PackageInfo]

@@ -3,6 +3,7 @@ from typing import Optional, Tuple
 
 from collections import Counter
 from fastapi import Depends, HTTPException, Query, Header
+from fastapi.responses import JSONResponse
 from aimcore.web.api.utils import get_project_repo, \
     APIRouter  # wrapper for fastapi.APIRouter
 
@@ -75,17 +76,22 @@ async def project_info_api(sequence: Optional[Tuple[str, ...]] = Query(default=(
 
 
 @projects_router.get('/packages/', response_model=ProjectPackagesApiOut)
-async def project_packages_api(include_types: Optional[bool] = False):
+async def project_packages_api(include_types: Optional[bool] = False, include_boards: Optional[bool] = False):
     from aim._sdk.package_utils import Package
-    if include_types:
-        return {
-            pkg.name: {
-                'containers': pkg.containers,
-                'sequences': pkg.sequences,
-                'functions': pkg.functions,
-            } for pkg in Package.pool.values()}
-    else:
-        return list(Package.pool.keys())
+
+    result = {}
+    for pkg in Package.pool.values():
+        pkg_info = {
+            'is_root': pkg.is_root
+        }
+        if include_types:
+            pkg_info['containers'] = pkg.containers
+            pkg_info['sequences'] = pkg.sequences
+            pkg_info['functions'] = pkg.functions
+        if include_boards:
+            pkg_info['boards'] = [board.as_posix() for board in pkg.boards]
+        result[pkg.name] = pkg_info
+    return JSONResponse(result)
 
 
 @projects_router.get('/sequence-types/')
