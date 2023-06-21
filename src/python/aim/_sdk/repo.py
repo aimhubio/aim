@@ -12,6 +12,7 @@ from aim._sdk.utils import clean_repo_path
 from aim._sdk import type_utils
 from aim._sdk.container import Container
 from aim._sdk.sequence import Sequence
+from aim._sdk.function import Function
 from aim._sdk.collections import ContainerCollection, SequenceCollection
 from aim._sdk.query_utils import construct_query_expression
 from aim._sdk.constants import KeyNames
@@ -117,6 +118,13 @@ class Repo(object):
         return list(self._meta_tree.subtree('chunks').keys())
 
     @property
+    def dev_package_dir(self) -> str:
+        dev_package_dir_path = os.path.join(self.path, 'pkgs')
+        if not os.path.exists(dev_package_dir_path):
+            os.mkdir(dev_package_dir_path)
+        return dev_package_dir_path
+
+    @property
     def encryption_key(self):
         from cryptography.fernet import Fernet
 
@@ -167,6 +175,9 @@ class Repo(object):
 
     def registered_sequence_types(self) -> List[str]:
         return list(Sequence.registry.keys())
+
+    def registered_functions(self) -> List[str]:
+        return list(Function.registry.keys())
 
     def get_container(self, hash_) -> Container:
         return Container(hash_, repo=self, mode='READONLY')

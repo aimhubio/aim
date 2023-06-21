@@ -13,7 +13,8 @@ from aimcore.transport.handlers import (
     get_tree,
     get_khash_array,
     get_lock,
-    get_file_manager
+    get_file_manager,
+    get_dev_package,
 )
 from aimcore.transport.config import AIM_SERVER_BASE_PATH
 from aim._core.storage.treeutils import encode_tree, decode_tree
@@ -25,6 +26,7 @@ def prepare_resource_registry():
     registry.register('KhashArrayView', get_khash_array)
     registry.register('Lock', get_lock)
     registry.register('FileManager', get_file_manager)
+    registry.register('Package', get_dev_package)
     return registry
 
 
@@ -96,16 +98,20 @@ def create_app():
         try:
             while True:
                 raw_message = await websocket.receive_bytes()
-                write_instructions = decode_tree(utils.unpack_args(raw_message))
+                write_instructions = decode_tree(
+                    utils.unpack_args(raw_message))
                 for instruction in write_instructions:
                     resource_handler, method_name, args = instruction
-                    TrackingRouter._verify_resource_handler(resource_handler, client_uri)
+                    TrackingRouter._verify_resource_handler(
+                        resource_handler, client_uri)
                     checked_args = []
                     for arg in args:
                         if isinstance(arg, utils.ResourceObject):
                             handler = arg.storage['handler']
-                            TrackingRouter._verify_resource_handler(handler, client_uri)
-                            checked_args.append(TrackingRouter.resource_pool[handler][1].ref)
+                            TrackingRouter._verify_resource_handler(
+                                handler, client_uri)
+                            checked_args.append(
+                                TrackingRouter.resource_pool[handler][1].ref)
                         else:
                             checked_args.append(arg)
 
@@ -128,9 +134,12 @@ def create_app():
     return app
 
 
-def start_server(host, port, ssl_keyfile=None, ssl_certfile=None, log_level='info'):
+app = create_app()
+
+
+def start_server(host, port, ssl_keyfile=None, ssl_certfile=None, *, log_level='info', reload=False, reload_dirs=()):
     import uvicorn
-    app = create_app()
-    uvicorn.run(app, host=host, port=port,
+    uvicorn.run('aimcore.transport.server:app', host=host, port=port,
                 ssl_keyfile=ssl_keyfile, ssl_certfile=ssl_certfile,
-                log_level=log_level)
+                log_level=log_level,
+                reload=reload, reload_dirs=reload_dirs)

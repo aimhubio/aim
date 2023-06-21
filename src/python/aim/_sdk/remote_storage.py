@@ -64,6 +64,9 @@ class RemoteStorage(StorageEngine):
     def task_queue(self):
         return self._client.get_queue()
 
+    def dev_package(self, name):
+        return RemotePackageProxy(self._client, name)
+
 
 class RemoteFileManagerProxy(FileManager):
     def __init__(self, client: 'Client', run_hash):
@@ -480,3 +483,38 @@ class RemoteLockProxy(ContainerLock):
 
     def release(self, force: bool = False) -> None:
         return self._rpc_client.run_instruction(self._hash, self._handler, 'release', (force,))
+
+
+class RemotePackageProxy:
+    class AutoClean(RemoteResourceAutoClean):
+        PRIORITY = 60
+
+    def __init__(self, client: 'Client', name: str):
+        self._rpc_client = client
+        self._name = name
+        self._hash = 0
+
+        kwargs = {
+            'name': name,
+        }
+        self.init_args = pack_args(encode_tree(kwargs))
+        self.resource_type = 'Package'
+        handler = self._rpc_client.get_resource_handler(self, self.resource_type, args=self.init_args)
+
+        self._resources = RemoteLockProxy.AutoClean(self)
+        self._resources.hash = self._hash
+        self._resources.rpc_client = client
+        self._resources.handler = handler
+        self._handler = handler
+
+    def install(self):
+        return self._rpc_client.run_instruction(self._hash, self._handler, 'install', is_write_only=True)
+
+    def sync(self, file, contents):
+        return self._rpc_client.run_instruction(self._hash, self._handler, 'sync', (file, contents), is_write_only=True)
+
+    def remove(self, file):
+        return self._rpc_client.run_instruction(self._hash, self._handler, 'remove', (file,), is_write_only=True)
+
+    def move(self, src, dest):
+        return self._rpc_client.run_instruction(self._hash, self._handler, 'move', (src, dest), is_write_only=True)
