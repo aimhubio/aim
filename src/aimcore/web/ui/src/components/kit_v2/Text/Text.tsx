@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { ITextProps } from './Text.d';
-import { StyledSlot } from './Text.style';
+import StyledSlot from './Text.style';
 
 /**
  * Polymorphic Text component
