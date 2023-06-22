@@ -1,12 +1,16 @@
 import { Slot } from '@radix-ui/react-slot';
 
 import { styled } from 'config/stitches';
-import { textEllipsis } from 'config/stitches/foundations/layout';
 
 const StyledSlot: any = styled(Slot, {
   variants: {
     ellipsis: {
-      true: textEllipsis,
+      true: {
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        width: '100%',
+      },
     },
     disabled: {
       true: {
@@ -18,4 +22,4 @@ const StyledSlot: any = styled(Slot, {
   },
 });
 
-export { StyledSlot };
+export default StyledSlot;
