@@ -6,7 +6,7 @@ const TabList = styled(TabPrimitive.List, {
   '&[data-orientation="horizontal"]': {
     display: 'flex',
   },
-  borderBottom: '1px solid $border30',
+  borderBottom: '1px solid $border-default-bgborder-light',
 });
 
 const TabRoot = styled(TabPrimitive.Root, {
@@ -35,7 +35,7 @@ const TabTrigger = styled(TabPrimitive.Trigger, {
   cursor: 'pointer',
   padding: '$7',
   '&[data-state="active"]': {
-    color: '$primary100',
+    color: '$background-focus-primary-plain',
     '&:after': {
       content: '""',
       position: 'absolute',
@@ -43,12 +43,12 @@ const TabTrigger = styled(TabPrimitive.Trigger, {
       left: 0,
       right: 0,
       height: 4,
-      background: '$primary100',
+      background: '$text-focus-primary-plain',
       borderRadius: '6px 6px 0 0',
     },
   },
   '&[data-disabled]': {
-    color: '$textPrimary50',
+    color: '$text-disable-text-subtle',
   },
 });
 
