@@ -22,10 +22,10 @@ const SliderRoot = styled(SliderPrimitive.Root, {
     cursor: 'unset',
     '.SliderThumb': {
       pointerEvents: 'none',
-      bc: '#CED1D7',
+      bc: '$background-disable-neutral-light',
     },
     '.SliderRange': {
-      bc: '#CED1D7',
+      bc: '$background-disable-neutral-light',
     },
   },
 });
@@ -35,18 +35,18 @@ const SliderMark = styled('span', {
   display: 'flex',
   ai: 'center',
   jc: 'center',
-  bc: '#ACB2BC',
+  bc: '$background-default-neutral-soft',
   width: 1,
   height: 6,
   zIndex: -1,
   br: '$1',
   cursor: 'pointer',
   '&[data-active=true]': {
-    bc: '$primary100',
+    bc: '$background-default-primary-plain',
   },
   '&[data-disabled=true]': {
     pointerEvents: 'none',
-    bc: '#CED1D7',
+    bc: '$background-default-neutral-airly',
     cursor: 'unset',
   },
   '&:before': {
@@ -62,7 +62,7 @@ const SliderMark = styled('span', {
 });
 
 const SliderTrack = styled(SliderPrimitive.Track, {
-  bc: '#CED1D7',
+  bc: '$background-default-neutral-gentle',
   position: 'relative',
   fg: 1,
   br: '$1',
@@ -73,7 +73,7 @@ const SliderTrack = styled(SliderPrimitive.Track, {
 
 const SliderRange = styled(SliderPrimitive.Range, {
   position: 'absolute',
-  bc: '$primary100',
+  bc: '$background-default-primary-plain',
   br: '$1',
   height: '100%',
 });
@@ -82,7 +82,7 @@ const SliderThumb = styled(SliderPrimitive.Thumb, {
   position: 'relative',
   display: 'block',
   size: '10px',
-  bc: '$primary100',
+  bc: '$background-default-primary-plain',
   br: '$5',
   '&:parent': {
     zIndex: '$10',
@@ -101,7 +101,7 @@ const SliderThumb = styled(SliderPrimitive.Thumb, {
   },
   '&:focus': {
     outline: 'none',
-    bs: '0 0 0 2px $colors$primary20',
+    bs: '0 0 0 2px $colors$background-focus-primary-light',
   },
 });
 
@@ -112,12 +112,13 @@ const SliderLabel = styled('span', {
   top: '14px',
   left: '-5px',
   display: 'flex',
+  color: '$text-default-text-deep',
   ai: 'center',
   jc: 'center',
   bc: 'white',
   br: '$3',
   fontSize: '$1',
-  border: '1px solid $colors$primary100',
+  border: '1px solid $colors$border-default-primary-plain',
 });
 
 export {

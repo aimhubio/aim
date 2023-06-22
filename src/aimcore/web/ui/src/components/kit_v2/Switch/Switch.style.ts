@@ -40,18 +40,21 @@ const ThumbStyled = styled(SwitchPrimitive.Thumb, {
 const SwitchStyled = styled(SwitchPrimitive.Root, {
   all: 'unset',
   cursor: 'pointer',
-  bc: '$secondary80',
+  bc: '$background-default-neutral-gentle',
   br: '$pill',
   position: 'relative',
   '&[data-disabled]': {
     pointerEvents: 'none',
   },
   '&[data-state="checked"]': {
-    bc: '$primary100',
-    '&[data-disabled]': { bc: '$primary50' },
+    bc: '$background-default-primary-plain',
+    '&[data-disabled]': { bc: '$background-disable-primary-soft' },
+    '&:active': {
+      bc: '$background-hover-primary-bold',
+    },
   },
   '&[data-state="unchecked"]': {
-    '&[data-disabled]': { bc: '$secondary50' },
+    '&[data-disabled]': { bc: '$background-disable-neutral-light' },
   },
   variants: {
     size: {
