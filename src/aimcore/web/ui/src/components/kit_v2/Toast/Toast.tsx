@@ -4,7 +4,7 @@ import { IconX } from '@tabler/icons-react';
 
 import { ColorPaletteType } from 'config/stitches/types';
 
-import Button from '../Button';
+import Button, { IButtonProps } from '../Button';
 import IconButton from '../IconButton';
 import Box from '../Box';
 import Icon from '../Icon';
@@ -77,7 +77,7 @@ const ToastItem = React.forwardRef<typeof ToastRoot, IToastProps>(
           <ToastAction className='ToastAction'>
             {onUndo ? (
               <Button
-                color={status as ColorPaletteType}
+                color={status as IButtonProps['color']}
                 css={{ ml: '$4' }}
                 onClick={() => onUndo(id)}
                 data-testid='undo-toast'

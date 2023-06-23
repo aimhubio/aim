@@ -9,7 +9,7 @@ export interface IButtonProps
    * @description The color of the button
    * @example 'primary'
    */
-  color?: 'primary' | 'danger' | 'success' | 'warning';
+  color?: 'primary' | 'danger' | 'success' | 'warning' | 'secondary';
   /**
    * @description The size of the button
    * @example 'md'
