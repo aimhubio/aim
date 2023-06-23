@@ -6,8 +6,8 @@ logger = logging.getLogger(__name__)
 
 
 def get_installed_packages():
-    import pkg_resources
-    packages = {i.key: i.version for i in pkg_resources.working_set}
+    import importlib_metadata
+    packages = {pkg.name: pkg.version for pkg in importlib_metadata.distributions()}
 
     return packages
 
