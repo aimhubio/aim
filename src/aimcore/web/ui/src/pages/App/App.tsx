@@ -10,12 +10,14 @@ import useApp from './useApp';
 import AppPage from './components/AppPage';
 
 function App(): React.FunctionComponentElement<React.ReactNode> {
-  const { data, isLoading, notifications } = useApp();
+  const { boardsList, pages, isLoading, notifications } = useApp();
   return (
     <ErrorBoundary>
       {isLoading ? null : (
         <Route path={[`${PathEnum.App}/*`, `${PathEnum.App}/*/edit`]} exact>
-          {(props) => <AppPage {...props} data={data} />}
+          {(props) => (
+            <AppPage {...props} boardsList={boardsList} pages={pages} />
+          )}
         </Route>
       )}
       <ToastProvider

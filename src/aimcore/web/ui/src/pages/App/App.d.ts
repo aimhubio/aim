@@ -2,6 +2,7 @@ import { BoardData } from 'modules/core/api/boardsApi';
 
 export interface AppSidebarProps {
   boards: string[];
+  pages: Record<string, any>;
   editMode: boolean;
 }
 
@@ -15,5 +16,6 @@ export type AppSidebarNode = {
 export interface AppWrapperProps {
   boardPath: string;
   editMode: boolean;
-  boardList: string[];
+  boardsList: string[];
+  pages: Record<string, any>;
 }

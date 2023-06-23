@@ -12,7 +12,10 @@ const api = new NetworkService(`${getAPIHost()}${ENDPOINTS.BOARDS.BASE}`);
  * this call is used for fetching boards list.
  * @returns {Promise<BoardData[]>}
  */
-async function fetchBoardsList(): Promise<string[]> {
+async function fetchBoardsList(): Promise<{
+  boards: [];
+  pages: Record<string, any>;
+}> {
   return (await api.makeAPIGetRequest(ENDPOINTS.BOARDS.GET)).body;
 }
 

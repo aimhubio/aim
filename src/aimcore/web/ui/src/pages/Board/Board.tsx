@@ -455,7 +455,12 @@ function renderTree(tree: any, elements: any) {
         </Box>
       );
     }
-    if (element.type === 'tab') {
+    if (
+      element.type === 'tab' ||
+      element.type === 'table_cell' ||
+      element.type === 'pages' ||
+      element.type === 'sidebar_section'
+    ) {
       return null;
     }
 
@@ -465,10 +470,6 @@ function renderTree(tree: any, elements: any) {
           {renderTree(tree, tree.get(element.id).elements)}
         </FormVizElement>
       );
-    }
-
-    if (element.type === 'table_cell') {
-      return null;
     }
 
     if (element.type === 'Table' && element.options.with_renderer) {

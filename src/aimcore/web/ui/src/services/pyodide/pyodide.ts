@@ -39,6 +39,7 @@ export function clearQueryResultsCache(key?: string) {
 }
 
 let layoutUpdateTimer: number;
+let pagesUpdateTimer: number;
 let prevBoardPath: undefined | string;
 
 // @ts-ignore
@@ -132,6 +133,22 @@ window.setState = (update: any, boardPath: string, persist = false) => {
     },
     { savePayload: false },
   );
+};
+
+// @ts-ignore
+window.updatePages = (pages: any) => {
+  let pagesData = pages.toJs();
+  pages.destroy();
+
+  window.clearTimeout(pagesUpdateTimer);
+
+  pagesUpdateTimer = window.setTimeout(() => {
+    pyodideEngine.events.fire(
+      'pages',
+      { pages: pagesData },
+      { savePayload: false },
+    );
+  }, 50);
 };
 
 export async function loadPyodideInstance() {

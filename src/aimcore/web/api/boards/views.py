@@ -13,7 +13,10 @@ boards_router = APIRouter()
 
 @boards_router.get('/', response_model=BoardOut)
 async def board_list_api(package=Depends(get_root_package)):
-    result = [board.as_posix() for board in package.boards]
+    result = {
+        'boards': [board.as_posix() for board in package.boards],
+        'pages': package.pages,
+    }
     return JSONResponse(result)
 
 
@@ -23,7 +26,8 @@ async def board_get_api(board_path: str, package=Depends(get_root_package)):
     if not board.exists():
         raise HTTPException(status_code=404)
     if not board.is_file():
-        raise HTTPException(status_code=400, detail=f'\'{board_path}\' is not valid board.')
+        raise HTTPException(
+            status_code=400, detail=f'\'{board_path}\' is not valid board.')
 
     result = {
         'path': board_path

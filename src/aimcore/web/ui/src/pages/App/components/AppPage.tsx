@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import AppWrapper from './AppWrapper';
 
-function AppPage({ match, location, data }: any) {
+function AppPage({ match, location, boardsList, pages }: any) {
   let boardPath = '';
   if (match?.params?.[0]) {
     boardPath = match.params[0];
@@ -16,7 +16,12 @@ function AppPage({ match, location, data }: any) {
   }, [boardPath]);
 
   return (
-    <AppWrapper boardList={data} boardPath={boardPath} editMode={editMode!} />
+    <AppWrapper
+      boardsList={boardsList}
+      pages={pages}
+      boardPath={boardPath}
+      editMode={editMode!}
+    />
   );
 }
 

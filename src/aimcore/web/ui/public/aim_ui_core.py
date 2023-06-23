@@ -3,7 +3,7 @@
 ####################
 
 from pyodide.ffi import create_proxy
-from js import search, runFunction, localStorage
+from js import search, runFunction, updatePages, localStorage
 import json
 import hashlib
 
@@ -1775,6 +1775,10 @@ class UI:
         board = BoardLink(*args, **kwargs, block=self.block_context)
         return board
 
+    # App structure components
+    def pages(self, pages):
+        updatePages(pages)
+
 
 class Row(Block, UI):
     def __init__(self, block=None):
@@ -1820,6 +1824,28 @@ class Form(Block, UI):
         batch_id = self.block_context["id"]
         state_update = state[board_path][batch_id]
         set_state(state_update, board_path=self.board_path)
+
+
+class Pages(Block):
+    def __init__(self, block=None):
+        super().__init__('pages', block=block)
+        self.pages = {}
+        self.render()
+
+    def page(self, path, name):
+        page = Page(path, name)
+        self.pages[path] = page
+
+
+class Page():
+    def __init__(self, path, name):
+        self.path = path
+        self.name = name
+
+
+class Section(Block):
+    def __init__(self, name, collapsed=False, block=None):
+        super().__init__('sidebar_section', block=block)
 
 
 ui = UI()

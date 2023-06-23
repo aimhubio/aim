@@ -5,6 +5,7 @@ import useBoardStore from 'pages/Board/BoardStore';
 
 function useApp() {
   const boardsList = useBoardStore((state) => state.boardsList);
+  const pages = useBoardStore((state) => state.pages);
   const fetchBoardsList = useBoardStore((state) => state.fetchBoardList);
   const isLoading = useBoardStore((state) => state.isLoading);
   const updateBoard = useBoardStore((state) => state.editBoard);
@@ -38,7 +39,8 @@ function useApp() {
   }, [boardsList, location]);
 
   return {
-    data: sortedList,
+    boardsList: sortedList,
+    pages,
     updateBoard,
     boards,
     isLoading,

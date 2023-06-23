@@ -16,6 +16,7 @@ class Package:
         self._path = pathlib.Path(pkg.__path__[0])
         self._boards_dir: pathlib.Path = None
         self._boards: List[str] = []
+        self._pages: Dict[str, any] = None
         self._registered_containers = []
         self._registered_sequences = []
         self._registered_functions = []
@@ -32,6 +33,10 @@ class Package:
         return self._boards
 
     @property
+    def pages(self) -> Dict[str, any]:
+        return self._pages
+
+    @property
     def containers(self) -> List:
         return self._registered_containers
 
@@ -45,7 +50,8 @@ class Package:
 
     @staticmethod
     def discover(base_pkg):
-        discovered_packages = (name for _, name, ispkg in pkgutil.iter_modules(base_pkg.__path__) if ispkg)
+        discovered_packages = (
+            name for _, name, ispkg in pkgutil.iter_modules(base_pkg.__path__) if ispkg)
         Package._load_packages(base_pkg, discovered_packages)
 
     @staticmethod
@@ -90,7 +96,12 @@ class Package:
         self._boards_dir: pathlib.Path = self._path / boards_path
         if self._boards_dir.exists():
             logger.debug(f'Registering boards for Aim package \'{pkg}\'.')
-            self._boards = list(map(lambda p: p.relative_to(self._boards_dir), self._boards_dir.glob('**/*.py')))
+            self._boards = list(map(lambda p: p.relative_to(
+                self._boards_dir), self._boards_dir.glob('**/*.py')))
+
+        if not hasattr(pkg, '__aim_pages__'):
+            return
+        self._pages = pkg.__aim_pages__
 
 
 def register_aimstack_packages():

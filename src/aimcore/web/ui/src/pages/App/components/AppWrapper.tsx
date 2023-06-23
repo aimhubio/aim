@@ -15,7 +15,12 @@ import { AppContainer, BoardWrapper } from '../App.style';
 
 import AppSidebar from './AppSidebar';
 
-function AppWrapper({ boardPath, editMode, boardList }: AppWrapperProps) {
+function AppWrapper({
+  boardPath,
+  editMode,
+  boardsList,
+  pages,
+}: AppWrapperProps) {
   const path = boardPath?.replace('/edit', '');
   const board = useBoardStore((state) => state.boards?.[path]);
   const fetchBoard = useBoardStore((state) => state.fetchBoard);
@@ -86,7 +91,7 @@ function AppWrapper({ boardPath, editMode, boardList }: AppWrapperProps) {
         )}
       </TopBar>
       <Box display='flex' height='calc(100% - 28px)'>
-        <AppSidebar boards={boardList} editMode={editMode} />
+        <AppSidebar boards={boardsList} pages={pages} editMode={editMode} />
         <BoardWrapper>
           {board && (
             <Board

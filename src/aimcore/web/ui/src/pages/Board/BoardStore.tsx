@@ -24,6 +24,7 @@ interface BoardStore {
   consoleOpen: boolean;
   boardsList: string[];
   boards: Record<string, BoardData> | null;
+  pages: Record<string, any> | null;
   template: TemplateData | null;
   templatesList: TemplateData[];
   notifyData: IToastProps[];
@@ -45,6 +46,7 @@ const useBoardStore = create<BoardStore>((set, get) => ({
   isLoading: true,
   consoleOpen: true,
   boardsList: [],
+  pages: null,
   templatesList: [],
   notifyData: [],
   boards: null,
@@ -78,8 +80,8 @@ const useBoardStore = create<BoardStore>((set, get) => ({
 
   fetchBoardList: async () => {
     try {
-      const boardsList = await fetchBoardsList();
-      set({ boardsList, isLoading: false });
+      const data = await fetchBoardsList();
+      set({ boardsList: data.boards, pages: data.pages, isLoading: false });
     } catch (err: any) {
       get().addNotifyData({
         status: 'danger',
