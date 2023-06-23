@@ -75,6 +75,7 @@ REQUIRED = [
     'python-dateutil',
     'requests',
     'segment-analytics-python',
+    'importlib_metadata',
 ]
 
 if platform.machine() != 'arm64':
