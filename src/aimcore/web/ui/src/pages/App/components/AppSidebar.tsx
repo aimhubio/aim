@@ -33,16 +33,18 @@ const AppSidebar: React.FC<any> = ({
     let lookup: Record<string, AppSidebarNode> = {};
 
     function iterateOverPages(pages: Record<string, any>, prefix: string = '') {
+      let localTree: AppSidebarNode[] = []; // local tree array
+
       for (let name in pages) {
-        if (typeof pages[name] === 'object') {
+        if (typeof pages[name] === 'object' && pages[name] !== null) {
           let node: AppSidebarNode = {
             title: <Text>{name}</Text>,
             key: prefix + name,
             value: name,
+            children: iterateOverPages(pages[name], prefix + name + '/'), // result of recursive call to children
           };
 
-          tree.push(node);
-          iterateOverPages(pages[name], prefix + name + '/');
+          localTree.push(node);
         } else {
           const boardPath = `${PathEnum.App}/${pages[name]}`;
           const isActive = location.pathname.replace('/edit', '') === boardPath;
@@ -57,20 +59,20 @@ const AppSidebar: React.FC<any> = ({
           let node: AppSidebarNode = {
             title: (
               <BoardLink to={`${boardPath}${editMode ? '/edit' : ''}`}>
-                <Text css={{ ml: '$4' }}>{name}</Text>
+                <Text>{name}</Text>
               </BoardLink>
             ),
             key: key,
             value: name,
           };
 
-          tree.push(node);
+          localTree.push(node);
         }
       }
+      return localTree; // Return local tree array
     }
-
     if (pages) {
-      iterateOverPages(pages);
+      tree = iterateOverPages(pages); // Assign result of initial function call to global tree array
     } else {
       // Step 1: Create nodes and build a lookup
       for (let i = 0; i < boards.length; i++) {
