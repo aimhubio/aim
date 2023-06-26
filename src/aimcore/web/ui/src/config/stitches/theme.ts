@@ -265,6 +265,7 @@ export const lightTheme: ConfigType.Theme = {
     'background-hover-neutral-lumos': '#F0F3F6',
     'background-focus-neutral-lumos': '#F5F7F9',
     'background-applied-neutral-lumos': '#F5F7F9',
+    'background-disable-neutral-gentle': '#B5C4D3',
     'background-disable-neutral-lumos': '#F5F7F9',
     'background-default-neutral-pastel-opacity': 'hsla(210, 25%, 77%, 0.8)',
     'background-default-neutral-light-opacity': 'hsla(210, 25%, 77%, 0.5)',
