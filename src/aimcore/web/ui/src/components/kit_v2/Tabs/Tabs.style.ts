@@ -35,7 +35,7 @@ const TabTrigger = styled(TabPrimitive.Trigger, {
   cursor: 'pointer',
   padding: '$7',
   '&[data-state="active"]': {
-    color: '$background-focus-primary-plain',
+    color: '$text-focus-primary-plain',
     '&:after': {
       content: '""',
       position: 'absolute',
@@ -43,7 +43,7 @@ const TabTrigger = styled(TabPrimitive.Trigger, {
       left: 0,
       right: 0,
       height: 4,
-      background: '$text-focus-primary-plain',
+      background: '$background-focus-primary-plain',
       borderRadius: '6px 6px 0 0',
     },
   },
