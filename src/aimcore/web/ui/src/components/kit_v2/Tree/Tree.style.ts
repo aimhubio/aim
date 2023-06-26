@@ -11,7 +11,12 @@ const TreeListWrapper = styled('div', {
       br: '$3',
       p: 0,
       '&:hover': {
-        bc: '#EFF0F2',
+        bc: '$background-hover-neutral-airly',
+        '.ant-tree-checkbox:not(.ant-tree-checkbox-checked)': {
+          '.ant-tree-checkbox-inner': {
+            bs: 'inset 0 0 0 1px $colors$icon-hover-primary-bold',
+          },
+        },
       },
     },
     '.ant-tree-switcher-noop': {
@@ -30,7 +35,7 @@ const TreeListWrapper = styled('div', {
       ai: 'center',
       jc: 'center',
       '&.ant-tree-node-selected': {
-        bc: '$primary',
+        bc: '$background-default-primary-plain',
       },
       '&:hover': {
         bc: 'unset',
@@ -64,14 +69,14 @@ const TreeListWrapper = styled('div', {
   },
   '.ant-tree-checkbox-indeterminate': {
     '.ant-tree-checkbox-inner': {
-      bs: 'inset 0 0 0 1px $colors$primary100',
+      bs: 'inset 0 0 0 1px $colors$icon-default-primary-plain',
     },
     '.ant-tree-checkbox-inner::after': {
       top: '50%',
       left: '50%',
       size: '6px',
       br: '$1',
-      bc: '$primary100',
+      bc: '$icon-default-primary-plain',
       border: 0,
       transform: 'translate(-50%, -50%) scale(1)',
       opacity: 1,
@@ -83,8 +88,8 @@ const TreeListWrapper = styled('div', {
       display: 'none',
     },
     '.ant-tree-checkbox-inner': {
-      bc: '$primary100',
-      bs: 'inset 0 0 0 1px $colors$primary100',
+      bc: '$icon-default-primary-plain',
+      bs: 'inset 0 0 0 1px $colors$icon-default-primary-plain',
       '&:after': {
         borderWidth: 1,
         transition: 'unset',
@@ -96,7 +101,7 @@ const TreeListWrapper = styled('div', {
   '.ant-tree-checkbox-inner': {
     size: '10px',
     border: 'unset',
-    bs: 'inset 0 0 0 1px $colors$secondary100',
+    bs: 'inset 0 0 0 1px $colors$icon-default-text-soft',
   },
 });
 
