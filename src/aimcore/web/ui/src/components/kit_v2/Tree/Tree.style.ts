@@ -19,6 +19,9 @@ const TreeListWrapper = styled('div', {
         },
       },
     },
+    '.ant-tree-treenode-selected': {
+      bc: '$background-hover-neutral-airly',
+    },
     '.ant-tree-switcher-noop': {
       width: '0 !important', // Set the margin to your preferred value
     },
@@ -35,7 +38,7 @@ const TreeListWrapper = styled('div', {
       ai: 'center',
       jc: 'center',
       '&.ant-tree-node-selected': {
-        bc: '$background-default-primary-plain',
+        bc: 'unset',
       },
       '&:hover': {
         bc: 'unset',
