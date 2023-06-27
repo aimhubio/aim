@@ -1,3 +1,5 @@
+import { omit } from 'lodash-es';
+
 import { createFetchDataRequest } from 'modules/core/api/dataFetchApi';
 // import {
 //   DecodingError,
@@ -44,7 +46,7 @@ export function search(
       parseStream<Array<any>>(data)
         .then((objectList) => {
           try {
-            let result;
+            let result = [];
             if (type_.includes('.Metric')) {
               let data: any[] = [];
 
@@ -99,7 +101,12 @@ export function search(
 
               result = data;
             } else {
-              result = objectList;
+              for (let item of objectList) {
+                result.push({
+                  ...omit(item, ['params']),
+                  ...item.params,
+                });
+              }
             }
 
             if (cb) {
