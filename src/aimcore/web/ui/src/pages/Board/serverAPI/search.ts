@@ -46,7 +46,7 @@ export function search(
       parseStream<Array<any>>(data)
         .then((objectList) => {
           try {
-            let result = [];
+            let result;
             if (type_.includes('.Metric')) {
               let data: any[] = [];
 
@@ -101,12 +101,7 @@ export function search(
 
               result = data;
             } else {
-              for (let item of objectList) {
-                result.push({
-                  ...omit(item, ['params']),
-                  ...item.params,
-                });
-              }
+              result = objectList;
             }
 
             if (cb) {
