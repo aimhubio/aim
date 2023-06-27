@@ -87,9 +87,8 @@ def run_function(func_name, params):
         return query_results_cache[run_function_key]
 
     try:
-        data = runFunction(board_path, func_name, params)
-
-        # data.destroy()
+        res = runFunction(board_path, func_name, params)
+        data = res.to_py()
 
         query_results_cache[run_function_key] = data
         return data
@@ -354,7 +353,7 @@ class Component(Element):
                 self.parent_block["id"]
             ] if (self.board_path in state and self.parent_block["id"] in state[self.board_path]) else {}
 
-            component_state_slice = state_slice[self.key] if self.key in state_slice else {
+            component_state_slice = deep_copy(state_slice[self.key]) if self.key in state_slice else {
             }
 
             component_state_slice.update(value)
@@ -830,19 +829,20 @@ class Table(Component):
         if renderer:
             for col in renderer:
                 cell_renderer = renderer[col]
-                for i, cell_content in enumerate(data[col]):
-                    cell = Block('table_cell', block=block)
+                if col in data:
+                    for i, cell_content in enumerate(data[col]):
+                        cell = Block('table_cell', block=block)
 
-                    cell.options = {
-                        "table": component_key,
-                        "column": col,
-                        "row": i
-                    }
+                        cell.options = {
+                            "table": component_key,
+                            "column": col,
+                            "row": i
+                        }
 
-                    cell.render()
+                        cell.render()
 
-                    with cell:
-                        cell_renderer(cell_content)
+                        with cell:
+                            cell_renderer(cell_content)
 
         self.render()
 
