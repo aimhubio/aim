@@ -13,7 +13,7 @@ const LeftIcon = styled(Icon, {
   ai: 'center',
   jc: 'center',
   size: '$sizes$1',
-  color: '$text-default-text-soft',
+  color: '$text-default-text-muted',
   pointerEvents: 'none',
   variants: {
     inputSize: {
@@ -29,12 +29,12 @@ const LeftIcon = styled(Icon, {
     },
     focused: {
       true: {
-        color: '$text-default-text-deep !important',
+        color: '$icon-default-primary-deep !important',
       },
     },
     disabled: {
       true: {
-        color: '$text-disable-text-subtle !important',
+        color: '$icon-disable-text-pastel !important',
       },
     },
   },
@@ -65,13 +65,13 @@ const InputContainer: any = styled('input', {
   outline: 'none',
   height: '100%',
   width: '100%',
-  color: '$textPrimary',
+  color: '$text-default-text-deep',
   bs: 'inset 0px 0px 0px 1px $colors$border-default-neutral-gentle',
   br: '$3',
   fontSize: '$3',
   p: 0,
   '&::placeholder': {
-    color: '$colors$border-default-neutral-gentle',
+    color: '$text-default-text-muted',
   },
   '&:hover': {
     bs: 'inset 0px 0px 0px 1px $colors$border-hover-neutral-soft',
@@ -190,11 +190,6 @@ const Caption = styled('p', {
     error: {
       true: {
         color: '$text-default-danger-plain',
-      },
-    },
-    disabled: {
-      true: {
-        color: '$text-disable-text-subtle',
       },
     },
   },

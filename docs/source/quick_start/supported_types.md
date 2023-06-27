@@ -65,7 +65,7 @@ from aim import Distribution
 
 `aim.Distribution` accepts the following parameters
 
-* `distribution`: array-like object used to construct `aim.Distribution`.
+* `samples`: array-like object used to construct `aim.Distribution`.
 * `bin_count`: Optional distribution bin count. 64 by default, max 512.
 
 Your data is converted to `numpy.histogram` upon initialization of the object.
@@ -78,7 +78,7 @@ from aim import Run, Distribution
 
 run = Run()
 d = Distribution(
-    distribution=[random.randrange(0, 10000) for _ in range(1000)],
+    samples=[random.randrange(0, 10000) for _ in range(1000)],
     bin_count=250
 )
 run.track(d, name='dist', step=0)
