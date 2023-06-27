@@ -32,5 +32,5 @@ def get_table_data (runs=[]):
 # Table
 ui.text('Runs')
 ui.table(get_table_data(runs), {
-    'hash': lambda val: ui.board_link('run.py', val, state={ hash: val }),
+    'hash': lambda val: ui.board_link('run.py', val, state={ 'hash': val }),
 })
