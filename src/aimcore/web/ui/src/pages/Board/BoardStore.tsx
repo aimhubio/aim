@@ -25,6 +25,7 @@ interface BoardStore {
   boardsList: string[];
   boards: Record<string, BoardData> | null;
   pages: Record<string, any> | null;
+  entry: string | null;
   template: TemplateData | null;
   templatesList: TemplateData[];
   notifyData: IToastProps[];
@@ -47,12 +48,13 @@ const useBoardStore = create<BoardStore>((set, get) => ({
   consoleOpen: true,
   boardsList: [],
   pages: null,
+  entry: null,
   templatesList: [],
   notifyData: [],
   boards: null,
   template: null,
   addNotifyData: ({ status = 'success', message = '', icon = null }: any) => {
-    const id = Math.random().toString(36).substr(2, 9);
+    const id = `${Date.now()}`;
     const notification: IToastProps = {
       id,
       icon,
@@ -81,7 +83,12 @@ const useBoardStore = create<BoardStore>((set, get) => ({
   fetchBoardList: async () => {
     try {
       const data = await fetchBoardsList();
-      set({ boardsList: data.boards, pages: data.pages, isLoading: false });
+      set({
+        boardsList: data.boards,
+        pages: data.pages?.pages ?? null,
+        entry: data.pages?.entry ?? null,
+        isLoading: false,
+      });
     } catch (err: any) {
       get().addNotifyData({
         status: 'danger',

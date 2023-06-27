@@ -6,6 +6,7 @@ import useBoardStore from 'pages/Board/BoardStore';
 function useApp() {
   const boardsList = useBoardStore((state) => state.boardsList);
   const pages = useBoardStore((state) => state.pages);
+  const entry = useBoardStore((state) => state.entry);
   const fetchBoardsList = useBoardStore((state) => state.fetchBoardList);
   const isLoading = useBoardStore((state) => state.isLoading);
   const updateBoard = useBoardStore((state) => state.editBoard);
@@ -32,11 +33,14 @@ function useApp() {
 
   React.useEffect(() => {
     if (!isLoading && sortedList.length > 0 && location.pathname === '/app') {
-      const firstBoardPath = sortedList[0]; // replace this with the correct property if different
-      history.replace(`/app/${firstBoardPath}`);
+      if (entry) {
+        history.replace(`/app/${entry}`);
+      } else {
+        const firstBoardPath = sortedList[0];
+        history.replace(`/app/${firstBoardPath}`);
+      }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [boardsList, location]);
+  }, [isLoading, sortedList, entry, location, history]);
 
   return {
     boardsList: sortedList,

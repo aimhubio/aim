@@ -1,7 +1,10 @@
 __aim_pages__ = {
-    "📈 Charts": "charts.py",
-    "Primitives": {
-        "🗃 Data Display": "data_display_elements.py",
-        "Inputs": "input_components.py",
+    "entry": "input_components.py",
+    "pages": {
+        "📈 Charts": "charts.py",
+        "Primitives": {
+            "Inputs": "input_components.py",
+            "🗃 Data Display": "data_display_elements.py",
+        }
     }
 }
