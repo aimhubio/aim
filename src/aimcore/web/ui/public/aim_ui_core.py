@@ -87,10 +87,8 @@ def run_function(func_name, params):
         return query_results_cache[run_function_key]
 
     try:
-        data = runFunction(board_path, func_name, params)
-        data = create_proxy(data.to_py())
-
-        # data.destroy()
+        res = runFunction(board_path, func_name, params)
+        data = res.to_py()
 
         query_results_cache[run_function_key] = data
         return data
