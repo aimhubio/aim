@@ -35,7 +35,7 @@ function NumberInputVizElement(props: any) {
 
   const id = React.useMemo(generateId, []);
   return (
-    <Box>
+    <Box flex={1}>
       {props.options.label && (
         <Text
           as='label'

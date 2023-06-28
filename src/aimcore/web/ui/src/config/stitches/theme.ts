@@ -252,6 +252,16 @@ export const lightTheme: ConfigType.Theme = {
     'background-active-primary-light': '#D3E4FD',
     'background-hover-primary-airly': '#E9F2FE',
     'background-focus-primary-airly': '#E9F2FE',
+    // background secondary colors
+    'background-active-secondary-dark': '#000',
+    'background-hover-secondary-bold': '#191C20',
+    'background-default-secondary-plain': '#1F2227',
+    'background-focus-secondary-plain': '#1473E6',
+    'background-focus-secondary-soft': '#92BBF7',
+    'background-disable-secondary-soft': '#9D9EA1',
+    'background-active-secondary-light': '#D2D3D4',
+    'background-hover-secondary-airly': '#E6E6E7',
+    'background-focus-secondary-airly': '#E6E6E7',
     // background text colors
     'background-default-text-deep': '#1F2227',
     // background neutral colors
@@ -265,6 +275,7 @@ export const lightTheme: ConfigType.Theme = {
     'background-hover-neutral-lumos': '#F0F3F6',
     'background-focus-neutral-lumos': '#F5F7F9',
     'background-applied-neutral-lumos': '#F5F7F9',
+    'background-disable-neutral-gentle': '#B5C4D3',
     'background-disable-neutral-lumos': '#F5F7F9',
     'background-default-neutral-pastel-opacity': 'hsla(210, 25%, 77%, 0.8)',
     'background-default-neutral-light-opacity': 'hsla(210, 25%, 77%, 0.5)',
@@ -369,6 +380,14 @@ export const lightTheme: ConfigType.Theme = {
     'border-disable-primary-soft': '#92BBF7',
     'border-active-primary-light': '#D3E4FD',
     'border-focus-primary-airly': '#D3E4FD',
+    // border secondary colors
+    'border-active-secondary-dark': '#000',
+    'border-hover-secondary-bold': '#191C20',
+    'border-default-secondary-plain': '#1F2227',
+    'border-focus-secondary-soft': '#92BBF7',
+    'border-disable-secondary-soft': '#9D9EA1',
+    'border-active-secondary-light': '#D3E4FD',
+    'border-focus-secondary-airly': '#D3E4FD',
     // border text colors
     'border-default-text-pastel-opacity': 'hsla(217, 11%, 14%, 0.2)',
     // border neutral colors
@@ -437,6 +456,12 @@ export const lightTheme: ConfigType.Theme = {
     'text-default-primary-plain': '#1473E6',
     'text-focus-primary-plain': '#1473E6',
     'text-disable-primary-soft': '#92BBF7',
+    // text secondary colors
+    'text-active-secondary-dark': '#000',
+    'text-hover-secondary-bold': '#191C20',
+    'text-default-secondary-plain': '#1F2227',
+    'text-focus-secondary-plain': '#1F2227',
+    'text-disable-secondary-soft': '#9D9EA1',
     // text colors
     'text-default-text-deep': '#1F2227',
     'text-default-text-bold': '#45484D',

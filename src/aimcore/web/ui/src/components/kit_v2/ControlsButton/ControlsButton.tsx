@@ -1,6 +1,9 @@
 import React from 'react';
 
-import { IconCaretDown, IconCaretUp } from '@tabler/icons-react';
+import ArrowDown from 'assets/icons/dropdown-arrow-down.svg';
+import ArrowUp from 'assets/icons/dropdown-arrow-up.svg';
+
+import Box from '../Box';
 
 import { IControlsButtonProps } from './ControlsButton.d';
 import {
@@ -60,7 +63,7 @@ const ControlsButton = React.forwardRef<
         ) : null}
         {
           <ArrowIcon rightIcon={!!rightIcon} size={size}>
-            {open ? <IconCaretUp size={10} /> : <IconCaretDown size={10} />}
+            <Box as='img' src={open ? ArrowUp : ArrowDown} />
           </ArrowIcon>
         }
         {rightIcon?.icon ? (

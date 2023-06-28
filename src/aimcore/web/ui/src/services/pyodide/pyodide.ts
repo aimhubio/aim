@@ -1,4 +1,4 @@
-import { getBasePath } from 'config/config';
+import { AIM_VERSION, getBasePath } from 'config/config';
 
 import { fetchPackages } from 'modules/core/api/projectApi';
 
@@ -162,7 +162,9 @@ export async function loadPyodideInstance() {
   });
 
   const namespace = pyodide.toPy({});
-  const coreFile = await fetch(`${getBasePath()}/static-files/aim_ui_core.py`);
+  const coreFile = await fetch(
+    `${getBasePath()}/static-files/aim_ui_core.py?v=${AIM_VERSION}`,
+  );
   const coreCode = await coreFile.text();
   pyodide.runPython(coreCode, { globals: namespace });
 

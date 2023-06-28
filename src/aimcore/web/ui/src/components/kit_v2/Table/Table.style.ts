@@ -5,6 +5,7 @@ const TableCellStyled = styled('td', {
   height: '$3',
   border: '1px solid  rgba(180, 191, 202, 0.3)',
   verticalAlign: 'middle',
+  whiteSpace: 'nowrap',
 });
 
 const TableStyled = styled('table', {

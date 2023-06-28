@@ -57,17 +57,17 @@ const StyledCheckbox = styled(CheckboxPrimitive.Root, {
   '&[data-state=checked]': {
     '&:hover': {
       [`& ${IndicatorWrapper}`]: {
-        bc: '$background-hover-primary-bold',
+        bc: '$icon-hover-primary-bold',
       },
     },
     '&:disabled': {
       [`& ${IndicatorWrapper}`]: {
         bs: 'unset !important',
-        bc: '$background-disable-primary-soft',
+        bc: '$icon-disable-primary-soft',
       },
     },
     [`& ${IndicatorWrapper}`]: {
-      bc: '$background-default-primary-plain',
+      bc: '$icon-focus-primary-plain',
       bs: 'inset 0 0 0 1px transparent',
       '&:disabled': {
         bc: '$background-text-disable-pastel !important',
@@ -75,6 +75,9 @@ const StyledCheckbox = styled(CheckboxPrimitive.Root, {
     },
   },
   '&[data-state=indeterminate]': {
+    [`& ${IndeterminateIcon}`]: {
+      bc: '$icon-default-text-soft',
+    },
     '&:hover': {
       [`& ${IndicatorWrapper}`]: {
         bs: 'inset 0 0 0 1px $colors$icon-hover-primary-bold',
@@ -89,7 +92,7 @@ const StyledCheckbox = styled(CheckboxPrimitive.Root, {
       },
     },
     [`& ${IndicatorWrapper}`]: {
-      bs: 'inset 0 0 0 1px $colors$icon-focus-primary-plain',
+      bs: 'inset 0 0 0 1px $colors$icon-default-text-soft',
     },
   },
   variants: {
