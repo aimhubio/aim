@@ -19,7 +19,7 @@ def flatten(dictionary, parent_key='', separator='.'):
 @memoize
 def get_table_data(data=[]):
     table_data = {}
-    exclude_keys = ['type', 'container_type', 'sequence_type', 'sequence_full_type',
+    exclude_keys = ['type', 'container_type', 'sequence_type', 'sequence_full_type', 'hash', 'axis_names',
                     'item_type', 'container_full_type', 'data']
 
     for i, audio in enumerate(data):
@@ -40,6 +40,6 @@ def get_table_data(data=[]):
 print(get_table_data(audios))
 
 ui.table(get_table_data(audios), {
-    'hash': lambda val: ui.board_link('run.py', val, state={'hash': val}),
+    'container.hash': lambda val: ui.board_link('run.py', val, state={'hash': val}),
     'values': lambda val: ui.audios([audios[int(val)]])
 })

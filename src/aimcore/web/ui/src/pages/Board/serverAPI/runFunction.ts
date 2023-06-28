@@ -20,13 +20,13 @@ export function runFunction(
   funcName: string,
   requestData: Record<string, any>,
 ) {
-  const runFunctionKey = `${funcName}_${JSON.stringify(requestData)}`;
+  const reqBody = pyodideJSProxyMapToObject(requestData.toJs());
+
+  const runFunctionKey = `${funcName}_${JSON.stringify(reqBody)}`;
 
   if (getQueryResultsCacheMap().has(runFunctionKey)) {
     return getQueryResultsCacheMap().get(runFunctionKey).data;
   }
-
-  const reqBody = pyodideJSProxyMapToObject(requestData.toJs());
 
   runFunctionRequest
     .call(funcName, reqBody)

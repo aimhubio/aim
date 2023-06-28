@@ -1,10 +1,11 @@
 import * as React from 'react';
 import classNames from 'classnames';
-import _ from 'lodash';
+import _ from 'lodash-es';
 
 import { CheckedState } from '@radix-ui/react-checkbox';
 
 import Checkbox from '../Checkbox';
+import Box from '../Box';
 
 import {
   TableBody,
@@ -36,7 +37,7 @@ function Table({
   );
   const transformedData = React.useMemo(() => {
     const keys = Object.keys(data);
-    const length = data[keys[0]].length;
+    const length = data[keys[0]]?.length ?? 0;
     const result = [];
 
     for (let i = 0; i < length; i++) {
