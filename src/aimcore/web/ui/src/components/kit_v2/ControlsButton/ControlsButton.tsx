@@ -14,6 +14,34 @@ import {
   Trigger,
 } from './ControlsButton.style';
 
+function getControlButtonStyles(
+  color: string,
+  focused: boolean,
+  applied: boolean,
+  disabled = false,
+) {
+  // Define suffixes based on the color.
+  const hoverSuffix = color === 'neutral' ? 'light' : 'pastel';
+  const colorSuffix = color === 'neutral' ? 'lumos' : 'light';
+
+  // Define styles based on the color, focus, applied and disabled statuses.
+  return {
+    backgroundColor: applied
+      ? `$background-${
+          disabled ? 'disable' : 'applied'
+        }-${color}-${colorSuffix}`
+      : 'unset',
+    bs: focused
+      ? `inset 0 0 0 1px $colors$border-focus-${
+          color === 'neutral' ? 'primary' : color
+        }-soft`
+      : 'unset',
+    '&:hover': {
+      backgroundColor: `$background-hover-${color}-${hoverSuffix}`,
+    },
+  };
+}
+
 /**
  * @description ControlsButton component
  * ControlsButton component params
@@ -37,6 +65,7 @@ const ControlsButton = React.forwardRef<
       open,
       rightIcon,
       size = 'md',
+      color = 'neutral',
       hasAppliedValues = false,
       appliedValuesCount,
       leftIcon,
@@ -48,18 +77,40 @@ const ControlsButton = React.forwardRef<
     return (
       <Trigger
         {...props}
-        focused={open}
-        applied={hasAppliedValues}
         size={size}
         rightIcon={!!rightIcon}
         leftIcon={!!leftIcon}
         disabled={disabled}
+        css={{
+          ...getControlButtonStyles(
+            color,
+            open,
+            appliedValuesCount ? appliedValuesCount > 0 : hasAppliedValues,
+            disabled,
+          ),
+        }}
         ref={forwardedRef}
       >
         {leftIcon ? <LeftIcon size='sm' icon={leftIcon} /> : null}
         {children}
         {appliedValuesCount ? (
-          <AppliedCount>{appliedValuesCount}</AppliedCount>
+          <AppliedCount
+            css={{
+              backgroundColor: `$background-${
+                disabled ? 'disable' : 'default'
+              }-${color}-${
+                disabled
+                  ? color === 'neutral'
+                    ? 'light'
+                    : 'pastel-opacity'
+                  : color === 'neutral'
+                  ? 'pastel-opacity'
+                  : 'gentle-opacity'
+              }`,
+            }}
+          >
+            {appliedValuesCount}
+          </AppliedCount>
         ) : null}
         {
           <ArrowIcon rightIcon={!!rightIcon} size={size}>

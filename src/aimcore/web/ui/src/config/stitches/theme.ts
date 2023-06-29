@@ -267,6 +267,7 @@ export const lightTheme: ConfigType.Theme = {
     // background neutral colors
     'background-default-neutral-soft': '#9DAAB7',
     'background-default-neutral-gentle': '#B5C4D3',
+    'background-hover-neutral-light': '#DAE1E9',
     'background-default-neutral-light': '#D4DAE3',
     'background-disable-neutral-light': '#D4DAE3',
     'background-default-neutral-airly': '#E8EDF2',
