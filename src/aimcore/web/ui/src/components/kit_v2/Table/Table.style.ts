@@ -6,6 +6,9 @@ const TableCellStyled = styled('td', {
   border: '1px solid  rgba(180, 191, 202, 0.3)',
   verticalAlign: 'middle',
   whiteSpace: 'nowrap',
+  '.AudiosList': {
+    height: 'unset !important',
+  },
 });
 
 const TableStyled = styled('table', {
