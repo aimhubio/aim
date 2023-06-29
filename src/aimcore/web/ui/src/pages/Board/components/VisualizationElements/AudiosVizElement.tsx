@@ -1,5 +1,3 @@
-import * as React from 'react';
-
 import AudiosList from '../AudiosList';
 
 function AudiosVizElement(props: any) {

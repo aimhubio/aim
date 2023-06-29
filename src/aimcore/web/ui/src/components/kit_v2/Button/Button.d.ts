@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { CSS, ColorPaletteType } from 'config/stitches/types';
+import { CSS } from 'config/stitches/types';
 
 // Button component props
 export interface IButtonProps
@@ -9,7 +9,7 @@ export interface IButtonProps
    * @description The color of the button
    * @example 'primary'
    */
-  color?: ColorPaletteType;
+  color?: 'primary' | 'danger' | 'success' | 'warning' | 'secondary';
   /**
    * @description The size of the button
    * @example 'md'

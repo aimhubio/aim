@@ -1,5 +1,3 @@
-import { ColorPaletteType } from 'config/stitches/types';
-
 import { IButtonProps } from '../Button';
 
 export interface IToggleButtonProps {
@@ -16,7 +14,7 @@ export interface IToggleButtonProps {
    * @example
    * <ToggleButton color="secondary" />
    */
-  color?: ColorPaletteType;
+  color?: IButtonProps['color'];
   /**
    * The change callback.
    * @example

@@ -67,7 +67,7 @@ function DictVisualizer(props: IDictVisualizerProps) {
 
       setRows(newRows);
     }
-  }, [collapsedItems, initialRows]);
+  }, [collapsedItems, initialRows, props.src]);
 
   return (
     <ErrorBoundary>
