@@ -62,7 +62,6 @@ function Table({
 
   function handleRowFocus(e: React.MouseEvent<HTMLTableRowElement>) {
     const { index } = e.currentTarget.dataset;
-
     if (Number(index) === focusedRow) {
       setFocusedRow(undefined);
       if (onRowFocus) {

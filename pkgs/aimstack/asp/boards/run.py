@@ -1,7 +1,5 @@
 from asp import Run, Metric
 
-import math
-
 if 'hash' in session_state:
     hash = session_state['hash']
 else:
