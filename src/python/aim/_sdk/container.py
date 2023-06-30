@@ -187,7 +187,7 @@ class Container(ABCContainer):
 
     def __setitem__(self, key, value):
         self._attrs_tree[key] = value
-        self._meta_attrs_tree[key] = value
+        self._meta_attrs_tree.merge(key, value)
 
     def __getitem__(self, key):
         return self._attrs_tree.collect(key, strict=True)
