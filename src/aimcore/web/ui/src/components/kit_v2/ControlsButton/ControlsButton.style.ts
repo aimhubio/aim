@@ -14,22 +14,8 @@ const Trigger = styled('button', {
   borderRadius: '$3',
   transition: 'all 0.2s ease-out',
   fontSize: '$3',
-  color: ' #5A667A',
-  '&:hover': {
-    bc: '#E2E6ED',
-  },
+  color: '$text-default-text-bold',
   variants: {
-    applied: {
-      true: {
-        bc: '$secondary10',
-      },
-    },
-    focused: {
-      true: {
-        bs: 'inset 0px 0px 0px 1px $colors$secondary100',
-        bc: '#E2E6ED',
-      },
-    },
     rightIcon: { true: {} },
     leftIcon: { true: {} },
     size: {
@@ -57,7 +43,7 @@ const Trigger = styled('button', {
         userSelect: 'none',
         cursor: 'not-allowed',
         pointerEvents: 'none',
-        color: '$secondary50',
+        color: '$text-disable-text-subtle',
       },
     },
   },
@@ -156,8 +142,7 @@ const AppliedCount = styled('span', {
   textOverflow: 'ellipsis',
   overflow: 'hidden',
   height: '14px',
-  lineHeight: 1.4,
-  bc: '$secondary30',
+  lineHeight: '15px',
   display: 'inline-block',
   textAlign: 'center',
   br: '100px',

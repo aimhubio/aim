@@ -267,6 +267,7 @@ export const lightTheme: ConfigType.Theme = {
     // background neutral colors
     'background-default-neutral-soft': '#9DAAB7',
     'background-default-neutral-gentle': '#B5C4D3',
+    'background-hover-neutral-light': '#DAE1E9',
     'background-default-neutral-light': '#D4DAE3',
     'background-disable-neutral-light': '#D4DAE3',
     'background-default-neutral-airly': '#E8EDF2',
@@ -396,6 +397,7 @@ export const lightTheme: ConfigType.Theme = {
     'border-default-neutral-gentle': '#B5C4D3',
     'border-hover-neutral-gentle': '#B5C4D3',
     'border-disable-neutral-light': '#DAE1E9',
+    'border-focus-neutral-soft': '#9DAAB7',
     // border bgborder colors
     'border-default-bgborder-soft': '#B4BFCA',
     'border-default-bgborder-light': '#D9DFE4',
