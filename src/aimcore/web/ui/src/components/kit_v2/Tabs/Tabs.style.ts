@@ -18,7 +18,10 @@ const TabRoot = styled(TabPrimitive.Root, {
   },
 });
 
-const TabContent = styled(TabPrimitive.Content, {});
+const TabContent = styled(TabPrimitive.Content, {
+  maxHeight: 'calc(100% - 40px)',
+  height: '100%',
+});
 
 const TabTriggerWrapper = styled('div', {
   position: 'relative',

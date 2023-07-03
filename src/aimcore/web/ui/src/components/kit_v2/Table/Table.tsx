@@ -5,7 +5,6 @@ import _ from 'lodash-es';
 import { CheckedState } from '@radix-ui/react-checkbox';
 
 import Checkbox from '../Checkbox';
-import Box from '../Box';
 
 import {
   TableBody,

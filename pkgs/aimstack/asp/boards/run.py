@@ -1,13 +1,18 @@
 from asp import Run, Metric
+from itertools import groupby
+from collections.abc import MutableMapping
+import math
 
 if 'hash' in session_state:
     hash = session_state['hash']
 else:
     hash = None
 
+
 @memoize
 def memoize_query(cb, query):
     return cb(query)
+
 
 runs = memoize_query(Run.filter, f'c.hash=="{hash}"')
 run = None
@@ -19,6 +24,8 @@ else:
     ui.subheader('No runs found')
     ui.board_link('runs.py', 'Explore runs')
 
+
+@memoize
 def flatten(dictionary, parent_key='', separator='.'):
     items = []
     for key, value in dictionary.items():
@@ -29,25 +36,12 @@ def flatten(dictionary, parent_key='', separator='.'):
             items.append((new_key, value))
     return dict(items)
 
-def merge_dictionaries(dict1, dict2):
+
+@memoize
+def merge_dicts(dict1, dict2):
     merged_dict = dict1.copy()
     merged_dict.update(dict2)
     return merged_dict
-
-@memoize
-def group_metrics_data(metrics=[], group_field='name'):
-    grouped_data = {}
-    # Group metric data by "group_field"
-    for metric in metrics:
-        metric_processed = merge_dictionaries(metric, flatten(metric))
-        if group_field in metric_processed:
-            key = str(metric_processed[group_field])
-            if key in grouped_data:
-                grouped_data[key].append(metric_processed)
-            else:
-                grouped_data[key] = [metric_processed]
-
-    return grouped_data.values()
 
 
 if run:
@@ -63,15 +57,36 @@ if run:
     with metrics_tab:
         metrics = memoize_query(Metric.filter, f'c.hash=="{hash}"')
         if metrics:
-            group_field = ui.select('Group by:', ('name', 'context', 'context.subset', 'hash'))
-            grouped_data = group_metrics_data(metrics, group_field=group_field)
-            ui.html('<br/>')
-            x = ui.select('Align by:', ('steps', 'axis.epoch'))
-            rows = ui.rows(len(grouped_data))
-            for index, grouped_metrics in enumerate(grouped_data):
-                row = rows[index]
-                row.html('<br/>')
-                row.text(f'{group_field}: {grouped_metrics[0][group_field]}')
-                row.line_chart(grouped_metrics, x=x, y='values', color=['name'])
+            row_controls, = ui.rows(1)
+            group_fields = row_controls.multi_select(
+                'Group by:', ('name', 'context', 'context.subset', 'hash'))
+            metrics_processed = [merge_dicts(
+                metric, flatten(metric)) for metric in metrics]
+
+            def key_func(x): return tuple(
+                str(x[field]) for field in group_fields)
+
+            grouped_iterator = groupby(
+                sorted(metrics_processed, key=key_func), key_func)
+            grouped_data = [list(group) for key, group in grouped_iterator]
+            x_axis = row_controls.select('Align by:', ('steps', 'axis.epoch'))
+            y_axis = 'values'
+            grouped_data_length = len(grouped_data)
+            ui.html('<br />')
+            rows = ui.rows(math.ceil(grouped_data_length/2))
+            for i, row in enumerate(rows):
+                col1, col2 = row.columns(2)
+                col1_index = i*2
+                col2_index = i*2 + 1
+                if col1_index < grouped_data_length:
+                    data = grouped_data[col1_index]
+                    for group_field in group_fields:
+                        col1.text(f'{group_field}: {data[0][group_field]}')
+                    col1.line_chart(data, x=x_axis, y=y_axis, color=['name'])
+                if col2_index < grouped_data_length:
+                    data = grouped_data[col2_index]
+                    for group_field in group_fields:
+                        col2.text(f'{group_field}: {data[0][group_field]}')
+                    col2.line_chart(data, x=x_axis, y=y_axis, color=['name'])
         else:
             ui.text(f'No metrics found')
