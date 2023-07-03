@@ -400,6 +400,7 @@ export const lightTheme: ConfigType.Theme = {
     'border-default-bgborder-soft': '#B4BFCA',
     'border-default-bgborder-light': '#D9DFE4',
     'border-default-bgborder-airly': '#E8EBEF',
+    'border-default-bgborder-airly-opacity': 'hsla(210, 17%, 75%, 0.3)',
     'border-default-bgborder-lumos': '#F7F8FA',
     'border-default-bgborder-pastel-opacity': 'hsla(210, 17%, 75%, 0.3)',
 
