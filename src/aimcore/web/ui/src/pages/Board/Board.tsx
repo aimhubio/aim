@@ -450,11 +450,12 @@ function renderTree(tree: any, elements: any) {
         });
       }
       return (
-        <Box width='100%' key={element.type + key} className={'block--tabs'}>
+        <Box key={element.type + key} className='block--tabs'>
           <Tabs tabs={tabs} />
         </Box>
       );
     }
+
     if (element.type === 'tab') {
       return null;
     }

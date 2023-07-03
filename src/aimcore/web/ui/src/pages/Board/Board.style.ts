@@ -149,7 +149,7 @@ const BoardVisualizerComponentsPane = styled(SplitPaneItem, {
     width: '100%',
     ai: 'center',
     gap: '$9',
-    fw: 'wrap',
+    // fw: 'wrap',
     maxHeight: '100%',
   },
   '.block--column': {
@@ -160,6 +160,17 @@ const BoardVisualizerComponentsPane = styled(SplitPaneItem, {
     jc: 'center',
     maxHeight: '100%',
     maxWidth: '100%',
+  },
+  '.block--tabs': {
+    display: 'flex',
+    flex: '1 1 0%',
+    width: '100%',
+    maxHeight: '100%',
+    '.TabRoot': {
+      display: 'flex',
+      flex: '1 1 0%',
+      flexDirection: 'column',
+    },
   },
   '.block--form': {
     display: 'flex',
@@ -238,7 +249,8 @@ const BoardComponentsViz = styled('div', {
 
 const BoardBlockTab = styled('div', {
   width: '100%',
-  height: 'calc(500px + 2 * $5)',
+  height: '100%',
+  maxHeight: '100%',
   p: '$5',
   overflow: 'auto',
 });
