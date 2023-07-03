@@ -72,21 +72,19 @@ if run:
             x_axis = row_controls.select('Align by:', ('steps', 'axis.epoch'))
             y_axis = 'values'
             grouped_data_length = len(grouped_data)
+            column_count = row_controls.number_input(
+                'Columns', value=2, min=1, max=grouped_data_length)
+            rows = ui.rows(math.ceil(grouped_data_length/column_count))
             ui.html('<br />')
-            rows = ui.rows(math.ceil(grouped_data_length/2))
             for i, row in enumerate(rows):
-                col1, col2 = row.columns(2)
-                col1_index = i*2
-                col2_index = i*2 + 1
-                if col1_index < grouped_data_length:
-                    data = grouped_data[col1_index]
-                    for group_field in group_fields:
-                        col1.text(f'{group_field}: {data[0][group_field]}')
-                    col1.line_chart(data, x=x_axis, y=y_axis, color=['name'])
-                if col2_index < grouped_data_length:
-                    data = grouped_data[col2_index]
-                    for group_field in group_fields:
-                        col2.text(f'{group_field}: {data[0][group_field]}')
-                    col2.line_chart(data, x=x_axis, y=y_axis, color=['name'])
+                cols = row.columns(column_count)
+                for j, col in enumerate(cols):
+                    data_index = i*column_count+j
+                    if data_index < grouped_data_length:
+                        data = grouped_data[data_index]
+                        for group_field in group_fields:
+                            col.text(f'{group_field}: {data[0][group_field]}')
+                        col.line_chart(
+                            data, x=x_axis, y=y_axis, color=['name'])
         else:
             ui.text(f'No metrics found')
