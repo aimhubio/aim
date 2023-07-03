@@ -73,12 +73,12 @@ if run:
             y_axis = 'values'
             grouped_data_length = len(grouped_data)
             column_count = row_controls.number_input(
-                'Columns', value=2, min=1, max=grouped_data_length)
+                'Columns:', value=2, min=1, max=grouped_data_length)
             rows = ui.rows(math.ceil(grouped_data_length/column_count))
-            ui.html('<br />')
             for i, row in enumerate(rows):
                 cols = row.columns(column_count)
                 for j, col in enumerate(cols):
+                    col.html('<br />')
                     data_index = i*column_count+j
                     if data_index < grouped_data_length:
                         data = grouped_data[data_index]
