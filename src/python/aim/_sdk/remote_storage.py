@@ -532,3 +532,33 @@ class RemotePackageProxy:
 
     def move(self, src, dest):
         return self._rpc_client.run_instruction(self._hash, self._handler, 'move', (src, dest), is_write_only=True)
+
+
+class RemoteRepoProxy:
+    class AutoClean(RemoteResourceAutoClean):
+        PRIORITY = 60
+
+    def __init__(self, client: 'Client'):
+        self._rpc_client = client
+
+        self.init_args = pack_args(encode_tree({}))
+        self.resource_type = 'Repo'
+
+        handler = self._rpc_client.get_resource_handler(self, self.resource_type, args=self.init_args)
+
+        self._resources = RemoteRepoProxy.AutoClean(self)
+        self._resources.rpc_client = client
+        self._resources.handler = handler
+        self._handler = handler
+
+    def _delete_run(self, hash_):
+        return self._rpc_client.run_instruction(-1, self._handler, '_delete_run', [hash_])
+
+    def _copy_run(self, dest_repo, hash_):
+        return self._rpc_client.run_instruction(-1, self._handler, '_copy_run', [dest_repo, hash_])
+
+    def prune(self):
+        return self._rpc_client.run_instruction(-1, self._handler, 'prune', [])
+
+    def _close_run(self, hash_):
+        return self._rpc_client.run_instruction(-1, self._handler, '_close_run', [hash_])

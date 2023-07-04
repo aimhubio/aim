@@ -48,6 +48,12 @@ def get_tree(**kwargs):
     return ResourceRef(repo.storage_engine.tree(hash_=sub, name=name, read_only=read_only))
 
 
+def get_repo():
+    repo_path = os.environ.get(AIM_SERVER_MOUNTED_REPO_PATH)
+    repo = Repo.from_path(repo_path)
+    return ResourceRef(repo)
+
+
 def get_khash_array(**kwargs):
     tree = kwargs['tree']
     path = kwargs['path']
