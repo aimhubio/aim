@@ -2,7 +2,6 @@
 # Bindings for fetching Aim Objects
 ####################
 
-from pyodide.ffi import create_proxy
 from js import search, runFunction, localStorage
 import json
 import hashlib
@@ -53,23 +52,16 @@ class WaitForQueryError(Exception):
     pass
 
 
-def query_filter(type_, query="", count=None, start=None, stop=None, isSequence=False):
+def query_filter(type_, query="", count=None, start=None, stop=None, is_sequence=False):
     query_key = f'{type_}_{query}_{count}_{start}_{stop}'
 
     if query_key in query_results_cache:
         return query_results_cache[query_key]
 
     try:
-        data = search(board_path, type_, query, count, start, stop, isSequence)
-        data = create_proxy(data.to_py())
-        items = []
-        i = 0
-        for item in data:
-            d = item
-            d["type"] = type_
-            i = i + 1
-            items.append(d)
-        data.destroy()
+        data = search(board_path, type_, query,
+                      count, start, stop, is_sequence)
+        items = data.to_py()
 
         query_results_cache[query_key] = items
         return items

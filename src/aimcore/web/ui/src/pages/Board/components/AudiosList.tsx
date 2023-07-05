@@ -73,7 +73,7 @@ function AudiosList(props: any) {
             style={{}}
             additionalProperties={{
               getAudiosBlobsData: getBlobsData,
-              useData: true,
+              useData: false,
             }}
           />
         </div>

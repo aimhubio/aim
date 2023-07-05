@@ -38,7 +38,7 @@ import BoardConsole from './components/BoardConsole';
 import FormVizElement from './components/VisualizationElements/FormVizElement';
 import useBoardStore from './BoardStore';
 
-const liveUpdateEnabled = true;
+const liveUpdateEnabled = false;
 const liveUpdateInterval = 5000;
 
 function Board({
@@ -151,7 +151,7 @@ def set_session_state(state_slice):
 `;
         for (let queryKey in queryKeysForCacheCleaningRef.current) {
           if (queryKeysForCacheCleaningRef.current[queryKey]) {
-            resetCode += `query_results_cache.pop('${queryKey}', None)
+            resetCode += `query_results_cache.pop(str(${queryKey}), None)
 `;
             queryKeysForCacheCleaningRef.current[queryKey] = false;
           }
@@ -167,6 +167,9 @@ def set_session_state(state_slice):
         }));
       } catch (ex: any) {
         if (ex.type === 'WaitForQueryError') {
+          return;
+        }
+        if (ex.message.includes('WAIT_FOR_QUERY_RESULT')) {
           return;
         }
         // eslint-disable-next-line no-console

@@ -79,10 +79,9 @@ export function search(
                     for (let z = 0; z < object.length; z++) {
                       object[z] = {
                         ...object[z],
-                        step: step,
                       };
                       data.push({
-                        ...objectList[i],
+                        ...omit(objectList[i], 'values', 'steps'),
                         ...object[z],
                         step: step,
                         index: z,
@@ -90,7 +89,7 @@ export function search(
                     }
                   } else {
                     data.push({
-                      ...objectList[i],
+                      ...omit(objectList[i], 'values', 'steps'),
                       ...object,
                       step: step,
                       index: 0,

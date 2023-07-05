@@ -189,15 +189,30 @@ export async function loadPyodideInstance() {
               queryArgs[i] = args[i];
             }
           }
-          let val = pyodide.runPython(
-            `query_filter('${sequenceType}', ${JSON.stringify(
-              queryArgs[0] ?? queryArgs['query'],
-            )}, ${queryArgs[1] ?? queryArgs['count'] ?? 'None'}, ${
-              queryArgs[2] ?? queryArgs['start'] ?? 'None'
-            }, ${queryArgs[3] ?? queryArgs['stop'] ?? 'None'}, True)`,
-            { globals: namespace },
+          let boardPath = namespace.get('board_path');
+          let val = search(
+            boardPath,
+            sequenceType,
+            ((queryArgs[0] ?? queryArgs['query']) as string) ?? null,
+            ((queryArgs[1] ?? queryArgs['count']) as number) ?? null,
+            ((queryArgs[2] ?? queryArgs['start']) as number) ?? null,
+            ((queryArgs[3] ?? queryArgs['stop']) as number) ?? null,
+            true,
           );
-          return val;
+
+          let data = pyodide.toPy(val, { depth: 2 });
+
+          return data;
+          // let val = pyodide.runPython(
+          //   `query_filter('${sequenceType}', ${JSON.stringify(
+          //     queryArgs[0] ?? queryArgs['query'],
+          //   )}, ${queryArgs[1] ?? queryArgs['count'] ?? 'None'}, ${
+          //     queryArgs[2] ?? queryArgs['start'] ?? 'None'
+          //   }, ${queryArgs[3] ?? queryArgs['stop'] ?? 'None'}, True)`,
+          //   { globals: namespace },
+          // );
+
+          // return val;
         },
       };
     });
