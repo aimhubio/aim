@@ -587,7 +587,7 @@ def prepare_lock_path(path: Path):
         path (:obj:`Path`) to lock file for given rocksdb.
     """
     path.parent.mkdir(parents=True, exist_ok=True)
-    locks_dir = path.parent.parent / 'locks'
+    locks_dir = path.parent / 'locks'
     locks_dir.mkdir(parents=True, exist_ok=True)
     return locks_dir / path.name
 
