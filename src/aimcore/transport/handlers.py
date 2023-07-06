@@ -60,7 +60,7 @@ def get_lock(**kwargs):
     run_hash = kwargs['run_hash']
     # TODO Do we need to import SFRunLock here?
     from aim._sdk.lock_manager import SFRunLock
-    return ResourceRef(repo.storage_engine.lock(run_hash), SFRunLock.release)
+    return ResourceRef(repo.storage_engine._lock_manager.get_run_lock(run_hash), SFRunLock.release)
 
 
 def get_file_manager(**kwargs):
