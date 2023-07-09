@@ -80,7 +80,7 @@ def run_function(func_name, params):
 
     try:
         res = runFunction(board_path, func_name, params)
-        data = res.to_py()
+        data = json.loads(res)["value"]
 
         query_results_cache[run_function_key] = data
         return data

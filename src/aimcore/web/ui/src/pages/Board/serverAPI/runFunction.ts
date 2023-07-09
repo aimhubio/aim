@@ -43,7 +43,7 @@ export function runFunction(
             };
 
             getQueryResultsCacheMap().set(runFunctionKey, {
-              data: result,
+              data: JSON.stringify({ value: result }),
               params: queryParams,
             });
 

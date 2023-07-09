@@ -191,12 +191,11 @@ export async function loadPyodideInstance() {
           }
 
           let val = pyodide.runPython(
-            `from pyodide.ffi import create_proxy
-create_proxy(query_filter('${sequenceType}', ${JSON.stringify(
+            `query_filter('${sequenceType}', ${JSON.stringify(
               queryArgs[0] ?? queryArgs['query'],
             )}, ${queryArgs[1] ?? queryArgs['count'] ?? 'None'}, ${
               queryArgs[2] ?? queryArgs['start'] ?? 'None'
-            }, ${queryArgs[3] ?? queryArgs['stop'] ?? 'None'}, True))`,
+            }, ${queryArgs[3] ?? queryArgs['stop'] ?? 'None'}, True)`,
             { globals: namespace },
           );
 
@@ -211,10 +210,9 @@ create_proxy(query_filter('${sequenceType}', ${JSON.stringify(
       jsModule[dataTypeName] = {
         filter: (query: string = '') => {
           let val = pyodide.runPython(
-            `from pyodide.ffi import create_proxy
-create_proxy(query_filter('${containerType}', ${JSON.stringify(
+            `query_filter('${containerType}', ${JSON.stringify(
               query,
-            )}, None, None, None, False))`,
+            )}, None, None, None, False)`,
             { globals: namespace },
           );
           return val;
