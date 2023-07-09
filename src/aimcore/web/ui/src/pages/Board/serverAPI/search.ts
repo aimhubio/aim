@@ -118,7 +118,7 @@ export function search(
             };
 
             getQueryResultsCacheMap().set(queryKey, {
-              data: result,
+              data: JSON.stringify(result),
               params: queryParams,
             });
 

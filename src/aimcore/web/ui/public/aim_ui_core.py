@@ -61,10 +61,10 @@ def query_filter(type_, query="", count=None, start=None, stop=None, is_sequence
     try:
         data = search(board_path, type_, query,
                       count, start, stop, is_sequence)
-        items = data.to_py()
+        data = json.loads(data)
 
-        query_results_cache[query_key] = items
-        return items
+        query_results_cache[query_key] = data
+        return data
     except Exception as e:
         if 'WAIT_FOR_QUERY_RESULT' in str(e):
             raise WaitForQueryError()
@@ -94,13 +94,13 @@ def run_function(func_name, params):
 class Sequence():
     @classmethod
     def filter(self, query="", count=None, start=None, stop=None):
-        return query_filter('Sequence', query, count, start, stop, isSequence=True)
+        return query_filter('Sequence', query, count, start, stop, is_sequence=True)
 
 
 class Container():
     @classmethod
     def filter(self, query=""):
-        return query_filter('Container', query, None, None, None, isSequence=False)
+        return query_filter('Container', query, None, None, None, is_sequence=False)
 
 
 ####################

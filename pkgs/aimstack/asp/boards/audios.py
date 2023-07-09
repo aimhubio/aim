@@ -1,23 +1,19 @@
-# from collections.abc import MutableMapping
 from asp import AudioSequence
 
-audios = AudioSequence.filter()
 ui.header('Audios')
 
-ui.audios(audios)
+audios = AudioSequence.filter()
 
-# ui.table({
-#     'a': [i for i in range(len(audios))]
-# }, {
-#     'a': lambda i: ui.audios([audios[i]])
-# })
+# audios = query_filter('asp.ImageSequence', '', is_sequence=True)
+
+ui.json(audios[0:100])
 
 
 # def flatten(dictionary, parent_key='', separator='.'):
 #     items = []
 #     for key, value in dictionary.items():
 #         new_key = parent_key + separator + key if parent_key else key
-#         if isinstance(value, MutableMapping):
+#         if isinstance(value, dict):
 #             items.extend(flatten(value, new_key, separator=separator).items())
 #         else:
 #             items.append((new_key, value))
@@ -28,7 +24,7 @@ ui.audios(audios)
 # def get_table_data(data=[], page_size=10, page_num=1, should_fold=True):
 #     table_data = {}
 #     exclude_keys = ['type', 'container_type', 'sequence_type', 'sequence_full_type', 'hash', 'axis_names',
-#                     'item_type', 'container_full_type', 'data']
+#                     'item_type', 'container_full_type', 'values']
 
 #     audios = data[(page_num - 1) * page_size:page_num * page_size]
 
@@ -38,7 +34,8 @@ ui.audios(audios)
 #             if key in exclude_keys:
 #                 continue
 #             else:
-#                 if key == 'values':
+#                 if key == 'blobs':
+#                     key = 'data'
 #                     value = i
 #                 if key in table_data:
 #                     table_data[key].append(f'{value}')
@@ -60,7 +57,7 @@ ui.audios(audios)
 #                                     index=1
 #                                     )
 
-# row2.table(get_table_data(audios), {
+# row2.table(get_table_data(audios, int(items_per_page), page_num, cols_folding == 'Fold'), {
 #     'container.hash': lambda val: ui.board_link('run.py', val, state={'hash': val}),
-#     'values': lambda val: ui.audios([audios[int(val)]])
+#     'data': lambda val: ui.images([audios[int(val)]])
 # })

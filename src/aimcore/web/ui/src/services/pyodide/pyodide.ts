@@ -189,30 +189,18 @@ export async function loadPyodideInstance() {
               queryArgs[i] = args[i];
             }
           }
-          let boardPath = namespace.get('board_path');
-          let val = search(
-            boardPath,
-            sequenceType,
-            ((queryArgs[0] ?? queryArgs['query']) as string) ?? null,
-            ((queryArgs[1] ?? queryArgs['count']) as number) ?? null,
-            ((queryArgs[2] ?? queryArgs['start']) as number) ?? null,
-            ((queryArgs[3] ?? queryArgs['stop']) as number) ?? null,
-            true,
+
+          let val = pyodide.runPython(
+            `from pyodide.ffi import create_proxy
+create_proxy(query_filter('${sequenceType}', ${JSON.stringify(
+              queryArgs[0] ?? queryArgs['query'],
+            )}, ${queryArgs[1] ?? queryArgs['count'] ?? 'None'}, ${
+              queryArgs[2] ?? queryArgs['start'] ?? 'None'
+            }, ${queryArgs[3] ?? queryArgs['stop'] ?? 'None'}, True))`,
+            { globals: namespace },
           );
 
-          let data = pyodide.toPy(val, { depth: 2 });
-
-          return data;
-          // let val = pyodide.runPython(
-          //   `query_filter('${sequenceType}', ${JSON.stringify(
-          //     queryArgs[0] ?? queryArgs['query'],
-          //   )}, ${queryArgs[1] ?? queryArgs['count'] ?? 'None'}, ${
-          //     queryArgs[2] ?? queryArgs['start'] ?? 'None'
-          //   }, ${queryArgs[3] ?? queryArgs['stop'] ?? 'None'}, True)`,
-          //   { globals: namespace },
-          // );
-
-          // return val;
+          return val;
         },
       };
     });
@@ -223,9 +211,10 @@ export async function loadPyodideInstance() {
       jsModule[dataTypeName] = {
         filter: (query: string = '') => {
           let val = pyodide.runPython(
-            `query_filter('${containerType}', ${JSON.stringify(
+            `from pyodide.ffi import create_proxy
+create_proxy(query_filter('${containerType}', ${JSON.stringify(
               query,
-            )}, None, None, None, False)`,
+            )}, None, None, None, False))`,
             { globals: namespace },
           );
           return val;
