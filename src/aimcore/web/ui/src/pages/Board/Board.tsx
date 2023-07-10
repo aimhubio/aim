@@ -116,7 +116,7 @@ any): React.FunctionComponentElement<React.ReactNode> {
               await micropip.install(lib);
             } catch (ex) {
               // eslint-disable-next-line no-console
-              console.log(ex);
+              console.warn(ex);
             }
           }
         }
@@ -131,7 +131,7 @@ any): React.FunctionComponentElement<React.ReactNode> {
         }));
       } catch (ex) {
         // eslint-disable-next-line no-console
-        console.log(ex);
+        console.warn(ex);
       }
     }
   }, [pyodide, pyodideIsLoading, data.code, namespace, registeredPackages]);
@@ -151,7 +151,9 @@ def set_session_state(state_slice):
 `;
         for (let queryKey in queryKeysForCacheCleaningRef.current) {
           if (queryKeysForCacheCleaningRef.current[queryKey]) {
-            resetCode += `query_results_cache.pop('${queryKey}', None)
+            resetCode += `query_results_cache.pop(${JSON.stringify(
+              queryKey,
+            )}, None)
 `;
             queryKeysForCacheCleaningRef.current[queryKey] = false;
           }
@@ -170,7 +172,7 @@ def set_session_state(state_slice):
           return;
         }
         // eslint-disable-next-line no-console
-        console.log(ex);
+        console.warn(ex);
         setState((s: any) => ({
           ...s,
           error: ex.message,
@@ -263,7 +265,7 @@ def set_session_state(state_slice):
                 return;
               }
               // eslint-disable-next-line no-console
-              console.error(ex);
+              console.warn(ex);
             }
           }, liveUpdateInterval);
         }
