@@ -1,10 +1,7 @@
 import React from 'react';
-import AudioPlayer from 'material-ui-audio-player';
 
-import { Tooltip } from '@material-ui/core';
-
-import { Button, Icon, Spinner, Text } from 'components/kit';
-import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import ErrorBoundary from 'components/ErrorBoundary';
+import AudioPlayer from 'components/AudioPlayer';
 
 import { BATCH_COLLECT_DELAY } from 'config/mediaConfigs/mediaConfigs';
 
@@ -13,132 +10,103 @@ import { IBoxContentProps } from 'modules/BaseExplorer/types';
 import contextToString from 'utils/contextToString';
 import { downloadLink } from 'utils/helper';
 
-import AudioBoxProgress from './AudioBoxProgress';
-import AudioBoxVolume from './AudioBoxVolume';
-
-import './AudioBox.scss';
+const EVENTS = {
+  onAudioPlay: 'onAudioPlay',
+};
 
 function AudioBox(props: IBoxContentProps) {
   const {
     engine: { events, blobURI },
     data: {
-      data: { data, blob_uri, format, index, caption },
+      data: { blobs, format, caption },
       sequence,
       record,
     },
     isFullView,
   } = props;
 
+  const blob_uri = blobs.data;
+  const initialBlobData = blobURI.getBlobData(blob_uri);
+  const initialSrc =
+    initialBlobData && format
+      ? `data:audio/${format};base64,${initialBlobData}`
+      : '';
+
   const [isPlaying, setIsPlaying] = React.useState<boolean>(false);
-  const [audio, setAudio] = React.useState<any>(null);
   const [processing, setProcessing] = React.useState<boolean>(false);
-  const [src, setSrc] = React.useState<string>('');
-  const [blobData, setBlobData] = React.useState<string>(
-    blobURI.getBlobData(blob_uri),
-  );
-  const [muted, setMuted] = React.useState<boolean>(true);
+  const [mediaState, setMediaState] = React.useState({
+    blobData: initialBlobData,
+    src: initialSrc,
+  });
+  const audioRef = React.useRef<HTMLMediaElement | null>(null);
+  const readyToPlayRef = React.useRef<boolean>(false);
 
-  const readyToPlay = React.useRef<boolean>(false);
-
-  React.useEffect(() => {
-    let timeoutID: number;
-    let unsubscribe: () => void;
-    if (processing) {
-      if (blobData === null) {
-        if (blobURI.getBlobData(blob_uri)) {
-          setBlobData(blobURI.getBlobData(blob_uri));
-        } else {
-          unsubscribe = blobURI.on(blob_uri, (blobData: string) => {
-            setBlobData(blobData);
-            unsubscribe();
-          });
-          timeoutID = window.setTimeout(() => {
-            if (blobURI.getBlobData(blob_uri)) {
-              setBlobData(blobURI.getBlobData(blob_uri));
-              unsubscribe();
-            } else {
-              // addUriToList(blob_uri);
-            }
-          }, BATCH_COLLECT_DELAY);
-        }
-      }
-    }
-    return () => {
-      if (timeoutID) {
-        clearTimeout(timeoutID);
-      }
-      if (unsubscribe) {
-        unsubscribe();
-      }
-      if (audio) {
-        audio.pause();
-      }
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [processing]);
-
-  React.useEffect(() => {
-    if (data) {
-      // from UInt8Array to DataURI
-      // @TODO - remove it from here after blobURI will be supported
-      const blob_data = btoa(
-        data.reduce(
-          (acc: string, c: number) => acc + String.fromCharCode(c),
-          '',
-        ),
-      );
-      const audioRef = new Audio();
-      audioRef.autoplay = true;
-      audioRef.muted = true;
-      audioRef.preload = 'metadata';
-      audioRef.src = `data:audio/${format};base64,${blob_data}`;
-      setSrc(`data:audio/${format};base64,${blob_data}`);
-      setAudio(audioRef);
-      setMuted(false);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data]);
-
-  React.useEffect(() => {
-    if (isPlaying) {
-      audio?.play().then(() => {
-        setMuted(false);
-      });
+  function onPlay() {
+    if (audioRef.current && mediaState.src) {
+      readyToPlayRef.current = true;
+      events.fire(EVENTS.onAudioPlay, { blob_uri, isFullView });
+      setIsPlaying(true);
     } else {
-      audio?.pause();
+      setProcessing(true);
+
+      blobURI
+        .getBlobsData([blob_uri])
+        .call()
+        .then(() => {
+          readyToPlayRef.current = true;
+          events.fire(EVENTS.onAudioPlay, { blob_uri, isFullView });
+          setIsPlaying(true);
+        });
     }
-  }, [isPlaying, audio]);
+  }
+
+  function onPause() {
+    setIsPlaying(false);
+  }
+
+  function onDownload(): void {
+    if (audioRef.current && mediaState.src) {
+      handleDownload();
+    } else {
+      setProcessing(true);
+      blobURI
+        .getBlobsData([blob_uri])
+        .call()
+        .then(() => {
+          const blobData = blobURI.getBlobData(blob_uri);
+          const newSrc = `data:audio/${format};base64,${blobData}`;
+          setMediaState({ blobData, src: newSrc });
+          handleDownload(newSrc);
+        });
+    }
+  }
+
+  function handleDownload(mediaSrc: string = mediaState.src): void {
+    const { step, index } = record;
+    const { context, name: audio_name } = sequence;
+    const strContext = contextToString(context);
+    const contextName = strContext === '' ? '' : `_${strContext}`;
+    const name = `${audio_name}${contextName}_${caption}_${step}_${index}`;
+    downloadLink(mediaSrc, name);
+  }
 
   React.useEffect(() => {
-    // Pause and clean up on unmount
-    if (audio) {
-      audio.addEventListener('ended', onAudioEnded);
-      audio.addEventListener('canplay', handleReadyToPlay);
-    }
-    return () => {
-      if (audio) {
-        audio.pause();
-        audio.removeEventListener('ended', onAudioEnded);
-        audio.removeEventListener('canplay', handleReadyToPlay);
+    if (audioRef.current && mediaState.src) {
+      if (isPlaying) {
+        audioRef.current.muted = false;
+        // eslint-disable-next-line no-console
+        audioRef.current.play().catch(console.error);
+      } else {
+        audioRef.current.pause();
       }
-    };
-  }, [audio]);
-
-  React.useEffect(() => {
-    if (audio && !muted) {
-      audio.muted = false;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [muted]);
+  }, [isPlaying, mediaState.src]);
 
   React.useEffect(() => {
     const unsubscribe = events.on(
-      'onAudioPlay',
-      (payload: { blob_uri: string; isFullView: boolean }) => {
-        if (
-          payload.blob_uri !== blob_uri ||
-          payload.isFullView !== isFullView
-        ) {
+      EVENTS.onAudioPlay,
+      (p: { blob_uri: string; isFullView: boolean }) => {
+        if (p.blob_uri !== blob_uri || p.isFullView !== isFullView) {
           setIsPlaying(false);
         }
       },
@@ -146,132 +114,75 @@ function AudioBox(props: IBoxContentProps) {
     return () => {
       unsubscribe();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [blob_uri, events, isFullView]);
 
-  function handleReadyToPlay(): void {
-    setProcessing(false);
-  }
+  React.useEffect(() => {
+    let timeoutID: number;
+    let unsubscribe: () => void;
 
-  function onAudioEnded(): void {
-    setIsPlaying(false);
-  }
+    const setBlobDataAndSrc = (blobData: string, format: string) => {
+      setMediaState({
+        blobData,
+        src: `data:audio/${format};base64,${blobData}`,
+      });
+    };
 
-  function onPlayChange(): void {
-    if (audio) {
-      readyToPlay.current = true;
-      events.fire('onAudioPlay', { blob_uri, isFullView });
-      setIsPlaying(!isPlaying);
-    } else {
-      setProcessing(true);
-      blobURI
-        .getBlobsData([blob_uri])
-        .call()
-        .then(() => {
-          readyToPlay.current = true;
-          events.fire('onAudioPlay', { blob_uri, isFullView });
-          setIsPlaying(!isPlaying);
+    if (processing && mediaState.blobData === null) {
+      const currentBlobData = blobURI.getBlobData(blob_uri);
+      if (currentBlobData) {
+        setBlobDataAndSrc(currentBlobData, format);
+      } else {
+        unsubscribe = blobURI.on(blob_uri, (blobData: string) => {
+          setBlobDataAndSrc(blobData, format);
+          unsubscribe();
         });
+        timeoutID = window.setTimeout(() => {
+          const currentBlobData = blobURI.getBlobData(blob_uri);
+          if (currentBlobData) {
+            setBlobDataAndSrc(currentBlobData, format);
+            unsubscribe();
+          } else {
+            // addUriToList(blob_uri);
+          }
+        }, BATCH_COLLECT_DELAY);
+      }
     }
-  }
 
-  function onDownload(): void {
-    if (audio) {
-      handleDownload();
-    } else {
-      setProcessing(true);
-      blobURI.getBlobsData([blob_uri]).call().then(handleDownload);
-    }
-  }
+    return () => {
+      if (timeoutID) {
+        clearTimeout(timeoutID);
+      }
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
+  }, [mediaState.blobData, blobURI, blob_uri, format, processing]);
 
-  function handleDownload(): void {
-    const { step } = record;
-    const { context, name: audio_name } = sequence;
-    const contextName =
-      contextToString(context) === '' ? '' : `_${contextToString(context)}`;
-    const name = `${audio_name}${contextName}_${caption}_${step}_${index}`;
-
-    // from UInt8Array to DataURI
-    // @TODO - remove it from here after blobURI will be supported
-    const blob_data = btoa(
-      data.reduce((acc: string, c: number) => acc + String.fromCharCode(c), ''),
-    );
-
-    downloadLink(`data:audio/${format};base64,${blob_data}`, name);
-  }
+  React.useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+      readyToPlayRef.current = false;
+    };
+  }, []);
 
   return (
     <ErrorBoundary>
-      <div className='AudioBox'>
-        <div className='AudioBox__controllers'>
-          <div className='AudioBox__controllers__player'>
-            {audio ? (
-              <Button
-                onClick={onPlayChange}
-                color='secondary'
-                withOnlyIcon
-                size='xSmall'
-              >
-                <Icon name={isPlaying ? 'pause' : 'play'} />
-              </Button>
-            ) : (
-              <>
-                <AudioPlayer
-                  displaySlider={false}
-                  volume={false}
-                  displayCloseButton={false}
-                  onPlayed={onPlayChange}
-                  width='24px'
-                  src={src}
-                />
-                {processing ? (
-                  <Spinner
-                    className='Icon__container'
-                    size={12}
-                    color='#414b6d'
-                    thickness={2}
-                  />
-                ) : (
-                  <Icon name={isPlaying ? 'pause' : 'play'} />
-                )}
-              </>
-            )}
-          </div>
-          <AudioBoxProgress
-            audio={audio}
-            isPlaying={isPlaying}
-            src={src}
-            disabled={!readyToPlay.current}
-          />
-          <AudioBoxVolume audio={audio} />
-          <div className='AudioBox__controllers__download'>
-            <Button withOnlyIcon size='xSmall' onClick={onDownload}>
-              {processing ? (
-                <Spinner
-                  className='Icon__container'
-                  size={12}
-                  color='#414b6d'
-                  thickness={2}
-                />
-              ) : (
-                <Icon name='download' />
-              )}
-            </Button>
-          </div>
-        </div>
-        <Tooltip title={caption || ''}>
-          <div>
-            <Text
-              title={caption || ''}
-              className='AudioBox__caption'
-              size={8}
-              weight={400}
-            >
-              {caption || ''}
-            </Text>
-          </div>
-        </Tooltip>
-      </div>
+      <AudioPlayer
+        audioRef={audioRef}
+        src={mediaState.src}
+        onEnded={() => setIsPlaying(false)}
+        onCanPlay={() => setProcessing(false)}
+        onPlay={onPlay}
+        onPause={onPause}
+        onDownload={onDownload}
+        processing={processing}
+        isPlaying={isPlaying}
+        readyToPlay={readyToPlayRef.current}
+        caption={caption}
+      />
     </ErrorBoundary>
   );
 }

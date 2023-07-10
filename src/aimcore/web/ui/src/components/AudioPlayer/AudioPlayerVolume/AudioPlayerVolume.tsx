@@ -1,11 +1,13 @@
 import React from 'react';
 
-import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import ErrorBoundary from 'components/ErrorBoundary';
 import { Button, Icon, Slider } from 'components/kit';
 
-import { IAudioBoxVolumeProps } from './AudioBox.d';
+import { AudioPlayerVolumeProps } from './AudioPlayerVolume.d';
 
-function AudioBoxVolume({ audio }: IAudioBoxVolumeProps) {
+import './AudioPlayerVolume.scss';
+
+function AudioPlayerVolume({ audio }: AudioPlayerVolumeProps) {
   const [volume, setVolume] = React.useState<number>(0.99);
   const [isMuted, setIsMuted] = React.useState<boolean>(false);
 
@@ -33,16 +35,16 @@ function AudioBoxVolume({ audio }: IAudioBoxVolumeProps) {
 
   return (
     <ErrorBoundary>
-      <div className='AudioBox__controllers__volume'>
+      <div className='AudioPlayerVolume'>
         <Button
+          className='AudioPlayerVolume__button'
           onClick={onVolumeToggle}
           withOnlyIcon
           size='xSmall'
-          className='AudioBox__controllers__volume--button'
         >
           <Icon name={isMuted || volume === 0 ? 'voice-off' : 'voice-on'} />
         </Button>
-        <div className='AudioBox__controllers__volume__Slider'>
+        <div className='AudioPlayerVolume__slider'>
           <Slider
             onChange={onVolumeChange}
             value={isMuted ? 0 : volume}
@@ -57,4 +59,4 @@ function AudioBoxVolume({ audio }: IAudioBoxVolumeProps) {
   );
 }
 
-export default AudioBoxVolume;
+export default AudioPlayerVolume;
