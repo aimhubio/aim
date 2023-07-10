@@ -1,9 +1,12 @@
 from asp import TextSequence
-
-
-texts = TextSequence.filter()
+import math
 
 ui.header('Texts')
+
+form = ui.form('Search')
+query = form.text_input(value='')
+
+texts = TextSequence.filter(query)
 
 
 def flatten(dictionary, parent_key='', separator='.'):
@@ -47,7 +50,8 @@ with row1:
     items_per_page = ui.select(
         'Items per page', options=('5', '10', '50', '100'), index=1)
 
-total_pages = int(len(texts) / int(items_per_page)) + 1
+total_pages = math.ceil((len(texts) / int(items_per_page)))
+
 page_numbers = [str(i) for i in range(1, total_pages + 1)]
 
 with row1:
