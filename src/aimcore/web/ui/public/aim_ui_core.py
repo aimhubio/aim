@@ -1254,7 +1254,7 @@ class NumberInput(Component):
 
 
 class Select(Component):
-    def __init__(self, label='', options=('option 1', 'option 2'), index=0, disabled=False, key=None, block=None):
+    def __init__(self, label='', options=('option 1', 'option 2'), index=0, searchable=False, disabled=False, key=None, block=None):
         component_type = "Select"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
@@ -1265,6 +1265,7 @@ class Select(Component):
         label = validate(label, str, "label")
         options = validate(options, (list, tuple), "options")
         index = validate(index, int, "index")
+        searchable = validate(searchable, bool, "searchable")
         disabled = validate(disabled, bool, "disabled")
 
         # set the initial data for this component
@@ -1275,6 +1276,7 @@ class Select(Component):
             "label": label,
             "options": options,
             "disabled": disabled,
+            "searchable": searchable,
             "isMulti": False,
             "value": self.value if batch_state is None else batch_state["value"],
         }
