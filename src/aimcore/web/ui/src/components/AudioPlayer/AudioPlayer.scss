@@ -11,13 +11,7 @@
     border-radius: $border-radius-main;
     width: toRem(268px);
     height: toRem(40px);
-    &__download {
-      min-width: 1.5rem;
-    }
     &__player {
-      min-width: 1.5rem;
-      height: 1.5rem;
-      border-radius: $radius-main;
       position: relative;
       display: flex;
       align-items: center;

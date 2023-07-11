@@ -1,7 +1,10 @@
 import React from 'react';
 
+import { IconVolume, IconVolumeOff } from '@tabler/icons-react';
+
 import ErrorBoundary from 'components/ErrorBoundary';
-import { Button, Icon, Slider } from 'components/kit';
+import { Slider } from 'components/kit';
+import { IconButton } from 'components/kit_v2';
 
 import { AudioPlayerVolumeProps } from './AudioPlayerVolume.d';
 
@@ -36,14 +39,13 @@ function AudioPlayerVolume({ audio }: AudioPlayerVolumeProps) {
   return (
     <ErrorBoundary>
       <div className='AudioPlayerVolume'>
-        <Button
+        <IconButton
+          variant='ghost'
+          icon={isMuted || volume === 0 ? <IconVolumeOff /> : <IconVolume />}
           className='AudioPlayerVolume__button'
           onClick={onVolumeToggle}
-          withOnlyIcon
-          size='xSmall'
-        >
-          <Icon name={isMuted || volume === 0 ? 'voice-off' : 'voice-on'} />
-        </Button>
+        />
+
         <div className='AudioPlayerVolume__slider'>
           <Slider
             onChange={onVolumeChange}

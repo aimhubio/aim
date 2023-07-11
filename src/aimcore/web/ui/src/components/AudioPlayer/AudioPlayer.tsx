@@ -1,9 +1,13 @@
-import React from 'react';
+import {
+  IconDownload,
+  IconPlayerPauseFilled,
+  IconPlayerPlayFilled,
+} from '@tabler/icons-react';
 
 import ErrorBoundary from 'components/ErrorBoundary';
-import { Tooltip, Text } from 'components/kit_v2';
+import { Tooltip, Text, IconButton } from 'components/kit_v2';
 
-import { Button, Icon, Spinner } from '../kit';
+import { Spinner } from '../kit';
 
 import { AudioPlayerProps, AudioPlayerProgress, AudioPlayerVolume } from '.';
 
@@ -44,23 +48,25 @@ function AudioPlayer(props: AudioPlayerProps) {
               onPause={onPause}
             />
             <>
-              {processing ? (
-                <Spinner
-                  className='Icon__container'
-                  size={12}
-                  color='#414b6d'
-                  thickness={2}
-                />
-              ) : (
-                <Button
-                  onClick={isPlaying ? onPause : onPlay}
-                  color='secondary'
-                  withOnlyIcon
-                  size='xSmall'
-                >
-                  <Icon name={isPlaying ? 'pause' : 'play'} />
-                </Button>
-              )}
+              <IconButton
+                variant='ghost'
+                icon={
+                  processing ? (
+                    <Spinner
+                      className='Icon__container'
+                      size={12}
+                      color='#414b6d'
+                      thickness={2}
+                    />
+                  ) : isPlaying ? (
+                    <IconPlayerPauseFilled />
+                  ) : (
+                    <IconPlayerPlayFilled />
+                  )
+                }
+                onClick={isPlaying ? onPause : onPlay}
+                color='secondary'
+              />
             </>
           </div>
           <AudioPlayerProgress
@@ -70,9 +76,10 @@ function AudioPlayer(props: AudioPlayerProps) {
             disabled={!readyToPlay}
           />
           <AudioPlayerVolume audio={audioRef.current} />
-          <div className='AudioPlayer__controllers__download'>
-            <Button withOnlyIcon size='xSmall' onClick={onDownload}>
-              {processing ? (
+          <IconButton
+            variant='ghost'
+            icon={
+              processing ? (
                 <Spinner
                   className='Icon__container'
                   size={12}
@@ -80,10 +87,11 @@ function AudioPlayer(props: AudioPlayerProps) {
                   thickness={2}
                 />
               ) : (
-                <Icon name='download' />
-              )}
-            </Button>
-          </div>
+                <IconDownload />
+              )
+            }
+            onClick={onDownload}
+          />
         </div>
         {caption ? (
           <Tooltip content={caption} contentProps={{ side: 'bottom' }}>
