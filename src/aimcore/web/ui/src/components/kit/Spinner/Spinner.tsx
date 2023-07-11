@@ -3,7 +3,6 @@ import React from 'react';
 import { ISpinnerProps } from './Spinner.d';
 
 import './Spinner.scss';
-
 /**
  * @property {number | string} size - * The size of the circle.
  * If using a number, the pixel unit is assumed.
@@ -13,30 +12,36 @@ import './Spinner.scss';
  * @property {string} className - component className
  */
 
-function Spinner({
-  size = 40,
-  thickness = 3,
-  color = '#1473e6',
-  className = '',
-}: ISpinnerProps): React.FunctionComponentElement<React.ReactNode> {
-  return (
-    <div
-      style={{ width: size, height: size }}
-      className={`Spinner ${className}`}
-    >
+const Spinner = React.forwardRef<HTMLDivElement, ISpinnerProps>(
+  (
+    {
+      size = 40,
+      thickness = 3,
+      color = '#1473e6',
+      className = '',
+    }: ISpinnerProps,
+    forwardedRef,
+  ): React.FunctionComponentElement<React.ReactNode> => {
+    return (
       <div
-        className='Spinner__loader'
-        style={{
-          borderWidth: thickness,
-          borderColor: color,
-          borderRightColor: 'transparent',
-          borderTopColor: 'transparent',
-        }}
-      />
-    </div>
-  );
-}
+        ref={forwardedRef}
+        style={{ width: size, height: size }}
+        className={`Spinner ${className}`}
+      >
+        <div
+          className='Spinner__loader'
+          style={{
+            borderWidth: thickness,
+            borderColor: color,
+            borderRightColor: 'transparent',
+            borderTopColor: 'transparent',
+          }}
+        />
+      </div>
+    );
+  },
+);
 
 Spinner.displayName = 'Spinner';
 
-export default React.memo<ISpinnerProps>(Spinner);
+export default React.memo(Spinner);
