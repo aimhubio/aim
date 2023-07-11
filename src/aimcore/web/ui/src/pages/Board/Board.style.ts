@@ -150,7 +150,7 @@ const BoardVisualizerComponentsPane = styled(SplitPaneItem, {
     ai: 'center',
     gap: '$9',
     // fw: 'wrap',
-    maxHeight: '100%',
+    maxHeight: 'max-content',
   },
   '.block--column': {
     display: 'inline-flex',
@@ -158,7 +158,7 @@ const BoardVisualizerComponentsPane = styled(SplitPaneItem, {
     flex: 1,
     gap: '$9',
     jc: 'center',
-    maxHeight: '100%',
+    maxHeight: 'max-content',
     maxWidth: '100%',
   },
   '.block--tabs': {

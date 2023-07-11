@@ -20,6 +20,7 @@ import pyodideEngine from 'services/pyodide/store';
 import {
   getQueryResultsCacheMap,
   clearQueryResultsCache,
+  clearPendingQueriesMap,
 } from 'services/pyodide/pyodide';
 
 // import SaveBoard from './components/SaveBoard';
@@ -171,6 +172,9 @@ def set_session_state(state_slice):
         if (ex.type === 'WaitForQueryError') {
           return;
         }
+        if (ex.message.includes('WAIT_FOR_QUERY_RESULT')) {
+          return;
+        }
         // eslint-disable-next-line no-console
         console.warn(ex);
         setState((s: any) => ({
@@ -211,7 +215,7 @@ def set_session_state(state_slice):
 
   React.useEffect(() => {
     setEditorValue(data.code);
-    const unsubscribe = pyodideEngine.events.on(
+    const unsubscribeFromBoardUpdates = pyodideEngine.events.on(
       boardPath,
       ({ layoutTree, state, queryKey, runFunctionKey }) => {
         if (layoutTree) {
@@ -277,7 +281,8 @@ def set_session_state(state_slice):
       if (editorRef.current) {
         editorRef.current = null;
       }
-      unsubscribe();
+      unsubscribeFromBoardUpdates();
+      clearPendingQueriesMap(boardPath);
     };
   }, [boardPath]);
 

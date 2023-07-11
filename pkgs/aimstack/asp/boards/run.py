@@ -3,18 +3,15 @@ from itertools import groupby
 import math
 
 if 'hash' in session_state:
-    hash = session_state['hash']
+    run_hash = session_state['hash']
 else:
-    hash = None
+    run_hash = None
 
-
-@memoize
-def memoize_query(cb, query):
-    return cb(query)
-
-
-runs = memoize_query(Run.filter, f'c.hash=="{hash}"')
+runs = []
 run = None
+
+if run_hash:
+    runs = Run.filter(f'c.hash=="{run_hash}"')
 
 if runs:
     run = runs[0]
@@ -54,7 +51,7 @@ if run:
             ui.text('No parameters found')
 
     with metrics_tab:
-        metrics = memoize_query(Metric.filter, f'c.hash=="{hash}"')
+        metrics = Metric.filter(f'c.hash=="{run_hash}"')
         if metrics:
             row_controls, = ui.rows(1)
             group_fields = row_controls.multi_select(
