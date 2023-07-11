@@ -1246,7 +1246,7 @@ class NumberInput(Component):
 
 
 class Select(Component):
-    def __init__(self, label='', options=('option 1', 'option 2'), index=0, disabled=False, key=None, block=None):
+    def __init__(self, label='', options=('option 1', 'option 2'), index=0, searchable=None, disabled=False, key=None, block=None):
         component_type = "Select"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
@@ -1258,6 +1258,10 @@ class Select(Component):
         options = validate(options, (list, tuple), "options")
         index = validate(index, int, "index")
         disabled = validate(disabled, bool, "disabled")
+        if searchable is not None:
+            searchable = validate(searchable, bool, "searchable")
+        else:
+            searchable = len(options) > 10
 
         # set the initial data for this component
         self.data = options[index]
@@ -1267,6 +1271,7 @@ class Select(Component):
             "label": label,
             "options": options,
             "disabled": disabled,
+            "searchable": searchable,
             "isMulti": False,
             "value": self.value if batch_state is None else batch_state["value"],
         }
@@ -1286,7 +1291,7 @@ class Select(Component):
 
 
 class MultiSelect(Component):
-    def __init__(self, label='', options=('option 1', 'option 2'), index=[0], disabled=False, key=None, block=None):
+    def __init__(self, label='', options=('option 1', 'option 2'), index=[0], searchable=None, disabled=False, key=None, block=None):
         component_type = "Select"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
@@ -1298,6 +1303,11 @@ class MultiSelect(Component):
         options = validate(options, tuple, "options")
         index = validate(index, list, "index")
         disabled = validate(disabled, bool, "disabled")
+        if searchable is not None:
+            searchable = validate(searchable, bool, "searchable")
+        else:
+            searchable = len(options) > 10
+
 
         # set the initial data for this component
         self.data = [options[i] for i in index]
@@ -1307,6 +1317,7 @@ class MultiSelect(Component):
             "label": label,
             "options": options,
             "disabled": disabled,
+            "searchable": searchable,
             "isMulti": True,
             "value": self.value if batch_state is None else batch_state["value"],
         }
