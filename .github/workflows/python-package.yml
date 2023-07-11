@@ -18,7 +18,7 @@ on:
 jobs:
   aim-ui-dist:
     if: ${{ github.event_name == 'schedule' || github.actor == 'gorarakelyan' || github.actor == 'alberttorosyan' || github.actor == 'roubkar' }}
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
         uses: actions/checkout@v2
