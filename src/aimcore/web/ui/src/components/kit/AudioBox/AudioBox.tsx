@@ -3,11 +3,10 @@ import AudioPlayer from 'material-ui-audio-player';
 
 import { Button, Icon, Spinner, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import AudioPlayerProgress from 'components/AudioPlayer/AudioPlayerProgress/AudioPlayerProgress';
+import AudioPlayerVolume from 'components/AudioPlayer/AudioPlayerVolume/AudioPlayerVolume';
 
 import { BATCH_COLLECT_DELAY } from 'config/mediaConfigs/mediaConfigs';
-
-import AudioBoxProgress from 'modules/BaseExplorer/components/AudioBox/AudioBoxProgress';
-import AudioBoxVolume from 'modules/BaseExplorer/components/AudioBox/AudioBoxVolume';
 
 import blobsURIModel from 'services/models/media/blobsURIModel';
 
@@ -204,13 +203,13 @@ function AudioBox({
               )}
             </div>
           )}
-          <AudioBoxProgress
+          <AudioPlayerProgress
             audio={audio}
             isPlaying={isPlaying}
             src={src}
             disabled={!readyToPlay.current}
           />
-          <AudioBoxVolume audio={audio} />
+          <AudioPlayerVolume audio={audio} />
           <Button withOnlyIcon size='small' onClick={onDownload}>
             {processing ? (
               <Spinner
