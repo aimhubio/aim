@@ -121,9 +121,9 @@ function SideBar(): React.FunctionComponentElement<React.ReactNode> {
               <Icon color='$textPrimary80' icon={<IconFileText />} />
             </SidebarBottomAnchor>
           </Tooltip>
-          <Text css={{ textAlign: 'center' }} color='secondary'>
+          {/* <Text css={{ textAlign: 'center' }} color='secondary'>
             {`v${AIM_VERSION}`}
-          </Text>
+          </Text> */}
         </SidebarBottom>
       </SidebarContainer>
     </ErrorBoundary>
