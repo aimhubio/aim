@@ -4,12 +4,7 @@ import { Divider } from '@material-ui/core';
 
 import ErrorBoundary from 'components/ErrorBoundary';
 
-import {
-  Alignment,
-  IConfigureAxesPopoverProps,
-  AxesRange,
-  AxesType,
-} from './index';
+import { IConfigureAxesPopoverProps, AxesRange, AxesType } from './index';
 
 import './ConfigureAxesPopover.scss';
 

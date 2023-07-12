@@ -1,10 +1,7 @@
 import { StoreApi } from 'zustand';
 import produce, { Draft } from 'immer';
 
-import {
-  GetProjectsInfoResult,
-  GetProjectsInfoSequencesResult,
-} from 'modules/core/api/projectApi';
+import { GetProjectsInfoSequencesResult } from 'modules/core/api/projectApi';
 import { AimErrorType, SelectorCreator } from 'modules/core/engine/types';
 
 import { SequenceType } from 'types/core/enums';

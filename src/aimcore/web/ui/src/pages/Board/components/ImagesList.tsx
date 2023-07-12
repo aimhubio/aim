@@ -1,31 +1,15 @@
 import * as React from 'react';
-// import * as _ from 'lodash-es';
 
 import { Skeleton } from '@material-ui/lab';
 
 import { Text } from 'components/kit';
 
-// import {
-//   BATCH_COLLECT_DELAY,
-//   BATCH_SEND_DELAY,
-// } from 'config/mediaConfigs/mediaConfigs';
-
-// import blobsURIModel from 'services/models/media/blobsURIModel';
-// import imagesExploreService from 'services/api/imagesExplore/imagesExploreService';
-
-// import {
-//   decodeBufferPairs,
-//   decodePathsVals,
-//   iterFoldTree,
-// } from 'utils/encoder/streamEncoding';
-// import arrayBufferToBase64 from 'utils/arrayBufferToBase64';
-
 function ImagesList(props: any) {
-  let blobUriArray = React.useRef<string[]>([]);
-  let timeoutID = React.useRef(0);
-  const requestRef = React.useRef<any>();
-
-  let [, setRenderKey] = React.useState(Date.now());
+  // let blobUriArray = React.useRef<string[]>([]);
+  // let timeoutID = React.useRef(0);
+  // const requestRef = React.useRef<any>();
+  //
+  // let [, setRenderKey] = React.useState(Date.now());
 
   const data = props.data.map((image: any) => ({
     ...image,
