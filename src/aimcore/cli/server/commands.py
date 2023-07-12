@@ -10,7 +10,6 @@ from aimcore.transport.config import (
     AIM_SERVER_MOUNTED_REPO_PATH,
     AIM_SERVER_BASE_PATH
 )
-from aimcore.transport.server import start_server
 
 from aim._ext.tracking import analytics
 
@@ -81,6 +80,8 @@ def server(host, port,
     del repo_inst
 
     try:
+        from aimcore.transport.server import start_server
+
         if dev:
             import aim
             import aimcore
