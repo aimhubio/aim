@@ -227,7 +227,7 @@ def fetch_blobs_batch(repo: 'Repo', uri_batch: List[str]) -> Iterator[bytes]:
         yield collect_streamable_data(encode_tree(it))
 
 
-@query_router.get('/fetch-blobs/')
+@query_router.post('/fetch-blobs/')
 async def fetch_blobs_api(uri_batch: URIBatchIn):
     repo = get_project_repo()
     return StreamingResponse(fetch_blobs_batch(repo, uri_batch))

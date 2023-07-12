@@ -91,8 +91,32 @@ function createRunFunctionRequest(): RequestInstance {
   };
 }
 
+function createBlobsRequest(): RequestInstance {
+  const controller = new AbortController();
+  const signal = controller.signal;
+
+  async function call(uris: string[]): Promise<any> {
+    return (
+      await api.makeAPIPostRequest(`${ENDPOINTS.DATA.FETCH_BLOBS}`, {
+        body: uris,
+        signal,
+      })
+    ).body;
+  }
+
+  function cancel(): void {
+    controller.abort();
+  }
+
+  return {
+    call,
+    cancel,
+  };
+}
+
 export {
   createFetchDataRequest,
   createFetchGroupedSequencesRequest,
   createRunFunctionRequest,
+  createBlobsRequest,
 };

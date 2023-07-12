@@ -1,12 +1,10 @@
 import React from 'react';
 
-import {
-  IconCaretDown,
-  IconCaretUp,
-  IconGripVertical,
-  IconX,
-} from '@tabler/icons-react';
+import { IconGripVertical, IconX } from '@tabler/icons-react';
 import { Divider } from '@material-ui/core';
+
+import ArrowDown from 'assets/icons/dropdown-arrow-down.svg';
+import ArrowUp from 'assets/icons/dropdown-arrow-up.svg';
 
 import ErrorBoundary from 'components/ErrorBoundary';
 import {
@@ -234,7 +232,7 @@ function FacetGroupingItem({
                 variant='outlined'
                 css={{ '&:hover': {} }}
                 color='secondary'
-                rightIcon={open ? <IconCaretUp /> : <IconCaretDown />}
+                rightIcon={<Box as='img' src={open ? ArrowUp : ArrowDown} />}
               >
                 <Text>{`${group.fields.length || ''} selected field(s)`}</Text>
                 {group.fields.length > 0 && (

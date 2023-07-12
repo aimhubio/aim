@@ -11,9 +11,6 @@ const AppContainer = styled('div', {
   '.ant-tree-node-content-wrapper': {
     position: 'unset !important',
   },
-  '.ant-tree-treenode-selected': {
-    backgroundColor: '#EFF0F2 !important',
-  },
 });
 
 const BoardWrapper = styled(Box, {

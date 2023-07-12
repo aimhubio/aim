@@ -47,9 +47,12 @@ class Run(Container, Caller):
         super().__init__(hash_, repo=repo, mode=mode)
 
         if not self._is_readonly:
-            self.name = f'Run #{self.hash}'
-            self.description = ''
-            self.archived = False
+            if self.name is None:
+                self.name = f'Run #{self.hash}'
+            if self.description is None:
+                self.description = ''
+            if self.archived is None:
+                self.archived = False
 
     def enable_system_monitoring(self):
         if not self._is_readonly:
@@ -80,7 +83,7 @@ class Run(Container, Caller):
 
     @property
     def name(self) -> str:
-        return self._attrs_tree['name']
+        return self._attrs_tree.get('name', None)
 
     @name.setter
     def name(self, val: str):
@@ -88,7 +91,7 @@ class Run(Container, Caller):
 
     @property
     def description(self) -> str:
-        return self._attrs_tree['description']
+        return self._attrs_tree.get('description', None)
 
     @description.setter
     def description(self, val: str):
@@ -96,7 +99,7 @@ class Run(Container, Caller):
 
     @property
     def archived(self) -> bool:
-        return self._attrs_tree['archived']
+        return self._attrs_tree.get('archived', None)
 
     @archived.setter
     def archived(self, val: bool):

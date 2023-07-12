@@ -6,7 +6,12 @@ import TooltipComponent from 'components/kit_v2/Tooltip';
 export default {
   title: 'Kit/Data Display',
   component: TooltipComponent,
-  argTypes: {},
+  argTypes: {
+    color: {
+      control: 'select',
+      options: ['info', 'success', 'warning', 'danger'],
+    },
+  },
 } as ComponentMeta<typeof TooltipComponent>;
 
 const Template: ComponentStory<typeof TooltipComponent> = (args) => (

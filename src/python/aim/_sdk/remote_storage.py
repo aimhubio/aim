@@ -168,6 +168,13 @@ class RemoteTreeViewProxy(TreeView):
     ):
         self._rpc_client.run_instruction(self._hash, self._handler, '__setitem__', (path, value), is_write_only=True)
 
+    def merge(
+        self,
+        path: Union[AimObjectKey, AimObjectPath],
+        value: AimObject,
+    ):
+        self._rpc_client.run_instruction(self._hash, self._handler, 'merge', (path, value), is_write_only=True)
+
     def keys_eager(
             self,
             path: Union[AimObjectKey, AimObjectPath] = (),
@@ -301,6 +308,13 @@ class SubtreeView(TreeView):
             value: AimObject
     ):
         self.tree[self.absolute_path(path)] = value
+
+    def merge(
+            self,
+            path: Union[AimObjectKey, AimObjectPath],
+            value: AimObject
+    ):
+        self.tree.merge(self.absolute_path(path), value)
 
     def keys(
         self,

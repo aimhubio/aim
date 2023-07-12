@@ -104,6 +104,23 @@ class ContainerTreeView(TreeView):
                                store_batch=batch)
         self.container.commit(batch)
 
+    def merge(
+        self,
+        path: Union[AimObjectKey, AimObjectPath],
+        value: AimObject
+    ):
+        if path == Ellipsis:
+            path = ()
+        if not isinstance(path, (tuple, list)):
+            path = (path,)
+
+        batch = self.container.batch()
+        encoded_path = E.encode_path(path)
+        for key, val in treeutils.encode_tree(value, strict=True):
+            self.container.set(encoded_path + key, val,
+                               store_batch=batch)
+        self.container.commit(batch)
+
     def keys_eager(
             self,
             path: Union[AimObjectKey, AimObjectPath] = (),

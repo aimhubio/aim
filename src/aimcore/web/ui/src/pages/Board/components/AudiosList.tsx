@@ -52,6 +52,7 @@ function AudiosList(props: any) {
 
   return (
     <div
+      className='AudiosList'
       style={{
         height: '100%',
         overflow: 'auto',
@@ -72,7 +73,7 @@ function AudiosList(props: any) {
             style={{}}
             additionalProperties={{
               getAudiosBlobsData: getBlobsData,
-              useData: true,
+              useData: false,
             }}
           />
         </div>

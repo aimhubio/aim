@@ -81,6 +81,13 @@ class TreeView:
     ):
         self.set(path, value, strict=True)
 
+    def merge(
+        self,
+        path: Union[AimObjectKey, AimObjectPath],
+        value: AimObject,
+    ):
+        self.__setitem__(path, value)
+
     # TODO [MV]: revisit this approach after cython bindings refactoring
     def keys_eager(
             self,
