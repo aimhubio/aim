@@ -261,11 +261,17 @@ export async function loadPyodideInstance() {
     pyodide.registerJsModule(packageName, jsModule);
   });
 
+  const ui = namespace.get('ui');
+
+  pyodide.registerJsModule('aim_ui', {
+    ui,
+  });
+
   pyodideEngine.setPyodide({
     current: pyodide,
     namespace,
     isLoading: false,
-    registeredPackages: Object.keys(availablePackages),
+    registeredPackages: Object.keys(availablePackages).concat(['aim_ui']),
   });
 }
 
