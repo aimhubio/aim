@@ -253,6 +253,9 @@ const BoardBlockTab = styled('div', {
   maxHeight: '100%',
   p: '$5',
   overflow: 'auto',
+  display: 'flex',
+  fd: 'column',
+  gap: '$13',
 });
 
 export {

@@ -24,7 +24,7 @@ def flatten(dictionary, parent_key='', separator='.'):
 @memoize
 def get_table_data(data=[], page_size=10, page_num=1):
     table_data = {}
-    exclude_keys = ['type', 'container_type', 'sequence_type', 'sequence_full_type', 'hash', 'axis_names',
+    exclude_keys = ['type', 'container_type', 'sequence_type', 'sequence_full_type', 'axis.epoch', 'steps',
                     'item_type', 'container_full_type', 'values']
 
     page_data = data[(page_num - 1) * page_size:page_num * page_size]
@@ -55,7 +55,7 @@ def merge_dicts(dict1, dict2):
 if metrics:
     row_controls, = ui.rows(1)
     group_fields = row_controls.multi_select(
-        'Group by:', ('name', 'context', 'context.subset', 'hash'))
+        'Group by:', ('name', 'context', 'context.subset', 'container.hash'))
     metrics_processed = [merge_dicts(
         metric, flatten(metric)) for metric in metrics]
 
@@ -68,14 +68,14 @@ if metrics:
     x_axis = row_controls.select('Align by:', ('steps', 'axis.epoch'))
     y_axis = 'values'
     grouped_data_length = len(grouped_data)
-    column_count = row_controls.number_input(
-        'Columns:', value=2, min=1, max=grouped_data_length)
-    rows = ui.rows(math.ceil(grouped_data_length/column_count))
+    column_numbers = [int(i) for i in range(1, int(grouped_data_length) + 1)]
+    column_count = row_controls.select(
+        'Columns', options=(column_numbers), index=0)
+    rows = ui.rows(math.ceil(grouped_data_length / int(column_count)))
     for i, row in enumerate(rows):
-        cols = row.columns(column_count)
+        cols = row.columns(int(column_count))
         for j, col in enumerate(cols):
-            col.html('<br />')
-            data_index = i*column_count+j
+            data_index = i*int(column_count)+j
             if data_index < grouped_data_length:
                 data = grouped_data[data_index]
                 for group_field in group_fields:
