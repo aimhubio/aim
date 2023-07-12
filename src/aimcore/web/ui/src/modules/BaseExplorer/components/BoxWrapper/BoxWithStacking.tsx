@@ -1,8 +1,11 @@
 import * as React from 'react';
 import * as _ from 'lodash-es';
 
+import { IconMaximize } from '@tabler/icons-react';
+
 import DepthSlider, { IDepthSliderProps } from 'components/DepthSlider';
-import { Button, Icon, Text } from 'components/kit';
+import { Text } from 'components/kit';
+import { IconButton } from 'components/kit_v2';
 
 import { SequenceType } from 'types/core/enums';
 import { AimFlatObjectBase } from 'types/core/AimObjects';
@@ -87,14 +90,12 @@ function BoxWithStacking(props: IBoxWithStackingProps<AimFlatObjectBase>) {
 
   return currentItem ? (
     <div className='BoxWrapper' style={{ ...boxConfig, ...currentItem.style }}>
-      <Button
-        onClick={() => setFullView(true)}
-        size='xSmall'
-        withOnlyIcon
+      <IconButton
         className='BoxWrapper__fullScreen'
-      >
-        <Icon name='full-screen' />
-      </Button>
+        variant='ghost'
+        icon={<IconMaximize />}
+        onClick={() => setFullView(true)}
+      />
       <div className='BoxWrapper__box'>
         {BoxContent && (
           <BoxContent

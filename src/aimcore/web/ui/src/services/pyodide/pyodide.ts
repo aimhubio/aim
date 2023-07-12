@@ -15,6 +15,7 @@ window.search = search;
 window.runFunction = runFunction;
 
 let queryResultsCacheMap: Map<string, any> = new Map();
+let pendinqQueriesMap: Map<string, Map<string, any>> = new Map();
 
 export function getQueryResultsCacheMap() {
   return queryResultsCacheMap;
@@ -35,6 +36,23 @@ export function clearQueryResultsCache(key?: string) {
       pyodide.runPython('query_results_cache.clear()', { globals: namespace });
       queryResultsCacheMap = new Map();
     }
+  }
+}
+
+export function getPendingQueriesMap() {
+  return pendinqQueriesMap;
+}
+
+export function clearPendingQueriesMap(boardPath: string) {
+  if (pendinqQueriesMap.has(boardPath)) {
+    let queriesMap = pendinqQueriesMap.get(boardPath);
+    if (queriesMap) {
+      for (let [key, cancel] of queriesMap) {
+        cancel();
+        queriesMap.delete(key);
+      }
+    }
+    pendinqQueriesMap.delete(boardPath);
   }
 }
 

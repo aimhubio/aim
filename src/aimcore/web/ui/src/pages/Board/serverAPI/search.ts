@@ -8,12 +8,13 @@ import { createFetchDataRequest } from 'modules/core/api/dataFetchApi';
 // import AdapterError from 'modules/core/pipeline/adapter/AdapterError';
 
 import pyodideEngine from 'services/pyodide/store';
-import { getQueryResultsCacheMap } from 'services/pyodide/pyodide';
+import {
+  getPendingQueriesMap,
+  getQueryResultsCacheMap,
+} from 'services/pyodide/pyodide';
 
 import { parseStream } from 'utils/encoder/streamEncoding';
 import { filterMetricsValues } from 'utils/app/filterMetricData';
-
-const searchRequest = createFetchDataRequest();
 
 export function search(
   boardPath: string,
@@ -33,6 +34,24 @@ export function search(
     return getQueryResultsCacheMap().get(queryKey).data;
   }
 
+  const searchRequest = createFetchDataRequest();
+
+  if (getPendingQueriesMap().has(boardPath)) {
+    let pendinqQueries = getPendingQueriesMap().get(boardPath);
+    if (pendinqQueries) {
+      if (pendinqQueries.has(queryKey)) {
+        return;
+      }
+
+      pendinqQueries.set(queryKey, searchRequest.cancel);
+    }
+  } else {
+    getPendingQueriesMap().set(
+      boardPath,
+      new Map([[queryKey, searchRequest.cancel]]),
+    );
+  }
+
   searchRequest
     .call({
       q: query,
@@ -43,6 +62,14 @@ export function search(
       report_progress: false,
     })
     .then((data) => {
+      if (getPendingQueriesMap().has(boardPath)) {
+        let pendinqQueries = getPendingQueriesMap().get(boardPath);
+        if (pendinqQueries) {
+          if (pendinqQueries.has(queryKey)) {
+            pendinqQueries.delete(queryKey);
+          }
+        }
+      }
       parseStream<Array<any>>(data)
         .then((objectList) => {
           try {

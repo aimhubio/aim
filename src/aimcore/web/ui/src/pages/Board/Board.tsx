@@ -20,6 +20,7 @@ import pyodideEngine from 'services/pyodide/store';
 import {
   getQueryResultsCacheMap,
   clearQueryResultsCache,
+  clearPendingQueriesMap,
 } from 'services/pyodide/pyodide';
 
 // import SaveBoard from './components/SaveBoard';
@@ -38,7 +39,7 @@ import BoardConsole from './components/BoardConsole';
 import FormVizElement from './components/VisualizationElements/FormVizElement';
 import useBoardStore from './BoardStore';
 
-const liveUpdateEnabled = false;
+const liveUpdateEnabled = true;
 const liveUpdateInterval = 5000;
 
 function Board({
@@ -214,7 +215,7 @@ def set_session_state(state_slice):
 
   React.useEffect(() => {
     setEditorValue(data.code);
-    const unsubscribe = pyodideEngine.events.on(
+    const unsubscribeFromBoardUpdates = pyodideEngine.events.on(
       boardPath,
       ({ layoutTree, state, queryKey, runFunctionKey }) => {
         if (layoutTree) {
@@ -280,7 +281,8 @@ def set_session_state(state_slice):
       if (editorRef.current) {
         editorRef.current = null;
       }
-      unsubscribe();
+      unsubscribeFromBoardUpdates();
+      clearPendingQueriesMap(boardPath);
     };
   }, [boardPath]);
 

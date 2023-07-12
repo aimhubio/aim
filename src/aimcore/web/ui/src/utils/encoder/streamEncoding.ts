@@ -503,8 +503,7 @@ export async function parseStream<T extends Array>(
             : { ...(val as any), hash: keys[0] };
         if (object) {
           if (object.hash?.startsWith?.('progress')) {
-            // maybe typeof progressCallback === 'function'
-            if (options?.progressCallback) {
+            if (typeof options?.progressCallback === 'function') {
               options.progressCallback(object as IRunProgress);
               const { 0: checked, 1: trackedRuns } = object;
 
@@ -515,7 +514,7 @@ export async function parseStream<T extends Array>(
               });
             }
           } else {
-            if (options?.callback) {
+            if (typeof options?.callback === 'function') {
               options.callback({ value: val, hash: keys[0] });
             }
             if (!isGenerator) {
