@@ -48,7 +48,7 @@ def run_up(args):
             args_list.append(p + '=' + args[p])
 
     child_process = subprocess.Popen(
-        ['aim', 'up'] + args_list + ['--force-init'],
+        ['aim', 'up'] + args_list + ['-y'],
         stderr=subprocess.PIPE,
         stdout=subprocess.PIPE
     )

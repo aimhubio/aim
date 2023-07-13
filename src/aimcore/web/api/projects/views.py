@@ -122,3 +122,13 @@ async def project_functions_api():
         raise HTTPException(status_code=404)
 
     return project.repo.registered_functions()
+
+
+@projects_router.get('/status/')
+async def project_status_api():
+    project = Project()
+
+    if not project.exists():
+        raise HTTPException(status_code=404)
+
+    return 'OK'

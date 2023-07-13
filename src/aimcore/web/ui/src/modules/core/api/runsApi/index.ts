@@ -106,29 +106,6 @@ function createRunLogRecordsRequest(): RequestInstance {
   };
 }
 
-function createBlobsRequest(sequenceType: `${SequenceType}`): RequestInstance {
-  const controller = new AbortController();
-  const signal = controller.signal;
-
-  async function call(uris: string[]): Promise<RunsSearchResult> {
-    return (
-      await api.makeAPIPostRequest(`${sequenceType}/get-batch`, {
-        body: uris,
-        signal,
-      })
-    ).body;
-  }
-
-  function cancel(): void {
-    controller.abort();
-  }
-
-  return {
-    call,
-    cancel,
-  };
-}
-
 function createActiveRunsRequest(): RequestInstance {
   const controller = new AbortController();
   const signal = controller.signal;
@@ -183,7 +160,6 @@ export {
   createSearchRunsRequest,
   createActiveRunsRequest,
   createSearchRunRequest,
-  createBlobsRequest,
   createRunLogRecordsRequest,
   alignMetricsRequest,
 };

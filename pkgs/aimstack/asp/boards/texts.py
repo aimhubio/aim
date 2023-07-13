@@ -1,8 +1,12 @@
-from asp import AudioSequence
+from asp import TextSequence
+import math
 
-ui.header('Audios')
+ui.header('Texts')
 
-audios = AudioSequence.filter()
+form = ui.form('Search')
+query = form.text_input(value='')
+
+texts = TextSequence.filter(query)
 
 
 def flatten(dictionary, parent_key='', separator='.'):
@@ -45,10 +49,15 @@ row1, row2 = ui.rows(2)
 with row1:
     items_per_page = ui.select(
         'Items per page', options=('5', '10', '50', '100'), index=1)
-    page_num = ui.number_input(
-        'Page', value=1, min=1, max=int(len(audios) / int(items_per_page)) + 1)
 
-row2.table(get_table_data(audios, int(items_per_page), page_num), {
+total_pages = math.ceil((len(texts) / int(items_per_page)))
+
+page_numbers = [str(i) for i in range(1, total_pages + 1)]
+
+with row1:
+    page_num = ui.select('Page', options=page_numbers, index=0)
+
+
+row2.table(get_table_data(texts, int(items_per_page), int(page_num)), {
     'container.hash': lambda val: ui.board_link('run.py', val, state={'hash': val}),
-    'data': lambda val: ui.audios([audios[int(val)]])
 })

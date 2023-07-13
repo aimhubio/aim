@@ -80,7 +80,7 @@
   },
   "scripts": {
     "start": "cross-env SKIP_PREFLIGHT_CHECK=true node --no-deprecation node_modules/react-scripts/scripts/start.js craco --max_old_space_size=4096 start",
-    "build": "cross-env SKIP_PREFLIGHT_CHECK=true node --no-deprecation node_modules/react-scripts/scripts/build.js craco --max_old_space_size=4096 build && gzipper c -i js,css,html ./build && node tasks/index-html-template-generator.js",
+    "build": "cross-env SKIP_PREFLIGHT_CHECK=true node --max_old_space_size=4096 --no-deprecation node_modules/react-scripts/scripts/build.js craco --max_old_space_size=4096 build && gzipper c -i js,css,html ./build && node tasks/index-html-template-generator.js",
     "test": "cross-env SKIP_PREFLIGHT_CHECK=true craco test ",
     "test:coverage": "cross-env SKIP_PREFLIGHT_CHECK=true craco test --collectCoverage",
     "test:watch": "cross-env SKIP_PREFLIGHT_CHECK=true craco test --watchAll",

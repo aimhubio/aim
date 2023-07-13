@@ -20,6 +20,7 @@ import pyodideEngine from 'services/pyodide/store';
 import {
   getQueryResultsCacheMap,
   clearQueryResultsCache,
+  clearPendingQueriesMap,
 } from 'services/pyodide/pyodide';
 
 // import SaveBoard from './components/SaveBoard';
@@ -116,7 +117,7 @@ any): React.FunctionComponentElement<React.ReactNode> {
               await micropip.install(lib);
             } catch (ex) {
               // eslint-disable-next-line no-console
-              console.log(ex);
+              console.warn(ex);
             }
           }
         }
@@ -131,7 +132,7 @@ any): React.FunctionComponentElement<React.ReactNode> {
         }));
       } catch (ex) {
         // eslint-disable-next-line no-console
-        console.log(ex);
+        console.warn(ex);
       }
     }
   }, [pyodide, pyodideIsLoading, data.code, namespace, registeredPackages]);
@@ -151,7 +152,9 @@ def set_session_state(state_slice):
 `;
         for (let queryKey in queryKeysForCacheCleaningRef.current) {
           if (queryKeysForCacheCleaningRef.current[queryKey]) {
-            resetCode += `query_results_cache.pop('${queryKey}', None)
+            resetCode += `query_results_cache.pop(${JSON.stringify(
+              queryKey,
+            )}, None)
 `;
             queryKeysForCacheCleaningRef.current[queryKey] = false;
           }
@@ -169,8 +172,11 @@ def set_session_state(state_slice):
         if (ex.type === 'WaitForQueryError') {
           return;
         }
+        if (ex.message.includes('WAIT_FOR_QUERY_RESULT')) {
+          return;
+        }
         // eslint-disable-next-line no-console
-        console.log(ex);
+        console.warn(ex);
         setState((s: any) => ({
           ...s,
           error: ex.message,
@@ -209,7 +215,7 @@ def set_session_state(state_slice):
 
   React.useEffect(() => {
     setEditorValue(data.code);
-    const unsubscribe = pyodideEngine.events.on(
+    const unsubscribeFromBoardUpdates = pyodideEngine.events.on(
       boardPath,
       ({ layoutTree, state, queryKey, runFunctionKey }) => {
         if (layoutTree) {
@@ -263,7 +269,7 @@ def set_session_state(state_slice):
                 return;
               }
               // eslint-disable-next-line no-console
-              console.error(ex);
+              console.warn(ex);
             }
           }, liveUpdateInterval);
         }
@@ -275,7 +281,8 @@ def set_session_state(state_slice):
       if (editorRef.current) {
         editorRef.current = null;
       }
-      unsubscribe();
+      unsubscribeFromBoardUpdates();
+      clearPendingQueriesMap(boardPath);
     };
   }, [boardPath]);
 

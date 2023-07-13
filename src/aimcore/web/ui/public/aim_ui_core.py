@@ -2,7 +2,6 @@
 # Bindings for fetching Aim Objects
 ####################
 
-from pyodide.ffi import create_proxy
 from js import search, runFunction, localStorage
 import json
 import hashlib
@@ -53,26 +52,19 @@ class WaitForQueryError(Exception):
     pass
 
 
-def query_filter(type_, query="", count=None, start=None, stop=None, isSequence=False):
+def query_filter(type_, query="", count=None, start=None, stop=None, is_sequence=False):
     query_key = f'{type_}_{query}_{count}_{start}_{stop}'
 
     if query_key in query_results_cache:
         return query_results_cache[query_key]
 
     try:
-        data = search(board_path, type_, query, count, start, stop, isSequence)
-        data = create_proxy(data.to_py())
-        items = []
-        i = 0
-        for item in data:
-            d = item
-            d["type"] = type_
-            i = i + 1
-            items.append(d)
-        data.destroy()
+        data = search(board_path, type_, query,
+                      count, start, stop, is_sequence)
+        data = json.loads(data)
 
-        query_results_cache[query_key] = items
-        return items
+        query_results_cache[query_key] = data
+        return data
     except Exception as e:
         if 'WAIT_FOR_QUERY_RESULT' in str(e):
             raise WaitForQueryError()
@@ -88,7 +80,7 @@ def run_function(func_name, params):
 
     try:
         res = runFunction(board_path, func_name, params)
-        data = res.to_py()
+        data = json.loads(res)["value"]
 
         query_results_cache[run_function_key] = data
         return data
@@ -102,13 +94,13 @@ def run_function(func_name, params):
 class Sequence():
     @classmethod
     def filter(self, query="", count=None, start=None, stop=None):
-        return query_filter('Sequence', query, count, start, stop, isSequence=True)
+        return query_filter('Sequence', query, count, start, stop, is_sequence=True)
 
 
 class Container():
     @classmethod
     def filter(self, query=""):
-        return query_filter('Container', query, None, None, None, isSequence=False)
+        return query_filter('Container', query, None, None, None, is_sequence=False)
 
 
 ####################
@@ -1254,7 +1246,7 @@ class NumberInput(Component):
 
 
 class Select(Component):
-    def __init__(self, label='', options=('option 1', 'option 2'), index=0, disabled=False, key=None, block=None):
+    def __init__(self, label='', options=('option 1', 'option 2'), index=0, searchable=None, disabled=False, key=None, block=None):
         component_type = "Select"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
@@ -1266,6 +1258,10 @@ class Select(Component):
         options = validate(options, (list, tuple), "options")
         index = validate(index, int, "index")
         disabled = validate(disabled, bool, "disabled")
+        if searchable is not None:
+            searchable = validate(searchable, bool, "searchable")
+        else:
+            searchable = len(options) > 10
 
         # set the initial data for this component
         self.data = options[index]
@@ -1275,6 +1271,7 @@ class Select(Component):
             "label": label,
             "options": options,
             "disabled": disabled,
+            "searchable": searchable,
             "isMulti": False,
             "value": self.value if batch_state is None else batch_state["value"],
         }
@@ -1294,7 +1291,7 @@ class Select(Component):
 
 
 class MultiSelect(Component):
-    def __init__(self, label='', options=('option 1', 'option 2'), index=[0], disabled=False, key=None, block=None):
+    def __init__(self, label='', options=('option 1', 'option 2'), index=[0], searchable=None, disabled=False, key=None, block=None):
         component_type = "Select"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
@@ -1306,6 +1303,11 @@ class MultiSelect(Component):
         options = validate(options, tuple, "options")
         index = validate(index, list, "index")
         disabled = validate(disabled, bool, "disabled")
+        if searchable is not None:
+            searchable = validate(searchable, bool, "searchable")
+        else:
+            searchable = len(options) > 10
+
 
         # set the initial data for this component
         self.data = [options[i] for i in index]
@@ -1315,6 +1317,7 @@ class MultiSelect(Component):
             "label": label,
             "options": options,
             "disabled": disabled,
+            "searchable": searchable,
             "isMulti": True,
             "value": self.value if batch_state is None else batch_state["value"],
         }

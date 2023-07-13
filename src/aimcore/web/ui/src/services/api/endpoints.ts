@@ -5,6 +5,7 @@ const ENDPOINTS = {
     FETCH: 'fetch',
     GET_GROUPED_SEQUENCES: 'grouped-sequences',
     RUN: 'run',
+    FETCH_BLOBS: 'fetch-blobs',
   },
 
   PROJECTS: {

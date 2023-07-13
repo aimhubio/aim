@@ -1,21 +1,17 @@
 from asp import Run, Metric
 from itertools import groupby
-from collections.abc import MutableMapping
 import math
 
 if 'hash' in session_state:
-    hash = session_state['hash']
+    run_hash = session_state['hash']
 else:
-    hash = None
+    run_hash = None
 
-
-@memoize
-def memoize_query(cb, query):
-    return cb(query)
-
-
-runs = memoize_query(Run.filter, f'c.hash=="{hash}"')
+runs = []
 run = None
+
+if run_hash:
+    runs = Run.filter(f'c.hash=="{run_hash}"')
 
 if runs:
     run = runs[0]
@@ -27,14 +23,14 @@ else:
 
 @memoize
 def flatten(dictionary, parent_key='', separator='.'):
-    items = []
+    flattened = {}
     for key, value in dictionary.items():
-        new_key = parent_key + separator + key if parent_key else key
-        if isinstance(value, MutableMapping):
-            items.extend(flatten(value, new_key, separator=separator).items())
+        new_key = f"{parent_key}{separator}{key}" if parent_key else key
+        if isinstance(value, dict):
+            flattened.update(flatten(value, new_key, separator=separator))
         else:
-            items.append((new_key, value))
-    return dict(items)
+            flattened[new_key] = value
+    return flattened
 
 
 @memoize
@@ -55,7 +51,7 @@ if run:
             ui.text('No parameters found')
 
     with metrics_tab:
-        metrics = memoize_query(Metric.filter, f'c.hash=="{hash}"')
+        metrics = Metric.filter(f'c.hash=="{run_hash}"')
         if metrics:
             row_controls, = ui.rows(1)
             group_fields = row_controls.multi_select(
@@ -78,7 +74,6 @@ if run:
             for i, row in enumerate(rows):
                 cols = row.columns(column_count)
                 for j, col in enumerate(cols):
-                    col.html('<br />')
                     data_index = i*column_count+j
                     if data_index < grouped_data_length:
                         data = grouped_data[data_index]

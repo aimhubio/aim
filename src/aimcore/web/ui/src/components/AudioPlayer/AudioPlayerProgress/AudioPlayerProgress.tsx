@@ -2,16 +2,18 @@ import React from 'react';
 import moment from 'moment';
 
 import { Slider, Text } from 'components/kit';
-import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import ErrorBoundary from 'components/ErrorBoundary';
 
-import { IAudioBoxProgressProps } from '.';
+import { AudioPlayerProgressProps } from './AudioPlayerProgress.d';
 
-function AudioBoxProgress({
+import './AudioPlayerProgress.scss';
+
+function AudioPlayerProgress({
   audio,
   isPlaying,
   src,
   disabled,
-}: IAudioBoxProgressProps) {
+}: AudioPlayerProgressProps) {
   const [trackProgress, setTrackProgress] = React.useState(0);
   const intervalRef = React.useRef<number>();
 
@@ -28,12 +30,12 @@ function AudioBoxProgress({
       clearInterval(intervalRef.current);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isPlaying, src]);
+  }, [isPlaying, src, audio]);
 
   function startTimer(): void {
     clearInterval(intervalRef.current);
     intervalRef.current = window.setInterval(() => {
-      setTrackProgress(audio.currentTime);
+      setTrackProgress(audio?.currentTime || 0);
     }, 100);
   }
 
@@ -56,8 +58,8 @@ function AudioBoxProgress({
 
   function formatDuration(): string {
     return moment
-      .utc(Math.round(audio.duration || 0) * 1000)
-      .format(defineTimeFormat(audio.duration || 0));
+      .utc(Math.round(audio?.duration || 0) * 1000)
+      .format(defineTimeFormat(audio?.duration || 0));
   }
 
   function defineTimeFormat(duration: number): string {
@@ -67,34 +69,38 @@ function AudioBoxProgress({
   function formatProgress(): string {
     return moment
       .utc(Math.round(trackProgress) * 1000)
-      .format(defineTimeFormat(audio.duration || 0));
+      .format(defineTimeFormat(audio?.duration || 0));
   }
 
   return (
     <ErrorBoundary>
-      <Slider
-        containerClassName='AudioBox__controllers__progressSlider'
-        onChangeCommitted={onTimerChange}
-        onChange={onProgressChange}
-        value={trackProgress}
-        step={0.1}
-        max={Math.round(audio?.duration)}
-        min={0}
-        disabled={disabled}
-      />
-      <div
-        className={`AudioBox__controllers__timer ${
-          audio?.duration > 3600 ? 'AudioBox__controllers__timer-long' : ''
-        }`}
-      >
-        <Text weight={400} size={12}>
-          {(audio && formatProgress()) || '00:00'}
-        </Text>
-        <Text weight={400} size={12}>
-          /{(audio && formatDuration()) || '00:00'}
-        </Text>
+      <div className='AudioPlayerProgress'>
+        <Slider
+          containerClassName='AudioPlayerProgress__progressSlider'
+          onChangeCommitted={onTimerChange}
+          onChange={onProgressChange}
+          value={trackProgress}
+          step={0.1}
+          max={Math.round(audio?.duration || 0)}
+          min={0}
+          disabled={disabled}
+        />
+        <div
+          className={`AudioPlayerProgress__timer ${
+            audio?.duration && audio.duration > 3600
+              ? 'AudioPlayerProgress__timer-long'
+              : ''
+          }`}
+        >
+          <Text weight={400} size={12}>
+            {(audio && formatProgress()) || '00:00'}
+          </Text>
+          <Text weight={400} size={12}>
+            /{(audio && formatDuration()) || '00:00'}
+          </Text>
+        </div>
       </div>
     </ErrorBoundary>
   );
 }
-export default AudioBoxProgress;
+export default AudioPlayerProgress;
