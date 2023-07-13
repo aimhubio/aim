@@ -252,7 +252,7 @@ class Repo(object):
             return SequenceCollection(query_context=query_context)
 
     def delete_containers(self, container_hashes: List[str]) -> Tuple[bool, List[str]]:
-        """Delete multiple Runs data from aim repository
+        """Delete multiple Containers data from aim repository
 
         This action removes containers data permanently and cannot be reverted.
         If you want to archive container but keep it's data use `repo.get_container(container_hash).archived = True`.
@@ -261,7 +261,7 @@ class Repo(object):
             container_hashes (:obj:`str`): list of Containers to be deleted.
 
         Returns:
-            (True, []) if all runs deleted successfully,
+            (True, []) if all containers deleted successfully,
             (False, :obj:`list`) with list of remaining containers otherwise.
         """
         remaining_containers = []
@@ -277,7 +277,7 @@ class Repo(object):
         else:
             return True, []
 
-    def delete_run(self, container_hash: str) -> bool:
+    def delete_container(self, container_hash: str) -> bool:
         """Delete Container data from aim repository
 
         This action removes container data permanently and cannot be reverted.
@@ -293,7 +293,7 @@ class Repo(object):
             self._delete_container(container_hash)
             return True
         except Exception as e:
-            logger.warning(f'Error while trying to delete run \'{container_hash}\'. {str(e)}')
+            logger.warning(f'Error while trying to delete container \'{container_hash}\'. {str(e)}')
             return False
 
     def move_containers(self, container_hashes: List[str], dest_repo: 'Repo') -> Tuple[bool, List[str]]:
@@ -301,7 +301,7 @@ class Repo(object):
 
         Args:
             container_hashes (:obj:`str`): list of Containers to be moved.
-            dest_repo (:obj:`Repo`): destination Repo instance to move Runs
+            dest_repo (:obj:`Repo`): destination Repo instance to move Containers
 
         Returns:
             (True, []) if all containers were moved successfully,
@@ -327,7 +327,7 @@ class Repo(object):
 
         Args:
             container_hashes (:obj:`str`): list of Containers to be copied.
-            dest_repo (:obj:`Repo`): destination Repo instance to copy Runs
+            dest_repo (:obj:`Repo`): destination Repo instance to copy Containers
 
         Returns:
             (True, []) if all containers were copied successfully,
@@ -352,7 +352,7 @@ class Repo(object):
             return self._remote_repo_proxy._delete_container(container_hash)
 
         # check container lock info. in progress containers can't be deleted
-        if self.storage_engine._lock_manager.get_run_lock_info(container_hash).locked:
+        if self.storage_engine._lock_manager.get_container_lock_info(container_hash).locked:
             raise RuntimeError(f'Cannot delete Container \'{container_hash}\'. Container is locked.')
 
         # remove container meta tree
@@ -378,9 +378,9 @@ class Repo(object):
             source_meta_container_tree_collected = source_meta_tree.subtree('chunks').subtree(container_hash).collect()
 
             # write destination meta tree info
-            source_meta_run_attrs_tree_collected = source_meta_container_tree_collected['attrs']
+            source_meta_container_attrs_tree_collected = source_meta_container_tree_collected['attrs']
             dest_meta_attrs_tree = dest_meta_tree.subtree('attrs')
-            for key, val in source_meta_run_attrs_tree_collected.items():
+            for key, val in source_meta_container_attrs_tree_collected.items():
                 dest_meta_attrs_tree.merge(key, val)
 
             cont_type = source_meta_container_tree_collected[KeyNames.INFO_PREFIX]['cont_type'].split('->')[-1]
@@ -397,10 +397,10 @@ class Repo(object):
                     for typename in seq_typename.split('->'):
                         dest_meta_tree[(KeyNames.SEQUENCES, typename, ctx_idx, seq_name)] = 1
 
-            # copy run meta tree
+            # copy container meta tree
             dest_meta_tree[('chunks', container_hash)] = source_meta_container_tree_collected
 
-            # copy run series tree
+            # copy container series tree
             source_series_container_tree = self.storage_engine.\
                 tree(container_hash, 'seqs', read_only=True).\
                 subtree('chunks').subtree(container_hash)
@@ -424,7 +424,7 @@ class Repo(object):
         if self._is_remote_repo:
             return self._remote_repo_proxy._close_container(container_hash)
 
-        # release run locks
+        # release container locks
         self._storage_engine._lock_manager.release_locks(container_hash, force=True)
 
         # set end time if needed

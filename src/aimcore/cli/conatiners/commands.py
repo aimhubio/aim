@@ -54,12 +54,12 @@ def remove_containers(ctx, hashes, yes):
     if not confirmed:
         return
 
-    success, remaining_runs = repo.delete_runs(matched_hashes)
+    success, remaining_containers = repo.delete_containers(matched_hashes)
     if success:
         click.echo(f'Successfully deleted {len(matched_hashes)} containers.')
     else:
         click.echo('Something went wrong while deleting containers. Remaining containers are:', err=True)
-        click.secho('\t'.join(remaining_runs), fg='yellow')
+        click.secho('\t'.join(remaining_containers), fg='yellow')
 
 
 @containers.command(name='cp')
@@ -76,12 +76,12 @@ def copy_containers(ctx, destination, hashes):
     destination_repo = Repo.from_path(destination)
 
     matched_hashes = match_runs(source_repo, hashes)
-    success, remaining_runs = source_repo.copy_containers(matched_hashes, destination_repo)
+    success, remaining_containers = source_repo.copy_containers(matched_hashes, destination_repo)
     if success:
         click.echo(f'Successfully copied {len(matched_hashes)} containers.')
     else:
         click.echo('Something went wrong while copying containers. Remaining containers are:', err=True)
-        click.secho('\t'.join(remaining_runs), fg='yellow')
+        click.secho('\t'.join(remaining_containers), fg='yellow')
 
 
 @containers.command(name='mv')
