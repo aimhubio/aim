@@ -10,10 +10,12 @@ import {
   createStateSlices,
   PreCreatedStateSlice,
 } from 'modules/core/utils/store';
-
 import createEventSystemEngine, {
   IEventSystemEngine,
-} from '../../modules/core/engine/event-system';
+} from 'modules/core/engine/event-system';
+import createBlobURISystemEngine, {
+  IBlobURISystemEngine,
+} from 'modules/core/engine/blob-uri-system';
 
 type Set<T> = StoreApi<T>['setState'];
 type Get<T> = StoreApi<T>['getState'];
@@ -40,6 +42,7 @@ export type State = {
   pyodide: Pyodide;
   layout: Layout;
   events: Record<string, unknown>;
+  blobURI: Record<string, string>;
 };
 
 type SelectorCreator<TState, P> = (state: TState) => P;
@@ -104,6 +107,7 @@ const initialState: State = {
     state: {},
   },
   events: {},
+  blobURI: {},
 };
 
 const stateCreator = (set: Set<State>, get: Get<State>) => {
@@ -143,6 +147,9 @@ const stateCreator = (set: Set<State>, get: Get<State>) => {
   initialState.events = eventSystemEngine.state;
   engine.events = eventSystemEngine.engine;
 
+  const blobURISystemEngine = createBlobURISystemEngine();
+  engine.blobURI = blobURISystemEngine.engine;
+
   return initialState;
 };
 
@@ -169,6 +176,7 @@ const pyodideEngine: State &
   GetMethods & {
     subscribe: Subscribe;
     events: IEventSystemEngine['engine'];
+    blobURI: IBlobURISystemEngine['engine'];
   } = {
   initialState,
   ...omit(engine, 'selectors', 'setMethods', 'getMethods', 'events'),
@@ -177,6 +185,7 @@ const pyodideEngine: State &
   ...engine.getMethods,
   subscribe: store.subscribe,
   events: engine.events,
+  blobURI: engine.blobURI,
 };
 
 export const usePyodideEngine = (selector: SelectorCreator<State, any>) =>

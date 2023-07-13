@@ -9,13 +9,21 @@ import { getItem, setItem } from 'utils/storage';
 
 import pyodideEngine from './store';
 
-// @ts-ignore
+declare global {
+  interface Window {
+    search: Function;
+    runFunction: Function;
+    updateLayout: Function;
+    setState: Function;
+    pyodideEngine: typeof pyodideEngine;
+  }
+}
+
 window.search = search;
-// @ts-ignore
 window.runFunction = runFunction;
 
 let queryResultsCacheMap: Map<string, any> = new Map();
-let pendinqQueriesMap: Map<string, Map<string, any>> = new Map();
+let pendingQueriesMap: Map<string, Map<string, any>> = new Map();
 
 export function getQueryResultsCacheMap() {
   return queryResultsCacheMap;
@@ -40,26 +48,25 @@ export function clearQueryResultsCache(key?: string) {
 }
 
 export function getPendingQueriesMap() {
-  return pendinqQueriesMap;
+  return pendingQueriesMap;
 }
 
 export function clearPendingQueriesMap(boardPath: string) {
-  if (pendinqQueriesMap.has(boardPath)) {
-    let queriesMap = pendinqQueriesMap.get(boardPath);
+  if (pendingQueriesMap.has(boardPath)) {
+    let queriesMap = pendingQueriesMap.get(boardPath);
     if (queriesMap) {
       for (let [key, cancel] of queriesMap) {
         cancel();
         queriesMap.delete(key);
       }
     }
-    pendinqQueriesMap.delete(boardPath);
+    pendingQueriesMap.delete(boardPath);
   }
 }
 
 let layoutUpdateTimer: number;
 let prevBoardPath: undefined | string;
 
-// @ts-ignore
 window.updateLayout = (items: any, boardPath: undefined | string) => {
   let layout = pyodideJSProxyMapToObject(items.toJs());
   items.destroy();
@@ -122,7 +129,6 @@ window.updateLayout = (items: any, boardPath: undefined | string) => {
   }, 50);
 };
 
-// @ts-ignore
 window.setState = (update: any, boardPath: string, persist = false) => {
   let stateUpdate = update.toJs();
   update.destroy();
@@ -286,7 +292,6 @@ export async function loadPlotly() {
   }
 }
 
-// @ts-ignore
 window.pyodideEngine = pyodideEngine;
 
 const toObjectDict = {

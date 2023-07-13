@@ -4,8 +4,6 @@ import PopoverContent from 'components/ChartPanel/PopoverContent/PopoverContent'
 import { Button, Icon } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
-import blobsURIModel from 'services/models/media/blobsURIModel';
-
 import { ChartTypeEnum } from 'utils/d3';
 
 import { IImageFullViewPopoverProps } from './types.d';
@@ -20,7 +18,8 @@ function ImageFullViewPopover({
   selectOptions,
   onRunsTagsChange,
 }: IImageFullViewPopoverProps): React.FunctionComponentElement<React.ReactNode> {
-  const blobData = blobsURIModel.getState()[imageData?.blob_uri];
+  // const blobData = blobsURIModel.getState()[imageData?.blob_uri];
+  const blobData = '';
 
   return (
     <ErrorBoundary>
