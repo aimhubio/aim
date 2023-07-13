@@ -262,9 +262,15 @@ export async function loadPyodideInstance() {
   });
 
   const ui = namespace.get('ui');
+  const Sequence = namespace.get('Sequence');
+  const Container = namespace.get('Container');
+  const memoize = namespace.get('memoize');
 
   pyodide.registerJsModule('aim_ui', {
     ui,
+    Sequence,
+    Container,
+    memoize,
   });
 
   pyodideEngine.setPyodide({
