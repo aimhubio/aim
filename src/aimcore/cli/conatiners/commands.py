@@ -10,15 +10,16 @@ from aim._sdk.repo import Repo
               type=str)
 @click.pass_context
 def containers(ctx, repo):
-    """Manage runs in aim repository."""
+    """Manage containers in aim repository."""
     ctx.ensure_object(dict)
     ctx.obj['repo'] = repo
 
 
 @containers.command(name='ls')
 @click.pass_context
-def list_runs(ctx):
-    """List Runs available in Repo."""
+def list_containers(ctx):
+    """List Containers available in Repo."""
+    #TODO [MV]: add more useful information
     repo_path = ctx.obj['repo']
     if not Repo.is_remote_path(repo_path):
         if not Repo.exists(repo_path):
@@ -26,20 +27,20 @@ def list_runs(ctx):
             exit(1)
 
     repo = Repo.from_path(repo_path)
-    run_hashes = repo.container_hashes
+    container_hashes = repo.container_hashes
 
-    click.echo('\t'.join(run_hashes))
-    click.echo(f'Total {len(run_hashes)} runs.')
+    click.echo('\t'.join(container_hashes))
+    click.echo(f'Total {len(container_hashes)} containers.')
 
 
 @containers.command(name='rm')
 @click.argument('hashes', nargs=-1, type=str)
 @click.pass_context
 @click.option('-y', '--yes', is_flag=True, help='Automatically confirm prompt')
-def remove_runs(ctx, hashes, yes):
-    """Remove Run data for given run hashes."""
+def remove_containers(ctx, hashes, yes):
+    """Remove Container data for given container hashes."""
     if len(hashes) == 0:
-        click.echo('Please specify at least one Run to delete.')
+        click.echo('Please specify at least one Container to delete.')
         exit(1)
     repo_path = ctx.obj['repo']
     repo = Repo.from_path(repo_path)
@@ -48,16 +49,16 @@ def remove_runs(ctx, hashes, yes):
     if yes:
         confirmed = True
     else:
-        confirmed = click.confirm(f'This command will permanently delete {len(matched_hashes)} runs from aim repo '
-                                  f'located at \'{repo_path}\'. Do you want to proceed?')
+        confirmed = click.confirm(f'This command will permanently delete {len(matched_hashes)} containers'
+                                  f' from aim repo located at \'{repo_path}\'. Do you want to proceed?')
     if not confirmed:
         return
 
     success, remaining_runs = repo.delete_runs(matched_hashes)
     if success:
-        click.echo(f'Successfully deleted {len(matched_hashes)} runs.')
+        click.echo(f'Successfully deleted {len(matched_hashes)} containers.')
     else:
-        click.echo('Something went wrong while deleting runs. Remaining runs are:', err=True)
+        click.echo('Something went wrong while deleting containers. Remaining containers are:', err=True)
         click.secho('\t'.join(remaining_runs), fg='yellow')
 
 
@@ -65,21 +66,21 @@ def remove_runs(ctx, hashes, yes):
 @click.option('--destination', required=True, type=str)
 @click.argument('hashes', nargs=-1, type=str)
 @click.pass_context
-def copy_runs(ctx, destination, hashes):
-    """Copy Run data for given run hashes to destination Repo."""
+def copy_containers(ctx, destination, hashes):
+    """Copy Container data for given container hashes to destination Repo."""
     if len(hashes) == 0:
-        click.echo('Please specify at least one Run to copy.')
+        click.echo('Please specify at least one Container to copy.')
         exit(1)
     source = ctx.obj['repo']
     source_repo = Repo.from_path(source)
     destination_repo = Repo.from_path(destination)
 
     matched_hashes = match_runs(source_repo, hashes)
-    success, remaining_runs = source_repo.copy_runs(matched_hashes, destination_repo)
+    success, remaining_runs = source_repo.copy_containers(matched_hashes, destination_repo)
     if success:
-        click.echo(f'Successfully copied {len(matched_hashes)} runs.')
+        click.echo(f'Successfully copied {len(matched_hashes)} containers.')
     else:
-        click.echo('Something went wrong while copying runs. Remaining runs are:', err=True)
+        click.echo('Something went wrong while copying containers. Remaining containers are:', err=True)
         click.secho('\t'.join(remaining_runs), fg='yellow')
 
 
@@ -88,10 +89,10 @@ def copy_runs(ctx, destination, hashes):
               type=str)
 @click.argument('hashes', nargs=-1, type=str)
 @click.pass_context
-def move_runs(ctx, destination, hashes):
-    """Move Run data for given run hashes to destination Repo."""
+def move_containers(ctx, destination, hashes):
+    """Move Container data for given container hashes to destination Repo."""
     if len(hashes) == 0:
-        click.echo('Please specify at least one Run to move.')
+        click.echo('Please specify at least one Container to move.')
         exit(1)
     source = ctx.obj['repo']
     source_repo = Repo.from_path(source)
@@ -99,29 +100,29 @@ def move_runs(ctx, destination, hashes):
 
     matched_hashes = match_runs(source_repo, hashes)
 
-    success, remaining_runs = source_repo.move_runs(matched_hashes, destination_repo)
+    success, remaining_containers = source_repo.move_containers(matched_hashes, destination_repo)
     if success:
-        click.echo(f'Successfully moved {len(matched_hashes)} runs.')
+        click.echo(f'Successfully moved {len(matched_hashes)} containers.')
     else:
-        click.echo('Something went wrong while moving runs. Remaining runs are:', err=True)
-        click.secho('\t'.join(remaining_runs), fg='yellow')
+        click.echo('Something went wrong while moving containers. Remaining containers are:', err=True)
+        click.secho('\t'.join(remaining_containers), fg='yellow')
 
 
 @containers.command(name='close')
 @click.argument('hashes', nargs=-1, type=str)
 @click.pass_context
 @click.option('-y', '--yes', is_flag=True, help='Automatically confirm prompt')
-def close_runs(ctx, hashes, yes):
-    """Close failed/stalled Runs."""
+def close_containers(ctx, hashes, yes):
+    """Close failed/stalled containers."""
     repo_path = ctx.obj['repo']
     repo = Repo.from_path(repo_path)
 
     if len(hashes) == 0:
-        click.echo('Please specify at least one Run to close.')
+        click.echo('Please specify at least one Container to close.')
         exit(1)
 
-    click.secho(f'This command will forcefully close {len(hashes)} Runs from Aim Repo \'{repo_path}\'. '
-                f'Please make sure Runs are not active.')
+    click.secho(f'This command will forcefully close {len(hashes)} Containers from Aim Repo \'{repo_path}\'. '
+                f'Please make sure Containers are not active.')
     if yes:
         confirmed = True
     else:
@@ -129,5 +130,5 @@ def close_runs(ctx, hashes, yes):
     if not confirmed:
         return
 
-    for run_hash in hashes:
-        repo._close_run(run_hash)
+    for container_hash in hashes:
+        repo._close_container(container_hash)

@@ -551,14 +551,11 @@ class RemoteRepoProxy:
         self._resources.handler = handler
         self._handler = handler
 
-    def _delete_run(self, hash_):
-        return self._rpc_client.run_instruction(-1, self._handler, '_delete_run', [hash_])
-
-    def _copy_run(self, dest_repo, hash_):
-        return self._rpc_client.run_instruction(-1, self._handler, '_copy_run', [dest_repo, hash_])
+    def _delete_container(self, hash_):
+        return self._rpc_client.run_instruction(-1, self._handler, '_delete_container', [hash_])
 
     def prune(self):
         return self._rpc_client.run_instruction(-1, self._handler, 'prune', [])
 
-    def _close_run(self, hash_):
-        return self._rpc_client.run_instruction(-1, self._handler, '_close_run', [hash_])
+    def _close_container(self, hash_):
+        return self._rpc_client.run_instruction(-1, self._handler, '_close_container', [hash_])

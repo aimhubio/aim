@@ -251,160 +251,165 @@ class Repo(object):
             # return SequenceCollection[type_](query_context=query_context)
             return SequenceCollection(query_context=query_context)
 
-    def delete_runs(self, run_hashes: List[str]) -> Tuple[bool, List[str]]:
+    def delete_containers(self, container_hashes: List[str]) -> Tuple[bool, List[str]]:
         """Delete multiple Runs data from aim repository
 
-        This action removes runs data permanently and cannot be reverted.
-        If you want to archive run but keep it's data use `repo.get_run(run_hash).archived = True`.
+        This action removes containers data permanently and cannot be reverted.
+        If you want to archive container but keep it's data use `repo.get_container(container_hash).archived = True`.
 
         Args:
-            run_hashes (:obj:`str`): list of Runs to be deleted.
+            container_hashes (:obj:`str`): list of Containers to be deleted.
 
         Returns:
-            (True, []) if all runs deleted successfully, (False, :obj:`list`) with list of remaining runs otherwise.
+            (True, []) if all runs deleted successfully,
+            (False, :obj:`list`) with list of remaining containers otherwise.
         """
-        remaining_runs = []
-        for run_hash in run_hashes:
+        remaining_containers = []
+        for container_hash in container_hashes:
             try:
-                self._delete_run(run_hash)
+                self._delete_container(container_hash)
             except Exception as e:
-                logger.warning(f'Error while trying to delete run \'{run_hash}\'. {str(e)}')
-                remaining_runs.append(run_hash)
+                logger.warning(f'Error while trying to delete container \'{container_hash}\'. {str(e)}')
+                remaining_containers.append(container_hash)
 
-        if remaining_runs:
-            return False, remaining_runs
+        if remaining_containers:
+            return False, remaining_containers
         else:
             return True, []
 
-    def delete_run(self, run_hash: str) -> bool:
-        """Delete Run data from aim repository
+    def delete_run(self, container_hash: str) -> bool:
+        """Delete Container data from aim repository
 
-        This action removes run data permanently and cannot be reverted.
-        If you want to archive run but keep it's data use `repo.get_run(run_hash).archived = True`.
+        This action removes container data permanently and cannot be reverted.
+        If you want to archive container but keep it's data use `repo.get_container(container_hash).archived = True`.
 
         Args:
-            run_hash (:obj:`str`): Run to be deleted.
+            container_hash (:obj:`str`): Container to be deleted.
 
         Returns:
-            True if run deleted successfully, False otherwise.
+            True if container deleted successfully, False otherwise.
         """
         try:
-            self._delete_run(run_hash)
+            self._delete_container(container_hash)
             return True
         except Exception as e:
-            logger.warning(f'Error while trying to delete run \'{run_hash}\'. {str(e)}')
+            logger.warning(f'Error while trying to delete run \'{container_hash}\'. {str(e)}')
             return False
 
-    def move_runs(self, run_hashes: List[str], dest_repo: 'Repo') -> Tuple[bool, List[str]]:
-        """Move multiple Runs data from current aim repository to destination aim repository
+    def move_containers(self, container_hashes: List[str], dest_repo: 'Repo') -> Tuple[bool, List[str]]:
+        """Move multiple Containers data from current aim repository to destination aim repository
 
         Args:
-            run_hashes (:obj:`str`): list of Runs to be moved.
+            container_hashes (:obj:`str`): list of Containers to be moved.
             dest_repo (:obj:`Repo`): destination Repo instance to move Runs
 
         Returns:
-            (True, []) if all runs were moved successfully,
-            (False, :obj:`list`) with list of remaining runs otherwise.
+            (True, []) if all containers were moved successfully,
+            (False, :obj:`list`) with list of remaining containers otherwise.
         """
         from tqdm import tqdm
-        remaining_runs = []
-        for run_hash in tqdm(run_hashes):
+        remaining_containers = []
+        for container_hash in tqdm(container_hashes):
             try:
-                self._copy_run(run_hash, dest_repo)
-                self._delete_run(run_hash)
+                self._copy_container(container_hash, dest_repo)
+                self._delete_container(container_hash)
             except Exception as e:
-                logger.warning(f'Error while trying to move run \'{run_hash}\'. {str(e)}')
-                remaining_runs.append(run_hash)
+                logger.warning(f'Error while trying to move container \'{container_hash}\'. {str(e)}')
+                remaining_containers.append(container_hash)
 
-        if remaining_runs:
-            return False, remaining_runs
+        if remaining_containers:
+            return False, remaining_containers
         else:
             return True, []
 
-    def copy_runs(self, run_hashes: List[str], dest_repo: 'Repo') -> Tuple[bool, List[str]]:
-        """Copy multiple Runs data from current aim repository to destination aim repository
+    def copy_containers(self, container_hashes: List[str], dest_repo: 'Repo') -> Tuple[bool, List[str]]:
+        """Copy multiple Containers data from current aim repository to destination aim repository
 
         Args:
-            run_hashes (:obj:`str`): list of Runs to be copied.
+            container_hashes (:obj:`str`): list of Containers to be copied.
             dest_repo (:obj:`Repo`): destination Repo instance to copy Runs
 
         Returns:
-            (True, []) if all runs were copied successfully,
-            (False, :obj:`list`) with list of remaining runs otherwise.
+            (True, []) if all containers were copied successfully,
+            (False, :obj:`list`) with list of remaining containers otherwise.
         """
         from tqdm import tqdm
-        remaining_runs = []
-        for run_hash in tqdm(run_hashes):
+        remaining_containers = []
+        for container_hash in tqdm(container_hashes):
             try:
-                self._copy_run(run_hash, dest_repo)
+                self._copy_container(container_hash, dest_repo)
             except Exception as e:
-                logger.warning(f'Error while trying to copy run \'{run_hash}\'. {str(e)}')
-                remaining_runs.append(run_hash)
+                logger.warning(f'Error while trying to copy container \'{container_hash}\'. {str(e)}')
+                remaining_containers.append(container_hash)
 
-        if remaining_runs:
-            return False, remaining_runs
+        if remaining_containers:
+            return False, remaining_containers
         else:
             return True, []
 
-    def _delete_run(self, run_hash):
+    def _delete_container(self, container_hash):
         if self._is_remote_repo:
-            return self._remote_repo_proxy._delete_run(run_hash)
+            return self._remote_repo_proxy._delete_container(container_hash)
 
-        # check run lock info. in progress runs can't be deleted
-        if self.storage_engine._lock_manager.get_run_lock_info(run_hash).locked:
-            raise RuntimeError(f'Cannot delete Run \'{run_hash}\'. Run is locked.')
+        # check container lock info. in progress containers can't be deleted
+        if self.storage_engine._lock_manager.get_run_lock_info(container_hash).locked:
+            raise RuntimeError(f'Cannot delete Container \'{container_hash}\'. Container is locked.')
 
         # remove container meta tree
-        meta_tree = self.storage_engine.tree(run_hash, 'meta', read_only=False)
-        del meta_tree.subtree('chunks')[run_hash]
+        meta_tree = self.storage_engine.tree(container_hash, 'meta', read_only=False)
+        del meta_tree.subtree('chunks')[container_hash]
         # remove container sequence tree
-        seq_tree = self.storage_engine.tree(run_hash, 'seqs', read_only=False)
-        del seq_tree.subtree('chunks')[run_hash]
+        seq_tree = self.storage_engine.tree(container_hash, 'seqs', read_only=False)
+        del seq_tree.subtree('chunks')[container_hash]
 
         # remove container blobs trees
-        blobs_tree = self._storage_engine.tree(run_hash, 'BLOBS', read_only=False)
-        del blobs_tree.subtree(('meta', 'chunks'))[run_hash]
-        del blobs_tree.subtree(('seqs', 'chunks'))[run_hash]
+        blobs_tree = self._storage_engine.tree(container_hash, 'BLOBS', read_only=False)
+        del blobs_tree.subtree(('meta', 'chunks'))[container_hash]
+        del blobs_tree.subtree(('seqs', 'chunks'))[container_hash]
 
         # delete entry from container map
-        del meta_tree.subtree('cont_types_map')[run_hash]
+        del meta_tree.subtree('cont_types_map')[container_hash]
 
-    def _copy_run(self, run_hash, dest_repo):
+    def _copy_container(self, container_hash, dest_repo):
         def copy_trees():
             source_meta_tree = self._meta_tree
-            dest_meta_tree = dest_repo._storage_engine.tree(run_hash, 'meta', read_only=False)
+            dest_meta_tree = dest_repo._storage_engine.tree(container_hash, 'meta', read_only=False)
 
-            source_meta_run_tree_collected = source_meta_tree.subtree('chunks').subtree(run_hash).collect()
+            source_meta_container_tree_collected = source_meta_tree.subtree('chunks').subtree(container_hash).collect()
 
             # write destination meta tree info
-            source_meta_run_attrs_tree_collected = source_meta_run_tree_collected['attrs']
+            source_meta_run_attrs_tree_collected = source_meta_container_tree_collected['attrs']
             dest_meta_attrs_tree = dest_meta_tree.subtree('attrs')
             for key, val in source_meta_run_attrs_tree_collected.items():
                 dest_meta_attrs_tree.merge(key, val)
 
-            cont_type = source_meta_run_tree_collected[KeyNames.INFO_PREFIX]['cont_type'].split('->')[-1]
+            cont_type = source_meta_container_tree_collected[KeyNames.INFO_PREFIX]['cont_type'].split('->')[-1]
 
-            dest_meta_tree[('cont_types_map', run_hash)] = source_meta_tree[('cont_types_map', run_hash)]
+            dest_meta_tree[('cont_types_map', container_hash)] = source_meta_tree[('cont_types_map', container_hash)]
             dest_meta_tree[('containers', cont_type)] = 1
 
-            for ctx_idx, ctx in source_meta_run_tree_collected[KeyNames.CONTEXTS].items():
+            for ctx_idx, ctx in source_meta_container_tree_collected[KeyNames.CONTEXTS].items():
                 dest_meta_tree[(KeyNames.CONTEXTS, ctx_idx)] = ctx
 
-            for ctx_idx in source_meta_run_tree_collected['sequences'].keys():
-                for seq_name in source_meta_run_tree_collected['sequences'][ctx_idx].keys():
-                    seq_typename = source_meta_run_tree_collected['sequences'][ctx_idx][seq_name][KeyNames.INFO_PREFIX][KeyNames.SEQUENCE_TYPE]
+            for ctx_idx in source_meta_container_tree_collected['sequences'].keys():
+                for seq_name in source_meta_container_tree_collected['sequences'][ctx_idx].keys():
+                    seq_typename = source_meta_container_tree_collected['sequences'][ctx_idx][seq_name][KeyNames.INFO_PREFIX][KeyNames.SEQUENCE_TYPE]
                     for typename in seq_typename.split('->'):
                         dest_meta_tree[(KeyNames.SEQUENCES, typename, ctx_idx, seq_name)] = 1
 
             # copy run meta tree
-            dest_meta_tree[('chunks', run_hash)] = source_meta_run_tree_collected
+            dest_meta_tree[('chunks', container_hash)] = source_meta_container_tree_collected
 
             # copy run series tree
-            source_series_run_tree = self.storage_engine.tree(run_hash, 'seqs', read_only=True).subtree('chunks').subtree(run_hash)
-            dest_series_run_tree = dest_repo.storage_engine.tree(run_hash, 'seqs', read_only=False).subtree('chunks').subtree(run_hash)
+            source_series_container_tree = self.storage_engine.\
+                tree(container_hash, 'seqs', read_only=True).\
+                subtree('chunks').subtree(container_hash)
+            dest_series_container_tree = dest_repo.storage_engine.\
+                tree(container_hash, 'seqs', read_only=False).\
+                subtree('chunks').subtree(container_hash)
 
             try:
-                dest_series_run_tree[...] = source_series_run_tree[...]
+                dest_series_container_tree[...] = source_series_container_tree[...]
             except KeyError:
                 pass
 
@@ -413,23 +418,25 @@ class Repo(object):
         except Exception as e:
             raise e
 
-    def _close_run(self, run_hash):
+    def _close_container(self, container_hash):
         from aim._sdk.utils import utc_timestamp
 
         if self._is_remote_repo:
-            return self._remote_repo_proxy._close_run(run_hash)
+            return self._remote_repo_proxy._close_container(container_hash)
 
         # release run locks
-        self._storage_engine._lock_manager.release_locks(run_hash, force=True)
+        self._storage_engine._lock_manager.release_locks(container_hash, force=True)
 
         # set end time if needed
-        run_meta_tree = self._storage_engine.tree(-1, 'meta', read_only=False).subtree('chunks').subtree(run_hash)
-        if not run_meta_tree.get((KeyNames.INFO_PREFIX, 'end_time')):
-            run_meta_tree[(KeyNames.INFO_PREFIX, 'end_time')] = utc_timestamp()
+        container_meta_tree = self._storage_engine.\
+            tree(-1, 'meta', read_only=False).\
+            subtree('chunks').subtree(container_hash)
+        if not container_meta_tree.get((KeyNames.INFO_PREFIX, 'end_time')):
+            container_meta_tree[(KeyNames.INFO_PREFIX, 'end_time')] = utc_timestamp()
 
     def prune(self):
         """
-        Utility function to remove dangling/orphan params/sequences with no referring runs.
+        Utility function to remove dangling/orphan params/sequences with no referring containers.
         """
         from aim._sdk.utils import prune
         if self._is_remote_repo:
