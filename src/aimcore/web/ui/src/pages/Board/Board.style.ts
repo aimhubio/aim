@@ -43,6 +43,11 @@ const BoardVisualizerComponentsPane = styled(SplitPaneItem, {
   flex: 1,
   display: 'flex',
   fd: 'column',
+  '.BoardConsole__container': {
+    '.ResizeElement': {
+      width: 'unset !important',
+    },
+  },
   '.BoardVisualizer__main__components--fullWidth': {
     width: '100%',
   },
