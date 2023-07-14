@@ -12,11 +12,15 @@ function AudiosList(props: any) {
     ...audio.record,
   }));
 
+  console.log(data[0].container?.hash);
+
   return (
     <div className='AudiosList' style={{ height: '100%', overflow: 'auto' }}>
       {data.map((item: any, i: number) => (
         <AudioBox
-          key={`${item.name}_${item.step}_${item.index}_${i}`}
+          key={`${item?.container?.hash}_${item.name}_${JSON.stringify(
+            item.context,
+          )}_${item.step}_${item.index}`}
           style={{
             margin: '5px',
             height: 50,
