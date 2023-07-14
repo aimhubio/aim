@@ -18,7 +18,6 @@ from aim.web.api.projects.pydantic_models import (
 from aim.web.api.utils import object_factory
 from aim.sdk.index_manager import RepoIndexManager
 from aim.storage.locking import AutoFileLock
-from aim.utils.tracking import analytics
 
 projects_router = APIRouter()
 
@@ -34,7 +33,7 @@ async def project_api():
         'name': project.name,
         'path': project.path,
         'description': project.description,
-        'telemetry_enabled': analytics.telemetry_enabled,
+        'telemetry_enabled': False,
     }
 
 
