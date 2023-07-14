@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { Box, Checkbox, Text } from 'components/kit_v2';
+import { Box, Checkbox } from 'components/kit_v2';
 
 import generateId from 'utils/generateId';
 

@@ -1,5 +1,3 @@
-import { SequenceFullView, SequenceOverview } from './Sequence';
-
 export type Params = Record<string, any>;
 
 export interface Tag {
@@ -22,9 +20,4 @@ export interface RunProps {
   tags: Array<Tag> | null;
   creation_time: number;
   end_time: number | null;
-}
-
-export interface RecordRanges {
-  record_range_total?: [number, number];
-  record_range_used?: [number, number];
 }

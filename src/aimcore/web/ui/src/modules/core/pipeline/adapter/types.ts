@@ -1,5 +1,6 @@
-import { RecordRanges, AimFlatObjectBase } from 'types/core/AimObjects';
+import { AimFlatObjectBase } from 'types/core/AimObjects';
 import { Context } from 'types/core/shared';
+import { RecordRanges } from 'types/core/AimObjects/GroupedSequences';
 
 export type ProcessInterceptor = (...arg: any) => any;
 

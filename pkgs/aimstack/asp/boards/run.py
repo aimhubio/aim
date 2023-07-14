@@ -74,7 +74,6 @@ if run:
             for i, row in enumerate(rows):
                 cols = row.columns(column_count)
                 for j, col in enumerate(cols):
-                    col.html('<br />')
                     data_index = i*column_count+j
                     if data_index < grouped_data_length:
                         data = grouped_data[data_index]

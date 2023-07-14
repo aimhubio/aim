@@ -402,7 +402,7 @@ def set_session_state(state_slice):
                   </BoardComponentsViz>
                 </Box>
                 {(newMode || editMode) && state.isProcessing !== null && (
-                  <div ref={boxContainer}>
+                  <div className='BoardConsole__container' ref={boxContainer}>
                     <BoardConsole
                       key={'board-console'}
                       boxContainer={boxContainer}
