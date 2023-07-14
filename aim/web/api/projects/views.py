@@ -33,7 +33,7 @@ async def project_api():
         'name': project.name,
         'path': project.path,
         'description': project.description,
-        'telemetry_enabled': False,
+        'telemetry_enabled': 0,
     }
 
 

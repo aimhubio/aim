@@ -10,7 +10,6 @@ from aim.web.configs import (
     AIM_UI_DEFAULT_HOST,
     AIM_UI_DEFAULT_PORT,
     AIM_UI_MOUNTED_REPO_PATH,
-    AIM_UI_TELEMETRY_KEY,
     AIM_PROXY_URL,
     AIM_PROFILER_KEY
 )
@@ -111,10 +110,6 @@ def up(dev, host, port, workers, uds,
             port = get_free_port_num()
         except Exception:
             pass
-
-    if not dev and os.getenv(AIM_UI_TELEMETRY_KEY, 1) == '0':
-        click.echo(f'"{AIM_UI_TELEMETRY_KEY}" is ignored. Read how to opt-out here: '
-                   f'https://aimstack.readthedocs.io/en/latest/community/telemetry.html')
 
     click.echo(click.style('Running Aim UI on repo `{}`'.format(repo_inst), fg='yellow'))
 
