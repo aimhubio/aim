@@ -43,6 +43,11 @@ const BoardVisualizerComponentsPane = styled(SplitPaneItem, {
   flex: 1,
   display: 'flex',
   fd: 'column',
+  '.BoardConsole__container': {
+    '.ResizeElement': {
+      width: 'unset !important',
+    },
+  },
   '.BoardVisualizer__main__components--fullWidth': {
     width: '100%',
   },
@@ -253,6 +258,9 @@ const BoardBlockTab = styled('div', {
   maxHeight: '100%',
   p: '$5',
   overflow: 'auto',
+  display: 'flex',
+  fd: 'column',
+  gap: '$13',
 });
 
 export {

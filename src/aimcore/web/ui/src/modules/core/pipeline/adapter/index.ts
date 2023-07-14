@@ -5,7 +5,7 @@ import { GroupedSequence } from 'types/core/AimObjects/GroupedSequences';
 
 import { PipelinePhasesEnum, StatusChangeCallback } from '../types';
 
-import processor, { ProcessedData, ProcessInterceptor } from './processor';
+import processor, { ProcessedData } from './processor';
 import AdapterError from './AdapterError';
 
 export type AdapterConfigOptions = {

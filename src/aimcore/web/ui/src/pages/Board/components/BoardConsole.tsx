@@ -122,7 +122,7 @@ function BoardConsoleOpener({ onClick, consoleElement }: any) {
           color='secondary'
           size='xs'
           onClick={handleClick}
-          icon={<Box as='img' src={isConsoleOpened ? ArrowUp : ArrowDown} />}
+          icon={<Box as='img' src={isConsoleOpened ? ArrowDown : ArrowUp} />}
         />
       </Tooltip>
     </Box>
