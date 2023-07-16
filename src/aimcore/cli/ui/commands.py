@@ -2,7 +2,7 @@ import os
 import click
 
 from aimcore.cli.utils import set_log_level
-from aimcore.cli.up.utils import build_db_upgrade_command, build_uvicorn_command, get_free_port_num
+from aimcore.cli.ui.utils import build_db_upgrade_command, build_uvicorn_command, get_free_port_num
 from aimcore.web.configs import (
     AIM_UI_BASE_PATH,
     AIM_UI_DEFAULT_HOST,
@@ -22,7 +22,7 @@ from aimcore.web.utils import ShellCommandException
 from aim._ext.tracking import analytics
 
 
-@click.command('up')
+@click.command('ui')
 @click.option('-h', '--host', default=AIM_UI_DEFAULT_HOST, type=str)
 @click.option('-p', '--port', default=AIM_UI_DEFAULT_PORT, type=int)
 @click.option('-w', '--workers', default=1, type=int)
@@ -48,7 +48,7 @@ from aim._ext.tracking import analytics
 @click.option('--profiler', is_flag=True, default=False)
 @click.option('--log-level', required=False, default='', type=str)
 @click.option('-y', '--yes', is_flag=True, help='Automatically confirm prompt')
-def up(dev, host, port, workers, uds,
+def ui(dev, host, port, workers, uds,
        repo,
        package,
        ssl_keyfile, ssl_certfile,
@@ -126,3 +126,8 @@ def up(dev, host, port, workers, uds,
     except ShellCommandException:
         click.echo('Failed to run Aim UI. Please see the logs above for details.')
         return
+
+
+@click.command('up', context_settings={'ignore_unknown_options': True, 'allow_extra_args': True})
+def up(**kwargs):
+    click.secho('Command `aim up` has been removed. Use `aim ui` instead.', fg='yellow')

@@ -2,7 +2,7 @@ import logging
 from pathlib import Path
 import yaml
 
-from aim._sdk.object import Object
+from aim._sdk.record import Record
 
 try:
     from dvc.repo import Repo
@@ -11,8 +11,8 @@ except ImportError:
     raise ImportError("module dvc could not be imported")
 
 
-@Object.alias('dvc.Metadata')
-class DvcData(Object):
+@Record.alias('dvc.Metadata')
+class DvcData(Record):
     """
     Wrapper over DVC's LIST interface.
     Find DVC tracked files and stores the list into aim storage.

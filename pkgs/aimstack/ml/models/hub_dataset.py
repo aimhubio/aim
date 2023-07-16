@@ -1,9 +1,9 @@
-from aim._sdk.object import Object
+from aim._sdk.record import Record
 import hub
 
 
-@Object.alias('hub.Dataset')
-class HubDataset(Object):
+@Record.alias('hub.Dataset')
+class HubDataset(Record):
     AIM_NAME = 'hub.Dataset'
 
     def __init__(self, dataset: hub.Dataset):
