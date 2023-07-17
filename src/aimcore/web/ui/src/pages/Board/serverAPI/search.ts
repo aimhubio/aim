@@ -70,7 +70,7 @@ export function search(
           }
         }
       }
-      parseStream<Array<any>>(data, undefined, 1, true)
+      parseStream<Array<any>>(data)
         .then((objectList) => {
           try {
             let result;
@@ -93,8 +93,6 @@ export function search(
               result = data;
             } else if (isSequence) {
               let data: any[] = [];
-
-              // console.log(objectList[0].blobs.data);
 
               for (let i = 0; i < objectList.length; i++) {
                 if (!objectList[i].values) {

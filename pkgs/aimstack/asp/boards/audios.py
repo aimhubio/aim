@@ -44,7 +44,7 @@ def get_table_data(data=[], page_size=10, page_num=1):
             else:
                 if key == "blobs.data":
                     key = "data"
-                    value = i
+                    value = ((page_num - 1) * page_size) + i
                 if key in table_data:
                     table_data[key].append(f"{value}")
                 else:

@@ -12,8 +12,6 @@ function AudiosList(props: any) {
     ...audio.record,
   }));
 
-  console.log(data[0].container?.hash);
-
   return (
     <div className='AudiosList' style={{ height: '100%', overflow: 'auto' }}>
       {data.map((item: any, i: number) => (
