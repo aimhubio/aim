@@ -128,8 +128,8 @@ function Table({
                   />
                 </TableCell>
               ) : null}
-              {columnKeys.map((key: string, columnIndex: number) => {
-                return <TableCell key={columnIndex}>{item[key]}</TableCell>;
+              {columnKeys.map((key: string) => {
+                return <TableCell key={key}>{item[key]}</TableCell>;
               })}
             </TableRow>
           );
