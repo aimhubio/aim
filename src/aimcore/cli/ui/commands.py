@@ -54,6 +54,9 @@ def ui(dev, host, port, workers, uds,
        ssl_keyfile, ssl_certfile,
        base_path,
        profiler, log_level, yes):
+    """
+    Start Aim UI with the --repo repository.
+    """
     if dev:
         os.environ[AIM_ENV_MODE_KEY] = 'dev'
         log_level = log_level or 'debug'
@@ -128,6 +131,6 @@ def ui(dev, host, port, workers, uds,
         return
 
 
-@click.command('up', context_settings={'ignore_unknown_options': True, 'allow_extra_args': True})
+@click.command('up', context_settings={'ignore_unknown_options': True, 'allow_extra_args': True}, hidden=True)
 def up(**kwargs):
     click.secho('Command `aim up` has been removed. Use `aim ui` instead.', fg='yellow')
