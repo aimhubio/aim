@@ -12,16 +12,14 @@ if TYPE_CHECKING:
 
 
 class URIService:
-    SEPARATOR = "__"
+    SEPARATOR = '__'
 
-    def __init__(self, repo: "Repo"):
+    def __init__(self, repo: 'Repo'):
         self.repo = repo
         self.encryptor = Fernet(repo.encryption_key)
 
     @staticmethod
-    def generate_resource_path(
-        prefix_view: "PrefixView", additional_path: "AimObjectPath"
-    ) -> str:
+    def generate_resource_path(prefix_view: 'PrefixView', additional_path: 'AimObjectPath') -> str:
         prefix_path = decode_path(prefix_view.prefix)
         encoded_path = encode_path((*prefix_path, *additional_path))
         return encoded_path.hex()
@@ -36,9 +34,7 @@ class URIService:
         for uri in uri_batch:
             resource_path = self.decode_uri(uri)
             resource_path = decode_path(bytes.fromhex(resource_path))
-            data = self.repo.storage_engine.tree(
-                None, resource_path, read_only=True
-            ).collect()
+            data = self.repo.storage_engine.tree(None, resource_path, read_only=True).collect()
             if isinstance(data, BLOB):
                 data = data.load()
             yield {uri: data}
