@@ -1,11 +1,16 @@
 from asp import AudioSequence
 
+if 'hash' in session_state:
+    run_hash = session_state['hash']
+
 ui.header("Audios")
 
-form = ui.form("Search")
-query = form.text_input(value="")
+if run_hash is None:
+    form = ui.form("Search")
+    query = form.text_input(value="")
 
-audios = AudioSequence.filter(query)
+audios = AudioSequence.filter(
+    f'container.hash=="{run_hash}"' if run_hash else query)
 
 
 def flatten(dictionary, parent_key="", separator="."):
@@ -34,7 +39,7 @@ def get_table_data(data=[], page_size=10, page_num=1):
         "values",
     ]
 
-    page_data = data[(page_num - 1) * page_size : page_num * page_size]
+    page_data = data[(page_num - 1) * page_size: page_num * page_size]
 
     for i, page_item in enumerate(page_data):
         items = flatten(page_item).items()
