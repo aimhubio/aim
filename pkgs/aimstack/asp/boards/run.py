@@ -41,7 +41,10 @@ def merge_dicts(dict1, dict2):
 
 
 if run:
-    params_tab, metrics_tab = ui.tabs(('Params', 'Metrics'))
+    params_tab, metrics_tab, audios_tab = ui.tabs(
+        ('Params', 'Metrics', 'Audios'))
+    with audios_tab:
+        audios = ui.board('audios.py', state={'container_hash': run_hash})
 
     with params_tab:
         params = run['params']
