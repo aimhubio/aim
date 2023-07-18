@@ -44,9 +44,9 @@ if run:
     params_tab, metrics_tab, audios_tab, texts_tab = ui.tabs(
         ('Params', 'Metrics', 'Audios', 'Texts'))
     with audios_tab:
-        audios = ui.board('audios.py', state={'hash': run_hash})
+        audios = ui.board('audios.py', state={'container_hash': run_hash})
     with texts_tab:
-        texts = ui.board('texts.py', state={'hash': run_hash})
+        texts = ui.board('texts.py', state={'container_hash': run_hash})
     with params_tab:
         params = run['params']
         if params:
