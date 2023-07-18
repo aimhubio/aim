@@ -1,12 +1,18 @@
 from asp import TextSequence
 import math
 
+run_hash = None
+if 'hash' in session_state:
+    run_hash = session_state['hash']
+
 ui.header('Texts')
 
-form = ui.form('Search')
-query = form.text_input(value='')
+if run_hash is None:
+    form = ui.form("Search")
+    query = form.text_input(value="")
 
-texts = TextSequence.filter(query)
+texts = TextSequence.filter(
+    f'container.hash=="{run_hash}"' if run_hash else query)
 
 
 def flatten(dictionary, parent_key='', separator='.'):

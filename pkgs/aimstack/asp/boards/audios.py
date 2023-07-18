@@ -1,5 +1,6 @@
 from asp import AudioSequence
 
+run_hash = None
 if 'hash' in session_state:
     run_hash = session_state['hash']
 
