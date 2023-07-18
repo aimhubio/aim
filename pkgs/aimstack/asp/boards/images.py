@@ -1,11 +1,11 @@
-from asp import AudioSequence
+from asp import ImageSequence
 
-ui.header('Audios')
+ui.header('Images')
 
 form = ui.form('Search')
 query = form.text_input(value='')
 
-audios = AudioSequence.filter(query)
+images = ImageSequence.filter(query)
 
 
 def flatten(dictionary, parent_key='', separator='.'):
@@ -22,7 +22,7 @@ def flatten(dictionary, parent_key='', separator='.'):
 @memoize
 def get_table_data(data=[], page_size=10, page_num=1):
     table_data = {}
-    exclude_keys = ['type', 'container_type', 'sequence_type', 'sequence_full_type', 'hash', 'axis_names',
+    exclude_keys = ['type', 'container_type', 'sequence_type', 'sequence_full_type', 'hash', 'axis_names', 'axis.epoch',
                     'item_type', 'container_full_type', 'values']
 
     page_data = data[(page_num - 1) * page_size:page_num * page_size]
@@ -35,7 +35,7 @@ def get_table_data(data=[], page_size=10, page_num=1):
             else:
                 if key == 'blobs.data':
                     key = 'data'
-                    value = i
+                    value = ((page_num - 1) * page_size) + i
                 if key in table_data:
                     table_data[key].append(f'{value}')
                 else:
@@ -49,9 +49,9 @@ with row1:
     items_per_page = ui.select(
         'Items per page', options=('5', '10', '50', '100'), index=1)
     page_num = ui.number_input(
-        'Page', value=1, min=1, max=int(len(audios) / int(items_per_page)) + 1)
+        'Page', value=1, min=1, max=int(len(images) / int(items_per_page)) + 1)
 
-row2.table(get_table_data(audios, int(items_per_page), page_num), {
+row2.table(get_table_data(images, int(items_per_page), page_num), {
     'container.hash': lambda val: ui.board_link('run.py', val, state={'hash': val}),
-    'data': lambda val: ui.audios([audios[int(val)]])
+    'data': lambda val: ui.images([images[int(val)]])
 })

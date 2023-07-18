@@ -1,8 +1,8 @@
 import React from 'react';
 import { areEqual, VariableSizeList as List } from 'react-window';
 
-import AudioBox from 'components/kit/AudioBox';
-import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import AudioBox from 'components/AudioBox';
+import ErrorBoundary from 'components/ErrorBoundary';
 
 import {
   MediaTypeEnum,

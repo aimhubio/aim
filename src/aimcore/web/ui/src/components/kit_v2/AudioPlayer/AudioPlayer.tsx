@@ -6,10 +6,9 @@ import {
 
 import ErrorBoundary from 'components/ErrorBoundary';
 import { Tooltip, Text, IconButton } from 'components/kit_v2';
+import { Spinner } from 'components/kit';
 
-import { Spinner } from '../kit';
-
-import { AudioPlayerProps, AudioPlayerProgress, AudioPlayerVolume } from '.';
+import { AudioPlayerProps, AudioPlayerProgress, AudioPlayerVolume } from './';
 
 import './AudioPlayer.scss';
 

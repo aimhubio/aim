@@ -39,7 +39,7 @@ import BoardConsole from './components/BoardConsole';
 import FormVizElement from './components/VisualizationElements/FormVizElement';
 import useBoardStore from './BoardStore';
 
-const liveUpdateEnabled = true;
+const liveUpdateEnabled = false;
 const liveUpdateInterval = 5000;
 
 function Board({
