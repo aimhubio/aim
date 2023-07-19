@@ -73,7 +73,6 @@ REQUIRED = [
     'packaging>=15.0',
     'python-dateutil',
     'requests',
-    'segment-analytics-python',
 ]
 
 if platform.machine() != 'arm64':
