@@ -34,11 +34,13 @@ function useAudioBlobURI({
     blobData: initialBlobData,
     src: initialSrc,
   });
-  const audioRef = React.useRef<HTMLMediaElement | null>(null);
+  const audioRef = React.useRef<HTMLMediaElement>(
+    document.createElement('audio'),
+  );
   const readyToPlayRef = React.useRef<boolean>(false);
 
   function onPlay() {
-    if (audioRef.current && mediaState.src) {
+    if (mediaState.src) {
       readyToPlayRef.current = true;
       events.fire(EVENTS.onAudioPlay, { blob_uri, isFullView });
       setIsPlaying(true);
@@ -55,11 +57,9 @@ function useAudioBlobURI({
         });
     }
   }
-  function onPause() {
-    setIsPlaying(false);
-  }
+
   function onDownload(): void {
-    if (audioRef.current && mediaState.src) {
+    if (mediaState.src) {
       handleDownload();
     } else {
       setProcessing(true);
@@ -82,13 +82,14 @@ function useAudioBlobURI({
   }
 
   React.useEffect(() => {
-    if (audioRef.current && mediaState.src) {
+    const audio = audioRef.current;
+    if (mediaState.src) {
       if (isPlaying) {
-        audioRef.current.muted = false;
+        audio.muted = false;
         // eslint-disable-next-line no-console
-        audioRef.current.play().catch(console.error);
+        audio.play().catch(console.error);
       } else {
-        audioRef.current.pause();
+        audio.pause();
       }
     }
   }, [isPlaying, mediaState.src]);
@@ -150,11 +151,9 @@ function useAudioBlobURI({
   }, [mediaState.blobData, blobURI, blob_uri, format, processing]);
 
   React.useEffect(() => {
+    const audio = audioRef.current;
     return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current = null;
-      }
+      audio.pause();
       readyToPlayRef.current = false;
     };
   }, []);
@@ -165,7 +164,6 @@ function useAudioBlobURI({
     setIsPlaying,
     setProcessing,
     onPlay,
-    onPause,
     onDownload,
     processing,
     isPlaying,

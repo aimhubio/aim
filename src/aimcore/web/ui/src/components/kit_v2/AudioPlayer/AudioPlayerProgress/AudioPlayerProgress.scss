@@ -29,6 +29,7 @@
   &__progressSlider {
     margin: 0 $space-xxxs 0 $space-xxs;
     height: toRem(40px);
+    flex: 1;
     .MuiSlider-root {
       height: 100% !important;
     }

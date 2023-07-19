@@ -13,7 +13,6 @@ function AudioBox(props: IBoxContentProps) {
     setIsPlaying,
     setProcessing,
     onPlay,
-    onPause,
     onDownload,
     processing,
     isPlaying,
@@ -39,7 +38,7 @@ function AudioBox(props: IBoxContentProps) {
         onEnded={() => setIsPlaying(false)}
         onCanPlay={() => setProcessing(false)}
         onPlay={onPlay}
-        onPause={onPause}
+        onPause={() => setIsPlaying(false)}
         onDownload={onDownload}
         processing={processing}
         isPlaying={isPlaying}
