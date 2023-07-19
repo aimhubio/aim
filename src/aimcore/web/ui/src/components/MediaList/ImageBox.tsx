@@ -14,6 +14,7 @@ import * as analytics from 'services/analytics';
 
 import { IImageBoxProps } from './MediaList.d';
 
+// @TODO: replace this with "ImageBox" component from "components/ImageBox" if it's possible
 const ImageBox = ({
   index,
   style,

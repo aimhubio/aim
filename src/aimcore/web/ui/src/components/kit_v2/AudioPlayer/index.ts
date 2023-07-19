@@ -1,6 +1,6 @@
 import AudioPlayer from './AudioPlayer';
-import AudioPlayerProgress from './AudioPlayerProgress/AudioPlayerProgress';
-import AudioPlayerVolume from './AudioPlayerVolume/AudioPlayerVolume';
+import AudioPlayerProgress from './AudioPlayerProgress';
+import AudioPlayerVolume from './AudioPlayerVolume';
 
 export * from './AudioPlayer.d';
 

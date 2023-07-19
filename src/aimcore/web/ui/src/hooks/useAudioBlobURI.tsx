@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { AudioBoxProps } from 'components/kit/AudioBox';
+import { AudioBoxProps } from 'components/AudioBox';
 
 import { BATCH_COLLECT_DELAY } from 'config/mediaConfigs/mediaConfigs';
 

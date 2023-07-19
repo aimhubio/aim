@@ -83,7 +83,6 @@ function createBlobURISystemEngine(): IBlobURISystemEngine {
    * @param {string} blobUri
    */
   function addUriToQueue(blobUri: string) {
-    blobUriQueue.push(blobUri);
     if (!blobsData[blobUri]) {
       blobUriQueue.push(blobUri);
       getBatch();
