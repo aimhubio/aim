@@ -2,7 +2,6 @@
  * type RunsSearchQueryParams
  * The request query options type of GET /runs/search
  */
-import { Tuple } from 'types/core/shared';
 
 export type RunsSearchQueryParams = {
   /**

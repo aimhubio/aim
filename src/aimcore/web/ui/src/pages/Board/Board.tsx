@@ -39,7 +39,7 @@ import BoardConsole from './components/BoardConsole';
 import FormVizElement from './components/VisualizationElements/FormVizElement';
 import useBoardStore from './BoardStore';
 
-const liveUpdateEnabled = true;
+const liveUpdateEnabled = false;
 const liveUpdateInterval = 5000;
 
 function Board({
@@ -402,7 +402,7 @@ def set_session_state(state_slice):
                   </BoardComponentsViz>
                 </Box>
                 {(newMode || editMode) && state.isProcessing !== null && (
-                  <div ref={boxContainer}>
+                  <div className='BoardConsole__container' ref={boxContainer}>
                     <BoardConsole
                       key={'board-console'}
                       boxContainer={boxContainer}

@@ -160,4 +160,3 @@ class HeartbeatWatcher:
                 now = datetime.datetime.now().timestamp()
                 if now - self._heartbeat_pool[client_uri] > self._client_keep_alive_time:
                     self._release_client_resources(client_uri)
-                    del self._heartbeat_pool[client_uri]

@@ -6,7 +6,7 @@ import ErrorBoundary from 'components/ErrorBoundary';
 import { Slider } from 'components/kit';
 import { IconButton } from 'components/kit_v2';
 
-import { AudioPlayerVolumeProps } from './AudioPlayerVolume.d';
+import { AudioPlayerVolumeProps } from './';
 
 import './AudioPlayerVolume.scss';
 

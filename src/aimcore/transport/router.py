@@ -28,6 +28,8 @@ class ClientRouter:
     def remove_client(cls, client_uri):
         if client_uri in cls.clients:
             cls.clients.remove(client_uri)
+        if client_uri in cls.client_heartbeat_pool:
+            del cls.client_heartbeat_pool[client_uri]
 
     async def get_version(self):
         from aim.__version__ import __version__ as aim_version

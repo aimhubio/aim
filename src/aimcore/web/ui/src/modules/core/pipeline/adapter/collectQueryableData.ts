@@ -1,5 +1,7 @@
-import { RecordRanges } from 'types/core/AimObjects';
-import { GroupedSequence } from 'types/core/AimObjects/GroupedSequences';
+import {
+  GroupedSequence,
+  RecordRanges,
+} from 'types/core/AimObjects/GroupedSequences';
 import { SequenceType } from 'types/core/enums';
 
 import { IQueryableData } from './types';
@@ -21,7 +23,7 @@ function getTotalRange(groupedSeqs: GroupedSequence[]): [number, number] {
       }
     }
   }
-  return [total[0], total[1] - 1];
+  return [total[0], total[1]];
 }
 
 function collectQueryableData(
@@ -41,7 +43,7 @@ function collectQueryableData(
         record_range_total: total,
         record_range_used: [
           groupedSeqs?.[0]?.sequences?.[0]?.range?.[0] || 0,
-          (groupedSeqs?.[0]?.sequences?.[0]?.range?.[1] || 1) - 1,
+          groupedSeqs?.[0]?.sequences?.[0]?.range?.[1] || 0,
         ],
       },
     };

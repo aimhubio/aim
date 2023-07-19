@@ -35,6 +35,8 @@ class Client:
         # temporary workaround for M1 build
 
         self._id = str(uuid.uuid4())
+        if remote_path.endswith('/'):
+            remote_path = remote_path[:-1]
         self._remote_path = remote_path
 
         self._protocol = 'http://'
@@ -56,7 +58,17 @@ class Client:
         endpoint = f'http://{self.remote_path}/status/'
         try:
             response = requests.get(endpoint)
-            if response.url.startswith('https://'):
+            if response.status_code == 200:
+                if response.url.startswith('https://'):
+                    self._protocol = 'https://'
+                return
+        except Exception:
+            pass
+
+        endpoint = f'https://{self.remote_path}/status/'
+        try:
+            response = requests.get(endpoint)
+            if response.status_code == 200:
                 self._protocol = 'https://'
         except Exception:
             pass

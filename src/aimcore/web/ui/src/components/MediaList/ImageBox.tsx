@@ -5,18 +5,16 @@ import { Skeleton } from '@material-ui/lab';
 import { Dialog } from '@material-ui/core';
 
 import { Button, Icon, Text } from 'components/kit';
-import ImageFullViewPopover from 'components/ImageFullViewPopover';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
-import { BATCH_COLLECT_DELAY } from 'config/mediaConfigs/mediaConfigs';
 import { MediaItemAlignmentEnum } from 'config/enums/imageEnums';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
-import blobsURIModel from 'services/models/media/blobsURIModel';
 import * as analytics from 'services/analytics';
 
 import { IImageBoxProps } from './MediaList.d';
 
+// @TODO: replace this with "ImageBox" component from "components/ImageBox" if it's possible
 const ImageBox = ({
   index,
   style,
@@ -33,31 +31,32 @@ const ImageBox = ({
   const [isImageFullViewPopupOpened, setIsImageFullViewPopupOpened] =
     React.useState<boolean>(false);
   let [blobData, setBlobData] = React.useState<string>(
-    blobsURIModel.getState()[blob_uri] ?? null,
+    // blobsURIModel.getState()[blob_uri] ?? null,
+    '',
   );
 
   React.useEffect(() => {
     let timeoutID: number;
     let subscription: any;
 
-    if (blobData === null) {
-      if (blobsURIModel.getState()[blob_uri]) {
-        setBlobData(blobsURIModel.getState()[blob_uri]);
-      } else {
-        subscription = blobsURIModel.subscribe(blob_uri, (data) => {
-          setBlobData(data[blob_uri]);
-          subscription.unsubscribe();
-        });
-        timeoutID = window.setTimeout(() => {
-          if (blobsURIModel.getState()[blob_uri]) {
-            setBlobData(blobsURIModel.getState()[blob_uri]);
-            subscription.unsubscribe();
-          } else {
-            addUriToList(blob_uri);
-          }
-        }, BATCH_COLLECT_DELAY);
-      }
-    }
+    // if (blobData === null) {
+    //   if (blobsURIModel.getState()[blob_uri]) {
+    //     setBlobData(blobsURIModel.getState()[blob_uri]);
+    //   } else {
+    //     subscription = blobsURIModel.subscribe(blob_uri, (data) => {
+    //       setBlobData(data[blob_uri]);
+    //       subscription.unsubscribe();
+    //     });
+    //     timeoutID = window.setTimeout(() => {
+    //       if (blobsURIModel.getState()[blob_uri]) {
+    //         setBlobData(blobsURIModel.getState()[blob_uri]);
+    //         subscription.unsubscribe();
+    //       } else {
+    //         addUriToList(blob_uri);
+    //       }
+    //     }, BATCH_COLLECT_DELAY);
+    //   }
+    // }
 
     return () => {
       if (timeoutID) {
@@ -157,22 +156,22 @@ const ImageBox = ({
             className='MediaPanel__Container__imageFullViewPopup'
             open={isImageFullViewPopupOpened}
           >
-            <ImageFullViewPopover
-              imageRendering={additionalProperties?.imageRendering}
-              tooltipContent={
-                tooltip?.content || {
-                  context: data.context,
-                  step: data.step,
-                  index: data.index,
-                  caption: data.caption,
-                  images_name: data.name,
-                }
-              }
-              selectOptions={selectOptions}
-              imageData={data}
-              handleClose={() => setIsImageFullViewPopupOpened(false)}
-              onRunsTagsChange={onRunsTagsChange}
-            />
+            {/*<ImageFullViewPopover*/}
+            {/*  imageRendering={additionalProperties?.imageRendering}*/}
+            {/*  tooltipContent={*/}
+            {/*    tooltip?.content || {*/}
+            {/*      context: data.context,*/}
+            {/*      step: data.step,*/}
+            {/*      index: data.index,*/}
+            {/*      caption: data.caption,*/}
+            {/*      images_name: data.name,*/}
+            {/*    }*/}
+            {/*  }*/}
+            {/*  selectOptions={selectOptions}*/}
+            {/*  imageData={data}*/}
+            {/*  handleClose={() => setIsImageFullViewPopupOpened(false)}*/}
+            {/*  onRunsTagsChange={onRunsTagsChange}*/}
+            {/*/>*/}
           </Dialog>
         </ErrorBoundary>
       </div>

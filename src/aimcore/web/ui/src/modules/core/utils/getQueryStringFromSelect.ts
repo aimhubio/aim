@@ -1,7 +1,5 @@
 import { QueryFormState } from 'modules/core/engine/explorer/query';
 
-import { SequenceType } from 'types/core/enums';
-
 import { formatValue } from 'utils/formatValue';
 
 export function getQueryStringFromSelect(queryData: QueryFormState): string {
