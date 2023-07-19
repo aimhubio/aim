@@ -15,6 +15,7 @@ from aimcore.transport.handlers import (
     get_lock,
     get_file_manager,
     get_dev_package,
+    get_repo
 )
 from aimcore.transport.config import AIM_SERVER_BASE_PATH
 from aim._core.storage.treeutils import encode_tree, decode_tree
@@ -27,6 +28,7 @@ def prepare_resource_registry():
     registry.register('Lock', get_lock)
     registry.register('FileManager', get_file_manager)
     registry.register('Package', get_dev_package)
+    registry.register('Repo', get_repo)
     return registry
 
 

@@ -48,6 +48,12 @@ def get_tree(**kwargs):
     return ResourceRef(repo.storage_engine.tree(hash_=sub, name=name, read_only=read_only))
 
 
+def get_repo():
+    repo_path = os.environ.get(AIM_SERVER_MOUNTED_REPO_PATH)
+    repo = Repo.from_path(repo_path)
+    return ResourceRef(repo)
+
+
 def get_khash_array(**kwargs):
     tree = kwargs['tree']
     path = kwargs['path']
@@ -60,7 +66,7 @@ def get_lock(**kwargs):
     run_hash = kwargs['run_hash']
     # TODO Do we need to import SFRunLock here?
     from aim._sdk.lock_manager import SFRunLock
-    return ResourceRef(repo.storage_engine._lock_manager.get_run_lock(run_hash), SFRunLock.release)
+    return ResourceRef(repo.storage_engine._lock_manager.get_container_lock(run_hash), SFRunLock.release)
 
 
 def get_file_manager(**kwargs):
