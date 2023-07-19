@@ -1,6 +1,7 @@
 # Changelog
 
-## 3.17.6
+## 3.17.6 
+- Switch to patched version of official `pynvml` (mihran113)
 - Remove telemetry tracking (mihran113)
 
 ## 3.17.5 Jun 2, 2023
