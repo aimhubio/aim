@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 @Object.alias('aim.Audio')
+@Object.alias('aim.audio')
 class Audio(Object):
     """Audio object used to store audio objects in Aim repository..
 
