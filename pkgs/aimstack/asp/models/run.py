@@ -23,6 +23,7 @@ from .logging import (
 
 from .sequences import (
     Metric,
+    SystemMetric,
     TextSequence,
     ImageSequence,
     AudioSequence,
@@ -46,9 +47,12 @@ class Run(Container, Caller):
         super().__init__(hash_, repo=repo, mode=mode)
 
         if not self._is_readonly:
-            self.name = f'Run #{self.hash}'
-            self.description = ''
-            self.archived = False
+            if self.name is None:
+                self.name = f'Run #{self.hash}'
+            if self.description is None:
+                self.description = ''
+            if self.archived is None:
+                self.archived = False
 
     def enable_system_monitoring(self):
         if not self._is_readonly:
@@ -65,17 +69,21 @@ class Run(Container, Caller):
 
     @events.on.logs_collected
     def track_terminal_logs(self, log_lines: List[Tuple[str, int]], **kwargs):
+        if self._state.get('cleanup'):
+            return
         for (line, line_num) in log_lines:
             self.logs.track(LogLine(line), step=line_num + self._prev_logs_end)
 
     @events.on.system_resource_stats_collected
     def track_system_resources(self, stats: Dict[str, Any], context: Dict, **kwargs):
+        if self._state.get('cleanup'):
+            return
         for resource_name, usage in stats.items():
-            self.sequences[resource_name, context].track(usage)
+            self.sequences.typed_sequence(SystemMetric, resource_name, context).track(usage)
 
     @property
     def name(self) -> str:
-        return self._attrs_tree['name']
+        return self._attrs_tree.get('name', None)
 
     @name.setter
     def name(self, val: str):
@@ -83,7 +91,7 @@ class Run(Container, Caller):
 
     @property
     def description(self) -> str:
-        return self._attrs_tree['description']
+        return self._attrs_tree.get('description', None)
 
     @description.setter
     def description(self, val: str):
@@ -91,7 +99,7 @@ class Run(Container, Caller):
 
     @property
     def archived(self) -> bool:
-        return self._attrs_tree['archived']
+        return self._attrs_tree.get('archived', None)
 
     @archived.setter
     def archived(self, val: bool):

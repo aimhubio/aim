@@ -36,6 +36,7 @@ function Tooltip({
   skipDelayDuration = 300,
   hasArrow = false,
   contentProps = {},
+  color = 'info',
   children,
   ...props
 }: ITooltipProps): React.FunctionComponentElement<React.ReactNode> {
@@ -57,7 +58,7 @@ function Tooltip({
             ref={ref}
             data-testid='tooltip-content'
             sideOffset={5}
-            style={{ zIndex: 1000 }}
+            colorPalette={color}
             {...contentProps}
           >
             {content}

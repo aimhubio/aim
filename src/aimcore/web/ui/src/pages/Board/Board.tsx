@@ -13,13 +13,14 @@ import { Box, Button, Link, Tabs } from 'components/kit_v2';
 
 import { PathEnum } from 'config/enums/routesEnum';
 
-import { search } from 'pages/Board/search';
+import { search } from 'pages/Board/serverAPI/search';
 
 import usePyodide from 'services/pyodide/usePyodide';
 import pyodideEngine from 'services/pyodide/store';
 import {
   getQueryResultsCacheMap,
   clearQueryResultsCache,
+  clearPendingQueriesMap,
 } from 'services/pyodide/pyodide';
 
 // import SaveBoard from './components/SaveBoard';
@@ -116,7 +117,7 @@ any): React.FunctionComponentElement<React.ReactNode> {
               await micropip.install(lib);
             } catch (ex) {
               // eslint-disable-next-line no-console
-              console.log(ex);
+              console.warn(ex);
             }
           }
         }
@@ -131,7 +132,7 @@ any): React.FunctionComponentElement<React.ReactNode> {
         }));
       } catch (ex) {
         // eslint-disable-next-line no-console
-        console.log(ex);
+        console.warn(ex);
       }
     }
   }, [pyodide, pyodideIsLoading, data.code, namespace, registeredPackages]);
@@ -151,23 +152,16 @@ def set_session_state(state_slice):
 `;
         for (let queryKey in queryKeysForCacheCleaningRef.current) {
           if (queryKeysForCacheCleaningRef.current[queryKey]) {
-            resetCode += `query_results_cache.pop('${queryKey}', None)
+            resetCode += `query_results_cache.pop(${JSON.stringify(
+              queryKey,
+            )}, None)
 `;
             queryKeysForCacheCleaningRef.current[queryKey] = false;
           }
         }
-        const code =
-          resetCode +
-          state.execCode.replace(
-            /Repo.filter(\((.|\n)*?\))/g,
-            (match: string) => {
-              return `${match}
-board_path=${boardPath === undefined ? 'None' : `"${boardPath}"`}
-`;
-            },
-          );
 
-        await pyodide?.runPythonAsync(code, { globals: namespace });
+        pyodide?.runPython(resetCode, { globals: namespace });
+        await pyodide?.runPythonAsync(state.execCode, { globals: namespace });
 
         setState((s: any) => ({
           ...s,
@@ -178,8 +172,11 @@ board_path=${boardPath === undefined ? 'None' : `"${boardPath}"`}
         if (ex.type === 'WaitForQueryError') {
           return;
         }
+        if (ex.message.includes('WAIT_FOR_QUERY_RESULT')) {
+          return;
+        }
         // eslint-disable-next-line no-console
-        console.log(ex);
+        console.warn(ex);
         setState((s: any) => ({
           ...s,
           error: ex.message,
@@ -218,16 +215,16 @@ board_path=${boardPath === undefined ? 'None' : `"${boardPath}"`}
 
   React.useEffect(() => {
     setEditorValue(data.code);
-    const unsubscribe = pyodideEngine.events.on(
+    const unsubscribeFromBoardUpdates = pyodideEngine.events.on(
       boardPath,
-      ({ layoutTree, state, queryKey }) => {
+      ({ layoutTree, state, queryKey, runFunctionKey }) => {
         if (layoutTree) {
           setState((s: any) => ({
             ...s,
             layoutTree,
           }));
         }
-        if (state || queryKey) {
+        if (state || queryKey || runFunctionKey) {
           setState((s: any) => ({
             ...s,
             stateUpdateCount: s.stateUpdateCount + 1,
@@ -272,7 +269,7 @@ board_path=${boardPath === undefined ? 'None' : `"${boardPath}"`}
                 return;
               }
               // eslint-disable-next-line no-console
-              console.error(ex);
+              console.warn(ex);
             }
           }, liveUpdateInterval);
         }
@@ -284,7 +281,8 @@ board_path=${boardPath === undefined ? 'None' : `"${boardPath}"`}
       if (editorRef.current) {
         editorRef.current = null;
       }
-      unsubscribe();
+      unsubscribeFromBoardUpdates();
+      clearPendingQueriesMap(boardPath);
     };
   }, [boardPath]);
 
@@ -404,7 +402,7 @@ board_path=${boardPath === undefined ? 'None' : `"${boardPath}"`}
                   </BoardComponentsViz>
                 </Box>
                 {(newMode || editMode) && state.isProcessing !== null && (
-                  <div ref={boxContainer}>
+                  <div className='BoardConsole__container' ref={boxContainer}>
                     <BoardConsole
                       key={'board-console'}
                       boxContainer={boxContainer}
@@ -459,11 +457,12 @@ function renderTree(tree: any, elements: any) {
         });
       }
       return (
-        <Box width='100%' key={element.type + key} className={'block--tabs'}>
+        <Box key={element.type + key} className='block--tabs'>
           <Tabs tabs={tabs} />
         </Box>
       );
     }
+
     if (element.type === 'tab') {
       return null;
     }

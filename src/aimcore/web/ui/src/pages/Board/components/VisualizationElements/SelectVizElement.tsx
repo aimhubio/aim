@@ -37,7 +37,7 @@ function SelectVizElement(props: any) {
       <Select
         key={id}
         multiple={props.options.isMulti}
-        searchable
+        searchable={props.options.searchable}
         disabled={props.options.disabled}
         value={props.options.value}
         popoverProps={{ align: 'start' }}

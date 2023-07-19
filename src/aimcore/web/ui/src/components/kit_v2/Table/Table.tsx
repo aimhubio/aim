@@ -1,6 +1,6 @@
 import * as React from 'react';
 import classNames from 'classnames';
-import _ from 'lodash';
+import _ from 'lodash-es';
 
 import { CheckedState } from '@radix-ui/react-checkbox';
 
@@ -36,7 +36,7 @@ function Table({
   );
   const transformedData = React.useMemo(() => {
     const keys = Object.keys(data);
-    const length = data[keys[0]].length;
+    const length = data[keys[0]]?.length ?? 0;
     const result = [];
 
     for (let i = 0; i < length; i++) {
@@ -61,7 +61,6 @@ function Table({
 
   function handleRowFocus(e: React.MouseEvent<HTMLTableRowElement>) {
     const { index } = e.currentTarget.dataset;
-
     if (Number(index) === focusedRow) {
       setFocusedRow(undefined);
       if (onRowFocus) {
@@ -129,8 +128,8 @@ function Table({
                   />
                 </TableCell>
               ) : null}
-              {columnKeys.map((key: string, columnIndex: number) => {
-                return <TableCell key={columnIndex}>{item[key]}</TableCell>;
+              {columnKeys.map((key: string) => {
+                return <TableCell key={key}>{item[key]}</TableCell>;
               })}
             </TableRow>
           );

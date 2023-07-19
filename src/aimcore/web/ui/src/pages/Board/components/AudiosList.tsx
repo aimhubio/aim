@@ -1,16 +1,8 @@
 import * as React from 'react';
 
-import AudioBox from 'components/kit/AudioBox';
+import AudioBox from 'components/AudioBox';
 
-import blobsURIModel from 'services/models/media/blobsURIModel';
-import audiosExploreService from 'services/api/audiosExplore/audiosExplore';
-
-import {
-  decodeBufferPairs,
-  decodePathsVals,
-  iterFoldTree,
-} from 'utils/encoder/streamEncoding';
-import arrayBufferToBase64 from 'utils/arrayBufferToBase64';
+import pyodideEngine from 'services/pyodide/store';
 
 function AudiosList(props: any) {
   const data = props.data.map((audio: any) => ({
@@ -20,62 +12,31 @@ function AudiosList(props: any) {
     ...audio.record,
   }));
 
-  function getBlobsData(uris: string[]) {
-    const request = audiosExploreService.getAudiosByURIs(uris);
-    return {
-      abort: request.abort,
-      call: () => {
-        return request
-          .call()
-          .then(async (stream) => {
-            let bufferPairs = decodeBufferPairs(stream);
-            let decodedPairs = decodePathsVals(bufferPairs);
-            let objects = iterFoldTree(decodedPairs, 1);
-            for await (let [keys, val] of objects) {
-              const URI = keys[0];
-              blobsURIModel.emit(URI as string, {
-                [URI]: arrayBufferToBase64(val as ArrayBuffer) as string,
-              });
-            }
-          })
-          .catch((ex) => {
-            if (ex.name === 'AbortError') {
-              // Abort Error
-            } else {
-              // eslint-disable-next-line no-console
-              console.log('Unhandled error: ');
-            }
-          });
-      },
-    };
-  }
-
   return (
-    <div
-      style={{
-        height: '100%',
-        overflow: 'auto',
-      }}
-    >
+    <div className='AudiosList' style={{ height: '100%', overflow: 'auto' }}>
       {data.map((item: any, i: number) => (
-        <div
-          key={i}
+        <AudioBox
+          key={`${item?.container?.hash}_${item.name}_${JSON.stringify(
+            item.context,
+          )}_${item.step}_${item.index}`}
           style={{
             margin: '5px',
             height: 50,
             width: 'calc(100% - 10px)',
             flex: 1,
           }}
-        >
-          <AudioBox
-            data={item}
-            style={{}}
-            additionalProperties={{
-              getAudiosBlobsData: getBlobsData,
-              useData: true,
-            }}
-          />
-        </div>
+          blobData={item.blobs.data}
+          format={item.format}
+          caption={item.caption}
+          name={item.name}
+          context={item.context}
+          step={item.step}
+          index={item.index}
+          engine={{
+            events: pyodideEngine.events,
+            blobURI: pyodideEngine.blobURI,
+          }}
+        />
       ))}
     </div>
   );

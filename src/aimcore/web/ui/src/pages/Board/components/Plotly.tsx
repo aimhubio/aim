@@ -7,7 +7,11 @@ function Plotly(props: any) {
     <div
       style={{
         height: '100%',
-        overflow: 'auto',
+        overflow: 'hidden',
+        display: 'flex',
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
       }}
     >
       <Figures
@@ -17,8 +21,6 @@ function Plotly(props: any) {
           },
         }}
         style={{
-          display: 'flex',
-          flex: 1,
           width: '100%',
           height: '100%',
         }}

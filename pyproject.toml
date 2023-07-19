@@ -18,13 +18,14 @@ exclude_lines = [
     "@(abc.)?abstractmethod",
     "except ImportError:"
 ]
-include = ["src/aimcore/web/*", "src/py-sdk/aim/_core/*", "src/py-sdk/aim/_sdk/*"]
+include = ["src/aimcore/web/*", "src/python/aim/_core/*", "src/python/aim/_sdk/*"]
 omit = ["src/aimcore/web/migrations/*"]
 
 [tool.flake8]
 max-line-length = 120
 ignore = ["E712", "F405"]
 exclude = [
+    "**/build/*",
     "**/node_modules/",
     "**/migrations/",
     "**/legacy/",

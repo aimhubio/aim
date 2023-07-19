@@ -44,7 +44,8 @@ class Audio(Object):
             audio_format = self.WAV
             if not rate:
                 rate = 22500
-                logger.info(f'Parameter "rate" is not provided! Using default: {rate}')
+                logger.info(
+                    f'Parameter "rate" is not provided! Using default: {rate}')
             bs = wavfile.write(rate, data)
             data = bs
 
@@ -52,7 +53,8 @@ class Audio(Object):
         if not audio_format:
             raise ValueError('Audio format must be provided.')
         elif audio_format not in self.audio_formats:
-            raise ValueError(f'Invalid audio format is provided. Must be one of {self.audio_formats}')
+            raise ValueError(
+                f'Invalid audio format is provided. Must be one of {self.audio_formats}')
 
         if isinstance(data, str):
             if not os.path.exists(data) or not os.path.isfile(data):

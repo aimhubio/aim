@@ -1,5 +1,3 @@
-import { IRunBatch } from 'pages/RunDetail/types';
-
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 import { SequenceFullView } from 'types/core/AimObjects';
 
@@ -111,30 +109,6 @@ export function filterMetricsData(
         invalidIndices.x_axis_iters,
         invalidIndices.x_axis_values,
       ],
-    }),
-  };
-}
-
-export function filterSingleRunMetricsData(run: IRunBatch) {
-  if (!run?.values?.length || !run?.iters?.length) {
-    return {
-      values: [],
-      iters: [],
-    };
-  }
-  const { values, iters } = run;
-  const invalidIndices = {
-    values: getInvalidIndices(values),
-    iters: getInvalidIndices(iters),
-  };
-  return {
-    values: getFilteredMetricValues({
-      data: values,
-      invalidIndicesArray: [invalidIndices.iters, invalidIndices.values],
-    }),
-    iters: getFilteredMetricValues({
-      data: iters,
-      invalidIndicesArray: [invalidIndices.iters, invalidIndices.values],
     }),
   };
 }

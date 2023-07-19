@@ -27,6 +27,7 @@ import Link from './Link';
 import Textarea from './Textarea';
 import Breadcrumb from './Breadcrumb';
 import Table from './Table';
+import AudioPlayer from './AudioPlayer';
 
 export {
   Badge,
@@ -60,4 +61,5 @@ export {
   Textarea,
   Breadcrumb,
   Table,
+  AudioPlayer,
 };

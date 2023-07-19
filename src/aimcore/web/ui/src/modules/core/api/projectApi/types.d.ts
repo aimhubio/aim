@@ -125,6 +125,11 @@ export type PackagesListType = Record<
      * i.e. ['asp.Run']
      */
     containers: string[];
+    /**
+     * The functions list of package
+     * i.e. TODO: add example
+     */
+    functions: string[];
   }
 >;
 

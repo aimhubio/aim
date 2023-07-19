@@ -1,17 +1,29 @@
-import { getBasePath } from 'config/config';
+import { AIM_VERSION, getBasePath } from 'config/config';
 
 import { fetchPackages } from 'modules/core/api/projectApi';
 
-import { search } from 'pages/Board/search';
+import { search } from 'pages/Board/serverAPI/search';
+import { runFunction } from 'pages/Board/serverAPI/runFunction';
 
 import { getItem, setItem } from 'utils/storage';
 
 import pyodideEngine from './store';
 
-// @ts-ignore
+declare global {
+  interface Window {
+    search: Function;
+    runFunction: Function;
+    updateLayout: Function;
+    setState: Function;
+    pyodideEngine: typeof pyodideEngine;
+  }
+}
+
 window.search = search;
+window.runFunction = runFunction;
 
 let queryResultsCacheMap: Map<string, any> = new Map();
+let pendingQueriesMap: Map<string, Map<string, any>> = new Map();
 
 export function getQueryResultsCacheMap() {
   return queryResultsCacheMap;
@@ -35,12 +47,28 @@ export function clearQueryResultsCache(key?: string) {
   }
 }
 
+export function getPendingQueriesMap() {
+  return pendingQueriesMap;
+}
+
+export function clearPendingQueriesMap(boardPath: string) {
+  if (pendingQueriesMap.has(boardPath)) {
+    let queriesMap = pendingQueriesMap.get(boardPath);
+    if (queriesMap) {
+      for (let [key, cancel] of queriesMap) {
+        cancel();
+        queriesMap.delete(key);
+      }
+    }
+    pendingQueriesMap.delete(boardPath);
+  }
+}
+
 let layoutUpdateTimer: number;
 let prevBoardPath: undefined | string;
 
-// @ts-ignore
 window.updateLayout = (items: any, boardPath: undefined | string) => {
-  let layout = toObject(items.toJs());
+  let layout = pyodideJSProxyMapToObject(items.toJs());
   items.destroy();
 
   let elements: Record<string, any[]> = {};
@@ -101,11 +129,10 @@ window.updateLayout = (items: any, boardPath: undefined | string) => {
   }, 50);
 };
 
-// @ts-ignore
 window.setState = (update: any, boardPath: string, persist = false) => {
   let stateUpdate = update.toJs();
   update.destroy();
-  let state = toObject(stateUpdate);
+  let state = pyodideJSProxyMapToObject(stateUpdate);
 
   // This section add persistence for state through saving it to URL and localStorage
 
@@ -159,7 +186,9 @@ export async function loadPyodideInstance() {
   });
 
   const namespace = pyodide.toPy({});
-  const coreFile = await fetch(`${getBasePath()}/static-files/aim_ui_core.py`);
+  const coreFile = await fetch(
+    `${getBasePath()}/static-files/aim_ui_core.py?v=${AIM_VERSION}`,
+  );
   const coreCode = await coreFile.text();
   pyodide.runPython(coreCode, { globals: namespace });
 
@@ -184,6 +213,7 @@ export async function loadPyodideInstance() {
               queryArgs[i] = args[i];
             }
           }
+
           let val = pyodide.runPython(
             `query_filter('${sequenceType}', ${JSON.stringify(
               queryArgs[0] ?? queryArgs['query'],
@@ -192,6 +222,7 @@ export async function loadPyodideInstance() {
             }, ${queryArgs[3] ?? queryArgs['stop'] ?? 'None'}, True)`,
             { globals: namespace },
           );
+
           return val;
         },
       };
@@ -210,6 +241,26 @@ export async function loadPyodideInstance() {
           );
           return val;
         },
+      };
+    });
+
+    packageData.functions.forEach((func_name: string) => {
+      let funcName = func_name.slice(`${packageName}.`.length);
+
+      jsModule[funcName] = (...args: any[]) => {
+        let funcArgs: Record<string, unknown> = {};
+        for (let i = 0; i < args.length; i++) {
+          if (typeof args[i] === 'object') {
+            Object.assign(funcArgs, args[i]);
+          } else {
+            funcArgs[i] = args[i];
+          }
+        }
+        let val = pyodide.runPython(
+          `run_function('${func_name}', ${JSON.stringify(funcArgs)})`,
+          { globals: namespace },
+        );
+        return val;
       };
     });
 
@@ -241,15 +292,16 @@ export async function loadPlotly() {
   }
 }
 
-// @ts-ignore
 window.pyodideEngine = pyodideEngine;
 
 const toObjectDict = {
   [Map.name]: (x: Map<any, any>) =>
-    Object.fromEntries(Array.from(x.entries(), ([k, v]) => [k, toObject(v)])),
-  [Array.name]: (x: Array<any>) => x.map(toObject),
+    Object.fromEntries(
+      Array.from(x.entries(), ([k, v]) => [k, pyodideJSProxyMapToObject(v)]),
+    ),
+  [Array.name]: (x: Array<any>) => x.map(pyodideJSProxyMapToObject),
 };
-function toObject(x: any): any {
+export function pyodideJSProxyMapToObject(x: any): any {
   const cb = toObjectDict[x?.constructor.name];
   return cb ? cb(x) : x;
 }

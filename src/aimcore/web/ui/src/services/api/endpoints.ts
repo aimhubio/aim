@@ -4,6 +4,8 @@ const ENDPOINTS = {
     GET: '',
     FETCH: 'fetch',
     GET_GROUPED_SEQUENCES: 'grouped-sequences',
+    RUN: 'run',
+    FETCH_BLOBS: 'fetch-blobs',
   },
 
   PROJECTS: {
@@ -52,6 +54,7 @@ const ENDPOINTS = {
     GET: '',
     GET_BY_TAG_NAME: 'tags',
   },
+
   BOARDS: {
     BASE: '/boards',
     GET: '',
@@ -60,6 +63,14 @@ const ENDPOINTS = {
     DELETE: '',
     TEMPLATES: '/templates',
     RESET: '/reset',
+  },
+
+  REPORTS: {
+    BASE: '/reports',
+    GET: '',
+    CREATE: '',
+    UPDATE: '',
+    DELETE: '',
   },
 };
 

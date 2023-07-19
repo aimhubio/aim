@@ -1,11 +1,16 @@
 import datetime
+import os
 
 from fastapi import APIRouter
+
+from aim._sdk.repo import Repo
+from aimcore.transport.config import AIM_SERVER_MOUNTED_REPO_PATH
 
 
 class ClientRouter:
     client_heartbeat_pool = dict()
     clients = []
+    repo = None
 
     def __init__(self):
         self.router = APIRouter()
@@ -23,6 +28,8 @@ class ClientRouter:
     def remove_client(cls, client_uri):
         if client_uri in cls.clients:
             cls.clients.remove(client_uri)
+        if client_uri in cls.client_heartbeat_pool:
+            del cls.client_heartbeat_pool[client_uri]
 
     async def get_version(self):
         from aim.__version__ import __version__ as aim_version
@@ -33,6 +40,9 @@ class ClientRouter:
         self.client_heartbeat_pool[client_uri] = datetime.datetime.now().timestamp()
 
     async def connect(self, client_uri):
+        if not self.repo:
+            repo_path = os.environ.get(AIM_SERVER_MOUNTED_REPO_PATH)
+            self.repo = Repo.from_path(repo_path, read_only=False)
         self.add_client(client_uri)
 
     async def reconnect(self, client_uri):

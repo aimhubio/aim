@@ -64,4 +64,59 @@ function createFetchGroupedSequencesRequest(
   };
 }
 
-export { createFetchDataRequest, createFetchGroupedSequencesRequest };
+function createRunFunctionRequest(): RequestInstance {
+  const controller = new AbortController();
+  const signal = controller.signal;
+
+  async function call(
+    func_name: string,
+    request_data: Record<string, any>,
+  ): Promise<any> {
+    return await api.makeAPIPostRequest(`${ENDPOINTS.DATA.RUN}`, {
+      query_params: {
+        func_name,
+      },
+      body: request_data,
+      signal,
+    });
+  }
+
+  function cancel(): void {
+    controller.abort();
+  }
+
+  return {
+    call,
+    cancel,
+  };
+}
+
+function createBlobsRequest(): RequestInstance {
+  const controller = new AbortController();
+  const signal = controller.signal;
+
+  async function call(uris: string[]): Promise<any> {
+    return (
+      await api.makeAPIPostRequest(`${ENDPOINTS.DATA.FETCH_BLOBS}`, {
+        body: uris,
+        signal,
+      })
+    ).body;
+  }
+
+  function cancel(): void {
+    controller.abort();
+  }
+
+  return {
+    call,
+    cancel,
+  };
+}
+
+export {
+  createFetchDataRequest,
+  createFetchGroupedSequencesRequest,
+  createRunFunctionRequest,
+  createBlobsRequest,
+};

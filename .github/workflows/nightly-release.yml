@@ -22,9 +22,9 @@ jobs:
           git checkout nightly
           git pull --rebase
           git merge main --strategy-option theirs
-          git checkout main -- ./src/py-sdk/aim/VERSION
+          git checkout main -- ./src/python/aim/VERSION
           . ./.github/workflow_files/override-version.sh
-          git add ./src/py-sdk/aim/VERSION
+          git add ./src/python/aim/VERSION
           git commit -m "Update VERSION file"
           git push
 

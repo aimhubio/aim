@@ -163,8 +163,8 @@ function getEventSystemEngine(
   return events.engine;
 }
 
-function getBlobURIEngine(config: ExplorerEngineConfiguration) {
-  const blobURI = createBlobURISystemEngine(config.sequenceType);
+function getBlobURIEngine() {
+  const blobURI = createBlobURISystemEngine();
 
   return blobURI.engine;
 }
@@ -294,7 +294,7 @@ function createEngine<TObject = any>(
     /**
      * Blob URI System
      */
-    blobURI = getBlobURIEngine(config);
+    blobURI = getBlobURIEngine();
 
     return initialState;
   }

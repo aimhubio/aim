@@ -14,8 +14,8 @@ import { GroupedSequence } from 'types/core/AimObjects/GroupedSequences';
 
 import getObjectPaths from 'utils/object/getObjectPaths';
 
-import { ObjectHashCreator, ProcessedData } from './types';
 import collectQueryableData from './collectQueryableData';
+import { ObjectHashCreator, ProcessedData } from './types';
 
 export function storageDataToFlatList(
   groupedSeqs: GroupedSequence[] = [],
@@ -30,7 +30,7 @@ export function storageDataToFlatList(
   let sequenceInfo: string[] = [];
   let recordInfo: string[] = [];
 
-  const queryable_data = collectQueryableData(groupedSeqs[0]);
+  const queryable_data = collectQueryableData(groupedSeqs, sequenceType);
 
   function pushToObjectList(object: AimFlatObjectBase) {
     objectList.push(object);

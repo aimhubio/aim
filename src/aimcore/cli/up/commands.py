@@ -22,7 +22,7 @@ from aimcore.web.utils import ShellCommandException
 from aim._ext.tracking import analytics
 
 
-@click.command()
+@click.command('up')
 @click.option('-h', '--host', default=AIM_UI_DEFAULT_HOST, type=str)
 @click.option('-p', '--port', default=AIM_UI_DEFAULT_PORT, type=int)
 @click.option('-w', '--workers', default=1, type=int)
@@ -121,7 +121,7 @@ def up(dev, host, port, workers, uds,
         os.environ[AIM_PROFILER_KEY] = '1'
 
     try:
-        server_cmd = build_uvicorn_command(host, port, workers, uds, ssl_keyfile, ssl_certfile, log_level)
+        server_cmd = build_uvicorn_command(host, port, workers, uds, ssl_keyfile, ssl_certfile, log_level, package)
         exec_cmd(server_cmd, stream_output=True)
     except ShellCommandException:
         click.echo('Failed to run Aim UI. Please see the logs above for details.')

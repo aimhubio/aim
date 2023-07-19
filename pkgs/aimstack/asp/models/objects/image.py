@@ -64,7 +64,8 @@ class Image(Object):
         elif inst_has_typename(image, ['Figure', 'matplotlib', 'figure']):
             self._from_matplotlib_figure(image, params)
         else:
-            raise TypeError(f'Cannot convert to aim.Image. Unsupported type {type(image)}.')
+            raise TypeError(
+                f'Cannot convert to aim.Image. Unsupported type {type(image)}.')
         self.caption = caption
 
     @property
@@ -170,12 +171,15 @@ class Image(Object):
                 if pil_image.mode not in ('RGBA', 'LA', 'PA', 'P'):
                     raise exc
                 elif not Image.FLAG_WARN_RGBA_RGB:
-                    logger.warning(f'Failed to save the image due to the following error: {exc}')
-                    logger.warning(f'Attempting to convert mode "{pil_image.mode}" to "RGB"')
+                    logger.warning(
+                        f'Failed to save the image due to the following error: {exc}')
+                    logger.warning(
+                        f'Attempting to convert mode "{pil_image.mode}" to "RGB"')
                     Image.FLAG_WARN_RGBA_RGB = True
 
                 alpha = pil_image.convert('RGBA').split()[-1]  # Get only alpha
-                background = PILImage.new('RGBA', pil_image.size, (255, 255, 255, 255))
+                background = PILImage.new(
+                    'RGBA', pil_image.size, (255, 255, 255, 255))
                 background.paste(pil_image, mask=alpha)
                 pil_image = background.convert('RGB')
 
@@ -196,7 +200,8 @@ class Image(Object):
 
     def _from_numpy_array(self, array: np.ndarray, params):
         if array.ndim not in {2, 3}:
-            raise ValueError('Cannot convert to aim.Image. array must have 2/3-D shape.')
+            raise ValueError(
+                'Cannot convert to aim.Image. array must have 2/3-D shape.')
 
         if array.ndim == 3 and array.shape[2] == 1:  # greyscale
             pil_image = PILImage.fromarray(array[:, :, 0])
@@ -212,7 +217,8 @@ class Image(Object):
             raise ValueError('Cannot convert from torch.Tensor')
 
         if tensor.ndim not in {2, 3}:
-            raise ValueError('Cannot convert to aim.Image. Tensor must have 2/3-D shape.')
+            raise ValueError(
+                'Cannot convert to aim.Image. Tensor must have 2/3-D shape.')
         if tensor.is_floating_point():
             tensor = tensor.mul(255).byte()
         array: np.ndarray = tensor.cpu().numpy()
@@ -236,7 +242,8 @@ class Image(Object):
             raise ValueError('Cannot convert from tf.Tensor')
 
         if tensor.ndim not in {2, 3}:
-            raise ValueError('Cannot convert to aim.Image. Tensor must have 2/3-D shape.')
+            raise ValueError(
+                'Cannot convert to aim.Image. Tensor must have 2/3-D shape.')
 
         if tensor.dtype.is_floating:
             tensor = tf.cast(tf.math.scalar_mul(255.0, tensor), tf.uint8)

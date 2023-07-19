@@ -1,10 +1,6 @@
 import _ from 'lodash-es';
 
-import { throttle } from 'components/Table/utils';
-
-import { createBlobsRequest } from 'modules/core/api/runsApi';
-
-import { SequenceType } from 'types/core/enums';
+import { createBlobsRequest } from 'modules/core/api/dataFetchApi';
 
 import { parseStream } from 'utils/encoder/streamEncoding';
 import arrayBufferToBase64 from 'utils/arrayBufferToBase64';
@@ -24,15 +20,13 @@ export interface IBlobURISystemEngine {
 
 const BATCH_SEND_DELAY = 1000;
 
-function createBlobURISystemEngine(
-  sequenceType: SequenceType,
-): IBlobURISystemEngine {
+function createBlobURISystemEngine(): IBlobURISystemEngine {
   const blobsData: Record<string, string> = {};
   const blobsSubscriptions: Record<string, Callback[]> = {};
   let blobUriQueue: string[] = [];
   let timeoutID: number | null = null;
 
-  const request = createBlobsRequest(sequenceType);
+  const request = createBlobsRequest();
 
   /**
    * Function to fire an event
@@ -89,7 +83,6 @@ function createBlobURISystemEngine(
    * @param {string} blobUri
    */
   function addUriToQueue(blobUri: string) {
-    blobUriQueue.push(blobUri);
     if (!blobsData[blobUri]) {
       blobUriQueue.push(blobUri);
       getBatch();
@@ -99,7 +92,7 @@ function createBlobURISystemEngine(
   /**
    * Function to throttle the batch get request
    */
-  const getBatch = throttle(() => {
+  const getBatch = _.throttle(() => {
     if (timeoutID) {
       window.clearTimeout(timeoutID);
     }

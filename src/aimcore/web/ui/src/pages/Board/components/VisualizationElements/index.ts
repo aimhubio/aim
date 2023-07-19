@@ -85,6 +85,12 @@ const HTMLVizElement = React.lazy(
       /* webpackPrefetch: true, webpackChunkName: "HTML" */ './HTMLVizElement'
     ),
 );
+const MarkdownVizElement = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true, webpackChunkName: "Markdown" */ './MarkdownVizElement'
+    ),
+);
 const TextVizElement = React.lazy(
   () =>
     import(
@@ -103,24 +109,6 @@ const SelectVizElement = React.lazy(
   () =>
     import(
       /* webpackPrefetch: true, webpackChunkName: "Select" */ './SelectVizElement'
-    ),
-);
-const RunMessagesVizElement = React.lazy(
-  () =>
-    import(
-      /* webpackPrefetch: true, webpackChunkName: "RunMessages" */ './RunMessagesVizElement'
-    ),
-);
-const RunLogsVizElement = React.lazy(
-  () =>
-    import(
-      /* webpackPrefetch: true, webpackChunkName: "RunLogs" */ './RunLogsVizElement'
-    ),
-);
-const RunNotesVizElement = React.lazy(
-  () =>
-    import(
-      /* webpackPrefetch: true, webpackChunkName: "RunNotes" */ './RunNotesVizElement'
     ),
 );
 const ExplorerVizElement = React.lazy(
@@ -224,12 +212,10 @@ export type VizElementKey =
   | 'Texts'
   | 'JSON'
   | 'HTML'
+  | 'Markdown'
   | 'Text'
   | 'Link'
   | 'Select'
-  | 'RunMessages'
-  | 'RunLogs'
-  | 'RunNotes'
   | 'Plotly'
   | 'Slider'
   | 'RangeSlider'
@@ -267,36 +253,38 @@ const VizElementsMap: Record<VizElementKey, React.FunctionComponent<any>> = {
   Checkbox: CheckboxVizElement,
   ToggleButton: ToggleButtonVizElement,
 
-  // data display elements
-  Plotly: PlotlyVizElement,
-  DataFrame: DataFrameVizElement,
-  Table: TableVizElement,
-  JSON: JSONVizElement,
-  HTML: HTMLVizElement,
+  // text elements
   Text: TextVizElement,
-  Link: LinkVizElement,
   Header: TextVizElement,
   SubHeader: TextVizElement,
   Code: CodeVizElement,
+  Link: LinkVizElement,
+  HTML: HTMLVizElement,
+  Markdown: MarkdownVizElement,
 
-  // Aim sequence viz components
+  // data display elements
+  DataFrame: DataFrameVizElement,
+  Table: TableVizElement,
+  JSON: JSONVizElement,
+
+  // charts
   LineChart: LineChartVizElement,
+  Plotly: PlotlyVizElement,
   NivoLineChart: NivoLineChartVizElement,
-  Figures: FiguresVizElement,
-  Audios: AudiosVizElement,
-  Images: ImagesVizElement,
-  Texts: TextsVizElement,
   BarChart: BarChartVizElement,
   ScatterPlot: ScatterPlotVizElement,
   ParallelPlot: ParallelPlotVizElement,
 
+  // Aim sequence viz components
+  Figures: FiguresVizElement,
+  Audios: AudiosVizElement,
+  Images: ImagesVizElement,
+  Texts: TextsVizElement,
+
   // Aim high level components
-  RunMessages: RunMessagesVizElement,
-  RunLogs: RunLogsVizElement,
-  RunNotes: RunNotesVizElement,
   Explorer: ExplorerVizElement,
 
-  // Super components
+  // Board components
   Board: BoardVizElement,
   BoardLink: BoardLinkVizElement,
 };
