@@ -7,6 +7,7 @@ from aimcore.cli.up import commands as up_commands
 from aimcore.cli.server import commands as server_commands
 from aimcore.cli.telemetry import commands as telemetry_commands
 from aimcore.cli.package import commands as package_commands
+from aimcore.cli.migrate import commands as migrate_commands
 
 core._verify_python3_env = lambda: None
 
@@ -22,3 +23,4 @@ cli_entry_point.add_command(up_commands.up)
 cli_entry_point.add_command(server_commands.server)
 cli_entry_point.add_command(telemetry_commands.telemetry)
 cli_entry_point.add_command(package_commands.package)
+cli_entry_point.add_command(migrate_commands.migrate)
