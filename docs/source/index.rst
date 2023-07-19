@@ -86,7 +86,6 @@
    :name: community
    :caption: Community
 
-   community/telemetry.md
    generated/CHANGELOG.md
 
 .. raw:: html

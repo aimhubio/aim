@@ -10,7 +10,6 @@ from aim.cli.reindex import commands as reindex_commands
 from aim.cli.runs import commands as runs_commands
 from aim.cli.convert import commands as convert_commands
 from aim.cli.storage import commands as storage_commands
-from aim.cli.telemetry import commands as telemetry_commands
 
 core._verify_python3_env = lambda: None
 
@@ -30,4 +29,3 @@ cli_entry_point.add_command(reindex_commands.reindex, REINDEX_NAME)
 cli_entry_point.add_command(runs_commands.runs, RUNS_NAME)
 cli_entry_point.add_command(convert_commands.convert, CONVERT)
 cli_entry_point.add_command(storage_commands.storage, STORAGE)
-cli_entry_point.add_command(telemetry_commands.telemetry)

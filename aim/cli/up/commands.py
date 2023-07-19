@@ -10,7 +10,6 @@ from aim.web.configs import (
     AIM_UI_DEFAULT_HOST,
     AIM_UI_DEFAULT_PORT,
     AIM_UI_MOUNTED_REPO_PATH,
-    AIM_UI_TELEMETRY_KEY,
     AIM_PROXY_URL,
     AIM_PROFILER_KEY
 )
@@ -18,8 +17,6 @@ from aim.sdk.repo import Repo, RepoStatus
 from aim.sdk.utils import clean_repo_path
 from aim.web.utils import exec_cmd
 from aim.web.utils import ShellCommandException
-
-from aim.utils.tracking import analytics
 
 
 @click.command()
@@ -114,11 +111,6 @@ def up(dev, host, port, workers, uds,
         except Exception:
             pass
 
-    if not dev and os.getenv(AIM_UI_TELEMETRY_KEY, 1) == '0':
-        click.echo(f'"{AIM_UI_TELEMETRY_KEY}" is ignored. Read how to opt-out here: '
-                   f'https://aimstack.readthedocs.io/en/latest/community/telemetry.html')
-    if dev:
-        analytics.dev_mode = True
     click.echo(click.style('Running Aim UI on repo `{}`'.format(repo_inst), fg='yellow'))
 
     if uds:
@@ -132,7 +124,6 @@ def up(dev, host, port, workers, uds,
         click.echo(f'Proxy {proxy_url}{base_path}/')
 
     click.echo('Press Ctrl+C to exit')
-    analytics.track_event(event_name='[Aim UI] Start UI')
 
     if profiler:
         os.environ[AIM_PROFILER_KEY] = '1'
