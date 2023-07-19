@@ -36,7 +36,7 @@ function AudioPlayerProgress({
     clearInterval(intervalRef.current);
     intervalRef.current = window.setInterval(() => {
       setTrackProgress(audio.currentTime || 0);
-    }, 100);
+    }, 20);
   }
 
   function onProgressChange(values: number[]): void {

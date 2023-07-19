@@ -49,7 +49,7 @@ function AudioPlayerVolume({ audio }: AudioPlayerVolumeProps) {
             value={[isMuted ? 0 : volume]}
             step={0.01}
             defaultValue={[1]}
-            max={0.99}
+            max={1}
             min={0}
             showLabel={false}
           />
