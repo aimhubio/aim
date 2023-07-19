@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import AudioBox from 'components/kit/AudioBox';
+import AudioBox from 'components/AudioBox';
 
 import pyodideEngine from 'services/pyodide/store';
 
