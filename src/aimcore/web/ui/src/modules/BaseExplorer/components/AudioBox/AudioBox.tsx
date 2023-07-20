@@ -2,7 +2,7 @@ import React from 'react';
 import { useAudioBlobURI } from 'hooks';
 
 import ErrorBoundary from 'components/ErrorBoundary';
-import AudioPlayer from 'components/AudioPlayer';
+import AudioPlayer from 'components/kit_v2/AudioPlayer';
 
 import { IBoxContentProps } from 'modules/BaseExplorer/types';
 

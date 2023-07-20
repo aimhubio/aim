@@ -17,7 +17,7 @@ def deep_copy(obj):
         return type(obj)((deep_copy(k), deep_copy(v)) for k, v in obj.items())
     elif isinstance(obj, set):
         return type(obj)(deep_copy(x) for x in obj)
-    elif hasattr(obj, '__dict__'):
+    elif hasattr(obj, "__dict__"):
         result = type(obj)()
         result.__dict__.update(deep_copy(obj.__dict__))
         return result
@@ -53,27 +53,26 @@ class WaitForQueryError(Exception):
 
 
 def query_filter(type_, query="", count=None, start=None, stop=None, is_sequence=False):
-    query_key = f'{type_}_{query}_{count}_{start}_{stop}'
+    query_key = f"{type_}_{query}_{count}_{start}_{stop}"
 
     if query_key in query_results_cache:
         return query_results_cache[query_key]
 
     try:
-        data = search(board_path, type_, query,
-                      count, start, stop, is_sequence)
+        data = search(board_path, type_, query, count, start, stop, is_sequence)
         data = json.loads(data)
 
         query_results_cache[query_key] = data
         return data
     except Exception as e:
-        if 'WAIT_FOR_QUERY_RESULT' in str(e):
+        if "WAIT_FOR_QUERY_RESULT" in str(e):
             raise WaitForQueryError()
         else:
             raise e
 
 
 def run_function(func_name, params):
-    run_function_key = f'{func_name}_{json.dumps(params)}'
+    run_function_key = f"{func_name}_{json.dumps(params)}"
 
     if run_function_key in query_results_cache:
         return query_results_cache[run_function_key]
@@ -85,22 +84,22 @@ def run_function(func_name, params):
         query_results_cache[run_function_key] = data
         return data
     except Exception as e:
-        if 'WAIT_FOR_QUERY_RESULT' in str(e):
+        if "WAIT_FOR_QUERY_RESULT" in str(e):
             raise WaitForQueryError()
         else:
             raise e
 
 
-class Sequence():
+class Sequence:
     @classmethod
     def filter(self, query="", count=None, start=None, stop=None):
-        return query_filter('Sequence', query, count, start, stop, is_sequence=True)
+        return query_filter("Sequence", query, count, start, stop, is_sequence=True)
 
 
-class Container():
+class Container:
     @classmethod
     def filter(self, query=""):
-        return query_filter('Container', query, None, None, None, is_sequence=False)
+        return query_filter("Container", query, None, None, None, is_sequence=False)
 
 
 ####################
@@ -187,8 +186,7 @@ def group(name, data, options, key=None):
             for opt in options:
                 val = find(
                     item,
-                    str(opt) if type(opt) is not str else opt.replace(
-                        "metric.", ""),
+                    str(opt) if type(opt) is not str else opt.replace("metric.", ""),
                 )
                 group_values.append(val)
 
@@ -291,10 +289,7 @@ class Block(Element):
     def __init__(self, type_, data=None, block=None):
         super().__init__(block)
         block_context["current"] += 1
-        self.block_context = {
-            "id": block_context["current"],
-            "type": type_
-        }
+        self.block_context = {"id": block_context["current"], "type": type_}
         self.key = generate_key(self.block_context)
 
         self.data = data
@@ -305,7 +300,7 @@ class Block(Element):
 
     def render(self):
         block_data = {
-            "element": 'block',
+            "element": "block",
             "block_context": self.block_context,
             "key": self.key,
             "parent_block": self.parent_block,
@@ -333,40 +328,47 @@ class Component(Element):
         self.data = None
         self.callbacks = {}
         self.options = {}
-        self.state = state[board_path][key] if board_path in state and key in state[board_path] else {
-        }
+        self.state = (
+            state[board_path][key]
+            if board_path in state and key in state[board_path]
+            else {}
+        )
         self.no_facet = True
 
     def set_state(self, value):
-        should_batch = self.parent_block is not None and self.parent_block["type"] == "form"
+        should_batch = (
+            self.parent_block is not None and self.parent_block["type"] == "form"
+        )
 
         if should_batch:
-            state_slice = state[self.board_path][
-                self.parent_block["id"]
-            ] if (self.board_path in state and self.parent_block["id"] in state[self.board_path]) else {}
+            state_slice = (
+                state[self.board_path][self.parent_block["id"]]
+                if (
+                    self.board_path in state
+                    and self.parent_block["id"] in state[self.board_path]
+                )
+                else {}
+            )
 
-            component_state_slice = deep_copy(state_slice[self.key]) if self.key in state_slice else {
-            }
+            component_state_slice = (
+                deep_copy(state_slice[self.key]) if self.key in state_slice else {}
+            )
 
             component_state_slice.update(value)
 
-            state_slice.update({
-                self.key: component_state_slice
-            })
+            state_slice.update({self.key: component_state_slice})
 
-            set_state({
-                self.parent_block["id"]: state_slice
-            }, self.board_path)
+            set_state({self.parent_block["id"]: state_slice}, self.board_path)
         else:
-            state_slice = state[self.board_path][
-                self.key
-            ] if (self.board_path in state and self.key in state[self.board_path]) else {}
+            state_slice = (
+                state[self.board_path][self.key]
+                if (self.board_path in state and self.key in state[self.board_path])
+                else {}
+            )
 
             state_slice.update(value)
 
-            set_state({
-                self.key: state_slice
-            }, self.board_path)
+            set_state({self.key: state_slice}, self.board_path)
 
     def render(self):
         component_data = {
@@ -378,7 +380,7 @@ class Component(Element):
             "options": self.options,
             "parent_block": self.parent_block,
             "no_facet": self.no_facet,
-            "board_path": self.board_path
+            "board_path": self.board_path,
         }
 
         component_data.update(self.state)
@@ -396,16 +398,12 @@ class AimSequenceComponent(Component):
             current = group_map[group_data[i][prop]]
 
             if prop == "color":
-                color_val = apply_group_value_pattern(
-                    current["order"], colors
-                )
+                color_val = apply_group_value_pattern(current["order"], colors)
                 elem["color"] = color_val
                 elem["color_val"] = current["val"]
                 elem["color_options"] = value
             elif prop == "stroke_style":
-                stroke_val = apply_group_value_pattern(
-                    current["order"], stroke_styles
-                )
+                stroke_val = apply_group_value_pattern(current["order"], stroke_styles)
                 elem["dasharray"] = stroke_val
                 elem["dasharray_val"] = current["val"]
                 elem["dasharray_options"] = value
@@ -428,22 +426,24 @@ class AimSequenceComponent(Component):
 
 
 class LineChart(AimSequenceComponent):
-    def __init__(self, data, x, y, color=[], stroke_style=[], options={}, key=None, block=None):
+    def __init__(
+        self, data, x, y, color=[], stroke_style=[], options={}, key=None, block=None
+    ):
         component_type = "LineChart"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
 
         color_map, color_data = group("color", data, color, component_key)
         stroke_map, stroke_data = group(
-            "stroke_style", data, stroke_style, component_key)
+            "stroke_style", data, stroke_style, component_key
+        )
         lines = []
         for i, item in enumerate(data):
             color_val = apply_group_value_pattern(
                 color_map[color_data[i]["color"]]["order"], colors
             )
             stroke_val = apply_group_value_pattern(
-                stroke_map[stroke_data[i]["stroke_style"]
-                           ]["order"], stroke_styles
+                stroke_map[stroke_data[i]["stroke_style"]]["order"], stroke_styles
             )
 
             line = dict(item)
@@ -456,9 +456,7 @@ class LineChart(AimSequenceComponent):
 
         self.data = lines
         self.options = options
-        self.callbacks = {
-            "on_active_point_change": self.on_active_point_change
-        }
+        self.callbacks = {"on_active_point_change": self.on_active_point_change}
 
         self.render()
 
@@ -483,34 +481,40 @@ class LineChart(AimSequenceComponent):
             item = self.data[point.key]
 
             if is_active:
-                self.set_state({
-                    "focused_line": item,
-                    "focused_point": point,
-                })
+                self.set_state(
+                    {
+                        "focused_line": item,
+                        "focused_point": point,
+                    }
+                )
             else:
-                self.set_state({
-                    "active_line": item,
-                    "active_point": point,
-                })
+                self.set_state(
+                    {
+                        "active_line": item,
+                        "active_point": point,
+                    }
+                )
 
 
 class NivoLineChart(AimSequenceComponent):
-    def __init__(self, data, x, y, color=[], stroke_style=[], options={}, key=None, block=None):
+    def __init__(
+        self, data, x, y, color=[], stroke_style=[], options={}, key=None, block=None
+    ):
         component_type = "NivoLineChart"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
 
         color_map, color_data = group("color", data, color, component_key)
         stroke_map, stroke_data = group(
-            "stroke_style", data, stroke_style, component_key)
+            "stroke_style", data, stroke_style, component_key
+        )
         lines = []
         for i, item in enumerate(data):
             color_val = apply_group_value_pattern(
                 color_map[color_data[i]["color"]]["order"], colors
             )
             stroke_val = apply_group_value_pattern(
-                stroke_map[stroke_data[i]["stroke_style"]
-                           ]["order"], stroke_styles
+                stroke_map[stroke_data[i]["stroke_style"]]["order"], stroke_styles
             )
 
             line = dict(item)
@@ -559,31 +563,30 @@ class BarChart(AimSequenceComponent):
         self.data = bars
         self.options = options
 
-        self.options.update({
-            'x': x,
-            'y': y
-        })
+        self.options.update({"x": x, "y": y})
 
         self.render()
 
 
 class ScatterPlot(AimSequenceComponent):
-    def __init__(self, data, x, y, color=[], stroke_style=[], options={}, key=None, block=None):
+    def __init__(
+        self, data, x, y, color=[], stroke_style=[], options={}, key=None, block=None
+    ):
         component_type = "ScatterPlot"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
 
         color_map, color_data = group("color", data, color, component_key)
         stroke_map, stroke_data = group(
-            "stroke_style", data, stroke_style, component_key)
+            "stroke_style", data, stroke_style, component_key
+        )
         lines = []
         for i, item in enumerate(data):
             color_val = apply_group_value_pattern(
                 color_map[color_data[i]["color"]]["order"], colors
             )
             stroke_val = apply_group_value_pattern(
-                stroke_map[stroke_data[i]["stroke_style"]
-                           ]["order"], stroke_styles
+                stroke_map[stroke_data[i]["stroke_style"]]["order"], stroke_styles
             )
 
             line = dict(item)
@@ -602,15 +605,15 @@ class ScatterPlot(AimSequenceComponent):
 
 class ParallelPlot(AimSequenceComponent):
     def __init__(
-            self,
-            data,
-            dimensions='dimensions',
-            values='values',
-            color=[],
-            stroke_style=[],
-            options={},
-            key=None,
-            block=None
+        self,
+        data,
+        dimensions="dimensions",
+        values="values",
+        color=[],
+        stroke_style=[],
+        options={},
+        key=None,
+        block=None,
     ):
         component_type = "ParallelPlot"
         component_key = update_viz_map(component_type, key)
@@ -618,19 +621,22 @@ class ParallelPlot(AimSequenceComponent):
 
         color_map, color_data = group("color", data, color, component_key)
         stroke_map, stroke_data = group(
-            "stroke_style", data, stroke_style, component_key)
+            "stroke_style", data, stroke_style, component_key
+        )
         lines = []
         for i, item in enumerate(data):
             color_val = apply_group_value_pattern(
-                color_map[color_data[i]["color"]]["order"], colors)
+                color_map[color_data[i]["color"]]["order"], colors
+            )
             stroke_val = apply_group_value_pattern(
-                stroke_map[stroke_data[i]["stroke_style"]]["order"], stroke_styles)
+                stroke_map[stroke_data[i]["stroke_style"]]["order"], stroke_styles
+            )
 
             line = dict(item)
             line["key"] = i
             line["data"] = {
                 "dimensions": find(item, dimensions),
-                "values": find(item, values)
+                "values": find(item, values),
             }
             line["color"] = color_val
             line["dasharray"] = stroke_val
@@ -810,12 +816,12 @@ class Table(Component):
 
         self.callbacks = {
             "on_row_select": self.on_row_select,
-            'on_row_focus': self.on_row_focus
+            "on_row_focus": self.on_row_focus,
         }
         self.options = {
             "data": data,
             "with_renderer": renderer is not None,
-            "selectable_rows": selectable_rows
+            "selectable_rows": selectable_rows,
         }
 
         if renderer:
@@ -823,13 +829,9 @@ class Table(Component):
                 cell_renderer = renderer[col]
                 if col in data:
                     for i, cell_content in enumerate(data[col]):
-                        cell = Block('table_cell', block=block)
+                        cell = Block("table_cell", block=block)
 
-                        cell.options = {
-                            "table": component_key,
-                            "column": col,
-                            "row": i
-                        }
+                        cell.options = {"table": component_key, "column": col, "row": i}
 
                         cell.render()
 
@@ -855,15 +857,15 @@ class Table(Component):
 
 class Text(Component):
     def __init__(
-            self,
-            text,
-            component='span',
-            size='$3',
-            weight='$2',
-            color='$textPrimary',
-            mono=False,
-            key=None,
-            block=None
+        self,
+        text,
+        component="span",
+        size="$3",
+        weight="$2",
+        color="$textPrimary",
+        mono=False,
+        key=None,
+        block=None,
     ):
         component_type = "Text"
         component_key = update_viz_map(component_type, key)
@@ -884,7 +886,7 @@ class Text(Component):
             "size": size,
             "weight": weight,
             "color": color,
-            "mono": mono
+            "mono": mono,
         }
 
         self.render()
@@ -903,11 +905,7 @@ class Link(Component):
 
         self.data = to
 
-        self.options = {
-            "text": text,
-            "to": to,
-            "new_tab": new_tab
-        }
+        self.options = {"text": text, "to": to, "new_tab": new_tab}
 
         self.render()
 
@@ -929,10 +927,7 @@ class Header(TypographyComponent):
         text = validate(text, str, "text")
 
         # set the properties/options for this component
-        options = {
-            "component": "h2",
-            "size": "$9"
-        }
+        options = {"component": "h2", "size": "$9"}
         super().__init__(text, "Header", options, key, block)
 
 
@@ -942,15 +937,12 @@ class SubHeader(TypographyComponent):
         text = validate(text, str, "text")
 
         # set the properties/options for this component
-        options = {
-            "component": "h3",
-            "size": "$6"
-        }
+        options = {"component": "h3", "size": "$6"}
         super().__init__(text, "SubHeader", options, key, block)
 
 
 class Code(Component):
-    def __init__(self, text, language='python', key=None, block=None):
+    def __init__(self, text, language="python", key=None, block=None):
         component_type = "Code"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
@@ -960,9 +952,7 @@ class Code(Component):
         language = validate(language, str, "language")
 
         self.data = text
-        self.options = {
-            "language": language
-        }
+        self.options = {"language": language}
 
         self.render()
 
@@ -999,21 +989,20 @@ class Markdown(Component):
 
 
 class Explorer(Component):
-    def __init__(self, name, query='', key=None, block=None):
+    def __init__(self, name, query="", key=None, block=None):
         component_type = "Explorer"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
 
         self.data = name
 
-        self.options = {
-            "query": query
-        }
+        self.options = {"query": query}
 
         self.render()
 
 
 # InputComponents
+
 
 def get_component_batch_state(key, parent_block=None):
     if parent_block is None:
@@ -1028,6 +1017,7 @@ def get_component_batch_state(key, parent_block=None):
 
 # validate value type, otherwise raise an exception
 
+
 def validate(value, type_, prop_name):
     if not isinstance(type_, tuple):
         type_ = (type_,)
@@ -1036,11 +1026,12 @@ def validate(value, type_, prop_name):
             return value
     raise Exception(f"Type of {prop_name} must be a {type_.__name__}")
 
+
 # check if all elements in list are numbers, otherwise raise an exception
 
 
 def validate_num_list(value):
-    if (all([isinstance(item, (int, float)) for item in value])):
+    if all([isinstance(item, (int, float)) for item in value]):
         return value
     else:
         raise Exception("Value must be a list of numbers")
@@ -1048,15 +1039,26 @@ def validate_num_list(value):
 
 # check if all elements in tuple are numbers, otherwise raise an exception
 
+
 def validate_num_tuple(value):
-    if (all([isinstance(item, (int, float)) for item in value])):
+    if all([isinstance(item, (int, float)) for item in value]):
         return value
     else:
         raise Exception("Value must be a tuple of numbers")
 
 
 class Slider(Component):
-    def __init__(self, label='', value=10, min=0, max=100, step=None, disabled=False, key=None, block=None):
+    def __init__(
+        self,
+        label="",
+        value=10,
+        min=0,
+        max=100,
+        step=None,
+        disabled=False,
+        key=None,
+        block=None,
+    ):
         component_type = "Slider"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
@@ -1084,9 +1086,7 @@ class Slider(Component):
             "value": self.value if batch_state is None else batch_state["value"][0],
         }
 
-        self.callbacks = {
-            "on_change": self.on_change
-        }
+        self.callbacks = {"on_change": self.on_change}
 
         self.render()
 
@@ -1107,7 +1107,17 @@ class Slider(Component):
 
 
 class RangeSlider(Component):
-    def __init__(self, label='', value=(0, 10), min=0, max=100, step=None, disabled=False, key=None, block=None):
+    def __init__(
+        self,
+        label="",
+        value=(0, 10),
+        min=0,
+        max=100,
+        step=None,
+        disabled=False,
+        key=None,
+        block=None,
+    ):
         component_type = "RangeSlider"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
@@ -1135,9 +1145,7 @@ class RangeSlider(Component):
             "value": self.value if batch_state is None else batch_state["value"],
         }
 
-        self.callbacks = {
-            "on_change": self.on_change
-        }
+        self.callbacks = {"on_change": self.on_change}
 
         self.render()
 
@@ -1158,7 +1166,7 @@ class RangeSlider(Component):
 
 
 class TextInput(Component):
-    def __init__(self, label='', value='', disabled=False, key=None, block=None):
+    def __init__(self, label="", value="", disabled=False, key=None, block=None):
         component_type = "TextInput"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
@@ -1180,9 +1188,7 @@ class TextInput(Component):
             "value": self.value if batch_state is None else batch_state["value"],
         }
 
-        self.callbacks = {
-            "on_change": self.on_change
-        }
+        self.callbacks = {"on_change": self.on_change}
 
         self.render()
 
@@ -1195,7 +1201,17 @@ class TextInput(Component):
 
 
 class NumberInput(Component):
-    def __init__(self, label='', value=0, min=None, max=None, step=None, disabled=False, key=None, block=None):
+    def __init__(
+        self,
+        label="",
+        value=0,
+        min=None,
+        max=None,
+        step=None,
+        disabled=False,
+        key=None,
+        block=None,
+    ):
         component_type = "NumberInput"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
@@ -1223,9 +1239,7 @@ class NumberInput(Component):
             "value": self.value if batch_state is None else batch_state["value"],
         }
 
-        self.callbacks = {
-            "on_change": self.on_change
-        }
+        self.callbacks = {"on_change": self.on_change}
 
         self.render()
 
@@ -1246,7 +1260,16 @@ class NumberInput(Component):
 
 
 class Select(Component):
-    def __init__(self, label='', options=('option 1', 'option 2'), index=0, searchable=None, disabled=False, key=None, block=None):
+    def __init__(
+        self,
+        label="",
+        options=("option 1", "option 2"),
+        index=0,
+        searchable=None,
+        disabled=False,
+        key=None,
+        block=None,
+    ):
         component_type = "Select"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
@@ -1276,9 +1299,7 @@ class Select(Component):
             "value": self.value if batch_state is None else batch_state["value"],
         }
 
-        self.callbacks = {
-            "on_change": self.on_change
-        }
+        self.callbacks = {"on_change": self.on_change}
 
         self.render()
 
@@ -1291,7 +1312,16 @@ class Select(Component):
 
 
 class MultiSelect(Component):
-    def __init__(self, label='', options=('option 1', 'option 2'), index=[0], searchable=None, disabled=False, key=None, block=None):
+    def __init__(
+        self,
+        label="",
+        options=("option 1", "option 2"),
+        index=[0],
+        searchable=None,
+        disabled=False,
+        key=None,
+        block=None,
+    ):
         component_type = "Select"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
@@ -1308,7 +1338,6 @@ class MultiSelect(Component):
         else:
             searchable = len(options) > 10
 
-
         # set the initial data for this component
         self.data = [options[i] for i in index]
 
@@ -1322,9 +1351,7 @@ class MultiSelect(Component):
             "value": self.value if batch_state is None else batch_state["value"],
         }
 
-        self.callbacks = {
-            "on_change": self.on_change
-        }
+        self.callbacks = {"on_change": self.on_change}
 
         self.render()
 
@@ -1343,7 +1370,9 @@ class MultiSelect(Component):
 
 
 class Switch(Component):
-    def __init__(self, label='', checked=False, size='md', disabled=False, key=None, block=None):
+    def __init__(
+        self, label="", checked=False, size="md", disabled=False, key=None, block=None
+    ):
         component_type = "Switch"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
@@ -1367,9 +1396,7 @@ class Switch(Component):
             "value": self.value if batch_state is None else batch_state["value"],
         }
 
-        self.callbacks = {
-            "on_change": self.on_change
-        }
+        self.callbacks = {"on_change": self.on_change}
 
         self.render()
 
@@ -1382,7 +1409,17 @@ class Switch(Component):
 
 
 class TextArea(Component):
-    def __init__(self, label='', value='', size='md', resize='none', caption='', disabled=False, key=None, block=None):
+    def __init__(
+        self,
+        label="",
+        value="",
+        size="md",
+        resize="none",
+        caption="",
+        disabled=False,
+        key=None,
+        block=None,
+    ):
         component_type = "TextArea"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
@@ -1410,9 +1447,7 @@ class TextArea(Component):
             "value": self.value if batch_state is None else batch_state["value"],
         }
 
-        self.callbacks = {
-            "on_change": self.on_change
-        }
+        self.callbacks = {"on_change": self.on_change}
 
         self.render()
 
@@ -1426,14 +1461,14 @@ class TextArea(Component):
 
 class Radio(Component):
     def __init__(
-            self,
-            label='',
-            options=('option 1', 'option 2'),
-            index=0,
-            orientation='vertical',
-            disabled=False,
-            key=None,
-            block=None
+        self,
+        label="",
+        options=("option 1", "option 2"),
+        index=0,
+        orientation="vertical",
+        disabled=False,
+        key=None,
+        block=None,
     ):
         component_type = "Radio"
         component_key = update_viz_map(component_type, key)
@@ -1460,9 +1495,7 @@ class Radio(Component):
             "value": self.value if batch_state is None else batch_state["value"],
         }
 
-        self.callbacks = {
-            "on_change": self.on_change
-        }
+        self.callbacks = {"on_change": self.on_change}
 
         self.render()
 
@@ -1475,7 +1508,7 @@ class Radio(Component):
 
 
 class Checkbox(Component):
-    def __init__(self, label='', checked=False, disabled=False, key=None, block=None):
+    def __init__(self, label="", checked=False, disabled=False, key=None, block=None):
         component_type = "Checkbox"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
@@ -1497,9 +1530,7 @@ class Checkbox(Component):
             "value": self.value if batch_state is None else batch_state["value"],
         }
 
-        self.callbacks = {
-            "on_change": self.on_change
-        }
+        self.callbacks = {"on_change": self.on_change}
 
         self.render()
 
@@ -1512,7 +1543,16 @@ class Checkbox(Component):
 
 
 class ToggleButton(Component):
-    def __init__(self, label='', left_value="On", right_value="Off", index=0, disabled=False, block=None, key=None):
+    def __init__(
+        self,
+        label="",
+        left_value="On",
+        right_value="Off",
+        index=0,
+        disabled=False,
+        block=None,
+        key=None,
+    ):
         component_type = "ToggleButton"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
@@ -1538,9 +1578,7 @@ class ToggleButton(Component):
             "value": self.value if batch_state is None else batch_state["value"],
         }
 
-        self.callbacks = {
-            "on_change": self.on_change
-        }
+        self.callbacks = {"on_change": self.on_change}
 
         self.render()
 
@@ -1576,7 +1614,9 @@ class Board(Component):
 
 
 class BoardLink(Component):
-    def __init__(self, path, text='Go To Board', new_tab=False, state={}, block=None, key=None):
+    def __init__(
+        self, path, text="Go To Board", new_tab=False, state={}, block=None, key=None
+    ):
         component_type = "BoardLink"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type, block)
@@ -1591,14 +1631,9 @@ class BoardLink(Component):
 
         self.board_state = state
 
-        self.options = {
-            "text": text,
-            "new_tab": new_tab
-        }
+        self.options = {"text": text, "new_tab": new_tab}
 
-        self.callbacks = {
-            "on_navigation": self.on_navigation
-        }
+        self.callbacks = {"on_navigation": self.on_navigation}
 
         self.render()
 
@@ -1733,8 +1768,7 @@ class UI:
         return line_chart
 
     def nivo_line_chart(self, *args, **kwargs):
-        nivo_line_chart = NivoLineChart(
-            *args, **kwargs, block=self.block_context)
+        nivo_line_chart = NivoLineChart(*args, **kwargs, block=self.block_context)
         return nivo_line_chart
 
     def bar_chart(self, *args, **kwargs):
@@ -1781,24 +1815,24 @@ class UI:
 
 class Row(Block, UI):
     def __init__(self, block=None):
-        super().__init__('row', block=block)
+        super().__init__("row", block=block)
 
 
 class Column(Block, UI):
     def __init__(self, block=None):
-        super().__init__('column', block=block)
+        super().__init__("column", block=block)
 
 
 class Tab(Block, UI):
     def __init__(self, label, block=None):
-        super().__init__('tab', data=label, block=block)
+        super().__init__("tab", data=label, block=block)
 
         self.data = label
 
 
 class Tabs(Block, UI):
     def __init__(self, labels, block=None):
-        super().__init__('tabs', block=block)
+        super().__init__("tabs", block=block)
 
         self.tabs = []
         for label in labels:
@@ -1807,15 +1841,11 @@ class Tabs(Block, UI):
 
 
 class Form(Block, UI):
-    def __init__(self, submit_button_label='Submit', block=None):
-        super().__init__('form', block=block)
+    def __init__(self, submit_button_label="Submit", block=None):
+        super().__init__("form", block=block)
 
-        self.options = {
-            'submit_button_label': submit_button_label
-        }
-        self.callbacks = {
-            'on_submit': self.submit
-        }
+        self.options = {"submit_button_label": submit_button_label}
+        self.callbacks = {"on_submit": self.submit}
 
         self.render()
 

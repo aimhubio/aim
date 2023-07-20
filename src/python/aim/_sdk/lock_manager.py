@@ -79,7 +79,7 @@ class LockManager(object):
     def softlock_fname(name: str) -> str:
         return f'{name}.softlock'
 
-    def get_run_lock_info(self, run_hash: str) -> LockInfo:
+    def get_container_lock_info(self, run_hash: str) -> LockInfo:
         # check locks created prior to 3.15 version
         locked = False
         created_at = None
@@ -115,7 +115,7 @@ class LockManager(object):
 
         return LockInfo(run_hash=run_hash, locked=locked, created_at=created_at, version=lock_version, type=lock_type)
 
-    def get_run_lock(self, run_hash: str, timeout: int = 10) -> ContainerLock:
+    def get_container_lock(self, run_hash: str, timeout: int = 10) -> ContainerLock:
         lock_path = self.locks_path / self.softlock_fname(run_hash)
         return SFRunLock(self, run_hash, lock_path, timeout=timeout)
 
@@ -151,7 +151,7 @@ class LockManager(object):
             if lock_path.exists():
                 lock_path.unlink()
         else:
-            lock_info = self.get_run_lock_info(run_hash)
+            lock_info = self.get_container_lock_info(run_hash)
             if lock_info.locked and lock_info.version == LockingVersion.LEGACY:
                 success = False
             elif lock_info.locked and self.is_stalled_lock(lock_path):

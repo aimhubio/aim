@@ -1,10 +1,11 @@
 import React from 'react';
 import moment from 'moment';
 
-import { Slider, Text } from 'components/kit';
+import { Slider } from 'components/kit';
+import { Text } from 'components/kit_v2';
 import ErrorBoundary from 'components/ErrorBoundary';
 
-import { AudioPlayerProgressProps } from './AudioPlayerProgress.d';
+import { AudioPlayerProgressProps } from './';
 
 import './AudioPlayerProgress.scss';
 

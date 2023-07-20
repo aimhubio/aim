@@ -228,6 +228,9 @@ class Container(ABCContainer):
     def _calc_hash(self):
         return hash_auto((self.hash, hash(self.storage.url), str(self.mode)))
 
+    def close(self):
+        self._resources._close()
+
 
 class ContainerSequenceMap(SequenceMap[Sequence]):
     def __init__(self, container: Container, sequence_cls: Type[Sequence]):

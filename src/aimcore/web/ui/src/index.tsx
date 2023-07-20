@@ -1,4 +1,6 @@
+/* eslint-disable import/first */
 // @ts-nocheck
+__webpack_public_path__ = window.externalPublicPath;
 
 import * as React from 'react';
 
@@ -8,7 +10,6 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import Main from './Main';
 import reportWebVitals from './reportWebVitals';
-
 const root = createRoot(document.getElementById('root')!);
 root.render(
   <React.Fragment>
