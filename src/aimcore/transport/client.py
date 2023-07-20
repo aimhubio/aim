@@ -39,7 +39,8 @@ class Client:
             remote_path = remote_path[:-1]
         self._remote_path = remote_path
 
-        self._protocol = 'http://'
+        self._http_protocol = 'http://'
+        self._ws_protocol = 'ws://'
         self.protocol_probe()
 
         self._resource_pool = weakref.WeakValueDictionary()
@@ -60,7 +61,8 @@ class Client:
             response = requests.get(endpoint)
             if response.status_code == 200:
                 if response.url.startswith('https://'):
-                    self._protocol = 'https://'
+                    self._http_protocol = 'https://'
+                    self._ws_protocol = 'wss://'
                 return
         except Exception:
             pass
@@ -69,7 +71,8 @@ class Client:
         try:
             response = requests.get(endpoint)
             if response.status_code == 200:
-                self._protocol = 'https://'
+                self._http_protocol = 'https://'
+                self._ws_protocol = 'wss://'
         except Exception:
             pass
 
@@ -113,7 +116,7 @@ class Client:
         # further incompatibility list will be added manually
 
     def client_heartbeat(self):
-        endpoint = f'{self._protocol}{self._client_endpoint}/heartbeat/{self.uri}/'
+        endpoint = f'{self._http_protocol}{self._client_endpoint}/heartbeat/{self.uri}/'
         response = requests.get(endpoint)
         response_json = response.json()
         if response.status_code != 200:
@@ -122,7 +125,7 @@ class Client:
         return response
 
     def connect(self):
-        endpoint = f'{self._protocol}{self._client_endpoint}/connect/{self.uri}/'
+        endpoint = f'{self._http_protocol}{self._client_endpoint}/connect/{self.uri}/'
         response = requests.get(endpoint)
         response_json = response.json()
         if response.status_code != 200:
@@ -131,7 +134,7 @@ class Client:
         return response
 
     def reconnect(self):
-        endpoint = f'{self._protocol}{self._client_endpoint}/reconnect/{self.uri}/'
+        endpoint = f'{self._http_protocol}{self._client_endpoint}/reconnect/{self.uri}/'
         response = requests.get(endpoint)
         response_json = response.json()
         if response.status_code != 200:
@@ -145,7 +148,7 @@ class Client:
     def disconnect(self):
         self._heartbeat_sender.stop()
 
-        endpoint = f'{self._protocol}{self._client_endpoint}/disconnect/{self.uri}/'
+        endpoint = f'{self._http_protocol}{self._client_endpoint}/disconnect/{self.uri}/'
         response = requests.get(endpoint)
         response_json = response.json()
         if response.status_code != 200:
@@ -154,7 +157,7 @@ class Client:
         return response
 
     def get_version(self,):
-        endpoint = f'{self._protocol}{self._client_endpoint}/get-version/'
+        endpoint = f'{self._http_protocol}{self._client_endpoint}/get-version/'
         response = requests.get(endpoint)
         response_json = response.json()
         if response.status_code == 404:
@@ -164,7 +167,7 @@ class Client:
         return response_json.get('version')
 
     def get_resource_handler(self, resource, resource_type, handler='', args=()):
-        endpoint = f'{self._protocol}{self._tracking_endpoint}/{self.uri}/get-resource/'
+        endpoint = f'{self._http_protocol}{self._tracking_endpoint}/{self.uri}/get-resource/'
 
         request_data = {
             'resource_handler': handler,
@@ -186,7 +189,7 @@ class Client:
         return handler
 
     def release_resource(self, queue_id, resource_handler):
-        endpoint = f'{self._protocol}{self._tracking_endpoint}/{self.uri}/release-resource/{resource_handler}/'
+        endpoint = f'{self._http_protocol}{self._tracking_endpoint}/{self.uri}/release-resource/{resource_handler}/'
         if queue_id != -1:
             self.get_queue().wait_for_finish()
 
@@ -217,7 +220,7 @@ class Client:
         return self._run_read_instructions(queue_id, resource, method, args)
 
     def _run_read_instructions(self, queue_id, resource, method, args):
-        endpoint = f'{self._protocol}{self._tracking_endpoint}/{self.uri}/read-instruction/'
+        endpoint = f'{self._http_protocol}{self._tracking_endpoint}/{self.uri}/read-instruction/'
 
         request_data = {
             'resource_handler': resource,
@@ -261,12 +264,12 @@ class Client:
         del self._thread_local.atomic_instructions[hash_]
 
     def refresh_ws(self):
-        self._ws = connect(f'ws://{self._tracking_endpoint}/{self.uri}/write-instruction/')
+        self._ws = connect(f'{self._ws_protocol}{self._tracking_endpoint}/{self.uri}/write-instruction/')
 
     @property
     def ws(self):
         if self._ws is None:
-            self._ws = connect(f'ws://{self._tracking_endpoint}/{self.uri}/write-instruction/')
+            self._ws = connect(f'{self._ws_protocol}{self._tracking_endpoint}/{self.uri}/write-instruction/')
 
         return self._ws
 
