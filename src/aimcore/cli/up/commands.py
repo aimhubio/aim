@@ -8,7 +8,6 @@ from aimcore.web.configs import (
     AIM_UI_DEFAULT_HOST,
     AIM_UI_DEFAULT_PORT,
     AIM_UI_MOUNTED_REPO_PATH,
-    AIM_UI_PACKAGE_NAME,
     AIM_UI_TELEMETRY_KEY,
     AIM_PROXY_URL,
     AIM_PROFILER_KEY
@@ -34,7 +33,7 @@ from aim._ext.tracking import analytics
                                                                              file_okay=False,
                                                                              dir_okay=True,
                                                                              writable=True))
-@click.option('--package', '--pkg', required=False, default='asp', type=str)
+@click.option('--package', '--pkg', required=False, default='', show_default='asp', type=str)
 @click.option('--dev', is_flag=True, default=False)
 @click.option('--ssl-keyfile', required=False, type=click.Path(exists=True,
                                                                file_okay=True,
@@ -81,7 +80,10 @@ def up(dev, host, port, workers, uds,
     repo_inst = Repo.from_path(repo, read_only=True)
 
     os.environ[AIM_UI_MOUNTED_REPO_PATH] = repo
-    os.environ[AIM_UI_PACKAGE_NAME] = package
+
+    dev_package_dir = repo_inst.dev_package_dir
+    if package:
+        repo_inst.set_active_package(pkg_name=package)
 
     try:
         db_cmd = build_db_upgrade_command()
@@ -121,8 +123,9 @@ def up(dev, host, port, workers, uds,
         os.environ[AIM_PROFILER_KEY] = '1'
 
     try:
-        server_cmd = build_uvicorn_command(host, port, workers, uds, ssl_keyfile, ssl_certfile, log_level, package)
+        server_cmd = build_uvicorn_command(host, port, workers, uds, ssl_keyfile, ssl_certfile, log_level, dev_package_dir)
         exec_cmd(server_cmd, stream_output=True)
     except ShellCommandException:
-        click.echo('Failed to run Aim UI. Please see the logs above for details.')
+        click.echo('Failed to run Aim UI. '
+                   'Please see the logs above for details.')
         return

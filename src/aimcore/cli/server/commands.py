@@ -21,7 +21,6 @@ from aim._ext.tracking import analytics
                                                                              file_okay=False,
                                                                              dir_okay=True,
                                                                              writable=True))
-@click.option('--package', '--pkg', required=False, default='asp', type=str)
 @click.option('--ssl-keyfile', required=False, type=click.Path(exists=True,
                                                                file_okay=True,
                                                                dir_okay=False,
@@ -35,7 +34,7 @@ from aim._ext.tracking import analytics
 @click.option('--dev', is_flag=True, default=False)
 @click.option('-y', '--yes', is_flag=True, help='Automatically confirm prompt')
 def server(host, port,
-           repo, package, ssl_keyfile, ssl_certfile,
+           repo, ssl_keyfile, ssl_certfile,
            base_path, log_level, dev, yes):
     # TODO [MV, AT] remove code duplication with aim up cmd implementation
     if not log_level:
@@ -66,9 +65,6 @@ def server(host, port,
         )
         return
     os.environ[AIM_SERVER_MOUNTED_REPO_PATH] = repo
-
-    if package not in Package.pool:
-        Package.load_package(package)
 
     click.secho('Running Aim Server on repo `{}`'.format(repo_inst), fg='yellow')
     click.echo('Server is mounted on {}:{}'.format(host, port), err=True)

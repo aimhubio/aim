@@ -71,6 +71,7 @@ class PackageSourceWatcher:
             await asyncio.sleep(5)
 
     def start(self):
+        click.echo(f'Watching for change in package \'{self.package_name}\' sources...')
         self.observer = Observer()
         event_hanlder = SourceFileChangeHandler(self.src_dir, self.queue)
         self.observer.schedule(event_hanlder, self.src_dir, recursive=True)
@@ -92,3 +93,4 @@ class PackageSourceWatcher:
                     with file_path.open('r') as fh:
                         self.package.sync(str(file_name), fh.read())
             self.package.install()
+            click.echo(f'Package \'{self.package_name}\' initialized.')

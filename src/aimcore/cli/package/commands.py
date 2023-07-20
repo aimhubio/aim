@@ -87,3 +87,12 @@ def sync_package(name, repo):
         package_watcher = PackageSourceWatcher(repo_inst, name, src_path)
         package_watcher.initialize()
         package_watcher.start()
+
+
+@package.command('set-active')
+@click.option('--name', '-n', required=True, type=str)
+@click.option('--repo', default='', type=str)
+def set_active_package(name, repo):
+    repo_inst = Repo.from_path(repo) if repo else Repo.default()
+    click.echo(f'Setting \'{name}\' as active package for Repo \'{repo_inst}\'')
+    repo_inst.set_active_package(pkg_name=name)
