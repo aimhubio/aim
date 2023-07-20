@@ -39,13 +39,7 @@ function IllustrationBlock({
       <div className='IllustrationBlock__container'>
         {showImage ? (
           <div className={`IllustrationBlock__${size}__img`}>
-            {image || (
-              <img
-                onLoad={onImgLoad}
-                src={Illustrations_List[type]}
-                alt='Illustration'
-              />
-            )}
+            {image || Illustrations_List[type]}
           </div>
         ) : null}
 
