@@ -1,8 +1,8 @@
 import React from 'react';
 import { FixedSizeList as List } from 'react-window';
 
-import ArrowDown from 'assets/icons/dropdown-arrow-down.svg';
-import ArrowUp from 'assets/icons/dropdown-arrow-up.svg';
+import { ReactComponent as ArrowDown } from 'assets/icons/dropdown-arrow-down.svg';
+import { ReactComponent as ArrowUp } from 'assets/icons/dropdown-arrow-up.svg';
 
 import Popover from '../Popover';
 import Button from '../Button';
@@ -184,7 +184,7 @@ const Select = ({
                 disabled={disabled}
                 variant='outlined'
                 color='secondary'
-                rightIcon={<Box as='img' src={open ? ArrowUp : ArrowDown} />}
+                rightIcon={open ? <ArrowUp /> : <ArrowDown />}
                 {...triggerProps}
               >
                 <Text css={{ flex: '1' }} disabled={disabled}>

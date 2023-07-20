@@ -1,7 +1,7 @@
-import emptyBookmarks from 'assets/illustrations/emptyBookmarks.svg';
-import emptySearch from 'assets/illustrations/emptySearch.svg';
-import exploreData from 'assets/illustrations/exploreData.svg';
-import wrongSearch from 'assets/illustrations/wrongSearch.svg';
+import { ReactComponent as EmptyBookmarks } from 'assets/illustrations/emptyBookmarks.svg';
+import { ReactComponent as EmptySearch } from 'assets/illustrations/emptySearch.svg';
+import { ReactComponent as ExploreData } from 'assets/illustrations/exploreData.svg';
+import { ReactComponent as WrongSearch } from 'assets/illustrations/wrongSearch.svg';
 
 import { DOCUMENTATIONS } from 'config/references';
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
@@ -16,17 +16,17 @@ enum IllustrationsEnum {
   EmptyData = 'emptyData',
 }
 
-const Illustrations_List: { [key: string]: string } = {
-  [IllustrationsEnum.EmptyBookmarks]: emptyBookmarks,
-  [IllustrationsEnum.EmptySearch]: emptySearch,
-  [IllustrationsEnum.ExploreData]: exploreData,
-  [IllustrationsEnum.WrongSearch]: wrongSearch,
-  [IllustrationsEnum.EmptyData]: exploreData,
+const Illustrations_List: { [key: string]: React.ReactNode } = {
+  [IllustrationsEnum.EmptyBookmarks]: <EmptyBookmarks />,
+  [IllustrationsEnum.EmptySearch]: <EmptySearch />,
+  [IllustrationsEnum.ExploreData]: <ExploreData />,
+  [IllustrationsEnum.WrongSearch]: <WrongSearch />,
+  [IllustrationsEnum.EmptyData]: <EmptySearch />,
   // for base explorer statuses
-  [PipelineStatusEnum.Never_Executed]: exploreData,
-  [PipelineStatusEnum.Insufficient_Resources]: exploreData,
-  [PipelineStatusEnum.Empty]: emptySearch,
-  [PipelineStatusEnum.Failed]: wrongSearch,
+  [PipelineStatusEnum.Never_Executed]: <ExploreData />,
+  [PipelineStatusEnum.Insufficient_Resources]: <ExploreData />,
+  [PipelineStatusEnum.Empty]: <EmptySearch />,
+  [PipelineStatusEnum.Failed]: <WrongSearch />,
 };
 
 const Request_Illustrations = {
