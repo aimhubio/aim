@@ -37,6 +37,8 @@ const Slider = React.memo(
     marks = [],
     disabled = false,
     onValueChange,
+    onValueCommit,
+    showLabel = true,
     ...props
   }: ISliderProps): React.FunctionComponentElement<React.ReactNode> => {
     const [sliderValue, setSliderValue] =
@@ -56,16 +58,30 @@ const Slider = React.memo(
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [value]);
 
-    const onChange = React.useCallback((value: number[]) => {
-      if (errorMessage) {
-        return;
-      }
-      setSliderValue(value);
-      if (onValueChange) {
-        onValueChange(value);
-      }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    const onChange = React.useCallback(
+      (value: number[]) => {
+        if (errorMessage) {
+          return;
+        }
+        setSliderValue(value);
+        if (onValueChange) {
+          onValueChange(value);
+        }
+      },
+      [errorMessage, onValueChange],
+    );
+
+    const onCommit = React.useCallback(
+      (value: number[]) => {
+        if (errorMessage) {
+          return;
+        }
+        if (onValueCommit) {
+          onValueCommit(value);
+        }
+      },
+      [errorMessage, onValueCommit],
+    );
 
     function getMarkPosition(mark: number) {
       // The mark position is calculated based on the min and max values
@@ -85,6 +101,7 @@ const Slider = React.memo(
           min={min}
           max={max}
           onValueChange={onChange}
+          onValueCommit={onCommit}
           data-testid='slider'
           {...props}
         >
@@ -93,7 +110,7 @@ const Slider = React.memo(
           </SliderTrack>
           {sliderValue.map((value: number, index) => (
             <SliderThumb className='SliderThumb' key={index}>
-              {errorMessage ? null : (
+              {!showLabel || errorMessage ? null : (
                 <SliderLabel className='SliderLabel'>{value}</SliderLabel>
               )}
             </SliderThumb>

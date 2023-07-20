@@ -9,7 +9,6 @@ const SliderRoot = styled(SliderPrimitive.Root, {
   userSelect: 'none',
   touchAction: 'none',
   cursor: 'pointer',
-  zIndex: '$1',
   '&[data-orientation="horizontal"]': {
     height: 10,
   },
@@ -23,6 +22,7 @@ const SliderRoot = styled(SliderPrimitive.Root, {
     '.SliderThumb': {
       pointerEvents: 'none',
       bc: '$background-disable-neutral-light',
+      opacity: 0,
     },
     '.SliderRange': {
       bc: '$background-disable-neutral-light',
