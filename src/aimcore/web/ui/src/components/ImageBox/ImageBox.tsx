@@ -8,15 +8,15 @@ import ErrorBoundary from 'components/ErrorBoundary';
 import { ImageBoxProps } from './';
 
 function ImageBox(props: ImageBoxProps) {
-  const { mediaState, caption } = useImageBlobURI(props);
+  const { data, caption } = useImageBlobURI(props);
 
   return (
     <ErrorBoundary>
       <div style={props.style}>
-        {mediaState.src ? (
+        {data.src ? (
           <img
             style={{ maxHeight: '100%', maxWidth: '100%' }}
-            src={mediaState.src}
+            src={data.src}
             alt={caption}
           />
         ) : (
@@ -28,5 +28,4 @@ function ImageBox(props: ImageBoxProps) {
     </ErrorBoundary>
   );
 }
-
 export default ImageBox;

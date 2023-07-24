@@ -21,7 +21,7 @@ class Figure(Object):
     """
 
     AIM_NAME = 'aim.Figure'
-    RESOLVE_BLOBS = True
+    RESOLVE_BLOBS = False
 
     def __init__(self, obj):
         super().__init__()
