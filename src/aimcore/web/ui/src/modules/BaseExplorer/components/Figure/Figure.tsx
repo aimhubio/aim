@@ -16,7 +16,6 @@ function Figure(props: IBoxContentProps) {
         step={props.data.record.step}
         blobData={props.data.data.blobs.data}
         isFullView={props.isFullView}
-        style={props.style}
       />
     </ErrorBoundary>
   );
