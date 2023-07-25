@@ -5,6 +5,7 @@ from aim import Repo
 from .utils import init_template, pyproject_toml_template, get_pkg_distribution_sources
 from .watcher import PackageSourceWatcher
 
+
 @click.group('package')
 def package():
     pass

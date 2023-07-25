@@ -1,3 +1,3 @@
 export interface AudioPlayerVolumeProps {
-  audio: HTMLAudioElement | null;
+  audio: HTMLAudioElement;
 }

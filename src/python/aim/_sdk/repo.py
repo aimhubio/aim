@@ -6,7 +6,7 @@ from collections import defaultdict
 from typing import Union, Type, List, Dict, Optional, Tuple
 from weakref import WeakValueDictionary
 
-from aim._sdk.configs import get_aim_repo_name
+from aim._sdk.configs import get_aim_repo_name, get_data_version
 from aim._sdk.utils import clean_repo_path
 
 from aim._sdk import type_utils
@@ -60,6 +60,18 @@ class Repo(object):
         return repo
 
     @classmethod
+    def get_version(cls, path: str) -> Optional[tuple[int, ...]]:
+        if cls.is_remote_path(path):
+            return None
+        path = clean_repo_path(path)
+        version_file_path = os.path.join(path, get_aim_repo_name(), 'VERSION')
+        if os.path.exists(version_file_path):
+            with open(version_file_path, 'r') as version_fh:
+                version_tp = version_fh.read().strip().split('.')
+                return tuple(map(int, version_tp))
+        return None
+
+    @classmethod
     def active_repo(cls) -> 'Repo':
         if len(cls._pool) == 0:
             return cls.default()
@@ -78,6 +90,9 @@ class Repo(object):
             self._storage_engine = RemoteStorage(path)
             self._remote_repo_proxy = RemoteRepoProxy(self._storage_engine._client)
         else:
+            if self.get_version(path) != get_data_version():
+                raise RuntimeError(f'Aim repo \'{path}\' is out of date. '
+                                   f'Please update repo by running `aim migrate --repo {path}`')
             self.root_path = path
             self.path = os.path.join(self.root_path, get_aim_repo_name())
             self._storage_engine = LocalStorage(self.path, read_only=read_only)
@@ -101,9 +116,15 @@ class Repo(object):
     def init(cls, path: str):
         aim_repo_path = os.path.join(clean_repo_path(path), get_aim_repo_name())
         os.makedirs(aim_repo_path, exist_ok=True)
+
+        version_file_path = os.path.join(aim_repo_path, 'VERSION')
+        with open(version_file_path, 'w') as version_fh:
+            version_fh.write('.'.join(map(str, get_data_version())) + '\n')
+
         active_pkg_file = os.path.join(aim_repo_path, 'active_pkg')
         with open(active_pkg_file, 'w') as apf:
             apf.write(Package.default_package_name)
+
         return cls.from_path(aim_repo_path, read_only=False)
 
     @classmethod

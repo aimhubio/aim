@@ -1,9 +1,10 @@
-from aim import Object
+from aim import Record
 from aim._sdk.blob import BLOB
 
 
-@Object.alias('aim.Text')
-class Text(Object):
+@Record.alias('aim.Text')
+@Record.alias('aim.text')
+class Text(Record):
     """Text object used to store text objects in Aim repository.
 
         Args:

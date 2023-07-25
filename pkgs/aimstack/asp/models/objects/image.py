@@ -12,14 +12,15 @@ from typing import List
 import numpy as np
 
 from aim._sdk.num_utils import inst_has_typename
-from aim import Object
+from aim import Record
 from aim._sdk.blob import BLOB
 
 logger = logging.getLogger(__name__)
 
 
-@Object.alias('aim.Image')
-class Image(Object):
+@Record.alias('aim.Image')
+@Record.alias('aim.image')
+class Image(Record):
     """Image object used to store image objects in Aim repository...
 
     Args:

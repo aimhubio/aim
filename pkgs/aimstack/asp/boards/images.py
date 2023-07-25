@@ -1,11 +1,17 @@
 from asp import ImageSequence
 
-ui.header('Images')
+container_hash = None
+if 'container_hash' in session_state:
+    container_hash = session_state['container_hash']
 
-form = ui.form('Search')
-query = form.text_input(value='')
+if container_hash is None:
+    ui.header("Images")
+    form = ui.form("Search")
+    query = form.text_input(value="")
 
-images = ImageSequence.filter(query)
+
+images = ImageSequence.filter(
+    f'c.hash=="{container_hash}"' if container_hash else query)
 
 
 def flatten(dictionary, parent_key='', separator='.'):
@@ -43,15 +49,18 @@ def get_table_data(data=[], page_size=10, page_num=1):
     return table_data
 
 
-row1, row2 = ui.rows(2)
+if len(images) == 0:
+    text = ui.text('No images found')
+else:
+    row1, row2 = ui.rows(2)
 
-with row1:
-    items_per_page = ui.select(
-        'Items per page', options=('5', '10', '50', '100'), index=1)
-    page_num = ui.number_input(
-        'Page', value=1, min=1, max=int(len(images) / int(items_per_page)) + 1)
+    with row1:
+        items_per_page = ui.select(
+            'Items per page', options=('5', '10', '50', '100'), index=1)
+        page_num = ui.number_input(
+            'Page', value=1, min=1, max=int(len(images) / int(items_per_page)) + 1)
 
-row2.table(get_table_data(images, int(items_per_page), page_num), {
-    'container.hash': lambda val: ui.board_link('run.py', val, state={'hash': val}),
-    'data': lambda val: ui.images([images[int(val)]])
-})
+    row2.table(get_table_data(images, int(items_per_page), page_num), {
+        'container.hash': lambda val: ui.board_link('run.py', val, state={'hash': val}),
+        'data': lambda val: ui.images([images[int(val)]])
+    })

@@ -2,8 +2,8 @@ import React from 'react';
 
 import { IconCircleX } from '@tabler/icons-react';
 
-import ArrowDown from 'assets/icons/dropdown-arrow-down.svg';
-import ArrowUp from 'assets/icons/dropdown-arrow-up.svg';
+import { ReactComponent as ArrowDown } from 'assets/icons/dropdown-arrow-down.svg';
+import { ReactComponent as ArrowUp } from 'assets/icons/dropdown-arrow-up.svg';
 
 import ResizeElement, {
   ResizableElement,
@@ -122,7 +122,7 @@ function BoardConsoleOpener({ onClick, consoleElement }: any) {
           color='secondary'
           size='xs'
           onClick={handleClick}
-          icon={<Box as='img' src={isConsoleOpened ? ArrowDown : ArrowUp} />}
+          icon={isConsoleOpened ? <ArrowDown /> : <ArrowUp />}
         />
       </Tooltip>
     </Box>
