@@ -1,8 +1,9 @@
 import * as React from 'react';
 
-import Figures from 'modules/BaseExplorer/components/Figures/Figures';
+import Figure from 'modules/BaseExplorer/components/Figure';
 
 function FiguresList(props: any) {
+  console.log(props.data);
   return (
     <div
       style={{
@@ -22,7 +23,7 @@ function FiguresList(props: any) {
             margin: 5,
           }}
         >
-          <Figures
+          <Figure
             data={{ data: item }}
             style={{
               display: 'flex',
