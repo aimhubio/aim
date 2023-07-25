@@ -3,6 +3,7 @@ from aim._sdk.blob import BLOB
 
 
 @Record.alias('aim.Text')
+@Record.alias('aim.text')
 class Text(Record):
     """Text object used to store text objects in Aim repository.
 

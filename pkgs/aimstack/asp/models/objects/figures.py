@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 @Record.alias('aim.Figure')
+@Record.alias('aim.figure')
 class Figure(Record):
     """
     Figure object can be used for storing Plotly or Matplotlib figures into Aim repository.

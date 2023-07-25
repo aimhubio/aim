@@ -10,6 +10,7 @@ from aimstack.asp.models.objects.text import Text
 
 
 @Record.alias('aim.LogLine')
+@Record.alias('aim.log_line')
 class LogLine(Text):
     AIM_NAME = 'aim.LogLine'
 
@@ -19,6 +20,7 @@ class LogStream(Sequence[LogLine]):
 
 
 @Record.alias('aim.LogRecord')
+@Record.alias('aim.log_record')
 class LogRecord(Record):
     AIM_NAME = 'aim.LogRecord'
 

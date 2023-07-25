@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 @Record.alias('aim.Image')
+@Record.alias('aim.image')
 class Image(Record):
     """Image object used to store image objects in Aim repository...
 

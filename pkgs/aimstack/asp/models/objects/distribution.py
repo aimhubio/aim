@@ -5,6 +5,7 @@ from aim._sdk.blob import BLOB
 
 
 @Record.alias('aim.Distribution')
+@Record.alias('aim.distribution')
 class Distribution(Record):
     """Distribution object used to store distribution objects in Aim repository.
 
