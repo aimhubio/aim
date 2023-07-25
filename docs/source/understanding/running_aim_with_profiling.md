@@ -2,9 +2,9 @@
 
 Aim comes with profiling feature which is logging all api requests to the backend into a directory inside your
 repository. We use [pyinstrument](https://pyinstrument.readthedocs.io/en/latest/) as underlying profiler. To toggle
-profiling, run `aim up` with `--profiler` flag.
+profiling, run `aim ui` with `--profiler` flag.
 
-`$ aim up --profiler`
+`$ aim ui --profiler`
 
 This will instruct backend to create a new directory inside your repository (`.aim/profler`). On every api call,
 profiler will create an `.html` file containing whole run trace of that api. Basically you can navigate into that

@@ -5,11 +5,11 @@ from inspect import getframeinfo, currentframe
 from typing import Optional, Tuple
 
 from aim._core.storage.hashing import hash_auto
-from aim import Object, Sequence
+from aim import Record, Sequence
 from aimstack.asp.models.objects.text import Text
 
 
-@Object.alias('aim.LogLine')
+@Record.alias('aim.LogLine')
 class LogLine(Text):
     AIM_NAME = 'aim.LogLine'
 
@@ -18,8 +18,8 @@ class LogStream(Sequence[LogLine]):
     ...
 
 
-@Object.alias('aim.LogRecord')
-class LogRecord(Object):
+@Record.alias('aim.LogRecord')
+class LogRecord(Record):
     AIM_NAME = 'aim.LogRecord'
 
     def __init__(self,
