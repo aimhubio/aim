@@ -5,7 +5,7 @@ import { ANALYTICS_EVENT_KEYS_MAP } from 'config/analytics/analyticsKeysMap';
 
 import useBoardStore from 'pages/Board/BoardStore';
 
-import * as analytics from 'services/googleAnalytics';
+import * as analytics from 'services/analytics';
 
 function useApp() {
   const boardsList = useBoardStore((state) => state.boardsList);
