@@ -32,10 +32,7 @@ def migrate(repo, run, yes):
             try:
                 Repo.init(repo)
                 repo_inst = Repo.from_path(repo, read_only=False)
-                if run is not None:
-                    utils.migrate_v3_run_data(repo_inst, aim_v3_dir_path, run_hash=run)
-                else:
-                    utils.migrate_v3_data(repo_inst, aim_v3_dir_path)
+                utils.migrate_data_v3_v4(repo_inst, aim_v3_dir_path, run_hash=run)
             except Exception as e:
                 shutil.rmtree(aim_dir_path)
                 click.secho(f'Failed to migrate Aim repo \'{repo}\'. Reason: {e}.')

@@ -5,7 +5,7 @@ import click
 import tqdm
 import logging
 
-from typing import Dict
+from typing import Dict, Optional
 
 from aim import Repo
 from aim._core.storage.rockscontainer import RocksContainer
@@ -167,22 +167,20 @@ def get_relational_data(sql_db_path: pathlib.Path) -> Dict:
         return runs_data
 
 
-def migrate_v3_data(repo: Repo, v3_repo_path: pathlib.Path):
-    chunks_dir = v3_repo_path / 'meta' / 'chunks'
+def migrate_data_v3_v4(repo: Repo, v3_repo_path: pathlib.Path, run_hash: Optional[str] = None):
     sql_db_path = v3_repo_path / 'run_metadata.sqlite'
-    run_hash_list = []
-    if chunks_dir.exists():
-        run_hash_list = list(map(lambda x: x.relative_to(chunks_dir).name, chunks_dir.glob('*')))
-
     runs_data = get_relational_data(sql_db_path)
-    runs_iter = tqdm.tqdm(run_hash_list, leave=False)
-    for run_hash in runs_iter:
-        runs_iter.set_description(f'Processing Run "{run_hash}"')
+
+    if run_hash is not None:
         migrate_single_run(repo, v3_repo_path, run_hash=run_hash, run_data=runs_data.get(run_hash))
+    else:
+        run_hash_list = []
+        chunks_dir = v3_repo_path / 'meta' / 'chunks'
+        if chunks_dir.exists():
+            run_hash_list = list(map(lambda x: x.relative_to(chunks_dir).name, chunks_dir.glob('*')))
 
-
-def migrate_v3_run_data(repo: Repo, v3_repo_path: pathlib.Path, run_hash: str):
-    sql_db_path = v3_repo_path / 'run_metadata.sqlite'
-
-    runs_data = get_relational_data(sql_db_path)
-    migrate_single_run(repo, v3_repo_path, run_hash=run_hash, run_data=runs_data.get(run_hash))
+        runs_data = get_relational_data(sql_db_path)
+        runs_iter = tqdm.tqdm(run_hash_list, leave=False)
+        for run_hash in runs_iter:
+            runs_iter.set_description(f'Processing Run "{run_hash}"')
+            migrate_single_run(repo, v3_repo_path, run_hash=run_hash, run_data=runs_data.get(run_hash))
