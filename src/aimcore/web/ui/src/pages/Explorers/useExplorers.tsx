@@ -7,7 +7,7 @@ import { useProjectStatistics } from 'pages/Dashboard/components/ProjectStatisti
 
 import { explorersRoutes } from 'routes/routes';
 
-import * as analytics from 'services/googleAnalytics';
+import * as analytics from 'services/analytics';
 
 import { IExplorerCardProps } from './components/ExplorerCard';
 

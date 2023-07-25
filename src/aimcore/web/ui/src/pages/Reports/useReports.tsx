@@ -2,7 +2,7 @@ import React from 'react';
 
 import { ANALYTICS_EVENT_KEYS_MAP } from 'config/analytics/analyticsKeysMap';
 
-import * as analytics from 'services/googleAnalytics';
+import * as analytics from 'services/analytics';
 
 import useReportsStore from './ReportsStore';
 
