@@ -2,8 +2,8 @@ import React from 'react';
 
 import { IconGripVertical, IconX } from '@tabler/icons-react';
 
-import ArrowDown from 'assets/icons/dropdown-arrow-down.svg';
-import ArrowUp from 'assets/icons/dropdown-arrow-up.svg';
+import { ReactComponent as ArrowDown } from 'assets/icons/dropdown-arrow-down.svg';
+import { ReactComponent as ArrowUp } from 'assets/icons/dropdown-arrow-up.svg';
 
 import {
   Box,
@@ -202,9 +202,7 @@ function useGroupingPopover(
                     variant='outlined'
                     css={{ '&:hover': {} }}
                     color='secondary'
-                    rightIcon={
-                      <Box as='img' src={open ? ArrowUp : ArrowDown} />
-                    }
+                    rightIcon={open ? <ArrowUp /> : <ArrowDown />}
                   >
                     <Text>{`${
                       group.fields.length || ''

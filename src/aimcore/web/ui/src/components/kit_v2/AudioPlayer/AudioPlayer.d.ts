@@ -1,7 +1,7 @@
 import React from 'react';
 
 export interface AudioPlayerProps extends React.HTMLProps<HTMLAudioElement> {
-  audioRef: React.MutableRefObject<HTMLMediaElement | null>;
+  audioRef: React.MutableRefObject<HTMLMediaElement>;
   src: string;
   isPlaying: boolean;
   processing: boolean;

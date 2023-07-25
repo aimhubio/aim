@@ -1,10 +1,10 @@
 import React from 'react';
 import moment from 'moment';
 
-import { Slider, Text } from 'components/kit';
+import { Text, Slider } from 'components/kit_v2';
 import ErrorBoundary from 'components/ErrorBoundary';
 
-import { AudioPlayerProgressProps } from './AudioPlayerProgress.d';
+import { AudioPlayerProgressProps } from './';
 
 import './AudioPlayerProgress.scss';
 
@@ -14,7 +14,7 @@ function AudioPlayerProgress({
   src,
   disabled,
 }: AudioPlayerProgressProps) {
-  const [trackProgress, setTrackProgress] = React.useState(0);
+  const [trackProgress, setTrackProgress] = React.useState<number>(0);
   const intervalRef = React.useRef<number>();
 
   React.useEffect(() => {
@@ -35,68 +35,65 @@ function AudioPlayerProgress({
   function startTimer(): void {
     clearInterval(intervalRef.current);
     intervalRef.current = window.setInterval(() => {
-      setTrackProgress(audio?.currentTime || 0);
-    }, 100);
+      setTrackProgress(audio.currentTime || 0);
+    }, 20);
   }
 
-  function onProgressChange(e: any, value: number | number[]): void {
-    if (audio) {
-      clearInterval(intervalRef.current);
-      setTrackProgress(value as number);
+  function onProgressChange(values: number[]): void {
+    clearInterval(intervalRef.current);
+    setTrackProgress(values[0]);
+  }
+
+  function onTimerChange(values: number[]): void {
+    clearInterval(intervalRef.current);
+    audio.currentTime = values[0];
+    if (isPlaying) {
+      startTimer();
     }
-  }
-
-  function onTimerChange(): void {
-    if (audio && !isNaN(trackProgress)) {
-      clearInterval(intervalRef.current);
-      audio.currentTime = trackProgress;
-      if (isPlaying) {
-        startTimer();
-      }
-    }
-  }
-
-  function formatDuration(): string {
-    return moment
-      .utc(Math.round(audio?.duration || 0) * 1000)
-      .format(defineTimeFormat(audio?.duration || 0));
   }
 
   function defineTimeFormat(duration: number): string {
     return duration > 3600 ? 'HH:mm:ss' : 'mm:ss';
   }
 
+  function formatDuration(): string {
+    return moment
+      .utc(Math.round(audio.duration || 0) * 1000)
+      .format(defineTimeFormat(audio.duration || 0));
+  }
+
   function formatProgress(): string {
     return moment
       .utc(Math.round(trackProgress) * 1000)
-      .format(defineTimeFormat(audio?.duration || 0));
+      .format(defineTimeFormat(audio.duration || 0));
   }
 
   return (
     <ErrorBoundary>
       <div className='AudioPlayerProgress'>
         <Slider
-          containerClassName='AudioPlayerProgress__progressSlider'
-          onChangeCommitted={onTimerChange}
-          onChange={onProgressChange}
-          value={trackProgress}
+          className='AudioPlayerProgress__progressSlider'
+          onValueCommit={onTimerChange}
+          onValueChange={onProgressChange}
+          value={[trackProgress]}
           step={0.1}
-          max={Math.round(audio?.duration || 0)}
+          max={Math.round(audio.duration || 1)}
           min={0}
           disabled={disabled}
+          showLabel={false}
         />
         <div
           className={`AudioPlayerProgress__timer ${
-            audio?.duration && audio.duration > 3600
+            audio.duration && audio.duration > 3600
               ? 'AudioPlayerProgress__timer-long'
               : ''
           }`}
         >
           <Text weight={400} size={12}>
-            {(audio && formatProgress()) || '00:00'}
+            {formatProgress() || '00:00'}
           </Text>
           <Text weight={400} size={12}>
-            /{(audio && formatDuration()) || '00:00'}
+            /{formatDuration() || '00:00'}
           </Text>
         </div>
       </div>

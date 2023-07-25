@@ -1,12 +1,17 @@
 from asp import TextSequence
 import math
 
-ui.header('Texts')
+container_hash = None
+if 'container_hash' in session_state:
+    container_hash = session_state['container_hash']
 
-form = ui.form('Search')
-query = form.text_input(value='')
+if container_hash is None:
+    ui.header('Texts')
+    form = ui.form("Search")
+    query = form.text_input(value="")
 
-texts = TextSequence.filter(query)
+texts = TextSequence.filter(
+    f'c.hash=="{container_hash}"' if container_hash else query)
 
 
 def flatten(dictionary, parent_key='', separator='.'):
@@ -44,20 +49,22 @@ def get_table_data(data=[], page_size=10, page_num=1):
     return table_data
 
 
-row1, row2 = ui.rows(2)
+if len(texts) == 0:
+    text = ui.text('No texts found')
+else:
+    row1, row2 = ui.rows(2)
 
-with row1:
-    items_per_page = ui.select(
-        'Items per page', options=('5', '10', '50', '100'), index=1)
+    with row1:
+        items_per_page = ui.select(
+            'Items per page', options=('5', '10', '50', '100'), index=1)
 
-total_pages = math.ceil((len(texts) / int(items_per_page)))
+    total_pages = math.ceil((len(texts) / int(items_per_page)))
 
-page_numbers = [str(i) for i in range(1, total_pages + 1)]
+    page_numbers = [str(i) for i in range(1, total_pages + 1)]
 
-with row1:
-    page_num = ui.select('Page', options=page_numbers, index=0)
+    with row1:
+        page_num = ui.select('Page', options=page_numbers, index=0)
 
-
-row2.table(get_table_data(texts, int(items_per_page), int(page_num)), {
-    'container.hash': lambda val: ui.board_link('run.py', val, state={'hash': val}),
-})
+    row2.table(get_table_data(texts, int(items_per_page), int(page_num)), {
+        'container.hash': lambda val: ui.board_link('run.py', val, state={'hash': val}),
+    })

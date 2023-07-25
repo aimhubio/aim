@@ -2,20 +2,16 @@ import React from 'react';
 import { useAudioBlobURI } from 'hooks';
 
 import ErrorBoundary from 'components/ErrorBoundary';
-import AudioPlayer from 'components/AudioPlayer';
+import { AudioPlayer } from 'components/kit_v2';
 
 import { AudioBoxProps } from './';
-
-function AudioBox(
-  props: AudioBoxProps,
-): React.FunctionComponentElement<React.ReactNode> {
+function AudioBox(props: AudioBoxProps) {
   const {
     audioRef,
     mediaState,
     setIsPlaying,
     setProcessing,
     onPlay,
-    onPause,
     onDownload,
     processing,
     isPlaying,
@@ -32,7 +28,7 @@ function AudioBox(
           onEnded={() => setIsPlaying(false)}
           onCanPlay={() => setProcessing(false)}
           onPlay={onPlay}
-          onPause={onPause}
+          onPause={() => setIsPlaying(false)}
           onDownload={onDownload}
           processing={processing}
           isPlaying={isPlaying}

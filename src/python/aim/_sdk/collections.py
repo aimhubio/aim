@@ -34,6 +34,10 @@ class ContainerCollectionBase(ABCContainerCollection[ContainerType]):
         for hash_ in self.__iter_meta__():
             yield self.ctype.from_storage(storage, meta_tree, hash_=hash_)
 
+    def count(self) -> int:
+        # more optimal implementation
+        return sum(1 for _ in self.__iter_meta__())
+
 
 class ContainerLimitCollection(ContainerCollectionBase['Container']):
     def __init__(self, base_collection: ContainerCollectionBase['Container'], n: int, query_context):
@@ -122,6 +126,10 @@ class SequenceCollectionBase(ABCSequenceCollection[SequenceType]):
         storage = self.query_context['storage']
         for hash_, name, context in self.__iter_meta__():
             yield self.stype.from_storage(storage, meta_tree, hash_=hash_, name=name, context=context)
+
+    def count(self):
+        # more optimal implementation
+        return sum(1 for _ in self.__iter_meta__())
 
 
 class SequenceLimitCollection(SequenceCollectionBase['Sequence']):

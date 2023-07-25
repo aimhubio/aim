@@ -29,6 +29,8 @@
   &__progressSlider {
     margin: 0 $space-xxxs 0 $space-xxs;
     height: toRem(40px);
+    flex: 1;
+    overflow: hidden;
     .MuiSlider-root {
       height: 100% !important;
     }
@@ -37,6 +39,7 @@
         .MuiSlider-thumb {
           opacity: 1;
           visibility: visible;
+          margin-top: 0;
         }
         .Mui-disabled {
           .MuiSlider-thumb {

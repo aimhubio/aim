@@ -141,9 +141,9 @@ def display_notebook(host, port, display, proxy_url=None):
     display.update(iframe)
 
 
-def up(options, context):
+def ui(options, context):
     """
-        Calls to run `aim up` command width corresponding arguments
+        Calls to run `aim ui` command width corresponding arguments
         Handles the result of the command
         Renders the <iframe> tag for the notebook and message for the shell users
         The <iframe> renders width the corresponding way for different execution contexts (mainly for notebooks)
@@ -173,7 +173,7 @@ def up(options, context):
     port = result.info["port"]
     host = result.info["host"]
 
-    # successful exec of aim up command
+    # successful exec of aim ui command
     if context == _COLAB_EXEC_CONTEXT:
         display_colab(port, display)
         return
@@ -197,7 +197,7 @@ def version(options, context):
 # Those are aim magic function available commands
 # It is possible to add commands outside aim cli
 handlers = {
-    'up': up,
+    'ui': ui,
     'version': version
 }
 

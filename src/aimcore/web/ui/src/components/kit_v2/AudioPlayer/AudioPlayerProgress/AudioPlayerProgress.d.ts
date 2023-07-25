@@ -1,5 +1,5 @@
 export interface AudioPlayerProgressProps {
-  audio: HTMLAudioElement | null;
+  audio: HTMLAudioElement;
   isPlaying: boolean;
   src: string;
   disabled?: boolean;

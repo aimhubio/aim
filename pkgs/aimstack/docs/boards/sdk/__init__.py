@@ -143,4 +143,4 @@ ui.html("""
 
 ui.board_link('sdk/container.py', 'Container API reference')
 ui.board_link('sdk/sequence.py', 'Sequence API reference')
-ui.board_link('sdk/object.py', 'Object API reference')
+ui.board_link('sdk/record.py', 'Object API reference')

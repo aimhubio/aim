@@ -2,12 +2,18 @@ from asp import Metric
 from itertools import groupby
 import math
 
-ui.header('Metrics')
+run_hash = None
+if 'run_hash' in session_state:
+    run_hash = session_state['run_hash']
 
-form = ui.form('Search')
-query = form.text_input(value='')
+if run_hash is None:
+    ui.header("Metrics")
+    form = ui.form("Search")
+    query = form.text_input(value="")
 
-metrics = Metric.filter(query)
+
+metrics = Metric.filter(
+    f'c.hash=="{run_hash}"' if run_hash else query)
 
 
 def flatten(dictionary, parent_key='', separator='.'):
@@ -82,23 +88,22 @@ if metrics:
                     col.text(f'{group_field}: {data[0][group_field]}')
                 col.line_chart(
                     data, x=x_axis, y=y_axis, color=['name'])
+
+    row1, row2 = ui.rows(2)
+    with row1:
+        items_per_page = ui.select(
+            'Items per page', options=('5', '10', '50', '100'), index=1)
+
+    total_pages = math.ceil((len(metrics) / int(items_per_page)))
+
+    page_numbers = [str(i) for i in range(1, total_pages + 1)]
+
+    with row1:
+        page_num = ui.select('Page', options=page_numbers, index=0)
+
+    row2.table(get_table_data(metrics, int(items_per_page), int(page_num)), {
+        'container.hash': lambda val: ui.board_link('run.py', val, state={'hash': val}),
+    })
+
 else:
     ui.text(f'No metrics found')
-
-row1, row2 = ui.rows(2)
-
-with row1:
-    items_per_page = ui.select(
-        'Items per page', options=('5', '10', '50', '100'), index=1)
-
-total_pages = math.ceil((len(metrics) / int(items_per_page)))
-
-page_numbers = [str(i) for i in range(1, total_pages + 1)]
-
-with row1:
-    page_num = ui.select('Page', options=page_numbers, index=0)
-
-
-row2.table(get_table_data(metrics, int(items_per_page), int(page_num)), {
-    'container.hash': lambda val: ui.board_link('run.py', val, state={'hash': val}),
-})
