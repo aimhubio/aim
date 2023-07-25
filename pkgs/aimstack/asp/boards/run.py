@@ -1,6 +1,4 @@
-from asp import Run, Metric
-from itertools import groupby
-import math
+from asp import Run
 
 if 'hash' in session_state:
     run_hash = session_state['hash']
@@ -41,12 +39,14 @@ def merge_dicts(dict1, dict2):
 
 
 if run:
-    params_tab, metrics_tab, audios_tab, texts_tab = ui.tabs(
-        ('Params', 'Metrics', 'Audios', 'Texts'))
+    params_tab, metrics_tab, audios_tab, texts_tab, images_tab = ui.tabs(
+        ('Params', 'Metrics', 'Audios', 'Texts', 'Images'))
     with audios_tab:
         audios = ui.board('audios.py', state={'container_hash': run_hash})
     with texts_tab:
         texts = ui.board('texts.py', state={'container_hash': run_hash})
+    with images_tab:
+        images = ui.board('images.py', state={'container_hash': run_hash})
     with params_tab:
         params = run['params']
         if params:

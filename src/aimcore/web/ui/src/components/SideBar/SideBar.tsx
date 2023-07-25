@@ -2,7 +2,7 @@ import React from 'react';
 
 import { IconBrandGithub, IconFileText } from '@tabler/icons-react';
 
-import logoImg from 'assets/logo.svg';
+import { ReactComponent as LogoImg } from 'assets/logo.svg';
 import { ReactComponent as DiscordIcon } from 'assets/icons/discord.svg';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
@@ -53,7 +53,9 @@ function SideBar(): React.FunctionComponentElement<React.ReactNode> {
             isActive={(m, l) => false}
           >
             <SidebarLi>
-              <Box width={28} as='img' src={logoImg} alt='logo' />
+              <Box width={28} display='flex'>
+                <LogoImg />
+              </Box>
             </SidebarLi>
           </SidebarLink>
           <SidebarLiContainer className='ScrollBar__hidden'>

@@ -3,8 +3,7 @@ import React from 'react';
 import { IconVolume, IconVolumeOff } from '@tabler/icons-react';
 
 import ErrorBoundary from 'components/ErrorBoundary';
-import { Slider } from 'components/kit';
-import { IconButton } from 'components/kit_v2';
+import { IconButton, Slider } from 'components/kit_v2';
 
 import { AudioPlayerVolumeProps } from './';
 
@@ -13,18 +12,10 @@ import './AudioPlayerVolume.scss';
 function AudioPlayerVolume({ audio }: AudioPlayerVolumeProps) {
   const [volume, setVolume] = React.useState<number>(0.99);
   const [isMuted, setIsMuted] = React.useState<boolean>(false);
-
-  function onVolumeChange(e: any, value: number | number[]): void {
-    setVolume(value as number);
+  function onVolumeChange(values: number[]): void {
+    setVolume(values[0] as number);
     setIsMuted(false);
   }
-
-  React.useEffect(() => {
-    if (audio) {
-      audio.volume = isMuted ? 0 : volume;
-    }
-  }, [volume, audio, isMuted]);
-
   function onVolumeToggle(): void {
     if (isMuted) {
       setIsMuted(false);
@@ -35,6 +26,12 @@ function AudioPlayerVolume({ audio }: AudioPlayerVolumeProps) {
       setIsMuted(true);
     }
   }
+
+  React.useEffect(() => {
+    if (audio) {
+      audio.volume = isMuted ? 0 : volume;
+    }
+  }, [volume, audio, isMuted]);
 
   return (
     <ErrorBoundary>
@@ -48,12 +45,13 @@ function AudioPlayerVolume({ audio }: AudioPlayerVolumeProps) {
 
         <div className='AudioPlayerVolume__slider'>
           <Slider
-            onChange={onVolumeChange}
-            value={isMuted ? 0 : volume}
+            onValueChange={onVolumeChange}
+            value={[isMuted ? 0 : volume]}
             step={0.01}
-            defaultValue={1}
-            max={0.99}
+            defaultValue={[1]}
+            max={1}
             min={0}
+            showLabel={false}
           />
         </div>
       </div>

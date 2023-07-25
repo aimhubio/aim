@@ -34,7 +34,7 @@ class LocalStorage(StorageEngine):
         return self.root_tree.subtree(name)
 
     def lock(self, hash_: str, timeout: int = 10) -> 'ContainerLock':
-        lock = self._lock_manager.get_run_lock(hash_, timeout)
+        lock = self._lock_manager.get_container_lock(hash_, timeout)
         lock.lock()
         return lock
 
