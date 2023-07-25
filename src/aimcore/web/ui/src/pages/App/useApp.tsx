@@ -1,7 +1,11 @@
 import React from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 
+import { ANALYTICS_EVENT_KEYS_MAP } from 'config/analytics/analyticsKeysMap';
+
 import useBoardStore from 'pages/Board/BoardStore';
+
+import * as analytics from 'services/googleAnalytics';
 
 function useApp() {
   const boardsList = useBoardStore((state) => state.boardsList);
@@ -24,6 +28,7 @@ function useApp() {
   }, [boardsList]);
 
   React.useEffect(() => {
+    analytics.pageView(ANALYTICS_EVENT_KEYS_MAP.app.pageView);
     if (boardsList.length === 0) {
       fetchBoardsList();
     }

@@ -1,16 +1,22 @@
 import React from 'react';
 
 import { ExplorersCatsEnum } from 'config/enums/explorersCatsEnum';
+import { ANALYTICS_EVENT_KEYS_MAP } from 'config/analytics/analyticsKeysMap';
 
 import { useProjectStatistics } from 'pages/Dashboard/components/ProjectStatistics';
 
 import { explorersRoutes } from 'routes/routes';
+
+import * as analytics from 'services/googleAnalytics';
 
 import { IExplorerCardProps } from './components/ExplorerCard';
 
 export default function useExplorers() {
   const { statisticsMap, projectParamsStore } = useProjectStatistics();
 
+  React.useEffect(() => {
+    analytics.pageView(ANALYTICS_EVENT_KEYS_MAP.explorers.pageView);
+  }, []);
   const explorers = React.useMemo(() => {
     const trainingsExplorersRoutes: { [key: string]: IExplorerCardProps } = {};
     const promptsExplorersRoutes: { [key: string]: IExplorerCardProps } = {};
