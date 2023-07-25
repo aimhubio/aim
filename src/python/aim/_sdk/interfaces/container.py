@@ -54,3 +54,7 @@ class ContainerCollection(Iterable[ContainerType]):
 
     def first(self) -> ContainerType:
         return next(iter(self))
+
+    def count(self) -> int:
+        # default implementation
+        return sum(1 for _ in iter(self))
