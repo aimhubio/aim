@@ -131,6 +131,10 @@ class SequenceCollectionBase(ABCSequenceCollection[SequenceType]):
         # more optimal implementation
         return sum(1 for _ in self.__iter_meta__())
 
+    def delete(self):
+        for sequence in self:
+            sequence.delete()
+
 
 class SequenceLimitCollection(SequenceCollectionBase['Sequence']):
     def __init__(self, base_collection: SequenceCollectionBase['Sequence'], n: int, query_context: Dict):

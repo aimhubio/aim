@@ -215,6 +215,36 @@ class Container(ABCContainer):
         query_params = {p: proxy for p in alias_names}
         return query.check(**query_params)
 
+    def delete_sequence(self, name, context=None):
+        if self._is_readonly:
+            raise RuntimeError('Cannot delete sequence in read-only mode.')
+
+        context = {} if context is None else context
+        sequence = self._sequence_map._sequence(name, context)
+        sequence.delete()
+
+    def delete(self):
+        if self._is_readonly:
+            raise RuntimeError('Cannot delete container in read-only mode.')
+
+        # remove container meta tree
+        meta_tree = self.storage.tree(self.hash, 'meta', read_only=False)
+        del meta_tree.subtree('chunks')[self.hash]
+        # remove container sequence tree
+        seq_tree = self.storage.tree(self.hash, 'seqs', read_only=False)
+        del seq_tree.subtree('chunks')[self.hash]
+
+        # remove container blobs trees
+        blobs_tree = self.storage.tree(self.hash, 'BLOBS', read_only=False)
+        del blobs_tree.subtree(('meta', 'chunks'))[self.hash]
+        del blobs_tree.subtree(('seqs', 'chunks'))[self.hash]
+
+        # delete entry from container map
+        del meta_tree.subtree('cont_types_map')[self.hash]
+
+        # close the container
+        self.close()
+
     @property
     def sequences(self) -> 'ContainerSequenceMap':
         return self._sequence_map
