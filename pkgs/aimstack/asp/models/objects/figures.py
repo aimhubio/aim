@@ -2,7 +2,7 @@ import io
 import logging
 import os.path
 
-from aim import Object
+from aim import Record
 from aim._sdk.num_utils import inst_has_typename
 from aim._sdk.blob import BLOB
 
@@ -10,8 +10,9 @@ from aim._sdk.blob import BLOB
 logger = logging.getLogger(__name__)
 
 
-@Object.alias('aim.Figure')
-class Figure(Object):
+@Record.alias('aim.Figure')
+@Record.alias('aim.figure')
+class Figure(Record):
     """
     Figure object can be used for storing Plotly or Matplotlib figures into Aim repository.
     Core functionality is based on Plotly.
@@ -21,7 +22,7 @@ class Figure(Object):
     """
 
     AIM_NAME = 'aim.Figure'
-    RESOLVE_BLOBS = True
+    RESOLVE_BLOBS = False
 
     def __init__(self, obj):
         super().__init__()
@@ -86,8 +87,8 @@ class Figure(Object):
         return from_json(self.data)
 
 
-@Object.alias('aim.Figure3d')
-class Figure3D(Object):
+@Record.alias('aim.Figure3d')
+class Figure3D(Record):
     """Figure3D object used to store 3-dimensional objects in Aim repository..
 
     Currently, 3D figure formats are limited to stl and obj

@@ -3,7 +3,7 @@ import shutil
 
 from aim.sdk.repo import Repo, _get_tracking_queue
 from aimcore.web.utils import exec_cmd
-from aimcore.cli.up import build_db_upgrade_command
+from aimcore.cli.ui import build_db_upgrade_command
 from aim.sdk.configs import AIM_REPO_NAME, AIM_ENV_MODE_KEY
 from aim.core.utils.tracking import analytics
 

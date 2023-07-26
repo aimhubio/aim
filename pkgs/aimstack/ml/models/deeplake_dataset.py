@@ -3,7 +3,7 @@ import warnings
 import logging
 from deeplake.util.exceptions import ReadOnlyModeError
 
-from aim._sdk.object import Object
+from aim._sdk.record import Record
 
 logger = logging.getLogger(__name__)
 
@@ -16,8 +16,8 @@ class ViewOnUncommittedDatasetWarning(UserWarning):
     pass
 
 
-@Object.alias('deeplake.Dataset')
-class DeeplakeDataset(Object):
+@Record.alias('deeplake.Dataset')
+class DeeplakeDataset(Record):
     """
     Track Activeloop Deeplake Dataset with versioning.
 

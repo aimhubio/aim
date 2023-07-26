@@ -1,6 +1,7 @@
 const isDev = process.env.NODE_ENV === 'development';
 
-const enabled = () => !isDev && window.gtag !== undefined;
+const enabled = () =>
+  !isDev && window.telemetry_enabled === 1 && window.gtag !== undefined;
 
 const pageView = (pageName: string) => {
   if (enabled()) {
@@ -12,7 +13,16 @@ const pageView = (pageName: string) => {
   }
 };
 
-const trackEvent = (eventName: string, properties = {}) => {
+const trackEvent = (
+  eventName: string,
+  properties:
+    | {
+        event_category: string;
+        event_label: string;
+        [key: string]: string;
+      }
+    | {} = {},
+) => {
   if (enabled()) {
     window.gtag('event', eventName, properties);
   }

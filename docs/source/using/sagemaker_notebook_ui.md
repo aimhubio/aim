@@ -47,13 +47,13 @@ run['hparams'] = {
 
 In order to run Aim UI from a terminal, execute the following command:
 ```shell
-$ aim up --base-path=/proxy/absolute/<your-port>/aim-sage
+$ aim ui --base-path=/proxy/absolute/<your-port>/aim-sage
 ```
 
 After running this command you will be able to open `<sagemker_instance>/proxy/absolute/<your-port>/aim-sage/` in your browser.
 The default port is `43800`.
 
-It is possible to set `__AIM_PROXY_URL__` env variable, and `aim up` command will print out the generated url for Aim UI.
+It is possible to set `__AIM_PROXY_URL__` env variable, and `aim ui` command will print out the generated url for Aim UI.
 
 To find your proxy url, just copy your SageMaker URL and remove `/lab` postfix.
 
@@ -67,10 +67,10 @@ To find your proxy url, just copy your SageMaker URL and remove `/lab` postfix.
 %load_ext aim
 ```
 
-2. Run `%aim up` command to open Aim UI in the notebook:
+2. Run `%aim ui` command to open Aim UI in the notebook:
 
 ```jupyter
-%aim up --proxy-url=https://<instance>.notebook.<region>.sagemaker.aws
+%aim ui --proxy-url=https://<instance>.notebook.<region>.sagemaker.aws
 ```
 
 Will load the Aim UI in the notebook cell.

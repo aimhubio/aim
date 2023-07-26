@@ -17,7 +17,7 @@ except ImportError:
         return None
 
 
-from aim._sdk.object import Object
+from aim._sdk.record import Record
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -26,20 +26,20 @@ if TYPE_CHECKING:
 
 def get_typename(type_: Type, inner_type: Optional[Type] = None) -> str:
     if issubclass(type_, int):
-        return f'{Object.get_typename()}->aim.Number->aim.Int'
+        return f'{Record.get_typename()}->aim.Number->aim.Int'
     if issubclass(type_, float):
-        return f'{Object.get_typename()}->aim.Number->aim.Float'
+        return f'{Record.get_typename()}->aim.Number->aim.Float'
     if issubclass(type_, numbers.Number):
-        return f'{Object.get_typename()}->aim.Number'
+        return f'{Record.get_typename()}->aim.Number'
     if issubclass(type_, str):
-        return f'{Object.get_typename()}->aim.String'
-    if issubclass(type_, Object):
+        return f'{Record.get_typename()}->aim.String'
+    if issubclass(type_, Record):
         return type_.get_full_typename()
     if issubclass(type_, list):
         if inner_type:
-            return f'{Object.get_typename()}->aim.List[{get_typename(inner_type)}]'
+            return f'{Record.get_typename()}->aim.List[{get_typename(inner_type)}]'
         else:
-            return f'{Object.get_typename()}->aim.List[]'
+            return f'{Record.get_typename()}->aim.List[]'
     return ''
 
 
@@ -79,7 +79,7 @@ def get_sequence_value_types(seq_type: Type['Sequence']) -> Tuple[str, ...]:
         elif item_type.__constraints__ != ():
             item_type = Union[item_type.__constraints__]
         else:
-            return Object.get_typename(),
+            return Record.get_typename(),
 
     def _get_generic_typename(type_):
         if hasattr(type_, '__origin__'):

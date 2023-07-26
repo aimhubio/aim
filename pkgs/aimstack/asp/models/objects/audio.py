@@ -3,7 +3,7 @@ import logging
 import os.path
 
 from aim._sdk.num_utils import inst_has_typename
-from aim import Object
+from aim import Record
 from aim._sdk.blob import BLOB
 
 from .io import wavfile
@@ -11,8 +11,9 @@ from .io import wavfile
 logger = logging.getLogger(__name__)
 
 
-@Object.alias('aim.Audio')
-class Audio(Object):
+@Record.alias('aim.Audio')
+@Record.alias('aim.audio')
+class Audio(Record):
     """Audio object used to store audio objects in Aim repository..
 
     Currently, audio formats are limited to mp3, wav, flac

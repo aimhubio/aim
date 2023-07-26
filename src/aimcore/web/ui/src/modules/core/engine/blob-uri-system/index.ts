@@ -119,9 +119,15 @@ function createBlobURISystemEngine(): IBlobURISystemEngine {
           .call(blobUris)
           .then(async (stream) => {
             await parseStream(stream, {
-              callback: (object: { hash: string; value: ArrayBuffer }) => {
-                const blobData: string = arrayBufferToBase64(object.value);
-                fire(object.hash, blobData);
+              callback: (object: {
+                hash: string;
+                value: ArrayBuffer | string;
+              }) => {
+                let blobData: string | ArrayBuffer = object.value;
+                if (typeof object.value !== 'string') {
+                  blobData = arrayBufferToBase64(object.value);
+                }
+                fire(object.hash, blobData as string);
               },
             });
             return Promise.resolve();

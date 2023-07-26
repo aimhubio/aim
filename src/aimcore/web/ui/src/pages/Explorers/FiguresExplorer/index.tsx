@@ -1,7 +1,7 @@
 import { isDEVModeOn } from 'config/config';
 
 import renderer from 'modules/BaseExplorer';
-import Figures from 'modules/BaseExplorer/components/Figures';
+import Figure from 'modules/BaseExplorer/components/Figure';
 
 import { SequenceType } from 'types/core/enums';
 
@@ -21,7 +21,7 @@ export const figuresExplorerConfig = {
       controls: defaultConfig.controls,
       box: {
         ...defaultConfig.box,
-        component: Figures,
+        component: Figure,
       },
     },
   },
