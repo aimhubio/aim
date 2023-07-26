@@ -2,6 +2,7 @@ import React from 'react';
 import { areEqual, VariableSizeList as List } from 'react-window';
 
 import AudioBox from 'components/AudioBox';
+import ImageBox from 'components/ImageBox';
 import ErrorBoundary from 'components/ErrorBoundary';
 
 import {
@@ -12,10 +13,9 @@ import {
 
 import getBiggestImageFromList from 'utils/getBiggestImageFromList';
 
-import ImageBox from './ImageBox';
 import { IMediaListProps } from './MediaList.d';
 
-const mediaBoxType: any = {
+const MediaBoxComponent: any = {
   [MediaTypeEnum.IMAGE]: ImageBox,
   [MediaTypeEnum.AUDIO]: AudioBox,
 };
@@ -110,7 +110,7 @@ export default MediaList;
 
 const MediaBoxMemoized = React.memo(function MediaBoxMemoized(props: any) {
   const { index, style, data } = props;
-  const Component = mediaBoxType[data.mediaType];
+  const Component = MediaBoxComponent[data.mediaType];
 
   return (
     <ErrorBoundary>

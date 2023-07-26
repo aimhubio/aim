@@ -8,7 +8,7 @@ import { AudioBoxProps } from './';
 function AudioBox(props: AudioBoxProps) {
   const {
     audioRef,
-    mediaState,
+    data,
     setIsPlaying,
     setProcessing,
     onPlay,
@@ -24,7 +24,7 @@ function AudioBox(props: AudioBoxProps) {
       <div style={props.style}>
         <AudioPlayer
           audioRef={audioRef}
-          src={mediaState.src}
+          src={data.src}
           onEnded={() => setIsPlaying(false)}
           onCanPlay={() => setProcessing(false)}
           onPlay={onPlay}

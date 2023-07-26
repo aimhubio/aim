@@ -7,4 +7,4 @@ RUN python -m pip install aim==$AIM_VERSION
 WORKDIR /opt/aim
 RUN aim init
 ENTRYPOINT ["aim"]
-CMD ["up"]
+CMD ["ui"]

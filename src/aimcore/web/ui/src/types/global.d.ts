@@ -5,6 +5,7 @@ declare global {
   const __DEV__: boolean;
   interface Window {
     gtag: GTAG;
+    telemetry_enabled: number;
   }
 }
 
