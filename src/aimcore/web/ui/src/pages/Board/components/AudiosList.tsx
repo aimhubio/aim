@@ -12,19 +12,22 @@ function AudiosList(props: any) {
     ...audio.record,
   }));
 
+  const boxStyle = {
+    margin: '5px',
+    height: 50,
+    width: 'calc(100% - 10px)',
+    flex: 1,
+  };
+  const boxKey = (item: any) =>
+    `${item?.container?.hash}_${item.name}_${JSON.stringify(item.context)}_${
+      item.step
+    }_${item.index}`;
   return (
     <div className='AudiosList' style={{ height: '100%', overflow: 'auto' }}>
-      {data.map((item: any, i: number) => (
+      {data.map((item: any) => (
         <AudioBox
-          key={`${item?.container?.hash}_${item.name}_${JSON.stringify(
-            item.context,
-          )}_${item.step}_${item.index}`}
-          style={{
-            margin: '5px',
-            height: 50,
-            width: 'calc(100% - 10px)',
-            flex: 1,
-          }}
+          key={boxKey(item)}
+          style={boxStyle}
           blobData={item.blobs.data}
           format={item.format}
           caption={item.caption}
