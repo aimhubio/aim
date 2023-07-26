@@ -70,7 +70,7 @@ function FigureBox(props: FigureBoxProps) {
             onUpdate={onAutoSize}
           />
         ) : (
-          <Spinner size={24} />
+          <Spinner size={24} thickness={2} />
         )}
       </div>
     </ErrorBoundary>
