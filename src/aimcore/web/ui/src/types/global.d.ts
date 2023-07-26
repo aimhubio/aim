@@ -1,5 +1,12 @@
+interface GTAG {
+  (command: string, target: string, params?: any): void;
+}
 declare global {
   const __DEV__: boolean;
+  interface Window {
+    gtag: GTAG;
+    telemetry_enabled: number;
+  }
 }
 
 export enum AppNameEnum {
@@ -9,10 +16,3 @@ export enum AppNameEnum {
   AUDIOS = 'audios',
   TEXT = 'text',
 }
-
-// export enum GroupNameEnum {
-//   COLOR = 'color',
-//   STROKE = 'stroke',
-//   CHART = 'chart',
-//   ROW = 'row',
-// }
