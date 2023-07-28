@@ -1,7 +1,7 @@
 import os
 import click
 
-from aimcore.cli.utils import set_log_level
+from aimcore.cli.utils import set_log_level, start_uvicorn_app
 from aim._sdk.repo import Repo
 from aim._sdk.package_utils import Package
 from aimcore.transport.config import (
@@ -75,17 +75,20 @@ def server(host, port,
     # delete the repo as it needs to be opened in a child process in dev mode
     del repo_inst
 
-    try:
-        from aimcore.transport.server import start_server
+    if dev:
+        import aim
+        import aimcore
 
-        if dev:
-            import aim
-            import aimcore
-            reload_dirs = (os.path.dirname(aim.__file__), os.path.dirname(aim.__file__), dev_package_dir)
-            start_server(host, port, ssl_keyfile, ssl_certfile, log_level=log_level, reload=dev, reload_dirs=reload_dirs)
-        else:
-            start_server(host, port, ssl_keyfile, ssl_certfile, log_level=log_level)
+        reload_dirs = [os.path.dirname(aim.__file__), os.path.dirname(aimcore.__file__), dev_package_dir]
+    else:
+        reload_dirs = []
+
+    try:
+        start_uvicorn_app('aimcore.transport.server:app',
+                          host=host, port=port,
+                          ssl_keyfile=ssl_keyfile, ssl_certfile=ssl_certfile, log_level=log_level,
+                          reload=dev, reload_dirs=reload_dirs)
     except Exception:
         click.echo('Failed to run Aim Tracking Server. '
-                   'Please see the logs for details.')
-        return
+                   'Please see the logs above for details.')
+        exit(1)

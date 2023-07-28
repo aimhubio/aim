@@ -15,35 +15,6 @@ def build_db_upgrade_command():
     return [sys.executable, '-m', 'alembic', '-c', ini_file, 'upgrade', 'head']
 
 
-def build_uvicorn_command(host, port, num_workers, uds_path, ssl_keyfile, ssl_certfile, log_level, dev_package_dir):
-    cmd = [sys.executable, '-m', 'uvicorn',
-           '--host', host, '--port', f'{port}',
-           '--workers', f'{num_workers}']
-    if os.getenv(AIM_ENV_MODE_KEY, 'prod') == 'prod':
-        log_level = log_level or 'error'
-    else:
-        import aim
-        import aimstack
-        from aimcore import web as aim_web
-
-        cmd += ['--reload']
-        cmd += ['--reload-dir', os.path.dirname(aim.__file__)]
-        cmd += ['--reload-dir', os.path.dirname(aim_web.__file__)]
-        cmd += ['--reload-dir', os.path.dirname(aimstack.__file__)]
-        cmd += ['--reload-dir', dev_package_dir]
-
-        log_level = log_level or 'debug'
-    if uds_path:
-        cmd += ['--uds', uds_path]
-    if ssl_keyfile:
-        cmd += ['--ssl-keyfile', ssl_keyfile]
-    if ssl_certfile:
-        cmd += ['--ssl-certfile', ssl_certfile]
-    cmd += ['--log-level', log_level.lower()]
-    cmd += ['aimcore.web.run:app']
-    return cmd
-
-
 def get_free_port_num():
     import socket
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
