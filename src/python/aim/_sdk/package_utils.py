@@ -2,8 +2,9 @@ import pathlib
 import pkgutil
 import importlib
 import logging
+import sys
 
-from typing import Iterable, Dict, List
+from typing import Iterable, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -56,11 +57,26 @@ class Package:
             Package.pool[name] = Package(name, pkg)
 
     @staticmethod
-    def load_package(package_name: str):
+    def load_package(package_name: str, src_lookup_dir: Optional[str] = None) -> bool:
         if package_name in Package.pool:
-            return
-        pkg = importlib.import_module(package_name)
-        Package.pool[package_name] = Package(package_name, pkg)
+            return True
+        try:
+            pkg = importlib.import_module(package_name)
+            if package_name not in Package.pool:
+                Package.pool[package_name] = Package(package_name, pkg)
+            return True
+        except ModuleNotFoundError:
+            if src_lookup_dir is None:
+                return False
+
+        sys.path.append(str(pathlib.Path(src_lookup_dir) / package_name / 'src'))
+        try:
+            pkg = importlib.import_module(package_name)
+            if package_name not in Package.pool:
+                Package.pool[package_name] = Package(package_name, pkg)
+            return True
+        except ModuleNotFoundError:
+            return False
 
     def register_aim_package_classes(self, name, pkg):
         if not hasattr(pkg, '__aim_types__'):
