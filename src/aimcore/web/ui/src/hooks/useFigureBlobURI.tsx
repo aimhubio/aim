@@ -1,53 +1,43 @@
 import React from 'react';
+import { PlotParams } from 'react-plotly.js';
 
-import { ImageBoxProps } from 'components/ImageBox';
+import { FigureBoxProps } from 'components/FigureBox';
 
 import { BATCH_COLLECT_DELAY } from 'config/mediaConfigs/mediaConfigs';
 
-function useImageBlobURI({
+function useFigureBlobURI({
   engine: { blobURI },
   format,
-  caption,
-  name,
-  step,
-  index,
   blobData: blob_uri,
-}: ImageBoxProps) {
+  isFullView,
+}: FigureBoxProps) {
   const initialBlobData = blobURI.getBlobData(blob_uri);
-  const initialSrc =
-    initialBlobData && format
-      ? `data:image/${format};base64,${initialBlobData}`
-      : '';
 
-  const [data, setData] = React.useState({
-    blobData: initialBlobData,
-    src: initialSrc,
-  });
+  const [data, setData] = React.useState<PlotParams | null>(
+    initialBlobData ? JSON.parse(initialBlobData) : null,
+  );
 
   React.useEffect(() => {
     let timeoutID: number;
     let unsubscribe: () => void;
 
-    const setBlobDataAndSrc = (blobData: string, format: string) => {
-      setData({
-        blobData,
-        src: `data:image/${format};base64,${blobData}`,
-      });
+    const setBlobData = (blobData: string) => {
+      setData(blobData ? JSON.parse(blobData) : null);
     };
 
-    if (data.blobData === null) {
+    if (data === null) {
       const currentBlobData = blobURI.getBlobData(blob_uri);
       if (currentBlobData) {
-        setBlobDataAndSrc(currentBlobData, format);
+        setBlobData(currentBlobData);
       } else {
         unsubscribe = blobURI.on(blob_uri, (blobData: string) => {
-          setBlobDataAndSrc(blobData, format);
+          setBlobData(blobData);
           unsubscribe();
         });
         timeoutID = window.setTimeout(() => {
           const currentBlobData = blobURI.getBlobData(blob_uri);
           if (currentBlobData) {
-            setBlobDataAndSrc(currentBlobData, format);
+            setBlobData(currentBlobData);
             unsubscribe();
           } else {
             blobURI.addUriToQueue(blob_uri);
@@ -64,15 +54,11 @@ function useImageBlobURI({
         unsubscribe();
       }
     };
-  }, [data.blobData, blobURI, blob_uri, format]);
+  }, [blob_uri, data, blobURI, format, isFullView]);
 
   return {
     data,
-    caption,
-    name,
-    step,
-    index,
   };
 }
 
-export default useImageBlobURI;
+export default useFigureBlobURI;

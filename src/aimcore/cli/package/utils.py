@@ -36,6 +36,8 @@ dynamic = [
   'version'
 ]
 
+[tool.setuptools.package-data]
+{name} = ["*.py"]
 """
 
 

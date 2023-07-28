@@ -71,6 +71,7 @@ REQUIRED = [
     'watchdog',
     'requests',
     'segment-analytics-python',
+    'importlib_metadata',
 ]
 
 
