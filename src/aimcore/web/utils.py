@@ -1,6 +1,7 @@
 import os
 import subprocess
 
+from typing import Optional
 from importlib import import_module
 from cachetools.func import ttl_cache
 
@@ -107,10 +108,12 @@ def get_root_package_name():
     return package_name
 
 
-def get_root_package():
+def get_root_package() -> Optional[Package]:
     pkg_name = get_root_package_name()
+    pkgs_dir = os.path.join(get_root_path(), get_aim_repo_name(), 'pkgs')
     if pkg_name not in Package.pool:
-        Package.load_package(pkg_name)
+        if not Package.load_package(pkg_name, pkgs_dir):
+            return None
     return Package.pool[pkg_name]
 
 
