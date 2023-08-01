@@ -7,7 +7,6 @@ import aimrocks
 from typing import Iterator, Optional, Tuple
 
 from aimcore.cleanup import AutoClean
-from aim._ext.exception_resistant import exception_resistant
 from aim._core.storage.locking import SoftFileLock, NoopLock
 from aim._core.storage.types import BLOB
 from aim._core.storage.container import Container, ContainerKey, ContainerValue, ContainerItemsIterator
@@ -144,8 +143,6 @@ class RocksContainer(Container):
             lock_cls = self.get_lock_cls()
             self._lock = lock_cls(self._lock_path, timeout)
             self._lock.acquire()
-        else:
-            self.optimize_for_read()
 
         self._db = aimrocks.DB(str(self.path),
                                aimrocks.Options(**self._db_opts),
@@ -539,41 +536,6 @@ class RocksContainer(Container):
             value = self._get_blob(key)
 
         return key, value
-
-    def optimize_for_read(self):
-        optimize_db_for_read(self.path, self._db_opts, run_compactions=self._extra_opts.get('compaction', False))
-
-
-@exception_resistant(silent=True)
-def optimize_db_for_read(path: Path, options: dict, run_compactions: bool = False):
-    """
-    This function will try to open rocksdb db in write mode and force WAL files recovery. Once done the underlying
-    db will contain .sst files only which will significantly reduce further open and read operations. Further
-    optimizations can be done by running compactions but this is a costly operation to be performed online.
-
-
-    Args:
-        path (:obj:`Path`): Path to rocksdb.
-        options (:obj:`dict`): options to be passed to aimrocks.DB object __init__.
-        run_compactions (:obj:`bool`, optional): Flag used to run rocksdb range compactions. False by default.
-    """
-
-    def non_empty_wal():
-        for wal_path in path.glob('*.log'):
-            if os.path.getsize(wal_path) > 0:
-                return True
-        return False
-
-    if non_empty_wal():
-        lock_path = prepare_lock_path(path)
-
-        with SoftFileLock(lock_path, timeout=0):
-            wdb = aimrocks.DB(str(path), aimrocks.Options(**options), read_only=False)
-            wdb.flush()
-            wdb.flush_wal()
-            if run_compactions:
-                wdb.compact_range()
-            del wdb
 
 
 def prepare_lock_path(path: Path):

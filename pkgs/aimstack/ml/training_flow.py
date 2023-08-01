@@ -69,7 +69,7 @@ class TrainingFlow(Caller):
         """Is called when exception is raised from Aim codebase. """
 
     def handle_exceptions(self):
-        from aim._ext.exception_resistant import set_exception_callback
+        from aimcore.error_handling import set_exception_callback
 
         def callback(e: Exception, func: callable):
             self.exception_raised(exception=e, function=func)
