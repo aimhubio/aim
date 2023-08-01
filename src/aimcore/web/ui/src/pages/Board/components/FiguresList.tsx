@@ -12,14 +12,6 @@ function FiguresList(props: any) {
     ...figure.record,
   }));
 
-  const boxStyle = {
-    width: '100%',
-    height: '100%',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    margin: 5,
-  };
   const boxKey = (item: any) =>
     `${item?.container?.hash}_${item.name}_${JSON.stringify(item.context)}_${
       item.step
@@ -29,7 +21,6 @@ function FiguresList(props: any) {
       {data.map((item: any) => (
         <FigureBox
           key={boxKey(item)}
-          style={boxStyle}
           blobData={item.blobs.data}
           format={item.format}
           name={item.name}
