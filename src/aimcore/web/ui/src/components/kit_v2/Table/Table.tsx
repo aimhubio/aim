@@ -91,8 +91,18 @@ function Table({
     }
   }
 
+  let height = undefined;
+
+  if (tableRef.current?.offsetHeight) {
+    height = tableRef.current.offsetHeight;
+
+    if (height > 600) {
+      height = 600;
+    }
+  }
+
   return (
-    <TableContainerStyled css={{ minHeight: tableRef.current?.offsetHeight }}>
+    <TableContainerStyled css={{ minHeight: height }}>
       <TableStyled
         className={classNames('AimTable', className)}
         ref={tableRef}
