@@ -1,17 +1,14 @@
 from asp import AudioSequence
 import math
 
-container_hash = None
-if 'container_hash' in session_state:
-    container_hash = session_state['container_hash']
+c_hash = session_state.get('container_hash')
 
-if container_hash is None:
+if c_hash is None:
     ui.header("Audios")
     form = ui.form("Search")
     query = form.text_input(value="")
 
-audios = AudioSequence.filter(
-    f'c.hash=="{container_hash}"' if container_hash else query)
+audios = AudioSequence.filter(f'c.hash=="{c_hash}"' if c_hash else query)
 
 
 def flatten(dictionary, parent_key="", separator="."):
@@ -73,7 +70,7 @@ else:
         row2.table(
             get_table_data(audios, int(items_per_page), int(page_num)),
             {
-                "container.hash": lambda val: ui.board_link("run.py", val, state={"hash": val}),
+                "container.hash": lambda val: ui.board_link("run.py", val, state={"container_hash": val}),
                 "data": lambda val: ui.audios([audios[int(val)]]),
             },
         )

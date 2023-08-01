@@ -1,17 +1,14 @@
 from asp import TextSequence
 import math
 
-container_hash = None
-if 'container_hash' in session_state:
-    container_hash = session_state['container_hash']
+c_hash = session_state.get('container_hash')
 
-if container_hash is None:
+if c_hash is None:
     ui.header('Texts')
     form = ui.form("Search")
     query = form.text_input(value="")
 
-texts = TextSequence.filter(
-    f'c.hash=="{container_hash}"' if container_hash else query)
+texts = TextSequence.filter(f'c.hash=="{c_hash}"' if c_hash else query)
 
 
 def flatten(dictionary, parent_key='', separator='.'):
@@ -66,5 +63,5 @@ else:
         page_num = ui.select('Page', options=page_numbers, index=0)
 
     row2.table(get_table_data(texts, int(items_per_page), int(page_num)), {
-        'container.hash': lambda val: ui.board_link('run.py', val, state={'hash': val}),
+        'container.hash': lambda val: ui.board_link('run.py', val, state={'container_hash': val}),
     })

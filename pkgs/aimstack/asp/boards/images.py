@@ -1,17 +1,14 @@
 from asp import ImageSequence
 
-container_hash = None
-if 'container_hash' in session_state:
-    container_hash = session_state['container_hash']
+c_hash = session_state.get('container_hash')
 
-if container_hash is None:
+if c_hash is None:
     ui.header("Images")
     form = ui.form("Search")
     query = form.text_input(value="")
 
 
-images = ImageSequence.filter(
-    f'c.hash=="{container_hash}"' if container_hash else query)
+images = ImageSequence.filter(f'c.hash=="{c_hash}"' if c_hash else query)
 
 
 def flatten(dictionary, parent_key='', separator='.'):
@@ -61,6 +58,6 @@ else:
             'Page', value=1, min=1, max=int(len(images) / int(items_per_page)) + 1)
 
     row2.table(get_table_data(images, int(items_per_page), page_num), {
-        'container.hash': lambda val: ui.board_link('run.py', val, state={'hash': val}),
+        'container.hash': lambda val: ui.board_link('run.py', val, state={'container_hash': val}),
         'data': lambda val: ui.images([images[int(val)]])
     })

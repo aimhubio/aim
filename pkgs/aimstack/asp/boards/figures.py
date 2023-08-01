@@ -1,10 +1,14 @@
 from asp import FigureSequence
 
-ui.header('Figures')
-form = ui.form('Search')
-query = form.text_input(value='')
+c_hash = session_state.get('container_hash')
 
-figures = FigureSequence.filter(query)
+if c_hash is None:
+    ui.header("Figures")
+    form = ui.form("Search")
+    query = form.text_input(value="")
+
+
+figures = FigureSequence.filter(f'c.hash=="{c_hash}"' if c_hash else query)
 
 
 def flatten(dictionary, parent_key='', separator='.'):
@@ -32,7 +36,8 @@ def get_table_data(data=[], page_size=10, page_num=1):
             if key in exclude_keys:
                 continue
             else:
-                if key == 'data':
+                if key == "blobs.data":
+                    key = "data"
                     value = ((page_num - 1) * page_size) + i
                 if key in table_data:
                     table_data[key].append(f'{value}')
@@ -50,5 +55,6 @@ with row1:
         'Page', value=1, min=1, max=int(len(figures) / int(items_per_page)) + 1)
 
 row2.table(get_table_data(figures, int(items_per_page), page_num), {
-    'container.hash': lambda val: ui.board_link('run.py', val, state={'hash': val}),
+    'container.hash': lambda val: ui.board_link('run.py', val, state={'container_hash': val}),
+    "data": lambda val: ui.figures([figures[int(val)]]),
 })

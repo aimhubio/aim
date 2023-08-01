@@ -2,18 +2,14 @@ from asp import Metric
 from itertools import groupby
 import math
 
-run_hash = None
-if 'run_hash' in session_state:
-    run_hash = session_state['run_hash']
+c_hash = session_state.get('container_hash')
 
-if run_hash is None:
+if c_hash is None:
     ui.header("Metrics")
     form = ui.form("Search")
     query = form.text_input(value="")
 
-
-metrics = Metric.filter(
-    f'c.hash=="{run_hash}"' if run_hash else query)
+metrics = Metric.filter(f'c.hash=="{c_hash}"' if c_hash else query)
 
 
 def flatten(dictionary, parent_key='', separator='.'):
@@ -28,26 +24,20 @@ def flatten(dictionary, parent_key='', separator='.'):
 
 
 @memoize
-def get_table_data(data=[], page_size=10, page_num=1):
+def get_table_data(data=[], page_size=10, page_num=1, keys=[]):
     table_data = {}
-    exclude_keys = ['type', 'container_type', 'sequence_type', 'sequence_full_type', 'axis.epoch', 'steps',
-                    'item_type', 'container_full_type', 'values']
-
     page_data = data[(page_num - 1) * page_size:page_num * page_size]
-
     for i, page_item in enumerate(page_data):
-        items = flatten(page_item).items()
-        for key, value in items:
-            if key in exclude_keys:
-                continue
+        flattened_item = flatten(page_item)
+        filtered_by_keys = {key: flattened_item[key] for key in keys}
+        for key, value in filtered_by_keys.items():
+            if key == 'blobs.data':
+                key = 'data'
+                value = i
+            if key in table_data:
+                table_data[key].append(f'{value}')
             else:
-                if key == 'blobs.data':
-                    key = 'data'
-                    value = i
-                if key in table_data:
-                    table_data[key].append(f'{value}')
-                else:
-                    table_data[key] = [f'{value}']
+                table_data[key] = [f'{value}']
     return table_data
 
 
@@ -101,9 +91,16 @@ if metrics:
     with row1:
         page_num = ui.select('Page', options=page_numbers, index=0)
 
-    row2.table(get_table_data(metrics, int(items_per_page), int(page_num)), {
-        'container.hash': lambda val: ui.board_link('run.py', val, state={'hash': val}),
-    })
+    with row2:
+        table_data = get_table_data(
+            data=metrics,
+            page_size=int(items_per_page),
+            page_num=int(page_num),
+            keys=['name', 'container.hash', 'context.subset', 'range']
+        )
+        row2.table(table_data, {
+            'container.hash': lambda val: ui.board_link('run.py', val, state={'container_hash': val}),
+        })
 
 else:
     ui.text(f'No metrics found')
