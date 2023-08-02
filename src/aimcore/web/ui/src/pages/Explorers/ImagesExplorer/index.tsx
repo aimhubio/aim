@@ -1,18 +1,18 @@
 import { isDEVModeOn } from 'config/config';
 
 import renderer from 'modules/BaseExplorer';
-import Figure from 'modules/BaseExplorer/components/Figure';
+import Image from 'modules/BaseExplorer/components/Image';
 
 import { SequenceType } from 'types/core/enums';
 
-import { getFiguresDefaultConfig } from './config';
+import { getImagesDefaultConfig } from './config';
 
-const defaultConfig = getFiguresDefaultConfig();
+const defaultConfig = getImagesDefaultConfig();
 
-export const figuresExplorerConfig = {
-  name: 'Figures Explorer',
-  sequenceType: SequenceType.Figure,
-  basePath: 'figures',
+export const imagesExplorerConfig = {
+  name: 'Images Explorer',
+  sequenceType: SequenceType.Image,
+  basePath: 'images',
   persist: true,
   groupings: defaultConfig.groupings,
   visualizations: {
@@ -21,13 +21,13 @@ export const figuresExplorerConfig = {
       controls: defaultConfig.controls,
       box: {
         ...defaultConfig.box,
-        component: Figure,
+        component: Image,
       },
     },
   },
   getStaticContent: defaultConfig.getStaticContent,
 };
 
-const FiguresExplorer = renderer(figuresExplorerConfig, isDEVModeOn);
+const ImagesExplorer = renderer(imagesExplorerConfig, isDEVModeOn);
 
-export default FiguresExplorer;
+export default ImagesExplorer;

@@ -4,6 +4,7 @@ import useFontSize from './useFontSize';
 import useModel from './useModel';
 import useAudioBlobURI from './useAudioBlobURI';
 import useImageBlobURI from './useImageBlobURI';
+import useFigureBlobURI from './useFigureBlobURI';
 
 export {
   useParamsSuggestions,
@@ -12,6 +13,7 @@ export {
   useModel,
   useAudioBlobURI,
   useImageBlobURI,
+  useFigureBlobURI,
 };
 
 export * from './window';

@@ -1,13 +1,6 @@
 import React from 'react';
 
-import {
-  IconChartDots,
-  IconFileAnalytics,
-  IconFlag3,
-  IconLayout2,
-  IconTable,
-  IconBox,
-} from '@tabler/icons-react';
+import { IconChartDots, IconFileAnalytics, IconBox } from '@tabler/icons-react';
 
 import { PathEnum } from 'config/enums/routesEnum';
 import { ExplorersCatsEnum } from 'config/enums/explorersCatsEnum';
@@ -76,6 +69,12 @@ const AudiosExplorer = React.lazy(
       /* webpackChunkName: "AudiosExplorer" */ 'pages/Explorers/AudiosExplorer'
     ),
 );
+const ImagesExplorer = React.lazy(
+  () =>
+    import(
+      /* webpackChunkName: "ImagesExplorer" */ 'pages/Explorers/ImagesExplorer'
+    ),
+);
 
 const MetricsExplorer = React.lazy(
   () =>
@@ -138,32 +137,18 @@ export enum RouteStatusEnum {
 }
 
 export const explorersRoutes: { [key: string]: IRoute } = {
-  // METRICS: {
-  //   path: PathEnum.Metrics,
-  //   component: Metrics,
-  //   showInSidebar: false,
-  //   displayName: 'Metrics',
-  //   description:
-  //     'Metrics Explorer allows to filter, group, aggregate tracked metrics.',
-  //   icon: 'metrics',
-  //   isExact: true,
-  //   title: pageTitlesEnum.METRICS_EXPLORER,
-  //   color: '#7A4CE0',
-  //   category: ExplorersCatsEnum.Trainings,
-  // },
-  // PARAMS: {
-  //   path: PathEnum.Params,
-  //   component: Params,
-  //   showInSidebar: false,
-  //   displayName: 'Params',
-  //   description:
-  //     'Params Explorer helps to visualize tracked h-params and metrics results via parallel coordinates plot.',
-  //   icon: 'params',
-  //   isExact: true,
-  //   title: pageTitlesEnum.PARAMS_EXPLORER,
-  //   color: '#AF4EAB',
-  //   category: ExplorersCatsEnum.Trainings,
-  // },
+  METRICS_EXPLORER: {
+    path: PathEnum.Metrics_Explorer,
+    component: MetricsExplorer,
+    showInSidebar: false,
+    icon: 'metrics',
+    displayName: 'Metrics',
+    description: 'Explore thousands of tracked metrics with Metrics Explorer.',
+    isExact: true,
+    title: pageTitlesEnum.METRICS_EXPLORER,
+    color: '#7A4CE0',
+    category: ExplorersCatsEnum.Trainings,
+  },
   TEXT_EXPLORER: {
     path: PathEnum.Text_Explorer,
     component: TextExplorer,
@@ -190,19 +175,19 @@ export const explorersRoutes: { [key: string]: IRoute } = {
     color: '#1473E6',
     category: ExplorersCatsEnum.Prompts,
   },
-  // IMAGES_EXPLORER: {
-  //   path: PathEnum.Images_Explorer,
-  //   component: ImagesExplore,
-  //   showInSidebar: false,
-  //   displayName: 'Images',
-  //   description:
-  //     'Images Explorer allows comparison of tracked images during training and evaluation.',
-  //   icon: 'images',
-  //   isExact: true,
-  //   title: pageTitlesEnum.IMAGES_EXPLORER,
-  //   color: '#F17922',
-  //   category: ExplorersCatsEnum.Trainings,
-  // },
+  IMAGES_EXPLORER: {
+    path: PathEnum.Images_Explorer,
+    component: ImagesExplorer,
+    showInSidebar: false,
+    displayName: 'Images',
+    description:
+      'Images Explorer allows comparison of tracked images during training and evaluation.',
+    icon: 'images',
+    isExact: true,
+    title: pageTitlesEnum.IMAGES_EXPLORER,
+    color: '#F17922',
+    category: ExplorersCatsEnum.Trainings,
+  },
   FIGURES_EXPLORER: {
     path: PathEnum.Figures_Explorer,
     component: FiguresExplorer,
@@ -242,18 +227,6 @@ export const explorersRoutes: { [key: string]: IRoute } = {
   //   color: '#606986',
   //   category: ExplorersCatsEnum.Trainings,
   // },
-  METRICS_EXPLORER: {
-    path: PathEnum.Metrics_Explorer,
-    component: MetricsExplorer,
-    showInSidebar: false,
-    icon: 'metrics',
-    displayName: 'Metrics',
-    description: 'Explore thousands of tracked metrics with Metrics Explorer.',
-    isExact: true,
-    title: pageTitlesEnum.METRICS_EXPLORER,
-    color: '#7A4CE0',
-    category: ExplorersCatsEnum.Trainings,
-  },
 };
 
 const routes: { [key: string]: any } = {

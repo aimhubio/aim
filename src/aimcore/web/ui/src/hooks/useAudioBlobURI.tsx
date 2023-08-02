@@ -30,7 +30,7 @@ function useAudioBlobURI({
 
   const [isPlaying, setIsPlaying] = React.useState<boolean>(false);
   const [processing, setProcessing] = React.useState<boolean>(false);
-  const [mediaState, setMediaState] = React.useState({
+  const [data, setData] = React.useState({
     blobData: initialBlobData,
     src: initialSrc,
   });
@@ -40,7 +40,7 @@ function useAudioBlobURI({
   const readyToPlayRef = React.useRef<boolean>(false);
 
   function onPlay() {
-    if (mediaState.src) {
+    if (data.src) {
       readyToPlayRef.current = true;
       events.fire(EVENTS.onAudioPlay, { blob_uri, isFullView });
       setIsPlaying(true);
@@ -59,7 +59,7 @@ function useAudioBlobURI({
   }
 
   function onDownload(): void {
-    if (mediaState.src) {
+    if (data.src) {
       handleDownload();
     } else {
       setProcessing(true);
@@ -69,13 +69,13 @@ function useAudioBlobURI({
         .then(() => {
           const blobData = blobURI.getBlobData(blob_uri);
           const newSrc = `data:audio/${format};base64,${blobData}`;
-          setMediaState({ blobData, src: newSrc });
+          setData({ blobData, src: newSrc });
           handleDownload(newSrc);
         });
     }
   }
 
-  function handleDownload(mediaSrc: string = mediaState.src): void {
+  function handleDownload(mediaSrc: string = data.src): void {
     const strContext = contextToString(context);
     const contextName = strContext === '' ? '' : `_${strContext}`;
     downloadLink(mediaSrc, `${name}${contextName}_${caption}_${step}_${index}`);
@@ -83,7 +83,7 @@ function useAudioBlobURI({
 
   React.useEffect(() => {
     const audio = audioRef.current;
-    if (mediaState.src) {
+    if (data.src) {
       if (isPlaying) {
         audio.muted = false;
         // eslint-disable-next-line no-console
@@ -92,7 +92,7 @@ function useAudioBlobURI({
         audio.pause();
       }
     }
-  }, [isPlaying, mediaState.src]);
+  }, [isPlaying, data.src]);
 
   React.useEffect(() => {
     const unsubscribe = events.on(
@@ -113,13 +113,13 @@ function useAudioBlobURI({
     let unsubscribe: () => void;
 
     const setBlobDataAndSrc = (blobData: string, format: string) => {
-      setMediaState({
+      setData({
         blobData,
         src: `data:audio/${format};base64,${blobData}`,
       });
     };
 
-    if (processing && mediaState.blobData === null) {
+    if (processing && data.blobData === null) {
       const currentBlobData = blobURI.getBlobData(blob_uri);
       if (currentBlobData) {
         setBlobDataAndSrc(currentBlobData, format);
@@ -148,7 +148,7 @@ function useAudioBlobURI({
         unsubscribe();
       }
     };
-  }, [mediaState.blobData, blobURI, blob_uri, format, processing]);
+  }, [data.blobData, blobURI, blob_uri, format, processing]);
 
   React.useEffect(() => {
     const audio = audioRef.current;
@@ -160,7 +160,7 @@ function useAudioBlobURI({
 
   return {
     audioRef,
-    mediaState,
+    data,
     setIsPlaying,
     setProcessing,
     onPlay,
