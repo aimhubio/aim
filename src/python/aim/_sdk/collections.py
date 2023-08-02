@@ -43,8 +43,7 @@ class ContainerCollectionBase(ABCContainerCollection[ContainerType]):
         return sum(1 for _ in self.__iter_meta__())
 
     def delete(self):
-        from aim import Repo
-        repo = Repo.active_repo()
+        repo = self.query_context['repo']
         for hash_ in self.__iter_meta__():
             repo.delete_container(hash_)
 
@@ -142,10 +141,9 @@ class SequenceCollectionBase(ABCSequenceCollection[SequenceType]):
         return sum(1 for _ in self.__iter_meta__())
 
     def delete(self):
-        from aim._sdk import Repo
         from aim._sdk import Container
         from aim._sdk.lock_manager import RunLockingError
-        repo = Repo.active_repo()
+        repo = self.query_context['repo']
         container_sequence_map = defaultdict(list)
         for hash_, name, context in self.__iter_meta__():
             container_sequence_map[hash_].append((name, context))

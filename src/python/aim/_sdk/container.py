@@ -70,7 +70,8 @@ class ContainerAutoClean(AutoClean['Container']):
 
         self._state['cleanup'] = True
         self._wait_for_empty_queue()
-        self._set_end_time()
+        if not self._state.get('deleted'):
+            self._set_end_time()
         if self._status_reporter is not None:
             self._status_reporter.close()
         if self._lock:
@@ -241,6 +242,9 @@ class Container(ABCContainer):
 
         # delete entry from container map
         del meta_tree.subtree('cont_types_map')[self.hash]
+
+        # set a deleted flag
+        self._state['deleted'] = True
 
         # close the container
         self.close()
