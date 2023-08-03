@@ -23,21 +23,16 @@ def flatten(dictionary, parent_key='', separator='.'):
 
 
 @memoize
-def get_table_data(data=[], page_size=10, page_num=1):
+def get_table_data(data=[], keys=[], page_size=10, page_num=1):
     table_data = {}
-    exclude_keys = ['type', 'container_type', 'sequence_type', 'sequence_full_type', 'hash', 'axis_names', 'axis.epoch',
-                    'item_type', 'container_full_type', 'values', 'data']
-
     page_data = data[(page_num - 1) * page_size:page_num * page_size]
 
-    for i, page_item in enumerate(page_data):
-        items = flatten(page_item).items()
-        for key, value in items:
-            if key in exclude_keys:
-                continue
-            else:
-                if key == "blobs.data":
-                    key = "data"
+    for key in keys:
+        for i, page_item in enumerate(page_data):
+            flattened = flatten(page_item)
+            if key in flattened:
+                value = flattened[key]
+                if key == 'blobs.data':
                     value = ((page_num - 1) * page_size) + i
                 if key in table_data:
                     table_data[key].append(f'{value}')
@@ -54,7 +49,14 @@ with row1:
     page_num = ui.number_input(
         'Page', value=1, min=1, max=int(len(figures) / int(items_per_page)) + 1)
 
-row2.table(get_table_data(figures, int(items_per_page), page_num), {
-    'container.hash': lambda val: ui.board_link('run.py', val, state={'container_hash': val}),
-    "data": lambda val: ui.figures([figures[int(val)]]),
-})
+with row2:
+    ui.table(get_table_data(
+        data=figures,
+        keys=['name', 'container.hash', 'context.train',
+              'format', 'source', 'range', 'blobs.data', 'step'],
+        page_size=int(items_per_page),
+        page_num=page_num
+    ), {
+        'container.hash': lambda val: ui.board_link('run.py', val, state={'container_hash': val}),
+        "blobs.data": lambda val: ui.figures([figures[int(val)]]),
+    })
