@@ -25,24 +25,19 @@ def flatten(dictionary, parent_key='', separator='.'):
 @memoize
 def get_table_data(data=[], page_size=10, page_num=1):
     table_data = {}
-    exclude_keys = ['type', 'container_type', 'sequence_type', 'sequence_full_type', 'hash', 'axis_names', 'axis.epoch',
-                    'item_type', 'container_full_type', 'values']
-
     page_data = data[(page_num - 1) * page_size:page_num * page_size]
 
     for i, page_item in enumerate(page_data):
         items = flatten(page_item).items()
         for key, value in items:
-            if key in exclude_keys:
-                continue
+
+            if key == 'blobs.data':
+                key = 'data'
+                value = ((page_num - 1) * page_size) + i
+            if key in table_data:
+                table_data[key].append(f'{value}')
             else:
-                if key == 'blobs.data':
-                    key = 'data'
-                    value = ((page_num - 1) * page_size) + i
-                if key in table_data:
-                    table_data[key].append(f'{value}')
-                else:
-                    table_data[key] = [f'{value}']
+                table_data[key] = [f'{value}']
     return table_data
 
 
