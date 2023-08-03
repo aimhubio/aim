@@ -1,13 +1,9 @@
 import * as React from 'react';
 
-import TextList from '../TextList';
+import TextsList from '../TextsList';
 
 function TextsVizElement(props: any) {
-  return (
-    <div className='VizComponentContainer'>
-      <TextList key={Date.now()} data={props.data} />
-    </div>
-  );
+  return <TextsList key={Date.now()} data={props.data} />;
 }
 
 export default TextsVizElement;

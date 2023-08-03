@@ -28,18 +28,20 @@ def get_table_data(data=[], keys=[], page_size=10, page_num=1):
     table_data = {}
     page_data = data[(page_num - 1) * page_size:page_num * page_size]
 
+    def append(key, value):
+        if key in table_data:
+            table_data[key].append(f'{value}')
+        else:
+            table_data[key] = [f'{value}']
+
     for key in keys:
         for i, page_item in enumerate(page_data):
             flattened_item = flatten(page_item)
             item = merge_dicts(page_item, flattened_item)
             if key in item:
                 value = item[key]
-                if key == 'blobs.data':
-                    value = ((page_num - 1) * page_size) + i
-                if key in table_data:
-                    table_data[key].append(f'{value}')
-                else:
-                    table_data[key] = [f'{value}']
+                append(key, value)
+
     return table_data
 
 

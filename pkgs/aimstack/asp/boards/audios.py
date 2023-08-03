@@ -23,54 +23,56 @@ def flatten(dictionary, parent_key="", separator="."):
 
 
 @memoize
-def get_table_data(data=[], page_size=10, page_num=1):
+def merge_dicts(dict1, dict2):
+    merged_dict = dict1.copy()
+    merged_dict.update(dict2)
+    return merged_dict
+
+
+@memoize
+def get_table_data(data=[], keys=[], page_size=10, page_num=1):
     table_data = {}
-    exclude_keys = [
-        "type",
-        "container_type",
-        "sequence_type",
-        "sequence_full_type",
-        "hash",
-        "axis_names",
-        "item_type",
-        "container_full_type",
-        "values",
-    ]
+    page_data = data[(page_num - 1) * page_size:page_num * page_size]
 
-    page_data = data[(page_num - 1) * page_size: page_num * page_size]
+    def append(key, value):
+        if key in table_data:
+            table_data[key].append(f'{value}')
+        else:
+            table_data[key] = [f'{value}']
 
-    for i, page_item in enumerate(page_data):
-        items = flatten(page_item).items()
-        for key, value in items:
-            if key in exclude_keys:
-                continue
-            else:
-                if key == "blobs.data":
-                    key = "data"
-                    value = ((page_num - 1) * page_size) + i
-                if key in table_data:
-                    table_data[key].append(f"{value}")
-                else:
-                    table_data[key] = [f"{value}"]
+    for key in keys:
+        for i, page_item in enumerate(page_data):
+            flattened_item = flatten(page_item)
+            item = merge_dicts(page_item, flattened_item)
+            if key == 'data':
+                value = ((page_num - 1) * page_size) + i
+                append(key, value)
+            elif key in item:
+                value = item[key]
+                append(key, value)
+
     return table_data
 
 
-if len(audios) == 0:
-    text = ui.text("No audios found")
-else:
+if audios:
     row1, row2 = ui.rows(2)
 
-    with row1:
-        items_per_page = ui.select(
-            "Items per page", options=("5", "10", "50", "100"), index=1
-        )
-        total_pages = math.ceil((len(audios) / int(items_per_page)))
-        page_numbers = [str(i) for i in range(1, total_pages + 1)]
-        page_num = ui.select('Page', options=page_numbers, index=0)
-        row2.table(
-            get_table_data(audios, int(items_per_page), int(page_num)),
-            {
-                "container.hash": lambda val: ui.board_link("run.py", val, state={"container_hash": val}),
-                "data": lambda val: ui.audios([audios[int(val)]]),
-            },
-        )
+    items_per_page = row1.select('Items per page', ('5', '10', '50', '100'))
+    total_pages = math.ceil((len(audios) / int(items_per_page)))
+    page_numbers = [str(i) for i in range(1, total_pages + 1)]
+    page_num = row1.select('Page', page_numbers, index=0)
+
+    table_data = get_table_data(
+        data=audios,
+        keys=['name', 'container.hash', 'context',
+              'format', 'range', 'data', 'step', 'index'],
+        page_size=int(items_per_page),
+        page_num=int(page_num)
+    )
+
+    row2.table(table_data, {
+        'container.hash': lambda val: ui.board_link('run.py', val, state={'container_hash': val}),
+        'data': lambda val: ui.audios([audios[int(val)]])
+    })
+else:
+    text = ui.text('No audios found')
