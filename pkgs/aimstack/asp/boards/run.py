@@ -34,8 +34,8 @@ def merge_dicts(dict1, dict2):
 
 
 if run:
-    params_tab, metrics_tab, audios_tab, texts_tab, images_tab = ui.tabs(
-        ('Params', 'Metrics', 'Audios', 'Texts', 'Images'))
+    params_tab, metrics_tab, audios_tab, texts_tab, images_tab, figures_tab = ui.tabs(('Params', 'Metrics', 'Audios',
+                                                                                      'Texts', 'Images', 'Figures'))
     with params_tab:
         params = run.get('params')
         if params is None:
@@ -50,3 +50,5 @@ if run:
         texts = ui.board('texts.py', state={'container_hash': c_hash})
     with images_tab:
         images = ui.board('images.py', state={'container_hash': c_hash})
+    with figures_tab:
+        figures = ui.board('figures.py', state={'container_hash': c_hash})

@@ -24,20 +24,22 @@ def flatten(dictionary, parent_key='', separator='.'):
 
 
 @memoize
-def get_table_data(data=[], page_size=10, page_num=1, keys=[]):
+def get_table_data(data=[], keys=[], page_size=10, page_num=1):
     table_data = {}
     page_data = data[(page_num - 1) * page_size:page_num * page_size]
-    for i, page_item in enumerate(page_data):
-        flattened_item = flatten(page_item)
-        filtered_by_keys = {key: flattened_item[key] for key in keys}
-        for key, value in filtered_by_keys.items():
-            if key == 'blobs.data':
-                key = 'data'
-                value = i
-            if key in table_data:
-                table_data[key].append(f'{value}')
-            else:
-                table_data[key] = [f'{value}']
+
+    for key in keys:
+        for i, page_item in enumerate(page_data):
+            flattened_item = flatten(page_item)
+            item = merge_dicts(page_item, flattened_item)
+            if key in item:
+                value = item[key]
+                if key == 'blobs.data':
+                    value = ((page_num - 1) * page_size) + i
+                if key in table_data:
+                    table_data[key].append(f'{value}')
+                else:
+                    table_data[key] = [f'{value}']
     return table_data
 
 
@@ -51,12 +53,11 @@ def merge_dicts(dict1, dict2):
 if metrics:
     row_controls, = ui.rows(1)
     group_fields = row_controls.multi_select(
-        'Group by:', ('name', 'context', 'context.subset', 'container.hash'))
-    metrics_processed = [merge_dicts(
-        metric, flatten(metric)) for metric in metrics]
+        'Group by:', ('name', 'context', 'context.subset', 'container.hash')
+    )
+    metrics_processed = [merge_dicts(m, flatten(m)) for m in metrics]
 
-    def key_func(x): return tuple(
-        str(x[field]) for field in group_fields)
+    def key_func(x): return tuple(str(x[field]) for field in group_fields)
 
     grouped_iterator = groupby(
         sorted(metrics_processed, key=key_func), key_func)
@@ -64,9 +65,8 @@ if metrics:
     x_axis = row_controls.select('Align by:', ('steps', 'axis.epoch'))
     y_axis = 'values'
     grouped_data_length = len(grouped_data)
-    column_numbers = [int(i) for i in range(1, int(grouped_data_length) + 1)]
-    column_count = row_controls.select(
-        'Columns', options=(column_numbers), index=0)
+    column_numbers = [str(i) for i in range(1, int(grouped_data_length) + 1)]
+    column_count = row_controls.select('Columns', column_numbers, index=0)
     rows = ui.rows(math.ceil(grouped_data_length / int(column_count)))
     for i, row in enumerate(rows):
         cols = row.columns(int(column_count))
@@ -80,27 +80,20 @@ if metrics:
                     data, x=x_axis, y=y_axis, color=['name'])
 
     row1, row2 = ui.rows(2)
-    with row1:
-        items_per_page = ui.select(
-            'Items per page', options=('5', '10', '50', '100'), index=1)
-
+    items_per_page = row1.select('Items per page', ('5', '10', '50', '100'))
     total_pages = math.ceil((len(metrics) / int(items_per_page)))
-
     page_numbers = [str(i) for i in range(1, total_pages + 1)]
+    page_num = row1.select('Page', page_numbers, index=0)
 
-    with row1:
-        page_num = ui.select('Page', options=page_numbers, index=0)
-
-    with row2:
-        table_data = get_table_data(
-            data=metrics,
-            page_size=int(items_per_page),
-            page_num=int(page_num),
-            keys=['name', 'container.hash', 'context.subset', 'range']
-        )
-        row2.table(table_data, {
-            'container.hash': lambda val: ui.board_link('run.py', val, state={'container_hash': val}),
-        })
+    table_data = get_table_data(
+        data=metrics,
+        keys=['name', 'container.hash', 'context', 'range'],
+        page_size=int(items_per_page),
+        page_num=int(page_num),
+    )
+    row2.table(table_data, {
+        'container.hash': lambda val: ui.board_link('run.py', val, state={'container_hash': val}),
+    })
 
 else:
-    ui.text(f'No metrics found')
+    ui.text('No metrics found')
