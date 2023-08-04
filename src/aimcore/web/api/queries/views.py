@@ -1,10 +1,11 @@
 from fastapi.responses import StreamingResponse
-from fastapi import HTTPException
+from fastapi import Depends, HTTPException
 
 from typing import Optional, Iterable, Dict, List, Iterator, TYPE_CHECKING
 from aim._sdk.uri_service import URIService
 from aim.utils import sequence_data, container_data
 
+from aimcore.web.utils import get_root_package
 from aimcore.web.api.runs.pydantic_models import QuerySyntaxErrorOut
 from aimcore.web.api.utils import (
     checked_query,
@@ -76,7 +77,8 @@ async def data_fetch_api(type_: str,
                          q: Optional[str] = '',
                          p: Optional[int] = 500,
                          start: Optional[int] = None,
-                         stop: Optional[int] = None):
+                         stop: Optional[int] = None,
+                         package=Depends(get_root_package)):
     repo = get_project_repo()
     query = checked_query(q)
     if type_ in Container.registry:
@@ -99,7 +101,8 @@ async def grouped_data_fetch_api(seq_type: Optional[str] = 'Sequence',
                                  q: Optional[str] = '',
                                  p: Optional[int] = 500,
                                  start: Optional[int] = None,
-                                 stop: Optional[int] = None):
+                                 stop: Optional[int] = None,
+                                 package=Depends(get_root_package)):
     repo = get_project_repo()
     query = checked_query(q)
     if seq_type not in Sequence.registry:
@@ -134,7 +137,7 @@ async def fetch_blobs_api(uri_batch: URIBatchIn):
 
 
 @query_router.post('/run/')
-async def run_function(func_name: str, request_data: Dict):
+async def run_function(func_name: str, request_data: Dict, package=Depends(get_root_package)):
     repo = get_project_repo()  # noqa
 
     from aim._sdk.function import Function

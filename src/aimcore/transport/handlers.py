@@ -5,7 +5,6 @@ from aimcore.transport.config import AIM_SERVER_MOUNTED_REPO_PATH
 
 from aim import Repo
 from aim._sdk.local_storage import LocalFileManager
-from aim._sdk.dev_package import DevPackage
 from aimcore.cleanup import AutoClean
 
 

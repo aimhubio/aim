@@ -51,26 +51,32 @@ class PackageSourceWatcher:
                 fs_events.append(self.queue.get())
             with self.repo.storage_engine.write_batch(0):
                 for fs_event in fs_events:
+                    file = pathlib.Path(fs_event.src_path)
+                    file_path = str(file.relative_to(self.src_dir))
+                    if self.is_black_listed(file_path):
+                        continue
                     try:
-                        file = pathlib.Path(fs_event.src_path)
-                        file_path = str(file.relative_to(self.src_dir))
-                        click.echo(f'Detected change in file \'{file_path}\'. Syncing.')
+                        click.echo(f'Detected change in: \'{file_path}\', type: \'{fs_event.event_type}\'. Syncing...')
 
                         if fs_event.event_type in (events.EVENT_TYPE_CREATED, events.EVENT_TYPE_MODIFIED):
                             with file.open('r') as fh:
                                 contents = fh.read()
                                 self.package.sync(str(file_path), contents)
+                                click.echo(f'Updated file {file_path}.')
                         elif fs_event.event_type == events.EVENT_TYPE_DELETED:
                             self.package.remove(str(file_path))
-                        elif fs_event == events.EVENT_TYPE_MOVED:
-                            dest_path = pathlib.Path(fs_event.dest_path).relative_to(self.src_dir)
+                            click.echo(f'Removed file {file_path}.')
+                        elif fs_event.event_type == events.EVENT_TYPE_MOVED:
+                            dest_path = str(pathlib.Path(fs_event.dest_path).relative_to(self.src_dir))
                             self.package.move(file_path, dest_path)
+                            click.echo(f'Moved file {file_path} to {dest_path}.')
                     except Exception:
                         pass
 
             await asyncio.sleep(5)
 
     def start(self):
+        click.echo(f'Watching for change in package \'{self.package_name}\' sources...')
         self.observer = Observer()
         event_hanlder = SourceFileChangeHandler(self.src_dir, self.queue)
         self.observer.schedule(event_hanlder, self.src_dir, recursive=True)
@@ -88,7 +94,15 @@ class PackageSourceWatcher:
             click.echo(f'Initializing package \'{self.package_name}\'.')
             for file_path in self.src_dir.glob('**/*'):
                 file_name = file_path.relative_to(self.src_dir)
-                if file_path.is_file():
+                if file_path.is_file() and not self.is_black_listed(str(file_name)):
                     with file_path.open('r') as fh:
                         self.package.sync(str(file_name), fh.read())
             self.package.install()
+            click.echo(f'Package \'{self.package_name}\' initialized.')
+
+    def is_black_listed(self, file_path: str) -> bool:
+        if '__pycache__' in file_path:
+            return True
+        if file_path.endswith('.pyc'):
+            return True
+        return False

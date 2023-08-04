@@ -137,11 +137,3 @@ def create_app():
 
 
 app = create_app()
-
-
-def start_server(host, port, ssl_keyfile=None, ssl_certfile=None, *, log_level='info', reload=False, reload_dirs=()):
-    import uvicorn
-    uvicorn.run('aimcore.transport.server:app', host=host, port=port,
-                ssl_keyfile=ssl_keyfile, ssl_certfile=ssl_certfile,
-                log_level=log_level,
-                reload=reload, reload_dirs=reload_dirs)

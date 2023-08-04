@@ -1,7 +1,7 @@
 import os
 import click
 
-from aimcore.cli.utils import set_log_level
+from aimcore.cli.utils import set_log_level, start_uvicorn_app
 from aim._sdk.repo import Repo
 from aim._sdk.package_utils import Package
 from aimcore.transport.config import (
@@ -21,7 +21,6 @@ from aim._ext.tracking import analytics
                                                                              file_okay=False,
                                                                              dir_okay=True,
                                                                              writable=True))
-@click.option('--package', '--pkg', required=False, default='asp', type=str)
 @click.option('--ssl-keyfile', required=False, type=click.Path(exists=True,
                                                                file_okay=True,
                                                                dir_okay=False,
@@ -35,7 +34,7 @@ from aim._ext.tracking import analytics
 @click.option('--dev', is_flag=True, default=False)
 @click.option('-y', '--yes', is_flag=True, help='Automatically confirm prompt')
 def server(host, port,
-           repo, package, ssl_keyfile, ssl_certfile,
+           repo, ssl_keyfile, ssl_certfile,
            base_path, log_level, dev, yes):
     # TODO [MV, AT] remove code duplication with aim up cmd implementation
     if not log_level:
@@ -67,9 +66,6 @@ def server(host, port,
         return
     os.environ[AIM_SERVER_MOUNTED_REPO_PATH] = repo
 
-    if package not in Package.pool:
-        Package.load_package(package)
-
     click.secho('Running Aim Server on repo `{}`'.format(repo_inst), fg='yellow')
     click.echo('Server is mounted on {}:{}'.format(host, port), err=True)
     click.echo('Press Ctrl+C to exit')
@@ -79,17 +75,20 @@ def server(host, port,
     # delete the repo as it needs to be opened in a child process in dev mode
     del repo_inst
 
-    try:
-        from aimcore.transport.server import start_server
+    if dev:
+        import aim
+        import aimcore
 
-        if dev:
-            import aim
-            import aimcore
-            reload_dirs = (os.path.dirname(aim.__file__), os.path.dirname(aim.__file__), dev_package_dir)
-            start_server(host, port, ssl_keyfile, ssl_certfile, log_level=log_level, reload=dev, reload_dirs=reload_dirs)
-        else:
-            start_server(host, port, ssl_keyfile, ssl_certfile, log_level=log_level)
+        reload_dirs = [os.path.dirname(aim.__file__), os.path.dirname(aimcore.__file__), dev_package_dir]
+    else:
+        reload_dirs = []
+
+    try:
+        start_uvicorn_app('aimcore.transport.server:app',
+                          host=host, port=port,
+                          ssl_keyfile=ssl_keyfile, ssl_certfile=ssl_certfile, log_level=log_level,
+                          reload=dev, reload_dirs=reload_dirs)
     except Exception:
         click.echo('Failed to run Aim Tracking Server. '
-                   'Please see the logs for details.')
-        return
+                   'Please see the logs above for details.')
+        exit(1)

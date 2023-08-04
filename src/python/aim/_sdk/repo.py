@@ -13,6 +13,7 @@ from aim._sdk import type_utils
 from aim._sdk.container import Container
 from aim._sdk.sequence import Sequence
 from aim._sdk.function import Function
+from aim._sdk.package_utils import Package
 from aim._sdk.collections import ContainerCollection, SequenceCollection
 from aim._sdk.query_utils import construct_query_expression
 from aim._sdk.constants import KeyNames
@@ -84,6 +85,7 @@ class Repo(object):
         self.read_only = read_only
         self._is_remote_repo = False
         if self.is_remote_path(path):
+            self.path = os.path.join(path, get_aim_repo_name())
             self._is_remote_repo = True
             self._storage_engine = RemoteStorage(path)
             self._remote_repo_proxy = RemoteRepoProxy(self._storage_engine._client)
@@ -114,9 +116,15 @@ class Repo(object):
     def init(cls, path: str):
         aim_repo_path = os.path.join(clean_repo_path(path), get_aim_repo_name())
         os.makedirs(aim_repo_path, exist_ok=True)
+
         version_file_path = os.path.join(aim_repo_path, 'VERSION')
         with open(version_file_path, 'w') as version_fh:
             version_fh.write('.'.join(map(str, get_data_version())) + '\n')
+
+        active_pkg_file = os.path.join(aim_repo_path, 'active_pkg')
+        with open(active_pkg_file, 'w') as apf:
+            apf.write(Package.default_package_name)
+
         return cls.from_path(aim_repo_path, read_only=False)
 
     @classmethod
@@ -461,3 +469,10 @@ class Repo(object):
             return self._remote_repo_proxy.prune()
 
         prune(self)
+
+    def set_active_package(self, pkg_name):
+        if self._is_remote_repo:
+            return self._remote_repo_proxy.set_active_package(pkg_name)
+        active_pkg_file = os.path.join(self.path, 'active_pkg')
+        with open(active_pkg_file, 'w') as apf:
+            apf.write(pkg_name)

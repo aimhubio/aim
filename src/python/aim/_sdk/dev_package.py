@@ -28,7 +28,10 @@ class DevPackage:
     def remove(self, file):
         logger.debug(f'Removing file \'{file}\'.')
         full_path = self._src_path / file
-        full_path.unlink(missing_ok=True)
+        try:
+            full_path.unlink()
+        except FileNotFoundError:
+            pass
 
     def move(self, src, dest):
         logger.debug(f'Moving file from \'{src}\' to \'{dest}\'.')

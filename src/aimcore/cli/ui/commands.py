@@ -1,14 +1,13 @@
 import os
 import click
 
-from aimcore.cli.utils import set_log_level
-from aimcore.cli.ui.utils import build_db_upgrade_command, build_uvicorn_command, get_free_port_num
+from aimcore.cli.utils import set_log_level, start_uvicorn_app
+from aimcore.cli.ui.utils import build_db_upgrade_command, get_free_port_num
 from aimcore.web.configs import (
     AIM_UI_BASE_PATH,
     AIM_UI_DEFAULT_HOST,
     AIM_UI_DEFAULT_PORT,
     AIM_UI_MOUNTED_REPO_PATH,
-    AIM_UI_PACKAGE_NAME,
     AIM_UI_TELEMETRY_KEY,
     AIM_PROXY_URL,
     AIM_PROFILER_KEY
@@ -34,7 +33,7 @@ from aim._ext.tracking import analytics
                                                                              file_okay=False,
                                                                              dir_okay=True,
                                                                              writable=True))
-@click.option('--package', '--pkg', required=False, default='asp', type=str)
+@click.option('--package', '--pkg', required=False, default='', show_default='asp', type=str)
 @click.option('--dev', is_flag=True, default=False)
 @click.option('--ssl-keyfile', required=False, type=click.Path(exists=True,
                                                                file_okay=True,
@@ -57,14 +56,11 @@ def ui(dev, host, port, workers, uds,
     """
     Start Aim UI with the --repo repository.
     """
-    if dev:
-        os.environ[AIM_ENV_MODE_KEY] = 'dev'
-        log_level = log_level or 'debug'
-    else:
-        os.environ[AIM_ENV_MODE_KEY] = 'prod'
+    if not log_level:
+        log_level = 'debug' if dev else 'warning'
+    set_log_level(log_level)
 
-    if log_level:
-        set_log_level(log_level)
+    os.environ[AIM_ENV_MODE_KEY] = 'dev' if dev else 'prod'
 
     if base_path:
         # process `base_path` as ui requires leading slash
@@ -82,9 +78,11 @@ def ui(dev, host, port, workers, uds,
             return
         Repo.init(repo)
     repo_inst = Repo.from_path(repo, read_only=True)
-
     os.environ[AIM_UI_MOUNTED_REPO_PATH] = repo
-    os.environ[AIM_UI_PACKAGE_NAME] = package
+
+    dev_package_dir = repo_inst.dev_package_dir
+    if package:
+        repo_inst.set_active_package(pkg_name=package)
 
     try:
         db_cmd = build_db_upgrade_command()
@@ -92,7 +90,7 @@ def ui(dev, host, port, workers, uds,
     except ShellCommandException:
         click.echo('Failed to initialize Aim DB. '
                    'Please see the logs above for details.')
-        return
+        exit(1)
 
     if port == 0:
         try:
@@ -123,12 +121,24 @@ def ui(dev, host, port, workers, uds,
     if profiler:
         os.environ[AIM_PROFILER_KEY] = '1'
 
+    if dev:
+        import aim
+        import aimstack
+        import aimcore
+
+        reload_dirs = [os.path.dirname(aim.__file__), os.path.dirname(aimcore.__file__), os.path.dirname(aimstack.__file__), dev_package_dir]
+    else:
+        reload_dirs = []
+
     try:
-        server_cmd = build_uvicorn_command(host, port, workers, uds, ssl_keyfile, ssl_certfile, log_level, package)
-        exec_cmd(server_cmd, stream_output=True)
-    except ShellCommandException:
-        click.echo('Failed to run Aim UI. Please see the logs above for details.')
-        return
+        start_uvicorn_app('aimcore.web.run:app',
+                          host=host, port=port, workers=workers, uds=uds,
+                          ssl_keyfile=ssl_keyfile, ssl_certfile=ssl_certfile, log_level=log_level,
+                          reload=dev, reload_dirs=reload_dirs)
+    except Exception:
+        click.echo('Failed to run Aim UI. '
+                   'Please see the logs above for details.')
+        exit(1)
 
 
 @click.command('up', context_settings={'ignore_unknown_options': True, 'allow_extra_args': True}, hidden=True)
