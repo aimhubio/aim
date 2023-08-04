@@ -1,37 +1,35 @@
 import * as React from 'react';
 
-import Figures from 'modules/BaseExplorer/components/Figures/Figures';
+import FigureBox from 'components/FigureBox';
+
+import pyodideEngine from 'services/pyodide/store';
 
 function FiguresList(props: any) {
+  const data = props.data.map((figure: any) => ({
+    ...figure,
+    ...figure.data,
+    ...figure.figures,
+    ...figure.record,
+  }));
+
+  const boxKey = (item: any) =>
+    `${item?.container?.hash}_${item.name}_${JSON.stringify(item.context)}_${
+      item.step
+    }`;
   return (
-    <div
-      style={{
-        height: '100%',
-        overflow: 'auto',
-      }}
-    >
-      {props.data.map((item: any, i: number) => (
-        <div
-          key={i}
-          style={{
-            width: '100%',
-            height: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            margin: 5,
+    <div className='FiguresList' style={{ height: '100%', overflow: 'auto' }}>
+      {data.map((item: any) => (
+        <FigureBox
+          key={boxKey(item)}
+          blobData={item.blobs.data}
+          format={item.format}
+          name={item.name}
+          context={item.context}
+          step={item.step}
+          engine={{
+            blobURI: pyodideEngine.blobURI,
           }}
-        >
-          <Figures
-            data={{ data: item }}
-            style={{
-              display: 'flex',
-              flex: 1,
-              width: '100%',
-              height: '100%',
-            }}
-          />
-        </div>
+        />
       ))}
     </div>
   );

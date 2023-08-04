@@ -1,4 +1,6 @@
 from abc import abstractmethod
+import logging
+from collections import defaultdict
 from typing import Iterator, Dict, Tuple, Type
 
 from aim._sdk import type_utils
@@ -17,6 +19,8 @@ if TYPE_CHECKING:
     from aim._sdk.container import Container
     from aim._sdk.sequence import Sequence
     from aim._core.storage.treeview import TreeView
+
+logger = logging.getLogger(__name__)
 
 
 class ContainerCollectionBase(ABCContainerCollection[ContainerType]):
@@ -37,6 +41,11 @@ class ContainerCollectionBase(ABCContainerCollection[ContainerType]):
     def count(self) -> int:
         # more optimal implementation
         return sum(1 for _ in self.__iter_meta__())
+
+    def delete(self):
+        repo = self.query_context['repo']
+        for hash_ in self.__iter_meta__():
+            repo.delete_container(hash_)
 
 
 class ContainerLimitCollection(ContainerCollectionBase['Container']):
@@ -130,6 +139,22 @@ class SequenceCollectionBase(ABCSequenceCollection[SequenceType]):
     def count(self):
         # more optimal implementation
         return sum(1 for _ in self.__iter_meta__())
+
+    def delete(self):
+        from aim._sdk import Container
+        from aim._sdk.lock_manager import RunLockingError
+        repo = self.query_context['repo']
+        container_sequence_map = defaultdict(list)
+        for hash_, name, context in self.__iter_meta__():
+            container_sequence_map[hash_].append((name, context))
+
+        for hash_ in container_sequence_map.keys():
+            try:
+                container = Container(hash_, repo=repo, mode='WRITE')
+                for name, context in container_sequence_map[hash_]:
+                    container.delete_sequence(name, context)
+            except RunLockingError:
+                logger.warning(f'Cannot delete sequences for container: {hash_}. Container is locked.')
 
 
 class SequenceLimitCollection(SequenceCollectionBase['Sequence']):

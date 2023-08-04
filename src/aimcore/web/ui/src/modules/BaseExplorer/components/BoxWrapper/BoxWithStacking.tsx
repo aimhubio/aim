@@ -97,7 +97,7 @@ function BoxWithStacking(props: IBoxWithStackingProps<AimFlatObjectBase>) {
         onClick={() => setFullView(true)}
       />
       <div className='BoxWrapper__box'>
-        {BoxContent && (
+        {!fullView && BoxContent && (
           <BoxContent
             key={boxId + '-' + currentItem.key}
             index={boxIndex}
@@ -134,11 +134,11 @@ function BoxWithStacking(props: IBoxWithStackingProps<AimFlatObjectBase>) {
             <div className='BoxWrapper__fullViewContent__box'>
               {BoxContent && (
                 <BoxContent
-                  key={'fullView-' + currentItem.key}
+                  key={'fullView-' + boxId + '-' + currentItem.key}
                   data={currentItem}
                   engine={engine}
                   visualizationName={visualizationName}
-                  isFullView
+                  isFullView={fullView}
                 />
               )}
             </div>

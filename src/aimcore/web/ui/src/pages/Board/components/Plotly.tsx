@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import Figures from 'modules/BaseExplorer/components/Figures/Figures';
+import Figures from 'modules/BaseExplorer/components/Figure/Figure';
 
 function Plotly(props: any) {
   return (

@@ -12,7 +12,7 @@ function projectStatisticsEngine() {
       const data = await getProjectsInfo({
         sequence: [
           SequenceType.Metric,
-          // SequenceType.Image,
+          SequenceType.Image,
           SequenceType.Figure,
           SequenceType.Text,
           SequenceType.Audio,

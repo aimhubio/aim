@@ -1,32 +1,28 @@
 import React from 'react';
 import { useImageBlobURI } from 'hooks';
 
-import { Skeleton } from '@material-ui/lab';
-
 import ErrorBoundary from 'components/ErrorBoundary';
+import { Spinner } from 'components/kit';
 
 import { ImageBoxProps } from './';
 
 function ImageBox(props: ImageBoxProps) {
-  const { mediaState, caption } = useImageBlobURI(props);
+  const { data, caption } = useImageBlobURI(props);
 
   return (
     <ErrorBoundary>
       <div style={props.style}>
-        {mediaState.src ? (
+        {data.src ? (
           <img
             style={{ maxHeight: '100%', maxWidth: '100%' }}
-            src={mediaState.src}
+            src={data.src}
             alt={caption}
           />
         ) : (
-          <div style={{ height: '100%' }}>
-            <Skeleton variant='rect' height='100%' />
-          </div>
+          <Spinner size={24} thickness={2} />
         )}
       </div>
     </ErrorBoundary>
   );
 }
-
 export default ImageBox;
