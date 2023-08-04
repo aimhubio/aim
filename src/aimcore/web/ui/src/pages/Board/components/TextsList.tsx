@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-function TextList(props: any) {
+function TextsList(props: any) {
   const data = props.data.map((text: any) => ({
     ...text,
     ...text.data,
@@ -10,10 +10,12 @@ function TextList(props: any) {
 
   return (
     <div
+      className='TextsList'
       style={{
         height: '100%',
         overflow: 'auto',
-        flex: 1,
+        minHeight: 40,
+        maxHeight: 100,
       }}
     >
       {data.map((item: any, i: number) => (
@@ -30,7 +32,6 @@ function TextList(props: any) {
               backgroundColor: '#e8eaee',
               borderRadius: 4,
               color: item.color,
-              whiteSpace: 'normal',
             }}
           >
             {item.data}
@@ -41,4 +42,4 @@ function TextList(props: any) {
   );
 }
 
-export default TextList;
+export default TextsList;
