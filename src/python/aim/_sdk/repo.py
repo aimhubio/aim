@@ -59,7 +59,7 @@ class Repo(object):
         return repo
 
     @classmethod
-    def get_version(cls, path: str) -> Optional[tuple[int, ...]]:
+    def get_version(cls, path: str) -> Optional[Tuple[int, ...]]:
         if cls.is_remote_path(path):
             return None
         path = clean_repo_path(path)
