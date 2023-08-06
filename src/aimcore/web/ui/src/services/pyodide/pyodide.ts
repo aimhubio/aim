@@ -267,11 +267,23 @@ export async function loadPyodideInstance() {
     pyodide.registerJsModule(packageName, jsModule);
   });
 
+  const ui = namespace.get('ui');
+  const Sequence = namespace.get('Sequence');
+  const Container = namespace.get('Container');
+  const memoize = namespace.get('memoize');
+
+  pyodide.registerJsModule('aim_ui', {
+    ui,
+    Sequence,
+    Container,
+    memoize,
+  });
+
   pyodideEngine.setPyodide({
     current: pyodide,
     namespace,
     isLoading: false,
-    registeredPackages: Object.keys(availablePackages),
+    registeredPackages: Object.keys(availablePackages).concat(['aim_ui']),
   });
 }
 

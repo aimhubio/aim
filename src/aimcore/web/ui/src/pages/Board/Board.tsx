@@ -99,6 +99,7 @@ any): React.FunctionComponentElement<React.ReactNode> {
       try {
         window.clearTimeout(timerId.current);
         clearDataCache();
+        clearPendingQueriesMap(boardPath);
         setState((s: any) => ({
           ...s,
           isProcessing: true,
