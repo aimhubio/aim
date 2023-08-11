@@ -461,16 +461,8 @@ class LineChart(AimSequenceComponent):
         self.render()
 
     @property
-    def active_line(self):
-        return self.state["active_line"] if "active_line" in self.state else None
-
-    @property
     def focused_line(self):
         return self.state["focused_line"] if "focused_line" in self.state else None
-
-    @property
-    def active_point(self):
-        return self.state["active_point"] if "active_point" in self.state else None
 
     @property
     def focused_point(self):
@@ -485,13 +477,6 @@ class LineChart(AimSequenceComponent):
                     {
                         "focused_line": item,
                         "focused_point": point,
-                    }
-                )
-            else:
-                self.set_state(
-                    {
-                        "active_line": item,
-                        "active_point": point,
                     }
                 )
 
