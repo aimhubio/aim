@@ -1,3 +1,14 @@
+export const ANALYTICS_EVENT_KEYS_MAP = {
+  app: {
+    pageView: '[App] Page view',
+  },
+  reports: {
+    pageView: '[ReportsPage] Page view',
+  },
+  explorers: {
+    pageView: '[ExplorersPage] Page view',
+  },
+};
 export const ANALYTICS_EVENT_KEYS = {
   metrics: {
     pageView: '[MetricsExplorer] Page view',
