@@ -849,10 +849,35 @@ class Table(Component):
         return self.state["focused_row"] if "focused_row" in self.state else None
 
     async def on_row_select(self, val):
-        self.set_state({"selected_rows": val.to_py()})
+        selected_indices = val.to_py()
+
+        if selected_indices is None:
+            self.set_state({"selected_rows": None})
+            return
+        
+        rows = []
+
+        for i in selected_indices:
+            row = {}
+
+            for col in self.data:
+                row[col] = self.data[col][i]
+
+            rows.append(row)
+
+        self.set_state({"selected_rows": rows})
 
     async def on_row_focus(self, val):
-        self.set_state({"focused_row": val.to_py()})
+        if val is None:
+            self.set_state({"focused_row": None})
+            return
+        
+        row = {}
+
+        for col in self.data:
+            row[col] = self.data[col][val]
+
+        self.set_state({"focused_row": row})
 
 
 class Text(Component):
