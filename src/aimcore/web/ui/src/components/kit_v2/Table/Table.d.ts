@@ -6,7 +6,7 @@ export interface TableProps {
   withSelect?: boolean;
   selectedIndices?: number[];
   focusedRowIndex?: number;
-  onRowSelect?: (rowDict: number[]) => void;
+  onRowSelect?: (rowIndices: number[]) => void;
   onRowFocus?: (focusedRowIndex: number | undefined) => void;
 }
 
