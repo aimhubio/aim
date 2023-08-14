@@ -461,16 +461,8 @@ class LineChart(AimSequenceComponent):
         self.render()
 
     @property
-    def active_line(self):
-        return self.state["active_line"] if "active_line" in self.state else None
-
-    @property
     def focused_line(self):
         return self.state["focused_line"] if "focused_line" in self.state else None
-
-    @property
-    def active_point(self):
-        return self.state["active_point"] if "active_point" in self.state else None
 
     @property
     def focused_point(self):
@@ -485,13 +477,6 @@ class LineChart(AimSequenceComponent):
                     {
                         "focused_line": item,
                         "focused_point": point,
-                    }
-                )
-            else:
-                self.set_state(
-                    {
-                        "active_line": item,
-                        "active_point": point,
                     }
                 )
 
@@ -849,10 +834,35 @@ class Table(Component):
         return self.state["focused_row"] if "focused_row" in self.state else None
 
     async def on_row_select(self, val):
-        self.set_state({"selected_rows": val.to_py()})
+        selected_indices = val.to_py()
+
+        if selected_indices is None:
+            self.set_state({"selected_rows": None})
+            return
+        
+        rows = []
+
+        for i in selected_indices:
+            row = {}
+
+            for col in self.data:
+                row[col] = self.data[col][i]
+
+            rows.append(row)
+
+        self.set_state({"selected_rows": rows})
 
     async def on_row_focus(self, val):
-        self.set_state({"focused_row": val.to_py()})
+        if val is None:
+            self.set_state({"focused_row": None})
+            return
+        
+        row = {}
+
+        for col in self.data:
+            row[col] = self.data[col][val]
+
+        self.set_state({"focused_row": row})
 
 
 class Text(Component):
