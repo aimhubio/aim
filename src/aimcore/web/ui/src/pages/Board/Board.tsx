@@ -21,6 +21,7 @@ import {
   getQueryResultsCacheMap,
   clearQueryResultsCache,
   clearPendingQueriesMap,
+  resetBoardState,
 } from 'services/pyodide/pyodide';
 
 // import SaveBoard from './components/SaveBoard';
@@ -275,6 +276,7 @@ def set_session_state(state_slice):
         }
       },
     );
+
     return () => {
       window.clearTimeout(timerId.current);
       clearDataCache();
@@ -283,6 +285,7 @@ def set_session_state(state_slice):
       }
       unsubscribeFromBoardUpdates();
       clearPendingQueriesMap(boardPath);
+      resetBoardState(boardPath);
     };
   }, [boardPath]);
 
