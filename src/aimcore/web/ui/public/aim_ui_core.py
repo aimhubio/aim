@@ -2,7 +2,7 @@
 # Bindings for fetching Aim Objects
 ####################
 
-from js import search, runFunction, localStorage
+from js import search, runFunction
 import json
 import hashlib
 
@@ -239,13 +239,7 @@ def group(name, data, options, key=None):
 
 current_layout = []
 
-
-saved_state_str = localStorage.getItem("app_state")
-
 state = {}
-
-if saved_state_str:
-    state = json.loads(saved_state_str)
 
 
 def set_state(update, board_path, persist=False):
@@ -255,6 +249,10 @@ def set_state(update, board_path, persist=False):
         state[board_path] = {}
 
     state[board_path].update(update)
+
+    for key in state[board_path]:
+        if state[board_path][key] is None:
+            del state[board_path][key]
 
     setState(state, board_path, persist)
 
@@ -1605,12 +1603,17 @@ class Board(Component):
 
         self.data = path
 
-        set_state(state or {}, path)
+        self.board_state = state
+        
+        self.callbacks = {"on_mount": self.on_mount}
 
         self.render()
 
     def get_state(self):
         return state[self.data] if self.data in state else None
+    
+    def on_mount(self):
+        set_state(self.board_state or {}, self.data)
 
 
 class BoardLink(Component):
