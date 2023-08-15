@@ -301,6 +301,13 @@ class Sequence(Generic[ItemType], ABCSequence):
         query_params.update({cp: c_proxy for cp in container_alias_names})
         return query.check(**query_params)
 
+    def delete(self):
+        del self._data_loader()[(self._ctx_idx, self._name)]
+        del self._container_tree[(KeyNames.SEQUENCES, self._ctx_idx, self._name)]
+
+        self._info.empty = True
+        self._info.next_step = 0
+
     def __repr__(self) -> str:
         return f'<{self.get_typename()} #{hash(self)} name={self.name} context={self._ctx_idx}>'
 

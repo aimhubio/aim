@@ -7,9 +7,8 @@ from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
 
 from aim._sdk.configs import get_aim_repo_name
-from aim._sdk.package_utils import Package
 
-from aimcore.web.configs import AIM_PROFILER_KEY, AIM_UI_PACKAGE_NAME
+from aimcore.web.configs import AIM_PROFILER_KEY
 from aimcore.web.middlewares.profiler import PyInstrumentProfilerMiddleware
 from aimcore.web.utils import get_root_path
 
@@ -73,10 +72,6 @@ def create_app():
     if os.environ.get(AIM_PROFILER_KEY) == "1":
         api_app.add_middleware(PyInstrumentProfilerMiddleware,
                                repo_path=os.path.join(get_root_path(), get_aim_repo_name()))
-
-    ui_pkg_name = os.environ.get(AIM_UI_PACKAGE_NAME)
-    if ui_pkg_name not in Package.pool:
-        Package.load_package(ui_pkg_name)
 
     api_app.include_router(dashboard_apps_router, prefix='/apps')
     api_app.include_router(dashboards_router, prefix='/dashboards')

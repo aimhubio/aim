@@ -63,31 +63,29 @@ function Table({
     const { index } = e.currentTarget.dataset;
     if (Number(index) === focusedRow) {
       setFocusedRow(undefined);
+
       if (onRowFocus) {
-        onRowFocus({});
+        onRowFocus(undefined);
       }
       return;
     } else {
       setFocusedRow(Number(index));
+
       if (onRowFocus) {
-        onRowFocus({ ...transformedData[Number(index)], rowIndex: index });
+        onRowFocus(Number(index));
       }
     }
   }
 
   function handleRowSelect(checked: CheckedState | undefined, index: number) {
-    let selectedList: number[] = [];
-    if (checked) {
-      selectedList = [...(selectedRows || []), index];
-    } else {
-      selectedList = selectedRows.filter((i) => i !== index);
-    }
+    let selectedList: number[] = checked
+      ? [...(selectedRows || []), index]
+      : selectedRows.filter((i) => i !== index);
+
     setSelectedRows(selectedList);
+
     if (onRowSelect) {
-      const selectedListDict = selectedList.map((i: number) => {
-        return { ...transformedData[i], rowIndex: i };
-      });
-      onRowSelect(selectedListDict);
+      onRowSelect(selectedList);
     }
   }
 

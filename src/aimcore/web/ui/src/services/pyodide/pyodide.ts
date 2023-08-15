@@ -64,6 +64,17 @@ export function clearPendingQueriesMap(boardPath: string) {
   }
 }
 
+export function resetBoardState(boardPath: string) {
+  let pyodide = pyodideEngine.getPyodideCurrent();
+  let namespace = pyodideEngine.getPyodideNamespace();
+
+  if (pyodide) {
+    pyodide.runPython(`state.pop('${boardPath}', None)`, {
+      globals: namespace,
+    });
+  }
+}
+
 let layoutUpdateTimer: number;
 let prevBoardPath: undefined | string;
 

@@ -1,5 +1,6 @@
 import uuid
 import base64
+import logging
 
 from typing import Dict, Union
 from fastapi import WebSocket, Request, APIRouter
@@ -7,6 +8,8 @@ from fastapi.responses import StreamingResponse, JSONResponse
 
 import aimcore.transport.message_utils as utils
 from aim._core.storage.treeutils import encode_tree, decode_tree
+
+logger = logging.getLogger(__name__)
 
 
 def get_handler():
@@ -109,6 +112,7 @@ class TrackingRouter:
             except KeyError:
                 pass
 
+            logger.debug(f'Caught exception {e}. Sending response 400.')
             return JSONResponse({
                 'exception': utils.build_exception(e),
             }, status_code=400)
@@ -118,6 +122,7 @@ class TrackingRouter:
             self._verify_resource_handler(resource_handler, client_uri)
             del self.resource_pool[resource_handler]
         except Exception as e:
+            logger.debug(f'Caught exception {e}. Sending response 400.')
             return JSONResponse({
                 'exception': utils.build_exception(e),
             }, status_code=400)
@@ -157,6 +162,7 @@ class TrackingRouter:
 
             return StreamingResponse(utils.pack_stream(encode_tree(result)))
         except Exception as e:
+            logger.debug(f'Caught exception {e}. Sending response 400.')
             return JSONResponse({
                 'exception': utils.build_exception(e),
             }, status_code=400)

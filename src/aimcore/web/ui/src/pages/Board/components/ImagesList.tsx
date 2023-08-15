@@ -17,7 +17,18 @@ function ImagesList(props: any) {
       item.step
     }_${item.index}`;
   return (
-    <div className='ImagesList' style={{ height: '100%', overflow: 'auto' }}>
+    <div
+      className='ImagesList'
+      style={{
+        height: '100%',
+        overflow: 'auto',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: 40,
+        maxHeight: 100,
+      }}
+    >
       {data.map((item: any) => (
         <ImageBox
           key={boxKey(item)}

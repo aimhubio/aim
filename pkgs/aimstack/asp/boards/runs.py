@@ -1,9 +1,7 @@
 from asp import Run
 
 form = ui.form('Search')
-
 query = form.text_input(value='')
-
 runs = Run.filter(query)
 
 
@@ -52,5 +50,5 @@ with row1:
                                     )
 
 row2.table(get_table_data(runs, int(items_per_page), page_num, cols_folding == 'Fold'), {
-    'hash': lambda val: ui.board_link('run.py', val, state={'hash': val}),
+    'hash': lambda val: ui.board_link('run.py', val, state={'container_hash': val}),
 })

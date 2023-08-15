@@ -17,7 +17,17 @@ function FiguresList(props: any) {
       item.step
     }`;
   return (
-    <div className='FiguresList' style={{ height: '100%', overflow: 'auto' }}>
+    <div
+      className='FiguresList'
+      style={{
+        overflow: 'hidden',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: 200,
+        width: 300,
+      }}
+    >
       {data.map((item: any) => (
         <FigureBox
           key={boxKey(item)}

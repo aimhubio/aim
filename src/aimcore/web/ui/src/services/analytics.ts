@@ -13,7 +13,16 @@ const pageView = (pageName: string) => {
   }
 };
 
-const trackEvent = (eventName: string, properties = {}) => {
+const trackEvent = (
+  eventName: string,
+  properties:
+    | {
+        event_category: string;
+        event_label: string;
+        [key: string]: string;
+      }
+    | {} = {},
+) => {
   if (enabled()) {
     window.gtag('event', eventName, properties);
   }

@@ -41,6 +41,7 @@ function SelectVizElement(props: any) {
         disabled={props.options.disabled}
         value={props.options.value}
         popoverProps={{ align: 'start' }}
+        triggerProps={{ css: { width: 'unset' } }}
         options={[
           {
             group: '',
