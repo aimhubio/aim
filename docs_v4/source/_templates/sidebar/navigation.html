@@ -1,0 +1,8 @@
+<div class="sidebar-tree">
+    <ul>
+        <li class="toctree-l1 {% if pagename == master_doc %}current current-page{% endif %}">
+            <a class="reference internal" href="{{ pathto(master_doc) }}">Home</a>
+        </li>
+    </ul>
+    {{ furo_navigation_tree }}
+</div>
