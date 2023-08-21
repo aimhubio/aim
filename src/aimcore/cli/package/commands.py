@@ -81,7 +81,7 @@ def sync_package(name, repo):
         exit(1)
     else:
         if repo and not Repo.is_remote_path(repo):
-            click.echo(f'Failed to run package sync. \'--repo\' must point to Aim remote server path.')
+            click.echo('Failed to run package sync. \'--repo\' must point to Aim remote server path.')
             exit(1)
         repo_inst = Repo.from_path(repo) if repo else Repo.default()
 

@@ -126,7 +126,8 @@ def ui(dev, host, port, workers, uds,
         import aimstack
         import aimcore
 
-        reload_dirs = [os.path.dirname(aim.__file__), os.path.dirname(aimcore.__file__), os.path.dirname(aimstack.__file__), dev_package_dir]
+        reload_dirs = [os.path.dirname(aim.__file__), os.path.dirname(aimcore.__file__),
+                       os.path.dirname(aimstack.__file__), dev_package_dir]
     else:
         reload_dirs = []
 
