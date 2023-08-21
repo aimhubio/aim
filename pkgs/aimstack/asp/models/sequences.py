@@ -1,7 +1,7 @@
 import numbers
 import json
 
-from typing import List, Union
+from typing import List, Union, Optional, Any
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -72,7 +72,11 @@ class DataframeMixin:
 
 
 class Metric(Sequence[numbers.Number], DataframeMixin):
-    ...
+    def track(self, value: Any, *, step: Optional[int] = None, **axis):
+        from aim._sdk import num_utils
+        if num_utils.is_number(value):
+            value = num_utils.convert_to_py_number(value)
+        super().track(value, step=step, **axis)
 
 
 class SystemMetric(Sequence[numbers.Number], DataframeMixin):
