@@ -1,4 +1,5 @@
 import datetime
+
 import pytz
 import json
 import inspect
@@ -6,13 +7,14 @@ import logging
 
 from functools import partialmethod
 
-from aim import Container
+from aim import Container, Sequence
 from aim._sdk.utils import utc_timestamp
 from aim._sdk import type_utils
 from aimcore.callbacks import Caller
 from aimcore.callbacks import events
 from aim._ext.system_info import utils as system_utils
 from aim._sdk.constants import ContainerOpenMode, KeyNames
+from aim._sdk.num_utils import is_number
 
 from .logging import (
     LogLine,
@@ -32,11 +34,11 @@ from .sequences import (
     Figure3DSequence
 )
 
-from typing import Optional, Union, List, Tuple, Dict, Any
+from typing import Optional, Union, List, Tuple, Dict, Any, Type
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from aim import Repo
+    from aim import Repo, Sequence
 
 
 @type_utils.query_alias('run')
@@ -88,6 +90,14 @@ class Run(Container, Caller):
     @name.setter
     def name(self, val: str):
         self['name'] = val
+
+    @property
+    def experiment(self) -> Optional[str]:
+        return self.get('experiment', None)
+
+    @experiment.setter
+    def experiment(self, val: str):
+        self['experiment'] = val
 
     @property
     def description(self) -> str:
@@ -163,6 +173,12 @@ class Run(Container, Caller):
         sequence = self.sequences[name, context]
         sequence.track(value, step=step, **axis)
 
+    def track_auto(self, value, name: str, step: int = None, context: dict = None, **axis):
+        context = {} if context is None else context
+        seq_type = self._get_sequence_type_from_value(value)
+        sequence = self.sequences.typed_sequence(seq_type, name, context)
+        sequence.track(value, step=step, **axis)
+
     def get_metric(self, name: str, context: Optional[dict] = None) -> Metric:
         context = {} if context is None else context
         return self.sequences.typed_sequence(Metric, name, context)
@@ -232,3 +248,23 @@ class Run(Container, Caller):
         import pandas as pd
         df = pd.DataFrame(data, index=[0])
         return df
+
+    @staticmethod
+    def _get_sequence_type_from_value(value) -> Type[Sequence]:
+        val_type = type_utils.get_object_typename(value)
+        if type_utils.is_allowed_type(val_type, type_utils.get_sequence_value_types(Metric)) \
+                or is_number(value):
+            return Metric
+        if type_utils.is_allowed_type(val_type, type_utils.get_sequence_value_types(ImageSequence)):
+            return ImageSequence
+        if type_utils.is_allowed_type(val_type, type_utils.get_sequence_value_types(AudioSequence)):
+            return AudioSequence
+        if type_utils.is_allowed_type(val_type, type_utils.get_sequence_value_types(TextSequence)):
+            return TextSequence
+        if type_utils.is_allowed_type(val_type, type_utils.get_sequence_value_types(DistributionSequence)):
+            return TextSequence
+        if type_utils.is_allowed_type(val_type, type_utils.get_sequence_value_types(FigureSequence)):
+            return TextSequence
+        if type_utils.is_allowed_type(val_type, type_utils.get_sequence_value_types(Figure3DSequence)):
+            return TextSequence
+        return Sequence
