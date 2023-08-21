@@ -190,6 +190,10 @@ class Container(ABCContainer):
         self._attrs_tree[key] = value
         self._meta_attrs_tree.merge(key, value)
 
+    def set(self, key, value, strict: bool):
+        self._attrs_tree.set(key, value, strict)
+        self._meta_attrs_tree.set(key, value, strict)
+
     def __getitem__(self, key):
         return self._attrs_tree.collect(key, strict=True)
 

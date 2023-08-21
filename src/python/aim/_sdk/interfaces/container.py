@@ -23,6 +23,10 @@ class Container(object):
     def get(self, key, default: Any = None, strict: bool = False):
         ...
 
+    @abstractmethod
+    def set(self, key, value: Any, strict: bool):
+        ...
+
     @property
     @abstractmethod
     def sequences(self) -> 'SequenceCollection':
