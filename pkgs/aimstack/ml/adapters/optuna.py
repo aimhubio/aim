@@ -8,8 +8,7 @@ from optuna.study.study import ObjectiveFuncType
 
 
 with try_import() as _imports:
-    from aim._sdk.run import Run
-    from aim._ext.system_info import DEFAULT_SYSTEM_TRACKING_INT
+    from aimstack.asp import Run
 
 
 @experimental_class('2.9.0')
@@ -45,9 +44,7 @@ class AimCallback:
         self,
         repo: Optional[str] = None,
         experiment_name: Optional[str] = None,
-        system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT,
         log_system_params: Optional[bool] = True,
-        capture_terminal_logs: Optional[bool] = True,
         metric_name: Union[str, Sequence[str]] = 'value',
         as_multirun: bool = False,
     ) -> None:
@@ -62,9 +59,7 @@ class AimCallback:
         self._as_multirun = as_multirun
         self._repo_path = repo
         self._experiment_name = experiment_name
-        self._system_tracking_interval = system_tracking_interval
         self._log_system_params = log_system_params
-        self._capture_terminal_logs = capture_terminal_logs
         self._run = None
         self._run_hash = None
 
@@ -118,10 +113,10 @@ class AimCallback:
             self.close()
         else:
             for key, value in trial.params.items():
-                self._run.track(value, name=key, step=step)
+                self._run.track_auto(value, name=key, step=step)
 
             for key, value in metrics.items():
-                self._run.track(value, name=key, step=step)
+                self._run.track_auto(value, name=key, step=step)
 
     @property
     def experiment(self) -> Run:
@@ -131,21 +126,14 @@ class AimCallback:
     def setup(self, args=None):
         if not self._run:
             if self._run_hash:
-                self._run = Run(
-                    self._run_hash,
-                    repo=self._repo_path,
-                    system_tracking_interval=self._system_tracking_interval,
-                    capture_terminal_logs=self._capture_terminal_logs,
-                )
+                self._run = Run(self._run_hash, repo=self._repo_path)
             else:
-                self._run = Run(
-                    repo=self._repo_path,
-                    experiment=self._experiment_name,
-                    system_tracking_interval=self._system_tracking_interval,
-                    log_system_params=self._log_system_params,
-                    capture_terminal_logs=self._capture_terminal_logs,
-                )
+                self._run = Run(repo=self._repo_path)
                 self._run_hash = self._run.hash
+                if self._experiment_name is not None:
+                    self._run.experiment = self._experiment_name
+            if self._log_system_params:
+                self._run.enable_system_monitoring()
 
         if args:
             for key, value in args.items():

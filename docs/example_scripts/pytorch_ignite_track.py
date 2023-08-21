@@ -13,7 +13,7 @@ from ignite.metrics import Accuracy, Loss, ConfusionMatrix, RunningAverage
 from ignite.handlers import global_step_from_engine, EarlyStopping
 from ignite.contrib.handlers import ProgressBar
 
-from aim.pytorch_ignite import AimLogger
+from aimstack.ml.adapters.pytorch_ignite import AimLogger
 
 # transform to normalize the data
 transform = transforms.Compose(

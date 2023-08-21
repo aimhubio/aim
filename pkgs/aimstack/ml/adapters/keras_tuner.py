@@ -1,7 +1,6 @@
 from typing import Optional, List
 
-from aim._sdk.run import Run
-from aim._ext.system_info import DEFAULT_SYSTEM_TRACKING_INT
+from aimstack.asp import Run
 
 try:
     from kerastuner.engine.tuner_utils import TunerCallback
@@ -33,16 +32,12 @@ class AimCallback(TunerCallback):
         self,
         repo: Optional[str] = None,
         experiment_name: Optional[str] = None,
-        system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT,
         log_system_params: Optional[bool] = True,
-        capture_terminal_logs: Optional[bool] = True,
         tuner=None,
     ):
         self._repo_path = repo
         self._experiment_name = experiment_name
-        self._system_tracking_interval = system_tracking_interval
         self._log_system_params = log_system_params
-        self._capture_terminal_logs = capture_terminal_logs
 
         self.tuner = tuner
 
@@ -60,20 +55,11 @@ class AimCallback(TunerCallback):
         tuner_key = next(iter(trial_dict))
         self._current_trial_id = trial_dict[tuner_key].trial_id
         if self._current_trial_id not in self._started_trials:
-            if self._repo_path is None and self._experiment_name is None:
-                self._run = Run(
-                    system_tracking_interval=self._system_tracking_interval,
-                    log_system_params=self._log_system_params,
-                    capture_terminal_logs=self._capture_terminal_logs,
-                )
-            else:
-                self._run = Run(
-                    repo=self._repo_path,
-                    experiment=self._experiment_name,
-                    system_tracking_interval=self._system_tracking_interval,
-                    log_system_params=self._log_system_params,
-                    capture_terminal_logs=self._capture_terminal_logs,
-                )
+            self._run = Run(repo=self._repo_path)
+            if self._experiment_name is not None:
+                self._run.experiment = self._experiment_name
+            if self._log_system_params:
+                self._run.enable_system_monitoring()
             self._run['trial_id'] = self._current_trial_id
             self._started_trials.append(self._current_trial_id)
         trial = self.tuner.oracle.get_trial(self._current_trial_id)
@@ -84,8 +70,4 @@ class AimCallback(TunerCallback):
     def on_batch_end(self, batch, logs=None):
         if logs:
             for log_name, log_value in logs.items():
-                self._run.track(log_value, name=log_name)
-
-    def __del__(self):
-        if self._run is not None and self._run.active:
-            self._run.close()
+                self._run.get_metric(name=log_name, context={}).track_auto(log_value)

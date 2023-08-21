@@ -2,7 +2,7 @@ import logging
 from pathlib import Path
 import yaml
 
-from aim._sdk.record import Record
+from aim import Record
 
 try:
     from dvc.repo import Repo

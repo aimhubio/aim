@@ -1,4 +1,4 @@
-from aim import Run
+from aimstack.asp import Run
 from aimstack.asp.models.objects.image import convert_to_aim_image_list
 
 import torch
@@ -105,7 +105,7 @@ for epoch in range(num_epochs):
             )
 
             # aim - Track model loss function
-            aim_run.track(
+            aim_run.track_auto(
                 loss.item(), name='loss', epoch=epoch, context={'subset': 'train'}
             )
 
@@ -117,23 +117,23 @@ for epoch in range(num_epochs):
             acc = 100 * correct / total
 
             # aim - Track metrics
-            aim_run.track(
+            aim_run.track_auto(
                 acc, name='accuracy', epoch=epoch, context={'subset': 'train'}
             )
 
-            aim_run.track(
+            aim_run.track_auto(
                 aim_images, name='images', epoch=epoch, context={'subset': 'train'}
             )
 
             # TODO: Do actual validation
             if i % 300 == 0:
-                aim_run.track(
-                    loss.item(), name='loss', epoch=epoch, context={'subset': 'val'}
+                aim_run.track_auto(
+                    loss, name='loss', epoch=epoch, context={'subset': 'val'}
                 )
-                aim_run.track(
+                aim_run.track_auto(
                     acc, name='accuracy', epoch=epoch, context={'subset': 'val'}
                 )
-                aim_run.track(
+                aim_run.track_auto(
                     aim_images, name='images', epoch=epoch, context={'subset': 'val'}
                 )
 

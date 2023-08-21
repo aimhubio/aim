@@ -1,4 +1,4 @@
-from aim.keras import AimCallback
+from aimstack.ml.adapters.keras import AimCallback
 
 import keras
 from keras.datasets import mnist

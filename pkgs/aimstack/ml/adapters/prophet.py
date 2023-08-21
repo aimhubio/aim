@@ -1,7 +1,6 @@
 from typing import Any, Dict, Optional, TypeVar
 
 from aimstack.asp import Run
-from aim._ext.system_info import DEFAULT_SYSTEM_TRACKING_INT
 
 Prophet = TypeVar('Prophet')
 
@@ -30,16 +29,12 @@ class AimLogger:
         self,
         repo: Optional[str] = None,
         experiment_name: Optional[str] = None,
-        system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT,
         log_system_params: Optional[bool] = True,
-        capture_terminal_logs: Optional[bool] = True,
         prophet_model: Prophet = None,
     ):
         self._repo_path = repo
         self._experiment = experiment_name
-        self._system_tracking_interval = system_tracking_interval
         self._log_system_params = log_system_params
-        self._capture_terminal_logs = capture_terminal_logs
         self._run = None
         self._run_hash = None
         self.setup(prophet_model.__dict__)
@@ -57,28 +52,22 @@ class AimLogger:
         if self._run:
             return
         if self._run_hash:
-            self._run = Run(
-                self._run_hash,
-                repo=self._repo_path,
-                system_tracking_interval=self._system_tracking_interval,
-                capture_terminal_logs=self._capture_terminal_logs,
-            )
+            self._run = Run(self._run_hash, repo=self._repo_path)
         else:
-            self._run = Run(
-                repo=self._repo_path,
-                experiment=self._experiment,
-                system_tracking_interval=self._system_tracking_interval,
-                log_system_params=self._log_system_params,
-                capture_terminal_logs=self._capture_terminal_logs,
-            )
+            self._run = Run(repo=self._repo_path)
             self._run_hash = self._run.hash
+            if self._experiment is not None:
+                self._run.experiment = self._experiment
+        if self._log_system_params:
+            self._run.enable_system_monitoring()
 
         for hparam, value in hparams.items():
             self._run.set(hparam, value, strict=False)
 
     def __del__(self) -> None:
-        if self._run and self._run.active:
-            self._run.close()
+        if self._run is not None:
+            del self._run
+            self._run = None
 
     def track_metrics(
         self,
@@ -94,4 +83,4 @@ class AimLogger:
         if context is None:
             context = {'subset': 'val'}
         for metric, value in metrics.items():
-            self._run.track(value, name=metric, context=context)
+            self._run.track_auto(value, name=metric, context=context)

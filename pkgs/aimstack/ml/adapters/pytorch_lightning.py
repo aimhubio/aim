@@ -25,10 +25,9 @@ except ImportError:
         'Please install it with command: \n pip install pytorch-lightning'
     )
 
-from aim._sdk.run import Run
-from aim._sdk.repo import Repo
+from aimstack.asp import Run
+from aim import Repo
 from aim._sdk.utils import clean_repo_path, get_aim_repo_name
-from aim._ext.system_info import DEFAULT_SYSTEM_TRACKING_INT
 
 
 class AimLogger(Logger):
@@ -56,9 +55,7 @@ class AimLogger(Logger):
         self,
         repo: Optional[str] = None,
         experiment_name: Optional[str] = None,
-        system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT,
         log_system_params: Optional[bool] = True,
-        capture_terminal_logs: Optional[bool] = True,
         train_metric_prefix: Optional[str] = 'train_',
         val_metric_prefix: Optional[str] = 'val_',
         test_metric_prefix: Optional[str] = 'test_',
@@ -69,9 +66,7 @@ class AimLogger(Logger):
 
         self._repo_path = repo
         self._experiment_name = experiment_name
-        self._system_tracking_interval = system_tracking_interval
         self._log_system_params = log_system_params
-        self._capture_terminal_logs = capture_terminal_logs
 
         self._train_metric_prefix = train_metric_prefix
         self._val_metric_prefix = val_metric_prefix
@@ -98,23 +93,17 @@ class AimLogger(Logger):
     def experiment(self) -> Run:
         if self._run is None:
             if self._run_hash:
-                self._run = Run(
-                    self._run_hash,
-                    repo=self._repo_path,
-                    system_tracking_interval=self._system_tracking_interval,
-                    capture_terminal_logs=self._capture_terminal_logs,
-                )
+                self._run = Run(self._run_hash, repo=self._repo_path)
                 if self._run_name is not None:
                     self._run.name = self._run_name
             else:
-                self._run = Run(
-                    repo=self._repo_path,
-                    experiment=self._experiment_name,
-                    system_tracking_interval=self._system_tracking_interval,
-                    log_system_params=self._log_system_params,
-                    capture_terminal_logs=self._capture_terminal_logs,
-                )
+                self._run = Run(repo=self._repo_path)
                 self._run_hash = self._run.hash
+                if self._experiment_name is not None:
+                    self._run.experiment = self._experiment_name
+        if self._log_system_params:
+            self._run.enable_system_monitoring()
+
         return self._run
 
     @rank_zero_only
@@ -157,13 +146,12 @@ class AimLogger(Logger):
             elif self._val_metric_prefix and name.startswith(self._val_metric_prefix):
                 name = name[len(self._val_metric_prefix):]
                 context['subset'] = 'val'
-            self.experiment.track(v, name=name, step=step, epoch=epoch, context=context)
+            self.experiment.track_auto(v, name=name, step=step, epoch=epoch, context=context)
 
     @rank_zero_only
     def finalize(self, status: str = '') -> None:
         super().finalize(status)
-        if self._run:
-            self._run.close()
+        if self._run is not None:
             del self._run
             self._run = None
 
@@ -171,9 +159,11 @@ class AimLogger(Logger):
         self.finalize()
 
     @property
-    def save_dir(self) -> str:
-        repo_path = clean_repo_path(self._repo_path) or Repo.default_repo_path()
-        return os.path.join(repo_path, get_aim_repo_name())
+    def save_dir(self) -> Optional[str]:
+        if self._repo_path is not None and not Repo.is_remote_path(self._repo_path):
+            repo_path = clean_repo_path(self._repo_path)
+            return os.path.join(repo_path, get_aim_repo_name())
+        return None
 
     @property
     def name(self) -> str:

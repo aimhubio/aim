@@ -1,7 +1,6 @@
 from typing import Any, Callable, Dict, List, Optional, Union
 
-from aim import Run
-from aim._ext.system_info import DEFAULT_SYSTEM_TRACKING_INT
+from aimstack.asp import Run
 
 try:
     from torch.optim import Optimizer
@@ -48,9 +47,7 @@ class AimLogger(BaseLogger):
         self,
         repo: Optional[str] = None,
         experiment_name: Optional[str] = None,
-        system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT,
         log_system_params: Optional[bool] = True,
-        capture_terminal_logs: Optional[bool] = True,
         train_metric_prefix: Optional[str] = 'train_',
         val_metric_prefix: Optional[str] = 'val_',
         test_metric_prefix: Optional[str] = 'test_',
@@ -60,9 +57,7 @@ class AimLogger(BaseLogger):
 
         self._repo_path = repo
         self._experiment_name = experiment_name
-        self._system_tracking_interval = system_tracking_interval
         self._log_system_params = log_system_params
-        self._capture_terminal_logs = capture_terminal_logs
 
         self._train_metric_prefix = train_metric_prefix
         self._val_metric_prefix = val_metric_prefix
@@ -76,21 +71,15 @@ class AimLogger(BaseLogger):
     def experiment(self) -> Run:
         if self._run is None:
             if self._run_hash:
-                self._run = Run(
-                    self._run_hash,
-                    repo=self._repo_path,
-                    system_tracking_interval=self._system_tracking_interval,
-                    capture_terminal_logs=self._capture_terminal_logs,
-                )
+                self._run = Run(self._run_hash, repo=self._repo_path)
             else:
-                self._run = Run(
-                    repo=self._repo_path,
-                    experiment=self._experiment_name,
-                    system_tracking_interval=self._system_tracking_interval,
-                    log_system_params=self._log_system_params,
-                    capture_terminal_logs=self._capture_terminal_logs,
-                )
+                self._run = Run(repo=self._repo_path)
                 self._run_hash = self._run.hash
+                if self._experiment_name is not None:
+                    self._run.experiment = self._experiment_name
+        if self._log_system_params:
+            self._run.enable_system_monitoring()
+
         return self._run
 
     def log_params(self, params: dict):
@@ -121,7 +110,7 @@ class AimLogger(BaseLogger):
                 name = name[len(self._val_metric_prefix):]
                 context['subset'] = 'val'
             context.update(self._context)
-            self.experiment.track(v, step=step, name=name, context=context)
+            self.experiment.track_auto(v, step=step, name=name, context=context)
 
     @property
     def save_dir(self) -> str:
@@ -136,8 +125,7 @@ class AimLogger(BaseLogger):
         return self.experiment.hash
 
     def close(self) -> None:
-        if self._run:
-            self._run.close()
+        if self._run is not None:
             del self._run
             self._run = None
 
