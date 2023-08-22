@@ -2,7 +2,7 @@
 # Bindings for fetching Aim Objects
 ####################
 
-from js import search, runFunction
+from js import search, runFunction, encodeURIComponent
 import json
 import hashlib
 
@@ -60,6 +60,10 @@ def query_filter(type_, query="", count=None, start=None, stop=None, is_sequence
 
     try:
         data = search(board_path, type_, query, count, start, stop, is_sequence)
+
+        if data is None:
+            raise WaitForQueryError()
+        
         data = json.loads(data)
 
         query_results_cache[query_key] = data
@@ -242,7 +246,7 @@ current_layout = []
 state = {}
 
 
-def set_state(update, board_path, persist=False):
+def set_state(update, board_path, persist=True):
     from js import setState
 
     if board_path not in state:
@@ -1613,17 +1617,14 @@ class Board(Component):
 
         self.data = path
 
-        self.board_state = state
-        
-        self.callbacks = {"on_mount": self.on_mount}
+        self.state_str = json.dumps(state)
+
+        self.options = {"state_str": self.state_str}
 
         self.render()
 
     def get_state(self):
         return state[self.data] if self.data in state else None
-    
-    def on_mount(self):
-        set_state(self.board_state or {}, self.data)
 
 
 class BoardLink(Component):
@@ -1642,17 +1643,15 @@ class BoardLink(Component):
 
         self.data = path
 
+        if state:
+            self.data += "?state=" + encodeURIComponent(json.dumps(state))
+
         self.board_state = state
 
         self.options = {"text": text, "new_tab": new_tab}
 
-        self.callbacks = {"on_navigation": self.on_navigation}
-
         self.render()
 
-    def on_navigation(self):
-        if self.board_state is not None:
-            set_state(self.board_state, self.data)
 
 
 class UI:

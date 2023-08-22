@@ -5,8 +5,6 @@ import { fetchPackages } from 'modules/core/api/projectApi';
 import { search } from 'pages/Board/serverAPI/search';
 import { runFunction } from 'pages/Board/serverAPI/runFunction';
 
-import { getItem, setItem } from 'utils/storage';
-
 import pyodideEngine from './store';
 
 declare global {
@@ -147,15 +145,16 @@ window.setState = (update: any, boardPath: string, persist = false) => {
 
   // This section add persistence for state through saving it to URL and localStorage
 
-  if (persist) {
-    const stateStr = JSON.stringify(state);
-    const boardStateStr = JSON.stringify(state[boardPath]);
-    const prevStateStr = getItem('app_state');
+  if (persist && boardPath === window.location.pathname.slice(5)) {
+    // TODO: remove hardcoded '/app/' from pathname
+    const stateStr = encodeURIComponent(JSON.stringify(state[boardPath]));
+
+    const url = new URL(window.location as any);
+
+    const prevStateStr = url.searchParams.get('state');
 
     if (stateStr !== prevStateStr) {
-      setItem('app_state', stateStr);
-      const url = new URL(window.location as any);
-      url.searchParams.set('state', boardStateStr);
+      url.searchParams.set('state', stateStr);
       window.history.pushState({}, '', url as any);
     }
   }
