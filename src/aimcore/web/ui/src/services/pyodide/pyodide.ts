@@ -4,6 +4,7 @@ import { fetchPackages } from 'modules/core/api/projectApi';
 
 import { search } from 'pages/Board/serverAPI/search';
 import { runFunction } from 'pages/Board/serverAPI/runFunction';
+import { find } from 'pages/Board/serverAPI/find';
 
 import { getItem, setItem } from 'utils/storage';
 
@@ -13,6 +14,7 @@ declare global {
   interface Window {
     search: Function;
     runFunction: Function;
+    findItem: Function;
     updateLayout: Function;
     setState: Function;
     pyodideEngine: typeof pyodideEngine;
@@ -21,6 +23,7 @@ declare global {
 
 window.search = search;
 window.runFunction = runFunction;
+window.findItem = find;
 
 let queryResultsCacheMap: Map<string, any> = new Map();
 let pendingQueriesMap: Map<string, Map<string, any>> = new Map();
@@ -236,6 +239,29 @@ export async function loadPyodideInstance() {
 
           return val;
         },
+        find: (...args: any[]) => {
+          let queryArgs: Record<string, string | number> = {
+            query: '',
+          };
+          for (let i = 0; i < args.length; i++) {
+            if (typeof args[i] === 'object') {
+              Object.assign(queryArgs, args[i]);
+            } else {
+              queryArgs[i] = args[i];
+            }
+          }
+
+          let val = pyodide.runPython(
+            `find_item('${sequenceType}', True, '${
+              queryArgs[0] ?? queryArgs['hash_']
+            }', '${queryArgs[1] ?? queryArgs['name']}', '${
+              queryArgs[2] ?? queryArgs['context']
+            }')`,
+            { globals: namespace },
+          );
+
+          return val;
+        },
       };
     });
 
@@ -248,6 +274,13 @@ export async function loadPyodideInstance() {
             `query_filter('${containerType}', ${JSON.stringify(
               query,
             )}, None, None, None, False)`,
+            { globals: namespace },
+          );
+          return val;
+        },
+        find: (hash_: string) => {
+          let val = pyodide.runPython(
+            `find_item('${containerType}', False, '${hash_}')`,
             { globals: namespace },
           );
           return val;
