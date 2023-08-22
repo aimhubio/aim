@@ -1,3 +1,5 @@
+import json
+
 from fastapi.responses import StreamingResponse
 from fastapi import Depends, HTTPException
 
@@ -37,11 +39,33 @@ async def sequence_search_result_streamer(repo: 'Repo',
         yield collect_streamable_data(encoded_tree)
 
 
+async def sequence_data_streamer(repo: 'Repo',
+                                 sequence: Sequence,
+                                 p: Optional[int],
+                                 start: Optional[int],
+                                 stop: Optional[int],
+                                 sample_seed: str):
+    if sequence is None:
+        return
+    seq_data = {hash(sequence): sequence_data(
+        repo, sequence, p, start, stop, sample_seed)}
+    encoded_tree = encode_tree(seq_data)
+    yield collect_streamable_data(encoded_tree)
+
+
 async def container_search_result_streamer(query_collection: Iterable[Container]):
     for container in query_collection:
         cont_data = {container.hash: container_data(container)}
         encoded_tree = encode_tree(cont_data)
         yield collect_streamable_data(encoded_tree)
+
+
+async def container_data_streamer(container: Container):
+    if container is None:
+        return
+    cont_data = {container.hash: container_data(container)}
+    encoded_tree = encode_tree(cont_data)
+    yield collect_streamable_data(encoded_tree)
 
 
 def sequence_query_grouped_response(repo: 'Repo',
@@ -95,6 +119,39 @@ async def data_fetch_api(type_: str,
     return StreamingResponse(streamer)
 
 
+@query_router.get('/find-container/')
+async def find_container_api(type_: str,
+                             hash_: str,
+                             package=Depends(get_root_package)):
+    if type_ not in Container.registry:
+        raise HTTPException(status_code=400, detail=f'\'{type_}\' is not a valid Container type.')
+    cont_type = Container.registry[type_][0]
+    container = cont_type.find(hash_)
+
+    streamer = container_data_streamer(container)
+    return StreamingResponse(streamer)
+
+
+@query_router.get('/find-sequence/')
+async def find_sequence_api(type_: str,
+                             hash_: str,
+                             name: str,
+                             ctx: str,
+                             p: Optional[int] = 500,
+                             start: Optional[int] = None,
+                             stop: Optional[int] = None,
+                             package=Depends(get_root_package)):
+    repo = get_project_repo()
+    context = json.loads(ctx)
+    if type_ not in Sequence.registry:
+        raise HTTPException(status_code=400, detail=f'\'{type_}\' is not a valid Sequence type.')
+    seq_type = Sequence.registry[type_][0]
+    sequence = seq_type.find(hash_, name, context)
+    sample_seed = f'{hash_}_{name}_{context}'
+    streamer = sequence_data_streamer(repo, sequence, p, start, stop, sample_seed)
+    return StreamingResponse(streamer)
+
+
 @query_router.get('/grouped-sequences/')
 async def grouped_data_fetch_api(seq_type: Optional[str] = 'Sequence',
                                  cont_type: Optional[str] = 'Container',
@@ -106,11 +163,9 @@ async def grouped_data_fetch_api(seq_type: Optional[str] = 'Sequence',
     repo = get_project_repo()
     query = checked_query(q)
     if seq_type not in Sequence.registry:
-        raise HTTPException(
-            status_code=400, detail=f'\'{seq_type}\' is not a valid Sequence type.')
+        raise HTTPException(status_code=400, detail=f'\'{seq_type}\' is not a valid Sequence type.')
     if cont_type not in Container.registry:
-        raise HTTPException(
-            status_code=400, detail=f'\'{cont_type}\' is not a valid Container type.')
+        raise HTTPException(status_code=400, detail=f'\'{cont_type}\' is not a valid Container type.')
     if query:
         query = f'(container.type.startswith("{Container.registry[cont_type][0].get_full_typename()}")) and {query}'
     else:
