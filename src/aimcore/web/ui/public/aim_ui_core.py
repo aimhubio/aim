@@ -127,7 +127,7 @@ class Container:
         return query_filter("Container", query, None, None, None, is_sequence=False)
     
     @classmethod
-    def find(self, hash_: str):
+    def find(self, hash_):
         return find_item("Container", is_sequence=False, hash_=hash_)
 
 

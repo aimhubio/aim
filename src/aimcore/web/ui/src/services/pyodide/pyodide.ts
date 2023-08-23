@@ -240,23 +240,28 @@ export async function loadPyodideInstance() {
           return val;
         },
         find: (...args: any[]) => {
-          let queryArgs: Record<string, string | number> = {
-            query: '',
-          };
+          let queryArgs: Record<string, string | number> = {};
           for (let i = 0; i < args.length; i++) {
-            if (typeof args[i] === 'object') {
+            if (
+              typeof args[i] === 'object' &&
+              (args[i].hasOwnProperty('hash_') ||
+                args[i].hasOwnProperty('name') ||
+                args[i].hasOwnProperty('context'))
+            ) {
               Object.assign(queryArgs, args[i]);
             } else {
               queryArgs[i] = args[i];
             }
           }
 
+          let hash_ = queryArgs[0] ?? queryArgs['hash_'];
+          let name = queryArgs[1] ?? queryArgs['name'];
+          let ctx = queryArgs[2] ?? queryArgs['context'];
+
           let val = pyodide.runPython(
-            `find_item('${sequenceType}', True, '${
-              queryArgs[0] ?? queryArgs['hash_']
-            }', '${queryArgs[1] ?? queryArgs['name']}', '${
-              queryArgs[2] ?? queryArgs['context']
-            }')`,
+            `find_item('${sequenceType}', True, ${JSON.stringify(
+              hash_,
+            )}, ${JSON.stringify(name)}, ${ctx})`,
             { globals: namespace },
           );
 
@@ -280,7 +285,7 @@ export async function loadPyodideInstance() {
         },
         find: (hash_: string) => {
           let val = pyodide.runPython(
-            `find_item('${containerType}', False, '${hash_}')`,
+            `find_item('${containerType}', False, ${JSON.stringify(hash_)})`,
             { globals: namespace },
           );
           return val;
