@@ -1740,6 +1740,10 @@ class UI:
         return plotly_chart
 
     def json(self, *args, **kwargs):
+        if (len(args) > 0 and (args[0] is None)) or ("data" in kwargs and (kwargs["data"] is None)):
+            text = Text('None', mono=True, block=self.block_context)
+            return text
+        
         json = JSON(*args, **kwargs, block=self.block_context)
         return json
 
