@@ -123,6 +123,7 @@ async def data_fetch_api(type_: str,
 async def find_container_api(type_: str,
                              hash_: str,
                              package=Depends(get_root_package)):
+    repo = get_project_repo()
     if type_ not in Container.registry:
         raise HTTPException(status_code=400, detail=f'\'{type_}\' is not a valid Container type.')
     cont_type = Container.registry[type_][0]
