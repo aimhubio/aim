@@ -4,7 +4,8 @@ import { CSS } from 'config/stitches/types';
 
 // Button component props
 export interface IButtonProps
-  extends Partial<React.HTMLAttributes<HTMLButtonElement>> {
+  extends Partial<React.HTMLAttributes<HTMLButtonElement>>,
+    Partial<HTMLButtonElement> {
   /**
    * @description The color of the button
    * @example 'primary'
