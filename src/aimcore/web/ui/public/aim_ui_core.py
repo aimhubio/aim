@@ -2,7 +2,7 @@
 # Bindings for fetching Aim Objects
 ####################
 
-from js import search, runFunction, encodeURIComponent
+from js import search, runFunction, findItem, encodeURIComponent
 import json
 import hashlib
 
@@ -94,16 +94,45 @@ def run_function(func_name, params):
             raise e
 
 
+def find_item(type_, is_sequence=False, hash_=None, name=None, ctx=None):
+    if ctx is not None:
+        ctx = json.dumps(ctx)
+    
+    query_key = f"{type_}_{hash_}_{name}_{ctx}"
+
+    if query_key in query_results_cache:
+        return query_results_cache[query_key]
+
+    try:
+        data = findItem(board_path, type_, is_sequence, hash_, name, ctx)
+        data = json.loads(data)
+
+        query_results_cache[query_key] = data
+        return data
+    except Exception as e:
+        if "WAIT_FOR_QUERY_RESULT" in str(e):
+            raise WaitForQueryError()
+        else:
+            raise e
+
 class Sequence:
     @classmethod
     def filter(self, query="", count=None, start=None, stop=None):
         return query_filter("Sequence", query, count, start, stop, is_sequence=True)
+    
+    @classmethod
+    def find(self, hash_, name, context):
+        return find_item("Sequence", is_sequence=True, hash_=hash_, name=name, ctx=context)
 
 
 class Container:
     @classmethod
     def filter(self, query=""):
         return query_filter("Container", query, None, None, None, is_sequence=False)
+    
+    @classmethod
+    def find(self, hash_):
+        return find_item("Container", is_sequence=False, hash_=hash_)
 
 
 ####################
