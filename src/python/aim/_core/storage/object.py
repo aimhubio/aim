@@ -22,7 +22,10 @@ class CustomObject(CustomObjectBase):
 
     @staticmethod
     def by_name(name: str):
-        return CustomObject.registry[name]
+        try:
+            return CustomObject.registry[name]
+        except KeyError:
+            return CustomObjectProxy
 
     @classmethod
     def get_typename(cls) -> str:
@@ -52,4 +55,11 @@ class CustomObject(CustomObjectBase):
     @classmethod
     def _aim_decode(cls, aim_name, storage):
         custom_cls = cls.by_name(aim_name)
-        return cls.__new__(custom_cls, _storage=storage)
+        obj = cls.__new__(custom_cls, _storage=storage)
+        setattr(obj, '_cls_name', aim_name)
+        return obj
+
+
+class CustomObjectProxy(CustomObject):
+    def _aim_encode(self):
+        return self._cls_name, self.storage[...]
