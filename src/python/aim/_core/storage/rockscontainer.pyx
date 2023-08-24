@@ -1,6 +1,8 @@
 import logging
 import os
+import tempfile
 from pathlib import Path
+from cachetools.func import ttl_cache
 
 import aimrocks
 
@@ -131,9 +133,17 @@ class RocksContainer(Container):
     def _lock(self, value):
         self._resources._lock = value
 
+    @ttl_cache(ttl=5)
+    def _refresh(self):
+        if not self.read_only:
+            return
+        assert self._db is not None
+        self._db.try_catch_up_with_primary()
+
     @property
     def db(self) -> aimrocks.DB:
         if self._db is not None:
+            self._refresh()
             return self._db
 
         logger.debug(f'opening {self.path} as aimrocks db')
@@ -144,14 +154,16 @@ class RocksContainer(Container):
             lock_cls = self.get_lock_cls()
             self._lock = lock_cls(self._lock_path, timeout)
             self._lock.acquire()
+            secondary_path = None
         else:
             self.optimize_for_read()
-
+            secondary_path = tempfile.mkdtemp()
         self._db = aimrocks.DB(str(self.path),
                                aimrocks.Options(**self._db_opts),
-                               read_only=self.read_only)
+                               read_only=self.read_only, secondary_path=secondary_path)
 
         return self._db
+
 
     def finalize(self, index: Container):
         """Finalize the Container.

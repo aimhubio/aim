@@ -21,6 +21,10 @@ function BoardVizElement(props: any) {
     }
   }, [code, boards]);
 
+  React.useEffect(() => {
+    props.callbacks.on_mount();
+  }, []);
+
   return (
     <div
       className='VizComponentContainer'

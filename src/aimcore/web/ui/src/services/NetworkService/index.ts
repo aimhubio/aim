@@ -91,10 +91,10 @@ class NetworkService {
         if (Array.isArray(item)) {
           for (let index = 0; index < item.length; index++) {
             const arrItem = item[index];
-            accumulator.push(`${key}=${arrItem}`);
+            accumulator.push(`${key}=${encodeURIComponent(arrItem)}`);
           }
         } else {
-          accumulator.push(`${key}=${item}`);
+          accumulator.push(`${key}=${encodeURIComponent(`${item}`)}`);
         }
 
         return accumulator;
