@@ -52,6 +52,22 @@ class WaitForQueryError(Exception):
     pass
 
 
+# dict forbids setting attributes, hence using derived class
+class dictionary(dict):
+    pass
+
+
+def process_properties(obj: dict):
+    if '$properties' in obj:
+        props = obj.pop('$properties')
+        new_obj = dictionary()
+        new_obj.update(obj)
+        for k, v in props.items():
+            setattr(new_obj, k, v)
+        return new_obj
+    return obj
+
+
 def query_filter(type_, query="", count=None, start=None, stop=None, is_sequence=False):
     query_key = f"{type_}_{query}_{count}_{start}_{stop}"
 
@@ -60,7 +76,7 @@ def query_filter(type_, query="", count=None, start=None, stop=None, is_sequence
 
     try:
         data = search(board_path, type_, query, count, start, stop, is_sequence)
-        data = json.loads(data)
+        data = json.loads(data, object_hook=process_properties)
 
         query_results_cache[query_key] = data
         return data
@@ -79,7 +95,7 @@ def run_function(func_name, params):
 
     try:
         res = runFunction(board_path, func_name, params)
-        data = json.loads(res)["value"]
+        data = json.loads(res, object_hook=process_properties)["value"]
 
         query_results_cache[run_function_key] = data
         return data

@@ -78,6 +78,28 @@ class ContainerAutoClean(AutoClean['Container']):
             self._lock.release()
 
 
+class Property:
+    PROP_NAME_BLACKLIST = (  # do not allow property names to be dict class public methods
+        'clear', 'copy', 'fromkeys', 'get', 'items', 'keys', 'pop', 'popitem', 'setdefault', 'update', 'values')
+
+    def __init__(self, default=None):
+        self._default = default
+        self._name = None  # Will be set by __set_name__
+
+    def __set_name__(self, owner, name):
+        if name in Property.PROP_NAME_BLACKLIST:
+            raise RuntimeError(f'Cannot define Aim Property with name \'{name}\'.')
+        self._name = name
+
+    def __get__(self, instance: 'Container', owner):
+        if instance is None:
+            return self
+        return instance._get_property(self._name, self._default)
+
+    def __set__(self, instance: 'Container', value: Any):
+        instance._set_property(self._name, value)
+
+
 @type_utils.query_alias('container', 'c')
 @type_utils.auto_registry
 class Container(ABCContainer):
@@ -138,6 +160,10 @@ class Container(ABCContainer):
                 self._meta_tree[KeyNames.CONTAINERS, self.get_typename()] = 1
                 self[...] = {}
 
+                for attr_name, attr in self.__class__.__dict__.items():
+                    if isinstance(attr, Property):
+                        self._set_property(attr_name, attr._default)
+
             self._tree[KeyNames.INFO_PREFIX, 'end_time'] = None
 
         self._resources = ContainerAutoClean(self)
@@ -171,6 +197,9 @@ class Container(ABCContainer):
         self._meta_attrs_tree: TreeView = self._meta_tree.subtree('attrs')
         self._attrs_tree: TreeView = self._tree.subtree('attrs')
 
+        self._meta_props_tree: TreeView = self._meta_tree.subtree('_props')
+        self._props_tree: TreeView = self._tree.subtree('_props')
+
         self._data_loader: Callable[[], 'TreeView'] = lambda: self._sequence_data_tree
         self.__sequence_data_tree: TreeView = None
         self._sequence_map = ContainerSequenceMap(self, Sequence)
@@ -201,6 +230,16 @@ class Container(ABCContainer):
             return self._attrs_tree.collect(key, strict=strict)
         except KeyError:
             return default
+
+    def _set_property(self, name: str, value: Any):
+        self._props_tree[name] = value
+        self._meta_props_tree.merge(name, value)
+
+    def _get_property(self, name: str, default: Any = None) -> Any:
+        return self._props_tree.get(name, default)
+
+    def collect_properties(self) -> Dict:
+        return self._props_tree.collect()
 
     def match(self, expr) -> bool:
         query = RestrictedPythonQuery(expr)

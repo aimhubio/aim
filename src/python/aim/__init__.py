@@ -2,7 +2,7 @@ import aimrocks
 
 from .record import Record
 from .sequence import Sequence
-from .container import Container
+from .container import Container, Property
 from .repo import Repo
 
 from aim._ext.notebook.notebook import load_ipython_extension
