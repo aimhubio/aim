@@ -46,7 +46,7 @@ SETUP_REQUIRED = [
 # What packages are required for this module to be executed?
 REQUIRED = [
     f'aim-ui=={__version__}',
-    'aimrocks==0.5.0',
+    'aimrocks==0.5.1',
     'khash==0.5.0a5',
     'cachetools>=4.0.0',
     'click>=7.0',
