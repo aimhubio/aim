@@ -2,16 +2,18 @@ from asp import Run
 
 c_hash = session_state.get('container_hash')
 
-runs = None if c_hash is None else Run.filter(f'c.hash=="{c_hash}"')
-run = None
-
-if runs is None:
-    ui.subheader('No runs found')
+if c_hash is None:
+    ui.subheader('No run selected')
     ui.board_link('runs.py', 'Explore runs')
+    run = None
 else:
-    run = runs[0]
-    hash = run.get('hash')
-    ui.subheader(f'Run: {hash}')
+    run = Run.find(c_hash)
+    if run:
+        hash = run.get('hash')
+        ui.subheader(f'Run: {hash}')
+    else:
+        ui.subheader('Run not found')
+        ui.board_link('runs.py', 'Explore runs')
 
 
 @memoize
