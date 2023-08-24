@@ -4,6 +4,7 @@ import { fetchPackages } from 'modules/core/api/projectApi';
 
 import { search } from 'pages/Board/serverAPI/search';
 import { runFunction } from 'pages/Board/serverAPI/runFunction';
+import { find } from 'pages/Board/serverAPI/find';
 
 import { getItem, setItem } from 'utils/storage';
 
@@ -13,6 +14,7 @@ declare global {
   interface Window {
     search: Function;
     runFunction: Function;
+    findItem: Function;
     updateLayout: Function;
     setState: Function;
     pyodideEngine: typeof pyodideEngine;
@@ -21,6 +23,7 @@ declare global {
 
 window.search = search;
 window.runFunction = runFunction;
+window.findItem = find;
 
 let queryResultsCacheMap: Map<string, any> = new Map();
 let pendingQueriesMap: Map<string, Map<string, any>> = new Map();
@@ -236,6 +239,34 @@ export async function loadPyodideInstance() {
 
           return val;
         },
+        find: (...args: any[]) => {
+          let queryArgs: Record<string, string | number> = {};
+          for (let i = 0; i < args.length; i++) {
+            if (
+              typeof args[i] === 'object' &&
+              (args[i].hasOwnProperty('hash_') ||
+                args[i].hasOwnProperty('name') ||
+                args[i].hasOwnProperty('context'))
+            ) {
+              Object.assign(queryArgs, args[i]);
+            } else {
+              queryArgs[i] = args[i];
+            }
+          }
+
+          let hash_ = queryArgs[0] ?? queryArgs['hash_'];
+          let name = queryArgs[1] ?? queryArgs['name'];
+          let ctx = queryArgs[2] ?? queryArgs['context'];
+
+          let val = pyodide.runPython(
+            `find_item('${sequenceType}', True, ${JSON.stringify(
+              hash_,
+            )}, ${JSON.stringify(name)}, ${ctx})`,
+            { globals: namespace },
+          );
+
+          return val;
+        },
       };
     });
 
@@ -248,6 +279,13 @@ export async function loadPyodideInstance() {
             `query_filter('${containerType}', ${JSON.stringify(
               query,
             )}, None, None, None, False)`,
+            { globals: namespace },
+          );
+          return val;
+        },
+        find: (hash_: string) => {
+          let val = pyodide.runPython(
+            `find_item('${containerType}', False, ${JSON.stringify(hash_)})`,
             { globals: namespace },
           );
           return val;

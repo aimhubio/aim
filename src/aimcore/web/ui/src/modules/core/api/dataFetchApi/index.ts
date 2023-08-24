@@ -15,7 +15,7 @@ function createFetchDataRequest(): RequestInstance {
 
   async function call(queryParams: any): Promise<any> {
     return (
-      await api.makeAPIGetRequest(`${ENDPOINTS.DATA.FETCH}`, {
+      await api.makeAPIGetRequest(ENDPOINTS.DATA.FETCH, {
         query_params: queryParams,
         signal,
       })
@@ -43,7 +43,7 @@ function createFetchGroupedSequencesRequest(
     queryParams: GroupedSequencesSearchQueryParams,
   ): Promise<ReadableStream> {
     return (
-      await api.makeAPIGetRequest(`${ENDPOINTS.DATA.GET_GROUPED_SEQUENCES}`, {
+      await api.makeAPIGetRequest(ENDPOINTS.DATA.GET_GROUPED_SEQUENCES, {
         query_params: {
           seq_type: sequenceType,
           cont_type,
@@ -72,7 +72,7 @@ function createRunFunctionRequest(): RequestInstance {
     func_name: string,
     request_data: Record<string, any>,
   ): Promise<any> {
-    return await api.makeAPIPostRequest(`${ENDPOINTS.DATA.RUN}`, {
+    return await api.makeAPIPostRequest(ENDPOINTS.DATA.RUN, {
       query_params: {
         func_name,
       },
@@ -97,10 +97,38 @@ function createBlobsRequest(): RequestInstance {
 
   async function call(uris: string[]): Promise<any> {
     return (
-      await api.makeAPIPostRequest(`${ENDPOINTS.DATA.FETCH_BLOBS}`, {
+      await api.makeAPIPostRequest(ENDPOINTS.DATA.FETCH_BLOBS, {
         body: uris,
         signal,
       })
+    ).body;
+  }
+
+  function cancel(): void {
+    controller.abort();
+  }
+
+  return {
+    call,
+    cancel,
+  };
+}
+
+function createFindDataRequest(isContainer: boolean = true): RequestInstance {
+  const controller = new AbortController();
+  const signal = controller.signal;
+
+  async function call(queryParams: any): Promise<any> {
+    return (
+      await api.makeAPIGetRequest(
+        isContainer
+          ? ENDPOINTS.DATA.FIND_CONTAINER
+          : ENDPOINTS.DATA.FIND_SEQUENCE,
+        {
+          query_params: queryParams,
+          signal,
+        },
+      )
     ).body;
   }
 
@@ -119,4 +147,5 @@ export {
   createFetchGroupedSequencesRequest,
   createRunFunctionRequest,
   createBlobsRequest,
+  createFindDataRequest,
 };
