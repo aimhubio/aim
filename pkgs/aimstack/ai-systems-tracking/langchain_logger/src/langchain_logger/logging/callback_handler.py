@@ -20,17 +20,6 @@ from langchain_logger import Experiment, Release
 import time
 
 """
-An extended Aim callback handler for LangChain.
-This callback handler could easily be part of the langchain_logger.
-
-That would be a more specialized chatbot logger for LangChain.
-But we have tried to keep it framework-agnostic.
-So it works with other chatbot implementations as well.
-These decisions are up to the developers.
-
-
-About this integration:
-
 There are three main building blocks in Aim logging:
 - Objects: a unit of data being saved. Ex. Number, Image, Text etc.
 - Sequences: a sequences of objects.
