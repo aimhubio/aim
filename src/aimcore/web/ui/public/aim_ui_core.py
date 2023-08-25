@@ -366,7 +366,7 @@ class Component(Element):
         )
         self.no_facet = True
 
-    def set_state(self, value):
+    def set_state(self, value, persist=True):
         should_batch = (
             self.parent_block is not None and self.parent_block["type"] == "form"
         )
@@ -389,7 +389,7 @@ class Component(Element):
 
             state_slice.update({self.key: component_state_slice})
 
-            set_state({self.parent_block["id"]: state_slice}, self.board_path)
+            set_state({self.parent_block["id"]: state_slice}, self.board_path, persist=False)
         else:
             state_slice = (
                 state[self.board_path][self.key]
@@ -399,7 +399,7 @@ class Component(Element):
 
             state_slice.update(value)
 
-            set_state({self.key: state_slice}, self.board_path)
+            set_state({self.key: state_slice}, self.board_path, persist=persist)
 
     def render(self):
         component_data = {
