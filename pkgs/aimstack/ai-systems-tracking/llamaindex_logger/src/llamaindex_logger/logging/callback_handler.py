@@ -192,14 +192,13 @@ class AimCallbackHandler(BaseCallbackHandler):
         """
         if event_type is CBEventType.LLM and payload:
             if EventPayload.RESPONSE in payload:
-                self.responses.append(payload[EventPayload.RESPONSE].message.content)
-                # TODO - track the usage
-                # "usage": {
-                #     "prompt_tokens": 3597,
-                #     "completion_tokens": 29,
-                #     "total_tokens": 3626
-                # }
-                # dict(payload[EventPayload.RESPONSE].raw.usage)
+                response = payload[EventPayload.RESPONSE]
+                self.responses.append(response.message.content)
+
+                usage = dict(response.raw.usage)
+                self.tokens_usage_input.track(usage["prompt_tokens"])
+                self.tokens_usage_output.track(usage["completion_tokens"])
+                self.tokens_usage.track(usage["total_tokens"])
         elif event_type is CBEventType.CHUNKING and payload:
             for chunk_id, chunk in enumerate(payload[EventPayload.CHUNKS]):
                 self.doc_chunks.track(Chunk(chunk_id, chunk, self.agent_actions))
