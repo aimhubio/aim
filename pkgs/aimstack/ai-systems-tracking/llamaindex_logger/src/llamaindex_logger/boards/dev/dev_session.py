@@ -95,7 +95,6 @@ def history(session_hash):
         ui.text("No message history")
 
 
-
 def chunks(session_hash):
     if not session_hash:
         return
@@ -122,8 +121,6 @@ def chunks(session_hash):
 
     else:
         ui.text("No chunk history")
-
-
 
 
 def session_cost(session_hash):

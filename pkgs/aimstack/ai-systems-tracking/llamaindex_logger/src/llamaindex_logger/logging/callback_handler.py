@@ -70,7 +70,7 @@ class AimCallbackHandler(BaseCallbackHandler):
         self.start_inp = None
         self.end_out = None
         self.agent_actions = []
-        
+
         self.query = None
         self.responses = []
 
@@ -191,14 +191,8 @@ class AimCallbackHandler(BaseCallbackHandler):
             event_id (str): event id to store.
         """
         if event_type is CBEventType.LLM and payload:
-            # if EventPayload.PROMPT in payload:
-            #     llm_input = str(payload[EventPayload.PROMPT])
-            #     llm_output = str(payload[EventPayload.COMPLETION])
             if EventPayload.RESPONSE in payload:
                 self.responses.append(payload[EventPayload.RESPONSE].message.content)
-                    
-                    # self.query = None
-
                 # TODO - track the usage
                 # "usage": {
                 #     "prompt_tokens": 3597,
@@ -206,12 +200,6 @@ class AimCallbackHandler(BaseCallbackHandler):
                 #     "total_tokens": 3626
                 # }
                 # dict(payload[EventPayload.RESPONSE].raw.usage)
-            # else:
-            #     message = payload.get(EventPayload.MESSAGES, [])
-            #     llm_input = "\n".join([str(x) for x in message])
-            #     llm_output = str(payload[EventPayload.RESPONSE])
-
-            # self.messages.track(Message(llm_input, llm_output, self.agent_actions))
         elif event_type is CBEventType.CHUNKING and payload:
             for chunk_id, chunk in enumerate(payload[EventPayload.CHUNKS]):
                 self.doc_chunks.track(Chunk(chunk_id, chunk, self.agent_actions))
@@ -227,6 +215,8 @@ class AimCallbackHandler(BaseCallbackHandler):
         if trace_id == "query":
             if self.query and self.responses:
                 for response in self.responses:
-                    self.messages.track(Message(self.query, response, self.agent_actions))
+                    self.messages.track(
+                        Message(self.query, response, self.agent_actions)
+                    )
                 self.query = None
                 self.responses = []
