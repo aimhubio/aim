@@ -8,7 +8,7 @@
    overview.md
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :name: start
    :caption: Quick Start
 
@@ -19,7 +19,7 @@
    quick_start/next_steps.md
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :name: ui
    :caption: Aim UI
 
