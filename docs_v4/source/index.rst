@@ -23,6 +23,7 @@ It's easy to get started with Aim. Follow the quick start guide below to install
   :caption: 🏁 Getting Started
 
   getting_started/quick_start.rst
+  getting_started/basics.rst
 
 Core Concepts
 -------------
@@ -50,7 +51,9 @@ your data tracking and visualization processes.
   :maxdepth: 3
   :caption: 💡 Use Cases
 
-  ./use_cases/use_case_1.rst
+  ./use_cases/experiment_tracking.rst
+  ./use_cases/chatbot_logger.rst
+  ./use_cases/qa_logger.rst
 
 Packages
 ---------

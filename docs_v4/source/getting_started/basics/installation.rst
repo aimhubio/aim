@@ -2,6 +2,7 @@
  Installation
 #############
 
+[TODO]
 This section shows a simple end-to-end aim setup. It starts from the installation, shows how to run Aim UI and explore the
 results.
 Use this as a starting point to get familiar with the basics of Aim while getting up and running.
