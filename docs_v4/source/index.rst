@@ -31,7 +31,14 @@ Core Concepts
   :maxdepth: 2
   :caption: ⚡ Core Concepts
 
-  ./core/core.rst
+  ./core/overview.rst
+  ./core/logging.rst
+  ./core/observability.rst
+  ./core/automations.rst
+  ./core/packages.rst
+  ./core/components.rst
+  ./core/how-aim-works.rst
+  ./core/value-prop.rst
 
 Use Cases
 ---------

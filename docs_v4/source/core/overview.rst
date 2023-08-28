@@ -1,9 +1,9 @@
 ###########
- Core
+ Overview
 ###########
 
-Overview
---------
+Main Concepts
+-------------
 
 Aim is built around three main aspects, each focusing on different pillar of the
 logging and logs analysis process:
@@ -44,3 +44,25 @@ For each layer we provide some examples to get started, how-to guides, reference
     Automations --> Observability
     Logging <--> Automations
       Logging <--> Observability
+
+Value Prop
+----------
+What's possible to achieve with aim
+What are we going to try to help users achieve with Aim?
+
+Components
+----------
+Aim library has these core components:
+
+- Aim python package
+- Aim core
+- Aim UI
+- Aim Tracking Server 
+- Aim Storage
+- Aim python sdk
+
+How Aim works
+-------------
+
+This is where I will share more about the way Aim works.
+How different components all interact
