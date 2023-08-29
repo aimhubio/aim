@@ -2,7 +2,7 @@
 # Bindings for fetching Aim Objects
 ####################
 
-from js import search, runFunction, localStorage
+from js import search, runFunction, findItem
 import json
 import hashlib
 
@@ -90,16 +90,45 @@ def run_function(func_name, params):
             raise e
 
 
+def find_item(type_, is_sequence=False, hash_=None, name=None, ctx=None):
+    if ctx is not None:
+        ctx = json.dumps(ctx)
+    
+    query_key = f"{type_}_{hash_}_{name}_{ctx}"
+
+    if query_key in query_results_cache:
+        return query_results_cache[query_key]
+
+    try:
+        data = findItem(board_path, type_, is_sequence, hash_, name, ctx)
+        data = json.loads(data)
+
+        query_results_cache[query_key] = data
+        return data
+    except Exception as e:
+        if "WAIT_FOR_QUERY_RESULT" in str(e):
+            raise WaitForQueryError()
+        else:
+            raise e
+
 class Sequence:
     @classmethod
     def filter(self, query="", count=None, start=None, stop=None):
         return query_filter("Sequence", query, count, start, stop, is_sequence=True)
+    
+    @classmethod
+    def find(self, hash_, name, context):
+        return find_item("Sequence", is_sequence=True, hash_=hash_, name=name, ctx=context)
 
 
 class Container:
     @classmethod
     def filter(self, query=""):
         return query_filter("Container", query, None, None, None, is_sequence=False)
+    
+    @classmethod
+    def find(self, hash_):
+        return find_item("Container", is_sequence=False, hash_=hash_)
 
 
 ####################
@@ -239,13 +268,7 @@ def group(name, data, options, key=None):
 
 current_layout = []
 
-
-saved_state_str = localStorage.getItem("app_state")
-
 state = {}
-
-if saved_state_str:
-    state = json.loads(saved_state_str)
 
 
 def set_state(update, board_path, persist=False):
@@ -255,6 +278,10 @@ def set_state(update, board_path, persist=False):
         state[board_path] = {}
 
     state[board_path].update(update)
+
+    for key in state[board_path]:
+        if state[board_path][key] is None:
+            del state[board_path][key]
 
     setState(state, board_path, persist)
 
@@ -461,16 +488,8 @@ class LineChart(AimSequenceComponent):
         self.render()
 
     @property
-    def active_line(self):
-        return self.state["active_line"] if "active_line" in self.state else None
-
-    @property
     def focused_line(self):
         return self.state["focused_line"] if "focused_line" in self.state else None
-
-    @property
-    def active_point(self):
-        return self.state["active_point"] if "active_point" in self.state else None
 
     @property
     def focused_point(self):
@@ -485,13 +504,6 @@ class LineChart(AimSequenceComponent):
                     {
                         "focused_line": item,
                         "focused_point": point,
-                    }
-                )
-            else:
-                self.set_state(
-                    {
-                        "active_line": item,
-                        "active_point": point,
                     }
                 )
 
@@ -849,10 +861,35 @@ class Table(Component):
         return self.state["focused_row"] if "focused_row" in self.state else None
 
     async def on_row_select(self, val):
-        self.set_state({"selected_rows": val.to_py()})
+        selected_indices = val.to_py()
+
+        if selected_indices is None:
+            self.set_state({"selected_rows": None})
+            return
+        
+        rows = []
+
+        for i in selected_indices:
+            row = {}
+
+            for col in self.data:
+                row[col] = self.data[col][i]
+
+            rows.append(row)
+
+        self.set_state({"selected_rows": rows})
 
     async def on_row_focus(self, val):
-        self.set_state({"focused_row": val.to_py()})
+        if val is None:
+            self.set_state({"focused_row": None})
+            return
+        
+        row = {}
+
+        for col in self.data:
+            row[col] = self.data[col][val]
+
+        self.set_state({"focused_row": row})
 
 
 class Text(Component):
@@ -1605,12 +1642,17 @@ class Board(Component):
 
         self.data = path
 
-        set_state(state or {}, path)
+        self.board_state = state
+        
+        self.callbacks = {"on_mount": self.on_mount}
 
         self.render()
 
     def get_state(self):
         return state[self.data] if self.data in state else None
+    
+    def on_mount(self):
+        set_state(self.board_state or {}, self.data)
 
 
 class BoardLink(Component):
@@ -1727,6 +1769,10 @@ class UI:
         return plotly_chart
 
     def json(self, *args, **kwargs):
+        if (len(args) > 0 and (args[0] is None)) or ("data" in kwargs and (kwargs["data"] is None)):
+            text = Text('None', mono=True, block=self.block_context)
+            return text
+        
         json = JSON(*args, **kwargs, block=self.block_context)
         return json
 

@@ -1,8 +1,11 @@
-from importlib import import_module
 import os
 import subprocess
 
-from aimcore.web.configs import AIM_UI_MOUNTED_REPO_PATH, AIM_UI_PACKAGE_NAME
+from typing import Optional
+from importlib import import_module
+from cachetools.func import ttl_cache
+
+from aimcore.web.configs import AIM_UI_MOUNTED_REPO_PATH
 from aim._sdk.configs import get_aim_repo_name
 from aim._sdk.utils import clean_repo_path
 from aim._sdk.package_utils import Package
@@ -94,10 +97,24 @@ def get_root_path():
     return clean_repo_path(os.getenv(AIM_UI_MOUNTED_REPO_PATH, os.getcwd()))
 
 
-def get_root_package():
-    ui_pkg_name = os.environ.get(AIM_UI_PACKAGE_NAME)
-    assert ui_pkg_name in Package.pool
-    return Package.pool[ui_pkg_name]
+@ttl_cache(ttl=5)
+def get_root_package_name():
+    package_file = os.path.join(get_root_path(), get_aim_repo_name(), 'active_pkg')
+    if not os.path.exists(package_file):
+        package_name = Package.default_package_name
+    else:
+        with open(package_file, 'r') as pf:
+            package_name = pf.read().strip()
+    return package_name
+
+
+def get_root_package() -> Optional[Package]:
+    pkg_name = get_root_package_name()
+    pkgs_dir = os.path.join(get_root_path(), get_aim_repo_name(), 'pkgs')
+    if pkg_name not in Package.pool:
+        if not Package.load_package(pkg_name, pkgs_dir):
+            return None
+    return Package.pool[pkg_name]
 
 
 def get_db_url():

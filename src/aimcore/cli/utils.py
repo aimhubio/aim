@@ -9,3 +9,8 @@ def set_log_level(log_level):
         raise ValueError('Invalid log level: %s' % log_level)
     os.environ[AIM_LOG_LEVEL_KEY] = str(numeric_level)
     logging.basicConfig(level=numeric_level)
+
+
+def start_uvicorn_app(app: str, **uvicorn_args):
+    import uvicorn
+    uvicorn.run(app, **uvicorn_args)

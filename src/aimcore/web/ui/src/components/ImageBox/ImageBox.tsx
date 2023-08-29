@@ -1,9 +1,8 @@
 import React from 'react';
 import { useImageBlobURI } from 'hooks';
 
-import { Skeleton } from '@material-ui/lab';
-
 import ErrorBoundary from 'components/ErrorBoundary';
+import { Spinner } from 'components/kit';
 
 import { ImageBoxProps } from './';
 
@@ -20,9 +19,7 @@ function ImageBox(props: ImageBoxProps) {
             alt={caption}
           />
         ) : (
-          <div style={{ height: '100%' }}>
-            <Skeleton variant='rect' height='100%' />
-          </div>
+          <Spinner size={24} thickness={2} />
         )}
       </div>
     </ErrorBoundary>

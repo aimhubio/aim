@@ -158,7 +158,7 @@ class Run(Container, Caller):
     def log_records(self) -> LogRecordSequence:
         return LogRecordSequence(self, name='__log_records', context={})
 
-    def track(self, value, name: str, step: int = None, context: dict = None, **axis):
+    def track(self, value, name: str, step: Optional[int] = None, context: dict = Optional[None], **axis):
         context = {} if context is None else context
         sequence = self.sequences[name, context]
         sequence.track(value, step=step, **axis)

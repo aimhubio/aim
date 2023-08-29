@@ -14,6 +14,7 @@ import { Box, Button, Link, Tabs } from 'components/kit_v2';
 import { PathEnum } from 'config/enums/routesEnum';
 
 import { search } from 'pages/Board/serverAPI/search';
+import { find } from 'pages/Board/serverAPI/find';
 
 import usePyodide from 'services/pyodide/usePyodide';
 import pyodideEngine from 'services/pyodide/store';
@@ -21,6 +22,7 @@ import {
   getQueryResultsCacheMap,
   clearQueryResultsCache,
   clearPendingQueriesMap,
+  resetBoardState,
 } from 'services/pyodide/pyodide';
 
 // import SaveBoard from './components/SaveBoard';
@@ -240,41 +242,74 @@ def set_session_state(state_slice):
             if (!getQueryResultsCacheMap().has(queryKey)) {
               return;
             }
-            const {
-              boardPath: queryBoardPath,
-              type_,
-              query,
-              count,
-              start,
-              stop,
-              isSequence,
-            } = getQueryResultsCacheMap().get(queryKey).params;
-
-            try {
-              getQueryResultsCacheMap().delete(queryKey);
-              search(
-                queryBoardPath,
+            if (getQueryResultsCacheMap().get(queryKey).type === 'filter') {
+              const {
+                boardPath: queryBoardPath,
                 type_,
                 query,
                 count,
                 start,
                 stop,
                 isSequence,
-                () => {
-                  queryKeysForCacheCleaningRef.current[queryKey] = true;
-                },
-              );
-            } catch (ex) {
-              if (ex === 'WAIT_FOR_QUERY_RESULT') {
-                return;
+              } = getQueryResultsCacheMap().get(queryKey).params;
+
+              try {
+                getQueryResultsCacheMap().delete(queryKey);
+                search(
+                  queryBoardPath,
+                  type_,
+                  query,
+                  count,
+                  start,
+                  stop,
+                  isSequence,
+                  () => {
+                    queryKeysForCacheCleaningRef.current[queryKey] = true;
+                  },
+                );
+              } catch (ex) {
+                if (ex === 'WAIT_FOR_QUERY_RESULT') {
+                  return;
+                }
+                // eslint-disable-next-line no-console
+                console.warn(ex);
               }
-              // eslint-disable-next-line no-console
-              console.warn(ex);
+            } else {
+              const {
+                boardPath: queryBoardPath,
+                type_,
+                isSequence,
+                hash_,
+                name,
+                ctx,
+              } = getQueryResultsCacheMap().get(queryKey).params;
+
+              try {
+                getQueryResultsCacheMap().delete(queryKey);
+                find(
+                  queryBoardPath,
+                  type_,
+                  isSequence,
+                  hash_,
+                  name,
+                  ctx,
+                  () => {
+                    queryKeysForCacheCleaningRef.current[queryKey] = true;
+                  },
+                );
+              } catch (ex) {
+                if (ex === 'WAIT_FOR_QUERY_RESULT') {
+                  return;
+                }
+                // eslint-disable-next-line no-console
+                console.warn(ex);
+              }
             }
           }, liveUpdateInterval);
         }
       },
     );
+
     return () => {
       window.clearTimeout(timerId.current);
       clearDataCache();
@@ -283,6 +318,7 @@ def set_session_state(state_slice):
       }
       unsubscribeFromBoardUpdates();
       clearPendingQueriesMap(boardPath);
+      resetBoardState(boardPath);
     };
   }, [boardPath]);
 

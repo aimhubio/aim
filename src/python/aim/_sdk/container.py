@@ -70,7 +70,8 @@ class ContainerAutoClean(AutoClean['Container']):
 
         self._state['cleanup'] = True
         self._wait_for_empty_queue()
-        self._set_end_time()
+        if not self._state.get('deleted'):
+            self._set_end_time()
         if self._status_reporter is not None:
             self._status_reporter.close()
         if self._lock:
@@ -165,6 +166,15 @@ class Container(ABCContainer):
             repo = Repo.active_repo()
         return repo.containers(query_=expr, type_=cls)
 
+    @classmethod
+    def find(cls, hash_: str) -> Optional['Container']:
+        from aim._sdk.repo import Repo
+        repo = Repo.active_repo()
+        try:
+            return cls(hash_, repo=repo, mode='READONLY')
+        except MissingContainerError:
+            return None
+
     def __storage_init__(self):
         self._tree: TreeView = self._meta_tree.subtree('chunks').subtree(self.hash)
         self._meta_attrs_tree: TreeView = self._meta_tree.subtree('attrs')
@@ -214,6 +224,39 @@ class Container(ABCContainer):
         alias_names = self.default_aliases.union(aliases)
         query_params = {p: proxy for p in alias_names}
         return query.check(**query_params)
+
+    def delete_sequence(self, name, context=None):
+        if self._is_readonly:
+            raise RuntimeError('Cannot delete sequence in read-only mode.')
+
+        context = {} if context is None else context
+        sequence = self._sequence_map._sequence(name, context)
+        sequence.delete()
+
+    def delete(self):
+        if self._is_readonly:
+            raise RuntimeError('Cannot delete container in read-only mode.')
+
+        # remove container meta tree
+        meta_tree = self.storage.tree(self.hash, 'meta', read_only=False)
+        del meta_tree.subtree('chunks')[self.hash]
+        # remove container sequence tree
+        seq_tree = self.storage.tree(self.hash, 'seqs', read_only=False)
+        del seq_tree.subtree('chunks')[self.hash]
+
+        # remove container blobs trees
+        blobs_tree = self.storage.tree(self.hash, 'BLOBS', read_only=False)
+        del blobs_tree.subtree(('meta', 'chunks'))[self.hash]
+        del blobs_tree.subtree(('seqs', 'chunks'))[self.hash]
+
+        # delete entry from container map
+        del meta_tree.subtree('cont_types_map')[self.hash]
+
+        # set a deleted flag
+        self._state['deleted'] = True
+
+        # close the container
+        self.close()
 
     @property
     def sequences(self) -> 'ContainerSequenceMap':

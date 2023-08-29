@@ -1,14 +1,7 @@
 import { styled } from 'config/stitches';
 
-const TableCellStyled = styled('td', {
-  p: '$3 $7',
-  height: '$3',
-  border: '1px solid  rgba(180, 191, 202, 0.3)',
-  verticalAlign: 'middle',
-  whiteSpace: 'nowrap',
-  '.AudiosList': {
-    height: 'unset !important',
-  },
+const TableContainerStyled = styled('div', {
+  overflow: 'auto',
 });
 
 const TableStyled = styled('table', {
@@ -33,6 +26,8 @@ const TableStyled = styled('table', {
     },
   },
 });
+
+const TableHeaderStyled = styled('thead', {});
 
 const TableHeadStyled = styled('th', {
   height: '$9',
@@ -63,9 +58,19 @@ const TableRowStyled = styled('tr', {
   },
 });
 
-const TableHeaderStyled = styled('thead', {});
+const TableCellStyled = styled('td', {
+  p: '$3 $7',
+  height: '$3',
+  border: '1px solid  rgba(180, 191, 202, 0.3)',
+  verticalAlign: 'middle',
+  whiteSpace: 'nowrap',
+  '.AudiosList': {
+    height: 'unset !important',
+  },
+});
 
 export {
+  TableContainerStyled,
   TableCellStyled,
   TableStyled,
   TableHeadStyled,

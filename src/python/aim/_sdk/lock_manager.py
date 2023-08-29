@@ -138,26 +138,18 @@ class LockManager(object):
         success = True
         lock_path = self.locks_path / self.softlock_fname(run_hash)
         if force:
-            # Force-release container locks if any
-            for container_dir in ('meta', 'seqs'):
-                soft_lock_path = self.repo_path / container_dir / 'locks' / self.softlock_fname(run_hash)
-                if soft_lock_path.exists():
-                    soft_lock_path.unlink()
-                unix_lock_path = self.repo_path / container_dir / 'locks' / run_hash
-                if unix_lock_path.exists():
-                    unix_lock_path.unlink()
-
             # Force-release run lock
             if lock_path.exists():
                 lock_path.unlink()
         else:
             lock_info = self.get_container_lock_info(run_hash)
-            if lock_info.locked and lock_info.version == LockingVersion.LEGACY:
-                success = False
-            elif lock_info.locked and self.is_stalled_lock(lock_path):
-                assert lock_info.version == LockingVersion.NEW
-                logger.info(f'Detected stalled lock for Run \'{run_hash}\'. Removing lock.')
-                lock_path.unlink()
+            if lock_info.locked:
+                if self.is_stalled_lock(lock_path):
+                    assert lock_info.version == LockingVersion.NEW
+                    logger.info(f'Detected stalled lock for Run \'{run_hash}\'. Removing lock.')
+                    lock_path.unlink()
+                else:
+                    success = False
         return success
 
     def is_stalled_lock(self, lock_file_path: Path) -> bool:

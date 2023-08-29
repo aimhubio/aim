@@ -12,21 +12,26 @@ function ImagesList(props: any) {
     ...image.record,
   }));
 
-  const boxStyle = {
-    margin: '5px',
-    height: 'calc(100% - 10px)',
-    flex: 1,
-  };
   const boxKey = (item: any) =>
     `${item?.container?.hash}_${item.name}_${JSON.stringify(item.context)}_${
       item.step
     }_${item.index}`;
   return (
-    <div className='ImagesList' style={{ height: '100%', overflow: 'auto' }}>
+    <div
+      className='ImagesList'
+      style={{
+        height: '100%',
+        overflow: 'auto',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: 40,
+        maxHeight: 100,
+      }}
+    >
       {data.map((item: any) => (
         <ImageBox
           key={boxKey(item)}
-          style={boxStyle}
           blobData={item.blobs.data}
           format={item.format}
           caption={item.caption}

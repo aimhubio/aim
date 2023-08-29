@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
+import { ANALYTICS_EVENT_KEYS_MAP } from 'config/analytics/analyticsKeysMap';
 
 import * as analytics from 'services/analytics';
 
@@ -17,7 +17,7 @@ function useReports() {
     if (reportsList?.length === 0) {
       getReportsData();
     }
-    analytics.pageView(ANALYTICS_EVENT_KEYS.reports.pageView);
+    analytics.pageView(ANALYTICS_EVENT_KEYS_MAP.reports.pageView);
   }, []);
 
   const [searchValue, setSearchValue] = React.useState<string>('');

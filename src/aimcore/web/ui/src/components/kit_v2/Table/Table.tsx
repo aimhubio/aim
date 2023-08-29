@@ -14,7 +14,7 @@ import {
   TableRow,
 } from './components';
 import { TableProps } from './Table.d';
-import { TableStyled } from './Table.style';
+import { TableContainerStyled, TableStyled } from './Table.style';
 
 function Table({
   data,
@@ -63,79 +63,89 @@ function Table({
     const { index } = e.currentTarget.dataset;
     if (Number(index) === focusedRow) {
       setFocusedRow(undefined);
+
       if (onRowFocus) {
-        onRowFocus({});
+        onRowFocus(undefined);
       }
       return;
     } else {
       setFocusedRow(Number(index));
+
       if (onRowFocus) {
-        onRowFocus({ ...transformedData[Number(index)], rowIndex: index });
+        onRowFocus(Number(index));
       }
     }
   }
 
   function handleRowSelect(checked: CheckedState | undefined, index: number) {
-    let selectedList: number[] = [];
-    if (checked) {
-      selectedList = [...(selectedRows || []), index];
-    } else {
-      selectedList = selectedRows.filter((i) => i !== index);
-    }
+    let selectedList: number[] = checked
+      ? [...(selectedRows || []), index]
+      : selectedRows.filter((i) => i !== index);
+
     setSelectedRows(selectedList);
+
     if (onRowSelect) {
-      const selectedListDict = selectedList.map((i: number) => {
-        return { ...transformedData[i], rowIndex: i };
-      });
-      onRowSelect(selectedListDict);
+      onRowSelect(selectedList);
+    }
+  }
+
+  let height = undefined;
+
+  if (tableRef.current?.offsetHeight) {
+    height = tableRef.current.offsetHeight;
+
+    if (height > 600) {
+      height = 600;
     }
   }
 
   return (
-    <TableStyled
-      className={classNames('AimTable', className)}
-      ref={tableRef}
-      {...rest}
-    >
-      <TableHeader>
-        <TableRow>
-          {withSelect ? <TableHead>#</TableHead> : null}
-          {Object.keys(data).map((header: string, index: number) => (
-            <TableHead key={index}>{header}</TableHead>
-          ))}
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {transformedData.map((item: Record<string, any>, index: number) => {
-          return (
-            <TableRow
-              isFocused={
-                focusedRow !== undefined ? focusedRow === index : false
-              }
-              data-index={index}
-              onClick={handleRowFocus}
-              key={index}
-            >
-              {withSelect ? (
-                <TableCell>
-                  <Checkbox
-                    data-index={index}
-                    checked={selectedRows?.includes(index)}
-                    onCheckedChange={(checked) =>
-                      handleRowSelect(checked, index)
-                    }
-                    onClick={(e: any) => e.stopPropagation()}
-                  />
-                </TableCell>
-              ) : null}
-              {columnKeys.map((key: string) => {
-                return <TableCell key={key}>{item[key]}</TableCell>;
-              })}
-            </TableRow>
-          );
-        })}
-      </TableBody>
-    </TableStyled>
+    <TableContainerStyled css={{ minHeight: height }}>
+      <TableStyled
+        className={classNames('AimTable', className)}
+        ref={tableRef}
+        {...rest}
+      >
+        <TableHeader>
+          <TableRow>
+            {withSelect ? <TableHead>#</TableHead> : null}
+            {Object.keys(data).map((header: string, index: number) => (
+              <TableHead key={index}>{header}</TableHead>
+            ))}
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {transformedData.map((item: Record<string, any>, index: number) => {
+            return (
+              <TableRow
+                isFocused={
+                  focusedRow !== undefined ? focusedRow === index : false
+                }
+                data-index={index}
+                onClick={handleRowFocus}
+                key={index}
+              >
+                {withSelect ? (
+                  <TableCell>
+                    <Checkbox
+                      data-index={index}
+                      checked={selectedRows?.includes(index)}
+                      onCheckedChange={(checked) =>
+                        handleRowSelect(checked, index)
+                      }
+                      onClick={(e: any) => e.stopPropagation()}
+                    />
+                  </TableCell>
+                ) : null}
+                {columnKeys.map((key: string) => {
+                  return <TableCell key={key}>{item[key]}</TableCell>;
+                })}
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </TableStyled>
+    </TableContainerStyled>
   );
 }
 
