@@ -878,7 +878,7 @@ class Table(Component):
         selected_indices = val.to_py()
 
         if selected_indices is None:
-            self.set_state({"selected_rows": None, "selected_rows_indices": None})
+            self.set_state({"selected_rows": None, "selected_rows_indices": None}, persist=False)
             return
         
         rows = []
@@ -891,7 +891,7 @@ class Table(Component):
 
             rows.append(row)
 
-        self.set_state({"selected_rows": rows, "selected_rows_indices": selected_indices})
+        self.set_state({"selected_rows": rows, "selected_rows_indices": selected_indices}, persist=False)
 
     def on_row_focus(self, val):
         if val is None:
