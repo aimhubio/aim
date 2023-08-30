@@ -349,7 +349,6 @@ class Block(Element):
 class Component(Element):
     def __init__(self, key, type_, block):
         super().__init__(block)
-        self.state = {}
         self.key = key
         self.type = type_
         self.data = None
@@ -830,10 +829,13 @@ class Table(Component):
             "on_row_select": self.on_row_select,
             "on_row_focus": self.on_row_focus,
         }
+
         self.options = {
             "data": data,
             "with_renderer": renderer is not None,
             "selectable_rows": selectable_rows,
+            "selected_rows_indices": self.selected_rows_indices,
+            "focused_row_index": self.focused_row_index
         }
 
         if renderer:
@@ -860,11 +862,19 @@ class Table(Component):
     def focused_row(self):
         return self.state["focused_row"] if "focused_row" in self.state else None
 
-    async def on_row_select(self, val):
+    @property
+    def selected_rows_indices(self):
+        return self.state["selected_rows_indices"] if "selected_rows_indices" in self.state else None    
+
+    @property
+    def focused_row_index(self):
+        return self.state["focused_row_index"] if "focused_row_index" in self.state else None
+
+    def on_row_select(self, val):
         selected_indices = val.to_py()
 
         if selected_indices is None:
-            self.set_state({"selected_rows": None})
+            self.set_state({"selected_rows": None, "selected_rows_indices": None})
             return
         
         rows = []
@@ -877,11 +887,11 @@ class Table(Component):
 
             rows.append(row)
 
-        self.set_state({"selected_rows": rows})
+        self.set_state({"selected_rows": rows, "selected_rows_indices": selected_indices})
 
-    async def on_row_focus(self, val):
+    def on_row_focus(self, val):
         if val is None:
-            self.set_state({"focused_row": None})
+            self.set_state({"focused_row": None, "focused_row_index": None})
             return
         
         row = {}
@@ -889,7 +899,7 @@ class Table(Component):
         for col in self.data:
             row[col] = self.data[col][val]
 
-        self.set_state({"focused_row": row})
+        self.set_state({"focused_row": row, "focused_row_index": val})
 
 
 class Text(Component):
