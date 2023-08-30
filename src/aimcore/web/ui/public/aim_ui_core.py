@@ -371,11 +371,12 @@ class Component(Element):
         )
 
         if should_batch:
+            state_key = f'__form__{self.parent_block["id"]}'
             state_slice = (
-                state[self.board_path][self.parent_block["id"]]
+                state[self.board_path][state_key]
                 if (
                     self.board_path in state
-                    and self.parent_block["id"] in state[self.board_path]
+                    and state_key in state[self.board_path]
                 )
                 else {}
             )
@@ -388,7 +389,7 @@ class Component(Element):
 
             state_slice.update({self.key: component_state_slice})
 
-            set_state({self.parent_block["id"]: state_slice}, self.board_path, persist=False)
+            set_state({state_key: state_slice}, self.board_path, persist=False)
         else:
             state_slice = (
                 state[self.board_path][self.key]
@@ -1905,7 +1906,7 @@ class Form(Block, UI):
         self.render()
 
     def submit(self):
-        batch_id = self.block_context["id"]
+        batch_id = f'__form__{self.block_context["id"]}'
         state_update = state[board_path][batch_id]
         set_state(state_update, board_path=self.board_path)
 
