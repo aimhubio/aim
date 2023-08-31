@@ -248,7 +248,10 @@ class Container(ABCContainer):
         return self._props_tree.get(name, default)
 
     def collect_properties(self) -> Dict:
-        return self._props_tree.collect()
+        try:
+            return self._props_tree.collect()
+        except KeyError:
+            return {}
 
     def match(self, expr) -> bool:
         query = RestrictedPythonQuery(expr)
