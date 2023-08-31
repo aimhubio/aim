@@ -117,7 +117,7 @@ def find_item(type_, is_sequence=False, hash_=None, name=None, ctx=None):
 
     try:
         data = findItem(board_path, type_, is_sequence, hash_, name, ctx)
-        data = json.loads(data)
+        data = json.loads(data, object_hook=process_properties)
 
         query_results_cache[query_key] = data
         return data
