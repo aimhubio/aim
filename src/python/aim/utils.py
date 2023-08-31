@@ -95,13 +95,15 @@ def sequence_data(
 
 
 def container_data(container: Container) -> Dict:
+    props = container.collect_properties()
+    props.update({
+        'container_type': container.get_typename(),
+        'container_full_type': container.get_full_typename()
+    })
     data = container[...]
     data.update({
         'hash': container.hash,
-        'params': container[...],
         '$properties': container.collect_properties(),
-        'container_type': container.get_typename(),
-        'container_full_type': container.get_full_typename(),
     })
     return data
 
