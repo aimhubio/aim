@@ -151,12 +151,6 @@ current_layout = []
 
 board_path = ${boardPath === undefined ? 'None' : `"${boardPath}"`}
 
-if len(${JSON.stringify(stateStr)}) > 0:
-  if board_path not in state:
-    state[board_path] = {}
-
-  state[board_path].update(json.loads(${JSON.stringify(stateStr)}))
-
 session_state = state[board_path] if board_path in state else {}
 def set_session_state(state_slice):
   set_state(state_slice, board_path)
@@ -223,8 +217,27 @@ def set_session_state(state_slice):
   }, [state.executionCount]);
 
   React.useEffect(() => {
-    runParsedCode();
-  }, [stateStr]);
+    if (pyodide && namespace) {
+      pyodide.runPython(
+        `
+board_path = ${boardPath === undefined ? 'None' : `"${boardPath}"`}
+
+if board_path not in state:
+  state[board_path] = {}
+
+state_str = ${JSON.stringify(stateStr)}
+
+if len(state_str) > 0:
+  state[board_path] = json.loads(state_str)
+else:
+  state[board_path] = {}
+  `,
+        { globals: namespace },
+      );
+
+      runParsedCode();
+    }
+  }, [stateStr, pyodide, namespace]);
 
   React.useEffect(() => {
     if (pyodideIsLoading) {
