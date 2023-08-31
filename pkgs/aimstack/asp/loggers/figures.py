@@ -23,6 +23,7 @@ class Figure(Record):
 
     AIM_NAME = 'aim.Figure'
     RESOLVE_BLOBS = False
+    SEQUENCE_NAME = 'FigureSequence'
 
     def __init__(self, obj):
         super().__init__()
@@ -100,6 +101,8 @@ class Figure3D(Record):
     """
 
     AIM_NAME = 'aim.Figure3d'
+    RESOLVE_BLOBS = False
+    SEQUENCE_NAME = 'Figure3DSequence'
 
     # supported geo formats
     UNKNOWN = ''
