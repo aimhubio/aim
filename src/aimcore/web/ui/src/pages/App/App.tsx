@@ -15,7 +15,9 @@ function App(): React.FunctionComponentElement<React.ReactNode> {
     <ErrorBoundary>
       {isLoading ? null : (
         <Route path={[`${PathEnum.App}/*`, `${PathEnum.App}/*/edit`]} exact>
-          {(props) => <AppPage {...props} data={data} />}
+          {(props) => (
+            <AppPage key={props.location.pathname} {...props} data={data} />
+          )}
         </Route>
       )}
       <ToastProvider

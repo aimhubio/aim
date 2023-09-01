@@ -1,3 +1,5 @@
+import * as _ from 'lodash-es';
+
 import { AIM_VERSION, getBasePath } from 'config/config';
 
 import { fetchPackages } from 'modules/core/api/projectApi';
@@ -5,8 +7,6 @@ import { fetchPackages } from 'modules/core/api/projectApi';
 import { search } from 'pages/Board/serverAPI/search';
 import { runFunction } from 'pages/Board/serverAPI/runFunction';
 import { find } from 'pages/Board/serverAPI/find';
-
-import { getItem, setItem } from 'utils/storage';
 
 import pyodideEngine from './store';
 
@@ -150,15 +150,42 @@ window.setState = (update: any, boardPath: string, persist = false) => {
 
   // This section add persistence for state through saving it to URL and localStorage
 
-  if (persist) {
-    const stateStr = JSON.stringify(state);
-    const boardStateStr = JSON.stringify(state[boardPath]);
-    const prevStateStr = getItem('app_state');
+  // TODO: remove hardcoded '/app/' from pathname
+  if (persist && boardPath === window.location.pathname.slice(5)) {
+    // Escape form state updates and unnecessary keys
+
+    let boartState: Record<string, {}> = {};
+
+    for (let key in state[boardPath]) {
+      // Escape form state updates
+      if (key.startsWith('__form__')) {
+        continue;
+      }
+
+      // Escape table selected and focused rows as only keeping indexes is enough
+      let item = _.omit(state[boardPath][key], [
+        'selected_rows',
+        'focused_row',
+      ]);
+
+      // Escape state fields which value is None (undefined in JS)
+      if (!_.isEmpty(JSON.parse(JSON.stringify(item)))) {
+        boartState[key] = item;
+      }
+    }
+
+    const stateStr = encodeURIComponent(JSON.stringify(boartState));
+
+    const url = new URL(window.location as any);
+
+    const prevStateStr = url.searchParams.get('state');
 
     if (stateStr !== prevStateStr) {
-      setItem('app_state', stateStr);
-      const url = new URL(window.location as any);
-      url.searchParams.set('state', boardStateStr);
+      if (_.isEmpty(boartState)) {
+        url.searchParams.delete('state');
+      } else {
+        url.searchParams.set('state', stateStr);
+      }
       window.history.pushState({}, '', url as any);
     }
   }
