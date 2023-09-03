@@ -9,7 +9,7 @@ ui.text("For more details, please visit the LlamaIndex GitHub repository: Llamai
 ui.subheader("Installation")
 
 ui.text(
-    "To get started, install the LlamIndex package. Navigate to `/pkgs/aimstack/ai-systems-tracking/llamaindex_logger` and execute the following command:"
+    "To get started, install the LlamaIndex package. Navigate to `/pkgs/aimstack/ai-systems-tracking/llamaindex_logger` and execute the following command:"
 )
 ui.code("pip install .")
 
