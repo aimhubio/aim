@@ -1,3 +1,4 @@
+import time
 from copy import deepcopy
 from typing import Any, Dict, List
 
@@ -5,19 +6,10 @@ from aim import Repo
 from aimstack.asp import Metric
 from langchain.callbacks.base import BaseCallbackHandler
 from langchain.schema import AgentAction, AgentFinish, LLMResult
-
-from langchain_logger import (
-    Message,
-    MessagesSequence,
-    SessionDev,
-    SessionProd,
-    UserActions,
-    UserActivity,
-)
-
+from langchain_logger import (Experiment, Message, MessagesSequence, Release,
+                              SessionDev, SessionProd, UserActions,
+                              UserActivity)
 from langchain_logger.utils import get_version
-from langchain_logger import Experiment, Release
-import time
 
 """
 There are three main building blocks in Aim logging:
@@ -147,21 +139,22 @@ class AimCallbackHandler(BaseCallbackHandler):
         self.user_activity = ua
         self.user_actions = user_actions
 
-
     def on_chain_start(
         self, serialized: Dict[str, Any], inputs: Dict[str, Any], **kwargs: Any
     ) -> None:
         inputs_res = deepcopy(inputs)
         if inputs_res.get("input"):
-            self.start_inp = inputs_res['input']
+            self.start_inp = inputs_res["input"]
         elif inputs_res.get("input_list"):
-            self.start_inp = inputs_res['input_list']
+            self.start_inp = inputs_res["input_list"]
 
     def on_chain_end(self, outputs: Dict[str, Any], **kwargs: Any) -> None:
         if self.start_inp:
             prompt_key = list(self.start_inp[0].keys())[0]
             for prompt, response in zip(self.start_inp, outputs["outputs"]):
-                self.messages.track(Message(prompt[prompt_key], response["text"], self.agent_actions))
+                self.messages.track(
+                    Message(prompt[prompt_key], response["text"], self.agent_actions)
+                )
             self.start_inp = None
 
     def on_llm_start(
@@ -171,10 +164,11 @@ class AimCallbackHandler(BaseCallbackHandler):
 
     def on_llm_end(self, response: LLMResult, **kwargs: Any) -> None:
         result = deepcopy(response)
-        self.tokens_usage_input.track(result.llm_output['token_usage']['prompt_tokens'])
-        self.tokens_usage_output.track(result.llm_output['token_usage']['completion_tokens'])
-        self.tokens_usage.track(result.llm_output['token_usage']['total_tokens'])
-
+        self.tokens_usage_input.track(result.llm_output["token_usage"]["prompt_tokens"])
+        self.tokens_usage_output.track(
+            result.llm_output["token_usage"]["completion_tokens"]
+        )
+        self.tokens_usage.track(result.llm_output["token_usage"]["total_tokens"])
 
     def on_tool_start(
         self, serialized: Dict[str, Any], input_str: str, **kwargs: Any
@@ -210,7 +204,7 @@ class AimCallbackHandler(BaseCallbackHandler):
         finish: AgentFinish,
         **kwargs: Any,
     ) -> Any:
-        self.end_out = finish.return_values['output']
+        self.end_out = finish.return_values["output"]
         self.messages.track(Message(self.start_inp, self.end_out, self.agent_actions))
         self.start_inp = None
         self.end_out = None

@@ -1,24 +1,14 @@
+import time
 from typing import Any, Dict, List, Optional
 
 from aim import Repo
 from aimstack.asp import Metric
 from llama_index.callbacks.base import BaseCallbackHandler
 from llama_index.callbacks.schema import CBEventType, EventPayload
-
-from llamaindex_logger import (
-    Message,
-    MessagesSequence,
-    Chunk,
-    ChunkSequence,
-    SessionDev,
-    SessionProd,
-    UserActions,
-    UserActivity,
-)
-
+from llamaindex_logger import (Chunk, ChunkSequence, Experiment, Message,
+                               MessagesSequence, Release, SessionDev,
+                               SessionProd, UserActions, UserActivity)
 from llamaindex_logger.utils import get_version
-from llamaindex_logger import Experiment, Release
-import time
 
 """
 There are three main building blocks in Aim logging:

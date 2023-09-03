@@ -1,7 +1,7 @@
 import json
 from datetime import datetime
 
-from llamaindex_logger import MessagesSequence, ChunkSequence, SessionProd
+from llamaindex_logger import ChunkSequence, MessagesSequence, SessionProd
 
 ##################
 # Utils

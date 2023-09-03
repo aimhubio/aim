@@ -4,7 +4,6 @@ from openai_logger.logging.analytics import *
 from openai_logger.logging.chat import *
 from openai_logger.logging.openai.chat_completion import *
 
-
 __all__ = [
     "Session",
     "SessionProd",

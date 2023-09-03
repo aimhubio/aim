@@ -1,20 +1,12 @@
+import time
 from typing import Any, Dict, Optional
 
 from aim import Repo
 from aimstack.asp import Metric
-
-from langchain_logger import (
-    Message,
-    MessagesSequence,
-    SessionDev,
-    SessionProd,
-    UserActions,
-    UserActivity,
-)
-
-from openai_logger.utils import get_version
+from langchain_logger import (Message, MessagesSequence, SessionDev,
+                              SessionProd, UserActions, UserActivity)
 from openai_logger import Experiment, Release
-import time
+from openai_logger.utils import get_version
 
 """
 There are three main building blocks in Aim logging:

@@ -4,7 +4,9 @@ ui.text(
     "The OpenAI API is an interface that allows developers to access OpenAI's natural language processing capabilities, and the OpenAI Python library simplifies interaction with this API in Python applications by providing pre-defined classes and compatibility with various API versions."
 )
 
-ui.text("For more details, please visit the OpenAI API GitHub repository: OpenAI Python Library GitHub: https://github.com/openai/openai-python")
+ui.text(
+    "For more details, please visit the OpenAI API GitHub repository: OpenAI Python Library GitHub: https://github.com/openai/openai-python"
+)
 
 ui.subheader("Installation")
 
@@ -57,7 +59,9 @@ aim_callback = AimCallbackHandler(username=get_user(), dev_mode=True, model=mode
 ui.text(
     "Now, we'll create a ChatCompletion instance. Just provide the callback manager, tell us which language model you want to use, and provide the initial chat question."
 )
-ui.text("Just a quick heads-up! The ChatCompletion we're using here comes from our codebase, not the one in the openai package. Our openai_logger.ChatCompletion is a friendly wrapper around the openai.ChatCompletion. We've added this wrapper to keep a close eye on all the important information because the latter doesn't have a built-in callback mechanism.")
+ui.text(
+    "Just a quick heads-up! The ChatCompletion we're using here comes from our codebase, not the one in the openai package. Our openai_logger.ChatCompletion is a friendly wrapper around the openai.ChatCompletion. We've added this wrapper to keep a close eye on all the important information because the latter doesn't have a built-in callback mechanism."
+)
 
 ui.code(
     """

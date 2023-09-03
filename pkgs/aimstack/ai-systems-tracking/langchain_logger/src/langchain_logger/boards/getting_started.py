@@ -4,7 +4,9 @@ ui.text(
     "LangChain is a powerful library designed to empower developers in creating applications that seamlessly combine large language models like GPT-3 with other sources of computation or knowledge. This allows you to perform tasks such as question answering over specific documents, build chatbots, and create intelligent agents."
 )
 
-ui.text("For more details, please visit the LangChain GitHub repository: LangChain GitHub: https://github.com/langchain-ai/langchain")
+ui.text(
+    "For more details, please visit the LangChain GitHub repository: LangChain GitHub: https://github.com/langchain-ai/langchain"
+)
 
 ui.subheader("Installation")
 
@@ -45,9 +47,7 @@ ui.text(
 
 ui.subheader("Building Chatbots using LLMChain")
 
-ui.text(
-    "First, initialize an LLM, which we'll utilize in the following example."
-)
+ui.text("First, initialize an LLM, which we'll utilize in the following example.")
 
 ui.code(
     """
@@ -113,11 +113,12 @@ synopsis_chain.apply(test_prompts)
 )
 
 
-
 ui.subheader("Enhancing LLMChain with AgentChain")
 
 ui.text("Let's begin by defining the set of tools we'll use.")
-ui.text("Importing SerpAPIWrapper for running search queries on the web and the Tool to manage the later.")
+ui.text(
+    "Importing SerpAPIWrapper for running search queries on the web and the Tool to manage the later."
+)
 
 ui.code(
     """

@@ -1,8 +1,7 @@
 import json
 
 from asp import Metric, SystemMetric
-
-from llamaindex_logger import MessagesSequence, ChunkSequence, SessionProd
+from llamaindex_logger import ChunkSequence, MessagesSequence, SessionProd
 
 # FIXIT:
 # There is LOTS of repeat non-ui code in these files.

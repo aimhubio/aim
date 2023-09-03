@@ -4,7 +4,9 @@ ui.text(
     "LlamaIndex is a comprehensive platform that empowers your LLM applications by offering essential tools for data ingestion, indexing, and a versatile query interface, enabling seamless integration of various data sources and formats into your large language model application."
 )
 
-ui.text("For more details, please visit the LlamaIndex GitHub repository: Llamaindex GitHub: https://github.com/jerryjliu/llama_index")
+ui.text(
+    "For more details, please visit the LlamaIndex GitHub repository: Llamaindex GitHub: https://github.com/jerryjliu/llama_index"
+)
 
 ui.subheader("Installation")
 
@@ -56,7 +58,9 @@ docs = SimpleDirectoryReader(
 """
 )
 
-ui.text("Source of the dataset can be found here: https://github.com/jerryjliu/llama_index/tree/main/examples/paul_graham_essay/data")
+ui.text(
+    "Source of the dataset can be found here: https://github.com/jerryjliu/llama_index/tree/main/examples/paul_graham_essay/data"
+)
 
 ui.text(
     "Next, initialize our Aim callback handler. Supply your current username, indicate your development mode preference, and specify the documents to be used for this experiment."
@@ -89,7 +93,9 @@ query_engine = index.as_query_engine()
 """
 )
 
-ui.text("With these steps completed, we are poised to query the engine by posing questions related to the provided document source, for instance:")
+ui.text(
+    "With these steps completed, we are poised to query the engine by posing questions related to the provided document source, for instance:"
+)
 
 ui.code(
     """
