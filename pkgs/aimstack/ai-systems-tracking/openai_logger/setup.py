@@ -6,7 +6,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 
 # Package info
 NAME = "openai_logger"
-DESCRIPTION = "A OpenAI logger"
+DESCRIPTION = "A OpenAI API logger"
 VERSION = "0.1.0"
 REQUIRES_PYTHON = ">=3.7.0"
 
