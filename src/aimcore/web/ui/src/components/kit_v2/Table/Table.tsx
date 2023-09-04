@@ -32,7 +32,7 @@ function Table({
   const tableRef = React.useRef<HTMLTableElement>(null);
   const columnKeys = React.useMemo(() => Object.keys(data), [data]);
   const [selectedRows, setSelectedRows] = React.useState<number[]>(
-    selectedIndices || [],
+    selectedIndices ?? [],
   );
   const transformedData = React.useMemo(() => {
     const keys = Object.keys(data);

@@ -10,7 +10,7 @@ from pathlib import Path
 from aim._core.storage.encoding import encode_path
 from aim._core.storage.container import Container, ContainerItemsIterator
 from aim._core.storage.prefixview import PrefixView
-from aim._core.storage.rockscontainer import RocksContainer, optimize_db_for_read
+from aim._core.storage.rockscontainer import RocksContainer
 
 from typing import Dict, List, NamedTuple, Tuple
 
@@ -161,7 +161,6 @@ class DB(object):
     ):
         db = cache.get(prefix)
         if db is None:
-            optimize_db_for_read(Path(path), self.opts)
             db = aimrocks.DB(path, opts=aimrocks.Options(**self.opts), read_only=True)
         if store is not None:
             store[prefix] = db

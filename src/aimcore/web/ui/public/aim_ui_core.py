@@ -2,7 +2,7 @@
 # Bindings for fetching Aim Objects
 ####################
 
-from js import search, runFunction, findItem
+from js import search, runFunction, findItem, encodeURIComponent
 import json
 import hashlib
 
@@ -76,6 +76,10 @@ def query_filter(type_, query="", count=None, start=None, stop=None, is_sequence
 
     try:
         data = search(board_path, type_, query, count, start, stop, is_sequence)
+
+        if data is None:
+            raise WaitForQueryError()
+
         data = json.loads(data, object_hook=process_properties)
 
         query_results_cache[query_key] = data
@@ -287,7 +291,7 @@ current_layout = []
 state = {}
 
 
-def set_state(update, board_path, persist=False):
+def set_state(update, board_path, persist=True):
     from js import setState
 
     if board_path not in state:
@@ -365,7 +369,6 @@ class Block(Element):
 class Component(Element):
     def __init__(self, key, type_, block):
         super().__init__(block)
-        self.state = {}
         self.key = key
         self.type = type_
         self.data = None
@@ -378,17 +381,18 @@ class Component(Element):
         )
         self.no_facet = True
 
-    def set_state(self, value):
+    def set_state(self, value, persist=True):
         should_batch = (
             self.parent_block is not None and self.parent_block["type"] == "form"
         )
 
         if should_batch:
+            state_key = f'__form__{self.parent_block["id"]}'
             state_slice = (
-                state[self.board_path][self.parent_block["id"]]
+                state[self.board_path][state_key]
                 if (
                     self.board_path in state
-                    and self.parent_block["id"] in state[self.board_path]
+                    and state_key in state[self.board_path]
                 )
                 else {}
             )
@@ -401,7 +405,7 @@ class Component(Element):
 
             state_slice.update({self.key: component_state_slice})
 
-            set_state({self.parent_block["id"]: state_slice}, self.board_path)
+            set_state({state_key: state_slice}, self.board_path, persist=False)
         else:
             state_slice = (
                 state[self.board_path][self.key]
@@ -411,7 +415,7 @@ class Component(Element):
 
             state_slice.update(value)
 
-            set_state({self.key: state_slice}, self.board_path)
+            set_state({self.key: state_slice}, self.board_path, persist=persist)
 
     def render(self):
         component_data = {
@@ -846,10 +850,13 @@ class Table(Component):
             "on_row_select": self.on_row_select,
             "on_row_focus": self.on_row_focus,
         }
+
         self.options = {
             "data": data,
             "with_renderer": renderer is not None,
             "selectable_rows": selectable_rows,
+            "selected_rows_indices": self.selected_rows_indices,
+            "focused_row_index": self.focused_row_index
         }
 
         if renderer:
@@ -876,11 +883,19 @@ class Table(Component):
     def focused_row(self):
         return self.state["focused_row"] if "focused_row" in self.state else None
 
-    async def on_row_select(self, val):
+    @property
+    def selected_rows_indices(self):
+        return self.state["selected_rows_indices"] if "selected_rows_indices" in self.state else None
+
+    @property
+    def focused_row_index(self):
+        return self.state["focused_row_index"] if "focused_row_index" in self.state else None
+
+    def on_row_select(self, val):
         selected_indices = val.to_py()
 
         if selected_indices is None:
-            self.set_state({"selected_rows": None})
+            self.set_state({"selected_rows": None, "selected_rows_indices": None}, persist=False)
             return
         
         rows = []
@@ -893,11 +908,11 @@ class Table(Component):
 
             rows.append(row)
 
-        self.set_state({"selected_rows": rows})
+        self.set_state({"selected_rows": rows, "selected_rows_indices": selected_indices}, persist=False)
 
-    async def on_row_focus(self, val):
+    def on_row_focus(self, val):
         if val is None:
-            self.set_state({"focused_row": None})
+            self.set_state({"focused_row": None, "focused_row_index": None})
             return
         
         row = {}
@@ -905,7 +920,7 @@ class Table(Component):
         for col in self.data:
             row[col] = self.data[col][val]
 
-        self.set_state({"focused_row": row})
+        self.set_state({"focused_row": row, "focused_row_index": val})
 
 
 class Text(Component):
@@ -1658,17 +1673,14 @@ class Board(Component):
 
         self.data = path
 
-        self.board_state = state
-        
-        self.callbacks = {"on_mount": self.on_mount}
+        self.state_str = json.dumps(state)
+
+        self.options = {"state_str": self.state_str}
 
         self.render()
 
     def get_state(self):
         return state[self.data] if self.data in state else None
-    
-    def on_mount(self):
-        set_state(self.board_state or {}, self.data)
 
 
 class BoardLink(Component):
@@ -1687,17 +1699,15 @@ class BoardLink(Component):
 
         self.data = path
 
+        if state:
+            self.data += "?state=" + encodeURIComponent(json.dumps(state))
+
         self.board_state = state
 
         self.options = {"text": text, "new_tab": new_tab}
 
-        self.callbacks = {"on_navigation": self.on_navigation}
-
         self.render()
 
-    def on_navigation(self):
-        if self.board_state is not None:
-            set_state(self.board_state, self.data)
 
 
 class UI:
@@ -1912,7 +1922,7 @@ class Form(Block, UI):
         self.render()
 
     def submit(self):
-        batch_id = self.block_context["id"]
+        batch_id = f'__form__{self.block_context["id"]}'
         state_update = state[board_path][batch_id]
         set_state(state_update, board_path=self.board_path)
 

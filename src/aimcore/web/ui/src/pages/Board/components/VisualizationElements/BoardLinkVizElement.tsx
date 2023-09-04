@@ -27,7 +27,6 @@ function BoardLinkVizElement(props: any) {
         size='md'
         variant='ghost'
         color='secondary'
-        onClick={() => props.callbacks.on_navigation()}
       >
         <Text>{props.options.text}</Text>
       </Button>

@@ -21,10 +21,6 @@ function BoardVizElement(props: any) {
     }
   }, [code, boards]);
 
-  React.useEffect(() => {
-    props.callbacks.on_mount();
-  }, []);
-
   return (
     <div
       className='VizComponentContainer'
@@ -40,6 +36,7 @@ function BoardVizElement(props: any) {
           }}
           editMode={false}
           previewMode
+          stateStr={props.options.state_str}
         />
       )}
     </div>
