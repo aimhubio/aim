@@ -8,6 +8,7 @@ import hashlib
 
 
 board_path = None
+package = None
 
 
 def deep_copy(obj):
@@ -1659,7 +1660,10 @@ class Board(Component):
 
         self.state_str = json.dumps(state)
 
-        self.options = {"state_str": self.state_str}
+        self.options = {
+            "state_str": self.state_str,
+            "package": package
+        }
 
         self.render()
 
@@ -1683,12 +1687,14 @@ class BoardLink(Component):
 
         self.data = path
 
-        if state:
-            self.data += "?state=" + encodeURIComponent(json.dumps(state))
-
         self.board_state = state
 
-        self.options = {"text": text, "new_tab": new_tab}
+        self.options = {
+            "text": text, 
+            "new_tab": new_tab,
+            "package": package,
+            "state_param": encodeURIComponent(json.dumps(state)) if state else None
+        }
 
         self.render()
 

@@ -6,8 +6,22 @@ import Board from 'pages/Board/Board';
 import useApp from 'pages/App/useApp';
 
 function BoardVizElement(props: any) {
-  const { boards, isLoading, fetchBoard } = useApp();
-  const boardPath = props.data;
+  const { boards, isLoading, fetchBoard, data: boardsList } = useApp();
+
+  const packageName = props.options.package;
+
+  let externalPackageNameLastIndex = props.data.indexOf(':');
+
+  let externalPackage =
+    externalPackageNameLastIndex === -1
+      ? null
+      : props.data.slice(0, externalPackageNameLastIndex);
+
+  const boardPath = externalPackage
+    ? props.data
+    : packageName && !boardsList.includes(props.data)
+    ? `${packageName}:${props.data}`
+    : props.data;
 
   let [code, setCode] = React.useState(boards?.[boardPath]?.code ?? null);
 
@@ -37,6 +51,7 @@ function BoardVizElement(props: any) {
           editMode={false}
           previewMode
           stateStr={props.options.state_str}
+          externalPackage={externalPackage}
         />
       )}
     </div>
