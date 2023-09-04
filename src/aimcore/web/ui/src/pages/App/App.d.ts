@@ -16,4 +16,5 @@ export interface AppWrapperProps {
   boardPath: string;
   editMode: boolean;
   boardList: string[];
+  stateStr?: str | null;
 }
