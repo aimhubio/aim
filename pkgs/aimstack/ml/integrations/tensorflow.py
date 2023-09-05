@@ -1,14 +1,14 @@
 from typing import Optional
 
 from aimstack.ml import Run
-from aimstack.ml.adapters.keras_mixins import TrackerKerasCallbackMetricsEpochEndMixin
+from aimstack.ml.integrations.keras_mixins import TrackerKerasCallbackMetricsEpochEndMixin
 
 try:
-    from keras.callbacks import Callback
+    from tensorflow.keras.callbacks import Callback
 except ImportError:
     raise RuntimeError(
-        'This contrib module requires keras to be installed. '
-        'Please install it with command: \n pip install keras'
+        'This contrib module requires tensorflow to be installed. '
+        'Please install it with command: \n pip install tensorflow'
     )
 
 
@@ -23,6 +23,7 @@ class AimCallback(TrackerKerasCallbackMetricsEpochEndMixin, Callback):
             Can be used later to query runs/sequences.
         log_system_params (:obj:`bool`, optional): Enable/Disable logging of system params such as installed packages,
             git info, environment variables, etc.
+        capture_terminal_logs (:obj:`bool`, optional): Enable/Disable terminal stdout logging.
     """
 
     def __init__(
@@ -30,10 +31,12 @@ class AimCallback(TrackerKerasCallbackMetricsEpochEndMixin, Callback):
         repo: Optional[str] = None,
         experiment_name: Optional[str] = None,
         log_system_params: Optional[bool] = True,
+        capture_terminal_logs: Optional[bool] = True,
     ):
         super(Callback, self).__init__()
 
         self._log_system_params = log_system_params
+        self._capture_terminal_logs = capture_terminal_logs
 
         self._run = Run(repo=repo)
         if experiment_name is not None:
@@ -63,7 +66,7 @@ class AimCallback(TrackerKerasCallbackMetricsEpochEndMixin, Callback):
         return cls(repo, experiment, run)
 
     def close(self) -> None:
-        if self._run:
+        if self._run is not None:
             del self._run
             self._run = None
 
