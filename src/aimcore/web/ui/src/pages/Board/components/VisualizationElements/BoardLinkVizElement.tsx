@@ -9,7 +9,7 @@ import useApp from 'pages/App/useApp';
 function BoardLinkVizElement(props: any) {
   const { data: boardsList } = useApp();
 
-  const packageName = props.options.package;
+  const packageName = props.options.package_name;
   const stateParam = props.options.state_param;
 
   let externalPackageNameLastIndex = props.data.indexOf(':');

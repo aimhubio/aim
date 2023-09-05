@@ -8,7 +8,7 @@ import useApp from 'pages/App/useApp';
 function BoardVizElement(props: any) {
   const { boards, isLoading, fetchBoard, data: boardsList } = useApp();
 
-  const packageName = props.options.package;
+  const packageName = props.options.package_name;
 
   let externalPackageNameLastIndex = props.data.indexOf(':');
 
