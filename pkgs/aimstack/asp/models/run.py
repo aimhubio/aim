@@ -38,7 +38,7 @@ from typing import Optional, Union, List, Tuple, Dict, Any, Type
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from aim import Repo, Sequence
+    from aim import Repo
 
 
 @type_utils.query_alias('run')
@@ -90,14 +90,6 @@ class Run(Container, Caller):
     @name.setter
     def name(self, val: str):
         self['name'] = val
-
-    @property
-    def experiment(self) -> Optional[str]:
-        return self.get('experiment', None)
-
-    @experiment.setter
-    def experiment(self, val: str):
-        self['experiment'] = val
 
     @property
     def description(self) -> str:

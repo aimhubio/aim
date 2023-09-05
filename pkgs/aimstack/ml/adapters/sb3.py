@@ -5,7 +5,7 @@ from typing import Optional, Dict, Any, Union, Tuple
 from stable_baselines3.common.logger import KVWriter, Logger
 from stable_baselines3.common.callbacks import BaseCallback  # type: ignore
 
-from aimstack.asp import Run
+from aimstack.ml import Run
 
 
 logger = logging.getLogger(__name__)

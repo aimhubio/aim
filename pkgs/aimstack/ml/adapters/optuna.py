@@ -8,7 +8,7 @@ from optuna.study.study import ObjectiveFuncType
 
 
 with try_import() as _imports:
-    from aimstack.asp import Run
+    from aimstack.ml import Run
 
 
 @experimental_class('2.9.0')
@@ -21,11 +21,8 @@ class AimCallback:
             If skipped, default Repo is used.
         experiment_name (:obj:`str`, optional): Sets Run's `experiment` property. 'default' if not specified.
             Can be used later to query runs/sequences.
-        system_tracking_interval (:obj:`int`, optional): Sets the tracking interval in seconds for system usage
-            metrics (CPU, Memory, etc.). Set to `None` to disable system metrics tracking.
         log_system_params (:obj:`bool`, optional): Enable/Disable logging of system params such as installed packages,
             git info, environment variables, etc.
-        capture_terminal_logs (:obj:`bool`, optional): Enable/Disable terminal stdout logging.
         metric_name (:obj:`str`, optional): Name assigned to optimized metric.
             In case of multi-objective optimization, list of names can be passed. Those names will be assigned
             to metrics in the order returned by objective function.

@@ -1,6 +1,6 @@
 from typing import Optional
 
-from aimstack.asp import Run
+from aimstack.ml import Run
 from aimstack.ml.adapters.keras_mixins import TrackerKerasCallbackMetricsEpochEndMixin
 
 try:
@@ -21,11 +21,8 @@ class AimCallback(TrackerKerasCallbackMetricsEpochEndMixin, Callback):
             If skipped, default Repo is used.
         experiment_name (:obj:`str`, optional): Sets Run's `experiment` property. 'default' if not specified.
             Can be used later to query runs/sequences.
-        system_tracking_interval (:obj:`int`, optional): Sets the tracking interval in seconds for system usage
-            metrics (CPU, Memory, etc.). Set to `None` to disable system metrics tracking.
         log_system_params (:obj:`bool`, optional): Enable/Disable logging of system params such as installed packages,
             git info, environment variables, etc.
-        capture_terminal_logs (:obj:`bool`, optional): Enable/Disable terminal stdout logging.
     """
 
     def __init__(

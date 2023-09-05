@@ -1,8 +1,7 @@
 from typing import Optional
 
-from aimstack.asp import Run
+from aimstack.ml import Run
 from aimstack.ml.adapters.keras_mixins import TrackerKerasCallbackMetricsEpochEndMixin
-from aim._ext.system_info import DEFAULT_SYSTEM_TRACKING_INT
 
 try:
     from tensorflow.keras.callbacks import Callback
@@ -22,8 +21,6 @@ class AimCallback(TrackerKerasCallbackMetricsEpochEndMixin, Callback):
             If skipped, default Repo is used.
         experiment_name (:obj:`str`, optional): Sets Run's `experiment` property. 'default' if not specified.
             Can be used later to query runs/sequences.
-        system_tracking_interval (:obj:`int`, optional): Sets the tracking interval in seconds for system usage
-            metrics (CPU, Memory, etc.). Set to `None` to disable system metrics tracking.
         log_system_params (:obj:`bool`, optional): Enable/Disable logging of system params such as installed packages,
             git info, environment variables, etc.
         capture_terminal_logs (:obj:`bool`, optional): Enable/Disable terminal stdout logging.
@@ -33,13 +30,11 @@ class AimCallback(TrackerKerasCallbackMetricsEpochEndMixin, Callback):
         self,
         repo: Optional[str] = None,
         experiment_name: Optional[str] = None,
-        system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT,
         log_system_params: Optional[bool] = True,
         capture_terminal_logs: Optional[bool] = True,
     ):
         super(Callback, self).__init__()
 
-        self._system_tracking_interval = system_tracking_interval
         self._log_system_params = log_system_params
         self._capture_terminal_logs = capture_terminal_logs
 

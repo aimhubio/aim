@@ -1,6 +1,6 @@
 from typing import Any, Callable, Dict, List, Optional, Union
 
-from aimstack.asp import Run
+from aimstack.ml import Run
 
 try:
     from torch.optim import Optimizer
@@ -32,11 +32,8 @@ class AimLogger(BaseLogger):
             If skipped, default Repo is used.
         experiment_name (:obj:`str`, optional): Sets Run's `experiment` property. 'default' if not specified.
             Can be used later to query runs/sequences.
-        system_tracking_interval (:obj:`int`, optional): Sets the tracking interval in seconds for system usage
-            metrics (CPU, Memory, etc.). Set to `None` to disable system metrics tracking.
         log_system_params (:obj:`bool`, optional): Enable/Disable logging of system params such as installed packages,
             git info, environment variables, etc.
-        capture_terminal_logs (:obj:`bool`, optional): Enable/Disable terminal stdout logging.
         train_metric_prefix (:obj:`str`, optional): Training metric prefix.
         val_metric_prefix (:obj:`str`, optional): validation metric prefix.
         test_metric_prefix (:obj:`str`, optional): testing metric prefix.

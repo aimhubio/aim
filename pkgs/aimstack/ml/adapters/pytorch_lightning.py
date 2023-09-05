@@ -25,7 +25,7 @@ except ImportError:
         'Please install it with command: \n pip install pytorch-lightning'
     )
 
-from aimstack.asp import Run
+from aimstack.ml import Run
 from aim import Repo
 from aim._sdk.utils import clean_repo_path, get_aim_repo_name
 
@@ -39,11 +39,8 @@ class AimLogger(Logger):
             If skipped, default Repo is used.
         experiment_name (:obj:`str`, optional): Sets Run's `experiment` property. 'default' if not specified.
             Can be used later to query runs/sequences.
-        system_tracking_interval (:obj:`int`, optional): Sets the tracking interval in seconds for system usage
-            metrics (CPU, Memory, etc.). Set to `None` to disable system metrics tracking.
         log_system_params (:obj:`bool`, optional): Enable/Disable logging of system params such as installed packages,
             git info, environment variables, etc.
-        capture_terminal_logs (:obj:`bool`, optional): Enable/Disable terminal stdout logging.
         train_metric_prefix (:obj:`str`, optional): Training metric prefix.
         val_metric_prefix (:obj:`str`, optional): validation metric prefix.
         test_metric_prefix (:obj:`str`, optional): testing metric prefix.

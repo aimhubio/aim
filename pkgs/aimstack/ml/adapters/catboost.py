@@ -1,7 +1,7 @@
 from sys import stdout
 from typing import Optional
 
-from aimstack.asp import Run
+from aimstack.ml import Run
 
 
 class AimLogger:
@@ -11,13 +11,10 @@ class AimLogger:
     Args:
         repo (:obj:`str`, optional): Aim repository path or Repo object to which Run object is bound.
             If skipped, default Repo is used.
-        experiment_name (:obj:`str`, optional): Sets Run's `experiment` property. 'default' if not specified.
+        experiment (:obj:`str`, optional): Sets Run's `experiment` property. 'default' if not specified.
             Can be used later to query runs/sequences.
-        system_tracking_interval (:obj:`int`, optional): Sets the tracking interval in seconds for system usage
-            metrics (CPU, Memory, etc.). Set to `None` to disable system metrics tracking.
         log_system_params (:obj:`bool`, optional): Enable/Disable logging of system params such as installed packages,
             git info, environment variables, etc.
-        capture_terminal_logs (:obj:`bool`, optional): Enable/Disable terminal stdout logging.
         loss_function (:obj:`str`, optional): Loss function
         log_cout (:obj:`bool`, optional): Enable/Disable stdout logging.
     """
