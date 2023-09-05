@@ -98,12 +98,13 @@ def container_data(container: Container) -> Dict:
     props = container.collect_properties()
     props.update({
         'container_type': container.get_typename(),
-        'container_full_type': container.get_full_typename()
+        'container_full_type': container.get_full_typename(),
+        'hash': container.hash,
     })
     data = container[...]
     data.update({
         'hash': container.hash,
-        '$properties': container.collect_properties(),
+        '$properties': props,
     })
     return data
 
