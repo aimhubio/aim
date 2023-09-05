@@ -1,6 +1,6 @@
 import { omit } from 'lodash-es';
 
-import { createFetchDataRequest } from 'modules/core/api/dataFetchApi';
+import { createFindDataRequest } from 'modules/core/api/dataFetchApi';
 // import {
 //   DecodingError,
 //   FetchingError,
@@ -16,25 +16,22 @@ import {
 import { parseStream } from 'utils/encoder/streamEncoding';
 import { filterMetricsValues } from 'utils/app/filterMetricData';
 
-export function search(
+export function find(
   boardPath: string,
   type_: string,
-  query: string,
-  count: number,
-  start: number,
-  stop: number,
   isSequence: boolean,
+  hash_: string,
+  name?: string,
+  ctx?: string,
   cb?: () => void,
 ) {
-  const queryKey = `${type_}_${query ?? 'None'}_${count ?? 'None'}_${
-    start ?? 'None'
-  }_${stop ?? 'None'}`;
+  const queryKey = `${type_}_${hash_}_${name ?? 'None'}_${ctx ?? 'None'}`;
 
   if (getQueryResultsCacheMap().has(queryKey)) {
     return getQueryResultsCacheMap().get(queryKey).data;
   }
 
-  const searchRequest = createFetchDataRequest();
+  const findRequest = createFindDataRequest(!isSequence);
 
   if (getPendingQueriesMap().has(boardPath)) {
     let pendinqQueries = getPendingQueriesMap().get(boardPath);
@@ -43,23 +40,21 @@ export function search(
         return;
       }
 
-      pendinqQueries.set(queryKey, searchRequest.cancel);
+      pendinqQueries.set(queryKey, findRequest.cancel);
     }
   } else {
     getPendingQueriesMap().set(
       boardPath,
-      new Map([[queryKey, searchRequest.cancel]]),
+      new Map([[queryKey, findRequest.cancel]]),
     );
   }
 
-  searchRequest
+  findRequest
     .call({
-      q: query,
-      type_: type_,
-      p: count,
-      start: start,
-      stop: stop,
-      report_progress: false,
+      type_,
+      hash_,
+      name,
+      ctx,
     })
     .then((data) => {
       if (getPendingQueriesMap().has(boardPath)) {
@@ -74,60 +69,49 @@ export function search(
         .then((objectList) => {
           try {
             let result;
-            if (type_.includes('.Metric')) {
-              let data: any[] = [];
+            let item = objectList[0];
 
-              for (let i = 0; i < objectList.length; i++) {
-                let item = objectList[i];
-                const { values, steps } = filterMetricsValues(item);
-                if (values.length === 0 || steps.length === 0) {
-                  continue;
-                }
-                data.push({
-                  ...item,
-                  values: [...values],
-                  steps: [...steps],
-                });
-              }
+            if (objectList.length === 0) {
+              result = null;
+            } else if (type_.includes('.Metric')) {
+              const { values, steps } = filterMetricsValues(item);
 
-              result = data;
+              result = {
+                ...item,
+                values: [...values],
+                steps: [...steps],
+              };
             } else if (isSequence) {
               let data: any[] = [];
 
-              for (let i = 0; i < objectList.length; i++) {
-                if (!objectList[i].values) {
-                  continue;
-                }
-
-                for (let y = 0; y < objectList[i].values.length; y++) {
-                  let object = objectList[i].values[y];
-                  let step = objectList[i].steps[y];
-                  if (Array.isArray(object)) {
-                    for (let z = 0; z < object.length; z++) {
-                      object[z] = {
-                        ...object[z],
-                      };
-                      data.push({
-                        ...omit(objectList[i], 'values', 'steps'),
-                        ...object[z],
-                        step: step,
-                        index: z,
-                      });
-                    }
-                  } else {
+              for (let y = 0; y < item.values.length; y++) {
+                let object = item.values[y];
+                let step = item.steps[y];
+                if (Array.isArray(object)) {
+                  for (let z = 0; z < object.length; z++) {
+                    object[z] = {
+                      ...object[z],
+                    };
                     data.push({
-                      ...omit(objectList[i], 'values', 'steps'),
-                      ...object,
+                      ...omit(item, 'values', 'steps'),
+                      ...object[z],
                       step: step,
-                      index: 0,
+                      index: z,
                     });
                   }
+                } else {
+                  data.push({
+                    ...omit(item, 'values', 'steps'),
+                    ...object,
+                    step: step,
+                    index: 0,
+                  });
                 }
               }
 
               result = data;
             } else {
-              result = objectList;
+              result = item;
             }
 
             if (cb) {
@@ -137,17 +121,16 @@ export function search(
             const queryParams = {
               boardPath,
               type_,
-              query,
-              count,
-              start,
-              stop,
               isSequence,
+              hash_,
+              name,
+              ctx,
             };
 
             getQueryResultsCacheMap().set(queryKey, {
               data: JSON.stringify(result),
               params: queryParams,
-              type: 'filter',
+              type: 'find',
             });
 
             pyodideEngine.events.fire(

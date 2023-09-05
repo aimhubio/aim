@@ -9,6 +9,7 @@ from copy import deepcopy
 from typing import Tuple
 from websockets.sync.client import connect
 
+from aimcore.error_handling import handle_exception
 from aimcore.transport.message_utils import raise_exception, pack_args, unpack_stream, unpack_args
 from aimcore.transport.rpc_queue import RpcQueueWithRetry
 from aimcore.transport.heartbeat import HeartbeatSender
@@ -124,6 +125,8 @@ class Client:
 
         return response
 
+    @handle_exception(requests.ConnectionError,
+                      error_message='Failed to connect to Aim Server. Have you forgot to run `aim server` command?')
     def connect(self):
         endpoint = f'{self._http_protocol}{self._client_endpoint}/connect/{self.uri}/'
         response = requests.get(endpoint)

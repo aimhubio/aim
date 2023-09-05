@@ -166,6 +166,15 @@ class Container(ABCContainer):
             repo = Repo.active_repo()
         return repo.containers(query_=expr, type_=cls)
 
+    @classmethod
+    def find(cls, hash_: str) -> Optional['Container']:
+        from aim._sdk.repo import Repo
+        repo = Repo.active_repo()
+        try:
+            return cls(hash_, repo=repo, mode='READONLY')
+        except MissingContainerError:
+            return None
+
     def __storage_init__(self):
         self._tree: TreeView = self._meta_tree.subtree('chunks').subtree(self.hash)
         self._meta_attrs_tree: TreeView = self._meta_tree.subtree('attrs')

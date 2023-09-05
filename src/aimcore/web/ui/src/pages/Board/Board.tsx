@@ -14,6 +14,7 @@ import { Box, Button, Link, Tabs } from 'components/kit_v2';
 import { PathEnum } from 'config/enums/routesEnum';
 
 import { search } from 'pages/Board/serverAPI/search';
+import { find } from 'pages/Board/serverAPI/find';
 
 import usePyodide from 'services/pyodide/usePyodide';
 import pyodideEngine from 'services/pyodide/store';
@@ -50,8 +51,8 @@ function Board({
   newMode,
   notifyData,
   onNotificationDelete,
-}: // saveBoard,
-any): React.FunctionComponentElement<React.ReactNode> {
+  stateStr,
+}: any): React.FunctionComponentElement<React.ReactNode> {
   const [mounted, setMounted] = React.useState(false);
   const {
     isLoading: pyodideIsLoading,
@@ -145,8 +146,11 @@ any): React.FunctionComponentElement<React.ReactNode> {
 block_context = {
   "current": 0,
 }
+
 current_layout = []
+
 board_path = ${boardPath === undefined ? 'None' : `"${boardPath}"`}
+
 session_state = state[board_path] if board_path in state else {}
 def set_session_state(state_slice):
   set_state(state_slice, board_path)
@@ -185,7 +189,14 @@ def set_session_state(state_slice):
         }));
       }
     }
-  }, [pyodide, pyodideIsLoading, boardPath, state.execCode, namespace]);
+  }, [
+    pyodide,
+    pyodideIsLoading,
+    boardPath,
+    state.execCode,
+    namespace,
+    stateStr,
+  ]);
 
   React.useEffect(() => {
     if (pyodide !== null && pyodideIsLoading === false) {
@@ -204,6 +215,29 @@ def set_session_state(state_slice):
       runParsedCode();
     }
   }, [state.executionCount]);
+
+  React.useEffect(() => {
+    if (pyodide && namespace) {
+      pyodide.runPython(
+        `
+board_path = ${boardPath === undefined ? 'None' : `"${boardPath}"`}
+
+if board_path not in state:
+  state[board_path] = {}
+
+state_str = ${JSON.stringify(stateStr)}
+
+if len(state_str) > 0:
+  state[board_path] = json.loads(state_str)
+else:
+  state[board_path] = {}
+  `,
+        { globals: namespace },
+      );
+
+      runParsedCode();
+    }
+  }, [stateStr, pyodide, namespace]);
 
   React.useEffect(() => {
     if (pyodideIsLoading) {
@@ -241,36 +275,68 @@ def set_session_state(state_slice):
             if (!getQueryResultsCacheMap().has(queryKey)) {
               return;
             }
-            const {
-              boardPath: queryBoardPath,
-              type_,
-              query,
-              count,
-              start,
-              stop,
-              isSequence,
-            } = getQueryResultsCacheMap().get(queryKey).params;
-
-            try {
-              getQueryResultsCacheMap().delete(queryKey);
-              search(
-                queryBoardPath,
+            if (getQueryResultsCacheMap().get(queryKey).type === 'filter') {
+              const {
+                boardPath: queryBoardPath,
                 type_,
                 query,
                 count,
                 start,
                 stop,
                 isSequence,
-                () => {
-                  queryKeysForCacheCleaningRef.current[queryKey] = true;
-                },
-              );
-            } catch (ex) {
-              if (ex === 'WAIT_FOR_QUERY_RESULT') {
-                return;
+              } = getQueryResultsCacheMap().get(queryKey).params;
+
+              try {
+                getQueryResultsCacheMap().delete(queryKey);
+                search(
+                  queryBoardPath,
+                  type_,
+                  query,
+                  count,
+                  start,
+                  stop,
+                  isSequence,
+                  () => {
+                    queryKeysForCacheCleaningRef.current[queryKey] = true;
+                  },
+                );
+              } catch (ex) {
+                if (ex === 'WAIT_FOR_QUERY_RESULT') {
+                  return;
+                }
+                // eslint-disable-next-line no-console
+                console.warn(ex);
               }
-              // eslint-disable-next-line no-console
-              console.warn(ex);
+            } else {
+              const {
+                boardPath: queryBoardPath,
+                type_,
+                isSequence,
+                hash_,
+                name,
+                ctx,
+              } = getQueryResultsCacheMap().get(queryKey).params;
+
+              try {
+                getQueryResultsCacheMap().delete(queryKey);
+                find(
+                  queryBoardPath,
+                  type_,
+                  isSequence,
+                  hash_,
+                  name,
+                  ctx,
+                  () => {
+                    queryKeysForCacheCleaningRef.current[queryKey] = true;
+                  },
+                );
+              } catch (ex) {
+                if (ex === 'WAIT_FOR_QUERY_RESULT') {
+                  return;
+                }
+                // eslint-disable-next-line no-console
+                console.warn(ex);
+              }
             }
           }, liveUpdateInterval);
         }
