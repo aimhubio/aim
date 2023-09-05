@@ -39,7 +39,7 @@ if run:
     params_tab, metrics_tab, audios_tab, texts_tab, images_tab, figures_tab = ui.tabs(('Params', 'Metrics', 'Audios',
                                                                                       'Texts', 'Images', 'Figures'))
     with params_tab:
-        params = run.get('params')
+        params = run
         if params is None:
             ui.text('No parameters found')
         else:
