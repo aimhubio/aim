@@ -6,7 +6,7 @@ import logging
 
 from functools import partialmethod
 
-from aim import Container
+from aim import Container, Property
 from aim._sdk.utils import utc_timestamp
 from aim._sdk import type_utils
 from aimcore.callbacks import Caller
@@ -41,6 +41,10 @@ if TYPE_CHECKING:
 
 @type_utils.query_alias('run')
 class Run(Container, Caller):
+    name = Property()
+    description = Property(default='')
+    archived = Property(default=False)
+
     def __init__(self, hash_: Optional[str] = None, *,
                  repo: Optional[Union[str, 'Repo']] = None,
                  mode: Optional[Union[str, ContainerOpenMode]] = ContainerOpenMode.WRITE):
@@ -49,10 +53,6 @@ class Run(Container, Caller):
         if not self._is_readonly:
             if self.name is None:
                 self.name = f'Run #{self.hash}'
-            if self.description is None:
-                self.description = ''
-            if self.archived is None:
-                self.archived = False
 
     def enable_system_monitoring(self):
         if not self._is_readonly:
@@ -80,30 +80,6 @@ class Run(Container, Caller):
             return
         for resource_name, usage in stats.items():
             self.sequences.typed_sequence(SystemMetric, resource_name, context).track(usage)
-
-    @property
-    def name(self) -> str:
-        return self._attrs_tree.get('name', None)
-
-    @name.setter
-    def name(self, val: str):
-        self['name'] = val
-
-    @property
-    def description(self) -> str:
-        return self._attrs_tree.get('description', None)
-
-    @description.setter
-    def description(self, val: str):
-        self['description'] = val
-
-    @property
-    def archived(self) -> bool:
-        return self._attrs_tree.get('archived', None)
-
-    @archived.setter
-    def archived(self, val: bool):
-        self['archived'] = val
 
     @property
     def creation_time(self) -> float:
