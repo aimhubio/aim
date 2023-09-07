@@ -20,6 +20,7 @@ class Distribution(Record):
 
     AIM_NAME = 'aim.Distribution'
     RESOLVE_BLOBS = True
+    SEQUENCE_NAME = 'DistributionSequence'
 
     def __init__(self, samples=None, bin_count=64, *, hist=None, bin_range=None):
         super().__init__()

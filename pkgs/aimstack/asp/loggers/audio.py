@@ -27,6 +27,7 @@ class Audio(Record):
 
     AIM_NAME = 'aim.Audio'
     RESOLVE_BLOBS = False
+    SEQUENCE_NAME = 'AudioSequence'
 
     # supported audio formats
     UNKNOWN = ''

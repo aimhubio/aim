@@ -66,7 +66,9 @@ def is_allowed_type(type_: str, type_list: Tuple[str]) -> bool:
 
 
 def get_sequence_value_types(seq_type: Type['Sequence']) -> Tuple[str, ...]:
-    if hasattr(seq_type, '__args__'):
+    if hasattr(seq_type, '__record_type__'):
+        item_type = seq_type.__record_type__
+    elif hasattr(seq_type, '__args__'):
         item_type = get_args(seq_type)[0]
     elif hasattr(seq_type, '__orig_bases__'):
         item_type = seq_type.__orig_bases__[0].__args__[0]
