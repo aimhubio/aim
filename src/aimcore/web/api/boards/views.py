@@ -1,6 +1,6 @@
 from fastapi import Depends, HTTPException
 from fastapi.responses import JSONResponse
-from aimcore.web.utils import get_root_package, get_root_package_name
+from aimcore.web.utils import get_root_package, get_root_package_name, get_package_by_name
 from aimcore.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
 
 from aimcore.web.api.boards.pydantic_models import BoardOut, BoardListOut
@@ -22,6 +22,13 @@ async def board_list_api(package=Depends(get_root_package)):
 
 @boards_router.get('/{board_path:path}', response_model=BoardListOut)
 async def board_get_api(board_path: str, package=Depends(get_root_package)):
+    if ':' in board_path:
+        package_name, board_path = board_path.split(':', maxsplit=1)
+        try:
+            package = get_package_by_name(package_name)
+        except AssertionError:
+            raise HTTPException(status_code=400, detail=f'\'{package_name}\' is not valid package.')
+
     if package is None:
         raise HTTPException(status_code=400, detail=f'Failed to load current active '
                                                     f'package \'{get_root_package_name()}\'.')

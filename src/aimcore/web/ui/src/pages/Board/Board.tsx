@@ -52,6 +52,7 @@ function Board({
   notifyData,
   onNotificationDelete,
   stateStr,
+  externalPackage,
 }: any): React.FunctionComponentElement<React.ReactNode> {
   const [mounted, setMounted] = React.useState(false);
   const {
@@ -150,6 +151,8 @@ block_context = {
 current_layout = []
 
 board_path = ${boardPath === undefined ? 'None' : `"${boardPath}"`}
+
+package = ${externalPackage === null ? 'None' : `"${externalPackage}"`}
 
 session_state = state[board_path] if board_path in state else {}
 def set_session_state(state_slice):
