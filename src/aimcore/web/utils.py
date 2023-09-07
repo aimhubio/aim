@@ -110,9 +110,16 @@ def get_root_package_name():
 
 def get_root_package() -> Optional[Package]:
     pkg_name = get_root_package_name()
-    pkgs_dir = os.path.join(get_root_path(), get_aim_repo_name(), 'pkgs')
     if pkg_name not in Package.pool:
+        pkgs_dir = os.path.join(get_root_path(), get_aim_repo_name(), 'pkgs')
         if not Package.load_package(pkg_name, pkgs_dir):
+            return None
+    return Package.pool[pkg_name]
+
+
+def get_package_by_name(pkg_name: str) -> Optional[Package]:
+    if pkg_name not in Package.pool:
+        if not Package.load_package(pkg_name):
             return None
     return Package.pool[pkg_name]
 

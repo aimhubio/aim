@@ -51,8 +51,9 @@ function Board({
   newMode,
   notifyData,
   onNotificationDelete,
-}: // saveBoard,
-any): React.FunctionComponentElement<React.ReactNode> {
+  stateStr,
+  externalPackage,
+}: any): React.FunctionComponentElement<React.ReactNode> {
   const [mounted, setMounted] = React.useState(false);
   const {
     isLoading: pyodideIsLoading,
@@ -146,8 +147,13 @@ any): React.FunctionComponentElement<React.ReactNode> {
 block_context = {
   "current": 0,
 }
+
 current_layout = []
+
 board_path = ${boardPath === undefined ? 'None' : `"${boardPath}"`}
+
+package = ${externalPackage === null ? 'None' : `"${externalPackage}"`}
+
 session_state = state[board_path] if board_path in state else {}
 def set_session_state(state_slice):
   set_state(state_slice, board_path)
@@ -186,7 +192,14 @@ def set_session_state(state_slice):
         }));
       }
     }
-  }, [pyodide, pyodideIsLoading, boardPath, state.execCode, namespace]);
+  }, [
+    pyodide,
+    pyodideIsLoading,
+    boardPath,
+    state.execCode,
+    namespace,
+    stateStr,
+  ]);
 
   React.useEffect(() => {
     if (pyodide !== null && pyodideIsLoading === false) {
@@ -205,6 +218,29 @@ def set_session_state(state_slice):
       runParsedCode();
     }
   }, [state.executionCount]);
+
+  React.useEffect(() => {
+    if (pyodide && namespace) {
+      pyodide.runPython(
+        `
+board_path = ${boardPath === undefined ? 'None' : `"${boardPath}"`}
+
+if board_path not in state:
+  state[board_path] = {}
+
+state_str = ${JSON.stringify(stateStr)}
+
+if len(state_str) > 0:
+  state[board_path] = json.loads(state_str)
+else:
+  state[board_path] = {}
+  `,
+        { globals: namespace },
+      );
+
+      runParsedCode();
+    }
+  }, [stateStr, pyodide, namespace]);
 
   React.useEffect(() => {
     if (pyodideIsLoading) {
