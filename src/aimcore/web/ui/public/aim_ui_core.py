@@ -69,6 +69,33 @@ def process_properties(obj: dict):
     return obj
 
 
+class ItemListIterator:
+    def __init__(self, items):
+        self.items = items
+        self.index = 0
+
+    def __next__(self):
+        if self.index < len(self.items):
+            result = self.items[self.index]
+            self.index += 1
+            return result
+        else:
+            raise StopIteration
+
+class ItemList:
+    def __init__(self, items):
+        self.items = items
+
+    def __iter__(self):
+        return ItemListIterator(self.items)
+    
+    def __len__(self):
+        return len(self.items)
+    
+    def __getitem__(self, index):
+        return self.items[index]
+
+
 def query_filter(type_, query="", count=None, start=None, stop=None, is_sequence=False):
     query_key = f"{type_}_{query}_{count}_{start}_{stop}"
 
@@ -84,7 +111,8 @@ def query_filter(type_, query="", count=None, start=None, stop=None, is_sequence
         data = json.loads(data, object_hook=process_properties)
 
         query_results_cache[query_key] = data
-        return data
+        
+        return ItemList(data)
     except Exception as e:
         if "WAIT_FOR_QUERY_RESULT" in str(e):
             raise WaitForQueryError()

@@ -11,6 +11,21 @@ if c_hash is None:
 
 images = ImageSequence.filter(f'c.hash=="{c_hash}"' if c_hash else query)
 
+images_flat_list = []
+
+for image in images:
+    for record in image['values']:
+        if type(record) is list:
+            for rec in record:
+                image_item = image.copy()
+                image_item.pop('values')
+                image_item.update(rec)
+                images_flat_list.append(image_item)
+        else:
+            image_item = image.copy()
+            image_item.pop('values')
+            image_item.update(record)
+            images_flat_list.append(image_item)
 
 def flatten(dictionary, parent_key='', separator='.'):
     items = []
@@ -55,25 +70,25 @@ def get_table_data(data=[], keys=[], page_size=10, page_num=1):
     return table_data
 
 
-if images:
+if images_flat_list:
     row1, row2 = ui.rows(2)
 
     items_per_page = row1.select('Items per page', ('5', '10', '50', '100'))
-    total_pages = math.ceil((len(images) / int(items_per_page)))
+    total_pages = math.ceil((len(images_flat_list) / int(items_per_page)))
     page_numbers = [str(i) for i in range(1, total_pages + 1)]
     page_num = row1.select('Page', page_numbers, index=0)
 
     table_data = get_table_data(
-        data=images,
+        data=images_flat_list,
         keys=['name', 'container.hash', 'context',
-              'format', 'range', 'data', 'step', 'index'],
+              'format', 'range', 'data'],
         page_size=int(items_per_page),
         page_num=int(page_num)
     )
 
     row2.table(table_data, {
         'container.hash': lambda val: ui.board_link('run.py', val, state={'container_hash': val}),
-        'data': lambda val: ui.images([images[int(val)]])
+        'data': lambda val: ui.images([images_flat_list[int(val)]])
     })
 else:
     text = ui.text('No images found')

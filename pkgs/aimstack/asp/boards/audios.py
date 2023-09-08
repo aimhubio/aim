@@ -10,6 +10,22 @@ if c_hash is None:
 
 audios = AudioSequence.filter(f'c.hash=="{c_hash}"' if c_hash else query)
 
+audios_flat_list = []
+
+for audio in audios:
+    for record in audio['values']:
+        if type(record) is list:
+            for rec in record:
+                audio_item = audio.copy()
+                audio_item.pop('values')
+                audio_item.update(rec)
+                audios_flat_list.append(audio_item)
+        else:
+            audio_item = audio.copy()
+            audio_item.pop('values')
+            audio_item.update(record)
+            audios_flat_list.append(audio_item)
+
 
 def flatten(dictionary, parent_key="", separator="."):
     items = []
@@ -54,25 +70,25 @@ def get_table_data(data=[], keys=[], page_size=10, page_num=1):
     return table_data
 
 
-if audios:
+if audios_flat_list:
     row1, row2 = ui.rows(2)
 
     items_per_page = row1.select('Items per page', ('5', '10', '50', '100'))
-    total_pages = math.ceil((len(audios) / int(items_per_page)))
+    total_pages = math.ceil((len(audios_flat_list) / int(items_per_page)))
     page_numbers = [str(i) for i in range(1, total_pages + 1)]
     page_num = row1.select('Page', page_numbers, index=0)
 
     table_data = get_table_data(
-        data=audios,
+        data=audios_flat_list,
         keys=['name', 'container.hash', 'context',
-              'format', 'range', 'data', 'step', 'index'],
+              'format', 'range', 'data'],
         page_size=int(items_per_page),
         page_num=int(page_num)
     )
 
     row2.table(table_data, {
         'container.hash': lambda val: ui.board_link('run.py', val, state={'container_hash': val}),
-        'data': lambda val: ui.audios([audios[int(val)]])
+        'data': lambda val: ui.audios([audios_flat_list[int(val)]])
     })
 else:
     text = ui.text('No audios found')
