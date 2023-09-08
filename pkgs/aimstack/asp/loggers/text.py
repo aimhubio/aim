@@ -13,6 +13,7 @@ class Text(Record):
 
     AIM_NAME = 'aim.Text'
     RESOLVE_BLOBS = True
+    SEQUENCE_NAME = 'TextSequence'
 
     def __init__(self, text):
         super().__init__()

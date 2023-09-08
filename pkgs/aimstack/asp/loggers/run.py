@@ -22,16 +22,12 @@ from .logging import (
     LogRecordSequence
 )
 
-from .sequences import (
-    Metric,
-    SystemMetric,
-    TextSequence,
-    ImageSequence,
-    AudioSequence,
-    DistributionSequence,
-    FigureSequence,
-    Figure3DSequence
-)
+from .metric import Metric, SystemMetric
+from .image import ImageSequence
+from .audio import AudioSequence
+from .text import TextSequence
+from .distribution import DistributionSequence
+from .figures import FigureSequence, Figure3DSequence
 
 from typing import Optional, Union, List, Tuple, Dict, Any, Type
 

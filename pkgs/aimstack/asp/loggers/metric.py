@@ -1,19 +1,13 @@
 import numbers
 import json
 
-from typing import List, Union, Optional, Any
+from typing import Optional, Any
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from pandas import DataFrame
 
 from aim import Sequence
-
-from .objects.text import Text
-from .objects.image import Image
-from .objects.audio import Audio
-from .objects.distribution import Distribution
-from .objects.figures import Figure, Figure3D
 
 
 class DataframeMixin:
@@ -81,27 +75,3 @@ class Metric(Sequence[numbers.Number], DataframeMixin):
 
 class SystemMetric(Sequence[numbers.Number], DataframeMixin):
     ...
-
-
-class TextSequence(Sequence[Union[Text, List[Text]]]):
-    pass
-
-
-class ImageSequence(Sequence[Union[Image, List[Image]]]):
-    pass
-
-
-class AudioSequence(Sequence[Union[Audio, List[Audio]]]):
-    pass
-
-
-class DistributionSequence(Sequence[Distribution]):
-    pass
-
-
-class FigureSequence(Sequence[Figure]):
-    pass
-
-
-class Figure3DSequence(Sequence[Figure3D]):
-    pass

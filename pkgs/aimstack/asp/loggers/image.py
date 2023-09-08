@@ -42,6 +42,7 @@ class Image(Record):
     FLAG_WARN_RGBA_RGB = False
     AIM_NAME = 'aim.Image'
     RESOLVE_BLOBS = False
+    SEQUENCE_NAME = 'ImageSequence'
 
     def __init__(self, image, caption: str = '', format=None, quality=90, optimize=False):
         super().__init__()

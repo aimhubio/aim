@@ -72,6 +72,13 @@ function AppWrapper({
     return items;
   }, [editMode, path]);
 
+  let externalPackageNameLastIndex = path.indexOf(':');
+
+  let externalPackage =
+    externalPackageNameLastIndex === -1
+      ? null
+      : path.slice(0, externalPackageNameLastIndex);
+
   return (
     <AppContainer>
       <TopBar id='app-top-bar'>
@@ -99,6 +106,7 @@ function AppWrapper({
               data={board}
               editMode={editMode}
               stateStr={stateStr}
+              externalPackage={externalPackage}
               // saveBoard={saveBoard}
             />
           )}
