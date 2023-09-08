@@ -1,7 +1,6 @@
 from paddle.hapi.callbacks import Callback
 from typing import Optional
-from aim._sdk.run import Run
-from aim._ext.system_info import DEFAULT_SYSTEM_TRACKING_INT
+from aimstack.ml import Run
 
 
 class AimCallback(Callback):
@@ -13,26 +12,19 @@ class AimCallback(Callback):
             If skipped, default Repo is used.
         experiment_name (:obj:`str`, optional): Sets Run's `experiment` property. 'default' if not specified.
             Can be used later to query runs/sequences.
-        system_tracking_interval (:obj:`int`, optional): Sets the tracking interval in seconds for system usage
-            metrics (CPU, Memory, etc.). Set to `None` to disable system metrics tracking.
         log_system_params (:obj:`bool`, optional): Enable/Disable logging of system params such as installed packages,
             git info, environment variables, etc.
-        capture_terminal_logs (:obj:`bool`, optional): Enable/Disable terminal stdout logging.
     """
 
     def __init__(
         self,
         repo: Optional[str] = None,
         experiment_name: Optional[str] = None,
-        system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT,
         log_system_params: Optional[bool] = True,
-        capture_terminal_logs: Optional[bool] = True,
     ):
         self.repo = repo
         self.experiment_name = experiment_name
-        self.system_tracking_interval = system_tracking_interval
         self.log_system_params = log_system_params
-        self.capture_terminal_logs = capture_terminal_logs
         self._run = None
         self._run_hash = None
 
@@ -56,7 +48,7 @@ class AimCallback(Callback):
                     v = v[0]
                 else:
                     raise NotImplementedError(f'number of items in {k} are more than 1')
-            self._run.track(v, k, step=step, context=context, epoch=self.epoch)
+            self._run.track_auto(v, k, step=step, context=context, epoch=self.epoch)
 
     @property
     def experiment(self):
@@ -67,28 +59,20 @@ class AimCallback(Callback):
     def setup(self, args=None):
         if not self._run:
             if self._run_hash:
-                self._run = Run(
-                    self._run_hash,
-                    repo=self.repo,
-                    system_tracking_interval=self.system_tracking_interval,
-                    log_system_params=self.log_system_params,
-                    capture_terminal_logs=self.capture_terminal_logs,
-                )
+                self._run = Run(self._run_hash, repo=self.repo)
             else:
-                self._run = Run(
-                    repo=self.repo,
-                    experiment=self.experiment_name,
-                    system_tracking_interval=self.system_tracking_interval,
-                    log_system_params=self.log_system_params,
-                    capture_terminal_logs=self.capture_terminal_logs,
-                )
+                self._run = Run(repo=self.repo)
                 self._run_hash = self._run.hash
-
+                if self.experiment_name is not None:
+                    self._run.experiment = self.experiment_name
+        if self.log_system_params:
+            self._run.enable_system_monitoring()
         # Log config parameters
         if args:
             for key in args:
                 self._run.set(key, args[key], strict=False)
 
     def __del__(self):
-        if self._run and self._run.active:
-            self._run.close()
+        if self._run is not None:
+            del self._run
+            self._run = None

@@ -5,8 +5,7 @@ from typing import Optional, Dict, Any, Union, Tuple
 from stable_baselines3.common.logger import KVWriter, Logger
 from stable_baselines3.common.callbacks import BaseCallback  # type: ignore
 
-from aim._sdk.run import Run
-from aim._ext.system_info import DEFAULT_SYSTEM_TRACKING_INT
+from aimstack.ml import Run
 
 
 logger = logging.getLogger(__name__)
@@ -40,7 +39,7 @@ class AimOutputFormat(KVWriter):
                     else:
                         context = {'tag': tag}
 
-                    self.aim_callback.experiment.track(
+                    self.aim_callback.experiment.track_auto(
                         value, key, step=step, context=context
                     )
 
@@ -54,11 +53,8 @@ class AimCallback(BaseCallback):
             If skipped, default Repo is used.
         experiment_name (:obj:`str`, optional): Sets Run's `experiment` property. 'default' if not specified.
             Can be used later to query runs/sequences.
-        system_tracking_interval (:obj:`int`, optional): Sets the tracking interval in seconds for system usage
-            metrics (CPU, Memory, etc.). Set to `None` to disable system metrics tracking.
         log_system_params (:obj:`bool`, optional): Enable/Disable logging of system params such as installed packages,
             git info, environment variables, etc.
-        capture_terminal_logs (:obj:`bool`, optional): Enable/Disable terminal stdout logging.
         verbose (:obj:`bool`, optional): Enable/Disable verbose
     """
 
@@ -66,18 +62,14 @@ class AimCallback(BaseCallback):
         self,
         repo: Optional[str] = None,
         experiment_name: Optional[str] = None,
-        system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT,
         log_system_params: Optional[bool] = True,
-        capture_terminal_logs: Optional[bool] = True,
         verbose: int = 0,
     ) -> None:
         super().__init__(verbose)
 
         self.repo = repo
         self.experiment_name = experiment_name
-        self.system_tracking_interval = system_tracking_interval
         self.log_system_params = log_system_params
-        self.capture_terminal_logs = capture_terminal_logs
         self._run = None
         self._run_hash = None
 
@@ -110,22 +102,14 @@ class AimCallback(BaseCallback):
     def setup(self, args=None):
         if not self._run:
             if self._run_hash:
-                self._run = Run(
-                    self._run_hash,
-                    repo=self.repo,
-                    system_tracking_interval=self.system_tracking_interval,
-                    log_system_params=self.log_system_params,
-                    capture_terminal_logs=self.capture_terminal_logs,
-                )
+                self._run = Run(self._run_hash, repo=self.repo)
             else:
-                self._run = Run(
-                    repo=self.repo,
-                    experiment=self.experiment_name,
-                    system_tracking_interval=self.system_tracking_interval,
-                    log_system_params=self.log_system_params,
-                    capture_terminal_logs=self.capture_terminal_logs,
-                )
+                self._run = Run(repo=self.repo)
                 self._run_hash = self._run.hash
+                if self.experiment_name is not None:
+                    self._run.experiment = self.experiment_name
+            if self.log_system_params:
+                self._run.enable_system_monitoring()
 
         # Log config parameters
         if args:

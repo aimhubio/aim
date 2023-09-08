@@ -1,6 +1,6 @@
 import tensorflow as tf
 import tensorflow_datasets as tfds
-from aim.keras_tuner import AimCallback
+from aimstack.ml.adapters.keras_tuner import AimCallback
 import kerastuner as kt
 
 
@@ -55,7 +55,7 @@ test_ds = test_ds.map(standardize_record).cache().batch(64)
 tuner.search(
     train_ds,
     validation_data=test_ds,
-    callbacks=[AimCallback(repo='.', experiment_name='keras_tuner_test', tuner=tuner)],
+    callbacks=[AimCallback(experiment_name='keras_tuner_test', tuner=tuner)],
 )
 
 best_model = tuner.get_best_models(1)[0]

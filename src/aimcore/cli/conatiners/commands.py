@@ -19,7 +19,7 @@ def containers(ctx, repo):
 @click.pass_context
 def list_containers(ctx):
     """List Containers available in Repo."""
-    #TODO [MV]: add more useful information
+    # TODO [MV]: add more useful information
     repo_path = ctx.obj['repo']
     if not Repo.is_remote_path(repo_path):
         if not Repo.exists(repo_path):

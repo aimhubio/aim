@@ -1,8 +1,7 @@
 from sys import stdout
 from typing import Optional
 
-from aim import Run
-from aim._ext.system_info import DEFAULT_SYSTEM_TRACKING_INT
+from aimstack.ml import Run
 
 
 class AimLogger:
@@ -12,13 +11,10 @@ class AimLogger:
     Args:
         repo (:obj:`str`, optional): Aim repository path or Repo object to which Run object is bound.
             If skipped, default Repo is used.
-        experiment_name (:obj:`str`, optional): Sets Run's `experiment` property. 'default' if not specified.
+        experiment (:obj:`str`, optional): Sets Run's `experiment` property. 'default' if not specified.
             Can be used later to query runs/sequences.
-        system_tracking_interval (:obj:`int`, optional): Sets the tracking interval in seconds for system usage
-            metrics (CPU, Memory, etc.). Set to `None` to disable system metrics tracking.
         log_system_params (:obj:`bool`, optional): Enable/Disable logging of system params such as installed packages,
             git info, environment variables, etc.
-        capture_terminal_logs (:obj:`bool`, optional): Enable/Disable terminal stdout logging.
         loss_function (:obj:`str`, optional): Loss function
         log_cout (:obj:`bool`, optional): Enable/Disable stdout logging.
     """
@@ -27,18 +23,14 @@ class AimLogger:
         self,
         repo: Optional[str] = None,
         experiment: Optional[str] = None,
-        system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT,
         log_system_params: Optional[bool] = True,
-        capture_terminal_logs: Optional[bool] = True,
         loss_function: Optional[str] = 'Loss',
         log_cout=stdout,
     ):
         super().__init__()
         self._repo_path = repo
         self._experiment = experiment
-        self._system_tracking_interval = system_tracking_interval
         self._log_system_params = log_system_params
-        self._capture_terminal_logs = capture_terminal_logs
         self._run = None
         self._run_hash = None
         self._loss_function = loss_function
@@ -57,21 +49,15 @@ class AimLogger:
         if self._run:
             return
         if self._run_hash:
-            self._run = Run(
-                self._run_hash,
-                repo=self._repo_path,
-                system_tracking_interval=self._system_tracking_interval,
-                capture_terminal_logs=self._capture_terminal_logs,
-            )
+            self._run = Run(self._run_hash, repo=self._repo_path)
         else:
-            self._run = Run(
-                repo=self._repo_path,
-                experiment=self._experiment,
-                system_tracking_interval=self._system_tracking_interval,
-                log_system_params=self._log_system_params,
-                capture_terminal_logs=self._capture_terminal_logs,
-            )
+            self._run = Run(repo=self._repo_path)
             self._run_hash = self._run.hash
+            if self._experiment is not None:
+                self._run.experiment = self._experiment
+
+        if self._log_system_params:
+            self._run.enable_system_monitoring()
 
     def _to_number(self, val):
         try:
@@ -103,21 +89,21 @@ class AimLogger:
                         value_best = self._to_number(log[6])
             if any((value_learn, value_test, value_best)):
                 if value_learn:
-                    run.track(
+                    run.track_auto(
                         value_learn,
                         name=self._loss_function,
                         step=value_iter,
                         context={'log': 'learn'},
                     )
                 if value_test:
-                    run.track(
+                    run.track_auto(
                         value_test,
                         name=self._loss_function,
                         step=value_iter,
                         context={'log': 'test'},
                     )
                 if value_best:
-                    run.track(
+                    run.track_auto(
                         value_best,
                         name=self._loss_function,
                         step=value_iter,

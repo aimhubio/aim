@@ -1,7 +1,6 @@
 from typing import Optional
 
-from aim import Run
-from aim._ext.system_info import DEFAULT_SYSTEM_TRACKING_INT
+from aimstack.ml import Run
 
 try:
     from lightgbm.callback import CallbackEnv
@@ -21,26 +20,19 @@ class AimCallback:
             If skipped, default Repo is used.
         experiment_name (:obj:`str`, optional): Sets Run's `experiment` property. 'default' if not specified.
             Can be used later to query runs/sequences.
-        system_tracking_interval (:obj:`int`, optional): Sets the tracking interval in seconds for system usage
-            metrics (CPU, Memory, etc.). Set to `None` to disable system metrics tracking.
         log_system_params (:obj:`bool`, optional): Enable/Disable logging of system params such as installed packages,
             git info, environment variables, etc.
-        capture_terminal_logs (:obj:`bool`, optional): Enable/Disable terminal stdout logging.
     """
 
     def __init__(
         self,
         repo: Optional[str] = None,
         experiment_name: Optional[str] = None,
-        system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT,
         log_system_params: Optional[bool] = True,
-        capture_terminal_logs: Optional[bool] = True,
     ):
         self._repo_path = repo
         self._experiment = experiment_name
-        self._system_tracking_interval = system_tracking_interval
         self._log_system_params = log_system_params
-        self._capture_terminal_logs = capture_terminal_logs
         self._run = None
         self._run_hash = None
 
@@ -58,21 +50,14 @@ class AimCallback:
         if self._run:
             return
         if self._run_hash:
-            self._run = Run(
-                self._run_hash,
-                repo=self._repo_path,
-                system_tracking_interval=self._system_tracking_interval,
-                capture_terminal_logs=self._capture_terminal_logs,
-            )
+            self._run = Run(self._run_hash, repo=self._repo_path)
         else:
-            self._run = Run(
-                repo=self._repo_path,
-                experiment=self._experiment,
-                system_tracking_interval=self._system_tracking_interval,
-                log_system_params=self._log_system_params,
-                capture_terminal_logs=self._capture_terminal_logs,
-            )
+            self._run = Run(repo=self._repo_path)
             self._run_hash = self._run.hash
+            if self._experiment is not None:
+                self._run.experiment = self._experiment
+        if self._log_system_params:
+            self._run.enable_system_monitoring()
 
     def __call__(self, env: CallbackEnv):
         if env.iteration == env.begin_iteration:
@@ -83,17 +68,17 @@ class AimCallback:
         for item in env.evaluation_result_list:
             if len(item) == 4:
                 data_name, eval_name, result, _ = item
-                self._run.track(
+                self._run.track_auto(
                     result, name=eval_name, context={'data_name': data_name}
                 )
             else:
                 data_name, eval_name = item[1].split()
                 res_mean = item[2]
                 res_stdv = item[4]
-                self._run.track(
+                self._run.track_auto(
                     res_mean, name=f'{eval_name}-mean', context={'data_name': data_name}
                 )
-                self._run.track(
+                self._run.track_auto(
                     res_stdv, name=f'{eval_name}-stdv', context={'data_name': data_name}
                 )
 
@@ -101,7 +86,6 @@ class AimCallback:
 
     def close(self):
         if self._run:
-            self._run.close()
             del self._run
             self._run = None
 

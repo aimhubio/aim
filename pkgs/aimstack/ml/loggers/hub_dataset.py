@@ -1,4 +1,4 @@
-from aim._sdk.record import Record
+from aim import Record
 import hub
 
 

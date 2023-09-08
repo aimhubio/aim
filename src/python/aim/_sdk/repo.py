@@ -419,7 +419,7 @@ class Repo(object):
 
             for ctx_idx in source_meta_container_tree_collected['sequences'].keys():
                 for seq_name in source_meta_container_tree_collected['sequences'][ctx_idx].keys():
-                    seq_typename = source_meta_container_tree_collected['sequences'][ctx_idx][seq_name][KeyNames.INFO_PREFIX][KeyNames.SEQUENCE_TYPE]
+                    seq_typename = source_meta_container_tree_collected['sequences'][ctx_idx][seq_name][KeyNames.INFO_PREFIX][KeyNames.SEQUENCE_TYPE] # noqa
                     for typename in seq_typename.split('->'):
                         dest_meta_tree[(KeyNames.SEQUENCES, typename, ctx_idx, seq_name)] = 1
 

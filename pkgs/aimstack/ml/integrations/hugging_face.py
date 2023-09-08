@@ -3,9 +3,8 @@ from typing import Optional, List, Dict
 from difflib import SequenceMatcher
 from collections import defaultdict
 
-from aim._ext.system_info import DEFAULT_SYSTEM_TRACKING_INT
 from aim._sdk.num_utils import is_number
-from aim._sdk.run import Run
+from aimstack.ml import Run
 
 try:
     from transformers.trainer_callback import TrainerCallback
@@ -27,26 +26,19 @@ class AimCallback(TrainerCallback):
             If skipped, default Repo is used.
         experiment_name (:obj:`str`, optional): Sets Run's `experiment` property. 'default' if not specified.
             Can be used later to query runs/sequences.
-        system_tracking_interval (:obj:`int`, optional): Sets the tracking interval in seconds for system usage
-            metrics (CPU, Memory, etc.). Set to `None` to disable system metrics tracking.
         log_system_params (:obj:`bool`, optional): Enable/Disable logging of system params such as installed packages,
             git info, environment variables, etc.
-        capture_terminal_logs (:obj:`bool`, optional): Enable/Disable terminal stdout logging.
     """
 
     def __init__(
         self,
         repo: Optional[str] = None,
         experiment_name: Optional[str] = None,
-        system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT,
         log_system_params: Optional[bool] = True,
-        capture_terminal_logs: Optional[bool] = True,
     ):
         self._repo_path = repo
         self._experiment_name = experiment_name
-        self._system_tracking_interval = system_tracking_interval
         self._log_system_params = log_system_params
-        self._capture_terminal_logs = capture_terminal_logs
         self._run = None
         self._run_hash = None
         self._log_value_warned = False
@@ -63,21 +55,14 @@ class AimCallback(TrainerCallback):
 
         if not self._run:
             if self._run_hash:
-                self._run = Run(
-                    self._run_hash,
-                    repo=self._repo_path,
-                    system_tracking_interval=self._system_tracking_interval,
-                    capture_terminal_logs=self._capture_terminal_logs,
-                )
+                self._run = Run(self._run_hash, repo=self._repo_path)
             else:
-                self._run = Run(
-                    repo=self._repo_path,
-                    experiment=self._experiment_name,
-                    system_tracking_interval=self._system_tracking_interval,
-                    log_system_params=self._log_system_params,
-                    capture_terminal_logs=self._capture_terminal_logs,
-                )
+                self._run = Run(repo=self._repo_path)
                 self._run_hash = self._run.hash
+                if self._experiment_name is not None:
+                    self._run.experiment = self._experiment_name
+        if self._log_system_params:
+            self._run.enable_system_monitoring()
 
         if args:
             combined_dict = {**args.to_sanitized_dict()}
@@ -141,7 +126,7 @@ class AimCallback(TrainerCallback):
                     )
                 continue
 
-            self._run.track(
+            self._run.track_auto(
                 log_value,
                 name=log_name,
                 context=context,

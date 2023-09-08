@@ -5,7 +5,7 @@ https://catboost.ai/en/docs/concepts/python-quickstart#classification
 
 import numpy as np
 
-from aim.catboost import AimLogger
+from aimstack.ml.adapters.catboost import AimLogger
 from catboost import CatBoostClassifier, Pool
 
 # initialize data

@@ -11,8 +11,7 @@ from mxnet.gluon.contrib.estimator import (
     Estimator,
 )
 from typing import Optional, Union, Any, List
-from aim._sdk.run import Run
-from aim._ext.system_info import DEFAULT_SYSTEM_TRACKING_INT
+from aimstack.ml import Run
 
 
 class AimLoggingHandler(
@@ -26,11 +25,8 @@ class AimLoggingHandler(
             If skipped, default Repo is used.
         experiment_name (:obj:`str`, optional): Sets Run's `experiment` property. 'default' if not specified.
             Can be used later to query runs/sequences.
-        system_tracking_interval (:obj:`int`, optional): Sets the tracking interval in seconds for system usage
-            metrics (CPU, Memory, etc.). Set to `None` to disable system metrics tracking.
         log_system_params (:obj:`bool`, optional): Enable/Disable logging of system params such as installed packages,
             git info, environment variables, etc.
-        capture_terminal_logs (:obj:`bool`, optional): Enable/Disable terminal stdout logging.
         log_interval: (:obj:`int` or `str`) default: 'epoch': Logging interval during training.
             log_interval='epoch': display metrics every epoch
             log_interval=integer k: display metrics every interval of k batches
@@ -44,9 +40,7 @@ class AimLoggingHandler(
         self,
         repo: Optional[str] = None,
         experiment_name: Optional[str] = None,
-        system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT,
         log_system_params: Optional[bool] = True,
-        capture_terminal_logs: Optional[bool] = True,
         log_interval: Union[int, str] = 'epoch',
         metrics: Optional[List[Any]] = None,
         priority=np.Inf,
@@ -67,9 +61,7 @@ class AimLoggingHandler(
 
         self.repo = repo
         self.experiment_name = experiment_name
-        self.system_tracking_interval = system_tracking_interval
         self.log_system_params = log_system_params
-        self.capture_terminal_logs = capture_terminal_logs
         self._run = None
         self._run_hash = None
 
@@ -143,7 +135,7 @@ class AimLoggingHandler(
 
                 context_name, metric_name = name.split(' ')
                 context = {'subset': context_name}
-                self._run.track(
+                self._run.track_auto(
                     value, metric_name, step=self.batch_index, context=context
                 )
             estimator.logger.info(msg.rstrip(', '))
@@ -171,7 +163,7 @@ class AimLoggingHandler(
 
                     context_name, metric_name = name.split(' ')
                     context = {'subset': context_name}
-                    self._run.track(
+                    self._run.track_auto(
                         value, metric_name, step=self.batch_index, context=context
                     )
                 estimator.logger.info(msg.rstrip(', '))
@@ -186,22 +178,14 @@ class AimLoggingHandler(
     def setup(self, estimator: Optional[Estimator] = None, args=None):
         if not self._run:
             if self._run_hash:
-                self._run = Run(
-                    self._run_hash,
-                    repo=self.repo,
-                    system_tracking_interval=self.system_tracking_interval,
-                    log_system_params=self.log_system_params,
-                    capture_terminal_logs=self.capture_terminal_logs,
-                )
+                self._run = Run(self._run_hash, repo=self.repo)
             else:
-                self._run = Run(
-                    repo=self.repo,
-                    experiment=self.experiment_name,
-                    system_tracking_interval=self.system_tracking_interval,
-                    log_system_params=self.log_system_params,
-                    capture_terminal_logs=self.capture_terminal_logs,
-                )
+                self._run = Run(repo=self.repo)
                 self._run_hash = self._run.hash
+                if self.experiment_name is not None:
+                    self._run.experiment = self.experiment_name
+            if self.log_system_params:
+                self._run.enable_system_monitoring()
 
         # Log config parameters
         if args:
@@ -212,5 +196,6 @@ class AimLoggingHandler(
                 estimator.logger.warning(f'Aim could not log config parameters -> {e}')
 
     def __del__(self):
-        if self._run and self._run.active:
-            self._run.close()
+        if self._run is not None:
+            del self._run
+            self._run = None

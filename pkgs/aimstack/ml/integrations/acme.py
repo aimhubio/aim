@@ -1,6 +1,5 @@
 from typing import Optional, Dict
-from aimstack.asp import Run
-from aim._ext.system_info.configs import DEFAULT_SYSTEM_TRACKING_INT
+from aimstack.ml import Run
 from acme.utils.loggers.base import Logger, LoggingData
 
 
@@ -13,11 +12,8 @@ class AimCallback:
             If skipped, default Repo is used.
         experiment_name (:obj:`str`, optional): Sets Run's `experiment` property. 'default' if not specified.
             Can be used later to query runs/sequences.
-        system_tracking_interval (:obj:`int`, optional): Sets the tracking interval in seconds for system usage
-            metrics (CPU, Memory, etc.). Set to `None` to disable system metrics tracking.
         log_system_params (:obj:`bool`, optional): Enable/Disable logging of system params such as installed packages,
             git info, environment variables, etc.
-        capture_terminal_logs (:obj:`bool`, optional): Enable/Disable terminal stdout logging.
         args (:obj:`dict`, optional): Arguments to set a run parameters
     """
 
@@ -25,16 +21,12 @@ class AimCallback:
         self,
         repo: Optional[str] = None,
         experiment_name: Optional[str] = None,
-        system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT,
         log_system_params: Optional[bool] = True,
-        capture_terminal_logs: Optional[bool] = True,
         args: Optional[Dict] = None,
     ):
         self.repo = repo
         self.experiment_name = experiment_name
-        self.system_tracking_interval = system_tracking_interval
         self.log_system_params = log_system_params
-        self.capture_terminal_logs = capture_terminal_logs
         self._run = None
         self._run_hash = None
 
@@ -49,29 +41,22 @@ class AimCallback:
     def setup(self, args=None):
         if not self._run:
             if self._run_hash:
-                self._run = Run(
-                    self._run_hash,
-                    repo=self.repo,
-                    system_tracking_interval=self.system_tracking_interval,
-                    log_system_params=self.log_system_params,
-                    capture_terminal_logs=self.capture_terminal_logs,
-                )
+                self._run = Run(self._run_hash, repo=self.repo)
             else:
-                self._run = Run(
-                    repo=self.repo,
-                    experiment=self.experiment_name,
-                    system_tracking_interval=self.system_tracking_interval,
-                    log_system_params=self.log_system_params,
-                    capture_terminal_logs=self.capture_terminal_logs,
-                )
+                self._run = Run(repo=self.repo)
                 self._run_hash = self._run.hash
+                if self.experiment_name is not None:
+                    self._run.experiment = self.experiment_name
+            if self.log_system_params:
+                self._run.enable_system_monitoring()
 
         if args:
             for key, value in args.items():
                 self._run.set(key, value, strict=False)
 
     def track(self, logs, step=None, context=None):
-        self._run.track(logs, step=step, context=context)
+        for name, val in logs.items():
+            self._run.track_auto(val, name=name, step=step, context=context)
 
     def close(self):
         if self._run and self._run.active:
@@ -86,7 +71,8 @@ class AimWriter(Logger):
         self.task_id = task_id
 
     def write(self, values: LoggingData):
-        self.aim_run.track(values, context={'logger_label': self.logger_label})
+        for name, value in values.items():
+            self.aim_run.track_auto(value, name=name, context={'logger_label': self.logger_label})
 
     def close(self):
         if self.aim_run and self.aim_run.active:

@@ -1,8 +1,7 @@
 from logging import getLogger
 from typing import Optional
-from aim._sdk.run import Run
 
-from aim._ext.system_info import DEFAULT_SYSTEM_TRACKING_INT
+from aimstack.ml import Run
 
 try:
     from fastai.learner import Callback
@@ -26,27 +25,20 @@ class AimCallback(Callback):
             If skipped, default Repo is used.
         experiment_name (:obj:`str`, optional): Sets Run's `experiment` property. 'default' if not specified.
             Can be used later to query runs/sequences.
-        system_tracking_interval (:obj:`int`, optional): Sets the tracking interval in seconds for system usage
-            metrics (CPU, Memory, etc.). Set to `None` to disable system metrics tracking.
         log_system_params (:obj:`bool`, optional): Enable/Disable logging of system params such as installed packages,
             git info, environment variables, etc.
-        capture_terminal_logs (:obj:`bool`, optional): Enable/Disable terminal stdout logging.
     """
 
     def __init__(
         self,
         repo: Optional[str] = None,
         experiment_name: Optional[str] = None,
-        system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT,
         log_system_params: Optional[bool] = True,
-        capture_terminal_logs: Optional[bool] = True,
     ):
         store_attr()
         self.repo = repo
         self.experiment_name = experiment_name
-        self.system_tracking_interval = system_tracking_interval
         self.log_system_params = log_system_params
-        self.capture_terminal_logs = capture_terminal_logs
         self._run = None
         self._run_hash = None
 
@@ -59,23 +51,14 @@ class AimCallback(Callback):
     def setup(self, args=None):
         if not self._run:
             if self._run_hash:
-                self._run = Run(
-                    self._run_hash,
-                    repo=self.repo,
-                    system_tracking_interval=self.system_tracking_interval,
-                    log_system_params=self.log_system_params,
-                    capture_terminal_logs=self.capture_terminal_logs,
-                )
+                self._run = Run(self._run_hash, repo=self.repo)
             else:
-                self._run = Run(
-                    repo=self.repo,
-                    experiment=self.experiment_name,
-                    system_tracking_interval=self.system_tracking_interval,
-                    log_system_params=self.log_system_params,
-                    capture_terminal_logs=self.capture_terminal_logs,
-                )
+                self._run = Run(repo=self.repo)
                 self._run_hash = self._run.hash
-
+                if self.experiment_name is not None:
+                    self._run.experiment = self.experiment_name
+        if self.log_system_params:
+            self._run.enable_system_monitoring()
         # Log config parameters
         if args:
             try:
@@ -93,12 +76,12 @@ class AimCallback(Callback):
     def after_batch(self):
         context = {'subset': 'train'} if self.training else {'subset': 'val'}
 
-        self._run.track(
+        self._run.track_auto(
             self.loss.item(), name='train_loss', step=self.train_iter, context=context
         )
         for i, h in enumerate(self.opt.hypers):
             for k, v in h.items():
-                self._run.track(v, f'{k}_{i}', step=self.train_iter, context=context)
+                self._run.track_auto(v, f'{k}_{i}', step=self.train_iter, context=context)
 
     def before_epoch(self):
         for metric in self.metrics:
@@ -107,7 +90,7 @@ class AimCallback(Callback):
     def after_epoch(self):
         for name, value in zip(self.recorder.metric_names, self.recorder.log):
             if name not in ['train_loss', 'epoch', 'time'] and value is not None:
-                self._run.track(value, name=name)
+                self._run.track_auto(value, name=name)
 
     def __del__(self):
         if self._run and self._run.active:

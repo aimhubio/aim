@@ -394,5 +394,3 @@ async def run_log_records_streamer(run: Run, record_range: str) -> bytes:
             yield collect_streamable_data(encoded_tree)
     except asyncio.CancelledError:
         pass
-
-
