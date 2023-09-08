@@ -51,6 +51,11 @@ query_results_cache = {}
 signals_store = {}
 
 
+# Signals are being used to invalidate query results cache on specific state updates
+# By binding queries and components with them same singal you can control when to invalidate query results cache
+# You can use signals as primitive strings or as Signal class instances
+# With Signal class you can also specify properties that should be present in state update to invalidate query results cache
+
 class Signal:
     def __init__(self, name, properties=None):
         self.name = name
@@ -63,6 +68,8 @@ class Signal:
 
 
 def register_signal(signal=None, query_key=None):
+    """Binds query key to signal. When signal is dispatched, query results cache will be invalidated"""
+
     if (signal is not None) and (query_key is not None): 
         if (signal not in signals_store):
             signals_store[signal] = {
@@ -73,6 +80,8 @@ def register_signal(signal=None, query_key=None):
             signals_store[signal]["query_keys"].append(query_key)
 
 def dispatch_signal(signal_name=None, properties=None):
+    """Dispatches signal. Cleares query results cache for all query keys bound to signal"""
+
     if signal_name is not None:
         signal = signals_store.get(signal_name, None)
         signal_properties = signal.get("properties", None)
