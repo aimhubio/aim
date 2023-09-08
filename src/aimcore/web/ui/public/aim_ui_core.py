@@ -76,7 +76,7 @@ def dispatch_signal(signal_name=None, properties=None):
     if signal_name is not None:
         signal = signals_store.get(signal_name, None)
         signal_properties = signal.get("properties", None)
-        print('-----', properties, signal_properties)
+
         if (signal is None) or (
             properties is not None and 
             signal_properties is not None and 

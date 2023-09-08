@@ -4,14 +4,14 @@ import math
 
 c_hash = session_state.get('container_hash')
 
-search_signal = Signal('search', properties=["focused_row"])
+search_signal = "search"
 
 if c_hash is None:
     ui.header("Metrics")
-    form = ui.form("Search", signal=search_signal.name)
+    form = ui.form("Search", signal=search_signal)
     query = form.text_input(value="")
 
-metrics = Metric.filter(f'c.hash=="{c_hash}"' if c_hash else query, signal=search_signal.name)
+metrics = Metric.filter(f'c.hash=="{c_hash}"' if c_hash else query, signal=search_signal)
 
 
 def flatten(dictionary, parent_key='', separator='.'):
@@ -97,7 +97,7 @@ if metrics:
     )
     row2.table(table_data, {
         'container.hash': lambda val: ui.board_link('run.py', val, state={'container_hash': val}),
-    }, selectable_rows=True, signal=search_signal.name)
+    })
 
 else:
     ui.text('No metrics found')

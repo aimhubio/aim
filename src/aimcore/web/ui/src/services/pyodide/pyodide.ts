@@ -317,32 +317,52 @@ export async function loadPyodideInstance() {
       let dataTypeName = containerType.slice(`${packageName}.`.length);
 
       jsModule[dataTypeName] = {
-        filter: (query: string = '', signal: string = '') => {
-          if (signal === '') {
-            signal = 'None';
-          } else {
+        filter: (...args: any[]) => {
+          let queryArgs: Record<string, string | number> = {
+            query: '',
+          };
+          for (let i = 0; i < args.length; i++) {
+            if (typeof args[i] === 'object') {
+              Object.assign(queryArgs, args[i]);
+            } else {
+              queryArgs[i] = args[i];
+            }
+          }
+
+          let query = JSON.stringify(queryArgs[0] ?? queryArgs['query']);
+          let signal = queryArgs[1] ?? queryArgs['signal'] ?? 'None';
+
+          if (signal !== 'None') {
             signal = JSON.stringify(signal);
           }
 
           let val = pyodide.runPython(
-            `query_filter('${containerType}', ${JSON.stringify(
-              query,
-            )}, None, None, None, False, ${signal})`,
+            `query_filter('${containerType}', ${query}, None, None, None, False, ${signal})`,
             { globals: namespace },
           );
           return val;
         },
-        find: (hash_: string, signal: string = '') => {
-          if (signal === '') {
-            signal = 'None';
-          } else {
+        find: (...args: any[]) => {
+          let queryArgs: Record<string, string | number> = {
+            hash_: '',
+          };
+          for (let i = 0; i < args.length; i++) {
+            if (typeof args[i] === 'object') {
+              Object.assign(queryArgs, args[i]);
+            } else {
+              queryArgs[i] = args[i];
+            }
+          }
+
+          let hash_ = JSON.stringify(queryArgs[0] ?? queryArgs['hash_']);
+          let signal = queryArgs[1] ?? queryArgs['signal'] ?? 'None';
+
+          if (signal !== 'None') {
             signal = JSON.stringify(signal);
           }
 
           let val = pyodide.runPython(
-            `find_item('${containerType}', False, ${JSON.stringify(
-              hash_,
-            )}, ${signal})`,
+            `find_item('${containerType}', False, ${hash_}, ${signal})`,
             { globals: namespace },
           );
           return val;
