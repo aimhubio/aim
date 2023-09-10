@@ -9,7 +9,7 @@ from acme.agents.jax import d4pg
 from acme.jax import experiments
 from acme.utils import loggers
 
-from aimstack.ml.adapters.acme import AimCallback, AimWriter
+from aimstack.ml.integrations.acme import AimCallback, AimWriter
 
 
 def make_environment(seed: int) -> dm_env.Environment:

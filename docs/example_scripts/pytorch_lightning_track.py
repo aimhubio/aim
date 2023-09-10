@@ -1,4 +1,4 @@
-from aimstack.ml.adapters.pytorch_lightning import AimLogger
+from aimstack.ml.integrations.pytorch_lightning import AimLogger
 
 from argparse import ArgumentParser
 

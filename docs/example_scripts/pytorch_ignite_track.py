@@ -13,7 +13,7 @@ from ignite.metrics import Accuracy, Loss, ConfusionMatrix, RunningAverage
 from ignite.handlers import global_step_from_engine, EarlyStopping
 from ignite.contrib.handlers import ProgressBar
 
-from aimstack.ml.adapters.pytorch_ignite import AimLogger
+from aimstack.ml.integrations.pytorch_ignite import AimLogger
 
 # transform to normalize the data
 transform = transforms.Compose(
@@ -105,7 +105,7 @@ def log_validation_results(trainer):
 
 
 # Create a logger
-aim_logger = AimLogger()
+aim_logger = AimLogger(repo="aim://0.0.0.0:53800")
 
 # Log experiment parameters:
 aim_logger.log_params(

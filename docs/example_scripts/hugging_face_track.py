@@ -26,7 +26,7 @@ from typing import Optional
 
 import numpy as np
 from datasets import load_dataset, load_metric
-from aimstack.ml.adapters.hugging_face import AimCallback
+from aimstack.ml.integrations.hugging_face import AimCallback
 
 import transformers
 from transformers import (

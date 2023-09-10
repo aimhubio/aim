@@ -1,5 +1,5 @@
 import optuna
-from aimstack.ml.adapters.optuna import AimCallback
+from aimstack.ml.integrations.optuna import AimCallback
 
 
 # Add Aim callback to Optuna optimization

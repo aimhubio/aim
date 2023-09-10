@@ -1,5 +1,5 @@
 from aimstack.asp import Run
-from aimstack.ml.adapters.pytorch import track_gradients_dists, track_params_dists
+from aimstack.ml.integrations.pytorch import track_gradients_dists, track_params_dists
 
 import torch
 import torch.nn as nn

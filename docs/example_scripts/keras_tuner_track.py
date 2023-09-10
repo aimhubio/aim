@@ -1,6 +1,6 @@
 import tensorflow as tf
 import tensorflow_datasets as tfds
-from aimstack.ml.adapters.keras_tuner import AimCallback
+from aimstack.ml.integrations.keras_tuner import AimCallback
 import kerastuner as kt
 
 

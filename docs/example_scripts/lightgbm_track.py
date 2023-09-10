@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pandas as pd
 from sklearn.metrics import mean_squared_error
-from aimstack.ml.adapters.lightgbm import AimCallback
+from aimstack.ml.integrations.lightgbm import AimCallback
 
 import lightgbm as lgb
 

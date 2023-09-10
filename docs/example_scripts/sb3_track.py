@@ -1,4 +1,4 @@
-from aimstack.ml.adapters.sb3 import AimCallback
+from aimstack.ml.integrations.sb3 import AimCallback
 from stable_baselines3 import A2C
 
 

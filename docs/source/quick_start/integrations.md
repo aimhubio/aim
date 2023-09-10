@@ -34,7 +34,7 @@ It only takes 2 steps to simply and easily inject Aim into pytorch ignite:
 
 ```python
 # import aim sdk designed for pytorch ignite
-from aim.pytorch_ignite import AimLogger
+from aimstack.ml.integrations.pytorch_ignite import AimLogger
 ```
 Pytorch Ignite provides trainer objects to simplify the training process of pytorch model. We can attach the trainer object as AimLogger's output handler to use the logger function defined by aim to simplify the process of tracking experiments. This process is divided into 2 steps:
 
@@ -42,7 +42,7 @@ Step 1. Create `AimLogger` object
 
 ```python
 aim_logger = AimLogger(
-    experiment='aim_on_pt_ignite',
+    experiment_name='aim_on_pt_ignite',
     train_metric_prefix='train_',
     val_metric_prefix='val_',
     test_metric_prefix='test_',
@@ -74,7 +74,7 @@ We only require 2 steps to simply and easily inject Aim into pytorch lightining:
 
 ```python
 # import aim sdk designed for pl
-from aim.pytorch_lightning import AimLogger
+from aimstack.ml.integrations.pytorch_lightning import AimLogger
 ```
 
 Pytorch lighting provides trainer objects to simplify the training process of pytorch model. One of the parameters is called logger. We can use the logger function defined by aim to simplify the process of tracking experiments. This process is divided into 2 steps:
@@ -84,7 +84,7 @@ Step 1. Create `AimLogger` object
 ```python
 # track experimental data by using Aim
 aim_logger = AimLogger(
-    experiment='aim_on_pt_lightning',
+    experiment_name='aim_on_pt_lightning',
     train_metric_prefix='train_',
     val_metric_prefix='val_',
 )
@@ -112,14 +112,14 @@ You only need 2 simple steps to employ Aim to collect data ❤️
 Step 1: Import the sdk designed by Aim for Huggingface.
 
 ```python
-from aim.hugging_face import AimCallback
+from aimstack.ml.integrations.hugging_face import AimCallback
 ```
 
 Step 2: Hugging Face has a trainer api to help us simplify the training process. This api provides a callback function to return the information that the user needs. Therefore, aim has specially designed SDK to simplify the process of the user writing callback functions, we only need to initialize `AimCallback` object as follows:
 
 ```python
 # Initialize aim_callback
-aim_callback = AimCallback(experiment='huggingface_experiment')
+aim_callback = AimCallback(experiment_name='huggingface_experiment')
 # Initialize trainer
 trainer = Trainer(
     model=model,    
@@ -144,9 +144,9 @@ It only takes 2 steps to easily integrate aim in keras to record experimental in
 
 ```python
 # call keras as the high api of tensorflow 
-from aim.tensorflow import AimCallback
+from aimstack.ml.integrations.tensorflow import AimCallback
 # call keras library directly
-from aim.keras import AimCallback
+from aimstack.ml.integrations.keras import AimCallback
 ```
 
 In keras, we call the `fit()` method of the model object to train the data. The callbacks are provided here. `AimCallback` inherits the usage specification of callbacks. We just need to add it to the callbacks list.
@@ -154,7 +154,7 @@ In keras, we call the `fit()` method of the model object to train the data. The 
 ```python
 model.fit(x_train, y_train, epochs=5, callbacks=[
           # in case of tf.keras, we use aim.tensorflow.AimCallback 
-          AimCallback(experiment='aim_on_keras')                                      
+          AimCallback(experiment_name='aim_on_keras')                                      
 ])
 ```
 
@@ -168,7 +168,7 @@ Example using tf.Keras can be found [here](https://github.com/aimhubio/aim/blob/
 It only takes 2 steps to easily integrate aim in keras to record experimental information.
 
 ```python
-from aim.keras_tuner import AimCallback
+from aimstack.ml.integrations.keras_tuner import AimCallback
 ```
 
 In kerastuner, we call the `search()` method of the tuner object to perform a search for best hyperparameter configuations. The callbacks are provided here. `AimCallback` inherits the usage specification of callbacks. We just need to add it to the callbacks list.
@@ -177,7 +177,7 @@ In kerastuner, we call the `search()` method of the tuner object to perform a se
 tuner.search(
     train_ds,
     validation_data=test_ds,
-    callbacks=[AimCallback(tuner=tuner, repo='./aim_logs', experiment='keras_tuner_test')],
+    callbacks=[AimCallback(tuner=tuner, repo='./aim_logs', experiment_name='keras_tuner_test')],
 )
 ```
 
@@ -194,14 +194,14 @@ Step 1: Explicitly import the `AimCallback` for tracking training data.
 
 ```python
 # call sdk aim.xgboost 
-from aim.xgboost import AimCallback
+from aimstack.ml.integrations.xgboost import AimCallback
 ```
 
 Step 2: XGboost provides the `xgboost.train` method for model training, in which the callbacks parameter can call back data information from the outside. Here we pass in aimcallbacl designed for tracking data information
 
 ```python
 xgboost.train(param, dtrain, num_round, watchlist,
-                            callbacks=[AimCallback(experiment='xgboost_test')])
+                            callbacks=[AimCallback(experiment_name='xgboost_test')])
 ```
 
 Adapter source can be found [here](https://github.com/aimhubio/aim/blob/main/aim/sdk/adapters/xgboost.py).  
@@ -215,7 +215,7 @@ Step 1: Import `AimLogger` to track the training metadata.
 
 ```python
 # call sdk aim.catboost 
-from aim.catboost import AimLogger
+from aimstack.ml.integrations.catboost import AimLogger
 ```
 
 Step 2: Pass the logger to the trainer.
@@ -243,7 +243,7 @@ It takes two steps to integrate Aim into your training script.
 Step 1: Explicitly import the `AimCallback` for tracking training metadata.
 
 ```python
-from aim.lightgbm import AimCallback
+from aimstack.ml.integrations.lightgbm import AimCallback
 ```
 
 Step 2: Pass the callback to `callbacks` list upon initiating your training.
@@ -253,7 +253,7 @@ gbm = lgb.train(params,
                 lgb_train,
                 num_boost_round=20,
                 valid_sets=lgb_eval,
-                callbacks=[AimCallback(experiment='lgb_test')])
+                callbacks=[AimCallback(experiment_name='lgb_test')])
 ```
 
 While your training is running you can start `aim up` in another terminal session and observe the information in real
@@ -270,7 +270,7 @@ It takes two steps to integrate Aim into your training script.
 Step 1: Explicitly import the `AimCallback` for tracking training metadata.
 
 ```python
-from aim.fastai import AimCallback
+from aimstack.ml.integrations.fastai import AimCallback
 ```
 
 Step 2: Pass the callback to `cbs` list upon initiating your training.
@@ -279,7 +279,7 @@ Step 2: Pass the callback to `cbs` list upon initiating your training.
 learn = cnn_learner(dls, resnet18, pretrained=True,
                     loss_func=CrossEntropyLossFlat(),
                     metrics=accuracy, model_dir="/tmp/model/",
-                    cbs=AimCallback(repo='.', experiment='fastai_example'))
+                    cbs=AimCallback(repo='.', experiment_name='fastai_example'))
 ```
 
 See `AimCallback` source [here](https://github.com/aimhubio/aim/blob/main/aim/sdk/adapters/fastai.py).  
@@ -294,7 +294,7 @@ It takes two steps to integrate Aim into your training script.
 Step 1: Import the `AimLoggingHandler` for tracking training metadata.
 
 ```python
-from aim.mxnet import AimLoggingHandler
+from aimstack.ml.integrations.mxnet import AimLoggingHandler
 ```
 
 Step 2: Pass a callback instance to `event_handlers` list upon initiating your training.
@@ -320,7 +320,7 @@ One can also use the decorator function `track_in_aim` to log inside the objecti
 Step 1: Explicitly import the `AimCallback` for tracking training metadata.
 
 ```python
-from aim.optuna import AimCallback
+from aimstack.ml.integrations.optuna import AimCallback
 ```
 
 Step 2: Pass the callback to `cbs` list upon initiating your training.
@@ -341,13 +341,13 @@ It takes two steps to integrate Aim into your training script.
 Step 1: Explicitly import the `AimCallback` for tracking training metadata.
 
 ```python
-from aim.paddle import AimCallback
+from aimstack.ml.integrations.paddle import AimCallback
 ```
 
 Step 2: Pass the callback to `callbacks` list upon initiating your training.
 
 ```python
-callback = AimCallback(repo='.', experiment='paddle_test')
+callback = AimCallback(repo='.', experiment_name='paddle_test')
 model.fit(train_dataset, eval_dataset, batch_size=64, callbacks=callback)
 ```
 
@@ -364,7 +364,7 @@ It takes two steps to integrate Aim into your training script.
 Step 1: Explicitly import the `AimCallback` for tracking training metadata.
 
 ```python
-from aim.sb3 import AimCallback
+from aimstack.ml.integrations.sb3 import AimCallback
 ```
 
 Step 2: Pass the callback to `callback` upon initiating your training.
@@ -386,7 +386,7 @@ It takes few simple steps to integrate Aim into your training script.
 Step 1: Explicitly import the `AimCallback` and `AimWriter` for tracking training metadata.
 
 ```python
-from aim.sdk.acme import AimCallback, AimWriter
+from aimstack.ml.integrations.acme import AimCallback, AimWriter
 ```
 
 Step 2: Initialize an Aim Run via `AimCallback`, and create a log factory using the Run.
@@ -425,14 +425,14 @@ It takes three steps to integrate Aim into your Prophet script.
 Step 1: Explicitly import the `AimLogger`.
 
 ```python
-from aim.prophet import AimLogger
+from aimstack.ml.integrations.prophet import AimLogger
 ```
 
 Step 2: After initializing a Prophet model, instantiate the AimLogger with your Prophet model.
 
 ```python
 model = Prophet()
-logger = AimLogger(prophet_model=model, repo=".", experiment="prophet_test")
+logger = AimLogger(prophet_model=model, repo=".", experiment_name="prophet_test")
 ```
 
 Step 3 (optional): pass any metrics you want after fitting the Prophet model.

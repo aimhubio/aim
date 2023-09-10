@@ -1,7 +1,7 @@
 import paddle
 import paddle.vision.transforms as T
 from paddle.static import InputSpec
-from aimstack.ml.adapters.paddle import AimCallback
+from aimstack.ml.integrations.paddle import AimCallback
 
 
 inputs = [InputSpec([-1, 1, 28, 28], 'float32', 'image')]

@@ -7,7 +7,7 @@ from fastai.vision.all import GrandparentSplitter, Resize, Normalize
 from fastai.vision.all import get_image_files, aug_transforms, imagenet_stats
 from fastai.vision.all import cnn_learner, resnet18, CrossEntropyLossFlat
 import regex as re
-from aimstack.ml.adapters.fastai import AimCallback
+from aimstack.ml.integrations.fastai import AimCallback
 
 
 def get_arabic_mnist_labels(file_path):

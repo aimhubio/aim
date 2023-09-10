@@ -1,4 +1,4 @@
-from aimstack.ml.adapters.prophet import AimLogger
+from aimstack.ml.integrations.prophet import AimLogger
 import numpy as np
 import pandas as pd
 from prophet import Prophet
