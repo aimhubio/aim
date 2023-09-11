@@ -48,8 +48,6 @@ def memoize(func):
 
 query_results_cache = {}
 
-signals_store = {}
-
 
 # Signals are being used to invalidate query results cache on specific state updates
 # By binding queries and components with the same signal you can control when to invalidate query results cache
@@ -57,46 +55,55 @@ signals_store = {}
 # With Signal class, you can also specify properties that should be present in state update to invalidate query results cache
 
 class Signal:
+    signals_store = {}
+
     def __init__(self, name, properties=None):
         self.name = name
         self.properties = properties
 
-        signals_store[self.name] = {
+        Signal.signals_store[self.name] = {
             "properties": self.properties,
             "query_keys": [],
         }
 
+    @staticmethod
+    def register(signal_name=None, query_key=None):
+        """Binds query key to signal. When signal is dispatched, query results cache will be invalidated"""
 
-def register_signal(signal=None, query_key=None):
-    """Binds query key to signal. When signal is dispatched, query results cache will be invalidated"""
+        if (signal_name is not None) and (query_key is not None): 
+            if (signal_name not in Signal.signals_store):
+                Signal.signals_store[signal_name] = {
+                    "properties": None,
+                    "query_keys": [query_key]
+                }
+            else:
+                Signal.signals_store[signal_name]["query_keys"].append(query_key)
 
-    if (signal is not None) and (query_key is not None): 
-        if (signal not in signals_store):
-            signals_store[signal] = {
-                "properties": None,
-                "query_keys": [query_key]
-            }
-        else:
-            signals_store[signal]["query_keys"].append(query_key)
+    @staticmethod
+    def dispatch(signal_name=None, properties=None):
+        """Dispatches signal. Cleares query results cache for all query keys bound to signal"""
 
-def dispatch_signal(signal_name=None, properties=None):
-    """Dispatches signal. Cleares query results cache for all query keys bound to signal"""
+        if signal_name is None:
+            return
 
-    if signal_name is not None:
-        signal = signals_store.get(signal_name, None)
+        signal = Signal.signals_store.get(signal_name, None)
+
+        if signal is None:
+            return
+
         signal_properties = signal.get("properties", None)
 
-        if (signal is None) or (
-            properties is not None and 
-            signal_properties is not None and 
-            not any(key in properties for key in signal_properties)
-            ):
+        if (
+            (properties is not None) and
+            (signal_properties is not None) and
+            (not any(key in properties for key in signal_properties))
+        ):
             return
-        
+    
         for key in signal.get("query_keys", []):
             clearQueryResultsCache(key)
 
-        signals_store[signal_name]["query_keys"] = []
+        Signal.signals_store[signal_name]["query_keys"] = []
 
 
 class WaitForQueryError(Exception):
@@ -123,7 +130,7 @@ def query_filter(type_, query="", count=None, start=None, stop=None, is_sequence
     query_key = f"{type_}_{query}_{count}_{start}_{stop}"
 
     if (signal is not None): 
-        register_signal(signal, query_key)
+        Signal.register(signal, query_key)
 
     if query_key in query_results_cache:
         return query_results_cache[query_key]
@@ -149,7 +156,7 @@ def run_function(func_name, params, signal=None):
     run_function_key = f"{func_name}_{json.dumps(params)}"
 
     if (signal is not None): 
-        register_signal(signal, run_function_key)
+        Signal.register(signal, run_function_key)
 
     if run_function_key in query_results_cache:
         return query_results_cache[run_function_key]
@@ -175,7 +182,7 @@ def find_item(type_, is_sequence=False, hash_=None, name=None, ctx=None, signal=
 
 
     if (signal is not None): 
-        register_signal(signal, query_key)
+        Signal.register(signal, query_key)
 
     if query_key in query_results_cache:
         return query_results_cache[query_key]
@@ -471,7 +478,7 @@ class Component(Element):
             set_state({state_key: state_slice}, self.board_path, persist=False)
         else:
             if self.signal is not None:
-                dispatch_signal(self.signal, list(value.keys()))
+                Signal.dispatch(self.signal, list(value.keys()))
                     
             state_slice = (
                 state[self.board_path][self.key]
@@ -2006,7 +2013,7 @@ class Form(Block, UI):
 
     def submit(self):
         if self.signal is not None:
-            dispatch_signal(self.signal)
+            Signal.dispatch(self.signal)
 
         batch_id = f'__form__{self.block_context["id"]}'
         state_update = state[board_path].get(batch_id, {})
