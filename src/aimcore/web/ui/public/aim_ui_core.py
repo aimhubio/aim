@@ -126,6 +126,9 @@ def process_properties(obj: dict):
     return obj
 
 
+# Iterator class for Aim Containers and Sequences which are being returned from filter methods
+# e.g. Metric.filter("s.name == 'loss'")
+
 class ItemListIterator:
     def __init__(self, items):
         self.items = items
