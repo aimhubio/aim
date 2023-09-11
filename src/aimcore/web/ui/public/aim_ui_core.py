@@ -2,7 +2,7 @@
 # Bindings for fetching Aim Objects
 ####################
 
-from js import search, runFunction, findItem, encodeURIComponent
+from js import search, runFunction, findItem, clearQueryResultsCache, encodeURIComponent
 import json
 import hashlib
 
@@ -47,6 +47,63 @@ def memoize(func):
 
 
 query_results_cache = {}
+
+
+# Signals are being used to invalidate query results cache on specific state updates
+# By binding queries and components with the same signal you can control when to invalidate query results cache
+# You can use signals as primitive strings or as Signal class instances
+# With Signal class, you can also specify properties that should be present in state update to invalidate query results cache
+
+class Signal:
+    signals_store = {}
+
+    def __init__(self, name, properties=None):
+        self.name = name
+        self.properties = properties
+
+        Signal.signals_store[self.name] = {
+            "properties": self.properties,
+            "query_keys": [],
+        }
+
+    @staticmethod
+    def register(signal_name=None, query_key=None):
+        """Binds query key to signal. When signal is dispatched, query results cache will be invalidated"""
+
+        if (signal_name is not None) and (query_key is not None): 
+            if (signal_name not in Signal.signals_store):
+                Signal.signals_store[signal_name] = {
+                    "properties": None,
+                    "query_keys": [query_key]
+                }
+            else:
+                Signal.signals_store[signal_name]["query_keys"].append(query_key)
+
+    @staticmethod
+    def dispatch(signal_name=None, properties=None):
+        """Dispatches signal. Cleares query results cache for all query keys bound to signal"""
+
+        if signal_name is None:
+            return
+
+        signal = Signal.signals_store.get(signal_name, None)
+
+        if signal is None:
+            return
+
+        signal_properties = signal.get("properties", None)
+
+        if (
+            (properties is not None) and
+            (signal_properties is not None) and
+            (not any(key in properties for key in signal_properties))
+        ):
+            return
+    
+        for key in signal.get("query_keys", []):
+            clearQueryResultsCache(key)
+
+        Signal.signals_store[signal_name]["query_keys"] = []
 
 
 class WaitForQueryError(Exception):
@@ -96,8 +153,11 @@ class ItemList:
         return self.items[index]
 
 
-def query_filter(type_, query="", count=None, start=None, stop=None, is_sequence=False):
+def query_filter(type_, query="", count=None, start=None, stop=None, is_sequence=False, signal=None):
     query_key = f"{type_}_{query}_{count}_{start}_{stop}"
+
+    if (signal is not None): 
+        Signal.register(signal, query_key)
 
     if query_key in query_results_cache:
         return query_results_cache[query_key]
@@ -120,8 +180,11 @@ def query_filter(type_, query="", count=None, start=None, stop=None, is_sequence
             raise e
 
 
-def run_function(func_name, params):
+def run_function(func_name, params, signal=None):
     run_function_key = f"{func_name}_{json.dumps(params)}"
+
+    if (signal is not None): 
+        Signal.register(signal, run_function_key)
 
     if run_function_key in query_results_cache:
         return query_results_cache[run_function_key]
@@ -139,11 +202,15 @@ def run_function(func_name, params):
             raise e
 
 
-def find_item(type_, is_sequence=False, hash_=None, name=None, ctx=None):
+def find_item(type_, is_sequence=False, hash_=None, name=None, ctx=None, signal=None):
     if ctx is not None:
         ctx = json.dumps(ctx)
     
     query_key = f"{type_}_{hash_}_{name}_{ctx}"
+
+
+    if (signal is not None): 
+        Signal.register(signal, query_key)
 
     if query_key in query_results_cache:
         return query_results_cache[query_key]
@@ -396,7 +463,7 @@ class Block(Element):
 
 
 class Component(Element):
-    def __init__(self, key, type_, block):
+    def __init__(self, key, type_, signal, block):
         super().__init__(block)
         self.key = key
         self.type = type_
@@ -409,6 +476,8 @@ class Component(Element):
             else {}
         )
         self.no_facet = True
+
+        self.signal = signal
 
     def set_state(self, value, persist=True):
         should_batch = (
@@ -436,6 +505,9 @@ class Component(Element):
 
             set_state({state_key: state_slice}, self.board_path, persist=False)
         else:
+            if self.signal is not None:
+                Signal.dispatch(self.signal, list(value.keys()))
+                    
             state_slice = (
                 state[self.board_path][self.key]
                 if (self.board_path in state and self.key in state[self.board_path])
@@ -503,11 +575,11 @@ class AimSequenceComponent(Component):
 
 class LineChart(AimSequenceComponent):
     def __init__(
-        self, data, x, y, color=[], stroke_style=[], options={}, key=None, block=None
+        self, data, x, y, color=[], stroke_style=[], options={}, key=None, signal=None, block=None
     ):
         component_type = "LineChart"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type, block)
+        super().__init__(component_key, component_type, signal, block)
 
         color_map, color_data = group("color", data, color, component_key)
         stroke_map, stroke_data = group(
@@ -559,11 +631,11 @@ class LineChart(AimSequenceComponent):
 
 class NivoLineChart(AimSequenceComponent):
     def __init__(
-        self, data, x, y, color=[], stroke_style=[], options={}, key=None, block=None
+        self, data, x, y, color=[], stroke_style=[], options={}, key=None, signal=None, block=None
     ):
         component_type = "NivoLineChart"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type, block)
+        super().__init__(component_key, component_type, signal, block)
 
         color_map, color_data = group("color", data, color, component_key)
         stroke_map, stroke_data = group(
@@ -593,10 +665,10 @@ class NivoLineChart(AimSequenceComponent):
 
 
 class BarChart(AimSequenceComponent):
-    def __init__(self, data, x, y, color=[], options={}, key=None, block=None):
+    def __init__(self, data, x, y, color=[], options={}, key=None, signal=None, block=None):
         component_type = "BarChart"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type, block)
+        super().__init__(component_key, component_type, signal, block)
 
         color_map, color_data = group("color", data, color, component_key)
         bars = []
@@ -631,11 +703,11 @@ class BarChart(AimSequenceComponent):
 
 class ScatterPlot(AimSequenceComponent):
     def __init__(
-        self, data, x, y, color=[], stroke_style=[], options={}, key=None, block=None
+        self, data, x, y, color=[], stroke_style=[], options={}, key=None, signal=None, block=None
     ):
         component_type = "ScatterPlot"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type, block)
+        super().__init__(component_key, component_type, signal, block)
 
         color_map, color_data = group("color", data, color, component_key)
         stroke_map, stroke_data = group(
@@ -674,11 +746,12 @@ class ParallelPlot(AimSequenceComponent):
         stroke_style=[],
         options={},
         key=None,
+        signal=None,
         block=None,
     ):
         component_type = "ParallelPlot"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type, block)
+        super().__init__(component_key, component_type, signal, block)
 
         color_map, color_data = group("color", data, color, component_key)
         stroke_map, stroke_data = group(
@@ -711,10 +784,10 @@ class ParallelPlot(AimSequenceComponent):
 
 
 class ImagesList(AimSequenceComponent):
-    def __init__(self, data, key=None, block=None):
+    def __init__(self, data, key=None, signal=None, block=None):
         component_type = "Images"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type, block)
+        super().__init__(component_key, component_type, signal, block)
 
         images = []
 
@@ -730,10 +803,10 @@ class ImagesList(AimSequenceComponent):
 
 
 class AudiosList(AimSequenceComponent):
-    def __init__(self, data, key=None, block=None):
+    def __init__(self, data, key=None, signal=None, block=None):
         component_type = "Audios"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type, block)
+        super().__init__(component_key, component_type, signal, block)
 
         audios = []
 
@@ -749,10 +822,10 @@ class AudiosList(AimSequenceComponent):
 
 
 class TextsList(AimSequenceComponent):
-    def __init__(self, data, color=[], key=None, block=None):
+    def __init__(self, data, color=[], key=None, signal=None, block=None):
         component_type = "Texts"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type, block)
+        super().__init__(component_key, component_type, signal, block)
 
         color_map, color_data = group("color", data, color, component_key)
 
@@ -774,10 +847,10 @@ class TextsList(AimSequenceComponent):
 
 
 class FiguresList(AimSequenceComponent):
-    def __init__(self, data, key=None, block=None):
+    def __init__(self, data, key=None, signal=None, block=None):
         component_type = "Figures"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type, block)
+        super().__init__(component_key, component_type, signal, block)
 
         figures = []
 
@@ -793,10 +866,10 @@ class FiguresList(AimSequenceComponent):
 
 
 class Union(Component):
-    def __init__(self, components, key=None, block=None):
+    def __init__(self, components, key=None, signal=None, block=None):
         component_type = "Union"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type, block)
+        super().__init__(component_key, component_type, signal, block)
 
         for i, elem in reversed(list(enumerate(current_layout))):
             for comp in components:
@@ -822,10 +895,10 @@ class Union(Component):
 
 
 class Plotly(Component):
-    def __init__(self, fig, key=None, block=None):
+    def __init__(self, fig, key=None, signal=None, block=None):
         component_type = "Plotly"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type, block)
+        super().__init__(component_key, component_type, signal, block)
 
         # TODO: validate plotly figure
         # fig = validate(fig, dict, "fig")
@@ -836,10 +909,10 @@ class Plotly(Component):
 
 
 class JSON(Component):
-    def __init__(self, data, key=None, block=None):
+    def __init__(self, data, key=None, signal=None, block=None):
         component_type = "JSON"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type, block)
+        super().__init__(component_key, component_type, signal, block)
 
         # validate all arguments passed in
         # TODO validate data is a JSON
@@ -850,10 +923,10 @@ class JSON(Component):
 
 
 class DataFrame(Component):
-    def __init__(self, data, key=None, block=None):
+    def __init__(self, data, key=None, signal=None, block=None):
         component_type = "DataFrame"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type, block)
+        super().__init__(component_key, component_type, signal, block)
 
         # validate all arguments passed in
         # TODO: validate data is a dataframe
@@ -864,10 +937,10 @@ class DataFrame(Component):
 
 
 class Table(Component):
-    def __init__(self, data, renderer={}, selectable_rows=False, key=None, block=None):
+    def __init__(self, data, renderer={}, selectable_rows=False, key=None, signal=None, block=None):
         component_type = "Table"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type, block)
+        super().__init__(component_key, component_type, signal, block)
 
         # validate all arguments passed in
         data = validate(data, dict, "data")
@@ -962,11 +1035,12 @@ class Text(Component):
         color="$textPrimary",
         mono=False,
         key=None,
+        signal=None,
         block=None,
     ):
         component_type = "Text"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type, block)
+        super().__init__(component_key, component_type, signal, block)
 
         # validate all arguments passed in
         text = validate(text, str, "text")
@@ -990,10 +1064,10 @@ class Text(Component):
 
 
 class Link(Component):
-    def __init__(self, text, to, new_tab=False, key=None, block=None):
+    def __init__(self, text, to, new_tab=False, key=None, signal=None, block=None):
         component_type = "Link"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type, block)
+        super().__init__(component_key, component_type, signal, block)
 
         # validate all arguments passed in
         text = validate(text, str, "text")
@@ -1008,9 +1082,9 @@ class Link(Component):
 
 
 class TypographyComponent(Component):
-    def __init__(self, text, component_type, options=None, key=None, block=None):
+    def __init__(self, text, component_type, options=None, key=None, signal=None, block=None):
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type, block)
+        super().__init__(component_key, component_type, signal, block)
 
         self.data = text
         self.options = options
@@ -1019,30 +1093,30 @@ class TypographyComponent(Component):
 
 
 class Header(TypographyComponent):
-    def __init__(self, text, key=None, block=None):
+    def __init__(self, text, key=None, signal=None, block=None):
         # validate all arguments passed in
         text = validate(text, str, "text")
 
         # set the properties/options for this component
         options = {"component": "h2", "size": "$9"}
-        super().__init__(text, "Header", options, key, block)
+        super().__init__(text, "Header", options, key, signal, block)
 
 
 class SubHeader(TypographyComponent):
-    def __init__(self, text, key=None, block=None):
+    def __init__(self, text, key=None, signal=None, block=None):
         # validate all arguments passed in
         text = validate(text, str, "text")
 
         # set the properties/options for this component
         options = {"component": "h3", "size": "$6"}
-        super().__init__(text, "SubHeader", options, key, block)
+        super().__init__(text, "SubHeader", options, key, signal, block)
 
 
 class Code(Component):
-    def __init__(self, text, language="python", key=None, block=None):
+    def __init__(self, text, language="python", key=None, signal=None, block=None):
         component_type = "Code"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type, block)
+        super().__init__(component_key, component_type, signal, block)
 
         # validate all arguments passed in
         text = validate(text, str, "text")
@@ -1055,10 +1129,10 @@ class Code(Component):
 
 
 class HTML(Component):
-    def __init__(self, text, key=None, block=None):
+    def __init__(self, text, key=None, signal=None, block=None):
         component_type = "HTML"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type, block)
+        super().__init__(component_key, component_type, signal, block)
 
         # validate all arguments passed in
         data = validate(text, str, "data")
@@ -1069,10 +1143,10 @@ class HTML(Component):
 
 
 class Markdown(Component):
-    def __init__(self, text, key=None, block=None):
+    def __init__(self, text, key=None, signal=None, block=None):
         component_type = "Markdown"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type, block)
+        super().__init__(component_key, component_type, signal, block)
 
         # validate all arguments passed in
         data = validate(text, str, "data")
@@ -1086,10 +1160,10 @@ class Markdown(Component):
 
 
 class Explorer(Component):
-    def __init__(self, name, query="", key=None, block=None):
+    def __init__(self, name, query="", key=None, signal=None, block=None):
         component_type = "Explorer"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type, block)
+        super().__init__(component_key, component_type, signal, block)
 
         self.data = name
 
@@ -1154,11 +1228,12 @@ class Slider(Component):
         step=None,
         disabled=False,
         key=None,
+        signal=None,
         block=None,
     ):
         component_type = "Slider"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type, block)
+        super().__init__(component_key, component_type, signal, block)
 
         batch_state = get_component_batch_state(component_key, block)
 
@@ -1213,11 +1288,12 @@ class RangeSlider(Component):
         step=None,
         disabled=False,
         key=None,
+        signal=None,
         block=None,
     ):
         component_type = "RangeSlider"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type, block)
+        super().__init__(component_key, component_type, signal, block)
 
         batch_state = get_component_batch_state(component_key, block)
 
@@ -1263,10 +1339,10 @@ class RangeSlider(Component):
 
 
 class TextInput(Component):
-    def __init__(self, label="", value="", disabled=False, key=None, block=None):
+    def __init__(self, label="", value="", disabled=False, key=None, signal=None, block=None):
         component_type = "TextInput"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type, block)
+        super().__init__(component_key, component_type, signal, block)
 
         batch_state = get_component_batch_state(component_key, block)
 
@@ -1307,11 +1383,12 @@ class NumberInput(Component):
         step=None,
         disabled=False,
         key=None,
+        signal=None,
         block=None,
     ):
         component_type = "NumberInput"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type, block)
+        super().__init__(component_key, component_type, signal, block)
 
         batch_state = get_component_batch_state(component_key, block)
 
@@ -1365,11 +1442,12 @@ class Select(Component):
         searchable=None,
         disabled=False,
         key=None,
+        signal=None,
         block=None,
     ):
         component_type = "Select"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type, block)
+        super().__init__(component_key, component_type, signal, block)
 
         batch_state = get_component_batch_state(component_key, block)
 
@@ -1417,11 +1495,12 @@ class MultiSelect(Component):
         searchable=None,
         disabled=False,
         key=None,
+        signal=None,
         block=None,
     ):
         component_type = "Select"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type, block)
+        super().__init__(component_key, component_type, signal, block)
 
         batch_state = get_component_batch_state(component_key, block)
 
@@ -1468,11 +1547,11 @@ class MultiSelect(Component):
 
 class Switch(Component):
     def __init__(
-        self, label="", checked=False, size="md", disabled=False, key=None, block=None
+        self, label="", checked=False, size="md", disabled=False, key=None, signal=None, block=None
     ):
         component_type = "Switch"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type, block)
+        super().__init__(component_key, component_type, signal, block)
 
         batch_state = get_component_batch_state(component_key, block)
 
@@ -1515,11 +1594,12 @@ class TextArea(Component):
         caption="",
         disabled=False,
         key=None,
+        signal=None,
         block=None,
     ):
         component_type = "TextArea"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type, block)
+        super().__init__(component_key, component_type, signal, block)
 
         batch_state = get_component_batch_state(component_key, block)
 
@@ -1565,11 +1645,12 @@ class Radio(Component):
         orientation="vertical",
         disabled=False,
         key=None,
+        signal=None,
         block=None,
     ):
         component_type = "Radio"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type, block)
+        super().__init__(component_key, component_type, signal, block)
 
         batch_state = get_component_batch_state(component_key, block)
 
@@ -1605,10 +1686,10 @@ class Radio(Component):
 
 
 class Checkbox(Component):
-    def __init__(self, label="", checked=False, disabled=False, key=None, block=None):
+    def __init__(self, label="", checked=False, disabled=False, key=None, signal=None, block=None):
         component_type = "Checkbox"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type, block)
+        super().__init__(component_key, component_type, signal, block)
 
         batch_state = get_component_batch_state(component_key, block)
 
@@ -1648,11 +1729,12 @@ class ToggleButton(Component):
         index=0,
         disabled=False,
         block=None,
+        signal=None,
         key=None,
     ):
         component_type = "ToggleButton"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type, block)
+        super().__init__(component_key, component_type, signal, block)
 
         batch_state = get_component_batch_state(component_key, block)
 
@@ -1691,10 +1773,10 @@ class ToggleButton(Component):
 
 
 class Board(Component):
-    def __init__(self, path, state={}, block=None, key=None):
+    def __init__(self, path, state={}, key=None, signal=None, block=None):
         component_type = "Board"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type, block)
+        super().__init__(component_key, component_type, signal, block)
 
         # validate all arguments passed in
         path = validate(path, str, "path")
@@ -1717,11 +1799,11 @@ class Board(Component):
 
 class BoardLink(Component):
     def __init__(
-        self, path, text="Go To Board", new_tab=False, state={}, block=None, key=None
+        self, path, text="Go To Board", new_tab=False, state={}, key=None, signal=None, block=None
     ):
         component_type = "BoardLink"
         component_key = update_viz_map(component_type, key)
-        super().__init__(component_key, component_type, block)
+        super().__init__(component_key, component_type, signal, block)
 
         # validate all arguments passed in
         path = validate(path, str, "path")
@@ -1947,8 +2029,10 @@ class Tabs(Block, UI):
 
 
 class Form(Block, UI):
-    def __init__(self, submit_button_label="Submit", block=None):
+    def __init__(self, submit_button_label="Submit", signal=None, block=None):
         super().__init__("form", block=block)
+
+        self.signal = signal
 
         self.options = {"submit_button_label": submit_button_label}
         self.callbacks = {"on_submit": self.submit}
@@ -1956,8 +2040,11 @@ class Form(Block, UI):
         self.render()
 
     def submit(self):
+        if self.signal is not None:
+            Signal.dispatch(self.signal)
+
         batch_id = f'__form__{self.block_context["id"]}'
-        state_update = state[board_path][batch_id]
+        state_update = state[board_path].get(batch_id, {})
         set_state(state_update, board_path=self.board_path)
 
 

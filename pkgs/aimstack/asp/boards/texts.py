@@ -3,12 +3,14 @@ import math
 
 c_hash = session_state.get('container_hash')
 
+search_signal = "search"
+
 if c_hash is None:
     ui.header('Texts')
-    form = ui.form("Search")
+    form = ui.form("Search", signal=search_signal)
     query = form.text_input(value="")
 
-texts = TextSequence.filter(f'c.hash=="{c_hash}"' if c_hash else query)
+texts = TextSequence.filter(f'c.hash=="{c_hash}"' if c_hash else query, signal=search_signal)
 
 texts_flat_list = []
 
