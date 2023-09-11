@@ -69,12 +69,12 @@ function createRunFunctionRequest(): RequestInstance {
   const signal = controller.signal;
 
   async function call(
-    func_name: string,
+    action_name: string,
     request_data: Record<string, any>,
   ): Promise<any> {
     return await api.makeAPIPostRequest(ENDPOINTS.DATA.RUN, {
       query_params: {
-        func_name,
+        action_name,
       },
       body: request_data,
       signal,

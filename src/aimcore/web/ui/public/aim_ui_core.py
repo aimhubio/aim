@@ -92,17 +92,17 @@ def query_filter(type_, query="", count=None, start=None, stop=None, is_sequence
             raise e
 
 
-def run_function(func_name, params):
-    run_function_key = f"{func_name}_{json.dumps(params)}"
+def run_action(action_name, params):
+    run_action_key = f"{action_name}_{json.dumps(params)}"
 
-    if run_function_key in query_results_cache:
-        return query_results_cache[run_function_key]
+    if run_action_key in query_results_cache:
+        return query_results_cache[run_action_key]
 
     try:
-        res = runFunction(board_path, func_name, params)
+        res = runFunction(board_path, action_name, params)
         data = json.loads(res, object_hook=process_properties)["value"]
 
-        query_results_cache[run_function_key] = data
+        query_results_cache[run_action_key] = data
         return data
     except Exception as e:
         if "WAIT_FOR_QUERY_RESULT" in str(e):

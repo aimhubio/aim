@@ -320,10 +320,10 @@ export async function loadPyodideInstance() {
       };
     });
 
-    packageData.functions.forEach((func_name: string) => {
-      let funcName = func_name.slice(`${packageName}.`.length);
+    packageData.actions.forEach((action_name: string) => {
+      let actionName = action_name.slice(`${packageName}.`.length);
 
-      jsModule[funcName] = (...args: any[]) => {
+      jsModule[actionName] = (...args: any[]) => {
         let funcArgs: Record<string, unknown> = {};
         for (let i = 0; i < args.length; i++) {
           if (typeof args[i] === 'object') {
@@ -333,7 +333,7 @@ export async function loadPyodideInstance() {
           }
         }
         let val = pyodide.runPython(
-          `run_function('${func_name}', ${JSON.stringify(funcArgs)})`,
+          `run_action('${action_name}', ${JSON.stringify(funcArgs)})`,
           { globals: namespace },
         );
         return val;
