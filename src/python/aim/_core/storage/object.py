@@ -10,6 +10,12 @@ class CustomObject(CustomObjectBase):
     def __init__(self):
         pass
 
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        if hasattr(cls, 'AIM_NAME'):
+            CustomObject.registry[cls.AIM_NAME] = cls
+        return cls
+
     @staticmethod
     def alias(name: str, exist_ok: bool = True):
         def decorator(cls):
