@@ -2,7 +2,7 @@ from typing import Any, Dict, Optional, TypeVar
 
 from aimstack.ml import Run
 
-Prophet = TypeVar('Prophet')
+Prophet = TypeVar("Prophet")
 
 
 class AimLogger:
@@ -78,6 +78,6 @@ class AimLogger:
         NOTE: if context is not provided, it's assumed all metrics are validation metrics.
         """
         if context is None:
-            context = {'subset': 'val'}
+            context = {"subset": "val"}
         for metric, value in metrics.items():
             self._run.track_auto(value, name=metric, context=context)

@@ -1,12 +1,10 @@
 import logging
+from typing import Any, Dict, Optional, Tuple, Union
+
 import numpy as np
-from typing import Optional, Dict, Any, Union, Tuple
-
-from stable_baselines3.common.logger import KVWriter, Logger
-from stable_baselines3.common.callbacks import BaseCallback  # type: ignore
-
 from aimstack.ml import Run
-
+from stable_baselines3.common.callbacks import BaseCallback  # type: ignore
+from stable_baselines3.common.logger import KVWriter, Logger
 
 logger = logging.getLogger(__name__)
 
@@ -33,11 +31,11 @@ class AimOutputFormat(KVWriter):
 
             if isinstance(value, np.ScalarType):
                 if not isinstance(value, str):
-                    tag, key = key.split('/')
-                    if tag in ['train', 'valid']:
-                        context = {'subset': tag}
+                    tag, key = key.split("/")
+                    if tag in ["train", "valid"]:
+                        context = {"subset": tag}
                     else:
-                        context = {'tag': tag}
+                        context = {"tag": tag}
 
                     self.aim_callback.experiment.track_auto(
                         value, key, step=step, context=context
@@ -74,7 +72,7 @@ class AimCallback(BaseCallback):
         self._run_hash = None
 
     def _init_callback(self) -> None:
-        args = {'algo': type(self.model).__name__}
+        args = {"algo": type(self.model).__name__}
         for key in self.model.__dict__:
             if type(self.model.__dict__[key]) in [float, int, str]:
                 args[key] = self.model.__dict__[key]

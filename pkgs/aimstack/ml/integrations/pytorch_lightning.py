@@ -1,17 +1,16 @@
 import os
-from typing import Any, Dict, Optional, Union
 from argparse import Namespace
+from typing import Any, Dict, Optional, Union
 
 import packaging.version
 
 try:
     import pytorch_lightning as pl
 
-    if packaging.version.parse(pl.__version__) < packaging.version.parse('1.7'):
-        from pytorch_lightning.loggers.base import (
-            LightningLoggerBase as Logger,
-            rank_zero_experiment,
-        )
+    if packaging.version.parse(pl.__version__) < packaging.version.parse("1.7"):
+        from pytorch_lightning.loggers.base import \
+            LightningLoggerBase as Logger
+        from pytorch_lightning.loggers.base import rank_zero_experiment
     else:
         from pytorch_lightning.loggers.logger import (
             Logger,
@@ -21,13 +20,13 @@ try:
     from pytorch_lightning.utilities import rank_zero_only
 except ImportError:
     raise RuntimeError(
-        'This contrib module requires PyTorch Lightning to be installed. '
-        'Please install it with command: \n pip install pytorch-lightning'
+        "This contrib module requires PyTorch Lightning to be installed. "
+        "Please install it with command: \n pip install lightning"
     )
 
-from aimstack.ml import Run
 from aim import Repo
 from aim._sdk.utils import clean_repo_path, get_aim_repo_name
+from aimstack.ml import Run
 
 
 class AimLogger(Logger):
@@ -53,9 +52,9 @@ class AimLogger(Logger):
         repo: Optional[str] = None,
         experiment_name: Optional[str] = None,
         log_system_params: Optional[bool] = True,
-        train_metric_prefix: Optional[str] = 'train_',
-        val_metric_prefix: Optional[str] = 'val_',
-        test_metric_prefix: Optional[str] = 'test_',
+        train_metric_prefix: Optional[str] = "train_",
+        val_metric_prefix: Optional[str] = "val_",
+        test_metric_prefix: Optional[str] = "test_",
         run_name: Optional[str] = None,
         run_hash: Optional[str] = None,
     ):
@@ -118,16 +117,16 @@ class AimLogger(Logger):
                 params = OmegaConf.to_container(params, resolve=True)
 
         for key, value in params.items():
-            self.experiment.set(('hparams', key), value, strict=False)
+            self.experiment.set(("hparams", key), value, strict=False)
 
     @rank_zero_only
     def log_metrics(self, metrics: Dict[str, float], step: Optional[int] = None):
-        assert rank_zero_only.rank == 0, 'experiment tried to log from global_rank != 0'
+        assert rank_zero_only.rank == 0, "experiment tried to log from global_rank != 0"
 
         metric_items: Dict[str:Any] = {k: v for k, v in metrics.items()}
 
-        if 'epoch' in metric_items:
-            epoch: int = metric_items.pop('epoch')
+        if "epoch" in metric_items:
+            epoch: int = metric_items.pop("epoch")
         else:
             epoch = None
 
@@ -135,18 +134,20 @@ class AimLogger(Logger):
             name = k
             context = {}
             if self._train_metric_prefix and name.startswith(self._train_metric_prefix):
-                name = name[len(self._train_metric_prefix):]
-                context['subset'] = 'train'
+                name = name[len(self._train_metric_prefix) :]
+                context["subset"] = "train"
             elif self._test_metric_prefix and name.startswith(self._test_metric_prefix):
-                name = name[len(self._test_metric_prefix):]
-                context['subset'] = 'test'
+                name = name[len(self._test_metric_prefix) :]
+                context["subset"] = "test"
             elif self._val_metric_prefix and name.startswith(self._val_metric_prefix):
-                name = name[len(self._val_metric_prefix):]
-                context['subset'] = 'val'
-            self.experiment.track_auto(v, name=name, step=step, epoch=epoch, context=context)
+                name = name[len(self._val_metric_prefix) :]
+                context["subset"] = "val"
+            self.experiment.track_auto(
+                v, name=name, step=step, epoch=epoch, context=context
+            )
 
     @rank_zero_only
-    def finalize(self, status: str = '') -> None:
+    def finalize(self, status: str = "") -> None:
         super().finalize(status)
         if self._run is not None:
             del self._run

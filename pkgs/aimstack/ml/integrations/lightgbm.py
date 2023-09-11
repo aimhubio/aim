@@ -6,8 +6,8 @@ try:
     from lightgbm.callback import CallbackEnv
 except ImportError:
     raise RuntimeError(
-        'This contrib module requires Lightgbm to be installed. '
-        'Please install it with command: \n pip install lightgbm'
+        "This contrib module requires Lightgbm to be installed. "
+        "Please install it with command: \n pip install lightgbm"
     )
 
 
@@ -59,6 +59,14 @@ class AimCallback:
         if self._log_system_params:
             self._run.enable_system_monitoring()
 
+    def before_tracking(self, **kwargs):
+        """Runs before tracking data"""
+        pass
+
+    def after_tracking(self, **kwargs):
+        """Runs after tracking data"""
+        pass
+
     def __call__(self, env: CallbackEnv):
         if env.iteration == env.begin_iteration:
             self.setup()
@@ -69,17 +77,17 @@ class AimCallback:
             if len(item) == 4:
                 data_name, eval_name, result, _ = item
                 self._run.track_auto(
-                    result, name=eval_name, context={'data_name': data_name}
+                    result, name=eval_name, context={"data_name": data_name}
                 )
             else:
                 data_name, eval_name = item[1].split()
                 res_mean = item[2]
                 res_stdv = item[4]
                 self._run.track_auto(
-                    res_mean, name=f'{eval_name}-mean', context={'data_name': data_name}
+                    res_mean, name=f"{eval_name}-mean", context={"data_name": data_name}
                 )
                 self._run.track_auto(
-                    res_stdv, name=f'{eval_name}-stdv', context={'data_name': data_name}
+                    res_stdv, name=f"{eval_name}-stdv", context={"data_name": data_name}
                 )
 
         self.after_tracking(env=env)

@@ -1,6 +1,7 @@
-from typing import Optional, Dict
-from aimstack.ml import Run
+from typing import Dict, Optional
+
 from acme.utils.loggers.base import Logger, LoggingData
+from aimstack.ml import Run
 
 
 class AimCallback:
@@ -72,7 +73,9 @@ class AimWriter(Logger):
 
     def write(self, values: LoggingData):
         for name, value in values.items():
-            self.aim_run.track_auto(value, name=name, context={'logger_label': self.logger_label})
+            self.aim_run.track_auto(
+                value, name=name, context={"logger_label": self.logger_label}
+            )
 
     def close(self):
         if self.aim_run and self.aim_run.active:

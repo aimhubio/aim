@@ -1,14 +1,15 @@
 from typing import Optional
 
 from aimstack.ml import Run
-from aimstack.ml.integrations.keras_mixins import TrackerKerasCallbackMetricsEpochEndMixin
+from aimstack.ml.integrations.keras_mixins import \
+    TrackerKerasCallbackMetricsEpochEndMixin
 
 try:
     from tensorflow.keras.callbacks import Callback
 except ImportError:
     raise RuntimeError(
-        'This contrib module requires tensorflow to be installed. '
-        'Please install it with command: \n pip install tensorflow'
+        "This contrib module requires tensorflow to be installed. "
+        "Please install it with command: \n pip install tensorflow"
     )
 
 
