@@ -7,7 +7,7 @@ from typing import Optional, Iterable, Dict, List, Iterator, TYPE_CHECKING
 from aim._sdk.uri_service import URIService
 from aim.utils import sequence_data, container_data
 
-from aimcore.web.utils import get_root_package
+from aimcore.web.utils import load_active_packages
 from aimcore.web.api.runs.pydantic_models import QuerySyntaxErrorOut
 from aimcore.web.api.utils import (
     checked_query,
@@ -102,7 +102,7 @@ async def data_fetch_api(type_: str,
                          p: Optional[int] = 500,
                          start: Optional[int] = None,
                          stop: Optional[int] = None,
-                         package=Depends(get_root_package)):
+                         packages=Depends(load_active_packages)):
     repo = get_project_repo()
     query = checked_query(q)
     if type_ in Container.registry:
@@ -122,7 +122,7 @@ async def data_fetch_api(type_: str,
 @query_router.get('/find-container/')
 async def find_container_api(type_: str,
                              hash_: str,
-                             package=Depends(get_root_package)):
+                             packages=Depends(load_active_packages)):
     repo = get_project_repo()
     if type_ not in Container.registry:
         raise HTTPException(status_code=400, detail=f'\'{type_}\' is not a valid Container type.')
@@ -135,13 +135,13 @@ async def find_container_api(type_: str,
 
 @query_router.get('/find-sequence/')
 async def find_sequence_api(type_: str,
-                             hash_: str,
-                             name: str,
-                             ctx: str,
-                             p: Optional[int] = 500,
-                             start: Optional[int] = None,
-                             stop: Optional[int] = None,
-                             package=Depends(get_root_package)):
+                            hash_: str,
+                            name: str,
+                            ctx: str,
+                            p: Optional[int] = 500,
+                            start: Optional[int] = None,
+                            stop: Optional[int] = None,
+                            packages=Depends(load_active_packages)):
     repo = get_project_repo()
     context = json.loads(ctx)
     if type_ not in Sequence.registry:
@@ -160,7 +160,7 @@ async def grouped_data_fetch_api(seq_type: Optional[str] = 'Sequence',
                                  p: Optional[int] = 500,
                                  start: Optional[int] = None,
                                  stop: Optional[int] = None,
-                                 package=Depends(get_root_package)):
+                                 packages=Depends(load_active_packages)):
     repo = get_project_repo()
     query = checked_query(q)
     if seq_type not in Sequence.registry:
@@ -193,7 +193,7 @@ async def fetch_blobs_api(uri_batch: URIBatchIn):
 
 
 @query_router.post('/run/')
-async def run_function(func_name: str, request_data: Dict, package=Depends(get_root_package)):
+async def run_function(func_name: str, request_data: Dict, packages=Depends(load_active_packages)):
     repo = get_project_repo()  # noqa
 
     from aim._sdk.function import Function

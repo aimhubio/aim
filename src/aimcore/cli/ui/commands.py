@@ -1,8 +1,8 @@
 import os
 import click
 
-from aimcore.cli.utils import set_log_level, start_uvicorn_app
-from aimcore.cli.ui.utils import build_db_upgrade_command, get_free_port_num
+from aimcore.cli.utils import set_log_level, start_uvicorn_app, get_free_port_num
+from aimcore.cli.ui.utils import build_db_upgrade_command
 from aimcore.web.configs import (
     AIM_UI_BASE_PATH,
     AIM_UI_DEFAULT_HOST,
@@ -33,7 +33,7 @@ from aim._ext.tracking import analytics
                                                                              file_okay=False,
                                                                              dir_okay=True,
                                                                              writable=True))
-@click.option('--package', '--pkg', required=False, default='', show_default='asp', type=str)
+@click.option('--package', '--pkg', required=False, type=str)
 @click.option('--dev', is_flag=True, default=False)
 @click.option('--ssl-keyfile', required=False, type=click.Path(exists=True,
                                                                file_okay=True,
@@ -81,8 +81,8 @@ def ui(dev, host, port, workers, uds,
     os.environ[AIM_UI_MOUNTED_REPO_PATH] = repo
 
     dev_package_dir = repo_inst.dev_package_dir
-    if package:
-        repo_inst.set_active_package(pkg_name=package)
+    if package is not None:
+        repo_inst.add_package(pkg_name=package)
 
     try:
         db_cmd = build_db_upgrade_command()

@@ -11,7 +11,6 @@ logger = logging.getLogger(__name__)
 
 class Package:
     pool: Dict[str, 'Package'] = {}
-    default_package_name = 'asp'
 
     def __init__(self, name, pkg):
         self.name = name

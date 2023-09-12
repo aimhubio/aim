@@ -18,15 +18,6 @@ if TYPE_CHECKING:
     from aim import Repo
 
 
-def object_factory():
-    from aimcore.web.api.projects.project import Project
-    project = Project()
-    if not project.exists():
-        raise HTTPException(status_code=404)
-
-    return project.repo.structured_db
-
-
 class APIRouter(FastAPIRouter):
     def api_route(
         self, path: str, *, include_in_schema: bool = True, **kwargs: Any

@@ -8,7 +8,7 @@ from .watcher import PackageSourceWatcher
 
 @click.group('package')
 def package():
-    pass
+    """Main command group for package related operations."""
 
 
 @package.command('create')
@@ -16,6 +16,14 @@ def package():
 @click.option('--install', '-i', is_flag=True, default=False)
 @click.option('--verbose', '-v', is_flag=True, default=False)
 def create_package(name, install, verbose):
+    """
+    Create a new package with a specified name.
+
+    :param name: Name of the new package to be created.
+    :param install: Whether to install the created package using pip.
+    :param verbose: Provide verbose output when installing the package.
+    """
+
     pkg_dir = pathlib.Path(name)
     if pkg_dir.exists():
         click.echo(f'Cannot create package. Directory \'{name}\' already exists.')
@@ -72,6 +80,13 @@ def create_package(name, install, verbose):
 @click.option('--name', '-n', required=True, type=str)
 @click.option('--repo', default='', type=str)
 def sync_package(name, repo):
+    """
+    Synchronize a package with a specified Aim repository.
+
+    :param name: Name of the package to be synchronized.
+    :param repo: The Aim repository to sync with. If not provided, uses default.
+    """
+
     try:
         src_path = get_pkg_distribution_sources(name)
         click.echo(f'Found sources for package \'{name}\'. Location: \'{src_path}\'.')
@@ -90,10 +105,37 @@ def sync_package(name, repo):
         package_watcher.start()
 
 
-@package.command('set-active')
+@package.command('add')
 @click.option('--name', '-n', required=True, type=str)
 @click.option('--repo', default='', type=str)
-def set_active_package(name, repo):
+def add_package(name, repo):
+    """
+    Add a package to a specified Aim repository.
+
+    :param name: Name of the package to be added.
+    :param repo: The Aim repository to add to. If not provided, uses default.
+    """
+
     repo_inst = Repo.from_path(repo) if repo else Repo.default()
-    click.echo(f'Setting \'{name}\' as active package for Repo \'{repo_inst}\'')
-    repo_inst.set_active_package(pkg_name=name)
+    if not repo_inst.add_package(pkg_name=name):
+        click.secho(f'Package \'{name}\' is already listed in Repo \'{repo_inst.path}\'', err=True)
+        exit(1)
+    click.echo(f'Added package \'{name}\' to Repo \'{repo_inst.path}\'')
+
+
+@package.command('rm')
+@click.option('--name', '-n', required=True, type=str)
+@click.option('--repo', default='', type=str)
+def remove_package(name, repo):
+    """
+    Remove a package from a specified Aim repository.
+
+    :param name: Name of the package to be removed.
+    :param repo: The Aim repository to remove from. If not provided, uses default.
+    """
+
+    repo_inst = Repo.from_path(repo) if repo else Repo.default()
+    if not repo_inst.remove_package(pkg_name=name):
+        click.secho(f'Package \'{name}\' is not listed in Repo \'{repo_inst.path}\'', err=True)
+        exit(1)
+    click.echo(f'Removed package \'{name}\' from Repo \'{repo_inst.path}\'')
