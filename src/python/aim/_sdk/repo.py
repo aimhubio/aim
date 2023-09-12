@@ -13,7 +13,6 @@ from aim._sdk import type_utils
 from aim._sdk.container import Container
 from aim._sdk.sequence import Sequence
 from aim._sdk.function import Function
-from aim._sdk.package_utils import Package
 from aim._sdk.collections import ContainerCollection, SequenceCollection
 from aim._sdk.query_utils import construct_query_expression
 from aim._sdk.constants import KeyNames
