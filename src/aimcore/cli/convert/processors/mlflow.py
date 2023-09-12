@@ -43,7 +43,7 @@ def parse_mlflow_logs(repo_inst, tracking_uri, experiment):
 
     if experiment is None:
         # process all experiments
-        experiments = client.list_experiments()
+        experiments = client.search_experiments()
     else:
         try:
             ex = client.get_experiment(experiment)
