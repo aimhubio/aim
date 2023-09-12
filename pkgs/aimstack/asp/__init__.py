@@ -1,17 +1,14 @@
-from .models.run import Run
-from .models.sequences import (
-    Metric,
-    SystemMetric,
-    TextSequence,
-    ImageSequence,
-    AudioSequence,
-    DistributionSequence,
-    FigureSequence,
-    Figure3DSequence,
-)
-from .models.logging import LogStream
+from .loggers.run import Run
 
-from .models.functions import get_project_stats
+from .loggers.metric import Metric, SystemMetric
+from .loggers.image import Image, ImageSequence
+from .loggers.audio import Audio, AudioSequence
+from .loggers.text import Text, TextSequence
+from .loggers.distribution import Distribution, DistributionSequence
+from .loggers.figures import Figure, Figure3D, FigureSequence, Figure3DSequence
+from .loggers.logging import LogStream
+
+from .loggers.functions import get_project_stats
 
 __all__ = ['Run', 'ImageSequence', 'AudioSequence']
 

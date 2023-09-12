@@ -1,5 +1,5 @@
-from aim import Run
-from aim.pytorch import track_gradients_dists, track_params_dists
+from aimstack.asp import Run
+from aimstack.ml.adapters.pytorch import track_gradients_dists, track_params_dists
 
 import torch
 import torch.nn as nn
@@ -111,8 +111,8 @@ for epoch in range(num_epochs):
             acc = 100 * correct / total
 
             # aim - Track metrics
-            items = {'accuracy': acc, 'loss': loss}
-            aim_run.track(items, epoch=epoch, context={'subset': 'train'})
+            aim_run.track_auto(acc, name='accuracy', epoch=epoch, context={'subset': 'train'})
+            aim_run.track_auto(loss, name='loss', epoch=epoch, context={'subset': 'train'})
 
             # aim - Track weights and gradients distributions
             track_params_dists(model, aim_run)
@@ -120,10 +120,10 @@ for epoch in range(num_epochs):
 
             # TODO: Do actual validation
             if i % 300 == 0:
-                aim_run.track(
-                    loss.item(), name='loss', epoch=epoch, context={'subset': 'val'}
+                aim_run.track_auto(
+                    loss, name='loss', epoch=epoch, context={'subset': 'val'}
                 )
-                aim_run.track(
+                aim_run.track_auto(
                     acc, name='accuracy', epoch=epoch, context={'subset': 'val'}
                 )
 

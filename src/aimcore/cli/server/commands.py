@@ -3,7 +3,6 @@ import click
 
 from aimcore.cli.utils import set_log_level, start_uvicorn_app
 from aim._sdk.repo import Repo
-from aim._sdk.package_utils import Package
 from aimcore.transport.config import (
     AIM_SERVER_DEFAULT_HOST,
     AIM_SERVER_DEFAULT_PORT,

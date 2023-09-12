@@ -147,6 +147,7 @@ export function search(
             getQueryResultsCacheMap().set(queryKey, {
               data: JSON.stringify(result),
               params: queryParams,
+              type: 'filter',
             });
 
             pyodideEngine.events.fire(

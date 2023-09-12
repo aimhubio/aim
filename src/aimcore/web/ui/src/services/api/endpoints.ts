@@ -6,6 +6,8 @@ const ENDPOINTS = {
     GET_GROUPED_SEQUENCES: 'grouped-sequences',
     RUN: 'run',
     FETCH_BLOBS: 'fetch-blobs',
+    FIND_CONTAINER: 'find-container',
+    FIND_SEQUENCE: 'find-sequence',
   },
 
   PROJECTS: {

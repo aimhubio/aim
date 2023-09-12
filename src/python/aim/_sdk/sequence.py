@@ -123,6 +123,17 @@ class Sequence(Generic[ItemType], ABCSequence):
             repo = Repo.active_repo()
         return repo.sequences(query_=expr, type_=cls)
 
+    @classmethod
+    def find(cls, hash_: str, name: str, context: Dict) -> Optional['Sequence']:
+        from aim._sdk.repo import Repo
+        repo = Repo.active_repo()
+        storage = repo.storage_engine
+        meta_tree = repo._meta_tree
+        seq = cls.from_storage(storage, meta_tree, hash_=hash_, name=name, context=context)
+        if seq.is_empty:
+            return None
+        return seq
+
     def _init_context(self, context: _ContextInfo):
         if isinstance(context, int):
             self._ctx_idx = context

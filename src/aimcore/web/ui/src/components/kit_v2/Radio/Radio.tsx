@@ -28,8 +28,10 @@ import {
 export const RadioGroup = React.forwardRef<
   React.ElementRef<typeof StyledRadioGroup>,
   RadioGroupProps
->(({ children, ...props }: RadioGroupProps) => (
-  <StyledRadioGroup {...props}>{children}</StyledRadioGroup>
+>(({ children, ...props }: RadioGroupProps, forwardedRef) => (
+  <StyledRadioGroup {...props} ref={forwardedRef}>
+    {children}
+  </StyledRadioGroup>
 ));
 
 const Radio = React.forwardRef<React.ElementRef<typeof Flex>, IRadioItemProps>(

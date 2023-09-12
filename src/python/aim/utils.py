@@ -1,8 +1,11 @@
 import random
-from typing import Optional, Dict, Type
+from typing import Optional, Dict, Type, TYPE_CHECKING
 
 from aim import Sequence, Container
 from aim._core.storage.encoding import encode_path, decode_path
+
+if TYPE_CHECKING:
+    from aim import Repo
 
 
 def _process_sequence_values(repo: 'Repo', values_list: list, steps_list: list, sequence: Sequence) -> list:
@@ -95,12 +98,17 @@ def sequence_data(
 
 
 def container_data(container: Container) -> Dict:
-    data = {
-        'hash': container.hash,
-        'params': container[...],
+    props = container.collect_properties()
+    props.update({
         'container_type': container.get_typename(),
         'container_full_type': container.get_full_typename(),
-    }
+        'hash': container.hash,
+    })
+    data = container[...]
+    data.update({
+        'hash': container.hash,
+        '$properties': props,
+    })
     return data
 
 

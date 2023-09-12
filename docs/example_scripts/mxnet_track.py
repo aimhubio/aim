@@ -4,7 +4,7 @@ from mxnet import gluon
 from mxnet.gluon.model_zoo import vision
 from mxnet.gluon.contrib.estimator import estimator
 
-from aim.mxnet import AimLoggingHandler
+from aimstack.ml.adapters.mxnet import AimLoggingHandler
 
 
 gpu_count = mx.context.num_gpus()

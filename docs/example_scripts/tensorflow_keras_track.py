@@ -1,4 +1,4 @@
-from aim.tensorflow import AimCallback
+from aimstack.ml.adapters.tensorflow import AimCallback
 
 import tensorflow as tf
 

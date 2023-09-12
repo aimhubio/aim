@@ -15,7 +15,12 @@ import { AppContainer, BoardWrapper } from '../App.style';
 
 import AppSidebar from './AppSidebar';
 
-function AppWrapper({ boardPath, editMode, boardList }: AppWrapperProps) {
+function AppWrapper({
+  boardPath,
+  editMode,
+  boardList,
+  stateStr,
+}: AppWrapperProps) {
   const path = boardPath?.replace('/edit', '');
   const board = useBoardStore((state) => state.boards?.[path]);
   const fetchBoard = useBoardStore((state) => state.fetchBoard);
@@ -67,6 +72,13 @@ function AppWrapper({ boardPath, editMode, boardList }: AppWrapperProps) {
     return items;
   }, [editMode, path]);
 
+  let externalPackageNameLastIndex = path.indexOf(':');
+
+  let externalPackage =
+    externalPackageNameLastIndex === -1
+      ? null
+      : path.slice(0, externalPackageNameLastIndex);
+
   return (
     <AppContainer>
       <TopBar id='app-top-bar'>
@@ -93,6 +105,8 @@ function AppWrapper({ boardPath, editMode, boardList }: AppWrapperProps) {
               key={board.path + editMode}
               data={board}
               editMode={editMode}
+              stateStr={stateStr}
+              externalPackage={externalPackage}
               // saveBoard={saveBoard}
             />
           )}

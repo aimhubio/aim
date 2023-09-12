@@ -1,4 +1,4 @@
-from aim.pytorch_lightning import AimLogger
+from aimstack.ml.adapters.pytorch_lightning import AimLogger
 
 from argparse import ArgumentParser
 
@@ -47,7 +47,7 @@ class LitClassifier(pl.LightningModule):
         loss = F.cross_entropy(y_hat, y)
         self.log('test_loss', loss)
         # Track metrics manually
-        self.logger.experiment.track(1, name='manually_tracked_metric')
+        self.logger.experiment.track_auto(1, name='manually_tracked_metric')
 
     def configure_optimizers(self):
         return torch.optim.Adam(self.parameters(), lr=self.hparams.learning_rate)

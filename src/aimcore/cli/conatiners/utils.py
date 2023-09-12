@@ -23,4 +23,3 @@ def match_runs(repo: 'Repo', hashes: List[str]) -> List[str]:
             matched_hashes.add(run_hash)
 
     return list(matched_hashes)
-
