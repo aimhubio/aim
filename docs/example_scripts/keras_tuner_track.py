@@ -37,16 +37,16 @@ def build_model(hp):
     return model
 
 
+def standardize_record(record):
+    return tf.cast(record["image"], tf.float32) / 255.0, record["label"]
+
+
 tuner = kt.Hyperband(
     build_model, objective="val_accuracy", max_epochs=30, hyperband_iterations=2
 )
 
 data = tfds.load("cifar10")
 train_ds, test_ds = data["train"], data["test"]
-
-
-def standardize_record(record):
-    return tf.cast(record["image"], tf.float32) / 255.0, record["label"]
 
 
 train_ds = train_ds.map(standardize_record).cache().batch(64).shuffle(10000)
