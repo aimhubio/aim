@@ -1,8 +1,12 @@
 from asp import Run
 
-form = ui.form('Search')
+search_signal = "search"
+
+form = ui.form('Search', signal=search_signal)
+
 query = form.text_input(value='')
-runs = Run.filter(query)
+
+runs = Run.filter(query, signal=search_signal)
 
 
 def flatten(dictionary, parent_key='', separator='.'):
