@@ -1,6 +1,6 @@
 # You should download and extract the data beforehand. Simply by doing this:
-# wget https://github.com/AnelMusic/Arabic_MNIST_Character_Classification/blob/master/arabic_mnist_dataset.tar.gz?raw=true
-# tar -xzf 'arabic_mnist_dataset.tar.gz?raw=true'
+# wget -c https://github.com/AnelMusic/Arabic_MNIST_Character_Classification/blob/master/arabic_mnist_dataset.tar.gz?raw=true -O arabic_mnist_dataset.tar.gz
+# mkdir -p arabic_mnist_dataset && tar -xzf arabic_mnist_dataset.tar.gz -C arabic_mnist_dataset
 
 import regex as re
 from aimstack.ml.integrations.fastai import AimCallback
@@ -59,7 +59,7 @@ arab_mnist = DataBlock(
     ],
 )
 # source
-dls = arab_mnist.dataloaders(".")
+dls = arab_mnist.dataloaders("arabic_mnist_dataset")
 learn = cnn_learner(
     dls,
     resnet18,
