@@ -1,3 +1,5 @@
+.. _quick-start:
+
 #########################
  Quick start
 #########################
@@ -91,3 +93,10 @@ Step 2. Pass the aim_logger object as the logger argument
   trainer = Trainer(gpus=1, progress_bar_refresh_rate=20, max_epochs=5, logger=aim_logger)
 
 More examples and integrations can be found here: [The packages Readme link with all integrations]()
+
+.. toctree::
+  :maxdepth: 2
+  :name: quick_start
+  :hidden:
+
+  ./quick_start/logging_basics.rst

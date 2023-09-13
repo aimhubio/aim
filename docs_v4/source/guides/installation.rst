@@ -3,6 +3,7 @@
 #############
 
 [TODO]
+In this section you will learn how to set up basic Aim
 This section shows a simple end-to-end aim setup. It starts from the installation, shows how to run Aim UI and explore the
 results.
 Use this as a starting point to get familiar with the basics of Aim while getting up and running.
@@ -29,3 +30,6 @@ You should see the line listing newly installed version of Aim. For instance:
 
 The installed package includes Python SDK needed for tracking training runs, UI for browsing the results and CLI
 for managing UI and results.
+
+Aim on Kubernetes
+=======
