@@ -33,46 +33,40 @@ Start in 3 steps
 
 3. Run Aim Server and Aim UI
 
-Run the Aim Server
 .. code-block:: console
 
   aim server
-
-Run the Aim UI
-.. code-block:: console
-
   aim ui
 
-Download and run your first Aim package
+Run your first Aim app
 ---------------------------------------
 
-Aim packages are composable observability applications built with Aim SDK and run by Aim SDK.
-They are distributed as Python packages and can be shared, installed with pip. 
+Aim apps are composable logging and observability applications built with Aim SDK and run by Aim.
+They are distributed as Python packages and can be shared, installed with pip.
 
-Aim comes with a number of prebuilt packages. You can find them on `AimStack <https://aimstack.io>`_.
+Aim comes with a number of prebuilt apps.
+In this instance, we will install the aimlflow app which provides auto-sync with mlflow and a dashboard on Aim of what was synced and when.
+Combined with the default experiment tracking app, users can have all the beautiful aim features eneabled autoamtically over mlflow logs.
 
 .. code-block:: console
 
-  pip install aim-experiment-tracking
-  aim server --package aim-experiment-tracking
-  aim up --package aim-experiment-tracking
+  pip install aimlflow
+  aim register aimlflow, aiml
+  aim server
+  aim ui
 
-Compose multiple Aim packages into one project
-----------------------------------------------
-
-Coming soon - not available yet
-
+This will enable both apps on Aim UI.
 
 Integrations with your favorite frameworks
 ------------------------------------------
-Aim Standard Package has the `ml` package that enables the integrations with most prominent ML tools.
+The default Aim experiment tracker app has the integrations with all of the  
+
+Aim experiment tracing  has the `ml` package that enables the integrations with most prominent ML tools.
 Usage:
 
 .. code-block:: python
 
-  # import aim logger for Pytorch Lightning
-  from aimstackp.ml import AimLogger
-
+  from aimstack.ml import AimLogger
 
 Pytorch lighting provides trainer objects to simplify the training process of pytorch model. 
 One of the parameters is called logger. 
@@ -96,4 +90,4 @@ Step 2. Pass the aim_logger object as the logger argument
   # track experimental data by using Aim
   trainer = Trainer(gpus=1, progress_bar_refresh_rate=20, max_epochs=5, logger=aim_logger)
 
-More examples and integrations can be found here: [The packages link with all integrations]()
+More examples and integrations can be found here: [The packages Readme link with all integrations]()
