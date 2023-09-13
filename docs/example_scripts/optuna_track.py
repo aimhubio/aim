@@ -1,6 +1,8 @@
 import optuna
 from aimstack.ml.integrations.optuna import AimCallback
 
+# ------------------------------------------------ Version 1: Single Run ------------------------------------------------
+
 # Add Aim callback to Optuna optimization
 aim_callback = AimCallback(experiment_name="optuna_single_run")
 
@@ -13,6 +15,8 @@ def objective(trial):
 study = optuna.create_study()
 study.optimize(objective, n_trials=10, callbacks=[aim_callback])
 
+
+# ------------------------------------------------ Version 2: Multy Run with decorator ----------------------------------
 
 # Aim logging in multirun mode.
 aim_callback = AimCallback(
