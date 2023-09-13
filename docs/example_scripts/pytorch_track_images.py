@@ -1,9 +1,11 @@
+import logging
 import torch
 import torch.nn as nn
 import torchvision
 import torchvision.transforms as transforms
+from tqdm import tqdm
 from aimstack.asp import Run
-from aimstack.asp.models.objects.image import convert_to_aim_image_list
+from aimstack.asp.loggers.image import convert_to_aim_image_list
 
 # Initialize a new Run
 aim_run = Run()
@@ -81,7 +83,7 @@ tensor_to_pil = transforms.ToPILImage()
 # Train the model
 total_step = len(train_loader)
 for epoch in range(num_epochs):
-    for i, (images, labels) in enumerate(train_loader):
+    for i, (images, labels) in tqdm(enumerate(train_loader), total=len(train_loader)):
         images = images.to(device)
         labels = labels.to(device)
         aim_images = convert_to_aim_image_list(images, labels)
@@ -96,7 +98,7 @@ for epoch in range(num_epochs):
         optimizer.step()
 
         if i % 30 == 0:
-            print(
+            logging.info(
                 "Epoch [{}/{}], Step [{}/{}], "
                 "Loss: {:.4f}".format(
                     epoch + 1, num_epochs, i + 1, total_step, loss.item()
@@ -142,7 +144,7 @@ model.eval()
 with torch.no_grad():
     correct = 0
     total = 0
-    for images, labels in test_loader:
+    for images, labels in tqdm(test_loader, total=len(test_loader)):
         images = images.to(device)
         labels = labels.to(device)
         outputs = model(images)
@@ -150,4 +152,4 @@ with torch.no_grad():
         total += labels.size(0)
         correct += (predicted == labels).sum().item()
 
-    print("Test Accuracy: {} %".format(100 * correct / total))
+    logging.info("Test Accuracy: {} %".format(100 * correct / total))
