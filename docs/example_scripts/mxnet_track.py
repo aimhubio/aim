@@ -42,16 +42,14 @@ val_data_loader = gluon.data.DataLoader(
 )
 
 
-resnet_18_v1 = vision.resnet18_v1(pretrained=False, classes=10)
-resnet_18_v1.initialize(init=mx.init.Xavier(), ctx=ctx)
+model = vision.resnet18_v1(pretrained=False, classes=10)
+model.initialize(init=mx.init.Xavier(), ctx=ctx)
 
 loss_fn = gluon.loss.SoftmaxCrossEntropyLoss()
 
 learning_rate = 0.04  # You can experiment with your own learning rate here
 num_epochs = 2  # You can run training for more epochs
-trainer = gluon.Trainer(
-    resnet_18_v1.collect_params(), "sgd", {"learning_rate": learning_rate}
-)
+trainer = gluon.Trainer(model.collect_params(), "sgd", {"learning_rate": learning_rate})
 
 
 train_acc = mx.metric.Accuracy()  # Metric to monitor
@@ -60,7 +58,7 @@ val_acc = mx.metric.Accuracy()
 
 # Define the estimator, by passing to it the model, loss function, metrics, trainer object and context
 est = estimator.Estimator(
-    net=resnet_18_v1,
+    net=model,
     loss=loss_fn,
     train_metrics=[train_acc, train_loss],
     val_metrics=val_acc,
