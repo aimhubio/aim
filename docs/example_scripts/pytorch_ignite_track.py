@@ -1,5 +1,3 @@
-# Example taken from https://github.com/pytorch/ignite/blob/master/examples/notebooks/FashionMNIST.ipynb
-
 import ignite
 import torch
 import torch.nn.functional as F
