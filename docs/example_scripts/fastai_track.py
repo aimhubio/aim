@@ -1,6 +1,4 @@
-# You should download and extract the data beforehand. Simply by doing this:
-# wget -c https://github.com/AnelMusic/Arabic_MNIST_Character_Classification/blob/master/arabic_mnist_dataset.tar.gz?raw=true -O arabic_mnist_dataset.tar.gz
-# mkdir -p arabic_mnist_dataset && tar -xzf arabic_mnist_dataset.tar.gz -C arabic_mnist_dataset
+import os
 
 import regex as re
 from aimstack.ml.integrations.fastai import AimCallback
@@ -14,6 +12,23 @@ def get_arabic_mnist_labels(file_path):
     regex = "label_(.+).png"
     label = re.search(regex, str(file_path)).group(1)
     return arabic_mnist_labels[int(label) - 1]
+
+
+def download_arabic_mnist():
+    url = "https://github.com/AnelMusic/Arabic_MNIST_Character_Classification/blob/master/arabic_mnist_dataset.tar.gz?raw=true"
+    output_zip_file = "arabic_mnist_dataset.tar.gz"
+    output_dir = "arabic_mnist_dataset"
+
+    try:
+        os.system(f"wget -c {url} -O {output_zip_file}")
+    except Exception as e:
+        print(f"Failed to download the dataset: {e}")
+    try:
+        os.system(f"mkdir -p {output_dir} && tar -xzf {output_zip_file} -C {output_dir}")
+    except Exception as e:
+        print(f"failed to unzip the dataset file: {e}")
+
+    return output_dir
 
 
 arabic_mnist_labels = [
@@ -46,7 +61,7 @@ arabic_mnist_labels = [
     "waw",
     "yeh",
 ]
-regex = "label_(.+).png"
+
 arab_mnist = DataBlock(
     blocks=(ImageBlock, CategoryBlock),
     get_items=get_image_files,
@@ -58,8 +73,13 @@ arab_mnist = DataBlock(
         Normalize.from_stats(*imagenet_stats),
     ],
 )
+
+dataset_dir = download_arabic_mnist()
+
 # source
-dls = arab_mnist.dataloaders("arabic_mnist_dataset")
+dls = arab_mnist.dataloaders(dataset_dir)
+
+
 learn = cnn_learner(
     dls,
     resnet18,
@@ -69,4 +89,5 @@ learn = cnn_learner(
     model_dir="/tmp/model/",
     cbs=AimCallback(experiment_name="fastai_test"),
 )
+
 learn.fit_one_cycle(1, lr_max=slice(10e-6, 1e-4))

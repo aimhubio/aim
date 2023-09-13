@@ -61,11 +61,11 @@ class AimCallback(Callback):
             self._run.enable_system_monitoring()
         # Log config parameters
         if args:
-            try:
-                for key in args:
+            for key in args:
+                try:
                     self._run.set(key, args[key], strict=False)
-            except Exception as e:
-                logger.warning(f"Aim could not log config parameters -> {e}")
+                except Exception as e:
+                    logger.warning(f"Aim could not log config parameters -> {e}")
 
     def before_fit(self):
         if not self._run:
