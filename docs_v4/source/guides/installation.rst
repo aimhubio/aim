@@ -30,6 +30,3 @@ You should see the line listing newly installed version of Aim. For instance:
 
 The installed package includes Python SDK needed for tracking training runs, UI for browsing the results and CLI
 for managing UI and results.
-
-Aim on Kubernetes
-=======

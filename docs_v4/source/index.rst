@@ -58,6 +58,7 @@ Aim can get really powerful as you build your own logging apps.
   :caption: 📚 Reference
   :hidden:
 
+  refs/cli.rst
   refs/sdk.rst
   refs/ui.rst
 
