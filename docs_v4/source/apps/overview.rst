@@ -9,7 +9,10 @@ Each one of these are logging applications - they enable a mechanism to log data
 
 Aim is an operating system for logs. Aim logging apps are python packages run by Aim that enable logging, observing and automating around the logs.
 
-[TODO] add aim apps schema image
+.. image:: https://docs-blobs.s3.us-east-2.amazonaws.com/v4-images/apps/aim-app-structure.png
+   :alt: Example Image
+   :width: 500px
+   :align: center
 
 Why do they matter?
 ===================
@@ -38,6 +41,6 @@ Once the app is installed, you can register it with Aim and just run Aim:
 You can register as many apps as you'd need, just provide them as a comma=separated list.
 
 How to create an Aim app
-++++====================
+========================
 
 Follow the guide for creating an Aim app here.

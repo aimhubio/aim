@@ -2,26 +2,65 @@
  Welcome to Aim
 #########################
 
-**Open-source modular observability for AI Systems.**
+.. raw:: html
+  
+  <div align="center">
+    <img src="https://user-images.githubusercontent.com/13848158/154338760-edfe1885-06f3-4e02-87fe-4b13a403516b.png">
+    <h3>Open-source modular observability for AI Systems</h3>
+    <br/>  
+    Easily log, connect and observe any parts of your AI Systems from experiments to production to prompts to ai system monitoring
+  </div>  
 
-Easily log, connect and observe any parts of your AI Systems from experiments to production to prompts to ai system monitoring.
+|
 
-At its core, Aim is an operating system for logs (link to the PoV).
-Aim enables building and running any kind of logging apps. 
+.. image:: https://dcbadge.vercel.app/api/server/zXq2NfVdtF?compact=true&style=flat
+  :target: https://community.aimstack.io/
+  :alt: Discord Server
 
-Aim comes installed with these apps by default.
+.. image:: https://img.shields.io/twitter/follow/aimstackio?style=social
+  :target: https://x.com/aimstackio
+  :alt: X Follow
 
-- Logs discovery
+.. image:: https://img.shields.io/badge/Medium-12100E?style=flat&logo=medium&logoColor=white
+  :target: https://medium.com/aimstack
+  :alt: Medium
+
+.. image:: https://img.shields.io/badge/platform-Linux%20%7C%20macOS-blue
+  :alt: Platform Support
+
+.. image:: https://img.shields.io/badge/python-%3E%3D%203.7-blue
+  :target: https://pypi.org/project/aim/
+  :alt: PyPI - Python Version
+
+.. image:: https://img.shields.io/badge/License-Apache%202.0-orange.svg
+  :target: https://opensource.org/licenses/Apache-2.0
+  :alt: License
+
+.. image:: https://img.shields.io/pypi/dw/aim?color=green
+  :target: https://pypi.org/project/aim/
+  :alt: PyPI Downloads
+
+.. image:: https://img.shields.io/github/issues/aimhubio/aim
+  :target: http://github.com/aimhubio/aim/issues
+  :alt: Issues
+
+|
+
+Aim is an operating system for logs.
+Aim comes installed with a set of default apps that provide a seamless experience for:
+
+- Logs browsing
 - Experiment tracking
 - AI Systems tracing
 
-It's easy to get started with Aim - the default Aim is seamlessly integrated with all major tools.
-Default apps can be used out of the box with no configuration required.
+It's super easy to start with Aim and use it. Aim has out-of-the-box seamless integrattions with major AI frameworks.
+Default Aim apps can be used out of the box with no configuration required.
 
+With Aim developers can build, run and share any kind of logging apps.
 Aim can get really powerful as you build your own logging apps.
 
 .. toctree::
-  :maxdepth: 3
+  :maxdepth: 2
   :caption: 🏁 Getting Started
   :hidden:
 

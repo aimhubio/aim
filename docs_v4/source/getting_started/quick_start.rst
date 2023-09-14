@@ -38,33 +38,37 @@ Start in 3 steps
   aim server
   aim ui
 
-Log your first project
+Log your first project with Aim
 ======================
 
-Aim logs everything int o a `Repo` which is a collection of `Container` objects.
+Aim saves the logs into a `Repo`. Repo is a collection of `Container` objects.
 ML training `Run` is kind of a `Container`. 
 
-`Container` is a set of `Sequence` objects interconnected by config dictionary. 
+Container is a set of `Sequence` objects interconnected by config dictionaries.
 
 `Sequence` is a sequence of `Record` objects.
+
 `Metric` is a Sequence of `Number` objects.
 
-The default Aim installation includes the `aimstack.base` app which contains all the primitives of logging.
+Hyperparameters and environment variables are examples of a config dictionary.
+
+Default Aim installation includes the `aimstack.base` app which contains all the primitives for logging.
 
 Here is how to add Aim to your project and start logging straight away.
 
 Logger configuration
 --------------------
+In this example, we use the default Run.
 
 .. code-block:: python
 
   import aim
-  from aimstack.asp import Run  
+  from aimstack.base import Run  
 
   # Create a run
   aim_run = Run(repo='/path/to/repo/.aim')
 
-It's also possible to run Aim remotely, in that case the repo will be a uri to the remote repo.
+It's also possible to run Aim remotely, in that case the repo will be the destination of the remote aim deployment.
 
 Configure and log the run
 -------------------------
@@ -86,14 +90,14 @@ Once Run is initialized, you can configure it with parameters and log the run.
   my_metric.track(0.0003)
   my_metric.track(0.0004)
 
-You can create as many metrics and other such sequences as your project requires.
+You can create as many metrics and other sequences as your project requires.
 Fundamentally Aim provides all the tools to log everything from everywhere.
 
 Run your first Aim app
 ======================
 
 Aim apps are composable logging and observability applications built with Aim SDK and run by Aim.
-They are distributed as Python packages and can be shared, installed with pip.
+Apps are packaged as regular Python packages and can be shared, installed with all python package .
 
 Aim comes with a number of prebuilt apps.
 In this instance, we will install the aimlflow app which provides auto-sync with mlflow and a dashboard on Aim of what was synced and when.
@@ -112,9 +116,9 @@ This will enable both apps on Aim UI.
 Integration with ML frameworks
 ==============================
 
-The Aim experiment tracker app has the integrations with all major ML frameworks and libraries.
+The Aim experiment tracker app is well-integrated with major ML frameworks and libraries.
 
-All those integrations are available as separate apps and default installed with the Aim experiment tracker as well as the ml app.
+Those integrations are apps and are part of default Aim installation.
 
 .. code-block:: python
 
