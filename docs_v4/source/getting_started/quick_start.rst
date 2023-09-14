@@ -39,7 +39,7 @@ Start in 3 steps
   aim ui
 
 Log your first project with Aim
-======================
+===============================
 
 Aim saves the logs into a `Repo`. Repo is a collection of `Container` objects.
 ML training `Run` is kind of a `Container`. 
@@ -135,6 +135,7 @@ This process is divided into 2 steps:
 Step 1. Create AimLogger object
 
 .. code-block::  python
+
   # track experimental data by using Aim
   aim_logger = AimLogger(
       experiment='aim_on_pt_lightning',

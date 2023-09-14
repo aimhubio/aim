@@ -120,6 +120,6 @@ Layouts
 .. _explorers:
 
 Explorers
-========
+=========
 
 Explorers

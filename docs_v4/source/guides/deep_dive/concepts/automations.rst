@@ -1,5 +1,5 @@
 ###########
- Automations
+Automations
 ###########
 
 Actions

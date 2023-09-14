@@ -9,7 +9,7 @@ There are three main concepts when logging with Aim:
 - Containers - a set of interconnected sequences
 
 Records
-------
+-------
 Records can be any python objects. 
 Records are used as a unit of the log.
 Aim comes with a number of predefined records such as Number, Text, Image, Distribution etc. 

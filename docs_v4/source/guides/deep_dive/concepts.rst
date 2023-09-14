@@ -56,3 +56,5 @@ For each layer we provide some examples to get started, how-to guides, reference
   ./concepts/automations.rst
   ./concepts/packages.rst
   ./concepts/components.rst
+  ./concepts/search.rst
+  ./concepts/repo.rst

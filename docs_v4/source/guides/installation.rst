@@ -20,6 +20,7 @@ Aim is a python package available for Linux and MacOs for Python versions 3.6+. 
 Verify aim was properly installed
 
 .. code-block:: console
+  
   aim version
 
 You should see the line listing newly installed version of Aim. For instance:

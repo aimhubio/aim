@@ -72,7 +72,7 @@ Aim can get really powerful as you build your own logging apps.
   :hidden:
 
   ./apps/overview.rst
-  ./apps/logs_discovery.rst
+  ./apps/base_logs_browser.rst
   ./apps/experiment_tracker.rst
   ./apps/langchain_debugger.rst
   ./apps/openai_debugger.rst

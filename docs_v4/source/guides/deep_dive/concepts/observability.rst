@@ -1,6 +1,6 @@
-###########
- Observability
-###########
+#############
+Observability
+#############
 
 Aim allows to build a whole observability layer for the AI systems.
 These are the main building blocks for the AI Observability layer:

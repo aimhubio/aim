@@ -23,20 +23,3 @@ Experiment Tracker
     <img src="https://user-images.githubusercontent.com/13848158/155354349-dcdf3bc3-d7a9-4f34-8258-4824a57f59c7.png" width="60" />
     <img src="https://user-images.githubusercontent.com/13848158/155354471-518f1814-7a41-4b23-9caf-e516507343f1.png" width="60" />
   </div>
-
-
-Installation and usage
-======================
-
-
-Multimedia tracking
-===================
-
-
-Logs comparison
-===============
-
-
-Experiment management
-=====================
-

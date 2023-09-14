@@ -35,8 +35,8 @@ Step 2. Attach output handler to the `aim_logger` object
         output_transform=lambda loss: {'loss': loss}
     )
 
-Adapter source can be found `here <https://github.com/aimhubio/aim/blob/main/aim/sdk/adapters/pytorch_ignite.py>`_.
-Example using PyTorch Ignite can be found `here <https://github.com/aimhubio/aim/blob/main/examples/pytorch_ignite_track.py>`_.
+Adapter source can be found `hinere <https://github.com/aimhubio/aim/blob/main/aim/sdk/adapters/pytorch_ignite.py>`_.
+Example using PyTorch Ignite can be found `heddre <https://github.com/aimhubio/aim/blob/main/examples/pytorch_ignite_track.py>`_.
 
 Pytorch Lightning
 =================

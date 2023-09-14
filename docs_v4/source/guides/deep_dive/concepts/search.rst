@@ -1,6 +1,6 @@
-###########
- Search
-###########
+######
+Search
+######
 
 Search is a fundamental component of any Aim package.
 Search powers the Aim applications across boards, experiments, runs and metrics.
