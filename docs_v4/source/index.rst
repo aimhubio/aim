@@ -20,22 +20,25 @@ Default apps can be used out of the box with no configuration required.
 
 Aim can get really powerful as you build your own logging apps.
 
-Go to :ref:`quick-start` to get started with Aim.
-
 .. toctree::
   :maxdepth: 3
   :caption: 🏁 Getting Started
   :hidden:
 
-  getting_started/quick_start.rst
-  getting_started/logging_basics.rst
+  ./getting_started/quick_start.rst
 
 .. toctree::
   :maxdepth: 2
   :caption: Apps
   :hidden:
 
-  ./apps/integrations.rst
+  ./apps/overview.rst
+  ./apps/logs_discovery.rst
+  ./apps/experiment_tracker.rst
+  ./apps/langchain_debugger.rst
+  ./apps/openai_debugger.rst
+  ./apps/llamaindex_debugger.rst
+  ./apps/integration_apps.rst
 
 .. toctree::
   :maxdepth: 2

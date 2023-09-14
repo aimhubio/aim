@@ -1,39 +1,5 @@
-#################
- Integration apps
-#################
-
-Integrate Aim into an existing project
-======================================
-
-Any python script
------------------
-
-.. code-block:: python
-
-    from aim import Run
-
-    run = Run()
-
-    # Save inputs, hparams or any other `key: value` pairs
-    run['hparams'] = {
-        'learning_rate': 0.001,
-        'batch_size': 32,
-    }
-
-    # ...
-    for step in range(10):
-        # Log metrics to visualize performance
-        run.track(step, name='metric_name')
-    # ...
-
-Aim easily integrates with your favorite ML frameworks.
-
-Aim loggers give access to the `aim.Run` object instance via the `experiment` property. The `aim.Run` instance will help you to easily track additional metrics or set any other `key: value` pairs (params) relevant to your project.
-
-In this way, you can easily extend the default integrations. More info about this is available on Integration guides [section.](../using/integration_guides.html)
-
 Pytorch Ignite
--------------------------------
+==============
 
 .. image:: https://colab.research.google.com/assets/colab-badge.svg
    :target: https://colab.research.google.com/github/aimhubio/tutorials/blob/publication/notebooks/pytorch_ignite_track.ipynb
@@ -73,7 +39,7 @@ Adapter source can be found `here <https://github.com/aimhubio/aim/blob/main/aim
 Example using PyTorch Ignite can be found `here <https://github.com/aimhubio/aim/blob/main/examples/pytorch_ignite_track.py>`_.
 
 Pytorch Lightning
------------------------------------
+=================
 
 <!--![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1Kq3-6x0dd7gAVCsiaClJf1TfKnW-d64f?usp=sharing) 
 
@@ -110,7 +76,7 @@ Adapter source can be found `here <https://github.com/aimhubio/aim/blob/main/aim
 Example using PyTorch Lightning can be found `here <https://github.com/aimhubio/aim/blob/main/examples/pytorch_lightning_track.py>`_.
 
 Hugging Face
--------------------------------
+============
 
 <!--![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1YJsWXmpmJ8s6K9smqIFT7CnM27yjoPq3?usp=sharing)-->
 
@@ -144,7 +110,7 @@ Adapter source can be found `here <https://github.com/aimhubio/aim/blob/main/aim
 Example using Hugging Face can be found `here <https://github.com/aimhubio/aim/blob/main/examples/hugging_face_track.py>`_.
 
 Integration with Keras & tf.Keras
------------------------------------
+=================================
 
 <!--![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/18V8OTQ9RtLEit_yjAZAtUY1jXQmfQ0RN?usp=sharing)-->
 
@@ -173,7 +139,7 @@ Example using Keras can be found `here <https://github.com/aimhubio/aim/blob/mai
 Example using tf.Keras can be found `here <https://github.com/aimhubio/aim/blob/main/examples/tensorflow_keras_track.py>`_.
 
 Integration with Keras Tuner
------------------------------
+============================
 
 It only takes 2 steps to easily integrate aim in Keras to record experimental information.
 
@@ -195,7 +161,7 @@ Adapter source can be found `here <https://github.com/aimhubio/aim/blob/main/aim
 Example using Keras Tuner can be found `here <https://github.com/aimhubio/aim/blob/main/examples/keras_tuner_track.py>`_.
 
 Integration with XGboost
--------------------------
+========================
 
 <!--In the real world, there is a well-known handwritten digit recognition problem. In this article, we use the machine learning framework xgboost to help us train an image classification model. In this process, we will use Aim to track our experimental data.-->
 
@@ -219,7 +185,7 @@ Adapter source can be found `here <https://github.com/aimhubio/aim/blob/main/aim
 Example using XGBoost can be found `here <https://github.com/aimhubio/aim/blob/main/examples/xgboost_track.py>`_.
 
 Integration with CatBoost
---------------------------
+=========================
 
 It only takes two steps to integrate Aim with `CatBoost <https://catboost.ai/>`_.
 
@@ -248,7 +214,7 @@ See `AimLogger` source `here <https://github.com/aimhubio/aim/blob/main/aim/sdk/
 Check out a simple example with Aim and CatBoost `here <https://github.com/aimhubio/aim/blob/main/examples/catboost_track.py>`_.
 
 Integration with LightGBM
---------------------------
+=========================
 
 Aim comes with a built-in callback designed to automatically track `LightGBM <https://lightgbm.readthedocs.io/en/latest/index.html>`_ trainings.
 It takes two steps to integrate Aim into your training script.
@@ -275,7 +241,7 @@ See `AimCallback` source `here <https://github.com/aimhubio/aim/blob/main/aim/sd
 Check out a simple regression task example `here <https://github.com/aimhubio/aim/blob/main/examples/lightgbm_track.py>`_.
 
 Integration with fastai
------------------------
+=======================
 
 Aim comes with a built-in callback designed to automatically track `fastai <https://docs.fast.ai/>`_ trainings.
 It takes two steps to integrate Aim into your training script.
@@ -299,7 +265,7 @@ See `AimCallback` source `here <https://github.com/aimhubio/aim/blob/main/aim/sd
 Check out a simple regression task example `here <https://github.com/aimhubio/aim/blob/main/examples/fastai_track.py>`_.
 
 Integration with MXNet
------------------------
+======================
 
 To track MXNet experiments use Aim callback designed for `MXNet <https://mxnet.apache.org/>`_ fit method.
 It takes two steps to integrate Aim into your training script.
@@ -324,7 +290,7 @@ See `AimCallback` source `here <https://github.com/aimhubio/aim/blob/main/aim/sd
 Check out a simple regression task example `here <https://github.com/aimhubio/aim/blob/main/examples/mxnet_track.py>`_.
 
 Integration with Optuna
-------------------------
+=======================
 
 Aim provides a callback designed to automatically track `Optuna <https://optuna.org/>`_ trainings.
 The `as_multirun` is a boolean argument. If `as_multirun` is set True then the callback will create a run for each trial. Otherwise it will track all of the results in a single run.
@@ -347,7 +313,7 @@ See `AimCallback` source `here <https://github.com/aimhubio/aim/blob/main/aim/sd
 Check out a simple objective optimization example `here <https://github.com/aimhubio/aim/blob/main/examples/optuna_track.py>`_.
 
 Integration with PaddlePaddle
-------------------------------
+=============================
 
 Aim provides a built-in callback to easily track `PaddlePaddle <https://www.paddlepaddle.org.cn/en>`_ trainings.
 It takes two steps to integrate Aim into your training script.
@@ -369,7 +335,7 @@ See `AimCallback` source `here <https://github.com/aimhubio/aim/blob/main/aim/sd
 Check out a simple objective optimization example `here <https://github.com/aimhubio/aim/blob/main/examples/paddle_track.py>`_.
 
 Integration with Stable-Baselines3
------------------------------------
+==================================
 
 Aim provides a callback to easily track one of the reliable Reinforcement Learning implementations `Stable-Baselines3 <https://stable-baselines3.readthedocs.io/en/master/>`_ trainings.
 It takes two steps to integrate Aim into your training script.
@@ -390,7 +356,7 @@ See `AimCallback` source `here <https://github.com/aimhubio/aim/blob/main/aim/sd
 Check out a simple objective optimization example `here <https://github.com/aimhubio/aim/blob/main/examples/sb3_track.py>`_.
 
 Integration with Acme
-----------------------
+=====================
 
 Aim provides a built-in callback to easily track `Acme <https://dm-acme.readthedocs.io/en/latest/>`_ trainings.
 It takes few simple steps to integrate Aim into your training script.
@@ -429,7 +395,7 @@ See `AimCallback` source `here <https://github.com/aimhubio/aim/blob/main/aim/sd
 Check out a simple objective optimization example `here <https://github.com/aimhubio/aim/blob/main/examples/acme_track.py>`_.
 
 Integration with Prophet
-------------------------
+========================
 
 Aim provides an AimLogger object designed to track `Prophet <https://facebook.github.io/prophet/docs/quick_start.html>`_ hyperparameters and metrics.
 It takes three steps to integrate Aim into your Prophet script.

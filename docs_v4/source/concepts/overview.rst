@@ -1,5 +1,3 @@
-.. _aim-concepts-overview:
-
 ###########
  Concepts Overview
 ###########
