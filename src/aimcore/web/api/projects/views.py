@@ -53,7 +53,7 @@ async def project_packages_api(names_only: Optional[bool] = False,
             pkg.name: {
                 'containers': pkg.containers,
                 'sequences': pkg.sequences,
-                'functions': pkg.functions,
+                'actions': pkg.actions,
                 'boards': [board.as_posix() for board in pkg.boards]
             } for pkg in Package.pool.values()}
     else:
@@ -88,14 +88,14 @@ async def project_container_types_api(only_tracked: Optional[bool] = False,
         return project.repo.registered_container_types()
 
 
-@projects_router.get('/functions/')
-async def project_functions_api(packages=Depends(load_active_packages)):
+@projects_router.get('/actions/')
+async def project_actions_api(packages=Depends(load_active_packages)):
     project = Project()
 
     if not project.exists():
         raise HTTPException(status_code=404)
 
-    return project.repo.registered_functions()
+    return project.repo.registered_actions()
 
 
 @projects_router.get('/status/')

@@ -193,13 +193,13 @@ async def fetch_blobs_api(uri_batch: URIBatchIn):
 
 
 @query_router.post('/run/')
-async def run_function(func_name: str, request_data: Dict, packages=Depends(load_active_packages)):
+async def run_action(action_name: str, request_data: Dict, packages=Depends(load_active_packages)):
     repo = get_project_repo()  # noqa
 
-    from aim._sdk.function import Function
-    function = Function.registry[func_name]
-    is_generator = function.is_generator
-    res = function.execute(**request_data)
+    from aim._sdk.action import Action
+    action = Action.registry[action_name]
+    is_generator = action.is_generator
+    res = action.execute(**request_data)
     if is_generator:
         def result_streamer():
             for i, it in enumerate(res):

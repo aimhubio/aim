@@ -2,7 +2,7 @@
 # Bindings for fetching Aim Objects
 ####################
 
-from js import search, runFunction, findItem, clearQueryResultsCache, encodeURIComponent
+from js import search, runAction, findItem, clearQueryResultsCache, encodeURIComponent
 import json
 import hashlib
 
@@ -70,7 +70,7 @@ class Signal:
     def register(signal_name=None, query_key=None):
         """Binds query key to signal. When signal is dispatched, query results cache will be invalidated"""
 
-        if (signal_name is not None) and (query_key is not None): 
+        if (signal_name is not None) and (query_key is not None):
             if (signal_name not in Signal.signals_store):
                 Signal.signals_store[signal_name] = {
                     "properties": None,
@@ -99,7 +99,7 @@ class Signal:
             (not any(key in properties for key in signal_properties))
         ):
             return
-    
+
         for key in signal.get("query_keys", []):
             clearQueryResultsCache(key)
 
@@ -129,7 +129,7 @@ def process_properties(obj: dict):
 def query_filter(type_, query="", count=None, start=None, stop=None, is_sequence=False, signal=None):
     query_key = f"{type_}_{query}_{count}_{start}_{stop}"
 
-    if (signal is not None): 
+    if (signal is not None):
         Signal.register(signal, query_key)
 
     if query_key in query_results_cache:
@@ -152,20 +152,20 @@ def query_filter(type_, query="", count=None, start=None, stop=None, is_sequence
             raise e
 
 
-def run_function(func_name, params, signal=None):
-    run_function_key = f"{func_name}_{json.dumps(params)}"
+def run_action(action_name, params, signal=None):
+    run_action_key = f"{action_name}_{json.dumps(params)}"
 
-    if (signal is not None): 
-        Signal.register(signal, run_function_key)
+    if (signal is not None):
+        Signal.register(signal, run_action_key)
 
-    if run_function_key in query_results_cache:
-        return query_results_cache[run_function_key]
+    if run_action_key in query_results_cache:
+        return query_results_cache[run_action_key]
 
     try:
-        res = runFunction(board_path, func_name, params)
+        res = runAction(board_path, action_name, params)
         data = json.loads(res, object_hook=process_properties)["value"]
 
-        query_results_cache[run_function_key] = data
+        query_results_cache[run_action_key] = data
         return data
     except Exception as e:
         if "WAIT_FOR_QUERY_RESULT" in str(e):
@@ -181,7 +181,7 @@ def find_item(type_, is_sequence=False, hash_=None, name=None, ctx=None, signal=
     query_key = f"{type_}_{hash_}_{name}_{ctx}"
 
 
-    if (signal is not None): 
+    if (signal is not None):
         Signal.register(signal, query_key)
 
     if query_key in query_results_cache:
@@ -479,7 +479,7 @@ class Component(Element):
         else:
             if self.signal is not None:
                 Signal.dispatch(self.signal, list(value.keys()))
-                    
+
             state_slice = (
                 state[self.board_path][self.key]
                 if (self.board_path in state and self.key in state[self.board_path])

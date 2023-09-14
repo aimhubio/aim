@@ -36,7 +36,7 @@ class ProjectPinnedSequencesApiIn(BaseModel):
 class PackageRegisteredModels(BaseModel):
     sequences: List[str]
     containers: List[str]
-    functions: List[str]
+    actions: List[str]
 
 
 ProjectNamesList = List[str]

@@ -25,7 +25,7 @@ export function storageDataToFlatList(
   const containerName = GetContainerName(containerType);
   const objectList: AimFlatObjectBase[] = []; // @CHECK make by hash function
 
-  let modifiers: string[] = [`${containerName}.hash`];
+  let modifiers: string[] = [];
   let params: string[] = [];
   let sequenceInfo: string[] = [];
   let recordInfo: string[] = [];
@@ -49,7 +49,7 @@ export function storageDataToFlatList(
   }
 
   for (const groupedSeq of groupedSeqs) {
-    concatParams(getObjectPaths(groupedSeq.params, containerName, '.'));
+    concatParams(getObjectPaths(groupedSeq['$properties'], containerName, '.'));
 
     sequencesToFlat({
       groupedSeq,
@@ -87,11 +87,18 @@ function sequencesToFlat({
   pushToObjectList,
   concatSequenceInfo,
   concatRecordInfo,
-}: any) {
+}: {
+  groupedSeq: GroupedSequence;
+  sequenceType: SequenceType;
+  containerType: ContainerType;
+  pushToObjectList: (object: AimFlatObjectBase) => void;
+  concatSequenceInfo: (sequence_info: string[]) => void;
+  concatRecordInfo: (record_info: string[]) => void;
+}) {
   let collectedData: Omit<AimFlatObjectBase, 'data'> = {};
 
   let hashObject: ObjectHashCreator = { hash: groupedSeq.hash };
-  let container = { hash: groupedSeq.hash, ...groupedSeq.params };
+  let container = { hash: groupedSeq.hash, ...groupedSeq['$properties'] };
 
   const sequenceName = GetSequenceName(sequenceType);
   const containerName = GetContainerName(containerType);
