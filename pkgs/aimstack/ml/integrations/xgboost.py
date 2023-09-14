@@ -73,11 +73,11 @@ class AimCallback(TrainingCallback):
                 else:
                     score = log[-1]
 
-                self._run.track_auto(
+                self._run.track(
                     score, step=0, name=metric_name, context={'stdv': False}
                 )
                 if stdv is not None:
-                    self._run.track_auto(
+                    self._run.track(
                         score, step=0, name=metric_name, context={'stdv': True}
                     )
 

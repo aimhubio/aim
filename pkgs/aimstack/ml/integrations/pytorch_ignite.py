@@ -107,7 +107,7 @@ class AimLogger(BaseLogger):
                 name = name[len(self._val_metric_prefix):]
                 context['subset'] = 'val'
             context.update(self._context)
-            self.experiment.track_auto(v, step=step, name=name, context=context)
+            self.experiment.track(v, step=step, name=name, context=context)
 
     @property
     def save_dir(self) -> str:

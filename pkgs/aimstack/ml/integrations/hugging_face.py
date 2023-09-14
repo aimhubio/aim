@@ -126,7 +126,7 @@ class AimCallback(TrainerCallback):
                     )
                 continue
 
-            self._run.track_auto(
+            self._run.track(
                 log_value,
                 name=log_name,
                 context=context,

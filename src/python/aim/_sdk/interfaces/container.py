@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Iterable, Iterator, TypeVar, List, Any
+from typing import Iterable, Iterator, TypeVar, List, Any, Optional
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -35,6 +35,9 @@ class Container(object):
     @abstractmethod
     def match(self, expr) -> bool:
         ...
+
+    def track(self, value, name: str, step: Optional[int] = None, context: dict = Optional[None], **axis):
+        raise NotImplementedError
 
 
 ContainerType = TypeVar('ContainerType', bound=Container)

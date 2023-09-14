@@ -135,7 +135,7 @@ class AimLoggingHandler(
 
                 context_name, metric_name = name.split(' ')
                 context = {'subset': context_name}
-                self._run.track_auto(
+                self._run.track(
                     value, metric_name, step=self.batch_index, context=context
                 )
             estimator.logger.info(msg.rstrip(', '))
@@ -163,7 +163,7 @@ class AimLoggingHandler(
 
                     context_name, metric_name = name.split(' ')
                     context = {'subset': context_name}
-                    self._run.track_auto(
+                    self._run.track(
                         value, metric_name, step=self.batch_index, context=context
                     )
                 estimator.logger.info(msg.rstrip(', '))

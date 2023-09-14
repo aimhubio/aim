@@ -110,10 +110,10 @@ class AimCallback:
             self.close()
         else:
             for key, value in trial.params.items():
-                self._run.track_auto(value, name=key, step=step)
+                self._run.track(value, name=key, step=step)
 
             for key, value in metrics.items():
-                self._run.track_auto(value, name=key, step=step)
+                self._run.track(value, name=key, step=step)
 
     @property
     def experiment(self) -> Run:

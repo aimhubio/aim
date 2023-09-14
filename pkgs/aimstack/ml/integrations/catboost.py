@@ -89,21 +89,21 @@ class AimLogger:
                         value_best = self._to_number(log[6])
             if any((value_learn, value_test, value_best)):
                 if value_learn:
-                    run.track_auto(
+                    run.track(
                         value_learn,
                         name=self._loss_function,
                         step=value_iter,
                         context={'log': 'learn'},
                     )
                 if value_test:
-                    run.track_auto(
+                    run.track(
                         value_test,
                         name=self._loss_function,
                         step=value_iter,
                         context={'log': 'test'},
                     )
                 if value_best:
-                    run.track_auto(
+                    run.track(
                         value_best,
                         name=self._loss_function,
                         step=value_iter,
