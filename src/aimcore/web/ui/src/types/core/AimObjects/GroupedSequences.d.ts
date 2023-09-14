@@ -10,7 +10,7 @@ export interface RecordRanges {
 
 export interface GroupedSequence<T = SequenceBase> {
   hash: string;
-  params: Record<string, any>;
+  $properties: Record<string, any>;
   sequences: Array<T>;
 }
 
@@ -18,12 +18,12 @@ export interface SequenceBase {
   name: string;
   item_type: string;
   range?: [number, number];
+  context: Record<string, unknown>;
 }
 
 export interface Sequence_Metric extends SequenceBase {
   axis: Record<string, unknown>;
   axis_names: Array<string>;
-  context: Record<string, unknown>;
   steps: Array<number>;
   values: Array<number>;
 }
