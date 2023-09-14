@@ -2,7 +2,7 @@
 # Bindings for fetching Aim Objects
 ####################
 
-from js import search, runFunction, findItem, clearQueryResultsCache, encodeURIComponent
+from js import search, runAction, findItem, clearQueryResultsCache, encodeURIComponent
 import json
 import hashlib
 
@@ -162,7 +162,7 @@ def run_action(action_name, params, signal=None):
         return query_results_cache[run_action_key]
 
     try:
-        res = runFunction(board_path, action_name, params)
+        res = runAction(board_path, action_name, params)
         data = json.loads(res, object_hook=process_properties)["value"]
 
         query_results_cache[run_action_key] = data

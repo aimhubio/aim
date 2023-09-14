@@ -5,7 +5,7 @@ import { AIM_VERSION, getBasePath } from 'config/config';
 import { fetchPackages } from 'modules/core/api/projectApi';
 
 import { search } from 'pages/Board/serverAPI/search';
-import { runFunction } from 'pages/Board/serverAPI/runFunction';
+import { runAction } from 'pages/Board/serverAPI/runAction';
 import { find } from 'pages/Board/serverAPI/find';
 
 import pyodideEngine from './store';
@@ -13,7 +13,7 @@ import pyodideEngine from './store';
 declare global {
   interface Window {
     search: Function;
-    runFunction: Function;
+    runAction: Function;
     findItem: Function;
     clearQueryResultsCache: Function;
     updateLayout: Function;
@@ -23,7 +23,7 @@ declare global {
 }
 
 window.search = search;
-window.runFunction = runFunction;
+window.runAction = runAction;
 window.findItem = find;
 window.clearQueryResultsCache = clearQueryResultsCache;
 
@@ -374,23 +374,23 @@ export async function loadPyodideInstance() {
       let actionName = action_name.slice(`${packageName}.`.length);
 
       jsModule[actionName] = (...args: any[]) => {
-        let funcArgs: Record<string, unknown> = {};
+        let actionArgs: Record<string, unknown> = {};
         for (let i = 0; i < args.length; i++) {
           if (typeof args[i] === 'object') {
-            Object.assign(funcArgs, args[i]);
+            Object.assign(actionArgs, args[i]);
           } else {
-            funcArgs[i] = args[i];
+            actionArgs[i] = args[i];
           }
         }
 
-        if (funcArgs['signal']) {
-          funcArgs['signal'] = JSON.stringify(funcArgs['signal']);
+        if (actionArgs['signal']) {
+          actionArgs['signal'] = JSON.stringify(actionArgs['signal']);
         }
 
         let val = pyodide.runPython(
           `run_action('${action_name}', ${JSON.stringify(
-            _.omit(funcArgs, ['signal']),
-          )}, ${funcArgs['signal']})`,
+            _.omit(actionArgs, ['signal']),
+          )}, ${actionArgs['signal']})`,
           { globals: namespace },
         );
         return val;

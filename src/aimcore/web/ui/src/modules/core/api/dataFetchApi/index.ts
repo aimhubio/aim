@@ -64,7 +64,7 @@ function createFetchGroupedSequencesRequest(
   };
 }
 
-function createRunFunctionRequest(): RequestInstance {
+function createRunActionRequest(): RequestInstance {
   const controller = new AbortController();
   const signal = controller.signal;
 
@@ -145,7 +145,7 @@ function createFindDataRequest(isContainer: boolean = true): RequestInstance {
 export {
   createFetchDataRequest,
   createFetchGroupedSequencesRequest,
-  createRunFunctionRequest,
+  createRunActionRequest,
   createBlobsRequest,
   createFindDataRequest,
 };

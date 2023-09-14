@@ -1,4 +1,4 @@
-import { createRunFunctionRequest } from 'modules/core/api/dataFetchApi';
+import { createRunActionRequest } from 'modules/core/api/dataFetchApi';
 // import {
 //   DecodingError,
 //   FetchingError,
@@ -13,23 +13,23 @@ import {
 
 import { parseStream } from 'utils/encoder/streamEncoding';
 
-const runFunctionRequest = createRunFunctionRequest();
+const runActionRequest = createRunActionRequest();
 
-export function runFunction(
+export function runAction(
   boardPath: string,
-  funcName: string,
+  actionName: string,
   requestData: Record<string, any>,
 ) {
   const reqBody = pyodideJSProxyMapToObject(requestData.toJs());
 
-  const runFunctionKey = `${funcName}_${JSON.stringify(reqBody)}`;
+  const runActionKey = `${actionName}_${JSON.stringify(reqBody)}`;
 
-  if (getQueryResultsCacheMap().has(runFunctionKey)) {
-    return getQueryResultsCacheMap().get(runFunctionKey).data;
+  if (getQueryResultsCacheMap().has(runActionKey)) {
+    return getQueryResultsCacheMap().get(runActionKey).data;
   }
 
-  runFunctionRequest
-    .call(funcName, reqBody)
+  runActionRequest
+    .call(actionName, reqBody)
     .then((res: any) => {
       const { headers, body } = res;
       const isGenerator = headers.get('is-generator') === 'True';
@@ -38,11 +38,11 @@ export function runFunction(
           try {
             const queryParams = {
               boardPath,
-              funcName,
+              actionName,
               requestData: reqBody,
             };
 
-            getQueryResultsCacheMap().set(runFunctionKey, {
+            getQueryResultsCacheMap().set(runActionKey, {
               data: JSON.stringify({ value: result }),
               params: queryParams,
             });
@@ -50,7 +50,7 @@ export function runFunction(
             pyodideEngine.events.fire(
               boardPath,
               {
-                runFunctionKey,
+                runActionKey,
               },
               { savePayload: false },
             );
