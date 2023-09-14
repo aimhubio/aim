@@ -5,7 +5,7 @@ import { AIM_VERSION, getBasePath } from 'config/config';
 import { fetchPackages } from 'modules/core/api/projectApi';
 
 import { search } from 'pages/Board/serverAPI/search';
-import { runFunction } from 'pages/Board/serverAPI/runFunction';
+import { runAction } from 'pages/Board/serverAPI/runAction';
 import { find } from 'pages/Board/serverAPI/find';
 
 import pyodideEngine from './store';
@@ -13,7 +13,7 @@ import pyodideEngine from './store';
 declare global {
   interface Window {
     search: Function;
-    runFunction: Function;
+    runAction: Function;
     findItem: Function;
     clearQueryResultsCache: Function;
     updateLayout: Function;
@@ -23,7 +23,7 @@ declare global {
 }
 
 window.search = search;
-window.runFunction = runFunction;
+window.runAction = runAction;
 window.findItem = find;
 window.clearQueryResultsCache = clearQueryResultsCache;
 
@@ -370,27 +370,27 @@ export async function loadPyodideInstance() {
       };
     });
 
-    packageData.functions.forEach((func_name: string) => {
-      let funcName = func_name.slice(`${packageName}.`.length);
+    packageData.actions.forEach((action_name: string) => {
+      let actionName = action_name.slice(`${packageName}.`.length);
 
-      jsModule[funcName] = (...args: any[]) => {
-        let funcArgs: Record<string, unknown> = {};
+      jsModule[actionName] = (...args: any[]) => {
+        let actionArgs: Record<string, unknown> = {};
         for (let i = 0; i < args.length; i++) {
           if (typeof args[i] === 'object') {
-            Object.assign(funcArgs, args[i]);
+            Object.assign(actionArgs, args[i]);
           } else {
-            funcArgs[i] = args[i];
+            actionArgs[i] = args[i];
           }
         }
 
-        if (funcArgs['signal']) {
-          funcArgs['signal'] = JSON.stringify(funcArgs['signal']);
-        }
+        let signal = actionArgs['signal']
+          ? JSON.stringify(actionArgs['signal'])
+          : 'None';
 
         let val = pyodide.runPython(
-          `run_function('${func_name}', ${JSON.stringify(
-            _.omit(funcArgs, ['signal']),
-          )}, ${funcArgs['signal']})`,
+          `run_action('${action_name}', ${JSON.stringify(
+            _.omit(actionArgs, ['signal']),
+          )}, ${signal})`,
           { globals: namespace },
         );
         return val;

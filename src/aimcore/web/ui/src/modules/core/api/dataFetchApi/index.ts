@@ -64,17 +64,17 @@ function createFetchGroupedSequencesRequest(
   };
 }
 
-function createRunFunctionRequest(): RequestInstance {
+function createRunActionRequest(): RequestInstance {
   const controller = new AbortController();
   const signal = controller.signal;
 
   async function call(
-    func_name: string,
+    action_name: string,
     request_data: Record<string, any>,
   ): Promise<any> {
     return await api.makeAPIPostRequest(ENDPOINTS.DATA.RUN, {
       query_params: {
-        func_name,
+        action_name,
       },
       body: request_data,
       signal,
@@ -145,7 +145,7 @@ function createFindDataRequest(isContainer: boolean = true): RequestInstance {
 export {
   createFetchDataRequest,
   createFetchGroupedSequencesRequest,
-  createRunFunctionRequest,
+  createRunActionRequest,
   createBlobsRequest,
   createFindDataRequest,
 };

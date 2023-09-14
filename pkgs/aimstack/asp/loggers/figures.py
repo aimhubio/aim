@@ -10,7 +10,6 @@ from aim._sdk.blob import BLOB
 logger = logging.getLogger(__name__)
 
 
-@Record.alias('aim.Figure')
 @Record.alias('aim.figure')
 class Figure(Record):
     """
@@ -21,7 +20,7 @@ class Figure(Record):
          obj (:obj:): plotly or matplotlib figure object.
     """
 
-    AIM_NAME = 'aim.Figure'
+    AIM_NAME = 'asp.Figure'
     RESOLVE_BLOBS = False
     SEQUENCE_NAME = 'FigureSequence'
 
@@ -88,7 +87,6 @@ class Figure(Record):
         return from_json(self.data)
 
 
-@Record.alias('aim.Figure3d')
 class Figure3D(Record):
     """Figure3D object used to store 3-dimensional objects in Aim repository..
 
@@ -100,7 +98,7 @@ class Figure3D(Record):
          caption (:obj:`str`, optional): Optional 3D object caption. '' by default.
     """
 
-    AIM_NAME = 'aim.Figure3d'
+    AIM_NAME = 'asp.Figure3d'
     RESOLVE_BLOBS = False
     SEQUENCE_NAME = 'Figure3DSequence'
 

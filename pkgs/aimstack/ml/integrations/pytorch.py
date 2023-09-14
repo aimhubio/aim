@@ -2,7 +2,7 @@ from aimstack.ml import Run
 
 
 def track_params_dists(model, run: Run):
-    from aimstack.asp.models.objects.distribution import Distribution
+    from aimstack.asp.loggers.distribution import Distribution
 
     data_hist = get_model_layers(model, 'data')
 
@@ -20,7 +20,7 @@ def track_params_dists(model, run: Run):
 
 
 def track_gradients_dists(model, run):
-    from aimstack.asp.models.objects.distribution import Distribution
+    from aimstack.asp.loggers.distribution import Distribution
 
     grad_hist = get_model_layers(model, 'grad')
 

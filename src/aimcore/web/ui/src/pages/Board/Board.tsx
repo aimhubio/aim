@@ -255,14 +255,14 @@ else:
     setEditorValue(data.code);
     const unsubscribeFromBoardUpdates = pyodideEngine.events.on(
       boardPath,
-      ({ layoutTree, state, queryKey, runFunctionKey }) => {
+      ({ layoutTree, state, queryKey, runActionKey }) => {
         if (layoutTree) {
           setState((s: any) => ({
             ...s,
             layoutTree,
           }));
         }
-        if (state || queryKey || runFunctionKey) {
+        if (state || queryKey || runActionKey) {
           setState((s: any) => ({
             ...s,
             stateUpdateCount: s.stateUpdateCount + 1,

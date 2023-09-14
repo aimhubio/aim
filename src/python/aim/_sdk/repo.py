@@ -12,7 +12,7 @@ from aim._sdk.utils import clean_repo_path
 from aim._sdk import type_utils
 from aim._sdk.container import Container
 from aim._sdk.sequence import Sequence
-from aim._sdk.function import Function
+from aim._sdk.action import Action
 from aim._sdk.package_utils import Package
 from aim._sdk.collections import ContainerCollection, SequenceCollection
 from aim._sdk.query_utils import construct_query_expression
@@ -205,8 +205,8 @@ class Repo(object):
     def registered_sequence_types(self) -> List[str]:
         return list(Sequence.registry.keys())
 
-    def registered_functions(self) -> List[str]:
-        return list(Function.registry.keys())
+    def registered_actions(self) -> List[str]:
+        return list(Action.registry.keys())
 
     def get_container(self, hash_) -> Container:
         return Container(hash_, repo=self, mode='READONLY')
