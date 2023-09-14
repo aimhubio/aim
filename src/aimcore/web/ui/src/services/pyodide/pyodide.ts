@@ -383,14 +383,14 @@ export async function loadPyodideInstance() {
           }
         }
 
-        if (actionArgs['signal']) {
-          actionArgs['signal'] = JSON.stringify(actionArgs['signal']);
-        }
+        let signal = actionArgs['signal']
+          ? JSON.stringify(actionArgs['signal'])
+          : 'None';
 
         let val = pyodide.runPython(
           `run_action('${action_name}', ${JSON.stringify(
             _.omit(actionArgs, ['signal']),
-          )}, ${actionArgs['signal']})`,
+          )}, ${signal})`,
           { globals: namespace },
         );
         return val;

@@ -156,7 +156,7 @@ def run_action(action_name, params, signal=None):
     run_action_key = f"{action_name}_{json.dumps(params)}"
 
     if (signal is not None):
-        Signal.register(signal, run_function_key)
+        Signal.register(signal, run_action_key)
 
     if run_action_key in query_results_cache:
         return query_results_cache[run_action_key]
