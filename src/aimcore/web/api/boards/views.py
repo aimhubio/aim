@@ -24,8 +24,11 @@ async def board_list_api(package_name: str,
 @boards_router.get('/{board_path:path}', response_model=BoardListOut)
 async def board_get_api(board_path: str,
                         packages=Depends(load_active_packages)):
-    package_name, board_path = board_path.split(':', maxsplit=1)
-    if package_name is None:
+    try:
+        package_name, board_path = board_path.split(':', maxsplit=1)
+    except ValueError:
+        raise HTTPException(status_code=400, detail=f'Board package name is not specified.')
+    if not package_name:
         raise HTTPException(status_code=400, detail=f'Board package name is not specified.')
 
     package = get_package_by_name(package_name)
