@@ -110,7 +110,7 @@ This will enable both apps on Aim UI.
 
 
 Integration with ML frameworks
-===========================
+==============================
 
 The Aim experiment tracker app has the integrations with all major ML frameworks and libraries.
 

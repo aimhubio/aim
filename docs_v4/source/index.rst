@@ -41,28 +41,17 @@ Aim can get really powerful as you build your own logging apps.
   ./apps/integration_apps.rst
 
 .. toctree::
-  :maxdepth: 2
+  :maxdepth: 3
   :caption: Guides
   :hidden:
 
-  ./guides/aimql_basics.rst
   ./guides/installation.rst
-
-
-.. toctree::
-  :maxdepth: 2
-  :caption: ⚡ Concepts
-  :hidden:
-
-  ./concepts/overview.rst
-  ./concepts/logging.rst
-  ./concepts/observability.rst
-  ./concepts/automations.rst
-  ./concepts/packages.rst
-  ./concepts/components.rst
-  ./concepts/how-aim-works.rst
-  ./concepts/value-prop.rst
-
+  ./guides/deep_dive.rst
+  ./guides/apps.rst
+  ./guides/aim_remote_server.rst
+  ./guides/aimql.rst
+  ./guides/aim_on_kubernetes.rst
+  ./guides/aim_on_notebooks.rst
 
 .. toctree::
   :maxdepth: 1

@@ -1,9 +1,9 @@
-###########
- Concepts Overview
-###########
+########
+Concepts
+########
 
-Main Concepts
--------------
+Overview
+========
 
 Aim is built around three main aspects, each focusing on different pillar of the
 logging and logs analysis process:
@@ -33,7 +33,7 @@ for building any kind of logging and visualization tool.
         Monitoring
 
 Core Concepts
--------------
+=============
 
 There are 3 main layers that Aim provides support for.
 For each layer we provide some examples to get started, how-to guides, reference docs, and conceptual guides.
@@ -45,24 +45,14 @@ For each layer we provide some examples to get started, how-to guides, reference
     Logging <--> Automations
       Logging <--> Observability
 
-Value Prop
-----------
-What's possible to achieve with aim
-What are we going to try to help users achieve with Aim?
 
-Components
-----------
-Aim library has these core components:
+.. toctree::
+  :maxdepth: 2
+  :caption: ⚡ Concepts
+  :hidden:
 
-- Aim python package
-- Aim core
-- Aim UI
-- Aim Tracking Server 
-- Aim Storage
-- Aim python sdk
-
-How Aim works
--------------
-
-This is where I will share more about the way Aim works.
-How different components all interact
+  ./concepts/logging.rst
+  ./concepts/observability.rst
+  ./concepts/automations.rst
+  ./concepts/packages.rst
+  ./concepts/components.rst
