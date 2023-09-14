@@ -14,9 +14,9 @@ class Record(AimStorageObject):
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
-        if hasattr(cls, 'SEQUENCE_NAME'):
+        if 'SEQUENCE_NAME' in cls.__dict__:
             from aim._sdk.sequence import Sequence
-            if hasattr(cls, 'SEQUENCE_BASE_TYPE'):
+            if 'SEQUENCE_BASE_TYPE' in cls.__dict__:
                 base_cls = cls.SEQUENCE_BASE_TYPE
                 sequence_cls = type(cls.SEQUENCE_NAME, (base_cls,), {
                     '__record_type__': Union[cls, List[cls]]
