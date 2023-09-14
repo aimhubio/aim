@@ -4,12 +4,12 @@ Pytorch Ignite
 .. image:: https://colab.research.google.com/assets/colab-badge.svg
    :target: https://colab.research.google.com/github/aimhubio/tutorials/blob/publication/notebooks/pytorch_ignite_track.ipynb
 
-It only takes 2 steps to simply and easily inject Aim into PyTorch Ignite:
+It only takes 2 steps to inject Aim into PyTorch Ignite:
 
 .. code-block:: python
 
-    # import aim sdk designed for pytorch ignite
-    from aim.pytorch_ignite import AimLogger
+    # import aim pytorch ignite app
+    from aim.ml.pytorch_ignite import AimLogger
 
 PyTorch Ignite provides trainer objects to simplify the training process of PyTorch models. We can attach the trainer object as AimLogger's output handler to use the logger function defined by Aim to simplify the process of tracking experiments. This process is divided into 2 steps:
 
