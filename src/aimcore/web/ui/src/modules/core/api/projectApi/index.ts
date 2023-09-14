@@ -24,10 +24,10 @@ async function getProjectContributions(): Promise<GetProjectContributionsResult>
  * function fetchPackages - get project packages
  * This call is used to fetch project packages data
  */
-async function fetchPackages(includeTypes = true): Promise<PackagesListType> {
+async function fetchPackages(namesOnly = false): Promise<PackagesListType> {
   return (
     await api.makeAPIGetRequest(
-      `${ENDPOINTS.PROJECTS.GET_PACKAGES}?include_types=${includeTypes}`,
+      `${ENDPOINTS.PROJECTS.GET_PACKAGES}?names_only=${namesOnly}`,
     )
   ).body;
 }
