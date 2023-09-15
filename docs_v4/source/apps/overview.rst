@@ -42,12 +42,12 @@ Out-of-the-box Aim apps
 
 Aim comes installed with a number of apps out of the box.
 
-- *Base App* - the base app provides all the logging primitives and a logs observer UI
-- *Experiment Tracker* - the experiment tracker helps track and manage experiments. It uses the base app primitives.
-- *Langchain Debugger* - the LangChain debugger app helps trace and visualize Langchain execution and experiments.
-- *LlamaIndex Debugger* - the LlamaIndex debugger app
-- *OpenAI Debugger* - the OpenAI debugger app
-- *Integration Apps* - set of apps for a number of ML and LLM frameworks + relevant experiment tracking UIs
+- **Base App** - the base app provides all the logging primitives and a logs observer UI
+- **Experiment Tracker** - the experiment tracker helps track and manage experiments. It uses the base app primitives.
+- **Langchain Debugger** - the LangChain debugger app helps trace and visualize Langchain execution and experiments.
+- **LlamaIndex Debugger** - the LlamaIndex debugger app
+- **OpenAI Debugger** - the OpenAI debugger app
+- **Integration Apps** - set of apps for a number of ML and LLM frameworks + relevant experiment tracking UIs
 
 You can see the list of apps by just running
 

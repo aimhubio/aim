@@ -15,7 +15,7 @@ Start in 3 steps
 
 .. code-block:: python
 
-  from aimstack.asp import Metric, Run
+  from aimstack.base import Metric, Run
 
   # Create a run
   run = Run()
@@ -122,7 +122,7 @@ Those integrations are apps and are part of default Aim installation.
 
 .. code-block:: python
 
-  from aimstack.ml import AimLogger
+  from aimstack.pl_logger import AimLogger
 
 Pytorch Lightning example
 -------------------------
