@@ -49,6 +49,14 @@ export function find(
     );
   }
 
+  pyodideEngine.events.fire(
+    boardPath as string,
+    {
+      queryDispatchedKey: queryKey,
+    },
+    { savePayload: false },
+  );
+
   findRequest
     .call({
       type_,

@@ -52,6 +52,14 @@ export function search(
     );
   }
 
+  pyodideEngine.events.fire(
+    boardPath as string,
+    {
+      queryDispatchedKey: queryKey,
+    },
+    { savePayload: false },
+  );
+
   searchRequest
     .call({
       q: query,
