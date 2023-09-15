@@ -68,51 +68,7 @@ export function find(
       parseStream<Array<any>>(data)
         .then((objectList) => {
           try {
-            let result;
-            let item = objectList[0];
-
-            if (objectList.length === 0) {
-              result = null;
-            } else if (type_.includes('.Metric')) {
-              const { values, steps } = filterMetricsValues(item);
-
-              result = {
-                ...item,
-                values: [...values],
-                steps: [...steps],
-              };
-            } else if (isSequence) {
-              let data: any[] = [];
-
-              for (let y = 0; y < item.values.length; y++) {
-                let object = item.values[y];
-                let step = item.steps[y];
-                if (Array.isArray(object)) {
-                  for (let z = 0; z < object.length; z++) {
-                    object[z] = {
-                      ...object[z],
-                    };
-                    data.push({
-                      ...omit(item, 'values', 'steps'),
-                      ...object[z],
-                      step: step,
-                      index: z,
-                    });
-                  }
-                } else {
-                  data.push({
-                    ...omit(item, 'values', 'steps'),
-                    ...object,
-                    step: step,
-                    index: 0,
-                  });
-                }
-              }
-
-              result = data;
-            } else {
-              result = item;
-            }
+            let result = objectList[0];
 
             if (cb) {
               cb();
