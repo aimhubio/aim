@@ -65,6 +65,7 @@ Aim can get really powerful as you build your own logging apps.
   :hidden:
 
   ./getting_started/quick_start.rst
+  ./getting_started/about_aim.rst
 
 .. toctree::
   :maxdepth: 2
