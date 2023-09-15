@@ -3,20 +3,20 @@ import inspect
 from typing import Callable, Dict
 
 
-class Function:
-    registry: Dict[str, 'Function'] = {}
+class Action:
+    registry: Dict[str, 'Action'] = {}
 
     def __init__(self, func: Callable, name: str):
-        self._validate_function(func)
+        self._validate(func)
         self._func = func
         self._name = f'{name}.{func.__name__}'
 
     @staticmethod
-    def _validate_function(func: Callable):
+    def _validate(func: Callable):
         signature = inspect.signature(func)
         for parameter in signature.parameters.values():
             if parameter.kind in (inspect.Parameter.POSITIONAL_ONLY, inspect.Parameter.VAR_POSITIONAL):
-                raise ValueError(f'Aim function {func.__name__} must accept keyword arguments.')
+                raise ValueError(f'Aim action {func.__name__} must accept keyword arguments.')
 
     @property
     def name(self) -> str:

@@ -9,17 +9,15 @@ from aim import Record
 from aimstack.asp.loggers.text import Text
 
 
-@Record.alias('aim.LogLine')
 @Record.alias('aim.log_line')
 class LogLine(Text):
-    AIM_NAME = 'aim.LogLine'
+    AIM_NAME = 'asp.LogLine'
     SEQUENCE_NAME = 'LogStream'
 
 
-@Record.alias('aim.LogRecord')
 @Record.alias('aim.log_record')
 class LogRecord(Record):
-    AIM_NAME = 'aim.LogRecord'
+    AIM_NAME = 'asp.LogRecord'
     SEQUENCE_NAME = 'LogRecordSequence'
 
     def __init__(self,

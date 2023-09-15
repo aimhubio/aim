@@ -11,7 +11,6 @@ from .io import wavfile
 logger = logging.getLogger(__name__)
 
 
-@Record.alias('aim.Audio')
 @Record.alias('aim.audio')
 class Audio(Record):
     """Audio object used to store audio objects in Aim repository..
@@ -25,7 +24,7 @@ class Audio(Record):
          caption (:obj:`str`, optional): Optional audio caption. '' by default.
     """
 
-    AIM_NAME = 'aim.Audio'
+    AIM_NAME = 'asp.Audio'
     RESOLVE_BLOBS = False
     SEQUENCE_NAME = 'AudioSequence'
 

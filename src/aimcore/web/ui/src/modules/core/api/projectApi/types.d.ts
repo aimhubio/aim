@@ -126,10 +126,10 @@ export type PackagesListType = Record<
      */
     containers: string[];
     /**
-     * The functions list of package
+     * The actions list of package
      * i.e. TODO: add example
      */
-    functions: string[];
+    actions: string[];
   }
 >;
 
