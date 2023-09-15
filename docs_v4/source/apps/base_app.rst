@@ -1,3 +1,4 @@
 #################
-Base Logs Browser
+Base App
 #################
+
