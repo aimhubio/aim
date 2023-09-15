@@ -1009,7 +1009,11 @@ class Table(Component):
             row = {}
 
             for col in self.data:
-                row[col] = self.data[col][i]
+                if i < len(self.data[col]):
+                    row[col] = self.data[col][i]
+                else:
+                    row[col] = None
+                
 
             rows.append(row)
 
@@ -1023,7 +1027,10 @@ class Table(Component):
         row = {}
 
         for col in self.data:
-            row[col] = self.data[col][val]
+            if val < len(self.data[col]):
+                row[col] = self.data[col][val]
+            else:
+                row[col] = None
 
         self.set_state({"focused_row": row, "focused_row_index": val})
 
