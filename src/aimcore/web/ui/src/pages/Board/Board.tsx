@@ -39,6 +39,7 @@ import {
 } from './Board.style';
 import BoardConsole from './components/BoardConsole';
 import FormVizElement from './components/VisualizationElements/FormVizElement';
+import LoadingBar from './components/LoadingBar';
 import useBoardStore from './BoardStore';
 
 const liveUpdateEnabled = false;
@@ -444,6 +445,7 @@ else:
                 processing={state.isProcessing}
                 fullWidth={!editMode && !newMode}
               >
+                <LoadingBar key={boardPath} boardPath={boardPath} />
                 {state.isProcessing !== false && (
                   <BoardSpinner className='BoardVisualizer__main__components__spinner'>
                     <Spinner />
