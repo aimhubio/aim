@@ -171,11 +171,11 @@ def query_filter(type_, query="", count=None, start=None, stop=None, is_sequence
         if data is None:
             raise WaitForQueryError()
 
-        data = json.loads(data, object_hook=process_properties)
+        data = ItemList(json.loads(data, object_hook=process_properties))
 
         query_results_cache[query_key] = data
         
-        return ItemList(data)
+        return data
     except Exception as e:
         if "WAIT_FOR_QUERY_RESULT" in str(e):
             raise WaitForQueryError()
