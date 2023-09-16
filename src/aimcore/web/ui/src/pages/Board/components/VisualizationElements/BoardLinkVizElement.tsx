@@ -9,6 +9,11 @@ import useApp from 'pages/App/useApp';
 function BoardLinkVizElement(props: any) {
   const { data: boardsList } = useApp();
 
+  const url = new URL(window.location.href);
+
+  const isEditMode =
+    url.pathname.startsWith('/app/') && url.pathname.endsWith('/edit');
+
   const packageName = props.options.package_name;
   const stateParam = props.options.state_param;
 
@@ -33,7 +38,9 @@ function BoardLinkVizElement(props: any) {
         textDecoration: 'underline',
         textDecorationColor: '$textPrimary50',
       }}
-      to={`/app/${boardPath}${stateParam ? '?state=' + stateParam : ''}`}
+      to={`/app/${boardPath}${isEditMode ? '/edit' : ''}${
+        stateParam ? '?state=' + stateParam : ''
+      }`}
       target={props.options.new_tab ? '_blank' : undefined}
     >
       <Button
