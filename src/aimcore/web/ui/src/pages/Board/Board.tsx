@@ -70,14 +70,14 @@ function Board({
   const boxContainer = React.useRef<HTMLDivElement>(
     document.createElement('div'),
   );
-  const tobBarRef = React.useRef<HTMLDivElement>(
-    document.querySelector('#app-top-bar'),
-  );
+
   const setEditorValue = useBoardStore((state) => state.setEditorValue);
 
   const boardPath = data.path;
 
   const timerId = React.useRef(0);
+
+  const tobBar = document.querySelector('#app-top-bar');
 
   let liveUpdateTimersRef = React.useRef<Record<string, number>>({});
   let queryKeysForCacheCleaningRef = React.useRef<Record<string, boolean>>({});
@@ -380,7 +380,7 @@ else:
     <ErrorBoundary>
       <Box as='section' height='100vh' className='Board'>
         {(editMode || newMode) &&
-          tobBarRef.current &&
+          tobBar &&
           createPortal(
             <Box
               className='Board__appBar__controls'
@@ -411,7 +411,7 @@ else:
                 </Button>
               </Link>
             </Box>,
-            tobBarRef.current,
+            tobBar,
           )}
         <BusyLoaderWrapper
           isLoading={pyodideIsLoading || isLoading || !mounted}
