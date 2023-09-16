@@ -4,9 +4,14 @@ Base App
 
 About
 =====
-Base App is composed of logging primitives. It also provides a UI for logs browsing. 
+Base App provides the logging primitives and the UI for logs browsing. 
 
-UI provides overview for any type of Aim logs.
+The Base App UI provides overview for any type of Aim logs.
+
+Installation
+------------
+Installed out of the box with as part of default Aim installation.
+Users can unregister and replace with any other app.
 
 Usage
 =====

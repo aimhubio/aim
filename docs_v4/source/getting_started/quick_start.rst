@@ -15,7 +15,8 @@ Start in 3 steps
 
 .. code-block:: python
 
-  from aimstack.base import Metric, Run
+  from aimstack.base import Metric
+  from aimstack.experiment_tracker import Run
 
   # Create a run
   run = Run()
