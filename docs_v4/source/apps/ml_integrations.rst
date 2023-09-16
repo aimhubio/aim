@@ -1,15 +1,20 @@
+###################
+ML Integration Apps
+###################
+
+
 Pytorch Ignite
 ==============
 
 .. image:: https://colab.research.google.com/assets/colab-badge.svg
    :target: https://colab.research.google.com/github/aimhubio/tutorials/blob/publication/notebooks/pytorch_ignite_track.ipynb
 
-It only takes 2 steps to inject Aim into PyTorch Ignite:
+It takes only 2 steps to inject Aim into PyTorch Ignite:
 
 .. code-block:: python
 
-    # import aim pytorch ignite app
-    from aim.ml.pytorch_ignite import AimLogger
+    # import aimstack pytorch ignite app
+    from aimstack.pytorch_ignite_logger import AimLogger
 
 PyTorch Ignite provides trainer objects to simplify the training process of PyTorch models. We can attach the trainer object as AimLogger's output handler to use the logger function defined by Aim to simplify the process of tracking experiments. This process is divided into 2 steps:
 
@@ -41,7 +46,8 @@ Example using PyTorch Ignite can be found `heddre <https://github.com/aimhubio/a
 Pytorch Lightning
 =================
 
-<!--![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1Kq3-6x0dd7gAVCsiaClJf1TfKnW-d64f?usp=sharing) 
+.. image:: https://colab.research.google.com/assets/colab-badge.svg
+   :target: https://colab.research.google.com/drive/1Kq3-6x0dd7gAVCsiaClJf1TfKnW-d64f?usp=sharing
 
 The work is designed to build an image classifier to solve a famous real-world problem ——handwritten digit recognition. In this work, we will introduce how to introduce aim logger to manage output information.-->
 
@@ -78,7 +84,8 @@ Example using PyTorch Lightning can be found `here <https://github.com/aimhubio/
 Hugging Face
 ============
 
-<!--![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1YJsWXmpmJ8s6K9smqIFT7CnM27yjoPq3?usp=sharing)-->
+.. image:: https://colab.research.google.com/assets/colab-badge.svg
+   :target: https://colab.research.google.com/drive/1YJsWXmpmJ8s6K9smqIFT7CnM27yjoPq3?usp=sharing
 
 <!--In this guide, we will show you how to integrate Aim with Huggingface. The work we are going to do together is a sentiment classification problem, which is the most common text classification task. We choose the IMDB movie review dataset as an experimental dataset, which classifies movie reviews as positive or negative. During the training process, we will show the use of aim to record effective information.-->
 
@@ -109,10 +116,12 @@ Step 2: Hugging Face has a trainer API to help us simplify the training process.
 Adapter source can be found `here <https://github.com/aimhubio/aim/blob/main/aim/sdk/adapters/hugging_face.py>`_.
 Example using Hugging Face can be found `here <https://github.com/aimhubio/aim/blob/main/examples/hugging_face_track.py>`_.
 
-Integration with Keras & tf.Keras
-=================================
+Keras & tf.Keras
+================
 
-<!--![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/18V8OTQ9RtLEit_yjAZAtUY1jXQmfQ0RN?usp=sharing)-->
+.. image:: https://colab.research.google.com/assets/colab-badge.svg
+   :target: https://colab.research.google.com/drive/18V8OTQ9RtLEit_yjAZAtUY1jXQmfQ0RN?usp=sharing
+
 
 <!--This tutorial leverages the well-known handwritten digit recognition task to describe how to integrate Aim with Keras & tf.Keras to train a digital image classification model based on the mnist dataset.-->
 
@@ -138,8 +147,8 @@ Adapter source can be found `here <https://github.com/aimhubio/aim/blob/main/aim
 Example using Keras can be found `here <https://github.com/aimhubio/aim/blob/main/examples/keras_track.py>`_.
 Example using tf.Keras can be found `here <https://github.com/aimhubio/aim/blob/main/examples/tensorflow_keras_track.py>`_.
 
-Integration with Keras Tuner
-============================
+Keras Tuner
+===========
 
 It only takes 2 steps to easily integrate aim in Keras to record experimental information.
 
@@ -160,10 +169,8 @@ In KerasTuner, we call the `search()` method of the tuner object to perform a se
 Adapter source can be found `here <https://github.com/aimhubio/aim/blob/main/aim/sdk/adapters/keras_tuner.py>`_.
 Example using Keras Tuner can be found `here <https://github.com/aimhubio/aim/blob/main/examples/keras_tuner_track.py>`_.
 
-Integration with XGboost
-========================
-
-<!--In the real world, there is a well-known handwritten digit recognition problem. In this article, we use the machine learning framework xgboost to help us train an image classification model. In this process, we will use Aim to track our experimental data.-->
+XGboost
+=======
 
 Enjoy using aim to track XGBoost experimental data which requires two simple steps:
 
@@ -184,8 +191,8 @@ Step 2: XGBoost provides the `xgboost.train` method for model training, in which
 Adapter source can be found `here <https://github.com/aimhubio/aim/blob/main/aim/sdk/adapters/xgboost.py>`_.
 Example using XGBoost can be found `here <https://github.com/aimhubio/aim/blob/main/examples/xgboost_track.py>`_.
 
-Integration with CatBoost
-=========================
+CatBoost
+========
 
 It only takes two steps to integrate Aim with `CatBoost <https://catboost.ai/>`_.
 
@@ -213,8 +220,8 @@ You can pass your own handler, else it defaults to `sys.stdout`.
 See `AimLogger` source `here <https://github.com/aimhubio/aim/blob/main/aim/sdk/adapters/catboost.py>`_.
 Check out a simple example with Aim and CatBoost `here <https://github.com/aimhubio/aim/blob/main/examples/catboost_track.py>`_.
 
-Integration with LightGBM
-=========================
+LightGBM
+========
 
 Aim comes with a built-in callback designed to automatically track `LightGBM <https://lightgbm.readthedocs.io/en/latest/index.html>`_ trainings.
 It takes two steps to integrate Aim into your training script.
@@ -240,8 +247,8 @@ While your training is running you can start `aim up` in another terminal sessio
 See `AimCallback` source `here <https://github.com/aimhubio/aim/blob/main/aim/sdk/adapters/lightgbm.py>`_.
 Check out a simple regression task example `here <https://github.com/aimhubio/aim/blob/main/examples/lightgbm_track.py>`_.
 
-Integration with fastai
-=======================
+Fastai
+======
 
 Aim comes with a built-in callback designed to automatically track `fastai <https://docs.fast.ai/>`_ trainings.
 It takes two steps to integrate Aim into your training script.
@@ -264,8 +271,8 @@ Step 2: Pass the callback to `cbs` list upon initiating your training.
 See `AimCallback` source `here <https://github.com/aimhubio/aim/blob/main/aim/sdk/adapters/fastai.py>`_.
 Check out a simple regression task example `here <https://github.com/aimhubio/aim/blob/main/examples/fastai_track.py>`_.
 
-Integration with MXNet
-======================
+MXNet
+=====
 
 To track MXNet experiments use Aim callback designed for `MXNet <https://mxnet.apache.org/>`_ fit method.
 It takes two steps to integrate Aim into your training script.
@@ -289,8 +296,8 @@ Step 2: Pass a callback instance to `event_handlers` list upon initiating your t
 See `AimCallback` source `here <https://github.com/aimhubio/aim/blob/main/aim/sdk/adapters/mxnet.py>`_.
 Check out a simple regression task example `here <https://github.com/aimhubio/aim/blob/main/examples/mxnet_track.py>`_.
 
-Integration with Optuna
-=======================
+Optuna
+======
 
 Aim provides a callback designed to automatically track `Optuna <https://optuna.org/>`_ trainings.
 The `as_multirun` is a boolean argument. If `as_multirun` is set True then the callback will create a run for each trial. Otherwise it will track all of the results in a single run.
@@ -312,8 +319,8 @@ Step 2: Pass the callback to `cbs` list upon initiating your training.
 See `AimCallback` source `here <https://github.com/aimhubio/aim/blob/main/aim/sdk/adapters/optuna.py>`_.
 Check out a simple objective optimization example `here <https://github.com/aimhubio/aim/blob/main/examples/optuna_track.py>`_.
 
-Integration with PaddlePaddle
-=============================
+PaddlePaddle
+============
 
 Aim provides a built-in callback to easily track `PaddlePaddle <https://www.paddlepaddle.org.cn/en>`_ trainings.
 It takes two steps to integrate Aim into your training script.
@@ -334,8 +341,8 @@ Step 2: Pass the callback to `callbacks` list upon initiating your training.
 See `AimCallback` source `here <https://github.com/aimhubio/aim/blob/main/aim/sdk/adapters/paddle.py>`_.
 Check out a simple objective optimization example `here <https://github.com/aimhubio/aim/blob/main/examples/paddle_track.py>`_.
 
-Integration with Stable-Baselines3
-==================================
+Stable-Baselines3
+=================
 
 Aim provides a callback to easily track one of the reliable Reinforcement Learning implementations `Stable-Baselines3 <https://stable-baselines3.readthedocs.io/en/master/>`_ trainings.
 It takes two steps to integrate Aim into your training script.
@@ -355,8 +362,8 @@ Step 2: Pass the callback to `callback` upon initiating your training.
 See `AimCallback` source `here <https://github.com/aimhubio/aim/blob/main/aim/sdk/adapters/sb3.py>`_.
 Check out a simple objective optimization example `here <https://github.com/aimhubio/aim/blob/main/examples/sb3_track.py>`_.
 
-Integration with Acme
-=====================
+Acme
+====
 
 Aim provides a built-in callback to easily track `Acme <https://dm-acme.readthedocs.io/en/latest/>`_ trainings.
 It takes few simple steps to integrate Aim into your training script.
@@ -394,8 +401,8 @@ Step 3: Pass the logger factory to `logger_factory` upon initiating your trainin
 See `AimCallback` source `here <https://github.com/aimhubio/aim/blob/main/aim/sdk/adapters/acme.py>`_.
 Check out a simple objective optimization example `here <https://github.com/aimhubio/aim/blob/main/examples/acme_track.py>`_.
 
-Integration with Prophet
-========================
+Prophet
+=======
 
 Aim provides an AimLogger object designed to track `Prophet <https://facebook.github.io/prophet/docs/quick_start.html>`_ hyperparameters and metrics.
 It takes three steps to integrate Aim into your Prophet script.
