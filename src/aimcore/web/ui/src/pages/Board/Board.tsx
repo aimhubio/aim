@@ -403,7 +403,10 @@ else:
               /> */}
               <Link
                 css={{ display: 'flex' }}
-                to={`${PathEnum.App}/${boardPath}`}
+                to={
+                  window.location.pathname.replace('/edit', '') +
+                  window.location.search
+                }
                 underline={false}
               >
                 <Button variant='outlined' size='xs'>
