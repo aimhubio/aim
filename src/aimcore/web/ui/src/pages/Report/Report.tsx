@@ -47,6 +47,8 @@ const markdownComponentsOverride = {
             data={{ code: children[0], path: node.position.start.line }}
             editMode={false}
             previewMode
+            stateStr=''
+            externalPackage={null}
           />
         </div>
       );
