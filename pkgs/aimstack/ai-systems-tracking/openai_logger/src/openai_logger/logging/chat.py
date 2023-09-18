@@ -7,28 +7,28 @@ from aimstack.asp import Run
 """
 
 
-@Record.alias("openai_logger.Message")
+@Record.alias('openai_logger.Message')
 class Message(Record):
-    AIM_NAME = "openai_logger.Message"
+    AIM_NAME = 'openai_logger.Message'
 
     def __init__(self, prompt: str, response: str, steps: list):
         super().__init__()
 
-        self.storage["prompt"] = prompt
-        self.storage["response"] = response
-        self.storage["steps"] = steps
+        self.storage['prompt'] = prompt
+        self.storage['response'] = response
+        self.storage['steps'] = steps
 
     @property
     def prompt(self):
-        return self.storage["prompt"]
+        return self.storage['prompt']
 
     @property
     def response(self):
-        return self.storage["response"]
+        return self.storage['response']
 
     @property
     def steps(self):
-        return self.storage["steps"]
+        return self.storage['steps']
 
     def __repr__(self):
         return f'Q: "{self.prompt}" \n A: "{self.response}"'

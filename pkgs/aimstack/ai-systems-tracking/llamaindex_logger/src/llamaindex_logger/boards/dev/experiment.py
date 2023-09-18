@@ -18,10 +18,10 @@ from llamaindex_logger import Experiment
 ##################
 
 
-def get_experiments(query="", param=None):
+def get_experiments(query='', param=None):
     sessions = Experiment.filter(query)
     sessions = sorted(
-        sessions, key=lambda sess: sess["params"].get("started") or 0, reverse=True
+        sessions, key=lambda sess: sess['params'].get('started') or 0, reverse=True
     )
     if param is not None:
         return [session.get(param) for session in sessions]
@@ -41,31 +41,31 @@ def get_experiment(session_hash):
 def experiment(exp_hash):
     exp = get_experiment(exp_hash)
     if not exp:
-        ui.text("Pick an experiment")
+        ui.text('Pick an experiment')
         return
 
     ui.header(f'Experiment "{exp_hash}"')
 
     overview, docs, llm, tools, agent = ui.tabs(
-        ["Overview", "Documents", "LLM", "Tools", "Agent"]
+        ['Overview', 'Documents', 'LLM', 'Tools', 'Agent']
     )
 
     overview.json(
         {
-            "release": exp["params"].get("release"),
-            "version": exp["params"].get("version"),
-            "started": datetime.fromtimestamp(exp["params"].get("started")).strftime(
-                "%Y-%m-%d %H:%M:%S"
+            'release': exp['params'].get('release'),
+            'version': exp['params'].get('version'),
+            'started': datetime.fromtimestamp(exp['params'].get('started')).strftime(
+                '%Y-%m-%d %H:%M:%S'
             )
-            if exp["params"].get("started")
-            else "-",
+            if exp['params'].get('started')
+            else '-',
         }
     )
 
-    docs.json(exp["params"].get("docs")) if exp["params"].get("docs") else None
-    llm.json(exp["params"].get("llm")) if exp["params"].get("llm") else None
-    tools.json(exp["params"].get("tools")) if exp["params"].get("tools") else None
-    agent.json(exp["params"].get("agent")) if exp["params"].get("agent") else None
+    docs.json(exp['params'].get('docs')) if exp['params'].get('docs') else None
+    llm.json(exp['params'].get('llm')) if exp['params'].get('llm') else None
+    tools.json(exp['params'].get('tools')) if exp['params'].get('tools') else None
+    agent.json(exp['params'].get('agent')) if exp['params'].get('agent') else None
 
 
 ##################
@@ -73,13 +73,13 @@ def experiment(exp_hash):
 ##################
 
 try:
-    exp_hash = state["dev/experiment.py"]["experiment_hash"]
+    exp_hash = state['dev/experiment.py']['experiment_hash']
 except:
-    exp_hash = ""
+    exp_hash = ''
 
-experiments = get_experiments("", "hash")
+experiments = get_experiments('', 'hash')
 
 if experiments:
-    default_exp = experiments.index(exp_hash) if exp_hash != "" else 0
+    default_exp = experiments.index(exp_hash) if exp_hash != '' else 0
     exp_hash = ui.select(options=experiments, index=default_exp)
     experiment(exp_hash)

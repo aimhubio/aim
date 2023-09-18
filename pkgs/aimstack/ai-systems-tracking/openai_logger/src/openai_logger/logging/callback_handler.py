@@ -25,7 +25,7 @@ class AimCallbackHandler:
         username,
         dev_mode,
         experiment=None,
-        repo_path="aim://0.0.0.0:53800",
+        repo_path='aim://0.0.0.0:53800',
         **extras: Any,
     ) -> None:
         self.repo = Repo.from_path(repo_path)
@@ -63,15 +63,15 @@ class AimCallbackHandler:
         except:
             release = Release(repo=self.repo)
             release[...] = {
-                "version": version,
-                "time": time.time(),
+                'version': version,
+                'time': time.time(),
             }
 
         if self.dev_mode:
             self.experiment = Experiment(repo=self.repo)
-            self.experiment["release"] = release.hash
-            self.experiment["version"] = version
-            self.experiment["started"] = time.time()
+            self.experiment['release'] = release.hash
+            self.experiment['version'] = version
+            self.experiment['started'] = time.time()
 
         if self.experiment is not None:
             for key, value in self.extras.items():
@@ -87,17 +87,17 @@ class AimCallbackHandler:
         else:
             self.session = SessionProd(repo=self.repo)
 
-        model_name = ""
-        if self.extras.get("llm"):
-            model_name = self.extras.get("model")
+        model_name = ''
+        if self.extras.get('llm'):
+            model_name = self.extras.get('model')
 
         self.session[...] = {
-            "chatbot_version": version,
-            "model": model_name,
-            "username": self.username,
-            "started": time.time(),
-            "experiment": self.experiment.hash if self.experiment else None,
-            "release": release.hash,
+            'chatbot_version': version,
+            'model': model_name,
+            'username': self.username,
+            'started': time.time(),
+            'experiment': self.experiment.hash if self.experiment else None,
+            'release': release.hash,
         }
 
         # System metrics will be tracked by default.
@@ -105,33 +105,33 @@ class AimCallbackHandler:
         # self.session.enable_system_monitoring()
 
         # Define what needs to be tracked as a result of langchain execution
-        self.messages = MessagesSequence(self.session, name="messages", context={})
+        self.messages = MessagesSequence(self.session, name='messages', context={})
 
         self.tokens_usage_input = Metric(
-            self.session, name="token-usage-input", context={}
+            self.session, name='token-usage-input', context={}
         )
 
         self.tokens_usage_output = Metric(
-            self.session, name="token-usage-output", context={}
+            self.session, name='token-usage-output', context={}
         )
 
-        self.tokens_usage = Metric(self.session, name="token-usage", context={})
+        self.tokens_usage = Metric(self.session, name='token-usage', context={})
 
         # toy user actions implementation for demo purposes.
         # TODO: Aim api should allow more efficient way of querying the specific user from Aim.
         for cont in self.repo.containers(None, UserActivity):
-            if cont["username"] == self.username:
+            if cont['username'] == self.username:
                 ua = cont
                 for seq in ua.sequences:
                     user_actions = seq
                     break
                 else:
-                    user_actions = UserActions(ua, name="user-actions", context={})
+                    user_actions = UserActions(ua, name='user-actions', context={})
                 break
         else:
             ua = UserActivity(repo=self.repo)
-            ua["username"] = self.username
-            user_actions = UserActions(ua, name="user-actions", context={})
+            ua['username'] = self.username
+            user_actions = UserActions(ua, name='user-actions', context={})
 
         self.user_activity = ua
         self.user_actions = user_actions
@@ -141,12 +141,12 @@ class AimCallbackHandler:
         payload: Optional[Dict[str, Any]] = None,
         **kwargs: Any,
     ) -> str:
-        messages = payload.get("messages")
+        messages = payload.get('messages')
         for message in messages:
-            if message.get("role") == "user":
-                self.user_history.append(message.get("content"))
-            elif message.get("role") == "assistant":
-                self.assistant_history.append(message.get("content"))
+            if message.get('role') == 'user':
+                self.user_history.append(message.get('content'))
+            elif message.get('role') == 'assistant':
+                self.assistant_history.append(message.get('content'))
             else:
                 raise KeyError(f"Message with key {message.get('role')} not found")
 

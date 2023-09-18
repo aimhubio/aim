@@ -7,28 +7,28 @@ from aimstack.asp import Run
 """
 
 
-@Record.alias("llamaindex_logger.Message")
+@Record.alias('llamaindex_logger.Message')
 class Message(Record):
-    AIM_NAME = "llamaindex_logger.Message"
+    AIM_NAME = 'llamaindex_logger.Message'
 
     def __init__(self, prompt: str, response: str, steps: list):
         super().__init__()
 
-        self.storage["prompt"] = prompt
-        self.storage["response"] = response
-        self.storage["steps"] = steps
+        self.storage['prompt'] = prompt
+        self.storage['response'] = response
+        self.storage['steps'] = steps
 
     @property
     def prompt(self):
-        return self.storage["prompt"]
+        return self.storage['prompt']
 
     @property
     def response(self):
-        return self.storage["response"]
+        return self.storage['response']
 
     @property
     def steps(self):
-        return self.storage["steps"]
+        return self.storage['steps']
 
     def __repr__(self):
         return f'Q: "{self.prompt}" \n A: "{self.response}"'
@@ -38,28 +38,28 @@ class MessagesSequence(Sequence[Message]):
     pass
 
 
-@Record.alias("llamaindex_logger.Chunk")
+@Record.alias('llamaindex_logger.Chunk')
 class Chunk(Record):
-    AIM_NAME = "llamaindex_logger.Chunk"
+    AIM_NAME = 'llamaindex_logger.Chunk'
 
     def __init__(self, id: str, chunk: str, steps: list):
         super().__init__()
 
-        self.storage["id"] = id
-        self.storage["chunk"] = chunk
-        self.storage["steps"] = steps
+        self.storage['id'] = id
+        self.storage['chunk'] = chunk
+        self.storage['steps'] = steps
 
     @property
     def id(self):
-        return self.storage["id"]
+        return self.storage['id']
 
     @property
     def chunk(self):
-        return self.storage["chunk"]
+        return self.storage['chunk']
 
     @property
     def steps(self):
-        return self.storage["steps"]
+        return self.storage['steps']
 
     def __repr__(self):
         return f'id: "{self.prompt}" - Chunk: "{self.chunk}"'
