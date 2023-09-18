@@ -10,7 +10,7 @@ with try_import() as _imports:
     from aimstack.ml import Run
 
 
-@experimental_class("2.9.0")
+@experimental_class('2.9.0')
 class AimCallback:
     """
     AimCallback callback class.
@@ -41,14 +41,14 @@ class AimCallback:
         repo: Optional[str] = None,
         experiment_name: Optional[str] = None,
         log_system_params: Optional[bool] = True,
-        metric_name: Union[str, Sequence[str]] = "value",
+        metric_name: Union[str, Sequence[str]] = 'value',
         as_multirun: bool = False,
     ) -> None:
         _imports.check()
 
         if not isinstance(metric_name, Sequence):
             raise TypeError(
-                f"Expected metric_name to be string or sequence of strings, got {type(metric_name)}."
+                f'Expected metric_name to be string or sequence of strings, got {type(metric_name)}.'
             )
 
         self._metric_name = metric_name
@@ -68,15 +68,15 @@ class AimCallback:
         if isinstance(self._metric_name, str):
             if len(trial.values) > 1:
                 # Broadcast default name for multi-objective optimization.
-                names = [f"{self._metric_name}_{i}" for i in range(len(trial.values))]
+                names = [f'{self._metric_name}_{i}' for i in range(len(trial.values))]
             else:
                 names = [self._metric_name]
         else:
             if len(self._metric_name) != len(trial.values):
                 raise ValueError(
-                    "Running multi-objective optimization "
-                    f"with {len(trial.values)} objective values, but {len(self._metric_name)} names specified. "
-                    "Match objective values and names, or use default broadcasting."
+                    'Running multi-objective optimization '
+                    f'with {len(trial.values)} objective values, but {len(self._metric_name)} names specified. '
+                    'Match objective values and names, or use default broadcasting.'
                 )
             else:
                 names = self._metric_name
@@ -84,24 +84,24 @@ class AimCallback:
         metrics = {name: value for name, value in zip(names, trial.values)}
 
         if self._as_multirun:
-            metrics["trial_number"] = trial.number
+            metrics['trial_number'] = trial.number
 
-        attributes = {"direction": [d.name for d in study.directions]}
+        attributes = {'direction': [d.name for d in study.directions]}
 
         step = trial.number if self._run else None
 
         if not self._run:
             self.setup()
-            self._run.name = f"trial-{trial.number}"
+            self._run.name = f'trial-{trial.number}'
 
         for key, value in attributes.items():
-            self._run.set(("hparams", key), value, strict=False)
+            self._run.set(('hparams', key), value, strict=False)
 
-        self._run.set("study_name", study.study_name, strict=False)
+        self._run.set('study_name', study.study_name)
 
         if self._as_multirun:
             for key, value in trial.params.items():
-                self._run.set(("hparams", key), value, strict=False)
+                self._run.set(('hparams', key), value, strict=False)
 
             for key, value in metrics.items():
                 self._run.set(key, value, strict=False)
@@ -141,7 +141,7 @@ class AimCallback:
             self._run = None
             self._run_hash = None
 
-    @experimental_func("3.0.0")
+    @experimental_func('3.0.0')
     def track_in_aim(self) -> Callable:
         """Decorator for using Aim for tracking inside the objective function.
 
@@ -157,7 +157,7 @@ class AimCallback:
             def wrapper(trial: optuna.trial.Trial) -> Union[float, Sequence[float]]:
                 if not self._run:
                     self.setup()
-                    self._run.name = f"trial-{trial.number}"
+                    self._run.name = f'trial-{trial.number}'
                 return func(trial)
 
             return wrapper

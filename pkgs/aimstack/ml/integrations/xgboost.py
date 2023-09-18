@@ -6,8 +6,8 @@ try:
     from xgboost.callback import TrainingCallback
 except ImportError:
     raise RuntimeError(
-        "This contrib module requires XGBoost to be installed. "
-        "Please install it with command: \n pip install xgboost"
+        'This contrib module requires XGBoost to be installed. '
+        'Please install it with command: \n pip install xgboost'
     )
 
 
@@ -74,11 +74,11 @@ class AimCallback(TrainingCallback):
                     score = log[-1]
 
                 self._run.track_auto(
-                    score, step=0, name=metric_name, context={"stdv": False}
+                    score, step=0, name=metric_name, context={'stdv': False}
                 )
                 if stdv is not None:
                     self._run.track_auto(
-                        score, step=0, name=metric_name, context={"stdv": True}
+                        score, step=0, name=metric_name, context={'stdv': True}
                     )
 
         return False

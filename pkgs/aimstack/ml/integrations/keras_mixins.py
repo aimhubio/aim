@@ -14,20 +14,20 @@ class TrackerKerasCallbackMetricsEpochEndMixin(object):
         if not logs:
             return
 
-        train_logs = {k: v for k, v in logs.items() if not k.startswith("val_")}
+        train_logs = {k: v for k, v in logs.items() if not k.startswith('val_')}
         for name, value in train_logs.items():
             self._run.track_auto(
-                value, name=name, context={"subset": "train"}, epoch=epoch
+                value, name=name, context={'subset': 'train'}, epoch=epoch
             )
 
-        val_logs = {k: v for k, v in logs.items() if k.startswith("val_")}
+        val_logs = {k: v for k, v in logs.items() if k.startswith('val_')}
         for name, value in val_logs.items():
             self._run.track_auto(
-                value, name=name[4:], context={"subset": "val"}, epoch=epoch
+                value, name=name[4:], context={'subset': 'val'}, epoch=epoch
             )
 
         lr = self._get_learning_rate()
         if lr is not None:
             self._run.track_auto(
-                lr, name="lr", context={"subset": "train"}, epoch=epoch
+                lr, name='lr', context={'subset': 'train'}, epoch=epoch
             )

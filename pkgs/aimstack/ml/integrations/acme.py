@@ -74,7 +74,7 @@ class AimWriter(Logger):
     def write(self, values: LoggingData):
         for name, value in values.items():
             self.aim_run.experiment.track_auto(
-                value, name=name, context={"logger_label": self.logger_label}
+                value, name=name, context={'logger_label': self.logger_label}
             )
 
     def close(self):

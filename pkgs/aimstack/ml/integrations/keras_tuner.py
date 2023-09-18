@@ -6,8 +6,8 @@ try:
     from kerastuner.engine.tuner_utils import TunerCallback
 except ImportError:
     raise RuntimeError(
-        "This contrib module requires KerasTuner to be installed. "
-        "Please install it with command: \n pip install keras-tuner"
+        'This contrib module requires KerasTuner to be installed. '
+        'Please install it with command: \n pip install keras-tuner'
     )
 
 
@@ -57,7 +57,7 @@ class AimCallback(TunerCallback):
                 self._run.experiment = self._experiment_name
             if self._log_system_params:
                 self._run.enable_system_monitoring()
-            self._run["trial_id"] = self._current_trial_id
+            self._run['trial_id'] = self._current_trial_id
             self._started_trials.append(self._current_trial_id)
         trial = self.tuner.oracle.get_trial(self._current_trial_id)
         hparams = trial.hyperparameters.values
@@ -67,4 +67,4 @@ class AimCallback(TunerCallback):
     def on_batch_end(self, batch, logs=None):
         if logs:
             for log_name, log_value in logs.items():
-                self._run.track_auto(log_value, name=log_name, context={"batch": batch})
+                self._run.track_auto(log_value, name=log_name, context={'batch': batch})
