@@ -1,11 +1,10 @@
 import warnings
+
 import mxnet as mx
+from aimstack.ml.integrations.mxnet import AimLoggingHandler
 from mxnet import gluon
-from mxnet.gluon.model_zoo import vision
 from mxnet.gluon.contrib.estimator import estimator
-
-from aimstack.ml.adapters.mxnet import AimLoggingHandler
-
+from mxnet.gluon.model_zoo import vision
 
 gpu_count = mx.context.num_gpus()
 ctx = [mx.gpu(i) for i in range(gpu_count)] if gpu_count > 0 else mx.cpu()
@@ -43,16 +42,14 @@ val_data_loader = gluon.data.DataLoader(
 )
 
 
-resnet_18_v1 = vision.resnet18_v1(pretrained=False, classes=10)
-resnet_18_v1.initialize(init=mx.init.Xavier(), ctx=ctx)
+model = vision.resnet18_v1(pretrained=False, classes=10)
+model.initialize(init=mx.init.Xavier(), ctx=ctx)
 
 loss_fn = gluon.loss.SoftmaxCrossEntropyLoss()
 
 learning_rate = 0.04  # You can experiment with your own learning rate here
 num_epochs = 2  # You can run training for more epochs
-trainer = gluon.Trainer(
-    resnet_18_v1.collect_params(), 'sgd', {'learning_rate': learning_rate}
-)
+trainer = gluon.Trainer(model.collect_params(), "sgd", {"learning_rate": learning_rate})
 
 
 train_acc = mx.metric.Accuracy()  # Metric to monitor
@@ -61,7 +58,7 @@ val_acc = mx.metric.Accuracy()
 
 # Define the estimator, by passing to it the model, loss function, metrics, trainer object and context
 est = estimator.Estimator(
-    net=resnet_18_v1,
+    net=model,
     loss=loss_fn,
     train_metrics=[train_acc, train_loss],
     val_metrics=val_acc,
@@ -70,15 +67,14 @@ est = estimator.Estimator(
 )
 
 aim_log_handler = AimLoggingHandler(
-    repo='.tmp_mxnet',
-    experiment_name='mxnet_example',
+    experiment_name="mxnet_example",
     log_interval=1,
     metrics=[train_acc, train_loss, val_acc],
 )
 
 # ignore warnings for nightly test on CI only
 with warnings.catch_warnings():
-    warnings.simplefilter('ignore')
+    warnings.simplefilter("ignore")
     # Magic line
     est.fit(
         train_data=train_data_loader,

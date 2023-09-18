@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import List, Optional
 
 from aimstack.ml import Run
 
@@ -67,4 +67,4 @@ class AimCallback(TunerCallback):
     def on_batch_end(self, batch, logs=None):
         if logs:
             for log_name, log_value in logs.items():
-                self._run.get_metric(name=log_name, context={}).track_auto(log_value)
+                self._run.track_auto(log_value, name=log_name, context={'batch': batch})

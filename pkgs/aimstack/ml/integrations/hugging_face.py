@@ -1,7 +1,7 @@
-from logging import getLogger
-from typing import Optional, List, Dict
-from difflib import SequenceMatcher
 from collections import defaultdict
+from difflib import SequenceMatcher
+from logging import getLogger
+from typing import Dict, List, Optional
 
 from aim._sdk.num_utils import is_number
 from aimstack.ml import Run

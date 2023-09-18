@@ -17,7 +17,7 @@ Here is an [example colab notebook](https://colab.research.google.com/github/aim
 
 ```python
 from aim import Image
-from aim.pytorch_ignite import AimLogger
+from aimstack.ml.integrations.pytorch_ignite import AimLogger
 
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -54,7 +54,7 @@ import torch.nn as nn
 from ignite.contrib.handlers.base_logger import BaseWeightsHistHandler
 from ignite.engine import Engine, Events
 
-from aim.pytorch_ignite import AimLogger
+from aimstack.ml.integrations.pytorch_ignite import AimLogger
 from aim import Distribution
 
 
@@ -107,7 +107,7 @@ Below is an example of a `CustomCallback` that's derived from the `AimCallback`.
 This allows us to track any `str` object that is passed to `on_log()` method as `aim.Text`.
 
 ```python
-from aim.hugging_face import AimCallback
+from aimstack.ml.integrations.hugging_face import AimCallback
 from aim import Text
 
 
@@ -130,7 +130,7 @@ Here is how to track confusion matrices with Aim while extending the default cal
 We have taken and adapted this [example.](https://www.tensorflow.org/tensorboard/image_summaries) to Aim. Here is how it looks:
 
 ```python
-from aim.tensorflow import AimCallback
+from aimstack.ml.integrations.tensorflow import AimCallback
 
 class CustomImageTrackingCallback(AimCallback):
     def __init__(self, data):
@@ -172,7 +172,7 @@ Here is how to override the `AimCallback` for XGBoost.
 
 ```python
 from aim import Text
-from aim.xgboost import AimCallback
+from aimstack.ml.integrations.xgboost import AimCallback
 
 
 class CustomCallback(AimCallback):
@@ -193,7 +193,7 @@ its content. Thus, most of the log output will be ignored by our parser logic, b
 on top of ours to fill the gap for your needs.
 
 ```python
-from aim.catboost import AimLogger
+from aimstack.ml.integrations.catboost import AimLogger
 
 
 class CustomLogger(AimLogger):
@@ -215,7 +215,7 @@ class CustomLogger(AimLogger):
 Here is how to override the `AimCallback` for LightGBM.
 
 ```python
-from aim.lightgbm import AimCallback
+from aimstack.ml.integrations.lightgbm import AimCallback
 
 
 class CustomCallback(AimCallback):

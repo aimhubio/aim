@@ -1,7 +1,8 @@
 from typing import Optional
 
 from aimstack.ml import Run
-from aimstack.ml.integrations.keras_mixins import TrackerKerasCallbackMetricsEpochEndMixin
+from aimstack.ml.integrations.keras_mixins import \
+    TrackerKerasCallbackMetricsEpochEndMixin
 
 try:
     from keras.callbacks import Callback

@@ -1,6 +1,6 @@
 import os
-from typing import Any, Dict, Optional, Union
 from argparse import Namespace
+from typing import Any, Dict, Optional, Union
 
 import packaging.version
 
@@ -8,10 +8,9 @@ try:
     import pytorch_lightning as pl
 
     if packaging.version.parse(pl.__version__) < packaging.version.parse('1.7'):
-        from pytorch_lightning.loggers.base import (
-            LightningLoggerBase as Logger,
-            rank_zero_experiment,
-        )
+        from pytorch_lightning.loggers.base import \
+            LightningLoggerBase as Logger
+        from pytorch_lightning.loggers.base import rank_zero_experiment
     else:
         from pytorch_lightning.loggers.logger import (
             Logger,
@@ -22,12 +21,12 @@ try:
 except ImportError:
     raise RuntimeError(
         'This contrib module requires PyTorch Lightning to be installed. '
-        'Please install it with command: \n pip install pytorch-lightning'
+        'Please install it with command: \n pip install lightning'
     )
 
-from aimstack.ml import Run
 from aim import Repo
 from aim._sdk.utils import clean_repo_path, get_aim_repo_name
+from aimstack.ml import Run
 
 
 class AimLogger(Logger):
@@ -143,7 +142,9 @@ class AimLogger(Logger):
             elif self._val_metric_prefix and name.startswith(self._val_metric_prefix):
                 name = name[len(self._val_metric_prefix):]
                 context['subset'] = 'val'
-            self.experiment.track_auto(v, name=name, step=step, epoch=epoch, context=context)
+            self.experiment.track_auto(
+                v, name=name, step=step, epoch=epoch, context=context
+            )
 
     @rank_zero_only
     def finalize(self, status: str = '') -> None:
