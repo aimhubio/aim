@@ -274,6 +274,8 @@ class Sequence(Generic[ItemType], ABCSequence):
             yield step, (value,) + axis_values
 
     def __getitem__(self, item: Union[slice, str, Tuple[str]]) -> 'SequenceView':
+        if isinstance(item, int):
+            return self._data.reservoir()[item]
         if isinstance(item, str):
             item = (item,)
         if isinstance(item, slice):
@@ -343,6 +345,8 @@ class SequenceView(object):
         return tuple(self._columns)
 
     def __getitem__(self, item: Union[slice, str, Tuple[str]]) -> 'SequenceView':
+        if isinstance(item, int):
+            return self._sequence._data.reservoir()[item]
         if isinstance(item, str):
             item = (item,)
         if isinstance(item, slice):
