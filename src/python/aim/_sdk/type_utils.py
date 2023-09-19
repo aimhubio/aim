@@ -51,7 +51,13 @@ def get_object_typename(obj: Any) -> str:
 
 
 def get_common_typename(types: Iterator[str]) -> str:
-    return os.path.commonprefix((min(types), max(types))).rstrip('->')
+    types_min = min(types)
+    types_max = max(types)
+    if is_subtype(types_max, types_min):
+        return types_min
+    common_type = os.path.commonprefix((types_min, types_max))
+    idx = common_type.rfind('->')
+    return common_type[:idx]
 
 
 def is_subtype(type_: str, base_type: str) -> bool:

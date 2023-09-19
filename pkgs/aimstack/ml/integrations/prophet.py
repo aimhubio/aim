@@ -80,4 +80,4 @@ class AimLogger:
         if context is None:
             context = {'subset': 'val'}
         for metric, value in metrics.items():
-            self._run.track_auto(value, name=metric, context=context)
+            self._run.track(value, name=metric, context=context)

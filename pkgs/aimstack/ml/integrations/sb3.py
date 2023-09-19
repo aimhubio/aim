@@ -37,7 +37,7 @@ class AimOutputFormat(KVWriter):
                     else:
                         context = {'tag': tag}
 
-                    self.aim_callback.experiment.track_auto(
+                    self.aim_callback.experiment.track(
                         value, key, step=step, context=context
                     )
 

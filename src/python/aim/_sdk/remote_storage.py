@@ -560,5 +560,8 @@ class RemoteRepoProxy:
     def _close_container(self, hash_):
         return self._rpc_client.run_instruction(-1, self._handler, '_close_container', [hash_])
 
-    def set_active_package(self, pkg_name: str):
-        return self._rpc_client.run_instruction(-1, self._handler, 'set_active_package', [pkg_name])
+    def add_package(self, pkg_name: str):
+        return self._rpc_client.run_instruction(-1, self._handler, 'add_package', [pkg_name])
+
+    def remove_package(self, pkg_name: str):
+        return self._rpc_client.run_instruction(-1, self._handler, 'remove_package', [pkg_name])

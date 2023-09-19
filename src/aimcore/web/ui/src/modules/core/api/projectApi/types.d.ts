@@ -130,6 +130,11 @@ export type PackagesListType = Record<
      * i.e. TODO: add example
      */
     actions: string[];
+    /**
+     * The boards list of package
+     * i.e. TODO: add example
+     */
+    boards: string[];
   }
 >;
 

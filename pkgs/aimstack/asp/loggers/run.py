@@ -133,11 +133,6 @@ class Run(Container, Caller):
 
     def track(self, value, name: str, step: Optional[int] = None, context: dict = Optional[None], **axis):
         context = {} if context is None else context
-        sequence = self.sequences[name, context]
-        sequence.track(value, step=step, **axis)
-
-    def track_auto(self, value, name: str, step: int = None, context: dict = None, **axis):
-        context = {} if context is None else context
         seq_type = self._get_sequence_type_from_value(value)
         sequence = self.sequences.typed_sequence(seq_type, name, context)
         sequence.track(value, step=step, **axis)

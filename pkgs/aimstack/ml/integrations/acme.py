@@ -57,7 +57,7 @@ class AimCallback:
 
     def track(self, logs, step=None, context=None):
         for name, val in logs.items():
-            self._run.track_auto(val, name=name, step=step, context=context)
+            self._run.track(val, name=name, step=step, context=context)
 
     def close(self):
         if self._run and self._run.active:
@@ -73,7 +73,7 @@ class AimWriter(Logger):
 
     def write(self, values: LoggingData):
         for name, value in values.items():
-            self.aim_run.experiment.track_auto(
+            self.aim_run.experiment.track(
                 value, name=name, context={'logger_label': self.logger_label}
             )
 

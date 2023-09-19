@@ -20,14 +20,6 @@ class ProjectParamsOut(BaseModel):
     figures3d: Optional[Dict[str, list]] = None
 
 
-class ProjectActivityApiOut(BaseModel):
-    num_experiments: int
-    num_runs: int
-    num_archived_runs: int
-    num_active_runs: int
-    activity_map: Dict[str, int] = {"2021-01-01": 54}
-
-
 class Sequence(BaseModel):
     name: str
     context: dict
@@ -45,6 +37,7 @@ class PackageRegisteredModels(BaseModel):
     sequences: List[str]
     containers: List[str]
     actions: List[str]
+    boards: List[str]
 
 
 ProjectNamesList = List[str]

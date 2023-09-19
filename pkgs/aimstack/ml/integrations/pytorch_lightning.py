@@ -142,7 +142,7 @@ class AimLogger(Logger):
             elif self._val_metric_prefix and name.startswith(self._val_metric_prefix):
                 name = name[len(self._val_metric_prefix):]
                 context['subset'] = 'val'
-            self.experiment.track_auto(
+            self.experiment.track(
                 v, name=name, step=step, epoch=epoch, context=context
             )
 

@@ -3,10 +3,10 @@ import * as React from 'react';
 import { Spinner } from 'components/kit';
 
 import Board from 'pages/Board/Board';
-import useApp from 'pages/App/useApp';
+import useApp from 'pages/Apps/useApp';
 
 function BoardVizElement(props: any) {
-  const { boards, isLoading, fetchBoard, data: boardsList } = useApp();
+  const { boards, isLoading, fetchBoard, data: boardsList, appName } = useApp();
 
   const packageName = props.options.package_name;
 
@@ -21,7 +21,7 @@ function BoardVizElement(props: any) {
     ? props.data
     : packageName && !boardsList.includes(props.data)
     ? `${packageName}:${props.data}`
-    : props.data;
+    : `${appName}:${props.data}`;
 
   let [code, setCode] = React.useState(boards?.[boardPath]?.code ?? null);
 

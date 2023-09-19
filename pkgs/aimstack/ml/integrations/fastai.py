@@ -76,12 +76,12 @@ class AimCallback(Callback):
     def after_batch(self):
         context = {'subset': 'train'} if self.training else {'subset': 'val'}
 
-        self._run.track_auto(
+        self._run.track(
             self.loss.item(), name='train_loss', step=self.train_iter, context=context
         )
         for i, h in enumerate(self.opt.hypers):
             for k, v in h.items():
-                self._run.track_auto(
+                self._run.track(
                     v, f'{k}_{i}', step=self.train_iter, context=context
                 )
 
@@ -92,7 +92,7 @@ class AimCallback(Callback):
     def after_epoch(self):
         for name, value in zip(self.recorder.metric_names, self.recorder.log):
             if name not in ['train_loss', 'epoch', 'time'] and value is not None:
-                self._run.track_auto(value, name=name)
+                self._run.track(value, name=name)
 
     def __del__(self):
         if self._run and self._run.active:

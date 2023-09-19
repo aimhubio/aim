@@ -67,4 +67,4 @@ class AimCallback(TunerCallback):
     def on_batch_end(self, batch, logs=None):
         if logs:
             for log_name, log_value in logs.items():
-                self._run.track_auto(log_value, name=log_name, context={'batch': batch})
+                self._run.track(log_value, name=log_name, context={'batch': batch})

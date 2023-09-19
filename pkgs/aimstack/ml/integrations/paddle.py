@@ -49,7 +49,7 @@ class AimCallback(Callback):
                     v = v[0]
                 else:
                     raise NotImplementedError(f'number of items in {k} are more than 1')
-            self._run.track_auto(v, k, step=step, context=context, epoch=self.epoch)
+            self._run.track(v, k, step=step, context=context, epoch=self.epoch)
 
     @property
     def experiment(self):

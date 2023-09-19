@@ -83,17 +83,17 @@ class AimCallback:
         for item in env.evaluation_result_list:
             if len(item) == 4:
                 data_name, eval_name, result, _ = item
-                self._run.track_auto(
+                self._run.track(
                     result, name=eval_name, context={'data_name': data_name}
                 )
             else:
                 data_name, eval_name = item[1].split()
                 res_mean = item[2]
                 res_stdv = item[4]
-                self._run.track_auto(
+                self._run.track(
                     res_mean, name=f'{eval_name}-mean', context={'data_name': data_name}
                 )
-                self._run.track_auto(
+                self._run.track(
                     res_stdv, name=f'{eval_name}-stdv', context={'data_name': data_name}
                 )
 
