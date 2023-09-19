@@ -2,7 +2,7 @@ import os
 
 import logging
 import regex as re
-from aimstack.ml.integrations.fastai import AimCallback
+from aimstack.fastai_tracker.callbacks import BaseCallback as AimCallback
 from fastai.vision.all import (
     CategoryBlock,
     CrossEntropyLossFlat,
