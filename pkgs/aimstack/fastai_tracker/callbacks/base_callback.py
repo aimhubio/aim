@@ -1,7 +1,7 @@
 from logging import getLogger
 from typing import Optional
 
-from aimstack.ml import Run
+from aimstack.experiment_tracker import TrainingRun
 
 try:
     from fastai.callback.hook import total_params
@@ -16,14 +16,14 @@ except ImportError:
 logger = getLogger(__name__)
 
 
-class AimCallback(Callback):
+class BaseCallback(Callback):
     """
-    AimCallback callback class.
+    BaseCallback callback class.
 
     Args:
-        repo (:obj:`str`, optional): Aim repository path or Repo object to which Run object is bound.
+        repo (:obj:`str`, optional): Aim repository path or Repo object to which TrainingRun object is bound.
             If skipped, default Repo is used.
-        experiment_name (:obj:`str`, optional): Sets Run's `experiment` property. 'default' if not specified.
+        experiment_name (:obj:`str`, optional): Sets TrainingRun's `experiment` property. 'default' if not specified.
             Can be used later to query runs/sequences.
         log_system_params (:obj:`bool`, optional): Enable/Disable logging of system params such as installed packages,
             git info, environment variables, etc.
@@ -43,7 +43,7 @@ class AimCallback(Callback):
         self._run_hash = None
 
     @property
-    def experiment(self) -> Run:
+    def experiment(self) -> TrainingRun:
         if not self._run:
             self.setup()
         return self._run
@@ -51,10 +51,11 @@ class AimCallback(Callback):
     def setup(self, args=None):
         if not self._run:
             if self._run_hash:
-                self._run = Run(self._run_hash, repo=self.repo)
+                self._run = TrainingRun(self._run_hash, repo=self.repo)
             else:
-                self._run = Run(repo=self.repo)
+                self._run = TrainingRun(repo=self.repo)
                 self._run_hash = self._run.hash
+                self._run['is_fastai_run'] = True
                 if self.experiment_name is not None:
                     self._run.experiment = self.experiment_name
         if self.log_system_params:
@@ -70,7 +71,7 @@ class AimCallback(Callback):
     def before_fit(self):
         if not self._run:
             configs_log = self.gather_args()
-            formatted_config = AimCallback.format_config(configs_log)
+            formatted_config = BaseCallback.format_config(configs_log)
             self.setup(formatted_config)
 
     def after_batch(self):
@@ -140,15 +141,15 @@ class AimCallback(Callback):
         'Format config parameters for logging'
         for key, value in config.items():
             if isinstance(value, dict):
-                config[key] = AimCallback.format_config(value)
+                config[key] = BaseCallback.format_config(value)
             else:
-                config[key] = AimCallback.format_config_value(value)
+                config[key] = BaseCallback.format_config_value(value)
         return config
 
     @classmethod
     def format_config_value(cls, value):
         if isinstance(value, list):
-            return [AimCallback.format_config_value(item) for item in value]
+            return [BaseCallback.format_config_value(item) for item in value]
         elif hasattr(value, '__stored_args__'):
-            return {**AimCallback.format_config(value.__stored_args__), '_name': value}
+            return {**BaseCallback.format_config(value.__stored_args__), '_name': value}
         return value
