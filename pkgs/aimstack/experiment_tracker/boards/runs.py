@@ -1,4 +1,4 @@
-from aimstack.experiment_tracker import TrainingRun
+from experiment_tracker import TrainingRun
 
 search_signal = "search"
 
