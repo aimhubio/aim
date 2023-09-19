@@ -26,6 +26,7 @@ type Pyodide = {
   isRunning: null | boolean;
   namespace: null | any;
   registeredPackages: string[];
+  boards: null | Record<string, string[]>;
 };
 
 type Layout = {
@@ -58,6 +59,7 @@ type Selectors = {
     State,
     Pyodide['registeredPackages']
   >;
+  boardsSelector: SelectorCreator<State, Pyodide['boards']>;
   // Layout state actions
   layoutSelector: SelectorCreator<State, Layout>;
   layoutTreeSelector: SelectorCreator<State, Layout['tree']>;
@@ -71,6 +73,7 @@ type GetMethods = {
   getPyodideIsRunning: () => Pyodide['isRunning'];
   getPyodideNamespace: () => Pyodide['namespace'];
   getPyodideRegisteredPackages: () => Pyodide['registeredPackages'];
+  getBoards: () => Pyodide['boards'];
   getLayout: () => Layout;
   getLayoutTree: () => Layout['tree'];
   getLayoutState: () => Layout['state'];
@@ -87,6 +90,7 @@ type SetMethods = {
   setPyodideRegisteredPackages: (
     registeredPackages: Pyodide['registeredPackages'],
   ) => void;
+  setBoards: (boards: Pyodide['boards']) => void;
   // Layout state actions
   setLayout: (layout: Partial<Layout>) => void;
   setLayoutTree: (layoutTree: Layout['tree']) => void;
@@ -101,6 +105,7 @@ const initialState: State = {
     isRunning: null,
     namespace: null,
     registeredPackages: [],
+    boards: null,
   },
   layout: {
     tree: null,
@@ -202,6 +207,7 @@ function generateSelectors(): Selectors {
     pyodideNamespaceSelector: (state) => state.pyodide.namespace,
     pyodideRegisteredPackagesSelector: (state) =>
       state.pyodide.registeredPackages,
+    boardsSelector: (state) => state.pyodide.boards,
     // Layout state actions
     layoutSelector: (state) => state.layout,
     layoutTreeSelector: (state) => state.layout.tree,
@@ -217,6 +223,7 @@ function generateGetMethods(get: Get<State>): GetMethods {
     getPyodideIsRunning: () => get().pyodide.isRunning,
     getPyodideNamespace: () => get().pyodide.namespace,
     getPyodideRegisteredPackages: () => get().pyodide.registeredPackages,
+    getBoards: () => get().pyodide.boards,
     getLayout: () => get().layout,
     getLayoutTree: () => get().layout.tree,
     getLayoutState: () => get().layout.state,
@@ -278,6 +285,14 @@ function generateSetMethods(set: Set<State>): SetMethods {
       set(
         produce((draft_state: Draft<State>) => {
           draft_state.pyodide.registeredPackages = registeredPackages;
+        }),
+        false,
+      );
+    },
+    setBoards: (boards: Pyodide['boards']) => {
+      set(
+        produce((draft_state: Draft<State>) => {
+          draft_state.pyodide.boards = boards;
         }),
         false,
       );

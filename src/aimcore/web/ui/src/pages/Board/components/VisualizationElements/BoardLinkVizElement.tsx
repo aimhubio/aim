@@ -4,15 +4,17 @@ import { IconLayout2, IconExternalLink } from '@tabler/icons-react';
 
 import { Link, Button, Text } from 'components/kit_v2';
 
-import useApp from 'pages/App/useApp';
+import { PathEnum } from 'config/enums/routesEnum';
+
+import useApp from 'pages/Apps/useApp';
 
 function BoardLinkVizElement(props: any) {
-  const { data: boardsList } = useApp();
+  const { data: boardsList, appName } = useApp();
 
   const url = new URL(window.location.href);
 
   const isEditMode =
-    url.pathname.startsWith('/app/') && url.pathname.endsWith('/edit');
+    url.pathname.startsWith(PathEnum.Apps) && url.pathname.endsWith('/edit');
 
   const packageName = props.options.package_name;
   const stateParam = props.options.state_param;
@@ -38,9 +40,9 @@ function BoardLinkVizElement(props: any) {
         textDecoration: 'underline',
         textDecorationColor: '$textPrimary50',
       }}
-      to={`/app/${boardPath}${isEditMode ? '/edit' : ''}${
-        stateParam ? '?state=' + stateParam : ''
-      }`}
+      to={`${PathEnum.App.replace(':appName', appName as string)}/${boardPath}${
+        isEditMode ? '/edit' : ''
+      }${stateParam ? '?state=' + stateParam : ''}`}
       target={props.options.new_tab ? '_blank' : undefined}
     >
       <Button

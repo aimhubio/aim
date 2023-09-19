@@ -11,7 +11,11 @@ import { PathEnum } from 'config/enums/routesEnum';
 import { AppSidebarNode, AppSidebarProps } from '../App.d';
 import { BoardLink } from '../App.style';
 
-const AppSidebar: React.FC<any> = ({ boards, editMode }: AppSidebarProps) => {
+const AppSidebar: React.FC<any> = ({
+  boards,
+  editMode,
+  appName,
+}: AppSidebarProps) => {
   const location = useLocation();
   const sidebarRef = React.useRef<any>(null);
   const [height, setHeight] = React.useState<number>(0);
@@ -28,7 +32,9 @@ const AppSidebar: React.FC<any> = ({ boards, editMode }: AppSidebarProps) => {
 
     // Step 1: Create nodes and build a lookup
     for (let i = 0; i < boards.length; i++) {
-      const boardPath = `${PathEnum.App}/${boards[i]}`;
+      const boardPath = `${PathEnum.App.replace(':appName', appName)}/${
+        boards[i]
+      }`;
       const isActive = location.pathname.replace('/edit', '') === boardPath;
       let path = boards[i].split('/');
       for (let j = 0; j < path.length; j++) {

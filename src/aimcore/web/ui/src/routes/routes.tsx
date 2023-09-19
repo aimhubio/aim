@@ -109,8 +109,12 @@ const Report = React.lazy(
   () => import(/* webpackChunkName: "Report" */ 'pages/Report/Report'),
 );
 
+const Apps = React.lazy(
+  () => import(/* webpackChunkName: "Apps" */ 'pages/Apps/Apps'),
+);
+
 const App = React.lazy(
-  () => import(/* webpackChunkName: "App" */ 'pages/App/App'),
+  () => import(/* webpackChunkName: "App" */ 'pages/Apps/App'),
 );
 
 export interface IRoute {
@@ -214,49 +218,26 @@ export const explorersRoutes: { [key: string]: IRoute } = {
     color: '#FCB500',
     category: ExplorersCatsEnum.Trainings,
   },
-  // SCATTERS: {
-  //   path: PathEnum.Scatters,
-  //   component: Scatters,
-  //   showInSidebar: false,
-  //   displayName: 'Scatters',
-  //   description:
-  //     'Scatter Explorer visualizes correlations between metrics results and h-params.',
-  //   icon: 'scatterplot',
-  //   isExact: true,
-  //   title: pageTitlesEnum.SCATTERS_EXPLORER,
-  //   color: '#606986',
-  //   category: ExplorersCatsEnum.Trainings,
-  // },
 };
 
 const routes: { [key: string]: any } = {
-  // DASHBOARD: {
-  //   path: PathEnum.Dashboard,
-  //   component: Dashboard,
-  //   showInSidebar: false,
-  //   displayName: 'Dashboard',
-  //   icon: 'dashboard',
-  //   isExact: true,
-  //   title: pageTitlesEnum.DASHBOARD,
-  // },
+  APPS: {
+    path: PathEnum.Apps,
+    component: Apps,
+    showInSidebar: true,
+    displayName: 'Apps',
+    icon: <IconBox color='#179299' />,
+    isExact: true,
+    title: pageTitlesEnum.APPS,
+  },
   APP: {
     path: PathEnum.App,
     component: App,
-    showInSidebar: true,
+    showInSidebar: false,
     displayName: 'App',
-    icon: <IconBox color='#179299' />,
     isExact: false,
     title: pageTitlesEnum.APP,
   },
-  // RUNS: {
-  //   path: PathEnum.Runs,
-  //   component: Runs,
-  //   showInSidebar: true,
-  //   displayName: 'Runs',
-  //   icon: <IconTable color='#9D257F' />,
-  //   isExact: true,
-  //   title: pageTitlesEnum.RUNS_EXPLORER,
-  // },
   EXPLORERS: {
     path: PathEnum.Explorers,
     component: Explorers,
@@ -266,31 +247,6 @@ const routes: { [key: string]: any } = {
     isExact: true,
     title: pageTitlesEnum.EXPLORERS,
   },
-  // BOARDS: {
-  //   path: PathEnum.Boards,
-  //   component: Boards,
-  //   showInSidebar: true,
-  //   displayName: 'Boards',
-  //   icon: <IconLayout2 color='#2A6218' />,
-  //   isExact: true,
-  //   title: pageTitlesEnum.BOARDS,
-  // },
-  // BOARD: {
-  //   path: PathEnum.Board,
-  //   component: Board,
-  //   showInSidebar: false,
-  //   displayName: 'Board',
-  //   isExact: true,
-  //   title: pageTitlesEnum.BOARD,
-  // },
-  // BOARD_EDIT: {
-  //   path: PathEnum.Board_Edit,
-  //   component: Board,
-  //   showInSidebar: false,
-  //   displayName: 'Board',
-  //   isExact: true,
-  //   title: pageTitlesEnum.BOARD,
-  // },
   REPORTS: {
     path: PathEnum.Reports,
     component: Reports,
@@ -317,82 +273,6 @@ const routes: { [key: string]: any } = {
     title: pageTitlesEnum.REPORT,
   },
   ...explorersRoutes,
-
-  // METRICS_ID: {
-  //   path: PathEnum.Metrics_Id,
-  //   component: Metrics,
-  //   showInSidebar: false,
-  //   displayName: 'MetricsId',
-  //   isExact: true,
-  //   title: pageTitlesEnum.METRICS_EXPLORER,
-  // },
-  // PARAMS_ID: {
-  //   path: PathEnum.Params_Id,
-  //   component: Params,
-  //   showInSidebar: false,
-  //   displayName: 'ParamsId',
-  //   isExact: true,
-  //   title: pageTitlesEnum.PARAMS_EXPLORER,
-  // },
-  // IMAGE_EXPLORER_ID: {
-  //   path: PathEnum.Images_Explorer_Id,
-  //   component: ImagesExplore,
-  //   showInSidebar: false,
-  //   displayName: 'ImagesId',
-  //   isExact: true,
-  //   title: pageTitlesEnum.IMAGES_EXPLORER,
-  // },
-  // SCATTERS_EXPLORE_ID: {
-  //   path: PathEnum.Scatters_Id,
-  //   component: Scatters,
-  //   showInSidebar: false,
-  //   displayName: 'ScatterId',
-  //   isExact: true,
-  //   title: pageTitlesEnum.SCATTERS_EXPLORER,
-  // },
-  // BOOKMARKS: {
-  //   path: PathEnum.Bookmarks,
-  //   component: Bookmarks,
-  //   showInSidebar: false,
-  //   displayName: 'Bookmarks',
-  //   icon: 'bookmarks',
-  //   isExact: true,
-  //   title: pageTitlesEnum.BOOKMARKS,
-  // },
-  // TAGS: {
-  //   path: PathEnum.Tags,
-  //   component: TagsContainer,
-  //   showInSidebar: true,
-  //   displayName: 'Tags',
-  //   icon: <IconFlag3 color='#2A6218' />,
-  //   isExact: true,
-  //   title: pageTitlesEnum.TAGS,
-  // },
-  // RUN_DETAIL: {
-  //   path: PathEnum.Run_Detail,
-  //   component: RunDetail,
-  //   showInSidebar: false,
-  //   displayName: 'Run Detail',
-  //   isExact: false,
-  //   title: pageTitlesEnum.RUN_DETAIL,
-  // },
-  // Experiment: {
-  //   path: PathEnum.Experiment,
-  //   component: Experiment,
-  //   showInSidebar: false,
-  //   displayName: 'Experiment',
-  //   isExact: false,
-  //   title: pageTitlesEnum.EXPERIMENT,
-  // },
-  // METRICS_EXPLORER: {
-  //   path: PathEnum.Metrics_Explorer,
-  //   component: MetricsExplorer,
-  //   showInSidebar: false,
-  //   icon: 'metrics',
-  //   displayName: 'Metrics_v2',
-  //   isExact: true,
-  //   title: pageTitlesEnum.METRICS_EXPLORER_V2,
-  // },
 };
 
 export default routes;
