@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from aimstack.ml import Run
+from aimstack.experiment_tracker import TrainingRun
 
 try:
     from kerastuner.engine.tuner_utils import TunerCallback
@@ -11,14 +11,14 @@ except ImportError:
     )
 
 
-class AimCallback(TunerCallback):
+class BaseCallback(TunerCallback):
     """
-    AimCallback callback class.
+    BaseCallback callback class.
 
     Args:
-        repo (:obj:`str`, optional): Aim repository path or Repo object to which Run object is bound.
+        repo (:obj:`str`, optional): Aim repository path or Repo object to which TrainingRun object is bound.
             If skipped, default Repo is used.
-        experiment_name (:obj:`str`, optional): Sets Run's `experiment` property. 'default' if not specified.
+        experiment_name (:obj:`str`, optional): Sets TrainingRun's `experiment` property. 'default' if not specified.
             Can be used later to query runs/sequences.
         log_system_params (:obj:`bool`, optional): Enable/Disable logging of system params such as installed packages,
             git info, environment variables, etc.
@@ -43,7 +43,7 @@ class AimCallback(TunerCallback):
         self._run = None
 
     @property
-    def experiment(self) -> Run:
+    def experiment(self) -> TrainingRun:
         if self._run is not None:
             return self._run
 
@@ -52,7 +52,8 @@ class AimCallback(TunerCallback):
         tuner_key = next(iter(trial_dict))
         self._current_trial_id = trial_dict[tuner_key].trial_id
         if self._current_trial_id not in self._started_trials:
-            self._run = Run(repo=self._repo_path)
+            self._run = TrainingRun(repo=self._repo_path)
+            self._run['is_keras_tuner_run'] = True
             if self._experiment_name is not None:
                 self._run.experiment = self._experiment_name
             if self._log_system_params:
