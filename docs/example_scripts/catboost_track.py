@@ -1,5 +1,5 @@
 import numpy as np
-from aimstack.ml.integrations.catboost import AimLogger
+from aimstack.catboost_tracker.loggers import BaseLogger as AimLogger
 from catboost import CatBoostClassifier, Pool
 
 # initialize data

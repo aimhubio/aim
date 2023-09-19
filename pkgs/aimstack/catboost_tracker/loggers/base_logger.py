@@ -1,17 +1,17 @@
 from sys import stdout
 from typing import Optional
 
-from aimstack.ml import Run
+from aimstack.experiment_tracker import TrainingRun
 
 
-class AimLogger:
+class BaseLogger:
     """
-    AimLogger logger class.
+    BaseLogger logger class.
 
     Args:
-        repo (:obj:`str`, optional): Aim repository path or Repo object to which Run object is bound.
+        repo (:obj:`str`, optional): Aim repository path or Repo object to which TrainingRun object is bound.
             If skipped, default Repo is used.
-        experiment (:obj:`str`, optional): Sets Run's `experiment` property. 'default' if not specified.
+        experiment (:obj:`str`, optional): Sets TrainingRun's `experiment` property. 'default' if not specified.
             Can be used later to query runs/sequences.
         log_system_params (:obj:`bool`, optional): Enable/Disable logging of system params such as installed packages,
             git info, environment variables, etc.
@@ -40,7 +40,7 @@ class AimLogger:
             assert hasattr(log_cout, 'write')
 
     @property
-    def experiment(self) -> Run:
+    def experiment(self) -> TrainingRun:
         if not self._run:
             self.setup()
         return self._run
@@ -49,10 +49,11 @@ class AimLogger:
         if self._run:
             return
         if self._run_hash:
-            self._run = Run(self._run_hash, repo=self._repo_path)
+            self._run = TrainingRun(self._run_hash, repo=self._repo_path)
         else:
-            self._run = Run(repo=self._repo_path)
+            self._run = TrainingRun(repo=self._repo_path)
             self._run_hash = self._run.hash
+            self._run['is_catboost_run'] = True
             if self._experiment is not None:
                 self._run.experiment = self._experiment
 
