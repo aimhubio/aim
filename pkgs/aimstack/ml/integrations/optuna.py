@@ -6,7 +6,6 @@ from optuna._experimental import experimental_class, experimental_func
 from optuna._imports import try_import
 from optuna.study.study import ObjectiveFuncType
 
-
 with try_import() as _imports:
     from aimstack.ml import Run
 

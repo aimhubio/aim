@@ -11,10 +11,7 @@ except ImportError:
     )
 try:
     from ignite.contrib.handlers.base_logger import (
-        BaseLogger,
-        BaseOptimizerParamsHandler,
-        BaseOutputHandler,
-    )
+        BaseLogger, BaseOptimizerParamsHandler, BaseOutputHandler)
     from ignite.engine import Engine, Events
 except ImportError:
     raise RuntimeError(
@@ -82,7 +79,7 @@ class AimLogger(BaseLogger):
     def log_params(self, params: dict):
         # Handle OmegaConf object
         try:
-            from omegaconf import OmegaConf, Container
+            from omegaconf import Container, OmegaConf
         except ModuleNotFoundError:
             pass
         else:

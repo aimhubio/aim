@@ -1,8 +1,7 @@
 import tensorflow as tf
 from aimstack.tensorboard_tracker import Run as AimRun
 
-
-aim_run = AimRun(sync_tensorboard_log_dir='logs/fit/')
+aim_run = AimRun(sync_tensorboard_log_dir="logs/fit/")
 mnist = tf.keras.datasets.mnist
 
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
@@ -13,19 +12,19 @@ def create_model():
     return tf.keras.models.Sequential(
         [
             tf.keras.layers.Flatten(input_shape=(28, 28)),
-            tf.keras.layers.Dense(512, activation='relu'),
+            tf.keras.layers.Dense(512, activation="relu"),
             tf.keras.layers.Dropout(0.2),
-            tf.keras.layers.Dense(10, activation='softmax'),
+            tf.keras.layers.Dense(10, activation="softmax"),
         ]
     )
 
 
 model = create_model()
 model.compile(
-    optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy']
+    optimizer="adam", loss="sparse_categorical_crossentropy", metrics=["accuracy"]
 )
 
-log_dir = 'logs/fit/'
+log_dir = "logs/fit/"
 tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
 
 model.fit(

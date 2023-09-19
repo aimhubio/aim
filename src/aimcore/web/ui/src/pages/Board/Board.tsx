@@ -39,6 +39,7 @@ import {
 } from './Board.style';
 import BoardConsole from './components/BoardConsole';
 import FormVizElement from './components/VisualizationElements/FormVizElement';
+import LoadingBar from './components/LoadingBar';
 import useBoardStore from './BoardStore';
 
 const liveUpdateEnabled = false;
@@ -69,14 +70,14 @@ function Board({
   const boxContainer = React.useRef<HTMLDivElement>(
     document.createElement('div'),
   );
-  const tobBarRef = React.useRef<HTMLDivElement>(
-    document.querySelector('#app-top-bar'),
-  );
+
   const setEditorValue = useBoardStore((state) => state.setEditorValue);
 
   const boardPath = data.path;
 
   const timerId = React.useRef(0);
+
+  const tobBar = document.querySelector('#app-top-bar');
 
   let liveUpdateTimersRef = React.useRef<Record<string, number>>({});
   let queryKeysForCacheCleaningRef = React.useRef<Record<string, boolean>>({});
@@ -379,7 +380,7 @@ else:
     <ErrorBoundary>
       <Box as='section' height='100vh' className='Board'>
         {(editMode || newMode) &&
-          tobBarRef.current &&
+          tobBar &&
           createPortal(
             <Box
               className='Board__appBar__controls'
@@ -402,7 +403,10 @@ else:
               /> */}
               <Link
                 css={{ display: 'flex' }}
-                to={`${PathEnum.App}/${boardPath}`}
+                to={
+                  window.location.pathname.replace('/edit', '') +
+                  window.location.search
+                }
                 underline={false}
               >
                 <Button variant='outlined' size='xs'>
@@ -410,7 +414,7 @@ else:
                 </Button>
               </Link>
             </Box>,
-            tobBarRef.current,
+            tobBar,
           )}
         <BusyLoaderWrapper
           isLoading={pyodideIsLoading || isLoading || !mounted}
@@ -444,6 +448,7 @@ else:
                 processing={state.isProcessing}
                 fullWidth={!editMode && !newMode}
               >
+                <LoadingBar key={boardPath} boardPath={boardPath} />
                 {state.isProcessing !== false && (
                   <BoardSpinner className='BoardVisualizer__main__components__spinner'>
                     <Spinner />

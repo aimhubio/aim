@@ -4,9 +4,9 @@ from typing import Optional
 from aimstack.ml import Run
 
 try:
-    from fastai.learner import Callback
-    from fastcore.basics import store_attr, detuplify, ignore_exceptions
     from fastai.callback.hook import total_params
+    from fastai.learner import Callback
+    from fastcore.basics import detuplify, ignore_exceptions, store_attr
 except ImportError:
     raise RuntimeError(
         'This contrib module requires fastai to be installed. '
@@ -61,11 +61,11 @@ class AimCallback(Callback):
             self._run.enable_system_monitoring()
         # Log config parameters
         if args:
-            try:
-                for key in args:
+            for key in args:
+                try:
                     self._run.set(key, args[key], strict=False)
-            except Exception as e:
-                logger.warning(f'Aim could not log config parameters -> {e}')
+                except Exception as e:
+                    logger.warning(f'Aim could not log config parameters -> {e}')
 
     def before_fit(self):
         if not self._run:
@@ -81,7 +81,9 @@ class AimCallback(Callback):
         )
         for i, h in enumerate(self.opt.hypers):
             for k, v in h.items():
-                self._run.track(v, f'{k}_{i}', step=self.train_iter, context=context)
+                self._run.track(
+                    v, f'{k}_{i}', step=self.train_iter, context=context
+                )
 
     def before_epoch(self):
         for metric in self.metrics:

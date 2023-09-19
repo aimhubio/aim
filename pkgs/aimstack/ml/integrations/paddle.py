@@ -1,6 +1,7 @@
-from paddle.hapi.callbacks import Callback
 from typing import Optional
+
 from aimstack.ml import Run
+from paddle.hapi.callbacks import Callback
 
 
 class AimCallback(Callback):

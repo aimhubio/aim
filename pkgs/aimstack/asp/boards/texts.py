@@ -12,6 +12,21 @@ if c_hash is None:
 
 texts = TextSequence.filter(f'c.hash=="{c_hash}"' if c_hash else query, signal=search_signal)
 
+texts_flat_list = []
+
+for text in texts:
+    for record in text['values']:
+        if type(record) is list:
+            for rec in record:
+                text_item = text.copy()
+                text_item.pop('values')
+                text_item.update(rec)
+                texts_flat_list.append(text_item)
+        else:
+            text_item = text.copy()
+            text_item.pop('values')
+            text_item.update(record)
+            texts_flat_list.append(text_item)
 
 def flatten(dictionary, parent_key='', separator='.'):
     items = []
@@ -56,25 +71,25 @@ def get_table_data(data=[], keys=[], page_size=10, page_num=1):
     return table_data
 
 
-if texts:
+if texts_flat_list:
     row1, row2 = ui.rows(2)
 
     items_per_page = row1.select('Items per page', ('5', '10', '50', '100'))
-    total_pages = math.ceil((len(texts) / int(items_per_page)))
+    total_pages = math.ceil((len(texts_flat_list) / int(items_per_page)))
     page_numbers = [str(i) for i in range(1, total_pages + 1)]
     page_num = row1.select('Page', page_numbers, index=0)
 
     table_data = get_table_data(
-        data=texts,
+        data=texts_flat_list,
         keys=['name', 'container.hash', 'context',
-              'format', 'range', 'data', 'step', 'index'],
+              'format', 'range', 'data'],
         page_size=int(items_per_page),
         page_num=int(page_num)
     )
 
     row2.table(table_data, {
         'container.hash': lambda val: ui.board_link('run.py', val, state={'container_hash': val}),
-        'data': lambda val: ui.texts([texts[int(val)]])
+        'data': lambda val: ui.texts([texts_flat_list[int(val)]])
     })
 else:
     text = ui.text('No texts found')

@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Dict
 
 from aimstack.ml import Run
 
@@ -22,6 +22,7 @@ class AimCallback:
             Can be used later to query runs/sequences.
         log_system_params (:obj:`bool`, optional): Enable/Disable logging of system params such as installed packages,
             git info, environment variables, etc.
+        args (:obj:`dict`, optional): Arguments to set a run parameters
     """
 
     def __init__(
@@ -29,10 +30,12 @@ class AimCallback:
         repo: Optional[str] = None,
         experiment_name: Optional[str] = None,
         log_system_params: Optional[bool] = True,
+        args: Optional[Dict] = None,
     ):
         self._repo_path = repo
         self._experiment = experiment_name
         self._log_system_params = log_system_params
+        self._args = args
         self._run = None
         self._run_hash = None
 
@@ -43,10 +46,10 @@ class AimCallback:
     @property
     def experiment(self) -> Run:
         if not self._run:
-            self.setup()
+            self.setup(self._args)
         return self._run
 
-    def setup(self):
+    def setup(self, args=None):
         if self._run:
             return
         if self._run_hash:
@@ -59,9 +62,21 @@ class AimCallback:
         if self._log_system_params:
             self._run.enable_system_monitoring()
 
+        if args:
+            for key, value in args.items():
+                self._run.set(key, value, strict=False)
+
+    def before_tracking(self, **kwargs):
+        """Runs before tracking data"""
+        pass
+
+    def after_tracking(self, **kwargs):
+        """Runs after tracking data"""
+        pass
+
     def __call__(self, env: CallbackEnv):
         if env.iteration == env.begin_iteration:
-            self.setup()
+            self.setup(self._args)
 
         self.before_tracking(env=env)
 

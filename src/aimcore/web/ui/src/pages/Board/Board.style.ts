@@ -263,6 +263,16 @@ const BoardBlockTab = styled('div', {
   gap: '$13',
 });
 
+const LoadingBarStyled = styled('div', {
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  height: 2,
+  backgroundColor: '$primary100',
+  zIndex: 9999,
+  transition: 'width 0.2s ease-in-out',
+});
+
 export {
   BoardVisualizerContainer,
   BoardVisualizerPane,
@@ -274,4 +284,5 @@ export {
   BoardConsoleElement,
   BoardBlockTab,
   BoardSpinner,
+  LoadingBarStyled,
 };

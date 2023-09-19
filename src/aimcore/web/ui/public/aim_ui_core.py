@@ -126,6 +126,36 @@ def process_properties(obj: dict):
     return obj
 
 
+# Iterator class for Aim Containers and Sequences which are being returned from filter methods
+# e.g. Metric.filter("s.name == 'loss'")
+
+class ItemListIterator:
+    def __init__(self, items):
+        self.items = items
+        self.index = 0
+
+    def __next__(self):
+        if self.index < len(self.items):
+            result = self.items[self.index]
+            self.index += 1
+            return result
+        else:
+            raise StopIteration
+
+class ItemList:
+    def __init__(self, items):
+        self.items = items
+
+    def __iter__(self):
+        return ItemListIterator(self.items)
+    
+    def __len__(self):
+        return len(self.items)
+    
+    def __getitem__(self, index):
+        return self.items[index]
+
+
 def query_filter(type_, query="", count=None, start=None, stop=None, is_sequence=False, signal=None):
     query_key = f"{type_}_{query}_{count}_{start}_{stop}"
 
@@ -141,9 +171,10 @@ def query_filter(type_, query="", count=None, start=None, stop=None, is_sequence
         if data is None:
             raise WaitForQueryError()
 
-        data = json.loads(data, object_hook=process_properties)
+        data = ItemList(json.loads(data, object_hook=process_properties))
 
         query_results_cache[query_key] = data
+        
         return data
     except Exception as e:
         if "WAIT_FOR_QUERY_RESULT" in str(e):
@@ -978,7 +1009,11 @@ class Table(Component):
             row = {}
 
             for col in self.data:
-                row[col] = self.data[col][i]
+                if i < len(self.data[col]):
+                    row[col] = self.data[col][i]
+                else:
+                    row[col] = None
+                
 
             rows.append(row)
 
@@ -992,7 +1027,10 @@ class Table(Component):
         row = {}
 
         for col in self.data:
-            row[col] = self.data[col][val]
+            if val < len(self.data[col]):
+                row[col] = self.data[col][val]
+            else:
+                row[col] = None
 
         self.set_state({"focused_row": row, "focused_row_index": val})
 

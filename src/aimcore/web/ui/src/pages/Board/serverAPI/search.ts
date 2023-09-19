@@ -52,6 +52,14 @@ export function search(
     );
   }
 
+  pyodideEngine.events.fire(
+    boardPath as string,
+    {
+      queryDispatchedKey: queryKey,
+    },
+    { savePayload: false },
+  );
+
   searchRequest
     .call({
       q: query,
@@ -71,65 +79,8 @@ export function search(
         }
       }
       parseStream<Array<any>>(data)
-        .then((objectList) => {
+        .then((result) => {
           try {
-            let result;
-            if (type_.includes('.Metric')) {
-              let data: any[] = [];
-
-              for (let i = 0; i < objectList.length; i++) {
-                let item = objectList[i];
-                const { values, steps } = filterMetricsValues(item);
-                if (values.length === 0 || steps.length === 0) {
-                  continue;
-                }
-                data.push({
-                  ...item,
-                  values: [...values],
-                  steps: [...steps],
-                });
-              }
-
-              result = data;
-            } else if (isSequence) {
-              let data: any[] = [];
-
-              for (let i = 0; i < objectList.length; i++) {
-                if (!objectList[i].values) {
-                  continue;
-                }
-
-                for (let y = 0; y < objectList[i].values.length; y++) {
-                  let object = objectList[i].values[y];
-                  let step = objectList[i].steps[y];
-                  if (Array.isArray(object)) {
-                    for (let z = 0; z < object.length; z++) {
-                      object[z] = {
-                        ...object[z],
-                      };
-                      data.push({
-                        ...omit(objectList[i], 'values', 'steps'),
-                        ...object[z],
-                        step: step,
-                        index: z,
-                      });
-                    }
-                  } else {
-                    data.push({
-                      ...omit(objectList[i], 'values', 'steps'),
-                      ...object,
-                      step: step,
-                      index: 0,
-                    });
-                  }
-                }
-              }
-
-              result = data;
-            } else {
-              result = objectList;
-            }
-
             if (cb) {
               cb();
             }

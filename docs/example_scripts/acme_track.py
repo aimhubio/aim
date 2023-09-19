@@ -1,19 +1,16 @@
 from typing import Optional
 
-from dm_control import suite as dm_suite
 import dm_env
-
-from acme import specs
-from acme import wrappers
+from acme import specs, wrappers
 from acme.agents.jax import d4pg
 from acme.jax import experiments
 from acme.utils import loggers
-
-from aimstack.ml.adapters.acme import AimCallback, AimWriter
+from aimstack.ml.integrations.acme import AimCallback, AimWriter
+from dm_control import suite as dm_suite
 
 
 def make_environment(seed: int) -> dm_env.Environment:
-    environment = dm_suite.load('cartpole', 'balance')
+    environment = dm_suite.load("cartpole", "balance")
 
     # Make the observations be a flat vector of all concatenated features.
     environment = wrappers.ConcatObservationWrapper(environment)
@@ -41,7 +38,7 @@ d4pg_config = d4pg.D4PGConfig(learning_rate=3e-4, sigma=0.2)
 d4pg_builder = d4pg.D4PGBuilder(d4pg_config)
 
 
-aim_run = AimCallback(repo='.', experiment_name='acme_test')
+aim_run = AimCallback(experiment_name="acme_test")
 
 
 def logger_factory(

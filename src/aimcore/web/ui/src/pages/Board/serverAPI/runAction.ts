@@ -28,6 +28,14 @@ export function runAction(
     return getQueryResultsCacheMap().get(runActionKey).data;
   }
 
+  pyodideEngine.events.fire(
+    boardPath,
+    {
+      runActionDispatchedKey: runActionKey,
+    },
+    { savePayload: false },
+  );
+
   runActionRequest
     .call(actionName, reqBody)
     .then((res: any) => {

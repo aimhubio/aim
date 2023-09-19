@@ -12,6 +12,21 @@ if c_hash is None:
 
 figures = FigureSequence.filter(f'c.hash=="{c_hash}"' if c_hash else query, signal=search_signal)
 
+figures_flat_list = []
+
+for figure in figures:
+    for record in figure['values']:
+        if type(record) is list:
+            for rec in record:
+                figure_item = figure.copy()
+                figure_item.pop('values')
+                figure_item.update(rec)
+                figures_flat_list.append(figure_item)
+        else:
+            figure_item = figure.copy()
+            figure_item.pop('values')
+            figure_item.update(record)
+            figures_flat_list.append(figure_item)
 
 def flatten(dictionary, parent_key='', separator='.'):
     items = []
@@ -56,16 +71,16 @@ def get_table_data(data=[], keys=[], page_size=10, page_num=1):
     return table_data
 
 
-if figures:
+if figures_flat_list:
     row1, row2 = ui.rows(2)
 
     items_per_page = row1.select('Items per page', ('5', '10', '50', '100'))
-    total_pages = math.ceil((len(figures) / int(items_per_page)))
+    total_pages = math.ceil((len(figures_flat_list) / int(items_per_page)))
     page_numbers = [str(i) for i in range(1, total_pages + 1)]
     page_num = row1.select('Page', page_numbers, index=0)
 
     table_data = get_table_data(
-        data=figures,
+        data=figures_flat_list,
         keys=['name', 'container.hash', 'context',
               'format', 'range', 'data', 'step'],
         page_size=int(items_per_page),
@@ -73,7 +88,7 @@ if figures:
     )
     row2.table(table_data, {
         'container.hash': lambda val: ui.board_link('run.py', val, state={'container_hash': val}),
-        'data': lambda val: ui.figures([figures[int(val)]]),
+        'data': lambda val: ui.figures([figures_flat_list[int(val)]]),
     })
 else:
     ui.text('No figures found')

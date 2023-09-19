@@ -88,11 +88,13 @@ function AppWrapper({
         {board && !editMode && (
           <Link
             css={{ display: 'flex' }}
-            to={`${PathEnum.App}/${boardPath}/edit`}
+            to={`${PathEnum.App}/${boardPath}/edit${
+              stateStr ? '?state=' + encodeURIComponent(stateStr) : ''
+            }`}
             underline={false}
           >
             <Button variant='outlined' size='xs' rightIcon={<IconPencil />}>
-              Edit
+              Playground
             </Button>
           </Link>
         )}

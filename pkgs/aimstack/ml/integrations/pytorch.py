@@ -8,15 +8,21 @@ def track_params_dists(model, run: Run):
 
     for name, params in data_hist.items():
         if 'weight' in params:
-            run.get_distribution_sequence(name, {
-                'type': 'data',
-                'params': 'weights',
-            }).track(Distribution(params['weight']))
+            run.get_distribution_sequence(
+                name,
+                {
+                    'type': 'data',
+                    'params': 'weights',
+                },
+            ).track(Distribution(params['weight']))
         if 'bias' in params:
-            run.get_distribution_sequence(name, {
-                'type': 'data',
-                'params': 'biases',
-            }).track(Distribution(params['bias']))
+            run.get_distribution_sequence(
+                name,
+                {
+                    'type': 'data',
+                    'params': 'biases',
+                },
+            ).track(Distribution(params['bias']))
 
 
 def track_gradients_dists(model, run):
@@ -26,15 +32,21 @@ def track_gradients_dists(model, run):
 
     for name, params in grad_hist.items():
         if 'weight' in params:
-            run.get_distribution_sequence(name, {
-                'type': 'gradients',
-                'params': 'weights',
-            }).track(Distribution(params['weight']))
+            run.get_distribution_sequence(
+                name,
+                {
+                    'type': 'gradients',
+                    'params': 'weights',
+                },
+            ).track(Distribution(params['weight']))
         if 'bias' in params:
-            run.get_distribution_sequence(name, {
-                'type': 'gradients',
-                'params': 'biases',
-            }).track(Distribution(params['bias']))
+            run.get_distribution_sequence(
+                name,
+                {
+                    'type': 'gradients',
+                    'params': 'biases',
+                },
+            ).track(Distribution(params['bias']))
 
 
 def get_model_layers(model, dt, parent_name=None):
