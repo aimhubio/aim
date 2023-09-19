@@ -1,6 +1,6 @@
 from typing import Any, Callable, Dict, List, Optional, Union
 
-from aimstack.ml import Run
+from aimstack.experiment_tracker import TrainingRun
 
 try:
     from torch.optim import Optimizer
@@ -20,14 +20,14 @@ except ImportError:
     )
 
 
-class AimLogger(BaseLogger):
+class Logger(BaseLogger):
     """
-    AimLogger logger class.
+    Logger logger class.
 
     Args:
-        repo (:obj:`str`, optional): Aim repository path or Repo object to which Run object is bound.
+        repo (:obj:`str`, optional): Aim repository path or Repo object to which TrainingRun object is bound.
             If skipped, default Repo is used.
-        experiment_name (:obj:`str`, optional): Sets Run's `experiment` property. 'default' if not specified.
+        experiment_name (:obj:`str`, optional): Sets TrainingRun's `experiment` property. 'default' if not specified.
             Can be used later to query runs/sequences.
         log_system_params (:obj:`bool`, optional): Enable/Disable logging of system params such as installed packages,
             git info, environment variables, etc.
@@ -62,13 +62,14 @@ class AimLogger(BaseLogger):
         self._run_hash = None
 
     @property
-    def experiment(self) -> Run:
+    def experiment(self) -> TrainingRun:
         if self._run is None:
             if self._run_hash:
-                self._run = Run(self._run_hash, repo=self._repo_path)
+                self._run = TrainingRun(self._run_hash, repo=self._repo_path)
             else:
-                self._run = Run(repo=self._repo_path)
+                self._run = TrainingRun(repo=self._repo_path)
                 self._run_hash = self._run.hash
+                self._run['is_pytorch_ignite_run'] = True
                 if self._experiment_name is not None:
                     self._run.experiment = self._experiment_name
         if self._log_system_params:
@@ -167,9 +168,9 @@ class OutputHandler(BaseOutputHandler):
         )
 
     def __call__(
-        self, engine: Engine, logger: AimLogger, event_name: Union[str, Events]
+        self, engine: Engine, logger: Logger, event_name: Union[str, Events]
     ) -> None:
-        if not isinstance(logger, AimLogger):
+        if not isinstance(logger, Logger):
             raise TypeError('Handler "OutputHandler" works only with AimLogger')
 
         rendered_metrics = self._setup_output_metrics_state_attrs(engine)
@@ -206,9 +207,9 @@ class OptimizerParamsHandler(BaseOptimizerParamsHandler):
         super(OptimizerParamsHandler, self).__init__(optimizer, param_name, tag)
 
     def __call__(
-        self, engine: Engine, logger: AimLogger, event_name: Union[str, Events]
+        self, engine: Engine, logger: Logger, event_name: Union[str, Events]
     ) -> None:
-        if not isinstance(logger, AimLogger):
+        if not isinstance(logger, Logger):
             raise TypeError('Handler OptimizerParamsHandler works only with AimLogger')
 
         global_step = engine.state.get_event_attrib_value(event_name)
