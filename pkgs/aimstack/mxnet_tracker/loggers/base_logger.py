@@ -2,23 +2,23 @@ import time
 from typing import Any, List, Optional, Union
 
 import numpy as np
-from aimstack.ml import Run
+from aimstack.experiment_tracker import TrainingRun
 from mxnet.gluon.contrib.estimator import (BatchBegin, BatchEnd, EpochBegin,
                                            EpochEnd, Estimator, TrainBegin,
                                            TrainEnd)
 from mxnet.gluon.contrib.estimator.utils import _check_metrics
 
 
-class AimLoggingHandler(
+class LoggingHandler(
     TrainBegin, TrainEnd, EpochBegin, EpochEnd, BatchBegin, BatchEnd
 ):
     """
-    AimLoggingHandler logging handler class.
+    LoggingHandler logging handler class.
 
     Args:
-        repo (:obj:`str`, optional): Aim repository path or Repo object to which Run object is bound.
+        repo (:obj:`str`, optional): Aim repository path or Repo object to which TrainingRun object is bound.
             If skipped, default Repo is used.
-        experiment_name (:obj:`str`, optional): Sets Run's `experiment` property. 'default' if not specified.
+        experiment_name (:obj:`str`, optional): Sets TrainingRun's `experiment` property. 'default' if not specified.
             Can be used later to query runs/sequences.
         log_system_params (:obj:`bool`, optional): Enable/Disable logging of system params such as installed packages,
             git info, environment variables, etc.
@@ -26,7 +26,7 @@ class AimLoggingHandler(
             log_interval='epoch': display metrics every epoch
             log_interval=integer k: display metrics every interval of k batches
         metrics: (:obj:`list`, optional): Metrics to be logged, logged at batch end, epoch end, train end.
-        priority: (:obj:`float`, optional), default np.Inf:  Priority level of the AimLoggingHandler.
+        priority: (:obj:`float`, optional), default np.Inf:  Priority level of the LoggingHandler.
             Priority level is sorted in ascending order.
             The lower the number is, the higher priority level the handler is.
     """
@@ -165,7 +165,7 @@ class AimLoggingHandler(
         self.batch_index += 1
 
     @property
-    def experiment(self) -> Run:
+    def experiment(self) -> TrainingRun:
         if not self._run:
             self.setup()
         return self._run
@@ -173,10 +173,11 @@ class AimLoggingHandler(
     def setup(self, estimator: Optional[Estimator] = None, args=None):
         if not self._run:
             if self._run_hash:
-                self._run = Run(self._run_hash, repo=self.repo)
+                self._run = TrainingRun(self._run_hash, repo=self.repo)
             else:
-                self._run = Run(repo=self.repo)
+                self._run = TrainingRun(repo=self.repo)
                 self._run_hash = self._run.hash
+                self._run['is_mxnet_run'] = True
                 if self.experiment_name is not None:
                     self._run.experiment = self.experiment_name
             if self.log_system_params:

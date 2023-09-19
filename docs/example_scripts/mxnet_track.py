@@ -1,7 +1,7 @@
 import warnings
 
 import mxnet as mx
-from aimstack.ml.integrations.mxnet import AimLoggingHandler
+from aimstack.mxnet_tracker.loggers import LoggingHandler as AimLoggingHandler
 from mxnet import gluon
 from mxnet.gluon.contrib.estimator import estimator
 from mxnet.gluon.model_zoo import vision
