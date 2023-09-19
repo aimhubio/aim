@@ -4,7 +4,7 @@ from logging import getLogger
 from typing import Dict, List, Optional
 
 from aim._sdk.num_utils import is_number
-from aimstack.ml import Run
+from aimstack.experiment_tracker import TrainingRun
 
 try:
     from transformers.trainer_callback import TrainerCallback
@@ -17,14 +17,14 @@ except ImportError:
 logger = getLogger(__name__)
 
 
-class AimCallback(TrainerCallback):
+class BaseCallback(TrainerCallback):
     """
     AimCallback callback class.
 
     Args:
-        repo (:obj:`str`, optional): Aim repository path or Repo object to which Run object is bound.
+        repo (:obj:`str`, optional): Aim repository path or Repo object to which TrainingRun object is bound.
             If skipped, default Repo is used.
-        experiment_name (:obj:`str`, optional): Sets Run's `experiment` property. 'default' if not specified.
+        experiment_name (:obj:`str`, optional): Sets TrainingRun's `experiment` property. 'default' if not specified.
             Can be used later to query runs/sequences.
         log_system_params (:obj:`bool`, optional): Enable/Disable logging of system params such as installed packages,
             git info, environment variables, etc.
@@ -55,10 +55,11 @@ class AimCallback(TrainerCallback):
 
         if not self._run:
             if self._run_hash:
-                self._run = Run(self._run_hash, repo=self._repo_path)
+                self._run = TrainingRun(self._run_hash, repo=self._repo_path)
             else:
-                self._run = Run(repo=self._repo_path)
+                self._run = TrainingRun(repo=self._repo_path)
                 self._run_hash = self._run.hash
+                self._run['is_hugging_face_run'] = True
                 if self._experiment_name is not None:
                     self._run.experiment = self._experiment_name
         if self._log_system_params:
