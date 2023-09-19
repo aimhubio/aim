@@ -1,8 +1,7 @@
 from typing import Optional
 
-from aimstack.ml import Run
-from aimstack.ml.integrations.keras_mixins import \
-    TrackerKerasCallbackMetricsEpochEndMixin
+from aimstack.experiment_tracker import TrainingRun
+from aimstack.keras_tracker.mixins import TrackerKerasCallbackMetricsEpochEndMixin
 
 try:
     from tensorflow.keras.callbacks import Callback
@@ -13,14 +12,14 @@ except ImportError:
     )
 
 
-class AimCallback(TrackerKerasCallbackMetricsEpochEndMixin, Callback):
+class BaseCallback(TrackerKerasCallbackMetricsEpochEndMixin, Callback):
     """
-    AimCallback callback class.
+    BaseCallback callback class.
 
     Args:
-        repo (:obj:`str`, optional): Aim repository path or Repo object to which Run object is bound.
+        repo (:obj:`str`, optional): Aim repository path or Repo object to which TrainingRun object is bound.
             If skipped, default Repo is used.
-        experiment_name (:obj:`str`, optional): Sets Run's `experiment` property. 'default' if not specified.
+        experiment_name (:obj:`str`, optional): Sets TrainingRun's `experiment` property. 'default' if not specified.
             Can be used later to query runs/sequences.
         log_system_params (:obj:`bool`, optional): Enable/Disable logging of system params such as installed packages,
             git info, environment variables, etc.
@@ -39,7 +38,8 @@ class AimCallback(TrackerKerasCallbackMetricsEpochEndMixin, Callback):
         self._log_system_params = log_system_params
         self._capture_terminal_logs = capture_terminal_logs
 
-        self._run = Run(repo=repo)
+        self._run = TrainingRun(repo=repo)
+        self._run['is_tensorflow_run'] = True
         if experiment_name is not None:
             self._run.experiment = experiment_name
         if log_system_params:
@@ -49,9 +49,9 @@ class AimCallback(TrackerKerasCallbackMetricsEpochEndMixin, Callback):
         self._repo_path = repo
 
     @property
-    def experiment(self) -> Run:
+    def experiment(self) -> TrainingRun:
         if not self._run:
-            self._run = Run(self._run_hash, repo=self._repo_path)
+            self._run = TrainingRun(self._run_hash, repo=self._repo_path)
             if self._log_system_params:
                 self._run.enable_system_monitoring()
         return self._run
@@ -61,7 +61,7 @@ class AimCallback(TrackerKerasCallbackMetricsEpochEndMixin, Callback):
         cls,
         repo: Optional[str] = None,
         experiment: Optional[str] = None,
-        run: Optional[Run] = None,
+        run: Optional[TrainingRun] = None,
     ):
         # Keep `metrics` method for backward compatibility
         return cls(repo, experiment, run)
@@ -73,7 +73,3 @@ class AimCallback(TrackerKerasCallbackMetricsEpochEndMixin, Callback):
 
     def __del__(self):
         self.close()
-
-
-# Keep `AimTracker` for backward compatibility
-AimTracker = AimCallback

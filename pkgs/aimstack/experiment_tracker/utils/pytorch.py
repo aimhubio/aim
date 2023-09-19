@@ -1,7 +1,7 @@
-from aimstack.ml import Run
+from aimstack.experiment_tracker import TrainingRun
 
 
-def track_params_dists(model, run: Run):
+def track_params_dists(model, run: TrainingRun):
     from aimstack.asp.loggers.distribution import Distribution
 
     data_hist = get_model_layers(model, 'data')
@@ -25,7 +25,7 @@ def track_params_dists(model, run: Run):
             ).track(Distribution(params['bias']))
 
 
-def track_gradients_dists(model, run):
+def track_gradients_dists(model, run: TrainingRun):
     from aimstack.asp.loggers.distribution import Distribution
 
     grad_hist = get_model_layers(model, 'grad')

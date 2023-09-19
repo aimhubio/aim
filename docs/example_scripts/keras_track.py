@@ -1,7 +1,7 @@
 import logging
 
 import numpy as np
-from aimstack.ml.integrations.keras import AimCallback
+from aimstack.keras_tracker.callbacks import BaseCallback as AimCallback
 from tensorflow import keras
 from tensorflow.keras import layers
 

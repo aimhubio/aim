@@ -1,4 +1,4 @@
-class TrackerKerasCallbackMetricsEpochEndMixin(object):
+class TrackerKerasCallbackMetricsEpochEndMixin:
     def on_epoch_end(self, epoch, logs=None):
         # Log metrics
         self._log_epoch_metrics(epoch, logs)
