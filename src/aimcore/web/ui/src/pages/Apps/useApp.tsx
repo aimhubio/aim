@@ -1,5 +1,6 @@
 import React from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
+import * as _ from 'lodash-es';
 
 import { ANALYTICS_EVENT_KEYS_MAP } from 'config/analytics/analyticsKeysMap';
 import { PathEnum } from 'config/enums/routesEnum';
@@ -27,7 +28,7 @@ function useApp() {
     : [];
 
   const sortedList = React.useMemo(() => {
-    const list = boardsList;
+    const list = _.sortBy(boardsList);
     // Separate directories and files
     let dirs = list.filter((path) => path.includes('/'));
     let files = list.filter((path) => !path.includes('/'));

@@ -14,7 +14,7 @@ function BoardLinkVizElement(props: any) {
   const url = new URL(window.location.href);
 
   const isEditMode =
-    url.pathname.startsWith('/app/') && url.pathname.endsWith('/edit');
+    url.pathname.startsWith(PathEnum.Apps) && url.pathname.endsWith('/edit');
 
   const packageName = props.options.package_name;
   const stateParam = props.options.state_param;
