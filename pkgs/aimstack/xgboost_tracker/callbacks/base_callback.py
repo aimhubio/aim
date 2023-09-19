@@ -1,6 +1,6 @@
 from typing import Optional
 
-from aimstack.ml import Run
+from aimstack.experiment_tracker import TrainingRun
 
 try:
     from xgboost.callback import TrainingCallback
@@ -11,14 +11,14 @@ except ImportError:
     )
 
 
-class AimCallback(TrainingCallback):
+class BaseCallback(TrainingCallback):
     """
-    AimCallback callback class.
+    BaseCallback callback class.
 
     Args:
-        repo (:obj:`str`, optional): Aim repository path or Repo object to which Run object is bound.
+        repo (:obj:`str`, optional): Aim repository path or Repo object to which TrainingRun object is bound.
             If skipped, default Repo is used.
-        experiment_name (:obj:`str`, optional): Sets Run's `experiment` property. 'default' if not specified.
+        experiment_name (:obj:`str`, optional): Sets TrainingRun's `experiment` property. 'default' if not specified.
             Can be used later to query runs/sequences.
         log_system_params (:obj:`bool`, optional): Enable/Disable logging of system params such as installed packages,
             git info, environment variables, etc.
@@ -38,7 +38,7 @@ class AimCallback(TrainingCallback):
         self._run_hash = None
 
     @property
-    def experiment(self) -> Run:
+    def experiment(self) -> TrainingRun:
         if not self._run:
             self.setup()
         return self._run
@@ -47,10 +47,11 @@ class AimCallback(TrainingCallback):
         if self._run:
             return
         if self._run_hash:
-            self._run = Run(self._run_hash, repo=self._repo_path)
+            self._run = TrainingRun(self._run_hash, repo=self._repo_path)
         else:
-            self._run = Run(repo=self._repo_path)
+            self._run = TrainingRun(repo=self._repo_path)
             self._run_hash = self._run.hash
+            self._run['is_xgboost_run'] = True
             if self._experiment is not None:
                 self._run.experiment = self._experiment
         if self._log_system_params:

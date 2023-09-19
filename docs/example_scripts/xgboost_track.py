@@ -5,7 +5,7 @@ from __future__ import division
 
 import numpy as np
 import xgboost as xgb
-from aimstack.ml.integrations.xgboost import AimCallback
+from aimstack.xgboost_tracker.callbacks import BaseCallback as AimCallback
 
 # label need to be 0 to num_class -1
 data = np.loadtxt(
