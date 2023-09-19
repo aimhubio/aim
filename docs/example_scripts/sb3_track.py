@@ -1,4 +1,4 @@
-from aimstack.ml.integrations.sb3 import AimCallback
+from aimstack.sb3_tracker.callbacks import BaseCallback as AimCallback
 from stable_baselines3 import A2C
 
 model = A2C("MlpPolicy", "CartPole-v1", verbose=2)

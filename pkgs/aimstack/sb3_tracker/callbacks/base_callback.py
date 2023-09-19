@@ -2,16 +2,16 @@ import logging
 from typing import Any, Dict, Optional, Tuple, Union
 
 import numpy as np
-from aimstack.ml import Run
-from stable_baselines3.common.callbacks import BaseCallback  # type: ignore
+from aimstack.experiment_tracker import TrainingRun
+from stable_baselines3.common.callbacks import BaseCallback as Callback  # type: ignore
 from stable_baselines3.common.logger import KVWriter, Logger
 
 logger = logging.getLogger(__name__)
 
 
-class AimOutputFormat(KVWriter):
+class OutputFormat(KVWriter):
     """
-    Track key/value pairs into Aim run.
+    Track key/value pairs into TrainingRun.
     """
 
     def __init__(self, aim_callback):
@@ -42,14 +42,14 @@ class AimOutputFormat(KVWriter):
                     )
 
 
-class AimCallback(BaseCallback):
+class BaseCallback(Callback):
     """
-    AimCallback callback class.
+    BaseCallback callback class.
 
     Args:
-        repo (:obj:`str`, optional): Aim repository path or Repo object to which Run object is bound.
+        repo (:obj:`str`, optional): Aim repository path or Repo object to which TrainingRun object is bound.
             If skipped, default Repo is used.
-        experiment_name (:obj:`str`, optional): Sets Run's `experiment` property. 'default' if not specified.
+        experiment_name (:obj:`str`, optional): Sets TrainingRun's `experiment` property. 'default' if not specified.
             Can be used later to query runs/sequences.
         log_system_params (:obj:`bool`, optional): Enable/Disable logging of system params such as installed packages,
             git info, environment variables, etc.
@@ -83,7 +83,7 @@ class AimCallback(BaseCallback):
 
         loggers = Logger(
             folder=None,
-            output_formats=[AimOutputFormat(self)],
+            output_formats=[OutputFormat(self)],
         )
 
         self.model.set_logger(loggers)
@@ -100,10 +100,11 @@ class AimCallback(BaseCallback):
     def setup(self, args=None):
         if not self._run:
             if self._run_hash:
-                self._run = Run(self._run_hash, repo=self.repo)
+                self._run = TrainingRun(self._run_hash, repo=self.repo)
             else:
-                self._run = Run(repo=self.repo)
+                self._run = TrainingRun(repo=self.repo)
                 self._run_hash = self._run.hash
+                self._run['is_sb3_run'] = True
                 if self.experiment_name is not None:
                     self._run.experiment = self.experiment_name
             if self.log_system_params:
