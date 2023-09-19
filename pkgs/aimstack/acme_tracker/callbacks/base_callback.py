@@ -1,17 +1,17 @@
 from typing import Dict, Optional
 
 from acme.utils.loggers.base import Logger, LoggingData
-from aimstack.ml import Run
+from aimstack.experiment_tracker import TrainingRun
 
 
-class AimCallback:
+class BaseCallback:
     """
-    AimCallback callback class.
+    BaseCallback callback class.
 
     Args:
-        repo (:obj:`str`, optional): Aim repository path or Repo object to which Run object is bound.
+        repo (:obj:`str`, optional): Aim repository path or Repo object to which TrainingRun object is bound.
             If skipped, default Repo is used.
-        experiment_name (:obj:`str`, optional): Sets Run's `experiment` property. 'default' if not specified.
+        experiment_name (:obj:`str`, optional): Sets TrainingRun's `experiment` property. 'default' if not specified.
             Can be used later to query runs/sequences.
         log_system_params (:obj:`bool`, optional): Enable/Disable logging of system params such as installed packages,
             git info, environment variables, etc.
@@ -42,10 +42,11 @@ class AimCallback:
     def setup(self, args=None):
         if not self._run:
             if self._run_hash:
-                self._run = Run(self._run_hash, repo=self.repo)
+                self._run = TrainingRun(self._run_hash, repo=self.repo)
             else:
-                self._run = Run(repo=self.repo)
+                self._run = TrainingRun(repo=self.repo)
                 self._run_hash = self._run.hash
+                self._run['is_acme_run'] = True
                 if self.experiment_name is not None:
                     self._run.experiment = self.experiment_name
             if self.log_system_params:
@@ -64,7 +65,7 @@ class AimCallback:
             self._run.close()
 
 
-class AimWriter(Logger):
+class BaseWriter(Logger):
     def __init__(self, aim_run, logger_label, steps_key, task_id):
         self.aim_run = aim_run
         self.logger_label = logger_label
