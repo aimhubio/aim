@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Route } from 'react-router-dom';
+import { Route, useRouteMatch } from 'react-router-dom';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import { ToastProvider, Toast } from 'components/kit_v2';
@@ -10,13 +10,32 @@ import useApp from './useApp';
 import AppPage from './components/AppPage';
 
 function App(): React.FunctionComponentElement<React.ReactNode> {
-  const { data, isLoading, notifications } = useApp();
+  const { data, isLoading, notifications, setAppName } = useApp();
+
+  const match = useRouteMatch<{ appName: string }>();
+  const appName = match.params['appName'];
+
+  React.useEffect(() => {
+    setAppName(appName);
+  }, [appName]);
+
   return (
     <ErrorBoundary>
       {isLoading ? null : (
-        <Route path={[`${PathEnum.App}/*`, `${PathEnum.App}/*/edit`]} exact>
+        <Route
+          path={[
+            `${PathEnum.App.replace(':appName', appName)}/*`,
+            `${PathEnum.App.replace(':appName', appName)}/*/edit`,
+          ]}
+          exact
+        >
           {(props) => (
-            <AppPage key={props.location.pathname} {...props} data={data} />
+            <AppPage
+              key={props.location.pathname}
+              {...props}
+              data={data}
+              appName={appName}
+            />
           )}
         </Route>
       )}

@@ -210,6 +210,7 @@ export async function loadPyodideInstance() {
     namespace: null,
     isLoading: true,
     registeredPackages: [],
+    boards: null,
   });
   // @ts-ignore
   const pyodide = await window.loadPyodide({
@@ -400,11 +401,18 @@ export async function loadPyodideInstance() {
     pyodide.registerJsModule(packageName, jsModule);
   });
 
+  let boards: Record<string, string[]> = {};
+
+  for (let pkg in availablePackages) {
+    boards[pkg] = availablePackages[pkg].boards;
+  }
+
   pyodideEngine.setPyodide({
     current: pyodide,
     namespace,
     isLoading: false,
     registeredPackages: Object.keys(availablePackages),
+    boards,
   });
 }
 

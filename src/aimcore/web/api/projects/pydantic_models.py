@@ -37,6 +37,7 @@ class PackageRegisteredModels(BaseModel):
     sequences: List[str]
     containers: List[str]
     actions: List[str]
+    boards: List[str]
 
 
 ProjectNamesList = List[str]

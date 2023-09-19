@@ -10,6 +10,7 @@ function usePyodide() {
   const registeredPackages = usePyodideEngine(
     pyodideEngine.pyodideRegisteredPackagesSelector,
   );
+  const boards = usePyodideEngine(pyodideEngine.boardsSelector);
 
   const loadPyodide = React.useCallback(() => {
     if (pyodide !== null) {
@@ -29,6 +30,7 @@ function usePyodide() {
     namespace,
     isLoading,
     registeredPackages,
+    boards,
     pyodide,
     loadPyodide,
   };

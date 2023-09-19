@@ -20,15 +20,16 @@ function AppWrapper({
   editMode,
   boardList,
   stateStr,
+  appName,
 }: AppWrapperProps) {
   const path = boardPath?.replace('/edit', '');
-  const board = useBoardStore((state) => state.boards?.[path]);
+  const board = useBoardStore((state) => state.boards?.[`${appName}:${path}`]);
   const fetchBoard = useBoardStore((state) => state.fetchBoard);
   // const updateBoard = useBoardStore((state) => state.editBoard);
 
   React.useEffect(() => {
     if (boardPath && !board) {
-      fetchBoard(path);
+      fetchBoard(path, appName);
     }
   }, [boardPath]);
 
@@ -42,8 +43,12 @@ function AppWrapper({
     const splitPath = path.split('/');
     let items = [
       {
-        name: 'App',
-        path: '/app',
+        name: 'Apps',
+        path: PathEnum.Apps,
+      },
+      {
+        name: appName,
+        path: PathEnum.App.replace(':appName', appName),
       },
       {
         name: splitPath.map((path, index) => {
@@ -59,13 +64,13 @@ function AppWrapper({
             </Text>
           );
         }),
-        path: `/app/${path}`,
+        path: `${PathEnum.App.replace(':appName', appName)}/${path}`,
       },
     ];
     if (editMode) {
       items.push({
         name: 'Edit',
-        path: `/app/${path}/edit`,
+        path: `${PathEnum.App.replace(':appName', appName)}/${path}/edit`,
       });
     }
 
@@ -88,7 +93,10 @@ function AppWrapper({
         {board && !editMode && (
           <Link
             css={{ display: 'flex' }}
-            to={`${PathEnum.App}/${boardPath}/edit${
+            to={`${PathEnum.App.replace(
+              ':appName',
+              appName,
+            )}/${boardPath}/edit${
               stateStr ? '?state=' + encodeURIComponent(stateStr) : ''
             }`}
             underline={false}
@@ -100,7 +108,7 @@ function AppWrapper({
         )}
       </TopBar>
       <Box display='flex' height='calc(100% - 28px)'>
-        <AppSidebar boards={boardList} editMode={editMode} />
+        <AppSidebar boards={boardList} editMode={editMode} appName={appName} />
         <BoardWrapper>
           {board && (
             <Board
