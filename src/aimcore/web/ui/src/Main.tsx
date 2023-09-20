@@ -12,6 +12,7 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import NotificationServiceContainer from 'components/NotificationServiceContainer/NotificationServiceContainer';
 
 import { checkIsBasePathInCachedEnv, getBasePath } from 'config/config';
+import { PathEnum } from 'config/enums/routesEnum';
 
 import PageWrapper from 'pages/PageWrapper';
 
@@ -85,7 +86,7 @@ function Main(): React.FunctionComponentElement<React.ReactNode> {
                     </Route>
                   );
                 })}
-                <Redirect to='/app' />
+                <Redirect to={PathEnum.Apps} />
               </Switch>
             </React.Suspense>
           </div>
