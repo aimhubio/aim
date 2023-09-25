@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 
 class Package:
     pool: Dict[str, 'Package'] = {}
+    attributes = ('name', 'category', 'author', 'description')
 
     def __init__(self, name, pkg):
         self.name = name

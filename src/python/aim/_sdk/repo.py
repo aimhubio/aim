@@ -496,3 +496,13 @@ class Repo(object):
             for package in packages:
                 apf.write(f"{package}\n")
         return True
+
+    def load_active_packages(self):
+        if self._is_remote_repo:
+            return
+        from aim._sdk.package_utils import Package
+        active_pkg_file = os.path.join(self.path, 'active_pkg')
+        pkgs_dir = os.path.join(self.path, 'pkgs')
+        with open(active_pkg_file, 'r') as apf:
+            for pkg_name in apf.read().split():
+                Package.load_package(pkg_name, pkgs_dir)
