@@ -27,16 +27,18 @@ def get_table_data(data=[], page_size=10, page_num=1, should_fold=True):
 
     runs = data[(page_num - 1) * page_size:page_num * page_size]
 
-    for run in runs:
+    for i, run in enumerate(runs):
         items = run.items() if should_fold else flatten(run).items()
         for key, value in items:
             if key in exclude_keys:
                 continue
             else:
-                if key in table_data:
-                    table_data[key].append(f'{value}')
-                else:
-                    table_data[key] = [f'{value}']
+                if key not in table_data:
+                    table_data[key] = [None] * i
+                elif len(table_data[key]) < i:
+                    table_data[key].extend([None] * (i - len(table_data[key])))
+            
+                table_data[key].append(f'{value}')
     return table_data
 
 
