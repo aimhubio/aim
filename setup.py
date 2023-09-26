@@ -72,6 +72,7 @@ REQUIRED = [
     'requests',
     'segment-analytics-python',
     'importlib_metadata',
+    'tabulate',
 ]
 
 

@@ -54,7 +54,11 @@ async def project_packages_api(names_only: Optional[bool] = False,
                 'containers': pkg.containers,
                 'sequences': pkg.sequences,
                 'actions': pkg.actions,
-                'boards': [board.as_posix() for board in pkg.boards]
+                'boards': [board.as_posix() for board in pkg.boards],
+                'name': pkg.name,
+                'description': pkg.description,
+                'author': pkg.author,
+                'category': pkg.category,
             } for pkg in Package.pool.values()}
     else:
         return list(Package.pool.keys())

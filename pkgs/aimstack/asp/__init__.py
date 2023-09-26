@@ -17,3 +17,7 @@ __aim_types__ = [
 ]
 
 __aim_actions__ = [get_project_stats]
+
+__description__ = 'Base package, providing building blocks for data logging and exploration.'
+__author__ = 'AimHub Inc.'
+__category__ = 'Generic Log Exploration'
