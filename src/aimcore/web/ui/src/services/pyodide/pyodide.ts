@@ -1,6 +1,7 @@
 import * as _ from 'lodash-es';
 
 import { AIM_VERSION, getBasePath } from 'config/config';
+import { PathEnum } from 'config/enums/routesEnum';
 
 import { fetchPackages } from 'modules/core/api/projectApi';
 
@@ -155,8 +156,15 @@ window.setState = (update: any, boardPath: string, persist = false) => {
 
   // This section add persistence for state through saving it to URL and localStorage
 
-  // TODO: remove hardcoded '/app/' from pathname
-  if (persist && boardPath === window.location.pathname.slice(5)) {
+  let urlPackageAndBoardPath = window.location.pathname.slice(
+    PathEnum.Apps.length + 1,
+  );
+  // Remove pakage name from url
+  let urlBoardPath = urlPackageAndBoardPath.slice(
+    urlPackageAndBoardPath.indexOf('/') + 1,
+  );
+
+  if (persist && boardPath === urlBoardPath) {
     // Escape form state updates and unnecessary keys
 
     let boartState: Record<string, {}> = {};
