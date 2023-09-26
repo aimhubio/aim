@@ -59,9 +59,9 @@ def create_package(name, install, verbose):
         src_dir = pkg_dir / 'src' / name
         src_dir.mkdir(parents=True)
 
-        models_dir = src_dir / 'models'
-        models_dir.mkdir()
-        (models_dir / '__init__.py').touch()
+        types_dir = src_dir / 'types'
+        types_dir.mkdir()
+        (types_dir / '__init__.py').touch()
 
         boards_dir = src_dir / 'boards'
         boards_dir.mkdir()

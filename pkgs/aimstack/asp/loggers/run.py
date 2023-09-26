@@ -79,10 +79,6 @@ class Run(Container, Caller):
             self.sequences.typed_sequence(SystemMetric, resource_name, context).track(usage)
 
     @property
-    def creation_time(self) -> float:
-        return self._tree[KeyNames.INFO_PREFIX, 'creation_time']
-
-    @property
     def created_at(self) -> datetime.datetime:
         return datetime.datetime.fromtimestamp(self.creation_time, tz=pytz.utc)
 

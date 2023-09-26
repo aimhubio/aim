@@ -227,6 +227,7 @@ class Sequence(Generic[ItemType], ABCSequence):
         axis_names = set(axis.keys())
         with self.storage.write_batch(self._container_hash):
             if self._info.empty:
+                sequence_type = self.get_full_typename()
                 self._tree[KeyNames.INFO_PREFIX, 'creation_time'] = utc_timestamp()
                 self._tree[KeyNames.INFO_PREFIX, 'version'] = self.version
                 self._tree[KeyNames.INFO_PREFIX, KeyNames.OBJECT_CATEGORY] = self.object_category
@@ -234,11 +235,11 @@ class Sequence(Generic[ItemType], ABCSequence):
                 self._tree[KeyNames.INFO_PREFIX, 'last_step'] = self._info.last_step = step
                 self._tree[KeyNames.INFO_PREFIX, 'axis'] = tuple(axis_names)
                 self._tree[KeyNames.INFO_PREFIX, KeyNames.VALUE_TYPE] = self._info.dtype = value_type
-                self._tree[KeyNames.INFO_PREFIX, KeyNames.SEQUENCE_TYPE] = self.get_full_typename()
+                self._tree[KeyNames.INFO_PREFIX, KeyNames.SEQUENCE_TYPE] = sequence_type
 
                 self._meta_tree[KeyNames.CONTEXTS, self._ctx_idx] = self._context.to_dict()
                 self._container_tree[KeyNames.CONTEXTS, self._ctx_idx] = self._context.to_dict()
-                for typename in self.get_full_typename().split('->'):
+                for typename in sequence_type.split('->'):
                     self._meta_tree[KeyNames.SEQUENCES, typename, self._ctx_idx, self.name] = 1
 
                 self._tree['first_value'] = value
@@ -268,12 +269,19 @@ class Sequence(Generic[ItemType], ABCSequence):
             self._values[step] = val
             self._info.next_step = self._info.last_step + 1
 
+    def get_logged_typename(self) -> str:
+        if self.is_empty:
+            return self.get_full_typename()
+        return self._tree[KeyNames.INFO_PREFIX, KeyNames.SEQUENCE_TYPE]
+
     def __iter__(self) -> Iterator[Tuple[int, Tuple[Any, ...]]]:
         data_iterator = zip(self.items(), zip(map(self.axis, self.axis_names)))
         for (step, value), axis_values in data_iterator:
             yield step, (value,) + axis_values
 
     def __getitem__(self, item: Union[slice, str, Tuple[str]]) -> 'SequenceView':
+        if isinstance(item, int):
+            return self._data.reservoir()[item]
         if isinstance(item, str):
             item = (item,)
         if isinstance(item, slice):
@@ -343,6 +351,8 @@ class SequenceView(object):
         return tuple(self._columns)
 
     def __getitem__(self, item: Union[slice, str, Tuple[str]]) -> 'SequenceView':
+        if isinstance(item, int):
+            return self._sequence._data.reservoir()[item]
         if isinstance(item, str):
             item = (item,)
         if isinstance(item, slice):

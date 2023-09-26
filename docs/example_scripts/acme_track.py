@@ -5,7 +5,7 @@ from acme import specs, wrappers
 from acme.agents.jax import d4pg
 from acme.jax import experiments
 from acme.utils import loggers
-from aimstack.ml.integrations.acme import AimCallback, AimWriter
+from aimstack.acme_tracker.callbacks import BaseWriter as AimWriter, BaseCallback as AimCallback
 from dm_control import suite as dm_suite
 
 

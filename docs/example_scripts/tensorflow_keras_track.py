@@ -1,5 +1,5 @@
 import tensorflow as tf
-from aimstack.ml.integrations.tensorflow import AimCallback
+from aimstack.tensorflow_tracker.callbacks import BaseCallback as AimCallback
 
 mnist = tf.keras.datasets.mnist
 

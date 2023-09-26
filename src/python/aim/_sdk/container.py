@@ -163,7 +163,8 @@ class Container(ABCContainer):
                 container_type = self.get_full_typename()
                 self._tree[KeyNames.INFO_PREFIX, KeyNames.CONTAINER_TYPE] = container_type
                 self._meta_tree[KeyNames.CONTAINER_TYPES_MAP, self.hash] = container_type
-                self._meta_tree[KeyNames.CONTAINERS, self.get_typename()] = 1
+                for typename in container_type.split('->'):
+                    self._meta_tree[KeyNames.CONTAINERS, typename] = 1
                 self[...] = {}
 
                 Container._init_properties(self.__class__, self)
@@ -260,6 +261,9 @@ class Container(ABCContainer):
             return self._props_tree.collect()
         except KeyError:
             return {}
+
+    def get_logged_typename(self) -> str:
+        return self._tree[KeyNames.INFO_PREFIX, KeyNames.CONTAINER_TYPE]
 
     def match(self, expr) -> bool:
         query = RestrictedPythonQuery(expr)

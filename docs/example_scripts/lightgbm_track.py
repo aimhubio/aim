@@ -3,7 +3,7 @@ import os
 import logging
 import lightgbm as lgb
 import pandas as pd
-from aimstack.ml.integrations.lightgbm import AimCallback
+from aimstack.lightgbm_tracker.callbacks import BaseCallback as AimCallback
 from sklearn.metrics import mean_squared_error
 
 
