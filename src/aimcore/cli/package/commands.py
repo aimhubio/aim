@@ -1,17 +1,20 @@
 import click
 import pathlib
+import tabulate
 
 from aim import Repo
+from aim._sdk.package_utils import Package
+
 from .utils import init_template, pyproject_toml_template, get_pkg_distribution_sources
 from .watcher import PackageSourceWatcher
 
 
-@click.group('package')
-def package():
-    """Main command group for package related operations."""
+@click.group('packages')
+def packages():
+    """Manage Aim packages/apps."""
 
 
-@package.command('create')
+@packages.command('create')
 @click.option('--name', '-n', required=True, type=str)
 @click.option('--install', '-i', is_flag=True, default=False)
 @click.option('--verbose', '-v', is_flag=True, default=False)
@@ -29,6 +32,27 @@ def create_package(name, install, verbose):
         click.echo(f'Cannot create package. Directory \'{name}\' already exists.')
         exit(1)
     try:
+        package_categories = list({pkg.category for pkg in Package.pool.values()})
+        package_categories.append('Other')
+        description = click.prompt('Package description')
+        author = click.prompt('Package author', default='unknown')
+
+        def prompt_suffix():
+            choices = '\n'.join([f'[{idx+1}] {cat}' for idx, cat in enumerate(package_categories)])
+            return ':\n' + choices
+
+        def process_value(val):
+            val = int(val)
+            if 1 < val <= len(package_categories):
+                return package_categories[val-1]
+
+        category = click.prompt('Select package category',
+                                show_choices=False,
+                                prompt_suffix=prompt_suffix(),
+                                value_proc=process_value,
+                                type=click.Choice(package_categories))
+        if category == 'Other':
+            category = click.prompt('Enter category name')
         pkg_dir.mkdir()
 
         # create source directories
@@ -45,7 +69,11 @@ def create_package(name, install, verbose):
         # create __init__.py
         init_file = src_dir / '__init__.py'
         with init_file.open('w+') as fh:
-            fh.write(init_template)
+            fh.write(init_template.format(
+                description=description,
+                author=author,
+                category=category
+            ))
 
         # create pyproject.toml
         pyproject_file = pkg_dir / 'pyproject.toml'
@@ -76,7 +104,7 @@ def create_package(name, install, verbose):
             click.echo(f'Successfully installed Aim package \'{name}\'.')
 
 
-@package.command('sync')
+@packages.command('sync')
 @click.option('--name', '-n', required=True, type=str)
 @click.option('--repo', default='', type=str)
 def sync_package(name, repo):
@@ -105,7 +133,7 @@ def sync_package(name, repo):
         package_watcher.start()
 
 
-@package.command('add')
+@packages.command('add')
 @click.option('--name', '-n', required=True, type=str)
 @click.option('--repo', default='', type=str)
 def add_package(name, repo):
@@ -123,7 +151,7 @@ def add_package(name, repo):
     click.echo(f'Added package \'{name}\' to Repo \'{repo_inst.path}\'')
 
 
-@package.command('rm')
+@packages.command('rm')
 @click.option('--name', '-n', required=True, type=str)
 @click.option('--repo', default='', type=str)
 def remove_package(name, repo):
@@ -139,3 +167,21 @@ def remove_package(name, repo):
         click.secho(f'Package \'{name}\' is not listed in Repo \'{repo_inst.path}\'', err=True)
         exit(1)
     click.echo(f'Removed package \'{name}\' from Repo \'{repo_inst.path}\'')
+
+
+@packages.command('ls')
+@click.option('--repo', default='', type=str)
+def list_packages(repo):
+    """
+    List all packages from a specified Aim repository.
+
+    :param repo: Path to the repository. If not specified, the default repository is used.
+    """
+
+    repo_inst = Repo.from_path(repo) if repo else Repo.default()
+    repo_inst.load_active_packages()
+    pkg_infos = {attr_name: [] for attr_name in Package.attributes}
+    for pkg in Package.pool.values():
+        for attr_name in Package.attributes:
+            pkg_infos[attr_name].append(getattr(pkg, attr_name))
+    click.echo(tabulate.tabulate(pkg_infos, pkg_infos.keys(), tablefmt='psql'))

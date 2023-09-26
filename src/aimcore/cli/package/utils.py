@@ -9,6 +9,9 @@ __aim_boards__ = 'boards'  # Path to the Aim boards directory relative to the pa
 
 __aim_types__ = []  # List of Aim Container and Sequence classes available in the package.
 
+__description__ = '{description}'
+__author__ = '{author}'
+__category__ = '{category}'
 
 # The following lines are auto-generated. Please do not remove them.
 from aim import register_package

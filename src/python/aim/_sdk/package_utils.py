@@ -11,9 +11,14 @@ logger = logging.getLogger(__name__)
 
 class Package:
     pool: Dict[str, 'Package'] = {}
+    attributes = ('name', 'category', 'author', 'description')
 
     def __init__(self, name, pkg):
         self.name = name
+        self.description = getattr(pkg, '__description__', None)
+        self.author = getattr(pkg, '__author__', None)
+        self.category = getattr(pkg, '__category__', None)
+
         self._path = pathlib.Path(pkg.__path__[0])
         self._boards_dir: pathlib.Path = None
         self._boards: List[str] = []

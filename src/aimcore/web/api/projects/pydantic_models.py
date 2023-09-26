@@ -34,6 +34,10 @@ class ProjectPinnedSequencesApiIn(BaseModel):
 
 
 class PackageRegisteredModels(BaseModel):
+    name: str
+    description: Optional[str]
+    author: Optional[str]
+    category: Optional[str]
     sequences: List[str]
     containers: List[str]
     actions: List[str]
