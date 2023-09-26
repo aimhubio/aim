@@ -87,10 +87,6 @@ class Run(Container, Caller):
         return datetime.datetime.fromtimestamp(self.creation_time, tz=pytz.utc)
 
     @property
-    def end_time(self) -> Optional[float]:
-        return self._tree[KeyNames.INFO_PREFIX, 'end_time']
-
-    @property
     def ended_at(self) -> Optional[datetime.datetime]:
         end_time = self.end_time
         if end_time is not None:
