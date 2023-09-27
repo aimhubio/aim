@@ -103,7 +103,7 @@
 <h3 align="center">
   <a href="#ℹ️-about"><b>About</b></a> &bull;
   <a href="#-demos"><b>Demos</b></a> &bull;
-  <a href="#-logging-apps"><b>Apps</b></a> &bull;
+  <a href="#-default-logging-apps"><b>Default logging apps</b></a> &bull;
   <a href="#-quick-start"><b>Quick Start</b></a> &bull;
   <a href="https://github.com/aimhubio/aim/tree/main/examples"><b>Examples</b></a> &bull;
   <a href="https://aimstack.readthedocs.io/en/latest/"><b>Documentation</b></a> &bull;
@@ -136,7 +136,9 @@ Apart from running the logging apps, Aim comes with explorers and reports.
 - Explorers are advanced logs comparison tools for specific kind of logs - they allow to compare 1000s of sessions of metrics, images, text, audio and other types of data.
 - Reports are embedded knowledge-base that operate with the apps and explorers seamlessly to enable capture the knowledge built on top of the logged  data from the observations through Aim apps and explorers.
 
-With the rise of AI Systems and the challenges it brings forward, logging apps are going to be a crucial part of the software. Our mission is to democratize developer tools for building AI.
+With the rise of AI Systems and the challenges it brings forward, logging apps are going to be a crucial part of the software. 
+
+Our mission is to democratize developer tools for building AI.
 
 <div align="center">
   <img src="https://user-images.githubusercontent.com/13848158/226426018-f7c11c9b-78d9-4ee4-b292-df28b3e8eaa6.jpg" height="140" />
@@ -259,7 +261,8 @@ Code: https://github.com/aimhubio/awesome-aim-demos/tree/main/mnist-training
 ![image](https://github.com/aimhubio/aim/assets/13848158/22d63c83-4b4e-431a-85cb-ff38064f8b55)
 
 
-# 🌍 Logging Apps
+# 🌍 Default logging apps
+Aim comes pre-installed with wide variety of apps. Here is the full lise.
 
 ## Base Apps
 
@@ -375,7 +378,7 @@ aim ui
 ```
 
 # 🛣️ Roadmap
-
+TODO:
 
 
 # 👥 Community
