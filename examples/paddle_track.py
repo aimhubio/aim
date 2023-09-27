@@ -14,5 +14,5 @@ model.prepare(
     metrics=paddle.metric.Accuracy(),
 )
 
-callback = AimCallback(experiment_name="paddle_test")
+callback = AimCallback(experiment_name="example_experiment")
 model.fit(train_dataset, test_dataset, batch_size=64, callbacks=callback)

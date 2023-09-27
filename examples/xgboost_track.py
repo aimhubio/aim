@@ -52,7 +52,7 @@ bst = xgb.train(
     xg_train,
     num_round,
     watchlist,
-    callbacks=[AimCallback(experiment_name="xgboost_test")],
+    callbacks=[AimCallback(experiment_name="example_experiment")],
 )
 # Note: this convention has been changed since xgboost-unity
 # get prediction, this is in 1D array, need reshape to (ndata, nclass)

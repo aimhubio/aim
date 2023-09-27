@@ -29,5 +29,5 @@ model.fit(
     x_train,
     y_train,
     epochs=5,
-    callbacks=[AimCallback(experiment_name="test_tf_keras_cb")],
+    callbacks=[AimCallback(experiment_name="example_experiment")],
 )

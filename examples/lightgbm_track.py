@@ -51,7 +51,7 @@ params = {
     "verbose": 0,
 }
 
-aim_callback = AimCallback(experiment_name="lgb_test", args=params)
+aim_callback = AimCallback(experiment_name="example_experiment", args=params)
 
 logging.info("Starting training...")
 # train

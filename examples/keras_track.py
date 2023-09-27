@@ -50,7 +50,7 @@ model.fit(
     epochs=epochs,
     validation_split=0.1,
     callbacks=[
-        AimCallback(experiment_name="test_keras_cb"),
+        AimCallback(experiment_name="example_experiment"),
     ],
 )
 

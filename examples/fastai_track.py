@@ -101,7 +101,7 @@ learn = cnn_learner(
     loss_func=CrossEntropyLossFlat(),
     metrics=accuracy,
     model_dir="/tmp/model/",
-    cbs=AimCallback(experiment_name="fastai_test"),
+    cbs=AimCallback(experiment_name="example_experiment"),
 )
 
 learn.fit_one_cycle(1, lr_max=slice(10e-6, 1e-4))

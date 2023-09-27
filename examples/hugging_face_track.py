@@ -34,7 +34,7 @@ model = AutoModelForSequenceClassification.from_pretrained(
 
 training_args = TrainingArguments(output_dir="test_trainer")
 
-aim_callback = AimCallback(experiment_name="huggingface_experiment")
+aim_callback = AimCallback(experiment_name="example_experiment")
 
 
 trainer = Trainer(

@@ -55,7 +55,7 @@ test_ds = test_ds.map(standardize_record).cache().batch(64)
 tuner.search(
     train_ds,
     validation_data=test_ds,
-    callbacks=[AimCallback(experiment_name="keras_tuner_test", tuner=tuner)],
+    callbacks=[AimCallback(experiment_name="example_experiment", tuner=tuner)],
 )
 
 best_model = tuner.get_best_models(1)[0]

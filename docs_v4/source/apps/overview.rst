@@ -40,47 +40,45 @@ With the ability generically log everything in the AI System, Aim apps can encom
 Out-of-the-box Aim apps
 ================
 
-Aim comes installed with a number of apps out of the box.
+ML Experiment Tracking
+====================================
+The ML Experiment Tracking Integrations are default available with Aim. 
+These are a set of experiment tracker specific integrations that connect to the respective fraeworks and their trainers.
 
-- **Base App** - the base app provides all the logging primitives and a logs observer UI
-- **Experiment Tracker** - the experiment tracker helps track and manage experiments. It uses the base app primitives.
-- **Langchain Debugger** - the LangChain debugger app helps trace and visualize Langchain execution and experiments.
-- **LlamaIndex Debugger** - the LlamaIndex debugger app
-- **OpenAI Debugger** - the OpenAI debugger app
-- **Integration Apps** - set of apps for a number of ML and LLM frameworks + relevant experiment tracking UIs
+It takes one line to add these loggers to your training script and start logging your experiments to Aim.
 
-You can see the list of apps by just running
+It's plug and go. No need to change your training script or your workflow.
 
-.. code-block:: console
+.. toctree::
+  :maxdepth: 3
+  :caption: ML Experiment Tracking Integration apps
 
-  aim apps ls
+  ./pytorch_ignite_tracker.rst
+  ./pytorch_lightning_tracker.rst
+  ./huggingface_tracker.rst
+  ./keras_tracker.rst
+  ./keras_tuner_tracker.rst
+  ./xgboost_tracker.rst
+  ./catboost_tracker.rst
+  ./lightgbm_tracker.rst
+  ./fastai_tracker.rst
+  ./mxnet_tracker.rst
+  ./optuna_tracker.rst
+  ./paddle_paddle_tracker.rst
+  ./stable_baselines3_tracker.rst
+  ./acme_tracker.rst
+  ./prophet_tracker.rst
 
-Install an Aim app
-==================
 
-Aim apps are python packages, they can be installed using pip.
+AI Systems Tracking
+====================================
+The AI Systsems Tracking are available in Aim by default.
+It consists of a set of trackers that connect to the latest AI systems and keep track of your interaction metadata.
+These systems seamlessly integrate with your existing AI pipelines.
 
-.. code-block:: console
+.. toctree::
+  :maxdepth: 3
+  :caption: AI Systems Tracking Apps
 
-  pip install aim-app-package
-
-Once the app is installed, you can register it with Aim and just run Aim UI:
-
-.. code-block:: console
-
-  aim register aim-app-package
-  aim server
-  aim ui
-
-Aim allows to register as many apps as you'd need, the apps need to be provided in comma-separated list.
-
-Create an Aim app
-========================
-
-.. note::
-  
-  Aim app development SDKs are still in alpha, however they are fully functional - we are doing final iterations with the community.
-
-It's straightforward to create an Aim app.
-Aim provides an app boilerplate and a number of apps are available under packages/aimstack.
-[Link to the app creation guide]
+  ./llamaindex_retriver.rst
+  ./langchain_chatbot.rst

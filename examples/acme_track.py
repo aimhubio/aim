@@ -38,7 +38,7 @@ d4pg_config = d4pg.D4PGConfig(learning_rate=3e-4, sigma=0.2)
 d4pg_builder = d4pg.D4PGBuilder(d4pg_config)
 
 
-aim_run = AimCallback(experiment_name="acme_test")
+aim_run = AimCallback(experiment_name="example_experiment")
 
 
 def logger_factory(

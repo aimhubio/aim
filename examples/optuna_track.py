@@ -4,7 +4,7 @@ from aimstack.optuna_tracker.callbacks import BaseCallback as AimCallback
 # ------------------------------------------------ Version 1: Single Run ------------------------------------------------
 
 # Add Aim callback to Optuna optimization
-aim_callback = AimCallback(experiment_name="optuna_single_run")
+aim_callback = AimCallback(experiment_name="example_experiment_single_run")
 
 
 def objective(trial):
@@ -20,7 +20,7 @@ study.optimize(objective, n_trials=10, callbacks=[aim_callback])
 
 # Aim logging in multirun mode.
 aim_callback = AimCallback(
-    as_multirun=True, experiment_name="optuna_multy_run_with_decorator"
+    as_multirun=True, experiment_name="example_experiment_multy_run_with_decorator"
 )
 
 

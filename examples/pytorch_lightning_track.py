@@ -51,7 +51,7 @@ test_loader = utils.data.DataLoader(test_dataset)
 
 # create AimLogger and call the fit to start the training
 aim_logger = AimLogger(
-    experiment_name="pt_lightning_exp",
+    experiment_name="example_experiment",
     train_metric_prefix="train_",
     test_metric_prefix="test_",
     val_metric_prefix="val_",

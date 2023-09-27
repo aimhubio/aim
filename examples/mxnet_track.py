@@ -67,7 +67,7 @@ est = estimator.Estimator(
 )
 
 aim_log_handler = AimLoggingHandler(
-    experiment_name="mxnet_example",
+    experiment_name="example_experiment",
     log_interval=1,
     metrics=[train_acc, train_loss, val_acc],
 )
