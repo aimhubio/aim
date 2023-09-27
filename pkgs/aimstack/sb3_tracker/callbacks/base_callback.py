@@ -118,3 +118,5 @@ class BaseCallback(Callback):
     def __del__(self):
         if self._run and self._run.active:
             self._run.close()
+            del self._run
+            self._run = None
