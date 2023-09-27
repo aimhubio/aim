@@ -152,7 +152,7 @@ const BoardVisualizerComponentsPane = styled(SplitPaneItem, {
     display: 'flex',
     fd: 'row',
     width: '100%',
-    ai: 'center',
+    ai: 'start',
     gap: '$9',
     // fw: 'wrap',
     maxHeight: 'max-content',

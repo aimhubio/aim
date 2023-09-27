@@ -35,7 +35,7 @@ def container_info_table(cont_infos):
         for key, val in cont_info.items():
             if len(table_data[key]) < i:
                 table_data[key].extend([None] * (i - len(table_data[key])))
-            table_data[key].append(val)
+            table_data[key].append(f'{val}')
     return table_data
 
 
