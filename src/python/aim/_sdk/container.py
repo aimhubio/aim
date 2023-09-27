@@ -125,7 +125,8 @@ class Container(ABCContainer):
             repo = Repo.default()
         elif isinstance(repo, str):
             from aim._sdk.repo import Repo
-            repo = Repo.from_path(repo)
+            read_only = True if mode == ContainerOpenMode.READONLY else False
+            repo = Repo.from_path(repo, read_only=read_only)
         self.repo = repo
         self.storage = repo.storage_engine
 
