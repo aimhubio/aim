@@ -47,7 +47,7 @@
 <div align="center">
   <br/>
   <kbd>
-    <img src="https://user-images.githubusercontent.com/13848158/136374529-af267918-5dc6-4a4e-8ed2-f6333a332f96.gif" />
+    <img src="https://github.com/aimhubio/aim/assets/13848158/f3b88aa5-2621-4b35-8541-dac3fd5c6f07"/>
   </kbd>
 </div>
 
@@ -236,18 +236,28 @@ Check out live Aim demos NOW to see it in action.
 
 ### Tracing LangChain-based chatbot executions
 
-Demo: [https://play-v4.aimstack.io/langchain-chatbot-ui/apps/llamaindex_observer/trace.py](https://play-v4.aimstack.io/langchain-chatbot-ui/apps/llamaindex_observer/trace.py)
-Code: 
+Demo: [https://play-v4.aimstack.io/langchain-chatbot-ui/apps/langchain_debugger/traces.py](https://play-v4.aimstack.io/langchain-chatbot-ui/apps/langchain_debugger/traces.py)
+
+Code: https://github.com/aimhubio/awesome-aim-demos/tree/main/langchain-chatbot
+
+![image](https://github.com/aimhubio/aim/assets/13848158/a1de8850-1850-41e5-b106-f433fd5a3dab)
 
 ### Tracing LlamaIndex query executions
 
-Demo: [https://play-v4.aimstack.io/langchain-chatbot-ui/apps/llamaindex_observer/trace.py](https://play-v4.aimstack.io/llamaindex-retriever-ui/apps/llamaindex_observer/traces.py)
-Code: 
+Demo: [https://play-v4.aimstack.io/llamaindex-retriever-ui/apps/llamaindex_observer/traces.py](https://play-v4.aimstack.io/llamaindex-retriever-ui/apps/llamaindex_observer/traces.py)
+
+Code: https://github.com/aimhubio/awesome-aim-demos/tree/main/llamaindex-retriever
+
+![image](https://github.com/aimhubio/aim/assets/13848158/344c1c3a-1835-4f33-a1d6-58fec8f51f49)
 
 ### Tracking PyTorch-based CNN trainings
 
 Demo: [https://play-v4.aimstack.io/mnist-training-ui/apps/experiment_tracker/runs.py](https://play-v4.aimstack.io/mnist-training-ui/apps/experiment_tracker/runs.py)
-Code: 
+
+Code: https://github.com/aimhubio/awesome-aim-demos/tree/main/mnist-training
+
+![image](https://github.com/aimhubio/aim/assets/13848158/22d63c83-4b4e-431a-85cb-ff38064f8b55)
+
 
 # 🌍 Logging Apps
 
