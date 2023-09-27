@@ -1,13 +1,13 @@
 from typing import Dict, Any
 
-from aimstack.ml import Run
+from aimstack.experiment_tracker import TrainingRun
 from aimcore.callbacks import Caller, event
 
 
 # TODO [AT]: This is a draft version. Final list of methods/signatures TBD.
 class TrainingFlow(Caller):
-    """High-level Run object, resembling the execution flow of the typical training script."""
-    def __init__(self, run: Run, callbacks=None):
+    """High-level Flow object, resembling the execution flow of the typical training script."""
+    def __init__(self, run: TrainingRun, callbacks=None):
         super().__init__(callbacks=callbacks)
         self.run = run
         self.init()
@@ -29,7 +29,7 @@ class TrainingFlow(Caller):
     def training_started(
         self, *,
         hparams: Dict[str, Any],
-        run: Run,
+        run: TrainingRun,
         **kwargs
     ):
         """Is called just after Run object and hyperparameters are ready."""
@@ -38,7 +38,7 @@ class TrainingFlow(Caller):
     def training_metrics_collected(
         self, *,
         metrics: Dict[str, Any], step: int, epoch: int = None,
-        run: Run,
+        run: TrainingRun,
         **kwargs
     ):
         """Is called after the training metrics are calculated and ready to be logged."""
@@ -47,7 +47,7 @@ class TrainingFlow(Caller):
     def validation_metrics_collected(
         self, *,
         metrics: Dict[str, Any], step: int, epoch: int = None,
-        run: Run,
+        run: TrainingRun,
         **kwargs
     ):
         """Is called after the validation metrics are calculated and ready to be logged."""
@@ -55,7 +55,7 @@ class TrainingFlow(Caller):
     @event
     def training_successfully_finished(
         self, *,
-        run: Run,
+        run: TrainingRun,
         **kwargs
     ):
         """Is called after the training phase is successfully finished."""
@@ -74,11 +74,3 @@ class TrainingFlow(Caller):
         def callback(e: Exception, func: callable):
             self.exception_raised(exception=e, function=func)
         set_exception_callback(callback)
-
-    # @event
-    # def run_available_experimental(
-    #     self, *,
-    #     run: Run,
-    #     **kwargs
-    # ):
-    #     ...

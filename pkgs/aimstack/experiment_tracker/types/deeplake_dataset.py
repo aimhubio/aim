@@ -16,7 +16,6 @@ class ViewOnUncommittedDatasetWarning(UserWarning):
     pass
 
 
-@Record.alias('deeplake.Dataset')
 class DeeplakeDataset(Record):
     """
     Track Activeloop Deeplake Dataset with versioning.

@@ -982,30 +982,12 @@ class Table(Component):
 
     @property
     def selected_rows(self):
-        return self.state["selected_rows"] if "selected_rows" in self.state else None
-
-    @property
-    def focused_row(self):
-        return self.state["focused_row"] if "focused_row" in self.state else None
-
-    @property
-    def selected_rows_indices(self):
-        return self.state["selected_rows_indices"] if "selected_rows_indices" in self.state else None
-
-    @property
-    def focused_row_index(self):
-        return self.state["focused_row_index"] if "focused_row_index" in self.state else None
-
-    def on_row_select(self, val):
-        selected_indices = val.to_py()
-
-        if selected_indices is None:
-            self.set_state({"selected_rows": None, "selected_rows_indices": None}, persist=False)
-            return
+        if self.selected_rows_indices is None:
+            return None
         
         rows = []
 
-        for i in selected_indices:
+        for i in self.selected_rows_indices:
             row = {}
 
             for col in self.data:
@@ -1017,22 +999,39 @@ class Table(Component):
 
             rows.append(row)
 
-        self.set_state({"selected_rows": rows, "selected_rows_indices": selected_indices}, persist=False)
+        return rows
 
-    def on_row_focus(self, val):
-        if val is None:
-            self.set_state({"focused_row": None, "focused_row_index": None})
-            return
+    @property
+    def focused_row(self):
+        if self.focused_row_index is None:
+            return None
         
         row = {}
 
+        idx = self.focused_row_index
+
         for col in self.data:
-            if val < len(self.data[col]):
-                row[col] = self.data[col][val]
+            if idx < len(self.data[col]):
+                row[col] = self.data[col][idx]
             else:
                 row[col] = None
+        
+        return row
 
-        self.set_state({"focused_row": row, "focused_row_index": val})
+    @property
+    def selected_rows_indices(self):
+        return self.state["selected_rows_indices"] if "selected_rows_indices" in self.state else None
+
+    @property
+    def focused_row_index(self):
+        return self.state["focused_row_index"] if "focused_row_index" in self.state else None
+
+    def on_row_select(self, val):
+        selected_indices = val.to_py()
+        self.set_state({"selected_rows_indices": selected_indices}, persist=False)
+
+    def on_row_focus(self, val):
+        self.set_state({"focused_row_index": val})
 
 
 class Text(Component):

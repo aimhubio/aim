@@ -22,7 +22,6 @@ from aim import Sequence, Record
 from aimstack.llamaindex_observer.types.action import LlamaAction
 
 
-@Record.alias('llamaindex_observer.Step')
 class Step(Record):
     """
     Represents a single execution step in LlamaIndex, which includes a list of Actions.

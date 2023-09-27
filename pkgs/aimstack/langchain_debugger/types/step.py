@@ -28,7 +28,6 @@ from aim import Sequence, Record
 from aimstack.langchain_debugger.types.action import Action
 
 
-@Record.alias('langchain_debugger.Step')
 class Step(Record):
     """
     Represents a single execution step in LangChain, which includes a list of Actions.

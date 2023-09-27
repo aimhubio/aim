@@ -11,7 +11,6 @@ except ImportError:
     raise ImportError("module dvc could not be imported")
 
 
-@Record.alias('dvc.Metadata')
 class DvcData(Record):
     """
     Wrapper over DVC's LIST interface.
