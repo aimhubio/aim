@@ -18,10 +18,13 @@ function LoadingBar({ boardPath }: { boardPath: string }) {
               continue;
             }
 
-            if (oldProgress[key] >= 90) {
+            const progressStep = Math.random() * 10;
+            const potentialProgress = oldProgress[key] + progressStep;
+
+            if (potentialProgress >= 90) {
               newProgress[key] = 90;
             } else {
-              newProgress[key] = oldProgress[key] + 10 * Math.random();
+              newProgress[key] = potentialProgress;
             }
           }
 
