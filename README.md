@@ -9,7 +9,7 @@
         </td>
       </tr>
       <tr>
-        <td colspan="2"><p align="center"><a href="#-aim-40">🔮 Aim 4.0 - COMING SOON!!</a></p></td>
+        <td colspan="2"><p align="center"><a href="#-aim-40">⚡ ⚡ Aim 4.0 stable has been released! ⚡ ⚡ !!</a></p></td>
       </tr>
     </tbody>
   </table>
@@ -20,16 +20,10 @@
 <div align="center">
   <img src="https://user-images.githubusercontent.com/13848158/225620298-9f9293e9-a138-41fd-bd77-21d53d0490b7.png">
   <h3>
-    An easy-to-use & supercharged open-source AI metadata tracker. 
+    Open-source modular observability for AI Systems.
   </h3>
   
-  Aim logs all your AI metadata, enables a UI to observe/compare them, and an SDK to query them programmatically.
-  
-  <p align="center">
-    <strong>Learn more:</strong> </br>
-    <a href="#experiment-tracking-with-aim">Experiment tracking with Aim</a> </br>
-    <a href="#ai-systems-and-agents-tracing-with-Aim">AI agents tracing with Aim</a>
-  </p>
+  Easily log, connect and observe any parts of your AI Systems from experiments to production to prompts to AI system monitoring.
   
 </div>
 
@@ -53,7 +47,7 @@
 <div align="center">
   <br/>
   <kbd>
-    <img src="https://user-images.githubusercontent.com/13848158/136374529-af267918-5dc6-4a4e-8ed2-f6333a332f96.gif" />
+    <img src="https://github.com/aimhubio/aim/assets/13848158/f3b88aa5-2621-4b35-8541-dac3fd5c6f07"/>
   </kbd>
 </div>
 
@@ -109,27 +103,42 @@
 <h3 align="center">
   <a href="#ℹ️-about"><b>About</b></a> &bull;
   <a href="#-demos"><b>Demos</b></a> &bull;
-  <a href="#-ecosystem"><b>Ecosystem</b></a> &bull;
+  <a href="#-default-logging-apps"><b>Default logging apps</b></a> &bull;
   <a href="#-quick-start"><b>Quick Start</b></a> &bull;
   <a href="https://github.com/aimhubio/aim/tree/main/examples"><b>Examples</b></a> &bull;
   <a href="https://aimstack.readthedocs.io/en/latest/"><b>Documentation</b></a> &bull;
   <a href="#-community"><b>Community</b></a> &bull;
   <a href="https://aimstack.io/blog"><b>Blog</b></a> &bull;
-  <a href="#-aim-40"><b>COMING SOON!!</b></a>
 </h3>  
 
 ---
 
 # ℹ️ About
 
-Aim is an open-source, self-hosted AI Metadata tracking tool designed to handle 100,000s of tracked metadata sequences.
+Aim is an open-source operating system for logs. 
+With Aim you can build, run and combine any kind of logging applications - experiment tracking, production monitoring, AI System (LLM-based) monitoring, usage monitoring etc.
 
-Aim provides a performant and beautiful UI for exploring and comparing metadata such as training runs or agents executions.
-Additionally, its SDK enables programmatic access to tracked metadata — perfect for automations and Jupyter Notebook analysis.
+The Logging applications are typically a combination of these components: 
 
-<p align="center">
-  <strong>Aim's mission is to democratize AI dev tools 🎯 </strong>
-</p>
+- The types and relationships of the data being logged
+- The observability UI over the data logged
+- Automations over the data logged
+
+
+Aim comes installed with a number of default logging apps:
+
+- Base App - a basic generic log exploration and the logging primitives
+- AI Experiment Tracking Apps - a collection of apps that log machine learning experiments for most of the ML frameworks.
+- AI Systems Tracing and Debugging Apps - a combination of variety of apps that log from langchain to llamaindex traces all in one place.
+
+Apart from running the logging apps, Aim comes with explorers and reports.
+
+- Explorers are advanced logs comparison tools for specific kind of logs - they allow to compare 1000s of sessions of metrics, images, text, audio and other types of data.
+- Reports are embedded knowledge-base that operate with the apps and explorers seamlessly to enable capture the knowledge built on top of the logged  data from the observations through Aim apps and explorers.
+
+With the rise of AI Systems and the challenges it brings forward, logging apps are going to be a crucial part of the software. 
+
+Our mission is to democratize developer tools for building AI.
 
 <div align="center">
   <img src="https://user-images.githubusercontent.com/13848158/226426018-f7c11c9b-78d9-4ee4-b292-df28b3e8eaa6.jpg" height="140" />
@@ -139,7 +148,17 @@ Additionally, its SDK enables programmatic access to tracked metadata — perfec
 
 </br>
 
-### AI systems and agents tracing with Aim
+### Base App
+
+A general observability over anything logged with Aim.
+
+| Visualize all the logs ever logged with Aim for the given project 🗺️ |
+| --- |
+| Base types to log common artifacts such as Images, Audio objects, Figures, Metrics  |
+| High-level overview of the logs, the types logged and the respective sessions/ containers  |
+| Deep-dive into each type of the log |
+
+### AI Systems Tracing Apps
 
 <div align="left">
   <table>
@@ -151,16 +170,15 @@ Additionally, its SDK enables programmatic access to tracked metadata — perfec
       <tr>
         <td>
           <ul>
-            <li>Track all the inputs, outputs of LLMs and tools</li>
-            <li>Capture terminal output of executions</li>
-            <li>Get notified on executions progress and finish</li>
+            <li>Track all the prompts, generations of LLMs</li>
+            <li>Track all the inputs, outputs of tools</li>
+            <li>Capture chains metadata</li>
             </ul>
           </td>
         <td>
           <ul>
             <li>Deep dive into single execution steps</li>
             <li>Compare executions side-by-side</li>
-            <li>View previous exectutions terminal outputs</li>
           </ul>
         </td>
       </tr>
@@ -168,7 +186,7 @@ Additionally, its SDK enables programmatic access to tracked metadata — perfec
   </table>
 </div>
 
-### Experiment tracking with Aim
+### Experiment Tracking Apps
 
 <div align="left">
   <table>
@@ -201,58 +219,120 @@ Additionally, its SDK enables programmatic access to tracked metadata — perfec
         <td>
           <ul>
             <li>System info and resource usage tracking</li>
-            <li>Real-time alerting on training progress</li>
-            <li>Logging and configurable notifications</li>
+            <li>Real-time alerting on training progress (upcoming)
           </ul>
         </td>
         <td>
           <ul>
             <li>Detailed run information for easy debugging</li>
             <li>Centralized dashboard for holistic view</li>
-            <li>Runs grouping with tags and experiments</li></ul>
         </td>
       </tr>
     </tbody>
   </table>
 </div>
 
-# 🔮 Aim 4.0
-**Aim 4.0 is coming soon!!**
-
-A major iteration of Aim as the ultimate metadata library to track all your interactions with your models - including experiments, prompts etc.
-
-- Remote first
-- Scalable 
-- Capable of storing and querying 100,000s of metadata sequences
-- Custom UI dashboards and reports
-
-The Aim experiment tracker is not just one-off experiment tracker.
-It's built on top of the metadata library that Aim is. Now you can also do prompt engineering on Aim.
-Stay tuned for more...
-
 # 🎬 Demos
 
 Check out live Aim demos NOW to see it in action.
 
-| [Machine translation experiments](http://play.aimstack.io:10001/metrics?grouping=HQGdK9Xxy35e6sY1CYkCmk1WbWMN2AsCNfJJ3d1RJYLtrVPMoF5UpGiA6CF8bEJnfzRsKpqespf3AEuKSVrhUYvYk9MxzNGA9XZWYUf6phEg8AMbZGLRVDXnAPDuo8tueqsST1ZLizWzQwDYJWHUza6pyB2Eojt9uWqNHUdb858TqDRnCJzqiVJXKXEzFWUyvU8MckJo1qpqWWCTb4GpYN6DUJZx2GXDGR21e2xxd4m7PmNUnbA9B3apLttZoipJF6c3v7tNUKmb6irpqnNB3yc57tqYDa1XZuKfDxkMtyFdQ1x95K4jjsTVwhftEWLze35QNcxNXRCGGS9o9yEfTLG26GUX2zjPZFCjjMGU6vV7z1xRccK8MyoGrLSgAQCbvk68dTGBHpXUBvCRq8N&chart=FviZzVrt4fVQPjpCLr9sVGGrcR5etSroyqambiKpm3nTgpyv4eQxKuwNX9uN8UtKmzYUhUyTMBEANHmtbwjLApkvnYeNbxGNC6PVcoqi65m1XJnSrvgt8WiD89BapFAWRUwAGx6SWD7KZPsk3RQyysU7W7FjD3Q99NusxFGhsEfD6HXc7i8xH9KHDRGjLwh6x9VTtSp4FS8HEvpLSiiJoX7LCTi8pB7dXvrQ8G5w3jPsFz4qXYFdsVaCNL1BpFFZuiqQNkfbnM84gEq7UmiV1VzM4oS3AgQHxADG3kpBVp6eKTey9F1Swd4FcUkFA9QEPjgQgqwRGjkquZ2bdDDVLBnCh7JPvboP2kifCiZZ5MDdV9MMx6PKHp4DusWyWLXiHQYPkpGPWBiuccMUXDsuJaCWJbuABdY7CyiJMv1jdHYkjabygSxehPVyEDefWAtjBfv2vaeM1xv63jadbmpKYFxft7qmuT9HvVxiGvRgs4RQFxy8K4rtFBca3HNs1mDaaY81gy9MGXyw7BS5Fniu92jaJpsWDdg6Y3AQBLZtrpJy2obEZ4yzJaCVT7JUNPAyyCUNLck393VFLoEkaD9CU5npK5R7tj1c1G3gkMNQXnSXy5NpSj8deMmXV5qz3JKu1nq2caGQKcqjzy2gLkExdm674AMFjSg9yFjK6VqASXQ17NKtWRUvaYoxGbHDAFQaMKWKh8QLm22QA9mKT8NksLptWozbgDvafnQLNMvezLU5bvKV5o75PAWYiRB56RcYfEhzaB6YWdgL7TJicyY5rFi6Az8UZ7wqB3N5iMuZdpxhKn5KbZDxyuUMuvVt24i5LVPPmmwQtqxMoJ4aLo48a2YvDW6TAkdQjNjvn6KcEEz6GTixujb1YHhMUD8v4AepWKEwKz1ddEca1P2wLQjbpihCuaqbxeohnuZZLogJdUBojBEDgrnrrVpPBaLLEkGSpkJbtrsKUuEeBo1AF3yNgHftLbynGpobVF5DhmsmddmiA6c8vSTokJxHhjpnW8mAcNHBRtmVJCT7VkdHSAhNypM4Hivwfx5jCccG9LauKmCeRMDzHiA57TX9W6ttcPHSvUyQorARQAd2oeNY4H83hZjHh9Bt8iwKZRt4xK6hrTR8tif7hq8eURXrGH9Ys7TzykXK8FHHWvLNzNnYf3E4a9NkD43MjfKvMM1hj4Q2K8MHbmRCqrmFrHP5kim9shq6mhLPTgwha32nvnrBkfPQVPwpGTzKuwE&select=CdsQ7jVNkogQhRzQR3e28Ek39AZ4Ma2y37k5zJaf9EZmQhMjy8GtGm4LGU6dRFuAVG7mYww5xDrQAE74KHQ3Kk1e6661RmcmNALAUjtHyCmrTVBMCnBGNiuq1y7EzmxoodYHU1BV1rnoefQAw2kTBtbWi11hV1P4LcwFCcXfUWF6rpRC7ehEnUCTqUV4bkGVJPLcmk9mdmiGwa2YgmnSShNGPVGZiEi1rMVECyngSRVdqdZwAeXBGWFLfqF1KbZeCo4MTF4SSmFupJ9zLhYbuojEbopyFWHQ6xs3sq9epPeaQziLM4Js7oFYRmuFWUYdFqnZngmewXWmi7tQAgVqhiT6dMjG2eTdfgX6WuRSuoHALkh2XJhHA6GfZLUcxC5Ni9YyKuBTamtaYarbNNJJ8z15WWvuUkLpjgHdEpE2h924xFdu8aoZNuiQxYGvcndaW1BTGMXS5fTKPqYfe2n8Ky2HWPkcX3hEXtyawu1F9BndKNaXLPgsdAoFBArBZnSe28YtSmTa5LRucKVBAxakvv5MWMXchAmpaGFQbZyYUoMgQLcJd7Y96x6zSR7nhwr5Ar81BrmqYz2WFLuk7osUbwsc9HbSG6CQt8p6Vg2u7DjKaZXW8pjkPHAKrHWtHEDiJPJ5rj6VsdFm3) | [lightweight-GAN experiments](http://play.aimstack.io:10002/images?grouping=E1zQzcmtDR3wibEa1MVysTvCyZEv1T8ixkCxTWExCyMnHtX2HyiF9eszvPgfd2xdJ5TUTKGpSs1bsLVq5tHAV3uWtsZmmckn6HjNtVCMyQDJpwhiEy5tAyw&select=2NEXuD7fFoaLcwRjymjA1wLmUrGs9s3AiXcCW82C367SwJt18CAB6xzkMGowrUDuDwggE1huaPVcQJpQUsmAQx1CnGiqCUBp2jPMd5mMNPX2QKQMcmvu9ZykBNkeBvCQFPd9ERuQD2g1EjWuvyJ3H53mAZTfp94LCXvR9CUsG5ei2CjQUzfZLM6DCyUr1GPaEVnY5f1EwzicNxXuoutkBgqCqaobJ7Do4q4eHAA6ooiWU6ekS3D2sLj6qYwhVTjfGCPfbWwBiH83nFkY3fLExzdeTY2zeUHeeYikQR9S7xHbVD8WvjekdQVp8X4dNLJZxiVmEqHpPRnU3ZrYsMhE7yFAAgjJwPNUzLTt6YFrtZBcmc4rwAC2oyrqysUSEr6gzL6LcJ6yuqDGf9D5tzftHbTLDkhc8B2sCgTS&images=9vt2MvuQj2Q7jxGQYhNH6ZnWw4CsEzubFcFotuqCHfzvuruDs6pyWfhqhinD4hCiYsAURXgJbmq2L5z4vEQMbrE7iTy8XHNndPBPyuCEvRpxGwwFkukX3YGkVhNDQmUPtBagKbsMAgUASJM8hFtKboqbu9KWTModsjd4Qag7aL1KbJCzBYmZLCpKMSf6eKUTQtfwLLWbgquEx6oahAoSujV6aZ5cjsjN4JdGtPbicySpccgLDQHaQYTHCseA6sPVaEwCsoQDJAcTnjEVFFUUUW5HbPkrNgeRKb8M9pxudrweRQ3gNukLx5yizxQKrmcKU7saxLraqYUA2y5LmEQohsWGUq8sKkvGDH6oNLx2ytJsdVM5PGieENXMAaPg3KuWYXXTwixzwscdDsHSWeiXTGj1QxUKiBCnfwkZ7pZbYMCSgczSn9WpwygrKhb2znSYhn4gFzCsdjiXPPDv9LpPzkFVbsMCvk1CadqpwxTfxNmteKm7CQVViyCrvheGAk5rKpPzaBc5agyvfKpUqgRarxojnG8a4s1Y7qFT1rNVSC13C9h5fG54dDoFHxDyvej3bVTMDYsAiie3eVA3yEskyBGwApPNtjLY2H4b9jTmR3V7jnA9moFGfwMiXUjt8eoJsWTNkqBdRGSnqdva8zi5bApQaggnLebgCRpK1g8VvPrVS3ABQC8aMZJ2vibebHePWs1ahWZ2AXUUYwcuSRkiUWHwgtG9U1x6rR41UxFFNvW9rpDsU99DWzYpdgxfU75wTEPb2qeXYPxV1zVt5ixcFfA3Lvtsp5XXyfHY9FaNFeKKzAUQXPAkMWG4yH4Tp5me8Nt4puBC4pvJrboVcQdSsYhtxj2YwUjzN7Jyn9BV28dtRFPdtFUUc9pKpLvhZAD6XPDtKqrN3pG3LwYTKAiMDtC6tHvDqhQGuJGQZH5cVyTKkT48Xup4znass8tJxUJwacVQa6x2ewyd8AXCfc4j9bPQssabADmc1ho5Eghn5qe82cEcyG1okdfBCRMfmZ5EeCeKQYmoXddxM2cAwfJzCzG9bGtaMvXk3VV8TrSiRKjg3Exbftv8gx12QAzoBP9zosuULFpEAPZF1TvHJbEUmYgu9gwuRTAS3qYiywB7dsCq8wsTr7qmwt8WFFucpte8WvrkRGYy1GA7bD6uPhvS6sr1Wv259oB7Tkr5kirMo6Vdkz8ex9zVd4h2AP1J1dy8cqXaSk5B3HTZ6n1qdAMt4faLtt8SNqg4EqcvXx6r2J1czzXAPa9oSseYifvedcMyxnWkcTvno4QA6sp6zH25ubEwPAVzZZk35nNoJPasH3PgEgLafGPLCsPDD2sku5djPjfqkbDLUWMYm7BbTr7xK8v4UoTS485rPiF6VKoNQSuEnKQMT3uNRTS4EXNMjyRfUs4gk1217EhGVLhfqiZQyG4gqEhcJE3phLydLskk36PyGEbyFyvigjwvrK6boJnFpesze6Czc13HdWbWp6LHLseYujigdmdktU6EQb5KmghstmJ9gUF14JVPjYP57xtv19UT8XDuaJfwJn9z3U17ZDFnQ5zbXKSwD9ikMEd6VFo1xLBRHSmRdFSqcC96s23qWmMhheGtv6tTQAkq7CB1J1gy3skuFJXqhs1RvFWbFFUCLmHeTCtskEsQVP5Rkzat5Jn3QtSqCiRpEGc9Ykd5bWFAaqoudGcqEt993tVfVS3ZrVKAa6NDmbtAcdnfsUZxDt2muRPJDNVCBNW5k8XvevMpMsL3uCETtdutufp1VyLur2Yyx5WA8AeeFeDBxRxad3ZHbH27XdMpxWHF26hnbQAewspG1weRpVW9Ebc4Lc53RBeu8gVmTbKydrri1FHaYySZqCxht8bN4kdqSmkymmcTN3cfRN9DmzcmfKG6GbTDeCA9oXz5cVqrGXZcAiaj1oinnByW7W8GwhtK1Tzd7LG74Nu35DUdPCJXMH2ug4SEa3yXERXCaLvAHvFZAS89e7RUPpr3nTTrQLurjHSdkJ39pwEJpDcDjeWHsJSmTG1x195e6xvMmgPxAZd3Lzyk8Cxme8p1cY7FehSbTPc3zAAwi9LDGYyoQRcdbRHPLJ2W8rt9KeNfNq9moa1RVFPCPvhGuuyycT4f4QkP4Nvy4iUCaB5d8B1hcgmtg2X9Zpg6GUR32RYneQigK6S9ZYPNnaFeCNZZrwaYjkDpKMTMB6N24JC1TEAH8en3kXzf8CpLWeJpxoyB3hcCxjFHLYaovzgfGPeFBPY6ADDUcT3xkpUUEybdxE1cX7drHvBwyGqeU5g7i424tydxqufUgPY5sF9bM6mdoA3AvqDD9B3Zai71irxYXX8e6rRck4RwptJgBMX2gbotizoz9LrUwFQ2naBfJvbfEhZNCzME8a7H2YiVcq4Z6pkfbT1uMLfaixfw8nQCzVRbJAyVZgGzVbBj242LpD48R6VmxGcU5t2XkN8hZyYdBk1Uds9QyUG9VpC8ka7HjkvxBMknk6v4BjMnHnAj4ZxDUxMWEDbWw6iWD3iYWzVn3n5dzRcAqCQv3m2ZUnwuHHCTVJVZKZVyxrFP5eznpNv87RUXMfjbXypoLJFVtMoq81y82hYRFSkbAUwzhhoXBAGeBGDmDcwky2Hf7ZmfkzDLnRke916VxhTRLr8c6nXokCn8xwweuJHFeBqx7D88gpRbn5RrnH33545zyzyNpZpabQUGY3L7G3QznVw6wCS9x7FMixW2mgCeeWFhPDiz5Kz6DyyjaT413VSoRBCRakNcitYHUXqqCUPsFmZ3LTedA8jN99fYzse5LX36TSVbjnM7XmiZ8vNoH5mUsawmvG7NXbhgoyhx4rzL7t57A4g7sQg4YhGAFzEbXrh416riiPH8r52on2VEqkjNPDnybSg3cwuR6rPfMWA7YoyEAp14aStUPaKqbM9omConMxZde5o2DpjS86G5vDBY1o7F4LnBHLHRxKfqAkTPjvEdhaYY2uY6i598po9b2fAtpUGCbXnzcNrV5Vei5WkiQAqRT6whGr29PTLsAVGed71drx7BqzNiDcFJBL9dVrVoPqYLvrYVGi89MuuWuirD7CRhXWahysjrNpFf4aHXmuXS3UD7SFgkqAZzL1hrVq77K8UhGMMWLUzE9gjP6PH4xL6fJetKaRGZNpbsqDoKuBkBAk9j1nGpYMAyuo2H2AWUyj8PUgAbi1e4KPeqNqMVT85oZ9jkCggYczgNhT8gw5QsMarouMctMdbokxRfxz2xt9r2DuNmbEmq9e13Tqv94VrzR91R2o7pvH7YUFtJvcoJwR8K5jyof5SfKHT53zaBKxkLfCpPP3qR9ZCbAzVbreFKsQnCcZpd643VA9wtgKXxc375NwKj4QbnvafKNU9qc455d3S3o57mU4DFA7yHSqY1q41zySxfXYx4txL4TiqeyyTQu7KcHYbTUYRs69pkE1rWRW84N1qmisw2o7iLQPrhWkixrRDRk5toYWQg6ZDZExCyedYBGjsUAut)|
-|:---:|:---:|
-| <a href="http://play.aimstack.io:10001/metrics?grouping=HQGdK9Xxy35e6sY1CYkCmk1WbWMN2AsCNfJJ3d1RJYLtrVPMoF5UpGiA6CF8bEJnfzRsKpqespf3AEuKSVrhUYvYk9MxzNGA9XZWYUf6phEg8AMbZGLRVDXnAPDuo8tueqsST1ZLizWzQwDYJWHUza6pyB2Eojt9uWqNHUdb858TqDRnCJzqiVJXKXEzFWUyvU8MckJo1qpqWWCTb4GpYN6DUJZx2GXDGR21e2xxd4m7PmNUnbA9B3apLttZoipJF6c3v7tNUKmb6irpqnNB3yc57tqYDa1XZuKfDxkMtyFdQ1x95K4jjsTVwhftEWLze35QNcxNXRCGGS9o9yEfTLG26GUX2zjPZFCjjMGU6vV7z1xRccK8MyoGrLSgAQCbvk68dTGBHpXUBvCRq8N&chart=FviZzVrt4fVQPjpCLr9sVGGrcR5etSroyqambiKpm3nTgpyv4eQxKuwNX9uN8UtKmzYUhUyTMBEANHmtbwjLApkvnYeNbxGNC6PVcoqi65m1XJnSrvgt8WiD89BapFAWRUwAGx6SWD7KZPsk3RQyysU7W7FjD3Q99NusxFGhsEfD6HXc7i8xH9KHDRGjLwh6x9VTtSp4FS8HEvpLSiiJoX7LCTi8pB7dXvrQ8G5w3jPsFz4qXYFdsVaCNL1BpFFZuiqQNkfbnM84gEq7UmiV1VzM4oS3AgQHxADG3kpBVp6eKTey9F1Swd4FcUkFA9QEPjgQgqwRGjkquZ2bdDDVLBnCh7JPvboP2kifCiZZ5MDdV9MMx6PKHp4DusWyWLXiHQYPkpGPWBiuccMUXDsuJaCWJbuABdY7CyiJMv1jdHYkjabygSxehPVyEDefWAtjBfv2vaeM1xv63jadbmpKYFxft7qmuT9HvVxiGvRgs4RQFxy8K4rtFBca3HNs1mDaaY81gy9MGXyw7BS5Fniu92jaJpsWDdg6Y3AQBLZtrpJy2obEZ4yzJaCVT7JUNPAyyCUNLck393VFLoEkaD9CU5npK5R7tj1c1G3gkMNQXnSXy5NpSj8deMmXV5qz3JKu1nq2caGQKcqjzy2gLkExdm674AMFjSg9yFjK6VqASXQ17NKtWRUvaYoxGbHDAFQaMKWKh8QLm22QA9mKT8NksLptWozbgDvafnQLNMvezLU5bvKV5o75PAWYiRB56RcYfEhzaB6YWdgL7TJicyY5rFi6Az8UZ7wqB3N5iMuZdpxhKn5KbZDxyuUMuvVt24i5LVPPmmwQtqxMoJ4aLo48a2YvDW6TAkdQjNjvn6KcEEz6GTixujb1YHhMUD8v4AepWKEwKz1ddEca1P2wLQjbpihCuaqbxeohnuZZLogJdUBojBEDgrnrrVpPBaLLEkGSpkJbtrsKUuEeBo1AF3yNgHftLbynGpobVF5DhmsmddmiA6c8vSTokJxHhjpnW8mAcNHBRtmVJCT7VkdHSAhNypM4Hivwfx5jCccG9LauKmCeRMDzHiA57TX9W6ttcPHSvUyQorARQAd2oeNY4H83hZjHh9Bt8iwKZRt4xK6hrTR8tif7hq8eURXrGH9Ys7TzykXK8FHHWvLNzNnYf3E4a9NkD43MjfKvMM1hj4Q2K8MHbmRCqrmFrHP5kim9shq6mhLPTgwha32nvnrBkfPQVPwpGTzKuwE&select=CdsQ7jVNkogQhRzQR3e28Ek39AZ4Ma2y37k5zJaf9EZmQhMjy8GtGm4LGU6dRFuAVG7mYww5xDrQAE74KHQ3Kk1e6661RmcmNALAUjtHyCmrTVBMCnBGNiuq1y7EzmxoodYHU1BV1rnoefQAw2kTBtbWi11hV1P4LcwFCcXfUWF6rpRC7ehEnUCTqUV4bkGVJPLcmk9mdmiGwa2YgmnSShNGPVGZiEi1rMVECyngSRVdqdZwAeXBGWFLfqF1KbZeCo4MTF4SSmFupJ9zLhYbuojEbopyFWHQ6xs3sq9epPeaQziLM4Js7oFYRmuFWUYdFqnZngmewXWmi7tQAgVqhiT6dMjG2eTdfgX6WuRSuoHALkh2XJhHA6GfZLUcxC5Ni9YyKuBTamtaYarbNNJJ8z15WWvuUkLpjgHdEpE2h924xFdu8aoZNuiQxYGvcndaW1BTGMXS5fTKPqYfe2n8Ky2HWPkcX3hEXtyawu1F9BndKNaXLPgsdAoFBArBZnSe28YtSmTa5LRucKVBAxakvv5MWMXchAmpaGFQbZyYUoMgQLcJd7Y96x6zSR7nhwr5Ar81BrmqYz2WFLuk7osUbwsc9HbSG6CQt8p6Vg2u7DjKaZXW8pjkPHAKrHWtHEDiJPJ5rj6VsdFm3"> <img src="https://user-images.githubusercontent.com/97726819/225964524-0051c2c7-8554-43ae-82b8-adcb77bcf1ba.png"> </a> | <a href="http://play.aimstack.io:10002/images?grouping=E1zQzcmtDR3wibEa1MVysTvCyZEv1T8ixkCxTWExCyMnHtX2HyiF9eszvPgfd2xdJ5TUTKGpSs1bsLVq5tHAV3uWtsZmmckn6HjNtVCMyQDJpwhiEy5tAyw&select=2NEXuD7fFoaLcwRjymjA1wLmUrGs9s3AiXcCW82C367SwJt18CAB6xzkMGowrUDuDwggE1huaPVcQJpQUsmAQx1CnGiqCUBp2jPMd5mMNPX2QKQMcmvu9ZykBNkeBvCQFPd9ERuQD2g1EjWuvyJ3H53mAZTfp94LCXvR9CUsG5ei2CjQUzfZLM6DCyUr1GPaEVnY5f1EwzicNxXuoutkBgqCqaobJ7Do4q4eHAA6ooiWU6ekS3D2sLj6qYwhVTjfGCPfbWwBiH83nFkY3fLExzdeTY2zeUHeeYikQR9S7xHbVD8WvjekdQVp8X4dNLJZxiVmEqHpPRnU3ZrYsMhE7yFAAgjJwPNUzLTt6YFrtZBcmc4rwAC2oyrqysUSEr6gzL6LcJ6yuqDGf9D5tzftHbTLDkhc8B2sCgTS&images=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"> <img src="https://user-images.githubusercontent.com/97726819/225948275-a41946ea-89f4-45f1-bce1-251c84dcddca.png"> </a> |
-| Training logs of a neural translation model(from WMT'19 competition). | Training logs of 'lightweight' GAN, proposed in ICLR 2021. |
+### Tracing LangChain-based chatbot executions
 
-| [FastSpeech 2 experiments](http://play.aimstack.io:10004/runs/d9e89aa7875e44b2ba85612a/audios)| [Simple MNIST](http://play.aimstack.io:10003/runs/7f083da898624a2c98e0f363/distributions) |
-|:---:|:---:|
-| <a href="http://play.aimstack.io:10004/runs/d9e89aa7875e44b2ba85612a/audios"> <img src="https://user-images.githubusercontent.com/97726819/225948457-567526da-a329-4c53-a9a7-98dfe392d4c4.png"> </a> | <a href="http://play.aimstack.io:10003/runs/7f083da898624a2c98e0f363/distributions"> <img src="https://user-images.githubusercontent.com/97726819/225948599-ff39c5b7-ae7d-4deb-8bc9-5eee1e189d89.png"> </a> |
-| Training logs of Microsoft's "FastSpeech 2: Fast and High-Quality End-to-End Text to Speech". | Simple MNIST training logs. |
+Demo: [https://play-v4.aimstack.io/langchain-chatbot-ui/apps/langchain_debugger/traces.py](https://play-v4.aimstack.io/langchain-chatbot-ui/apps/langchain_debugger/traces.py)
 
-# 🌍 Ecosystem
+Code: https://github.com/aimhubio/awesome-aim-demos/tree/main/langchain-chatbot
 
-Aim is not just an experiment tracker. It's a groundwork for an ecosystem. 
-Check out the two most famous Aim-based tools.
+![image](https://github.com/aimhubio/aim/assets/13848158/a1de8850-1850-41e5-b106-f433fd5a3dab)
 
-| [aimlflow](https://github.com/aimhubio/aimlflow) | [Aim-spaCy](https://github.com/aimhubio/aim-spacy) |
-|:---:|:---:|
-| ![aimlflow](https://user-images.githubusercontent.com/97726819/225957836-cdec88e3-4993-435a-a135-d78be3ac1635.png) | ![Aim-spaCy](https://user-images.githubusercontent.com/97726819/225957990-4edc4525-1f65-4405-b663-ce7af888bdfa.png) |
-| Exploring MLflow experiments with a powerful UI | an Aim-based spaCy experiment tracker |
+### Tracing LlamaIndex query executions
+
+Demo: [https://play-v4.aimstack.io/llamaindex-retriever-ui/apps/llamaindex_observer/traces.py](https://play-v4.aimstack.io/llamaindex-retriever-ui/apps/llamaindex_observer/traces.py)
+
+Code: https://github.com/aimhubio/awesome-aim-demos/tree/main/llamaindex-retriever
+
+![image](https://github.com/aimhubio/aim/assets/13848158/344c1c3a-1835-4f33-a1d6-58fec8f51f49)
+
+### Tracking PyTorch-based CNN trainings
+
+Demo: [https://play-v4.aimstack.io/mnist-training-ui/apps/experiment_tracker/runs.py](https://play-v4.aimstack.io/mnist-training-ui/apps/experiment_tracker/runs.py)
+
+Code: https://github.com/aimhubio/awesome-aim-demos/tree/main/mnist-training
+
+![image](https://github.com/aimhubio/aim/assets/13848158/22d63c83-4b4e-431a-85cb-ff38064f8b55)
+
+
+# 🌍 Default logging apps
+Aim comes pre-installed with wide variety of apps. Here is the full lise.
+
+## Base Apps
+
+### base
+Base Aim app for general observability over anything logged with Aim.
+Includes base types to log common artifacts such as Images, Audio objects, Figures, Metrics.
+
+### docs
+Use the docs Aim app to access Aim docs.
+
+## AI Systems Tracing Apps
+
+### langchain_debugger
+Simple LangChain debugger that logs prompts and generations of LLMs, inputs and outputs of tools, as well as chains metadata.
+
+### llamaindex_observer
+A simple LlamaIndex debugger and observer, which logs metadata such as embeddings chunks, retrieval nodes, queries and responses.
+
+## Experiment Tracking Apps
+
+### experiment_tracker
+Base app for tacking and exploring ML experiments with Aim.
+
+### acme_tracker
+Package for tracking and exploring acme experiments.
+
+### catboost_tracker
+Package for tracking and exploring CatBoost experiments.
+
+### fastai_tracker
+Package for tracking and exploring fast.ai experiments.
+
+### hugging_face_tracker
+Package for tracking and exploring HuggingFace experiments.
+
+### keras_tracker
+Package for tracking and exploring Keras experiments.
+
+### keras_tuner_tracker
+Package for tracking and exploring KerasTuner experiments.
+
+### lightgbm_tracker
+Package for tracking and exploring LightGBM experiments.
+
+### mxnet_tracker
+Package for tracking and exploring MXNet experiments.
+
+### optuna_tracker
+Package for tracking and exploring Optuna experiments.
+
+### paddle_tracker
+Package for tracking and exploring PaddlePaddle experiments.
+
+### prophet_tracker
+Package for tracking and exploring Prophet ML experiments.
+
+### pytorch_ignite_tracker
+Package for tracking and exploring PyTorch Ignite experiments
+
+### pytorch_lightning_tracker
+Package for tracking and exploring PyTorch Lightning experiments.
+
+### sb3_tracker
+Package for tracking and exploring Stable-Baselines3 experiments.
+
+### tensorflow_tracker
+Package for tracking and exploring TensorFlow experiments.
+
+### xgboost_tracker
+Package for tracking and exploring XGBoost experiments.
 
 # 🏁 Quick start
 
@@ -267,7 +347,7 @@ pip3 install aim
 ## 2. Integrate Aim with your code
 
 ```python
-from aim import Run
+from aimstack.base import Run, Metric
 
 # Initialize a new run
 run = Run()
@@ -278,287 +358,28 @@ run["hparams"] = {
     "batch_size": 32,
 }
 
-# Log metrics
-for i in range(10):
-    run.track(i, name='loss', step=i, context={ "subset":"train" })
-    run.track(i, name='acc', step=i, context={ "subset":"train" })
+# Init a metric
+metric = Metric(run, name='loss', context={'subset': 'training'})
+
+for i in range(1000):
+      metric.track(i, epoch=1)
 ```
 
-_See the full list of supported trackable objects(e.g. images, text, etc) [here](https://aimstack.readthedocs.io/en/latest/quick_start/supported_types.html)._
-
-## 3. Run the training as usual and start Aim UI
+## 3. Start Aim server
 
 ```shell
-aim up
+aim server
 ```
 
-## Learn more
+## 4. Start Aim UI
 
-<details>
-<summary>
-<strong>Migrate from other tools</strong>
-</summary>
-
-</br>
-
-Aim has built-in converters to easily migrate logs from other tools. 
-These migrations cover the most common usage scenarios.
-In case of custom and complex scenarios you can use Aim SDK to implement your own conversion script.
-
-- [TensorBoard logs converter](https://aimstack.readthedocs.io/en/latest/quick_start/convert_data.html#show-tensorboard-logs-in-aim)
-- [MLFlow logs converter](https://aimstack.readthedocs.io/en/latest/quick_start/convert_data.html#show-mlflow-logs-in-aim)
-- [Weights & Biases logs converter](https://aimstack.readthedocs.io/en/latest/quick_start/convert_data.html#show-weights-and-biases-logs-in-aim)
-
-</details>
-
-<details>
-<summary>
-<strong>Integrate Aim into an existing project</strong>
-</summary>
-
-</br>
-
-Aim easily integrates with a wide range of ML frameworks, providing built-in callbacks for most of them.
-
-- [Integration with Pytorch Ignite](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-pytorch-ignite)
-- [Integration with Pytorch Lightning](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-pytorch-lightning)
-- [Integration with Hugging Face](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-hugging-face)
-- [Integration with Keras & tf.Keras](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-keras-tf-keras)
-- [Integration with Keras Tuner](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-keras-tuner)
-- [Integration with XGboost](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-xgboost)
-- [Integration with CatBoost](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-catboost)
-- [Integration with LightGBM](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-lightgbm)
-- [Integration with fastai](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-fastai)
-- [Integration with MXNet](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-mxnet)
-- [Integration with Optuna](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-optuna)
-- [Integration with PaddlePaddle](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-paddlepaddle)
-- [Integration with Stable-Baselines3](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-stable-baselines3)
-- [Integration with Acme](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-acme)
-- [Integration with Prophet](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-prophet)
-
-</details>
-
-<details>
-<summary>
-<strong>Query runs programmatically via SDK</strong>
-</summary>
-
-</br>
-
-Aim Python SDK empowers you to query and access any piece of tracked metadata with ease.
-
-```python
-from aim import Repo
-
-my_repo = Repo('/path/to/aim/repo')
-
-query = "metric.name == 'loss'" # Example query
-
-# Get collection of metrics
-for run_metrics_collection in my_repo.query_metrics(query).iter_runs():
-    for metric in run_metrics_collection:
-        # Get run params
-        params = metric.run[...]
-        # Get metric values
-        steps, metric_values = metric.values.sparse_numpy()
+```shell
+aim ui
 ```
-
-</details>
-
-<details>
-<summary>
-<strong>Set up a centralized tracking server</strong>
-</summary>
-
-</br>
-
-Aim remote tracking server allows running experiments in a multi-host environment and collect tracked data in a centralized location.
-
-See the docs on how to [set up the remote server](https://aimstack.readthedocs.io/en/latest/using/remote_tracking.html).
-
-</details>
-
-<details>
-<summary>
-<strong>Deploy Aim on kubernetes</strong>
-</summary>
-
-</br>
-
-- The official Aim docker image: https://hub.docker.com/r/aimstack/aim
-- A guide on how to deploy Aim on kubernetes: https://aimstack.readthedocs.io/en/latest/using/k8s_deployment.html
-
-
-</details>
-
-Read the full documentation on [aimstack.readthedocs.io](https://aimstack.readthedocs.io) 📖
-
-# 🆚 Comparisons to familiar tools
-
-<details>
-<summary>
-  <strong>TensorBoard vs Aim</strong>
-</summary>
-
-</br>
-
-**Training run comparison**
-
-Order of magnitude faster training run comparison with Aim
-- The tracked params are first class citizens at Aim. You can search, group, aggregate via params - deeply explore all the tracked data (metrics, params, images) on the UI.
-- With tensorboard the users are forced to record those parameters in the training run name to be able to search and compare. This causes a super-tedius comparison experience and usability issues on the UI when there are many experiments and params. **TensorBoard doesn't have features to group, aggregate the metrics**.
-
-**Scalability**
-
-- Aim is built to handle 1000s of training runs - both on the backend and on the UI.
-- TensorBoard becomes really slow and hard to use when a few hundred training runs are queried / compared.
-
-**Beloved TB visualizations to be added on Aim**
-
-- Embedding projector.
-- Neural network visualization.
-
-</details>
-
-<details>
-<summary>
-  <strong>MLflow vs Aim</strong>
-</summary>
-
-</br>
-
-MLFlow is an end-to-end ML Lifecycle tool.
-Aim is focused on training tracking.
-The main differences of Aim and MLflow are around the UI scalability and run comparison features.
-
-Aim and MLflow are a perfect match - check out the [aimlflow](https://github.com/aimhubio/aimlflow) - the tool that enables Aim superpowers on MLflow.
-
-**Run comparison**
-
-- Aim treats tracked parameters as first-class citizens. Users can query runs, metrics, images, and filter using the params.
-- MLFlow does have a search by tracked config, but there are no grouping, aggregation, subplotting by hyperparams and other comparison features available.
-
-**UI Scalability**
-
-- Aim UI can handle several thousands of metrics at the same time smoothly with 1000s of steps. It may get shaky when you explore 1000s of metrics with 10000s of steps each. But we are constantly optimizing!
-- MLflow UI becomes slow to use when there are a few hundreds of runs.
-
-</details>
-
-<details>
-<summary>
-  <strong>Weights and Biases vs Aim</strong>
-</summary>
-
-</br>
-
-Hosted vs self-hosted
-
-- Weights and Biases is a hosted closed-source MLOps platform.
-- Aim is self-hosted, free, and open-source experiment tracking tool.
-
-</details>
 
 # 🛣️ Roadmap
+TODO:
 
-## Detailed milestones
-
-The [Aim product roadmap](https://github.com/orgs/aimhubio/projects/3) :sparkle: 
-
-- The `Backlog` contains the issues we are going to choose from and prioritize weekly
-- The issues are mainly prioritized by the highly-requested features
-
-## High-level roadmap
-
-The high-level features we are going to work on the next few months:
-
-**In progress**
-
-- [ ] Aim SDK low-level interface
-- [ ] Dashboards – customizable layouts with embedded explorers
-- [ ] Ergonomic UI kit
-- [ ] Text Explorer
-
-<details>
-<summary>
-  <strong>Next-up</strong>
-</summary>
-
-</br>
-
-**Aim UI**
-
-- Runs management
-    - Runs explorer – query and visualize runs data(images, audio, distributions, ...) in a central dashboard
-- Explorers
-    - Distributions Explorer
-
-**SDK and Storage**
-
-- Scalability
-    - Smooth UI and SDK experience with over 10.000 runs
-- Runs management
-    - CLI commands
-        - Reporting - runs summary and run details in a CLI compatible format
-        - Manipulations – copy, move, delete runs, params and sequences
-- Cloud storage support – store runs blob(e.g. images) data on the cloud
-- Artifact storage – store files, model checkpoints, and beyond
-
-**Integrations**
-
-- ML Frameworks:
-    - Shortlist: scikit-learn
-- Resource management tools
-    - Shortlist: Kubeflow, Slurm
-- Workflow orchestration tools
-
-</details>
-
-<details>
-<summary>
-  <strong>Done</strong>
-</summary>
-
-</br>
-
-  - [x] Live updates (Shipped: _Oct 18 2021_)
-  - [x] Images tracking and visualization (Start: _Oct 18 2021_, Shipped: _Nov 19 2021_)
-  - [x] Distributions tracking and visualization (Start: _Nov 10 2021_, Shipped: _Dec 3 2021_)
-  - [x] Jupyter integration (Start: _Nov 18 2021_, Shipped: _Dec 3 2021_)
-  - [x] Audio tracking and visualization (Start: _Dec 6 2021_, Shipped: _Dec 17 2021_)
-  - [x] Transcripts tracking and visualization (Start: _Dec 6 2021_, Shipped: _Dec 17 2021_)
-  - [x] Plotly integration (Start: _Dec 1 2021_, Shipped: _Dec 17 2021_)
-  - [x] Colab integration (Start: _Nov 18 2021_, Shipped: _Dec 17 2021_)
-  - [x] Centralized tracking server (Start: _Oct 18 2021_, Shipped: _Jan 22 2022_)
-  - [x] Tensorboard adaptor - visualize TensorBoard logs with Aim (Start: _Dec 17 2021_, Shipped: _Feb 3 2022_)
-  - [x] Track git info, env vars, CLI arguments, dependencies (Start: _Jan 17 2022_, Shipped: _Feb 3 2022_)
-  - [x] MLFlow adaptor (visualize MLflow logs with Aim) (Start: _Feb 14 2022_, Shipped: _Feb 22 2022_)
-  - [x] Activeloop Hub integration (Start: _Feb 14 2022_, Shipped: _Feb 22 2022_)
-  - [x] PyTorch-Ignite integration (Start: _Feb 14 2022_, Shipped: _Feb 22 2022_)
-  - [x] Run summary and overview info(system params, CLI args, git info, ...) (Start: _Feb 14 2022_, Shipped: _Mar 9 2022_)
-  - [x] Add DVC related metadata into aim run (Start: _Mar 7 2022_, Shipped: _Mar 26 2022_)
-  - [x] Ability to attach notes to Run from UI (Start: _Mar 7 2022_, Shipped: _Apr 29 2022_)
-  - [x] Fairseq integration (Start: _Mar 27 2022_, Shipped: _Mar 29 2022_)
-  - [x] LightGBM integration (Start: _Apr 14 2022_, Shipped: _May 17 2022_)
-  - [x] CatBoost integration (Start: _Apr 20 2022_, Shipped: _May 17 2022_)
-  - [x] Run execution details(display stdout/stderr logs) (Start: _Apr 25 2022_, Shipped: _May 17 2022_)
-  - [x] Long sequences(up to 5M of steps) support (Start: _Apr 25 2022_, Shipped: _Jun 22 2022_)
-  - [x] Figures Explorer (Start: _Mar 1 2022_, Shipped: _Aug 21 2022_)
-  - [x] Notify on stuck runs (Start: _Jul 22 2022_, Shipped: _Aug 21 2022_)
-  - [x] Integration with KerasTuner (Start: _Aug 10 2022_, Shipped: _Aug 21 2022_)
-  - [x] Integration with WandB (Start: _Aug 15 2022_, Shipped: _Aug 21 2022_)
-  - [x] Stable remote tracking server (Start: _Jun 15 2022_, Shipped: _Aug 21 2022_)
-  - [x] Integration with fast.ai (Start: _Aug 22 2022_, Shipped: _Oct 6 2022_)
-  - [x] Integration with MXNet (Start: _Sep 20 2022_, Shipped: _Oct 6 2022_)
-  - [x] Project overview page (Start: _Sep 1 2022_, Shipped: _Oct 6 2022_)
-  - [x] Remote tracking server scaling (Start: _Sep 11 2022_, Shipped: _Nov 26 2022_)
-  - [x] Integration with PaddlePaddle (Start: _Oct 2 2022_, Shipped: _Nov 26 2022_)
-  - [x] Integration with Optuna (Start: _Oct 2 2022_, Shipped: _Nov 26 2022_)
-  - [x] Audios Explorer (Start: _Oct 30 2022_, Shipped: _Nov 26 2022_)
-  - [x] Experiment page (Start: _Nov 9 2022_, Shipped: _Nov 26 2022_)
-  - [x] HuggingFace datasets (Start: _Dec 29 2022_, _Feb 3 2023_)
-
-</details>
 
 # 👥 Community
 
