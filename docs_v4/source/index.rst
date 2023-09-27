@@ -76,14 +76,15 @@ Aim can get really powerful as you build your own logging apps.
   ./apps/base_app.rst
   ./apps/experiment_tracker.rst
   ./apps/langchain_debugger.rst
-  ./apps/openai_debugger.rst
+..  ./apps/openai_debugger.rst
+
   ./apps/llamaindex_debugger.rst
   ./apps/integration_apps.rst
 
 .. toctree::
   :maxdepth: 3
   :caption: Guides
-  :hidden:
+  :hidden: True
 
   ./guides/installation.rst
   ./guides/deep_dive.rst
@@ -96,7 +97,7 @@ Aim can get really powerful as you build your own logging apps.
 .. toctree::
   :maxdepth: 1
   :caption: 📚 Reference
-  :hidden:
+  :hidden: True
 
   refs/cli.rst
   refs/sdk.rst
@@ -107,7 +108,8 @@ Aim can get really powerful as you build your own logging apps.
   :caption: 🗂️ Browse
   :hidden:
 
-  ./browse/glossary.rst
+..  ./browse/glossary.rst
+
   ./browse/genindex.rst
   ./browse/modindex.rst
 

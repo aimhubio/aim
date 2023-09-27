@@ -2,7 +2,6 @@
  Installation
 #############
 
-[TODO]
 In this section you will learn how to set up basic Aim
 This section shows a simple end-to-end aim setup. It starts from the installation, shows how to run Aim UI and explore the
 results.
@@ -27,7 +26,7 @@ You should see the line listing newly installed version of Aim. For instance:
 
 .. code-block:: none
 
-  Aim v3.5.1
+  Aim v4.0.0
 
 The installed package includes Python SDK needed for tracking training runs, UI for browsing the results and CLI
 for managing UI and results.
