@@ -28,7 +28,7 @@ function Apps(): React.FunctionComponentElement<React.ReactNode> {
       if (!result.hasOwnProperty(category)) {
         result[category] = [];
       }
-      result[category ?? 'Unknown'].push(packages[pkg]);
+      result[category].push(packages[pkg]);
     }
 
     return result;
