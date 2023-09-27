@@ -54,7 +54,6 @@ if c_hash is None:
     ui.board_link('traces.py', 'Explore traces')
 else:
     metrics = Metric.filter(f'c.hash=="{c_hash}"', signal=search_signal)
-
     if metrics:
         row_controls, = ui.rows(1)
         # group_fields = row_controls.multi_select(

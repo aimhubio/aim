@@ -16,7 +16,6 @@ Classes:
 
 from copy import deepcopy
 from typing import Any, Dict, List
-import time
 
 from aim import Repo
 
@@ -76,15 +75,21 @@ class GenericCallbackHandler(BaseCallbackHandler):
         self.repo = Repo.from_path(repo_path)
         self.trace = None
         self.steps = None
-        self.steps_count = 0
+        self.tokens_usage_input = None
+        self.tokens_usage_output = None
+        self.tokens_usage = None
+
         self.actions = []
         self.used_tools = set()
         self.executed_chains = set()
         self.chains_stack = []
-        self.tokens_usage_input = None
-        self.tokens_usage_output = None
-        self.tokens_usage = None
-        self.initial_prompts_stored = False
+
+        self.step_total_tokens_count = 0
+        self.step_cost = 0
+
+        self.step_first_input = None
+        self.step_latest_output = None
+
         # Setup logging
         self.setup()
 
@@ -98,9 +103,11 @@ class GenericCallbackHandler(BaseCallbackHandler):
         """
         if self.trace is not None:
             return
+
         self.trace = Trace(repo=self.repo)
-        self.trace['date'] = time.time()
+
         self.steps = StepSequence(self.trace, name='actions', context={})
+
         self.tokens_usage_input = Metric(self.trace, name='token-usage-input',
                                          context={})
         self.tokens_usage_output = Metric(self.trace, name='token-usage-output',
@@ -114,14 +121,30 @@ class GenericCallbackHandler(BaseCallbackHandler):
         After flushing, it resets the actions and used_tools for the next set of operations.
         """
         self.steps.track(Step(self.actions))
-        del self.trace['used_tools']
-        self.trace['used_tools'] = list(self.used_tools)
         self.actions = []
         self.chains_stack = []
-        self.initial_prompts_stored = False
-        self.steps_count += 1
-        self.trace['steps_count'] = self.steps_count
-        self.trace['cost'] = 0
+
+        self.trace['used_tools'] = list(self.used_tools)
+        self.trace['executed_chains'] = list(self.executed_chains)
+
+        steps_count = self.trace.get('steps_count', 0)
+        steps_count += 1
+        self.trace['steps_count'] = steps_count
+
+        all_tokens = self.trace.get('tokens_count', 0)
+        all_tokens += self.step_total_tokens_count
+        self.trace['tokens_count'] = all_tokens
+        self.step_total_tokens_count = 0
+
+        total_cost = self.trace.get('cost', 0)
+        total_cost += self.step_cost
+        self.trace['cost'] = total_cost
+        self.step_cost = 0
+
+        self.trace['latest_input'] = self.step_first_input
+        self.trace['latest_output'] = self.step_latest_output
+        self.step_first_input = None
+        self.step_latest_output = None
 
     def on_llm_start(self, serialized: Dict[str, Any], prompts: List[str],
                      invocation_params: Dict[str, Any], **kwargs: Any) -> None:
@@ -141,11 +164,6 @@ class GenericCallbackHandler(BaseCallbackHandler):
         action = LLMStartAction(model_name, temperature, prompts)
         self.actions.append(action)
 
-        if self.initial_prompts_stored is False:
-            del self.trace['initial_prompts']
-            self.trace['initial_prompts'] = prompts
-            self.initial_prompts_stored = True
-
     def on_llm_end(self, response: LLMResult, **kwargs: Any) -> None:
         """
         Handle the event when a Language Model (LLM) ends.
@@ -161,20 +179,50 @@ class GenericCallbackHandler(BaseCallbackHandler):
                 generations_log.append(flatten_dict(generation.dict()))
 
         llm_output = response.llm_output
-        token_usage = llm_output.get('token_usage', {})
+        token_usage_res = llm_output.get('token_usage', {})
+        token_usage = {
+            'prompt_tokens': token_usage_res.get('prompt_tokens', 0),
+            'completion_tokens': token_usage_res.get('completion_tokens',
+                                                     0),
+            'total_tokens': token_usage_res.get('total_tokens', 0),
+        }
         model_name = llm_output.get('model_name', 'Unknown')
 
-        action = LLMEndAction(model_name, token_usage.to_dict(),
-                              generations_log)
+        # Tokens calculation
+        self.step_total_tokens_count += token_usage['prompt_tokens'] + \
+                                        token_usage['completion_tokens']
+
+        # Cost calculation
+        prompt_cost_val = 0
+        output_cost_val = 0
+        unknown_cost_val = False
+        if model_name.startswith('gpt-3.5'):
+            prompt_cost_val = 0.002
+            output_cost_val = 0.002
+        elif model_name.startswith('gpt-4-32K'):
+            prompt_cost_val = 0.12
+            output_cost_val = 0.06
+        elif model_name.startswith('gpt-4'):
+            prompt_cost_val = 0.03
+            output_cost_val = 0.06
+        else:
+            unknown_cost_val = True
+
+        if not unknown_cost_val:
+            input_price = token_usage[
+                              'prompt_tokens'] * prompt_cost_val / 1000
+            output_price = token_usage[
+                               'completion_tokens'] * output_cost_val / 1000
+            total_price = input_price + output_price
+            self.step_cost += total_price
+
+        # Tokens usage tracking
+        self.tokens_usage_input.track(token_usage['prompt_tokens'])
+        self.tokens_usage_output.track(token_usage['completion_tokens'])
+        self.tokens_usage.track(token_usage['total_tokens'])
+
+        action = LLMEndAction(model_name, token_usage, generations_log)
         self.actions.append(action)
-
-        del self.trace['final_generations']
-        self.trace['final_generations'] = generations_log
-
-        # Track token usage as Aim metrics
-        self.tokens_usage_input.track(token_usage.get('prompt_tokens', 0))
-        self.tokens_usage_output.track(token_usage.get('completion_tokens', 0))
-        self.tokens_usage.track(token_usage.get('total_tokens', 0))
 
     def on_tool_start(self, serialized: Dict[str, Any], input_str: str,
                       **kwargs: Any) -> None:
@@ -232,6 +280,9 @@ class GenericCallbackHandler(BaseCallbackHandler):
         self.chains_stack.append(chain_id)
         self.executed_chains.add(chain_id)
 
+        if self.step_first_input is None:
+            self.step_first_input = input
+            self.step_latest_output = None
 
     def on_chain_end(self, outputs: Dict[str, Any], **kwargs: Any) -> None:
         """
@@ -255,6 +306,4 @@ class GenericCallbackHandler(BaseCallbackHandler):
         action = ChainEndAction(finished_chain, text, output)
         self.actions.append(action)
 
-        # Update the trace's executed chains
-        del self.trace['executed_chains']
-        self.trace['executed_chains'] = self.executed_chains
+        self.step_latest_output = output

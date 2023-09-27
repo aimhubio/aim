@@ -144,25 +144,33 @@ def render_step(step, step_idx):
 
     render_actions(actions, int(items_per_page), int(page_num))
 
+
 c_hash = session_state.get('container_hash')
 
 search_signal = "search"
 
 if c_hash is None:
-    ui.header("Steps")
-    form = ui.form("Search", signal=search_signal)
-    query = form.text_input(value="")
-
-steps = StepSequence.filter(f'c.hash=="{c_hash}"' if c_hash else query, signal=search_signal)
-
-steps_length = len(steps)
-
-if steps_length == 0:
-    ui.text('No tracked steps')
+    ui.subheader('No trace selected')
+    ui.text('This board is intended to be used in the context of a single Trace.')
+    ui.board_link('traces.py', 'Explore traces')
 else:
-    if steps_length > 1:
-        current_step_idx = ui.slider(label='Select the step:', value=0, min=0, max=steps_length-1, step=1)
+    sequences = StepSequence.filter(f'c.hash=="{c_hash}"', signal=search_signal)
+
+    if not sequences or len(sequences) == 0:
+        ui.text('No tracked steps')
+    elif len(sequences) > 1:
+        ui.text('More than 1 step sequence is found. This app supports visualizing only a single step sequence.')
     else:
-        current_step_idx = 0
-    current_step = steps[current_step_idx]
-    render_step(current_step, current_step_idx)
+        sequence = sequences[0]
+        steps = sequence.get('values', [])
+        steps_length = len(steps)
+
+        if steps_length == 0:
+            ui.text('No tracked steps')
+        else:
+            if steps_length > 1:
+                current_step_idx = ui.slider(label='Select the step:', value=0, min=0, max=steps_length-1, step=1)
+            else:
+                current_step_idx = 0
+            current_step = steps[current_step_idx]
+            render_step(current_step, current_step_idx)

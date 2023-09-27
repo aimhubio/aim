@@ -1,4 +1,3 @@
-import time
 from typing import Optional, Any, Dict, List
 
 from aim import Repo
@@ -14,6 +13,7 @@ except ImportError:
         "package installed. Please install it with `pip install llama-index`."
     )
 
+from aimstack.base import Metric
 from aimstack.llamaindex_observer.types.trace import Trace
 from aimstack.llamaindex_observer.types.step import Step, StepSequence
 from aimstack.llamaindex_observer.types.action import (
@@ -51,8 +51,14 @@ class GenericCallbackHandler(BaseCallbackHandler):
         self.repo = Repo.from_path(repo)
         self.trace = None
         self.steps = None
-        self.steps_count = 0
+        self.tokens_usage_input = None
+        self.tokens_usage_output = None
+        self.tokens_usage = None
+
         self.actions = []
+
+        self.step_total_tokens_count = 0
+        self.step_cost = 0
 
         # Setup logging
         self.setup()
@@ -67,9 +73,16 @@ class GenericCallbackHandler(BaseCallbackHandler):
         """
         if self.trace is not None:
             return
+
         self.trace = Trace(repo=self.repo)
-        self.trace['date'] = time.time()
+
         self.steps = StepSequence(self.trace, name='actions', context={})
+
+        self.tokens_usage_input = Metric(self.trace, name='token-usage-input',
+                                         context={})
+        self.tokens_usage_output = Metric(self.trace, name='token-usage-output',
+                                          context={})
+        self.tokens_usage = Metric(self.trace, name='token-usage', context={})
 
     def flush(self):
         """
@@ -79,9 +92,20 @@ class GenericCallbackHandler(BaseCallbackHandler):
         """
         self.steps.track(Step(self.actions))
         self.actions = []
-        self.steps_count += 1
-        self.trace['steps_count'] = self.steps_count
-        self.trace['cost'] = 0
+
+        steps_count = self.trace.get('steps_count', 0)
+        steps_count += 1
+        self.trace['steps_count'] = steps_count
+
+        all_tokens = self.trace.get('tokens_count', 0)
+        all_tokens += self.step_total_tokens_count
+        self.trace['tokens_count'] = all_tokens
+        self.step_total_tokens_count = 0
+
+        total_cost = self.trace.get('cost', 0)
+        total_cost += self.step_cost
+        self.trace['cost'] = total_cost
+        self.step_cost = 0
 
     def on_event_start(self, event_type: str,
                        payload: Optional[Dict[str, Any]] = None,
@@ -134,11 +158,16 @@ class GenericCallbackHandler(BaseCallbackHandler):
                 )
             )
         elif event_type == CBEventType.QUERY:
+            query_str = payload.get(EventPayload.QUERY_STR)
             self.actions.append(
                 QueryAction(
-                    query_text=payload.get(EventPayload.QUERY_STR)
+                    query_text=query_str
                 )
             )
+
+            # Log the latest query message
+            self.trace['latest_query'] = query_str
+            self.trace['latest_response'] = ''
 
         # print('SSS #' * 10)
         # print(event_type, payload)
@@ -176,14 +205,51 @@ class GenericCallbackHandler(BaseCallbackHandler):
                 token_usage_res = {}
             token_usage = {
                 'prompt_tokens': token_usage_res.get('prompt_tokens', 0),
-                'completion_tokens': token_usage_res.get('completion_tokens', 0),
+                'completion_tokens': token_usage_res.get('completion_tokens',
+                                                         0),
                 'total_tokens': token_usage_res.get('total_tokens', 0),
             }
+            model_name = response_meta.get('model', '-')
+
+            # Tokens calculation
+            self.step_total_tokens_count += token_usage['prompt_tokens'] + \
+                                            token_usage['completion_tokens']
+
+            # Cost calculation
+            prompt_cost_val = 0
+            output_cost_val = 0
+            unknown_cost_val = False
+            if model_name.startswith('gpt-3.5'):
+                prompt_cost_val = 0.002
+                output_cost_val = 0.002
+            elif model_name.startswith('gpt-4-32K'):
+                prompt_cost_val = 0.12
+                output_cost_val = 0.06
+            elif model_name.startswith('gpt-4'):
+                prompt_cost_val = 0.03
+                output_cost_val = 0.06
+            else:
+                unknown_cost_val = True
+
+            if not unknown_cost_val:
+                input_price = token_usage[
+                                  'prompt_tokens'] * prompt_cost_val / 1000
+                output_price = token_usage[
+                                   'completion_tokens'] * output_cost_val / 1000
+                total_price = input_price + output_price
+                self.step_cost += total_price
+
+            # Tokens usage tracking
+            self.tokens_usage_input.track(token_usage['prompt_tokens'])
+            self.tokens_usage_output.track(token_usage['completion_tokens'])
+            self.tokens_usage.track(token_usage['total_tokens'])
+
+            # Append the action
             self.actions.append(
                 LLMEndAction(
                     messages=messages,
                     response=response_content,
-                    model_name=response_meta.get('model', '-'),
+                    model_name=model_name,
                     token_usage=token_usage
                 )
             )
@@ -226,6 +292,10 @@ class GenericCallbackHandler(BaseCallbackHandler):
                     response=response_content
                 )
             )
+
+            # Log the latest query response
+            self.trace['latest_response'] = response_content
+
         # print('EEE #' * 10)
         # print(event_type, payload)
         # print('EEE #' * 10)

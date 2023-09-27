@@ -8,20 +8,21 @@ query = form.text_input(value='')
 runs = Trace.filter(query)
 
 # Sort traces by Date in DESC order globally
-runs = sorted(runs, key=lambda trace: trace.get('params', {}).get('date', 0), reverse=True)
+runs = sorted(runs, key=lambda trace: trace.creation_time, reverse=True)
 
 @memoize
 def get_table_data(data=[], page_size=10, page_num=1):
     table_data = {
         'Trace': [],
         'Date': [],
-        'Status': [],
         'Used Tools': [],
-        'Executed Chains': [],
         'Total Steps': [],
-        'Tokens': [],
+        'Total Tokens': [],
         'Cost': [],
-        # 'Prompts': [],
+        'Latest Inputs': [],
+        'Latest Outputs': [],
+        'Executed Chains': [],
+        # 'Status': [], todo: track status properly
     }
 
     traces = data[(page_num - 1) * page_size:page_num * page_size]
@@ -30,36 +31,26 @@ def get_table_data(data=[], page_size=10, page_num=1):
         table_data['Trace'].append(trace['hash'])
 
         # Convert timestamp to readable date format
-        from datetime import datetime
-        timestamp = trace.get('params', {}).get('date')
-        date = datetime.utcfromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S') if timestamp else 'N/A'
+        date = datetime.utcfromtimestamp(trace.creation_time).strftime('%Y-%m-%d %H:%M:%S')
         table_data['Date'].append(date)
 
-        # Extract used tools, or indicate "None" if no tools were used
-        tools = ', '.join(trace.get('params', {}).get('used_tools', [])) or "None"
+        # Format status, tools and chains
+        tools = ', '.join(trace.get('used_tools', [])) or "N/A"
         table_data['Used Tools'].append(tools)
+        chains = trace.get('executed_chains', [])
+        table_data['Executed Chains'].append(', '.join(chains))
 
-        # Format chains in a more readable way
-        chains = trace.get('params', {}).get('executed_chains', '')
-        formatted_chains = ', '.join([chain.strip() for chain in chains.strip('{}').split(',')])
-        table_data['Executed Chains'].append(formatted_chains)
+        # Display steps count, tokens and cost
+        steps_count = trace.get('steps_count', 'N/A')
+        tokens_count = trace.get('tokens_count', 'N/A')
+        cost = trace.get('cost', 'N/A')
 
-        # Display steps count and cost
-        steps_count = trace.get('params', {}).get('steps_count', 'N/A')
-        cost = trace.get('params', {}).get('cost', 'N/A')
-        tokens = trace.get('params', {}).get('tokens', 'N/A')
         table_data['Total Steps'].append(steps_count)
-        table_data['Cost'].append(cost)
-        table_data['Tokens'].append(tokens)
-        table_data['Status'].append('Exception' if '_Exception' in tools else 'Success')
+        table_data['Total Tokens'].append(tokens_count)
+        table_data['Cost'].append('${}'.format(cost))
 
-        # initial_prompts = ' '.join(trace.get('params', {}).get('initial_prompts', []))
-        # table_data['Prompts'].append(initial_prompts)
-        #
-        # # Visualize only message_content key for generations
-        # message_contents = [gen_info.get('message_content', 'N/A') for gen_info in trace.get('params', {}).get('final_generations', [])]
-        # final_generations = ' | '.join(message_contents)
-        # table_data['Generations'].append(final_generations)
+        table_data['Latest Inputs'].append(str(trace.get('latest_input', 'N/A')))
+        table_data['Latest Outputs'].append(str(trace.get('latest_output', 'N/A')))
 
     return table_data
 
@@ -74,5 +65,4 @@ with row1:
 
 row2.table(get_table_data(runs, int(items_per_page), page_num), {
     'Trace': lambda val: ui.board_link('trace.py', val, state={'container_hash': val}),
-    # 'Prompts': lambda val: ui.code(val),
 })
