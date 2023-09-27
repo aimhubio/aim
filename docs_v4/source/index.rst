@@ -68,18 +68,28 @@ Aim can get really powerful as you build your own logging apps.
   ./getting_started/about_aim.rst
 
 .. toctree::
-  :maxdepth: 2
+  :maxdepth: 3
   :caption: Apps
   :hidden:
 
   ./apps/overview.rst
-  ./apps/base_app.rst
-  ./apps/experiment_tracker.rst
+  ./apps/pytorch_ignite_tracker.rst
+  ./apps/pytorch_lightning_tracker.rst
+  ./apps/huggingface_tracker.rst
+  ./apps/keras_tracker.rst
+  ./apps/keras_tuner_tracker.rst
+  ./apps/xgboost_tracker.rst
+  ./apps/catboost_tracker.rst
+  ./apps/lightgbm_tracker.rst
+  ./apps/fastai_tracker.rst
+  ./apps/mxnet_tracker.rst
+  ./apps/optuna_tracker.rst
+  ./apps/paddle_paddle_tracker.rst
+  ./apps/stable_baselines3_tracker.rst
+  ./apps/acme_tracker.rst
+  ./apps/prophet_tracker.rst
+  ./apps/llamaindex_retriever.rst
   ./apps/langchain_debugger.rst
-..  ./apps/openai_debugger.rst
-
-  ./apps/llamaindex_debugger.rst
-  ./apps/integration_apps.rst
 
 .. toctree::
   :maxdepth: 3

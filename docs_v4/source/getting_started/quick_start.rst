@@ -15,8 +15,7 @@ Start in 3 steps
 
 .. code-block:: python
 
-  from aimstack.base import Metric
-  from aimstack.experiment_tracker import Run
+  from aimstack.base import Run, Metric
 
   # Create a run
   run = Run()
@@ -32,11 +31,14 @@ Start in 3 steps
   for i in range(1000):
         metric.track(i, epoch=1)
 
-3. Run Aim Server and Aim UI
+3. Run Aim Server
 
 .. code-block:: console
-
   aim server
+
+4. Run Aim UI
+
+.. code-block:: console
   aim ui
 
 Log your first project with Aim
@@ -63,7 +65,6 @@ In this example, we use the default Run.
 
 .. code-block:: python
 
-  import aim
   from aimstack.base import Run  
 
   # Create a run
@@ -94,26 +95,6 @@ Once Run is initialized, you can configure it with parameters and log the run.
 You can create as many metrics and other sequences as your project requires.
 Fundamentally Aim provides all the tools to log everything from everywhere.
 
-Run your first Aim app
-======================
-
-Aim apps are composable logging and observability applications built with Aim SDK and run by Aim.
-Apps are packaged as regular Python packages and can be shared, installed with all python package .
-
-Aim comes with a number of prebuilt apps.
-In this instance, we will install the aimlflow app which provides auto-sync with mlflow and a dashboard on Aim of what was synced and when.
-Combined with the default experiment tracking app, users can have all the beautiful aim features eneabled autoamtically over mlflow logs.
-
-.. code-block:: console
-
-  pip install aimlflow
-  aim register aimlflow, aiml
-  aim server
-  aim ui
-
-This will enable both apps on Aim UI.
-
-
 Integration with ML frameworks
 ==============================
 
@@ -123,7 +104,7 @@ Those integrations are apps and are part of default Aim installation.
 
 .. code-block:: python
 
-  from aimstack.pl_logger import AimLogger
+  from aimstack.pytorch_lightning_tracker.loggers import BaseLogger as AimLogger
 
 Pytorch Lightning example
 -------------------------

@@ -49,36 +49,27 @@ It takes one line to add these loggers to your training script and start logging
 
 It's plug and go. No need to change your training script or your workflow.
 
-.. toctree::
-  :maxdepth: 3
-  :caption: ML Experiment Tracking Integration apps
-
-  ./pytorch_ignite_tracker.rst
-  ./pytorch_lightning_tracker.rst
-  ./huggingface_tracker.rst
-  ./keras_tracker.rst
-  ./keras_tuner_tracker.rst
-  ./xgboost_tracker.rst
-  ./catboost_tracker.rst
-  ./lightgbm_tracker.rst
-  ./fastai_tracker.rst
-  ./mxnet_tracker.rst
-  ./optuna_tracker.rst
-  ./paddle_paddle_tracker.rst
-  ./stable_baselines3_tracker.rst
-  ./acme_tracker.rst
-  ./prophet_tracker.rst
-
+- `PyTorch Ignite Tracker <./pytorch_ignite_tracker.html>`_
+- `PyTorch Lightning Tracker <./pytorch_lightning_tracker.html>`_
+- `HuggingFace Tracker <./huggingface_tracker.html>`_
+- `Keras Tracker <./keras_tracker.html>`_
+- `Keras Tuner Tracker <./keras_tuner_tracker.html>`_
+- `XGBoost Tracker <./xgboost_tracker.html>`_
+- `CatBoost Tracker <./catboost_tracker.html>`_
+- `LightGBM Tracker <./lightgbm_tracker.html>`_
+- `FastAI Tracker <./fastai_tracker.html>`_
+- `MXNet Tracker <./mxnet_tracker.html>`_
+- `Optuna Tracker <./optuna_tracker.html>`_
+- `Paddle Paddle Tracker <./paddle_paddle_tracker.html>`_
+- `Stable Baselines3 Tracker <./stable_baselines3_tracker.html>`_
+- `Acme Tracker <./acme_tracker.html>`_
+- `Prophet Tracker <./prophet_tracker.html>`_
 
 AI Systems Tracking
 ====================================
-The AI Systsems Tracking are available in Aim by default.
-It consists of a set of trackers that connect to the latest AI systems and keep track of your interaction metadata.
-These systems seamlessly integrate with your existing AI pipelines.
+The AI Systems Tracking apps are available in Aim by default.
+It consists of a set of trackers that log AI systems executions and enable out-of-the-box observability.
+These apps seamlessly integrate with your existing AI pipelines.
 
-.. toctree::
-  :maxdepth: 3
-  :caption: AI Systems Tracking Apps
-
-  ./llamaindex_retriver.rst
-  ./langchain_chatbot.rst
+- `LlamaIndex Retriever <./llamaindex_retriever.html>`_
+- `LangChain Debugger <./langchain_debugger.html>`_
