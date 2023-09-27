@@ -18,6 +18,7 @@ class Package:
         self.description = getattr(pkg, '__description__', None)
         self.author = getattr(pkg, '__author__', None)
         self.category = getattr(pkg, '__category__', None)
+        self.hide_boards = getattr(pkg, '__hide_boards__', False)
 
         self._path = pathlib.Path(pkg.__path__[0])
         self._boards_dir: pathlib.Path = None

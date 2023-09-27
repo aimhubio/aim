@@ -10,7 +10,7 @@ class Text(Record):
              text (:obj:): str object used to construct `aim.Text`.
         """
 
-    AIM_NAME = 'asp.Text'
+    AIM_NAME = 'base.Text'
     RESOLVE_BLOBS = True
     SEQUENCE_NAME = 'TextSequence'
 

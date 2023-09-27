@@ -6,18 +6,18 @@ from typing import Optional, Tuple
 
 from aim._core.storage.hashing import hash_auto
 from aim import Record
-from aimstack.asp.loggers.text import Text
+from aimstack.base.loggers.text import Text
 
 
 @Record.alias('aim.log_line')
 class LogLine(Text):
-    AIM_NAME = 'asp.LogLine'
+    AIM_NAME = 'base.LogLine'
     SEQUENCE_NAME = 'LogStream'
 
 
 @Record.alias('aim.log_record')
 class LogRecord(Record):
-    AIM_NAME = 'asp.LogRecord'
+    AIM_NAME = 'base.LogRecord'
     SEQUENCE_NAME = 'LogRecordSequence'
 
     def __init__(self,
