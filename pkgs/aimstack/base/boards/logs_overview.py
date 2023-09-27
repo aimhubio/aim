@@ -1,5 +1,4 @@
 import json
-
 from collections import defaultdict
 
 from base import get_project_stats, get_sequence_type_preview, get_container_type_preview
@@ -9,9 +8,9 @@ project_stats = get_project_stats()
 container_info = project_stats['containers']
 sequence_info = project_stats['sequences']
 
-row1, = ui.rows(1)
+row, = ui.rows(1)
 
-col1, col2 = row1.columns(2)
+col1, col2 = row.columns(2)
 
 col1.header('Containers Overview')
 
@@ -53,7 +52,7 @@ def sequence_info_table(seq_infos):
         seq_full_types.append(seq_info['sequence_full_type'])
         container_hashes.append(seq_info['hash'])
         names.append(seq_info['name'])
-        contexts.append(json.dumps(seq_info['context']))
+        contexts.append(seq_info['context'])
         item_types.append(seq_info['value_type'])
         axis_names.append(', '.join(seq_info['axis_names']))
         ranges.append(f"[{seq_info['range'][0]}, {seq_info['range'][1]}]")
@@ -69,22 +68,38 @@ def sequence_info_table(seq_infos):
     }
 
 
-if cont_table.focused_row is not None:
-    cont_type = cont_table.focused_row['type']
+selected_cont_type = cont_table.focused_row
+if selected_cont_type is not None:
+    cont_type = selected_cont_type['type']
     ui.header(f'Containers of type \'{cont_type}\'')
     cont_infos = get_container_type_preview(type_=cont_type)
-    ui.table(container_info_table(cont_infos), {
+    row, = ui.rows(1)
+    cont_type_table = row.table(container_info_table(cont_infos), {
         'hash': lambda val: ui.board_link('run.py', val, state={'container_hash': val})
     })
+
+    selected_cont = cont_type_table.focused_row
+    if selected_cont is not None:
+        container_hash = selected_cont['hash']
+        row.json(Container.find(container_hash))
 else:
     ui.text('Select Container type to see details.')
 
-if seq_table.focused_row is not None:
-    seq_type = seq_table.focused_row['type']
+selected_seq_type = seq_table.focused_row
+if selected_seq_type is not None:
+    seq_type = selected_seq_type['type']
     ui.header(f'Sequences of type \'{seq_type}\'')
     seq_infos = get_sequence_type_preview(type_=seq_type)
-    ui.table(sequence_info_table(seq_infos), {
-        'hash': lambda val: ui.board_link('run.py', val, state={'container_hash': val})
+    row, = ui.rows(1)
+    seq_type_table = row.table(sequence_info_table(seq_infos), {
+        'hash': lambda val: ui.board_link('run.py', val, state={'container_hash': val}),
+        'context': lambda val: ui.text(json.dumps(val))
     })
+    selected_seq = seq_type_table.focused_row
+    if selected_seq is not None:
+        container_hash = selected_seq['hash']
+        name = selected_seq['name']
+        context = selected_seq['context']
+        row.json(Sequence.find(container_hash, name, context))
 else:
     ui.text('Select Sequence type to see details.')

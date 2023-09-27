@@ -6,7 +6,6 @@ from aim import Record
 logger = getLogger(__name__)
 
 
-@Record.alias("hf_datasets.Metadata")
 class HFDataset(Record):
     AIM_NAME = "hf_datasets.Metadata"
     DEFAULT_KEY = "train"
