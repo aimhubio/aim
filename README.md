@@ -127,7 +127,7 @@ The Logging applications are typically a combination of these components:
 
 Aim comes installed with a number of default logging apps:
 
-- Logs Discovery App - an app that allows to log and observe all.
+- Base App - a basic generic log exploration and the logging primitives
 - AI Experiment Tracking Apps - a collection of apps that log machine learning experiments for most of the ML frameworks.
 - AI Systems Tracing and Debugging Apps - a combination of variety of apps that log from langchain to llamaindex traces all in one place.
 
@@ -146,7 +146,7 @@ With the rise of AI Systems and the challenges it brings forward, logging apps a
 
 </br>
 
-### Logs Discovery App
+### Base App
 
 A general observability over anything logged with Aim.
 
