@@ -10,7 +10,7 @@ from typing import Dict, Optional
 from aim import Repo
 from aim._core.storage.rockscontainer import RocksContainer
 from aim._core.storage.treeview import TreeView
-from aimstack.asp import Run, SystemMetric
+from aimstack.base import Run, SystemMetric
 
 logger = logging.getLogger(__name__)
 

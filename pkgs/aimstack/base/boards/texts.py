@@ -1,4 +1,4 @@
-from asp import TextSequence
+from base import TextSequence
 import math
 
 c_hash = session_state.get('container_hash')

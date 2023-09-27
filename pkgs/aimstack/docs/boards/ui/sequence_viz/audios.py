@@ -15,7 +15,7 @@ ui.table({
 })
 
 ui.subheader('Example')
-ui.code("""from asp import Audios
+ui.code("""from base import Audios
 
 audios = Audios.filter()
 

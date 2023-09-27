@@ -2,7 +2,7 @@ import json
 
 from collections import defaultdict
 
-from asp import get_project_stats, get_sequence_type_preview, get_container_type_preview
+from base import get_project_stats, get_sequence_type_preview, get_container_type_preview
 
 project_stats = get_project_stats()
 
@@ -71,10 +71,10 @@ def sequence_info_table(seq_infos):
 
 if cont_table.focused_row is not None:
     cont_type = cont_table.focused_row['type']
-    ui.header(f'Container of type \'{cont_type}\'')
+    ui.header(f'Containers of type \'{cont_type}\'')
     cont_infos = get_container_type_preview(type_=cont_type)
     ui.table(container_info_table(cont_infos), {
-        'hash': lambda val: ui.board_link('container.py', val, state={'container_hash': val})
+        'hash': lambda val: ui.board_link('run.py', val, state={'container_hash': val})
     })
 else:
     ui.text('Select Container type to see details.')
@@ -84,7 +84,7 @@ if seq_table.focused_row is not None:
     ui.header(f'Sequences of type \'{seq_type}\'')
     seq_infos = get_sequence_type_preview(type_=seq_type)
     ui.table(sequence_info_table(seq_infos), {
-        'hash': lambda val: ui.board_link('container.py', val, state={'container_hash': val})
+        'hash': lambda val: ui.board_link('run.py', val, state={'container_hash': val})
     })
 else:
     ui.text('Select Sequence type to see details.')

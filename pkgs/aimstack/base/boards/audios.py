@@ -1,4 +1,4 @@
-from asp import AudioSequence
+from base import AudioSequence
 import math
 
 c_hash = session_state.get('container_hash')

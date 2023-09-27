@@ -15,7 +15,7 @@ ui.table({
 })
 
 ui.subheader('Example')
-ui.code("""from asp import Figures
+ui.code("""from base import Figures
 
 figures = Figures.filter()
 

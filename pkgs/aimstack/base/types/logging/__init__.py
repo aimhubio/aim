@@ -6,7 +6,7 @@ from typing import Optional, Tuple
 
 from aim._core.storage.hashing import hash_auto
 from aim import Record
-from aimstack.base.loggers.text import Text
+from aimstack.base.types.text import Text
 
 
 @Record.alias('aim.log_line')

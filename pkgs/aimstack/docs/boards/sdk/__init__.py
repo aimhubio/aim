@@ -127,7 +127,7 @@ ui.code("""
 r.sequences('sequence.name == "loss"', Metric).all()
 
 # Option 2: Use Metric.filter classmethod
-from aimstack.asp import Metric
+from aimstack.base import Metric
 
 Metric.filter('sequence.name == "loss"').all()
 """)
