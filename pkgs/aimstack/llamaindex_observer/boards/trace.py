@@ -1,4 +1,6 @@
 # This board is going to be updated after UI-side data processing refactoring
+from datetime import datetime
+
 from llamaindex_observer import Trace
 from llamaindex_observer import StepSequence
 
@@ -38,25 +40,35 @@ def merge_dicts(dict1, dict2):
 
 @memoize
 def display_trace_details(trace):
-    from datetime import datetime
-
     # Extract and format the required data from the trace
-    details = {
-        'Trace': trace.get('hash', 'N/A'),
-        'Date': datetime.utcfromtimestamp(trace.get('date', 0)).strftime('%Y-%m-%d %H:%M:%S') if trace.get('params', {}).get('date') else 'N/A',
-        # 'Status': 'Exception' if '_Exception' in ', '.join(trace.get('params', {}).get('used_tools', [])) else 'Success',
-        # 'Used Tools': ', '.join(trace.get('params', {}).get('used_tools', [])) or "None",
-        # 'Executed Chains': ', '.join([chain.strip() for chain in trace.get('params', {}).get('executed_chains', '').strip('{}').split(',')]),
-        'Total Steps': trace.get('steps_count', 'N/A'),
-        # 'Tokens': trace.get('params', {}).get('tokens', 'N/A'),
-        'Cost': trace.get('cost', 'N/A'),
-        # 'Prompts': ' '.join(trace.get('params', {}).get('initial_prompts', []))
-    }
+    table_data = {}
+
+    table_data['Trace'] = trace['hash']
+
+    # Convert timestamp to readable date format
+    date = datetime.utcfromtimestamp(trace.creation_time).strftime('%Y-%m-%d %H:%M:%S')
+    table_data['Date'] = date
+
+    # Display steps count, tokens and cost
+    steps_count = trace.get('steps_count', 'N/A')
+    tokens_count = trace.get('tokens_count', 'N/A')
+    cost = trace.get('cost', 'N/A')
+
+    table_data['Total Steps'] = steps_count
+    table_data['Total Tokens'] = tokens_count
+    table_data['Cost'] = '${}'.format(cost)
+
+    # Display latest query and response
+    latest_query = trace.get('latest_query', 'N/A')
+    latest_response = trace.get('latest_response', 'N/A')
+
+    table_data['Latest Query'] = latest_query
+    table_data['Latest Response'] = latest_response
 
     # Convert the details dictionary to a table format
     table_data = {
-        'Key': list(details.keys()),
-        'Value': list(details.values())
+        'Key': list(table_data.keys()),
+        'Value': list(table_data.values())
     }
 
     return table_data
@@ -70,5 +82,4 @@ if trace:
     with steps_tab:
         ui.board('steps.py', state={'container_hash': c_hash})
     with cost_tab:
-        # ui.board('cost.py', state={'container_hash': c_hash})
-        pass
+        ui.board('cost.py', state={'container_hash': c_hash})

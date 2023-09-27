@@ -16,7 +16,6 @@ Classes:
 
 from copy import deepcopy
 from typing import Any, Dict, List
-import time
 
 from aim import Repo
 
@@ -99,8 +98,9 @@ class GenericCallbackHandler(BaseCallbackHandler):
         if self.trace is not None:
             return
         self.trace = Trace(repo=self.repo)
-        self.trace['date'] = time.time()
+
         self.steps = StepSequence(self.trace, name='actions', context={})
+
         self.tokens_usage_input = Metric(self.trace, name='token-usage-input',
                                          context={})
         self.tokens_usage_output = Metric(self.trace, name='token-usage-output',

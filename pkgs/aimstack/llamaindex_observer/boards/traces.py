@@ -1,5 +1,6 @@
-from llamaindex_observer import Trace
 from datetime import datetime
+
+from llamaindex_observer import Trace
 
 ui.header('Traces')
 
@@ -8,18 +9,18 @@ query = form.text_input(value='')
 runs = Trace.filter(query)
 
 # Sort traces by Date in DESC order globally
-runs = sorted(runs, key=lambda trace: trace.get('date', 0), reverse=True)
+runs = sorted(runs, key=lambda trace: trace.creation_time, reverse=True)
 
 @memoize
 def get_table_data(data=[], page_size=10, page_num=1):
     table_data = {
         'Trace': [],
         'Date': [],
-        'Status': [],
         'Total Steps': [],
-        # 'Tokens': [],
+        'Total Tokens': [],
         'Cost': [],
-        # 'Prompts': [],
+        'Latest Query': [],
+        'Latest Response': [],
     }
 
     traces = data[(page_num - 1) * page_size:page_num * page_size]
@@ -28,26 +29,24 @@ def get_table_data(data=[], page_size=10, page_num=1):
         table_data['Trace'].append(trace['hash'])
 
         # Convert timestamp to readable date format
-        from datetime import datetime
-        timestamp = trace.get('date')
-        date = datetime.utcfromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S') if timestamp else 'N/A'
+        date = datetime.utcfromtimestamp(trace.creation_time).strftime('%Y-%m-%d %H:%M:%S')
         table_data['Date'].append(date)
 
-        # Display steps count and cost
+        # Display steps count, tokens and cost
         steps_count = trace.get('steps_count', 'N/A')
+        tokens_count = trace.get('tokens_count', 'N/A')
         cost = trace.get('cost', 'N/A')
-        # tokens = trace.get('params', {}).get('tokens', 'N/A')
-        table_data['Total Steps'].append(steps_count)
-        table_data['Cost'].append(cost)
-        # table_data['Tokens'].append(tokens)
 
-        # initial_prompts = ' '.join(trace.get('params', {}).get('initial_prompts', []))
-        # table_data['Prompts'].append(initial_prompts)
-        #
-        # # Visualize only message_content key for generations
-        # message_contents = [gen_info.get('message_content', 'N/A') for gen_info in trace.get('params', {}).get('final_generations', [])]
-        # final_generations = ' | '.join(message_contents)
-        # table_data['Generations'].append(final_generations)
+        table_data['Total Steps'].append(steps_count)
+        table_data['Total Tokens'].append(tokens_count)
+        table_data['Cost'].append('${}'.format(cost))
+
+        # Display latest query and response
+        latest_query = trace.get('latest_query', 'N/A')
+        latest_response = trace.get('latest_response', 'N/A')
+
+        table_data['Latest Query'].append(latest_query)
+        table_data['Latest Response'].append(latest_response)
 
     return table_data
 
