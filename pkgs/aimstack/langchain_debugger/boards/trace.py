@@ -61,6 +61,9 @@ def display_trace_details(trace):
     table_data['Total Tokens'] = tokens_count
     table_data['Cost'] = '${}'.format(cost)
 
+    table_data['Latest Inputs']= str(trace.get('latest_input', 'N/A'))
+    table_data['Latest Outputs']= str(trace.get('latest_output', 'N/A'))
+
     # Convert the details dictionary to a table format
     res = {
         'Key': list(table_data.keys()),

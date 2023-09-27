@@ -87,6 +87,9 @@ class GenericCallbackHandler(BaseCallbackHandler):
         self.step_total_tokens_count = 0
         self.step_cost = 0
 
+        self.step_first_input = None
+        self.step_latest_output = None
+
         # Setup logging
         self.setup()
 
@@ -137,6 +140,11 @@ class GenericCallbackHandler(BaseCallbackHandler):
         total_cost += self.step_cost
         self.trace['cost'] = total_cost
         self.step_cost = 0
+
+        self.trace['latest_input'] = self.step_first_input
+        self.trace['latest_output'] = self.step_latest_output
+        self.step_first_input = None
+        self.step_latest_output = None
 
     def on_llm_start(self, serialized: Dict[str, Any], prompts: List[str],
                      invocation_params: Dict[str, Any], **kwargs: Any) -> None:
@@ -272,6 +280,10 @@ class GenericCallbackHandler(BaseCallbackHandler):
         self.chains_stack.append(chain_id)
         self.executed_chains.add(chain_id)
 
+        if self.step_first_input is None:
+            self.step_first_input = input
+            self.step_latest_output = None
+
     def on_chain_end(self, outputs: Dict[str, Any], **kwargs: Any) -> None:
         """
         Handle the event when a chain ends.
@@ -293,3 +305,5 @@ class GenericCallbackHandler(BaseCallbackHandler):
         # Create a new ChainEndAction and add it to the actions list
         action = ChainEndAction(finished_chain, text, output)
         self.actions.append(action)
+
+        self.step_latest_output = output
