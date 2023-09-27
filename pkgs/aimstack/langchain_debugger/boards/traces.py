@@ -16,10 +16,12 @@ def get_table_data(data=[], page_size=10, page_num=1):
         'Trace': [],
         'Date': [],
         'Used Tools': [],
-        'Executed Chains': [],
         'Total Steps': [],
         'Total Tokens': [],
         'Cost': [],
+        'Latest Inputs': [],
+        'Latest Outputs': [],
+        'Executed Chains': [],
         # 'Status': [], todo: track status properly
     }
 
@@ -46,6 +48,9 @@ def get_table_data(data=[], page_size=10, page_num=1):
         table_data['Total Steps'].append(steps_count)
         table_data['Total Tokens'].append(tokens_count)
         table_data['Cost'].append('${}'.format(cost))
+
+        table_data['Latest Inputs'].append(str(trace.get('latest_input', 'N/A')))
+        table_data['Latest Outputs'].append(str(trace.get('latest_output', 'N/A')))
 
     return table_data
 
