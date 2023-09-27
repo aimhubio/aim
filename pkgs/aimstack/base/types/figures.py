@@ -20,7 +20,7 @@ class Figure(Record):
          obj (:obj:): plotly or matplotlib figure object.
     """
 
-    AIM_NAME = 'asp.Figure'
+    AIM_NAME = 'base.Figure'
     RESOLVE_BLOBS = False
     SEQUENCE_NAME = 'FigureSequence'
 
@@ -98,7 +98,7 @@ class Figure3D(Record):
          caption (:obj:`str`, optional): Optional 3D object caption. '' by default.
     """
 
-    AIM_NAME = 'asp.Figure3d'
+    AIM_NAME = 'base.Figure3d'
     RESOLVE_BLOBS = False
     SEQUENCE_NAME = 'Figure3DSequence'
 

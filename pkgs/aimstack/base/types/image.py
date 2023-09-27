@@ -39,7 +39,7 @@ class Image(Record):
 
     DEFAULT_IMG_FORMAT = 'png'
     FLAG_WARN_RGBA_RGB = False
-    AIM_NAME = 'asp.Image'
+    AIM_NAME = 'base.Image'
     RESOLVE_BLOBS = False
     SEQUENCE_NAME = 'ImageSequence'
 

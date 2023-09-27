@@ -1,3 +1,3 @@
 __description__ = 'Package for tracking and exploring Runs for PaddlePaddle.'
-__author__ = 'AimHub Inc.'
+__author__ = 'AimStack'
 __category__ = 'Experiment Tracking'

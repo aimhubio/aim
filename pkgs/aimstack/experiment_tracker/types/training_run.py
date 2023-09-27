@@ -1,4 +1,4 @@
-from aimstack.asp import Run as BaseRun
+from aimstack.base import Run as BaseRun
 from aim import Property
 
 

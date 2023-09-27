@@ -6,5 +6,5 @@ __all__ = ['TrainingRun']
 __aim_types__ = [TrainingRun]
 
 __description__ = 'Browse machine learning experiments tracked with Aim.'
-__author__ = 'AimHub Inc.'
+__author__ = 'AimStack'
 __category__ = 'Experiment Tracking'

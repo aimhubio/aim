@@ -38,6 +38,7 @@ class PackageRegisteredModels(BaseModel):
     description: Optional[str]
     author: Optional[str]
     category: Optional[str]
+    hide_boards: bool
     sequences: List[str]
     containers: List[str]
     actions: List[str]

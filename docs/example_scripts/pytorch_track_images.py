@@ -4,8 +4,8 @@ import torch.nn as nn
 import torchvision
 import torchvision.transforms as transforms
 from tqdm import tqdm
-from aimstack.asp import Run
-from aimstack.asp.loggers.image import convert_to_aim_image_list
+from aimstack.base import Run
+from aimstack.base.types.image import convert_to_aim_image_list
 
 # Initialize a new Run
 aim_run = Run()
@@ -106,7 +106,7 @@ for epoch in range(num_epochs):
             )
 
             # aim - Track model loss function
-            aim_run.track_auto(
+            aim_run.track(
                 loss.item(), name="loss", epoch=epoch, context={"subset": "train"}
             )
 
@@ -118,23 +118,23 @@ for epoch in range(num_epochs):
             acc = 100 * correct / total
 
             # aim - Track metrics
-            aim_run.track_auto(
+            aim_run.track(
                 acc, name="accuracy", epoch=epoch, context={"subset": "train"}
             )
 
-            aim_run.track_auto(
+            aim_run.track(
                 aim_images, name="images", epoch=epoch, context={"subset": "train"}
             )
 
             # TODO: Do actual validation
             if i % 300 == 0:
-                aim_run.track_auto(
+                aim_run.track(
                     loss, name="loss", epoch=epoch, context={"subset": "val"}
                 )
-                aim_run.track_auto(
+                aim_run.track(
                     acc, name="accuracy", epoch=epoch, context={"subset": "val"}
                 )
-                aim_run.track_auto(
+                aim_run.track(
                     aim_images, name="images", epoch=epoch, context={"subset": "val"}
                 )
 
