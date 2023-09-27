@@ -194,18 +194,19 @@ async def fetch_blobs_api(uri_batch: URIBatchIn):
 
 @query_router.post('/run/')
 async def run_action(action_name: str, request_data: Dict, packages=Depends(load_active_packages)):
-    repo = get_project_repo()  # noqa
-
     from aim._sdk.action import Action
     action = Action.registry[action_name]
     is_generator = action.is_generator
-    res = action.execute(**request_data)
     if is_generator:
         def result_streamer():
+            repo = get_project_repo()  # noqa
+            res = action.execute(**request_data)
             for i, it in enumerate(res):
                 yield collect_streamable_data(encode_tree({i: it}))
     else:
         def result_streamer():
+            repo = get_project_repo()  # noqa
+            res = action.execute(**request_data)
             yield collect_streamable_data(encode_tree({0: res}))
 
     return StreamingResponse(result_streamer(), headers={
