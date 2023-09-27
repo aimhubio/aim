@@ -25,14 +25,16 @@ interface BoardStore {
   boardsList: string[];
   boards: Record<string, BoardData> | null;
   template: TemplateData | null;
+  appName: string;
   templatesList: TemplateData[];
   notifyData: IToastProps[];
+  setAppName: (value: string) => void;
   setConsoleOpen: (value: boolean) => void;
   setEditorValue: (value: string) => void;
   fetchBoardList: () => Promise<void>;
   onNotificationDelete: (id: string) => void;
   addNotifyData: ({ status, message, icon }: any) => void;
-  fetchBoard: (path: string) => Promise<void>;
+  fetchBoard: (path: string, appName?: string) => Promise<void>;
   addBoard: (boardBody: BoardsRequestBody) => Promise<void>;
   editBoard: (id: string, boardBody: BoardsRequestBody) => Promise<void>;
   removeBoard: (id: string) => Promise<void>;
@@ -42,13 +44,14 @@ interface BoardStore {
 
 const useBoardStore = create<BoardStore>((set, get) => ({
   editorValue: '',
-  isLoading: true,
+  isLoading: false,
   consoleOpen: true,
   boardsList: [],
   templatesList: [],
   notifyData: [],
   boards: null,
   template: null,
+  appName: '',
   addNotifyData: ({ status = 'success', message = '', icon = null }: any) => {
     const id = Math.random().toString(36).substr(2, 9);
     const notification: IToastProps = {
@@ -75,6 +78,9 @@ const useBoardStore = create<BoardStore>((set, get) => ({
   setEditorValue: (value: string) => {
     set({ editorValue: value });
   },
+  setAppName: (value: string) => {
+    set({ appName: value });
+  },
 
   fetchBoardList: async () => {
     try {
@@ -88,8 +94,13 @@ const useBoardStore = create<BoardStore>((set, get) => ({
       set({ isLoading: false });
     }
   },
-  fetchBoard: async (boardPath: string) => {
+  fetchBoard: async (boardPath: string, appName?: string) => {
     try {
+      let pkg = get().appName || appName;
+      if (!boardPath.includes(':') && pkg) {
+        boardPath = `${pkg}:${boardPath}`;
+      }
+
       const boards = await fetchBoardByPath(boardPath);
       set({
         boards: {

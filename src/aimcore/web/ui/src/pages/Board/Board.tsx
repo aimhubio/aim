@@ -14,6 +14,7 @@ import { Box, Button, Link, Tabs } from 'components/kit_v2';
 import { PathEnum } from 'config/enums/routesEnum';
 
 import { search } from 'pages/Board/serverAPI/search';
+import { find } from 'pages/Board/serverAPI/find';
 
 import usePyodide from 'services/pyodide/usePyodide';
 import pyodideEngine from 'services/pyodide/store';
@@ -38,6 +39,7 @@ import {
 } from './Board.style';
 import BoardConsole from './components/BoardConsole';
 import FormVizElement from './components/VisualizationElements/FormVizElement';
+import LoadingBar from './components/LoadingBar';
 import useBoardStore from './BoardStore';
 
 const liveUpdateEnabled = false;
@@ -50,8 +52,9 @@ function Board({
   newMode,
   notifyData,
   onNotificationDelete,
-}: // saveBoard,
-any): React.FunctionComponentElement<React.ReactNode> {
+  stateStr,
+  externalPackage,
+}: any): React.FunctionComponentElement<React.ReactNode> {
   const [mounted, setMounted] = React.useState(false);
   const {
     isLoading: pyodideIsLoading,
@@ -67,14 +70,14 @@ any): React.FunctionComponentElement<React.ReactNode> {
   const boxContainer = React.useRef<HTMLDivElement>(
     document.createElement('div'),
   );
-  const tobBarRef = React.useRef<HTMLDivElement>(
-    document.querySelector('#app-top-bar'),
-  );
+
   const setEditorValue = useBoardStore((state) => state.setEditorValue);
 
   const boardPath = data.path;
 
   const timerId = React.useRef(0);
+
+  const tobBar = document.querySelector('#app-top-bar');
 
   let liveUpdateTimersRef = React.useRef<Record<string, number>>({});
   let queryKeysForCacheCleaningRef = React.useRef<Record<string, boolean>>({});
@@ -145,8 +148,13 @@ any): React.FunctionComponentElement<React.ReactNode> {
 block_context = {
   "current": 0,
 }
+
 current_layout = []
+
 board_path = ${boardPath === undefined ? 'None' : `"${boardPath}"`}
+
+package = ${externalPackage === null ? 'None' : `"${externalPackage}"`}
+
 session_state = state[board_path] if board_path in state else {}
 def set_session_state(state_slice):
   set_state(state_slice, board_path)
@@ -185,7 +193,14 @@ def set_session_state(state_slice):
         }));
       }
     }
-  }, [pyodide, pyodideIsLoading, boardPath, state.execCode, namespace]);
+  }, [
+    pyodide,
+    pyodideIsLoading,
+    boardPath,
+    state.execCode,
+    namespace,
+    stateStr,
+  ]);
 
   React.useEffect(() => {
     if (pyodide !== null && pyodideIsLoading === false) {
@@ -206,6 +221,29 @@ def set_session_state(state_slice):
   }, [state.executionCount]);
 
   React.useEffect(() => {
+    if (pyodide && namespace) {
+      pyodide.runPython(
+        `
+board_path = ${boardPath === undefined ? 'None' : `"${boardPath}"`}
+
+if board_path not in state:
+  state[board_path] = {}
+
+state_str = ${JSON.stringify(stateStr)}
+
+if len(state_str) > 0:
+  state[board_path] = json.loads(state_str)
+else:
+  state[board_path] = {}
+  `,
+        { globals: namespace },
+      );
+
+      runParsedCode();
+    }
+  }, [stateStr, pyodide, namespace]);
+
+  React.useEffect(() => {
     if (pyodideIsLoading) {
       setState((s: any) => ({
         ...s,
@@ -218,14 +256,14 @@ def set_session_state(state_slice):
     setEditorValue(data.code);
     const unsubscribeFromBoardUpdates = pyodideEngine.events.on(
       boardPath,
-      ({ layoutTree, state, queryKey, runFunctionKey }) => {
+      ({ layoutTree, state, queryKey, runActionKey }) => {
         if (layoutTree) {
           setState((s: any) => ({
             ...s,
             layoutTree,
           }));
         }
-        if (state || queryKey || runFunctionKey) {
+        if (state || queryKey || runActionKey) {
           setState((s: any) => ({
             ...s,
             stateUpdateCount: s.stateUpdateCount + 1,
@@ -241,36 +279,68 @@ def set_session_state(state_slice):
             if (!getQueryResultsCacheMap().has(queryKey)) {
               return;
             }
-            const {
-              boardPath: queryBoardPath,
-              type_,
-              query,
-              count,
-              start,
-              stop,
-              isSequence,
-            } = getQueryResultsCacheMap().get(queryKey).params;
-
-            try {
-              getQueryResultsCacheMap().delete(queryKey);
-              search(
-                queryBoardPath,
+            if (getQueryResultsCacheMap().get(queryKey).type === 'filter') {
+              const {
+                boardPath: queryBoardPath,
                 type_,
                 query,
                 count,
                 start,
                 stop,
                 isSequence,
-                () => {
-                  queryKeysForCacheCleaningRef.current[queryKey] = true;
-                },
-              );
-            } catch (ex) {
-              if (ex === 'WAIT_FOR_QUERY_RESULT') {
-                return;
+              } = getQueryResultsCacheMap().get(queryKey).params;
+
+              try {
+                getQueryResultsCacheMap().delete(queryKey);
+                search(
+                  queryBoardPath,
+                  type_,
+                  query,
+                  count,
+                  start,
+                  stop,
+                  isSequence,
+                  () => {
+                    queryKeysForCacheCleaningRef.current[queryKey] = true;
+                  },
+                );
+              } catch (ex) {
+                if (ex === 'WAIT_FOR_QUERY_RESULT') {
+                  return;
+                }
+                // eslint-disable-next-line no-console
+                console.warn(ex);
               }
-              // eslint-disable-next-line no-console
-              console.warn(ex);
+            } else {
+              const {
+                boardPath: queryBoardPath,
+                type_,
+                isSequence,
+                hash_,
+                name,
+                ctx,
+              } = getQueryResultsCacheMap().get(queryKey).params;
+
+              try {
+                getQueryResultsCacheMap().delete(queryKey);
+                find(
+                  queryBoardPath,
+                  type_,
+                  isSequence,
+                  hash_,
+                  name,
+                  ctx,
+                  () => {
+                    queryKeysForCacheCleaningRef.current[queryKey] = true;
+                  },
+                );
+              } catch (ex) {
+                if (ex === 'WAIT_FOR_QUERY_RESULT') {
+                  return;
+                }
+                // eslint-disable-next-line no-console
+                console.warn(ex);
+              }
             }
           }, liveUpdateInterval);
         }
@@ -310,7 +380,7 @@ def set_session_state(state_slice):
     <ErrorBoundary>
       <Box as='section' height='100vh' className='Board'>
         {(editMode || newMode) &&
-          tobBarRef.current &&
+          tobBar &&
           createPortal(
             <Box
               className='Board__appBar__controls'
@@ -333,7 +403,10 @@ def set_session_state(state_slice):
               /> */}
               <Link
                 css={{ display: 'flex' }}
-                to={`${PathEnum.App}/${boardPath}`}
+                to={
+                  window.location.pathname.replace('/edit', '') +
+                  window.location.search
+                }
                 underline={false}
               >
                 <Button variant='outlined' size='xs'>
@@ -341,7 +414,7 @@ def set_session_state(state_slice):
                 </Button>
               </Link>
             </Box>,
-            tobBarRef.current,
+            tobBar,
           )}
         <BusyLoaderWrapper
           isLoading={pyodideIsLoading || isLoading || !mounted}
@@ -375,6 +448,7 @@ def set_session_state(state_slice):
                 processing={state.isProcessing}
                 fullWidth={!editMode && !newMode}
               >
+                <LoadingBar key={boardPath} boardPath={boardPath} />
                 {state.isProcessing !== false && (
                   <BoardSpinner className='BoardVisualizer__main__components__spinner'>
                     <Spinner />

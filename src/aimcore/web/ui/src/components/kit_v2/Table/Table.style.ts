@@ -64,6 +64,7 @@ const TableCellStyled = styled('td', {
   border: '1px solid  rgba(180, 191, 202, 0.3)',
   verticalAlign: 'middle',
   whiteSpace: 'nowrap',
+  cursor: 'pointer',
   '.AudiosList': {
     height: 'unset !important',
   },

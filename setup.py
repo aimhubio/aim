@@ -46,7 +46,7 @@ SETUP_REQUIRED = [
 # What packages are required for this module to be executed?
 REQUIRED = [
     f'aim-ui=={__version__}',
-    'aimrocks==0.4.0',
+    'aimrocks==0.5.1',
     'khash==0.5.0a5',
     'cachetools>=4.0.0',
     'click>=7.0',
@@ -61,7 +61,7 @@ REQUIRED = [
     'fastapi<1,>=0.69.0',
     'jinja2<4,>=2.10.0',
     'pytz>=2019.1',
-    'SQLAlchemy<2,>=1.4.1',
+    'SQLAlchemy>=1.4.1',
     'uvicorn<1,>=0.12.0',
     'Pillow>=8.0.0',
     'protobuf<5,>=3.9.2',
@@ -72,6 +72,7 @@ REQUIRED = [
     'requests',
     'segment-analytics-python',
     'importlib_metadata',
+    'tabulate',
 ]
 
 

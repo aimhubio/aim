@@ -51,7 +51,13 @@ def get_object_typename(obj: Any) -> str:
 
 
 def get_common_typename(types: Iterator[str]) -> str:
-    return os.path.commonprefix((min(types), max(types))).rstrip('->')
+    types_min = min(types)
+    types_max = max(types)
+    if is_subtype(types_max, types_min):
+        return types_min
+    common_type = os.path.commonprefix((types_min, types_max))
+    idx = common_type.rfind('->')
+    return common_type[:idx]
 
 
 def is_subtype(type_: str, base_type: str) -> bool:
@@ -66,7 +72,9 @@ def is_allowed_type(type_: str, type_list: Tuple[str]) -> bool:
 
 
 def get_sequence_value_types(seq_type: Type['Sequence']) -> Tuple[str, ...]:
-    if hasattr(seq_type, '__args__'):
+    if hasattr(seq_type, '__record_type__'):
+        item_type = seq_type.__record_type__
+    elif hasattr(seq_type, '__args__'):
         item_type = get_args(seq_type)[0]
     elif hasattr(seq_type, '__orig_bases__'):
         item_type = seq_type.__orig_bases__[0].__args__[0]

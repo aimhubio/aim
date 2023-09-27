@@ -14,3 +14,12 @@ def set_log_level(log_level):
 def start_uvicorn_app(app: str, **uvicorn_args):
     import uvicorn
     uvicorn.run(app, **uvicorn_args)
+
+
+def get_free_port_num():
+    import socket
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.bind(('', 0))
+    port_num = s.getsockname()[1]
+    s.close()
+    return port_num

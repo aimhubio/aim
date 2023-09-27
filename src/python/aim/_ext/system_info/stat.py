@@ -159,9 +159,7 @@ class Stat(object):
                     memory = nvml.nvmlDeviceGetMemoryInfo(handle)
                     # Device memory usage
                     # 'memory_used': round10e5(memory.used / 1024 / 1024),
-                    gpu_info["gpu_memory_percent"] = (
-                        round10e5(memory.used * 100 / memory.total),
-                    )
+                    gpu_info["gpu_memory_percent"] = round10e5(memory.used * 100 / memory.total)
                 except nvml.NVMLError_NotSupported:
                     pass
                 try:

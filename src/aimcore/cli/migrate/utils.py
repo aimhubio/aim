@@ -10,12 +10,12 @@ from typing import Dict, Optional
 from aim import Repo
 from aim._core.storage.rockscontainer import RocksContainer
 from aim._core.storage.treeview import TreeView
-from aimstack.asp import Run, SystemMetric
+from aimstack.base import Run, SystemMetric
 
 logger = logging.getLogger(__name__)
 
 RUN_DATA_QUERY_TEMPLATE = """
-SELECT 
+SELECT
     run.hash as hash,
     run.name as name,
     run.description as description,
@@ -24,7 +24,7 @@ SELECT
     json_group_array(tag.name) as tags,
     {select_notes} as notes
 FROM
-    run 
+    run
     LEFT OUTER JOIN experiment ON run.experiment_id = experiment.id
     {notes_join_clause}
     LEFT OUTER JOIN run_tag ON run.id = run_tag.run_id LEFT JOIN tag ON run_tag.tag_id = tag.id
@@ -48,7 +48,7 @@ SEQUENCE_TYPE_MAP = {
 }
 
 
-def migrate_v1_sequence_data(run: Run, trace_data_tree: TreeView, length: int, item_type: str, name: str, context: Dict):
+def migrate_v1_sequence_data(run: Run, trace_tree: TreeView, length: int, item_type: str, name: str, context: Dict):
     if name.startswith('__system'):
         seq = run.sequences.typed_sequence(SystemMetric, name, context)
     elif item_type == 'aim.log_line':
@@ -59,9 +59,9 @@ def migrate_v1_sequence_data(run: Run, trace_data_tree: TreeView, length: int, i
             logger.warning(f'Unknown type of sequence element \'{item_type}\'. Skipping.')
             return
         seq = get_seq_method(run, name, context)
-    trace_iter = zip(trace_data_tree.subtree('val').items(),
-                     trace_data_tree.subtree('time').items(),
-                     trace_data_tree.subtree('epoch').items())
+    trace_iter = zip(trace_tree.subtree('val').items(),
+                     trace_tree.subtree('time').items(),
+                     trace_tree.subtree('epoch').items())
     trace_iter = tqdm.tqdm(trace_iter, leave=False, total=length)
     context_str = str(context)
     if len(context_str) > 20:
@@ -142,8 +142,8 @@ def get_relational_data(sql_db_path: pathlib.Path) -> Dict:
     try:
         import sqlite3
     except ModuleNotFoundError:
-        if not click.confirm(f'Missing package \'sqlite3\'. Cannot migrate Run experiment, tags and notes info. '
-                             f'Would you like to proceed?'):
+        if not click.confirm('Missing package \'sqlite3\'. Cannot migrate Run experiment, tags and notes info. '
+                             'Would you like to proceed?'):
             exit(0)
         return {}
     else:

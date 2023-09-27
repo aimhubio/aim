@@ -12,8 +12,7 @@ from aim._sdk.utils import clean_repo_path
 from aim._sdk import type_utils
 from aim._sdk.container import Container
 from aim._sdk.sequence import Sequence
-from aim._sdk.function import Function
-from aim._sdk.package_utils import Package
+from aim._sdk.action import Action
 from aim._sdk.collections import ContainerCollection, SequenceCollection
 from aim._sdk.query_utils import construct_query_expression
 from aim._sdk.constants import KeyNames
@@ -121,10 +120,6 @@ class Repo(object):
         with open(version_file_path, 'w') as version_fh:
             version_fh.write('.'.join(map(str, get_data_version())) + '\n')
 
-        active_pkg_file = os.path.join(aim_repo_path, 'active_pkg')
-        with open(active_pkg_file, 'w') as apf:
-            apf.write(Package.default_package_name)
-
         return cls.from_path(aim_repo_path, read_only=False)
 
     @classmethod
@@ -205,8 +200,8 @@ class Repo(object):
     def registered_sequence_types(self) -> List[str]:
         return list(Sequence.registry.keys())
 
-    def registered_functions(self) -> List[str]:
-        return list(Function.registry.keys())
+    def registered_actions(self) -> List[str]:
+        return list(Action.registry.keys())
 
     def get_container(self, hash_) -> Container:
         return Container(hash_, repo=self, mode='READONLY')
@@ -419,7 +414,7 @@ class Repo(object):
 
             for ctx_idx in source_meta_container_tree_collected['sequences'].keys():
                 for seq_name in source_meta_container_tree_collected['sequences'][ctx_idx].keys():
-                    seq_typename = source_meta_container_tree_collected['sequences'][ctx_idx][seq_name][KeyNames.INFO_PREFIX][KeyNames.SEQUENCE_TYPE]
+                    seq_typename = source_meta_container_tree_collected['sequences'][ctx_idx][seq_name][KeyNames.INFO_PREFIX][KeyNames.SEQUENCE_TYPE] # noqa
                     for typename in seq_typename.split('->'):
                         dest_meta_tree[(KeyNames.SEQUENCES, typename, ctx_idx, seq_name)] = 1
 
@@ -470,9 +465,45 @@ class Repo(object):
 
         prune(self)
 
-    def set_active_package(self, pkg_name):
+    def add_package(self, pkg_name: str) -> bool:
         if self._is_remote_repo:
-            return self._remote_repo_proxy.set_active_package(pkg_name)
+            return self._remote_repo_proxy.add_package(pkg_name)
         active_pkg_file = os.path.join(self.path, 'active_pkg')
-        with open(active_pkg_file, 'w') as apf:
-            apf.write(pkg_name)
+        with open(active_pkg_file, 'a+') as apf:
+            apf.seek(0)
+            packages = set(line.strip() for line in apf.readlines())
+            if pkg_name in packages:
+                return False
+            packages.add(pkg_name)
+            apf.seek(0)
+            apf.truncate()
+            for package in packages:
+                apf.write(f"{package}\n")
+        return True
+
+    def remove_package(self, pkg_name: str) -> bool:
+        if self._is_remote_repo:
+            return self._remote_repo_proxy.remove_package(pkg_name)
+        active_pkg_file = os.path.join(self.path, 'active_pkg')
+        with open(active_pkg_file, 'a+') as apf:
+            apf.seek(0)
+            packages = set(line.strip() for line in apf.readlines())
+            if pkg_name not in packages:
+                return False
+            packages.remove(pkg_name)
+            apf.seek(0)
+            apf.truncate()
+            for package in packages:
+                apf.write(f"{package}\n")
+        return True
+
+    def load_active_packages(self):
+        if self._is_remote_repo:
+            return
+        from aim._sdk.package_utils import Package
+        active_pkg_file = os.path.join(self.path, 'active_pkg')
+        if os.path.exists(active_pkg_file):
+            pkgs_dir = os.path.join(self.path, 'pkgs')
+            with open(active_pkg_file, 'r') as apf:
+                for pkg_name in apf.read().split():
+                    Package.load_package(pkg_name, pkgs_dir)

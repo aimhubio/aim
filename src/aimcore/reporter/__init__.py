@@ -577,8 +577,13 @@ class RunStatusReporter:
         Stops the background thread, flushes all the pending check-ins and
         cleans up the resources.
         """
-        self.instances.remove(self)
-        self.stop()
+        try:
+            # Handle cases when close is called manually.
+            # Subsequent call of close() (i.e. on resource clean-up) should not fail.
+            self.instances.remove(self)
+            self.stop()
+        except KeyError:
+            pass
 
     def stop(self):
         """

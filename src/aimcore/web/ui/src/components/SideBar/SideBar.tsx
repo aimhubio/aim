@@ -49,7 +49,7 @@ function SideBar(): React.FunctionComponentElement<React.ReactNode> {
         <SidebarUl>
           <SidebarLink
             exact={true}
-            to={routes.APP.path}
+            to={PathEnum.Apps}
             isActive={(m, l) => false}
           >
             <SidebarLi>

@@ -44,6 +44,7 @@ class ContainerAutoClean(AutoClean['Container']):
 
         self._state = instance._state
         self._tree = instance._tree
+        self._props_tree = instance._props_tree
         self.storage = instance.storage
 
         self._status_reporter = instance._status_reporter
@@ -53,7 +54,7 @@ class ContainerAutoClean(AutoClean['Container']):
         """
         Finalize the run by indexing all the data.
         """
-        self._tree[KeyNames.INFO_PREFIX, 'end_time'] = utc_timestamp()
+        self._props_tree['end_time'] = utc_timestamp()
 
     def _wait_for_empty_queue(self):
         queue = self.storage.task_queue()
@@ -78,10 +79,39 @@ class ContainerAutoClean(AutoClean['Container']):
             self._lock.release()
 
 
+class Property:
+    PROP_NAME_BLACKLIST = (  # do not allow property names to be dict class public methods
+        'clear', 'copy', 'fromkeys', 'get', 'items', 'keys', 'pop', 'popitem', 'setdefault', 'update', 'values')
+
+    def __init__(self, default=None):
+        self._default = default
+        self._name = None  # Will be set by __set_name__
+
+    def __set_name__(self, owner, name):
+        if name in Property.PROP_NAME_BLACKLIST:
+            raise RuntimeError(f'Cannot define Aim Property with name \'{name}\'.')
+        self._name = name
+
+    def __get__(self, instance: 'Container', owner):
+        if instance is None:
+            return self
+        return instance._get_property(self._name)
+
+    def __set__(self, instance: 'Container', value: Any):
+        instance._set_property(self._name, value)
+
+    def initialize(self, instance: 'Container'):
+        if callable(self._default):
+            instance._set_property(self._name, self._default())
+        else:
+            instance._set_property(self._name, self._default)
+
+
 @type_utils.query_alias('container', 'c')
 @type_utils.auto_registry
 class Container(ABCContainer):
-    version = '1.0.0'
+    version = Property(default='1.0.0')
+    creation_time = Property(default=utc_timestamp)
 
     def __init__(self, hash_: Optional[str] = None, *,
                  repo: Optional[Union[str, 'Repo']] = None,
@@ -95,7 +125,8 @@ class Container(ABCContainer):
             repo = Repo.default()
         elif isinstance(repo, str):
             from aim._sdk.repo import Repo
-            repo = Repo.from_path(repo)
+            read_only = True if mode == ContainerOpenMode.READONLY else False
+            repo = Repo.from_path(repo, read_only=read_only)
         self.repo = repo
         self.storage = repo.storage_engine
 
@@ -128,17 +159,18 @@ class Container(ABCContainer):
         self.__storage_init__()
 
         if not self._is_readonly:
-            if hash_ is None:  # newly create Container
-                self._tree[KeyNames.INFO_PREFIX, 'creation_time'] = utc_timestamp()
-                self._tree[KeyNames.INFO_PREFIX, 'version'] = self.version
+            if hash_ is None:  # newly created Container
                 self._tree[KeyNames.INFO_PREFIX, KeyNames.OBJECT_CATEGORY] = self.object_category
                 container_type = self.get_full_typename()
                 self._tree[KeyNames.INFO_PREFIX, KeyNames.CONTAINER_TYPE] = container_type
                 self._meta_tree[KeyNames.CONTAINER_TYPES_MAP, self.hash] = container_type
-                self._meta_tree[KeyNames.CONTAINERS, self.get_typename()] = 1
+                for typename in container_type.split('->'):
+                    self._meta_tree[KeyNames.CONTAINERS, typename] = 1
                 self[...] = {}
 
-            self._tree[KeyNames.INFO_PREFIX, 'end_time'] = None
+                Container._init_properties(self.__class__, self)
+
+            self.end_time = None
 
         self._resources = ContainerAutoClean(self)
 
@@ -166,10 +198,22 @@ class Container(ABCContainer):
             repo = Repo.active_repo()
         return repo.containers(query_=expr, type_=cls)
 
+    @classmethod
+    def find(cls, hash_: str) -> Optional['Container']:
+        from aim._sdk.repo import Repo
+        repo = Repo.active_repo()
+        try:
+            return cls(hash_, repo=repo, mode='READONLY')
+        except MissingContainerError:
+            return None
+
     def __storage_init__(self):
         self._tree: TreeView = self._meta_tree.subtree('chunks').subtree(self.hash)
         self._meta_attrs_tree: TreeView = self._meta_tree.subtree('attrs')
         self._attrs_tree: TreeView = self._tree.subtree('attrs')
+
+        self._meta_props_tree: TreeView = self._meta_tree.subtree('_props')
+        self._props_tree: TreeView = self._tree.subtree('_props')
 
         self._data_loader: Callable[[], 'TreeView'] = lambda: self._sequence_data_tree
         self.__sequence_data_tree: TreeView = None
@@ -190,6 +234,10 @@ class Container(ABCContainer):
         self._attrs_tree[key] = value
         self._meta_attrs_tree.merge(key, value)
 
+    def set(self, key, value, strict: bool):
+        self._attrs_tree.set(key, value, strict)
+        self._meta_attrs_tree.set(key, value, strict)
+
     def __getitem__(self, key):
         return self._attrs_tree.collect(key, strict=True)
 
@@ -201,6 +249,22 @@ class Container(ABCContainer):
             return self._attrs_tree.collect(key, strict=strict)
         except KeyError:
             return default
+
+    def _set_property(self, name: str, value: Any):
+        self._props_tree[name] = value
+        self._meta_props_tree.merge(name, value)
+
+    def _get_property(self, name: str, default: Any = None) -> Any:
+        return self._props_tree.get(name, default)
+
+    def collect_properties(self) -> Dict:
+        try:
+            return self._props_tree.collect()
+        except KeyError:
+            return {}
+
+    def get_logged_typename(self) -> str:
+        return self._tree[KeyNames.INFO_PREFIX, KeyNames.CONTAINER_TYPE]
 
     def match(self, expr) -> bool:
         query = RestrictedPythonQuery(expr)
@@ -253,6 +317,15 @@ class Container(ABCContainer):
     def sequences(self) -> 'ContainerSequenceMap':
         return self._sequence_map
 
+    # TODO [AT]: Implement end_time as a Property similar to other pre-defined props
+    @property
+    def end_time(self):
+        return self._get_property('end_time')
+
+    @end_time.setter
+    def end_time(self, value):
+        self._set_property('end_time', value)
+
     def __repr__(self) -> str:
         return f'<{self.get_typename()} #{hash(self)} hash={self.hash} mode={self.mode}>'
 
@@ -264,6 +337,16 @@ class Container(ABCContainer):
 
     def close(self):
         self._resources._close()
+
+    @staticmethod
+    def _init_properties(cls: Type['Container'], inst: 'Container'):
+        if cls != Container:
+            for base_cls in cls.__bases__:
+                if issubclass(base_cls, Container):
+                    Container._init_properties(base_cls, inst)
+        for attr in cls.__dict__.values():
+            if isinstance(attr, Property):
+                attr.initialize(inst)
 
 
 class ContainerSequenceMap(SequenceMap[Sequence]):

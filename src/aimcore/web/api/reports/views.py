@@ -1,10 +1,8 @@
-from aimcore.web.api.utils import APIRouter
+from aimcore.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
 from aimcore.web.api.reports.serializers import report_response_serializer
 from aimcore.web.api.reports.models import Report
-from typing import List
 from sqlalchemy.orm import Session
 from fastapi import Depends, HTTPException
-from aimcore.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
 
 
 from aimcore.web.api.reports.pydantic_models import (

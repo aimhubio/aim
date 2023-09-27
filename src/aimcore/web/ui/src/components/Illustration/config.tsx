@@ -19,6 +19,7 @@ const ILLUSTRATION_TYPES: Record<string, IllustrationType> = {
   Empty_Bookmarks: 'emptyBookmarks',
   Empty_Boards: 'emptyBoards',
   Empty_Reports: 'emptyReports',
+  Empty_Apps: 'emptyApps',
 };
 
 const ILLUSTRATION_LIST: Record<IllustrationType, React.ReactNode> = {
@@ -29,6 +30,7 @@ const ILLUSTRATION_LIST: Record<IllustrationType, React.ReactNode> = {
   [ILLUSTRATION_TYPES.Empty_Bookmarks]: <EmptyBookmarks />,
   [ILLUSTRATION_TYPES.Empty_Boards]: <EmptyBookmarks />,
   [ILLUSTRATION_TYPES.Empty_Reports]: <EmptyBookmarks />,
+  [ILLUSTRATION_TYPES.Empty_Apps]: <EmptyBookmarks />,
 };
 
 function getDefaultIllustrationContent(
@@ -57,6 +59,7 @@ function getDefaultIllustrationContent(
   const Empty_Bookmarks = "You don't have any saved bookmark";
   const Empty_Boards = "You don't have any board created";
   const Empty_Reports = "You don't have any report created";
+  const Empty_Apps = "You don't have any installed apps";
 
   const CONTENT = {
     [ILLUSTRATION_TYPES.Never_Executed]: Never_Executed,
@@ -66,6 +69,7 @@ function getDefaultIllustrationContent(
     [ILLUSTRATION_TYPES.Empty_Bookmarks]: Empty_Bookmarks,
     [ILLUSTRATION_TYPES.Empty_Boards]: Empty_Boards,
     [ILLUSTRATION_TYPES.Empty_Reports]: Empty_Reports,
+    [ILLUSTRATION_TYPES.Empty_Apps]: Empty_Apps,
   };
   return CONTENT[type] || null;
 }

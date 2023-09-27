@@ -11,19 +11,24 @@ logger = logging.getLogger(__name__)
 
 class Package:
     pool: Dict[str, 'Package'] = {}
-    default_package_name = 'asp'
+    attributes = ('name', 'category', 'author', 'description')
 
     def __init__(self, name, pkg):
         self.name = name
+        self.description = getattr(pkg, '__description__', None)
+        self.author = getattr(pkg, '__author__', None)
+        self.category = getattr(pkg, '__category__', None)
+        self.hide_boards = getattr(pkg, '__hide_boards__', False)
+
         self._path = pathlib.Path(pkg.__path__[0])
         self._boards_dir: pathlib.Path = None
         self._boards: List[str] = []
-        self._registered_containers = []
-        self._registered_sequences = []
-        self._registered_functions = []
-        self.register_aim_package_classes(name, pkg)
-        self.register_aim_package_functions(name, pkg)
-        self.register_aim_package_boards(pkg)
+        self._containers = []
+        self._sequences = []
+        self._actions = []
+        self.register_package_types(name, pkg)
+        self.register_package_actions(name, pkg)
+        self.register_package_boards(pkg)
 
     @property
     def boards_directory(self) -> pathlib.Path:
@@ -35,15 +40,15 @@ class Package:
 
     @property
     def containers(self) -> List:
-        return self._registered_containers
+        return self._containers
 
     @property
     def sequences(self) -> List:
-        return self._registered_sequences
+        return self._sequences
 
     @property
-    def functions(self) -> List:
-        return self._registered_functions
+    def actions(self) -> List:
+        return self._actions
 
     @staticmethod
     def discover(base_pkg):
@@ -78,7 +83,7 @@ class Package:
         except ModuleNotFoundError:
             return False
 
-    def register_aim_package_classes(self, name, pkg):
+    def register_package_types(self, name, pkg):
         if not hasattr(pkg, '__aim_types__'):
             return
         from .container import Container
@@ -89,20 +94,20 @@ class Package:
             setattr(aim_type, '__aim_package__', name)
             aim_type.registry[aim_type.get_typename()].append(aim_type)
             if issubclass(aim_type, Container):
-                self._registered_containers.append(aim_type.get_typename())
+                self._containers.append(aim_type.get_typename())
             if issubclass(aim_type, Sequence):
-                self._registered_sequences.append(aim_type.get_typename())
+                self._sequences.append(aim_type.get_typename())
 
-    def register_aim_package_functions(self, name, pkg):
-        if not hasattr(pkg, '__aim_functions__'):
+    def register_package_actions(self, name, pkg):
+        if not hasattr(pkg, '__aim_actions__'):
             return
-        from aim._sdk.function import Function
-        for func in pkg.__aim_functions__:
-            f = Function(func, name)
-            Function.registry[f.name] = f
-            self._registered_functions.append(f.name)
+        from aim._sdk.action import Action
+        for action in pkg.__aim_actions__:
+            ac = Action(action, name)
+            Action.registry[ac.name] = ac
+            self._actions.append(ac.name)
 
-    def register_aim_package_boards(self, pkg):
+    def register_package_boards(self, pkg):
         boards_path = getattr(pkg, '__aim_boards__', 'boards')
         self._boards_dir: pathlib.Path = self._path / boards_path
         if self._boards_dir.exists():

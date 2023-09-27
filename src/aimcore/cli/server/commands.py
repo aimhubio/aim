@@ -1,9 +1,8 @@
 import os
 import click
 
-from aimcore.cli.utils import set_log_level, start_uvicorn_app
+from aimcore.cli.utils import set_log_level, start_uvicorn_app, get_free_port_num
 from aim._sdk.repo import Repo
-from aim._sdk.package_utils import Package
 from aimcore.transport.config import (
     AIM_SERVER_DEFAULT_HOST,
     AIM_SERVER_DEFAULT_PORT,
@@ -47,6 +46,12 @@ def server(host, port,
         if not base_path.startswith('/'):
             base_path = f'/{base_path}'
         os.environ[AIM_SERVER_BASE_PATH] = base_path
+
+    if port == 0:
+        try:
+            port = get_free_port_num()
+        except Exception:
+            pass
 
     if not Repo.exists(repo):
         init_repo = yes or click.confirm(f'\'{repo}\' is not a valid Aim repository. Do you want to initialize it?')

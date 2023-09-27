@@ -1,4 +1,5 @@
 import click
+import tabulate
 
 from aimcore.cli.conatiners.utils import match_runs
 from aim._sdk.repo import Repo
@@ -19,7 +20,7 @@ def containers(ctx, repo):
 @click.pass_context
 def list_containers(ctx):
     """List Containers available in Repo."""
-    #TODO [MV]: add more useful information
+    # TODO [MV]: add more useful information
     repo_path = ctx.obj['repo']
     if not Repo.is_remote_path(repo_path):
         if not Repo.exists(repo_path):
@@ -28,8 +29,21 @@ def list_containers(ctx):
 
     repo = Repo.from_path(repo_path)
     container_hashes = repo.container_hashes
+    container_props = {}
+    all_props = set()
+    for hash_ in container_hashes:
+        cont = repo.get_container(hash_)
+        props = cont.collect_properties()
+        container_props[hash_] = props
+        all_props.update(props.keys())
 
-    click.echo('\t'.join(container_hashes))
+    container_props_fmt = {'hash': []}
+    container_props_fmt.update({prop: [] for prop in all_props})
+    for hash_, props in container_props.items():
+        container_props_fmt['hash'].append(hash_)
+        for prop in all_props:
+            container_props_fmt[prop].append(props.get(prop))
+    click.echo(tabulate.tabulate(container_props_fmt, container_props_fmt.keys(), tablefmt='psql'))
     click.echo(f'Total {len(container_hashes)} containers.')
 
 

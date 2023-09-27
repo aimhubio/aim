@@ -1,3 +1,8 @@
+import sys
+
+from types import new_class
+from typing import Union, List
+
 from aim._core.storage.object import CustomObject as AimStorageObject
 from aim._sdk.blob import BLOB
 
@@ -6,6 +11,20 @@ from aim._sdk.blob import BLOB
 class Record(AimStorageObject):
     AIM_NAME = 'aim.Record'
     RESOLVE_BLOBS = False
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        if 'SEQUENCE_NAME' in cls.__dict__:
+            from aim._sdk.sequence import Sequence
+            if 'SEQUENCE_BASE_TYPE' in cls.__dict__:
+                base_cls = cls.SEQUENCE_BASE_TYPE
+                sequence_cls = type(cls.SEQUENCE_NAME, (base_cls,), {
+                    '__record_type__': Union[cls, List[cls]]
+                })
+            else:
+                sequence_cls = new_class(cls.SEQUENCE_NAME, (Sequence[Union[cls, List[cls]]],), {})
+            module = sys.modules[cls.__module__]
+            setattr(module, cls.SEQUENCE_NAME, sequence_cls)
 
     @classmethod
     def get_full_typename(cls):

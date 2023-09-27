@@ -1,18 +1,22 @@
+import * as _ from 'lodash-es';
+
 import { AIM_VERSION, getBasePath } from 'config/config';
+import { PathEnum } from 'config/enums/routesEnum';
 
 import { fetchPackages } from 'modules/core/api/projectApi';
 
 import { search } from 'pages/Board/serverAPI/search';
-import { runFunction } from 'pages/Board/serverAPI/runFunction';
-
-import { getItem, setItem } from 'utils/storage';
+import { runAction } from 'pages/Board/serverAPI/runAction';
+import { find } from 'pages/Board/serverAPI/find';
 
 import pyodideEngine from './store';
 
 declare global {
   interface Window {
     search: Function;
-    runFunction: Function;
+    runAction: Function;
+    findItem: Function;
+    clearQueryResultsCache: Function;
     updateLayout: Function;
     setState: Function;
     pyodideEngine: typeof pyodideEngine;
@@ -20,7 +24,9 @@ declare global {
 }
 
 window.search = search;
-window.runFunction = runFunction;
+window.runAction = runAction;
+window.findItem = find;
+window.clearQueryResultsCache = clearQueryResultsCache;
 
 let queryResultsCacheMap: Map<string, any> = new Map();
 let pendingQueriesMap: Map<string, Map<string, any>> = new Map();
@@ -35,9 +41,12 @@ export function clearQueryResultsCache(key?: string) {
 
   if (pyodide) {
     if (key) {
-      pyodide.runPython(`query_results_cache.pop('${key}', None)`, {
-        globals: namespace,
-      });
+      pyodide.runPython(
+        `query_results_cache.pop(${JSON.stringify(key)}, None)`,
+        {
+          globals: namespace,
+        },
+      );
 
       queryResultsCacheMap.delete(key);
     } else {
@@ -147,15 +156,49 @@ window.setState = (update: any, boardPath: string, persist = false) => {
 
   // This section add persistence for state through saving it to URL and localStorage
 
-  if (persist) {
-    const stateStr = JSON.stringify(state);
-    const boardStateStr = JSON.stringify(state[boardPath]);
-    const prevStateStr = getItem('app_state');
+  let urlPackageAndBoardPath = window.location.pathname.slice(
+    PathEnum.Apps.length + 1,
+  );
+  // Remove pakage name from url
+  let urlBoardPath = urlPackageAndBoardPath.slice(
+    urlPackageAndBoardPath.indexOf('/') + 1,
+  );
+
+  if (persist && boardPath === urlBoardPath) {
+    // Escape form state updates and unnecessary keys
+
+    let boartState: Record<string, {}> = {};
+
+    for (let key in state[boardPath]) {
+      // Escape form state updates
+      if (key.startsWith('__form__')) {
+        continue;
+      }
+
+      // Escape table selected and focused rows as only keeping indexes is enough
+      let item = _.omit(state[boardPath][key], [
+        'selected_rows',
+        'focused_row',
+      ]);
+
+      // Escape state fields which value is None (undefined in JS)
+      if (!_.isEmpty(JSON.parse(JSON.stringify(item)))) {
+        boartState[key] = item;
+      }
+    }
+
+    const stateStr = encodeURIComponent(JSON.stringify(boartState));
+
+    const url = new URL(window.location as any);
+
+    const prevStateStr = url.searchParams.get('state');
 
     if (stateStr !== prevStateStr) {
-      setItem('app_state', stateStr);
-      const url = new URL(window.location as any);
-      url.searchParams.set('state', boardStateStr);
+      if (_.isEmpty(boartState)) {
+        url.searchParams.delete('state');
+      } else {
+        url.searchParams.set('state', stateStr);
+      }
       window.history.pushState({}, '', url as any);
     }
   }
@@ -175,6 +218,8 @@ export async function loadPyodideInstance() {
     namespace: null,
     isLoading: true,
     registeredPackages: [],
+    boards: null,
+    packages: null,
   });
   // @ts-ignore
   const pyodide = await window.loadPyodide({
@@ -225,12 +270,51 @@ export async function loadPyodideInstance() {
             }
           }
 
+          let query = JSON.stringify(queryArgs[0] ?? queryArgs['query']);
+          let count = queryArgs[1] ?? queryArgs['count'] ?? 'None';
+          let start = queryArgs[2] ?? queryArgs['start'] ?? 'None';
+          let stop = queryArgs[3] ?? queryArgs['stop'] ?? 'None';
+          let signal = queryArgs[4] ?? queryArgs['signal'] ?? 'None';
+
+          if (signal !== 'None') {
+            signal = JSON.stringify(signal);
+          }
+
           let val = pyodide.runPython(
-            `query_filter('${sequenceType}', ${JSON.stringify(
-              queryArgs[0] ?? queryArgs['query'],
-            )}, ${queryArgs[1] ?? queryArgs['count'] ?? 'None'}, ${
-              queryArgs[2] ?? queryArgs['start'] ?? 'None'
-            }, ${queryArgs[3] ?? queryArgs['stop'] ?? 'None'}, True)`,
+            `query_filter('${sequenceType}', ${query}, ${count}, ${start}, ${stop}, True, ${signal})`,
+            { globals: namespace },
+          );
+
+          return val;
+        },
+        find: (...args: any[]) => {
+          let queryArgs: Record<string, string | number> = {};
+          for (let i = 0; i < args.length; i++) {
+            if (
+              typeof args[i] === 'object' &&
+              (args[i].hasOwnProperty('hash_') ||
+                args[i].hasOwnProperty('name') ||
+                args[i].hasOwnProperty('context'))
+            ) {
+              Object.assign(queryArgs, args[i]);
+            } else {
+              queryArgs[i] = args[i];
+            }
+          }
+
+          let hash_ = queryArgs[0] ?? queryArgs['hash_'];
+          let name = queryArgs[1] ?? queryArgs['name'];
+          let ctx = queryArgs[2] ?? queryArgs['context'];
+          let signal = queryArgs[3] ?? queryArgs['signal'] ?? 'None';
+
+          if (signal !== 'None') {
+            signal = JSON.stringify(signal);
+          }
+
+          let val = pyodide.runPython(
+            `find_item('${sequenceType}', True, ${JSON.stringify(
+              hash_,
+            )}, ${JSON.stringify(name)}, ${ctx}, ${signal})`,
             { globals: namespace },
           );
 
@@ -243,11 +327,52 @@ export async function loadPyodideInstance() {
       let dataTypeName = containerType.slice(`${packageName}.`.length);
 
       jsModule[dataTypeName] = {
-        filter: (query: string = '') => {
+        filter: (...args: any[]) => {
+          let queryArgs: Record<string, string | number> = {
+            query: '',
+          };
+          for (let i = 0; i < args.length; i++) {
+            if (typeof args[i] === 'object') {
+              Object.assign(queryArgs, args[i]);
+            } else {
+              queryArgs[i] = args[i];
+            }
+          }
+
+          let query = JSON.stringify(queryArgs[0] ?? queryArgs['query']);
+          let signal = queryArgs[1] ?? queryArgs['signal'] ?? 'None';
+
+          if (signal !== 'None') {
+            signal = JSON.stringify(signal);
+          }
+
           let val = pyodide.runPython(
-            `query_filter('${containerType}', ${JSON.stringify(
-              query,
-            )}, None, None, None, False)`,
+            `query_filter('${containerType}', ${query}, None, None, None, False, ${signal})`,
+            { globals: namespace },
+          );
+          return val;
+        },
+        find: (...args: any[]) => {
+          let queryArgs: Record<string, string | number> = {
+            hash_: '',
+          };
+          for (let i = 0; i < args.length; i++) {
+            if (typeof args[i] === 'object') {
+              Object.assign(queryArgs, args[i]);
+            } else {
+              queryArgs[i] = args[i];
+            }
+          }
+
+          let hash_ = JSON.stringify(queryArgs[0] ?? queryArgs['hash_']);
+          let signal = queryArgs[1] ?? queryArgs['signal'] ?? 'None';
+
+          if (signal !== 'None') {
+            signal = JSON.stringify(signal);
+          }
+
+          let val = pyodide.runPython(
+            `find_item('${containerType}', False, ${hash_}, ${signal})`,
             { globals: namespace },
           );
           return val;
@@ -255,20 +380,27 @@ export async function loadPyodideInstance() {
       };
     });
 
-    packageData.functions.forEach((func_name: string) => {
-      let funcName = func_name.slice(`${packageName}.`.length);
+    packageData.actions.forEach((action_name: string) => {
+      let actionName = action_name.slice(`${packageName}.`.length);
 
-      jsModule[funcName] = (...args: any[]) => {
-        let funcArgs: Record<string, unknown> = {};
+      jsModule[actionName] = (...args: any[]) => {
+        let actionArgs: Record<string, unknown> = {};
         for (let i = 0; i < args.length; i++) {
           if (typeof args[i] === 'object') {
-            Object.assign(funcArgs, args[i]);
+            Object.assign(actionArgs, args[i]);
           } else {
-            funcArgs[i] = args[i];
+            actionArgs[i] = args[i];
           }
         }
+
+        let signal = actionArgs['signal']
+          ? JSON.stringify(actionArgs['signal'])
+          : 'None';
+
         let val = pyodide.runPython(
-          `run_function('${func_name}', ${JSON.stringify(funcArgs)})`,
+          `run_action('${action_name}', ${JSON.stringify(
+            _.omit(actionArgs, ['signal']),
+          )}, ${signal})`,
           { globals: namespace },
         );
         return val;
@@ -278,11 +410,28 @@ export async function loadPyodideInstance() {
     pyodide.registerJsModule(packageName, jsModule);
   });
 
+  let boards: Record<string, string[]> = {};
+  let packages: Record<string, Record<string, any>> = {};
+
+  for (let pkg in availablePackages) {
+    boards[pkg] = availablePackages[pkg].boards;
+    if (!availablePackages[pkg].hide_boards) {
+      packages[pkg] = _.omit(availablePackages[pkg], [
+        'containers',
+        'sequences',
+        'actions',
+        'boards',
+      ]);
+    }
+  }
+
   pyodideEngine.setPyodide({
     current: pyodide,
     namespace,
     isLoading: false,
     registeredPackages: Object.keys(availablePackages),
+    boards,
+    packages,
   });
 }
 
