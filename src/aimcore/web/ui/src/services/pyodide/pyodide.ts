@@ -411,16 +411,18 @@ export async function loadPyodideInstance() {
   });
 
   let boards: Record<string, string[]> = {};
-  let packages: Record<string, Record<string, string>> = {};
+  let packages: Record<string, Record<string, any>> = {};
 
   for (let pkg in availablePackages) {
     boards[pkg] = availablePackages[pkg].boards;
-    packages[pkg] = _.omit(availablePackages[pkg], [
-      'containers',
-      'sequences',
-      'actions',
-      'boards',
-    ]);
+    if (!availablePackages[pkg].hide_boards) {
+      packages[pkg] = _.omit(availablePackages[pkg], [
+        'containers',
+        'sequences',
+        'actions',
+        'boards',
+      ]);
+    }
   }
 
   pyodideEngine.setPyodide({

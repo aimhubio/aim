@@ -135,6 +135,11 @@ export type PackagesListType = Record<
      * i.e. TODO: add example
      */
     boards: string[];
+    /**
+     * Whether to display app card in apps page or not
+     * i.e. TODO: add example
+     */
+    hide_boards: boolean;
   }
 >;
 
