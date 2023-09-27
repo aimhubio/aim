@@ -17,7 +17,7 @@ class Distribution(Record):
         bin_range (:obj:`tuple`, optional): Tuple of (start, end) bin range.
     """
 
-    AIM_NAME = 'asp.Distribution'
+    AIM_NAME = 'base.Distribution'
     RESOLVE_BLOBS = True
     SEQUENCE_NAME = 'DistributionSequence'
 

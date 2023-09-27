@@ -24,7 +24,7 @@ class Audio(Record):
          caption (:obj:`str`, optional): Optional audio caption. '' by default.
     """
 
-    AIM_NAME = 'asp.Audio'
+    AIM_NAME = 'base.Audio'
     RESOLVE_BLOBS = False
     SEQUENCE_NAME = 'AudioSequence'
 

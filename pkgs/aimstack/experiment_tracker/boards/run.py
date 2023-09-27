@@ -45,12 +45,12 @@ if run:
         else:
             ui.json(params)
     with metrics_tab:
-        metrics = ui.board('asp:metrics.py', state={'container_hash': c_hash})
+        metrics = ui.board('base:metrics.py', state={'container_hash': c_hash})
     with audios_tab:
-        audios = ui.board('asp:audios.py', state={'container_hash': c_hash})
+        audios = ui.board('base:audios.py', state={'container_hash': c_hash})
     with texts_tab:
-        texts = ui.board('asp:texts.py', state={'container_hash': c_hash})
+        texts = ui.board('base:texts.py', state={'container_hash': c_hash})
     with images_tab:
-        images = ui.board('asp:images.py', state={'container_hash': c_hash})
+        images = ui.board('base:images.py', state={'container_hash': c_hash})
     with figures_tab:
-        figures = ui.board('asp:figures.py', state={'container_hash': c_hash})
+        figures = ui.board('base:figures.py', state={'container_hash': c_hash})

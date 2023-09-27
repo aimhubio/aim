@@ -1,4 +1,4 @@
-from asp import Run
+from base import Run
 from collections import defaultdict
 
 search_signal = "search"

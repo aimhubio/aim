@@ -1,4 +1,4 @@
-from asp import FigureSequence
+from base import FigureSequence
 import math
 
 c_hash = session_state.get('container_hash')

@@ -59,6 +59,7 @@ async def project_packages_api(names_only: Optional[bool] = False,
                 'description': pkg.description,
                 'author': pkg.author,
                 'category': pkg.category,
+                'hide_boards': pkg.hide_boards
             } for pkg in Package.pool.values()}
     else:
         return list(Package.pool.keys())
