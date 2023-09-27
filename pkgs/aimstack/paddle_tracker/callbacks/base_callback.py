@@ -76,5 +76,6 @@ class BaseCallback(Callback):
 
     def __del__(self):
         if self._run is not None:
+            self._run.close()
             del self._run
             self._run = None

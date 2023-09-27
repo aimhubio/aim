@@ -121,6 +121,7 @@ class Logger(BaseLogger):
 
     def close(self) -> None:
         if self._run is not None:
+            self._run.close()
             del self._run
             self._run = None
 

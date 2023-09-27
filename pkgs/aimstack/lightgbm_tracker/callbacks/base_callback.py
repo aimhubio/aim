@@ -102,6 +102,7 @@ class BaseCallback:
 
     def close(self):
         if self._run:
+            self._run.close()
             del self._run
             self._run = None
 
