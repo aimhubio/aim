@@ -15,16 +15,15 @@ import sys
 import glob
 from importlib.util import module_from_spec, spec_from_file_location
 
+
 sys.path.insert(0, os.path.abspath('..'))
 
 
 PATH_HERE = os.path.abspath(os.path.dirname(__file__))
 PATH_ROOT = os.path.join(PATH_HERE, '..', '..')
 
-FOLDER_GENERATED = 'generated'
-
 spec = spec_from_file_location(
-    'aim/__about__.py', os.path.join(PATH_ROOT, 'aim', '__about__.py')
+    'src/python/aim/__about__.py', os.path.join(PATH_ROOT, 'src', 'python', 'aim', '__about__.py')
 )
 about = module_from_spec(spec)
 spec.loader.exec_module(about)
@@ -55,12 +54,18 @@ def _transform_changelog(path_in: str, path_out: str) -> None:
         fp.writelines(chlog_lines)
 
 
-os.makedirs(os.path.join(PATH_HERE, FOLDER_GENERATED), exist_ok=True)
-# copy all documents from GH templates like contribution guide
-for md in glob.glob(os.path.join(PATH_ROOT, '.github', '*.md')):
-    shutil.copy(md, os.path.join(PATH_HERE, FOLDER_GENERATED, os.path.basename(md)))
-# copy also the changelog
-_transform_changelog(os.path.join(PATH_ROOT, 'CHANGELOG.md'), os.path.join(PATH_HERE, FOLDER_GENERATED, 'CHANGELOG.md'))
+COMMUNITY_PATH = os.path.join(PATH_HERE, 'community')
+os.makedirs(COMMUNITY_PATH, exist_ok=True)
+
+# Copy the contributing guide, changelog and code of conduct
+community_docs = (
+    'CHANGELOG.md',
+    'CODE_OF_CONDUCT.md',
+    'CONTRIBUTING.md',
+)
+for community_doc in community_docs:
+    _transform_changelog(os.path.join(PATH_ROOT, community_doc),
+                         os.path.join(COMMUNITY_PATH, community_doc))
 
 # -- General configuration ---------------------------------------------------
 
@@ -72,24 +77,32 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
     'sphinx_copybutton',
+    'sphinxcontrib.mermaid',
+    'sphinx.ext.autosectionlabel',
     'm2r2'
 ]
-
-# Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = []
 
+pygments_style = 'sphinx'
 
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'sphinx_rtd_theme'
+html_theme = 'furo'
+
+html_theme_options = {
+    "source_repository": "https://github.com/aimhubio/aim/",
+    "source_branch": "main",
+    "source_directory": "docs/",
+}
+
+templates_path = ['_templates']
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -102,3 +115,6 @@ autodoc_typehints = 'none'
 autodoc_member_order = 'groupwise'
 
 source_suffix = ['.rst', '.md']
+
+with open("rst_prolog.rst", "r") as prolog_file:
+    rst_prolog = prolog_file.read()

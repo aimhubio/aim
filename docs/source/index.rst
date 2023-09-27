@@ -1,100 +1,140 @@
-.. mdinclude:: overview.md
+#########################
+ Welcome to Aim
+#########################
 
 .. raw:: html
+  
+  <div align="center">
+    <img src="https://user-images.githubusercontent.com/13848158/154338760-edfe1885-06f3-4e02-87fe-4b13a403516b.png">
+    <h3>Open-source modular observability for AI Systems</h3>
+    <br/>  
+    Easily log, connect and observe any parts of your AI Systems from experiments to production to prompts to ai system monitoring
+  </div>  
 
-   <div style="display:none">
+|
 
-.. toctree::
-   overview.md
+.. image:: https://dcbadge.vercel.app/api/server/zXq2NfVdtF?compact=true&style=flat
+  :target: https://community.aimstack.io/
+  :alt: Discord Server
 
-.. toctree::
-   :maxdepth: 1
-   :name: start
-   :caption: Quick Start
+.. image:: https://img.shields.io/twitter/follow/aimstackio?style=social
+  :target: https://x.com/aimstackio
+  :alt: X Follow
 
-   quick_start/setup.md
-   quick_start/integrations.md
-   quick_start/convert_data.md
-   quick_start/supported_types.md
-   quick_start/next_steps.md
+.. image:: https://img.shields.io/badge/Medium-12100E?style=flat&logo=medium&logoColor=white
+  :target: https://medium.com/aimstack
+  :alt: Medium
 
-.. toctree::
-   :maxdepth: 1
-   :name: ui
-   :caption: Aim UI
+.. image:: https://img.shields.io/badge/platform-Linux%20%7C%20macOS-blue
+  :alt: Platform Support
 
-   ui/overview.md
-   ui/pages/home_page.md
-   ui/pages/run_management.md
-   ui/pages/explorers.md
-   ui/pages/table.md
-   ui/pages/bookmarks.md
+.. image:: https://img.shields.io/badge/python-%3E%3D%203.7-blue
+  :target: https://pypi.org/project/aim/
+  :alt: PyPI - Python Version
 
+.. image:: https://img.shields.io/badge/License-Apache%202.0-orange.svg
+  :target: https://opensource.org/licenses/Apache-2.0
+  :alt: License
 
-.. toctree::
-   :maxdepth: 2
-   :name: guides
-   :caption: Using Aim
+.. image:: https://img.shields.io/pypi/dw/aim?color=green
+  :target: https://pypi.org/project/aim/
+  :alt: PyPI Downloads
 
-   using/manage_runs.md
-   using/configure_runs.md
-   using/query_runs.md
-   using/search.md
-   using/remote_tracking.md
-   using/training_monitoring.md
-   using/logging.md
-   using/notifications.md
-   using/callbacks.md
-   using/k8s_deployment.md
-   using/huggingface_spaces.md
-   using/jupyter_notebook_ui.md
-   using/sagemaker_notebook_ui.md
-   using/integration_guides.md
+.. image:: https://img.shields.io/github/issues/aimhubio/aim
+  :target: http://github.com/aimhubio/aim/issues
+  :alt: Issues
 
-.. toctree::
-   :maxdepth: 2
-   :name: concepts
-   :caption: Understanding Aim
+|
 
-   understanding/overview.md
-   understanding/data_storage.md
-   understanding/storage_indexing.md
-   understanding/concepts.md
-   understanding/running_aim_with_profiling.md
-   understanding/metric_step_hashing.md
+Aim is an operating system for logs.
+Aim comes installed with a set of default apps that provide a seamless experience for:
+
+- Logs browsing
+- Experiment tracking
+- AI Systems tracing
+
+It's super easy to start with Aim and use it. Aim has out-of-the-box seamless integrattions with major AI frameworks.
+Default Aim apps can be used out of the box with no configuration required.
+
+With Aim developers can build, run and share any kind of logging apps.
+Aim can get really powerful as you build your own logging apps.
 
 .. toctree::
-   :maxdepth: 1
-   :name: examples
-   :caption: Examples
+  :maxdepth: 2
+  :caption: 🏁 Getting Started
+  :hidden:
 
-   examples/images_explorer_gan.md
-
-.. toctree::
-   :maxdepth: 2
-   :name: refs
-   :caption: References
-
-   refs/cli
-   refs/sdk
-   refs/ql
-   refs/storage
-
+  ./getting_started/quick_start.rst
+  ./getting_started/about_aim.rst
 
 .. toctree::
-   :maxdepth: 1
-   :name: community
-   :caption: Community
+  :maxdepth: 3
+  :caption: Apps
+  :hidden:
 
-   community/telemetry.md
-   generated/CHANGELOG.md
+  ./apps/overview.rst
+  ./apps/pytorch_ignite_tracker.rst
+  ./apps/pytorch_lightning_tracker.rst
+  ./apps/huggingface_tracker.rst
+  ./apps/keras_tracker.rst
+  ./apps/keras_tuner_tracker.rst
+  ./apps/xgboost_tracker.rst
+  ./apps/catboost_tracker.rst
+  ./apps/lightgbm_tracker.rst
+  ./apps/fastai_tracker.rst
+  ./apps/mxnet_tracker.rst
+  ./apps/optuna_tracker.rst
+  ./apps/paddle_paddle_tracker.rst
+  ./apps/stable_baselines3_tracker.rst
+  ./apps/acme_tracker.rst
+  ./apps/prophet_tracker.rst
+  ./apps/llamaindex_retriever.rst
+  ./apps/langchain_debugger.rst
 
-.. raw:: html
+.. toctree::
+  :maxdepth: 3
+  :caption: Guides
+  :hidden: True
 
-   </div>
+  ./guides/installation.rst
+  ./guides/deep_dive.rst
+  ./guides/apps.rst
+  ./guides/aim_remote_server.rst
+  ./guides/aimql.rst
+  ./guides/aim_on_kubernetes.rst
+  ./guides/aim_on_notebooks.rst
 
-Indices and tables
-==================
+.. toctree::
+  :maxdepth: 1
+  :caption: 📚 Reference
+  :hidden: True
 
-* :ref:`genindex`
-* :ref:`modindex`
+  refs/cli.rst
+  refs/sdk.rst
+  refs/ui.rst
+
+.. toctree::
+  :maxdepth: 1
+  :caption: 🗂️ Browse
+  :hidden:
+
+..  ./browse/glossary.rst
+
+  ./browse/genindex.rst
+  ./browse/modindex.rst
+
+
+.. toctree::
+  :maxdepth: 1
+  :caption: 👐 Community & Resources
+  :hidden:
+
+  ./community/CHANGELOG.md
+  ./community/CONTRIBUTING.md
+  ./community/CODE_OF_CONDUCT.md
+  Aim repo <https://github.com/aimhubio/aim>
+  AimStack repo <https://github.com/aimhubio/aimstack>
+  Discord <https://community.aimstack.io>
+  X <https://x.com/aimstackio>
+  Blog <https://aimstack.io/blog>
+  Website <https://aimstack.io>
