@@ -139,6 +139,7 @@ class BaseCallback:
     def close(self) -> None:
         if self._run:
             self._run.close()
+            del self._run
             self._run = None
             self._run_hash = None
 

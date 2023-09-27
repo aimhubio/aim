@@ -151,6 +151,7 @@ class BaseLogger(Logger):
     def finalize(self, status: str = '') -> None:
         super().finalize(status)
         if self._run is not None:
+            self._run.close()
             del self._run
             self._run = None
 
