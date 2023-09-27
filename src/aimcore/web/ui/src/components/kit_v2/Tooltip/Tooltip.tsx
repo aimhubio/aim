@@ -41,7 +41,7 @@ function Tooltip({
   ...props
 }: ITooltipProps): React.FunctionComponentElement<React.ReactNode> {
   const ref = React.useRef<HTMLDivElement>(null);
-  return (
+  return content ? (
     <TooltipPrimitive.Provider
       delayDuration={delayDuration}
       disableHoverableContent={disableHoverableContent}
@@ -67,6 +67,10 @@ function Tooltip({
         </TooltipPrimitive.Portal>
       </TooltipPrimitive.Root>
     </TooltipPrimitive.Provider>
+  ) : (
+    <Slot>
+      <div>{children}</div>
+    </Slot>
   );
 }
 

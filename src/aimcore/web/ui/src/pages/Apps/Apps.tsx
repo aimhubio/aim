@@ -1,13 +1,11 @@
 import * as React from 'react';
-
-import { IconPlus } from '@tabler/icons-react';
+import * as _ from 'lodash-es';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
-import { Box, Button, Input, Link, Text } from 'components/kit_v2';
+import { Box, Input, Text } from 'components/kit_v2';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import Illustration, { ILLUSTRATION_TYPES } from 'components/Illustration';
 
-import { PathEnum } from 'config/enums/routesEnum';
 import { TopBar } from 'config/stitches/foundations/layout';
 
 import usePyodide from 'services/pyodide/usePyodide';
@@ -16,7 +14,7 @@ import { AppsCardWrapper, AppsContainer } from './Apps.style';
 import AppCard from './components/AppCard';
 
 function Apps(): React.FunctionComponentElement<React.ReactNode> {
-  const { registeredPackages, isLoading } = usePyodide();
+  const { packages, isLoading } = usePyodide();
   const [searchValue, setSearchValue] = React.useState<string>('');
 
   return (
@@ -26,7 +24,9 @@ function Apps(): React.FunctionComponentElement<React.ReactNode> {
       </TopBar>
       <AppsContainer>
         <BusyLoaderWrapper isLoading={isLoading} height={'100%'}>
-          {registeredPackages?.length > 0 ? (
+          {_.isEmpty(packages) ? (
+            <Illustration type={ILLUSTRATION_TYPES.Empty_Apps} />
+          ) : (
             <>
               <Box display='flex' ai='center'>
                 <Box flex={1}>
@@ -42,19 +42,21 @@ function Apps(): React.FunctionComponentElement<React.ReactNode> {
                 </Box>
               </Box>
               <AppsCardWrapper>
-                {registeredPackages
+                {Object.keys(packages)
                   .filter((appName: string) =>
                     appName
                       .toLowerCase()
                       .includes(searchValue.trim().toLowerCase()),
                   )
                   .map((appName: string) => (
-                    <AppCard key={appName} name={appName} description={null} />
+                    <AppCard
+                      key={appName}
+                      name={appName}
+                      {...packages[appName]}
+                    />
                   ))}
               </AppsCardWrapper>
             </>
-          ) : (
-            <Illustration type={ILLUSTRATION_TYPES.Empty_Apps} />
           )}
         </BusyLoaderWrapper>
       </AppsContainer>
