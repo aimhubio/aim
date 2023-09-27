@@ -56,9 +56,12 @@ def merge_dicts(dict1, dict2):
 
 if metrics:
     row_controls, = ui.rows(1)
+
     group_fields = row_controls.multi_select(
-        'Group by:', ('name', 'context', 'context.subset', 'container.hash')
+        'Group by:', ('container.hash', 'name', 'context'),
+        index=[1]
     )
+
     metrics_processed = [merge_dicts(m, flatten(m)) for m in metrics]
 
     def key_func(x): return tuple(str(x[field]) for field in group_fields)
@@ -66,12 +69,26 @@ if metrics:
     grouped_iterator = groupby(
         sorted(metrics_processed, key=key_func), key_func)
     grouped_data = [list(group) for key, group in grouped_iterator]
-    x_axis = row_controls.select('Align by:', ('steps', 'axis.epoch'))
+
+    x_axis = 'steps'
     y_axis = 'values'
+
+    color_by = row_controls.multi_select(
+        'Color by:', ('container.hash', 'name', 'context'),
+        index=[0]
+    )
+    stroke_style = row_controls.multi_select(
+        'Style by:', ('container.hash', 'name', 'context'),
+        index=[2]
+    )
+
     grouped_data_length = len(grouped_data)
+
     column_numbers = [str(i) for i in range(1, int(grouped_data_length) + 1)]
     column_count = row_controls.select('Columns', column_numbers, index=0)
+
     rows = ui.rows(math.ceil(grouped_data_length / int(column_count)))
+
     for i, row in enumerate(rows):
         cols = row.columns(int(column_count))
         for j, col in enumerate(cols):
@@ -81,10 +98,12 @@ if metrics:
                 for group_field in group_fields:
                     col.text(f'{group_field}: {data[0][group_field]}')
                 col.line_chart(
-                    data, x=x_axis, y=y_axis, color=['name'])
+                    data, x=x_axis, y=y_axis, color=color_by, stroke_style=stroke_style)
 
     row1, row2 = ui.rows(2)
+
     items_per_page = row1.select('Items per page', ('5', '10', '50', '100'))
+
     total_pages = math.ceil((len(metrics) / int(items_per_page)))
     page_numbers = [str(i) for i in range(1, total_pages + 1)]
     page_num = row1.select('Page', page_numbers, index=0)
@@ -95,6 +114,7 @@ if metrics:
         page_size=int(items_per_page),
         page_num=int(page_num),
     )
+
     row2.table(table_data, {
         'container.hash': lambda val: ui.board_link('run.py', val, state={'container_hash': val}),
     })
