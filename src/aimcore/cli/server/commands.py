@@ -35,6 +35,25 @@ from aim._ext.tracking import analytics
 def server(host, port,
            repo, ssl_keyfile, ssl_certfile,
            base_path, log_level, dev, yes):
+    """
+    Launches the Aim tracking server with specified configurations.
+
+    Parameters:
+        host (str): Host address to bind to.
+        port (int): Port number to bind to.
+        repo (click.Path): Aim Repository path. Defaults to the current working directory.
+        ssl_keyfile (click.Path): SSL key file path. Not required.
+        ssl_certfile (click.Path): SSL certificate file path. Not required.
+        base_path (str): Base path for the server. Not required.
+        log_level (str): Set the log level. Defaults to `debug` if running in dev mode, otherwise to `warning`.
+        dev (bool): Run in development mode. Default is False.
+        yes (bool): Automatically confirm prompt. Useful for bypassing prompts.
+
+    Usage:
+        Run this command with the desired options to launch the Aim server. For instance:
+        `aim server --host 0.0.0.0 --port 53800`
+    """
+
     # TODO [MV, AT] remove code duplication with aim up cmd implementation
     if not log_level:
         log_level = 'debug' if dev else 'warning'

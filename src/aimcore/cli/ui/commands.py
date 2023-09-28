@@ -47,14 +47,32 @@ from aim._ext.tracking import analytics
 @click.option('--profiler', is_flag=True, default=False)
 @click.option('--log-level', required=False, default='', type=str)
 @click.option('-y', '--yes', is_flag=True, help='Automatically confirm prompt')
-def ui(dev, host, port, workers, uds,
-       repo,
-       package,
+def ui(host, port, repo, package,
+       workers, uds,
        ssl_keyfile, ssl_certfile,
        base_path,
-       profiler, log_level, yes):
+       profiler, log_level, dev, yes):
     """
-    Start Aim UI with the --repo repository.
+    Launches the Aim UI with specified configurations.
+
+    Parameters:
+        host (str): Host address to bind to.
+        port (int): Port number to bind to.
+        repo (click.Path): Aim Repository path. Defaults to the current working directory.
+        package (str): Additional package name to be loaded in UI.
+        workers (int): Number of worker processes. Default is 1.
+        uds (click.Path): Unix Domain Socket path. Not required.
+        ssl_keyfile (click.Path): SSL key file path. Not required.
+        ssl_certfile (click.Path): SSL certificate file path. Not required.
+        base_path (str): Base path for the UI. Not required.
+        profiler (bool): Enable or disable the profiler. Default is False.
+        log_level (str): Set the log level. Defaults to `debug` if running in dev mode, otherwise to `warning`.
+        dev (bool): Run in development mode. Default is False.
+        yes (bool): Automatically confirm prompt. Useful for bypassing prompts.
+
+    Usage:
+        Run this command with the desired options to launch Aim UI. For instance:
+        `aim ui --host 0.0.0.0 --port 43800 --workers 4`
     """
     if not log_level:
         log_level = 'debug' if dev else 'warning'
