@@ -74,6 +74,7 @@ for community_doc in community_docs:
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinx.ext.autosummary',
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
     'sphinx_copybutton',
@@ -111,8 +112,12 @@ html_static_path = ['_static']
 # html_logo = "_static/images/logo.svg"
 html_favicon = '_static/images/logo.svg'
 
-autodoc_typehints = 'none'
-autodoc_member_order = 'groupwise'
+autodoc_typehints = 'description'
+autodoc_member_order = "bysource"
+autoclass_content = "both"
+autodoc_default_options = {
+    'exclude-members': '__init__, __repr__, __weakref__'
+}
 
 source_suffix = ['.rst', '.md']
 
