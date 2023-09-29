@@ -1,3 +1,10 @@
+"""
+The repo module contains implementation of class Repo; a core class for accessing the data logged in Aim.
+It provides interfaces for creating and managing Aim repositories, for both local and remote setups.
+Repo class can be used to query stored Containers and Sequences, as well as get the metadata about logs, such as
+registered types, actions, packages, summary of logged types, etc.
+"""
+
 import logging
 import os
 import shutil

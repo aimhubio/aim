@@ -1,3 +1,11 @@
+"""
+The container module provides implementation of a Container class. Container is a core class, representing a inter-related
+set of properties, parameters, Sequence and Record entities. Specific Container types can be used to collect and store
+data representing a process execution, such as model training, LLM chain execution, etc.
+Container class provides interface for getting and setting it's pre-defined Properties as well as free-form dict-like parameters.
+Container class has an interface for managing sequence objects.
+"""
+
 import logging
 import cachetools.func
 
