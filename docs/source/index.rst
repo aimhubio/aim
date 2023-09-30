@@ -94,15 +94,9 @@ Aim can get really powerful as you build your own logging apps.
 .. toctree::
   :maxdepth: 3
   :caption: Guides
-  :hidden: True
+  :hidden:
 
-  ./guides/installation.rst
   ./guides/deep_dive.rst
-  ./guides/apps.rst
-  ./guides/aim_remote_server.rst
-  ./guides/aimql.rst
-  ./guides/aim_on_kubernetes.rst
-  ./guides/aim_on_notebooks.rst
 
 .. toctree::
   :maxdepth: 1
