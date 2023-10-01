@@ -34,11 +34,13 @@ Start in 3 steps
 3. Run Aim Server
 
 .. code-block:: console
+  
   aim server
 
 4. Run Aim UI
 
 .. code-block:: console
+  
   aim ui
 
 Log your first project with Aim
