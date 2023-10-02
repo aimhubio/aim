@@ -5,8 +5,7 @@
 Aim provides command-line interface for launching Aim UI and tracking servers,
 managing Aim repositories, logged data and Aim apps.
 
-.. currentmodule:: aimcore.cli
-.. automodule:: aimcore.cli
+Below is a brief summary table of Aim CLI commands:
 
 =========== ===========
 Command     Description
@@ -21,6 +20,17 @@ migrate     Migrates the data format of a specified Aim repository.
 version     Prints version of installed Aim and exists.
 =========== ===========
 
+----
+
+API Reference for Aim Command Line Interface
+=============================================
+
+The following section describes Aim CLI commands in detail.
+
+.. currentmodule:: aimcore.cli
+.. automodule:: aimcore.cli
+
 .. click:: aimcore.cli.cli:cli_entry_point
   :prog: aim
   :nested: full
+  :commands: init, server, ui, packages, containers, migrate, version
