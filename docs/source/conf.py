@@ -80,7 +80,8 @@ extensions = [
     'sphinx_copybutton',
     'sphinxcontrib.mermaid',
     'sphinx.ext.autosectionlabel',
-    'm2r2'
+    'm2r2',
+    'sphinx_click',
 ]
 
 # List of patterns, relative to source directory, that match files and

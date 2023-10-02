@@ -4,4 +4,5 @@ furo
 sphinxcontrib-mermaid==0.8.1
 m2r2
 sphinx-copybutton
+sphinx-click
 Cython==3.0.0a9

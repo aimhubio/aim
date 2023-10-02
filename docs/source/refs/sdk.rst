@@ -1,6 +1,6 @@
-===========
- Python SDK
-===========
+===============
+ Aim Python SDK
+===============
 
 API Reference for Aim Python SDK classes
 ========================================
