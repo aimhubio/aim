@@ -2,7 +2,6 @@
 Acme
 ###################
 
-
 `AimCallback` for `Acme` is designed to enhance your experiment logging and monitoring. It thoroughly records essential information, including hyperparameters, training, validation, and test time metrics like loss and accuracy. Moreover, it offers comprehensive system usage tracking, keeping an eye on CPU and GPU memory utilization.
 
 Aim provides a built-in callback to easily track `Acme <https://dm-acme.readthedocs.io/en/latest/>`_ trainings.
