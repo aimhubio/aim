@@ -6,7 +6,11 @@ About
 =====
 Base App provides the logging primitives and the UI for logs browsing. 
 
-The Base App UI provides overview for any type of Aim logs.
+The Base App UI provides the views for all primitive types as well as views for any other custom record type that is logged with Aim.
+
+.. image:: https://docs-blobs.s3.us-east-2.amazonaws.com/v4-images/guides/aim-logs-overview.png
+    :width: 100%
+    :alt: Aim Logs Overview
 
 Installation
 ------------
@@ -21,11 +25,13 @@ The Base app is default installed with Aim. It can be accessed via
   
   from aimstack.base import Metric, ImageSequence
 
-Logs Browser
+Base app boards
 ============
-Base app logs browser is a handy tool to confirm Aim logs are being written and accessible.
+Base app UI is very handy to browse through the logs and sense check them. It provides the following views:
 
-Overview page
--------------
-The Overview page shows the bigger image of what has been logged. It is a good place to start
-when you are not sure what to look for.
+- Overview
+- Metrics
+- Texts
+- Images
+- Figures
+
