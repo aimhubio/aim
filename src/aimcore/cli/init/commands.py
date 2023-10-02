@@ -14,15 +14,15 @@ from aim._ext.tracking import analytics
 @click.option('-y', '--yes', is_flag=True, help='Automatically confirm prompt')
 def init(repo, yes):
     """
-    Initializes a new Aim repository in the specified directory.
+    Initializes or re-initializes an Aim repository at a given directory.
 
-    Parameters:
-        repo (click.Path): Path to initialize the Aim repository in. Defaults to the current working directory.
-        yes (bool): Automatically confirm prompt. Useful for bypassing prompts that ask for confirmation during initialization.
+    This command facilitates the creation of a new Aim repository at the specified
+    directory. If a repository already exists in the given directory, users are prompted
+    to either re-initialize or retain the existing repository. Re-initializing results
+    in an empty Aim repository.
 
-    Usage:
-        Run this command to initialize a new Aim repository. For instance:
-        `aim init --repo /path/to/directory`
+    The command is designed to ensure smooth tracking and management of machine learning
+    experiments using the Aim platform.
     """
     re_init = False
     if Repo.exists(repo):

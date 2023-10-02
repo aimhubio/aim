@@ -11,7 +11,14 @@ from .watcher import PackageSourceWatcher
 
 @click.group('packages')
 def packages():
-    """Manage Aim packages/apps."""
+    """
+    Command group for managing Aim packages and apps.
+
+    Provides functionalities to create, synchronize, add, remove, and list Aim
+    packages. Each sub-command pertains to a specific operation related to
+    package management. The system ensures smooth interaction between Aim
+    repositories and the packages, allowing for seamless integration and utilization.
+    """
 
 
 @packages.command('create')
@@ -20,13 +27,12 @@ def packages():
 @click.option('--verbose', '-v', is_flag=True, default=False)
 def create_package(name, install, verbose):
     """
-    Create a new package with a specified name.
+    Initializes a new Aim package in the current working directory.
 
-    :param name: Name of the new package to be created.
-    :param install: Whether to install the created package using pip.
-    :param verbose: Provide verbose output when installing the package.
+    This command sets up the directory structure and necessary files for a new Aim
+    package. If the `--install` option is provided, the package will also be
+    installed in the current Python environment using pip.
     """
-
     pkg_dir = pathlib.Path(name)
     if pkg_dir.exists():
         click.echo(f'Cannot create package. Directory \'{name}\' already exists.')
@@ -109,12 +115,12 @@ def create_package(name, install, verbose):
 @click.option('--repo', default='', type=str)
 def sync_package(name, repo):
     """
-    Synchronize a package with a specified Aim repository.
+    Continuously sync package source code with an Aim repository.
 
-    :param name: Name of the package to be synchronized.
-    :param repo: The Aim repository to sync with. If not provided, uses default.
+    This command monitors the source directory of a specified package for changes,
+    and updates the corresponding Aim repository in real-time. It ensures the repository
+    reflects the latest version of the package code.
     """
-
     try:
         src_path = get_pkg_distribution_sources(name)
         click.echo(f'Found sources for package \'{name}\'. Location: \'{src_path}\'.')
@@ -138,12 +144,11 @@ def sync_package(name, repo):
 @click.option('--repo', default='', type=str)
 def add_package(name, repo):
     """
-    Add a package to a specified Aim repository.
+    Register a package with an Aim repository.
 
-    :param name: Name of the package to be added.
-    :param repo: The Aim repository to add to. If not provided, uses default.
+    This command associates a specified package with an Aim repository. This means
+    that the repository will recognize the package and be able to utilize its functionalities.
     """
-
     repo_inst = Repo.from_path(repo) if repo else Repo.default()
     if not repo_inst.add_package(pkg_name=name):
         click.secho(f'Package \'{name}\' is already listed in Repo \'{repo_inst.path}\'', err=True)
@@ -156,12 +161,11 @@ def add_package(name, repo):
 @click.option('--repo', default='', type=str)
 def remove_package(name, repo):
     """
-    Remove a package from a specified Aim repository.
+    Deregister a package from an Aim repository.
 
-    :param name: Name of the package to be removed.
-    :param repo: The Aim repository to remove from. If not provided, uses default.
+    This command removes the association between a specified package and an Aim repository.
+    Post this operation, the repository will no longer recognize or be able to use the package.
     """
-
     repo_inst = Repo.from_path(repo) if repo else Repo.default()
     if not repo_inst.remove_package(pkg_name=name):
         click.secho(f'Package \'{name}\' is not listed in Repo \'{repo_inst.path}\'', err=True)
@@ -173,11 +177,11 @@ def remove_package(name, repo):
 @click.option('--repo', default='', type=str)
 def list_packages(repo):
     """
-    List all packages from a specified Aim repository.
+    Display all registered packages in an Aim repository.
 
-    :param repo: Path to the repository. If not specified, the default repository is used.
+    This command lists all packages that are currently associated with a specified
+    Aim repository. It provides a tabulated view of the package attributes.
     """
-
     repo_inst = Repo.from_path(repo) if repo else Repo.default()
     repo_inst.load_active_packages()
     pkg_infos = {attr_name: [] for attr_name in Package.attributes}

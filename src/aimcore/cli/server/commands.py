@@ -36,24 +36,14 @@ def server(host, port,
            repo, ssl_keyfile, ssl_certfile,
            base_path, log_level, dev, yes):
     """
-    Launches the Aim tracking server with specified configurations.
+    Starts the Aim remote tracking server for real-time logging.
 
-    Parameters:
-        host (str): Host address to bind to.
-        port (int): Port number to bind to.
-        repo (click.Path): Aim Repository path. Defaults to the current working directory.
-        ssl_keyfile (click.Path): SSL key file path. Not required.
-        ssl_certfile (click.Path): SSL certificate file path. Not required.
-        base_path (str): Base path for the server. Not required.
-        log_level (str): Set the log level. Defaults to `debug` if running in dev mode, otherwise to `warning`.
-        dev (bool): Run in development mode. Default is False.
-        yes (bool): Automatically confirm prompt. Useful for bypassing prompts.
+    The Aim tracking server facilitates real-time logging of experiments
+    from remote locations. This command launches the server with specified
+    configurations, including host, port, and associated repository.
 
-    Usage:
-        Run this command with the desired options to launch the Aim server. For instance:
-        `aim server --host 0.0.0.0 --port 53800`
+    Like the UI, the server can also run in production or development mode.
     """
-
     # TODO [MV, AT] remove code duplication with aim up cmd implementation
     if not log_level:
         log_level = 'debug' if dev else 'warning'

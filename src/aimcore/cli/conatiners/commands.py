@@ -11,7 +11,16 @@ from aim._sdk.repo import Repo
               type=str)
 @click.pass_context
 def containers(ctx, repo):
-    """Manage containers in aim repository."""
+    """
+    Command group for managing containers within an Aim repository.
+
+    This command group provides functionalities to list, delete, copy, move, and
+    close containers in an Aim repository. Each sub-command pertains to a specific
+    operation on the containers.
+
+    By default, the command group targets the Aim repository at 'aim://0.0.0.0:53800'.
+    A different repository can be specified using the '--repo' option.
+    """
     ctx.ensure_object(dict)
     ctx.obj['repo'] = repo
 
@@ -19,8 +28,14 @@ def containers(ctx, repo):
 @containers.command(name='ls')
 @click.pass_context
 def list_containers(ctx):
-    """List Containers available in Repo."""
-    # TODO [MV]: add more useful information
+    """
+    List all available containers within an Aim repository.
+
+    This command retrieves and displays containers from a specified Aim repository
+    in a tabulated format. For each container, various properties, as determined by
+    the Aim system, are shown. The default display format is 'psql',
+    which structures the output in a PostgreSQL-like table style.
+    """
     repo_path = ctx.obj['repo']
     if not Repo.is_remote_path(repo_path):
         if not Repo.exists(repo_path):
@@ -52,7 +67,13 @@ def list_containers(ctx):
 @click.pass_context
 @click.option('-y', '--yes', is_flag=True, help='Automatically confirm prompt')
 def remove_containers(ctx, hashes, yes):
-    """Remove Container data for given container hashes."""
+    """
+    Delete specified containers from an Aim repository.
+
+    This command deletes one or more containers identified by their hashes
+    from the Aim repository. You will be prompted for confirmation
+    before the containers are deleted unless the `--yes` option is used.
+    """
     if len(hashes) == 0:
         click.echo('Please specify at least one Container to delete.')
         exit(1)
@@ -81,7 +102,12 @@ def remove_containers(ctx, hashes, yes):
 @click.argument('hashes', nargs=-1, type=str)
 @click.pass_context
 def copy_containers(ctx, destination, hashes):
-    """Copy Container data for given container hashes to destination Repo."""
+    """
+    Copy specified containers to another Aim repository.
+
+    This command copies one or more containers identified by their hashes
+    from the current Aim repository to a destination repository.
+    """
     if len(hashes) == 0:
         click.echo('Please specify at least one Container to copy.')
         exit(1)
@@ -104,7 +130,13 @@ def copy_containers(ctx, destination, hashes):
 @click.argument('hashes', nargs=-1, type=str)
 @click.pass_context
 def move_containers(ctx, destination, hashes):
-    """Move Container data for given container hashes to destination Repo."""
+    """
+    Move specified containers to another Aim repository.
+
+    This command moves one or more containers identified by their hashes
+    from the current Aim repository to a destination repository. After the move,
+    the containers will no longer exist in the source repository.
+    """
     if len(hashes) == 0:
         click.echo('Please specify at least one Container to move.')
         exit(1)
@@ -127,7 +159,13 @@ def move_containers(ctx, destination, hashes):
 @click.pass_context
 @click.option('-y', '--yes', is_flag=True, help='Automatically confirm prompt')
 def close_containers(ctx, hashes, yes):
-    """Close failed/stalled containers."""
+    """
+    Forcefully close specified failed or stalled containers.
+
+    This command attempts to close one or more containers that might have
+    failed or stalled. This is a forceful operation, and you'll be warned
+    to ensure the containers are not actively running.
+    """
     repo_path = ctx.obj['repo']
     repo = Repo.from_path(repo_path)
 
