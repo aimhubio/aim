@@ -262,7 +262,7 @@ Code: https://github.com/aimhubio/awesome-aim-demos/tree/main/mnist-training
 
 
 # 🌍 Default logging apps
-Aim comes pre-installed with wide variety of apps. Here is the full lise.
+Aim comes pre-installed with wide variety of apps. Here is the full list.
 
 ## Base Apps
 
