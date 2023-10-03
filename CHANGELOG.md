@@ -1,5 +1,10 @@
 # Changelog
 
+## 4.0.1
+
+- Fix aim migrate command when list(float) with single value is tracked (alberttorosyan)
+
+
 ## 4.0.0 Sep 27, 2023
 
 ### Enhancements
