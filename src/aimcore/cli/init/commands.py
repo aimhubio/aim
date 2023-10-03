@@ -14,9 +14,15 @@ from aim._ext.tracking import analytics
 @click.option('-y', '--yes', is_flag=True, help='Automatically confirm prompt')
 def init(repo, yes):
     """
-    Initializes new repository in the --repo directory.
-    Initializes new repository in the current working directory if --repo argument is not provided:
-     - Creates .aim directory & runs upgrades for structured DB
+    Initializes or re-initializes an Aim repository at a given directory.
+
+    This command facilitates the creation of a new Aim repository at the specified
+    directory. If a repository already exists in the given directory, users are prompted
+    to either re-initialize or retain the existing repository. Re-initializing results
+    in an empty Aim repository.
+
+    The command is designed to ensure smooth tracking and management of machine learning
+    experiments using the Aim platform.
     """
     re_init = False
     if Repo.exists(repo):

@@ -1,3 +1,11 @@
+"""
+The container module provides implementation of a Container class. Container is a core class, representing a inter-related
+set of properties, parameters, Sequence and Record entities. Specific Container types can be used to collect and store
+data representing a process execution, such as model training, LLM chain execution, etc.
+Container class provides interface for getting and setting it's pre-defined Properties as well as free-form dict-like parameters.
+Container class has an interface for managing sequence objects.
+"""
+
 import logging
 import cachetools.func
 
@@ -116,6 +124,14 @@ class Container(ABCContainer):
     def __init__(self, hash_: Optional[str] = None, *,
                  repo: Optional[Union[str, 'Repo']] = None,
                  mode: Optional[Union[str, ContainerOpenMode]] = ContainerOpenMode.WRITE):
+        """
+        Initializes the Container instance.
+
+        Args:
+            hash_ (str, optional): Unique identifier for the container.
+            repo (Union[str, 'Repo'], optional): Repository path or Repo object.
+            mode (Union[str, ContainerOpenMode], optional): Mode for the container (e.g., "READONLY" or "WRITE"). Defaults to "WRITE".
+        """
         if isinstance(mode, str):
             mode = ContainerOpenMode[mode]
         self.mode = mode
@@ -176,6 +192,14 @@ class Container(ABCContainer):
 
     @classmethod
     def from_storage(cls, storage, meta_tree: 'TreeView', *, hash_: str):
+        """
+        Restores a serialized container instance from given storage and meta tree.
+
+        Args:
+            storage: Storage backend instance.
+            meta_tree ('TreeView'): Tree view of the metadata.
+            hash_ (str): Unique identifier for the container.
+        """
         self = cls.__new__(cls)
         self.mode = ContainerOpenMode.READONLY
         self.storage = storage
@@ -193,6 +217,13 @@ class Container(ABCContainer):
 
     @classmethod
     def filter(cls, expr: str = '', repo: 'Repo' = None) -> 'ContainerCollection':
+        """
+        Filters the containers based on the given expression and repository.
+
+        Args:
+            expr (str, optional): Query expression for filtering.
+            repo ('Repo', optional): Repository instance. Defaults to the active Repo.
+        """
         if repo is None:
             from aim._sdk.repo import Repo
             repo = Repo.active_repo()
@@ -200,6 +231,12 @@ class Container(ABCContainer):
 
     @classmethod
     def find(cls, hash_: str) -> Optional['Container']:
+        """
+        Finds and returns a container instance based on the given hash.
+
+        Args:
+            hash_ (str): Unique identifier for the container.
+        """
         from aim._sdk.repo import Repo
         repo = Repo.active_repo()
         try:
@@ -231,24 +268,59 @@ class Container(ABCContainer):
         return self.__sequence_data_tree
 
     def __setitem__(self, key, value):
+        """
+        Sets a value in the container for a given key.
+
+        Args:
+            key: Key to set the value for.
+            value: Value to be set.
+        """
         self._attrs_tree[key] = value
         self._meta_attrs_tree.merge(key, value)
 
     def set(self, key, value, strict: bool):
+        """
+        Sets a value in the container for a given key with optional strictness.
+
+        Args:
+            key: Key to set the value for.
+            value: Value to be set.
+            strict (bool): Whether to enforce strict setting.
+        """
         self._attrs_tree.set(key, value, strict)
         self._meta_attrs_tree.set(key, value, strict)
 
     def __getitem__(self, key):
+        """
+        Retrieves a value from the container based on the given key.
+
+        Args:
+            key: Key for which value is to be retrieved.
+        """
         return self._attrs_tree.collect(key, strict=True)
 
-    def __delitem__(self, key):
-        del self._attrs_tree[key]
-
     def get(self, key, default: Any = None, strict: bool = False):
+        """
+        Retrieves a value from the container based on the key or returns a default value.
+
+        Args:
+            key: Key for which value is to be retrieved.
+            default (optional): Default value to return if key doesn't exist.
+            strict (bool, optional): Whether to enforce strict retrieval.
+        """
         try:
             return self._attrs_tree.collect(key, strict=strict)
         except KeyError:
             return default
+
+    def __delitem__(self, key):
+        """
+        Deletes a value in the container based on the given key.
+
+        Args:
+            key: Key for which the value is to be deleted.
+        """
+        del self._attrs_tree[key]
 
     def _set_property(self, name: str, value: Any):
         self._props_tree[name] = value
@@ -258,15 +330,24 @@ class Container(ABCContainer):
         return self._props_tree.get(name, default)
 
     def collect_properties(self) -> Dict:
+        """
+        Collects and returns all properties associated with the container as a dictionary object.
+        """
         try:
             return self._props_tree.collect()
         except KeyError:
             return {}
 
     def get_logged_typename(self) -> str:
+        """
+        Returns the typename of the logged data in the container.
+        """
         return self._tree[KeyNames.INFO_PREFIX, KeyNames.CONTAINER_TYPE]
 
     def match(self, expr) -> bool:
+        """
+        Checks if the container matches the given expression.
+        """
         query = RestrictedPythonQuery(expr)
         query_cache = {}
         return self._check(query, query_cache)
@@ -281,6 +362,13 @@ class Container(ABCContainer):
         return query.check(**query_params)
 
     def delete_sequence(self, name, context=None):
+        """
+        Deletes a sequence from the container based on the given name and context.
+
+        Args:
+            name: Name of the sequence to delete.
+            context (optional): Contextual information for the sequence. `{}` if not specified.
+        """
         if self._is_readonly:
             raise RuntimeError('Cannot delete sequence in read-only mode.')
 
@@ -289,6 +377,9 @@ class Container(ABCContainer):
         sequence.delete()
 
     def delete(self):
+        """
+        Deletes the container and its associated data.
+        """
         if self._is_readonly:
             raise RuntimeError('Cannot delete container in read-only mode.')
 
@@ -315,6 +406,9 @@ class Container(ABCContainer):
 
     @property
     def sequences(self) -> 'ContainerSequenceMap':
+        """
+        Returns a map of sequences associated with the container.
+        """
         return self._sequence_map
 
     # TODO [AT]: Implement end_time as a Property similar to other pre-defined props
@@ -336,6 +430,9 @@ class Container(ABCContainer):
         return hash_auto((self.hash, hash(self.storage.url), str(self.mode)))
 
     def close(self):
+        """
+        Closes the container and releases any associated resources.
+        """
         self._resources._close()
 
     @staticmethod
@@ -360,7 +457,17 @@ class ContainerSequenceMap(SequenceMap[Sequence]):
                  query_: Optional[str] = None,
                  type_: Union[str, Type[Sequence]] = Sequence,
                  **kwargs) -> SequenceCollection:
+        """
+        Retrieves a sequence collection based on a query expression.
 
+        Args:
+            query_ (str, optional): Query expression for filtering.
+            type_ (Union[str, Type[Sequence]]): Sequence type or type name. Defaults to Sequence.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            SequenceCollection: The filtered sequence collection.
+        """
         query_context = {
             'storage': self._container.storage,
             'var_name': None,
@@ -376,11 +483,26 @@ class ContainerSequenceMap(SequenceMap[Sequence]):
         return seq_collection.filter(q) if q else seq_collection
 
     def __iter__(self) -> Iterator[Sequence]:
+        """
+        Returns an iterator over the sequences.
+
+        Yields:
+            Sequence: The next sequence in the container.
+        """
         for ctx_idx in self._sequence_tree.keys():
             for name in self._sequence_tree.subtree(ctx_idx).keys():
                 yield self._sequence_cls(self._container, name=name, context=ctx_idx)
 
     def __getitem__(self, item: Union[str, Tuple[str, Dict]]) -> Sequence:
+        """
+        Retrieves a sequence based on the given item (name or tuple of name and context).
+
+        Args:
+            item (Union[str, Tuple[str, Dict]]): Name of the sequence or a tuple of name and context.
+
+        Returns:
+            Sequence: The retrieved sequence.
+        """
         if isinstance(item, str):
             name = item
             context = {}
@@ -392,10 +514,32 @@ class ContainerSequenceMap(SequenceMap[Sequence]):
         return self._sequence(name, Context(context))
 
     def typed_sequence(self, sequence_type: Type[Sequence], name: str, context: Dict):
+        """
+        Retrieves a sequence of specified type based on the given name and context.
+
+        Args:
+            sequence_type (Type[Sequence]): The desired sequence type.
+            name (str): Name of the sequence.
+            context (Dict): Contextual information for the sequence.
+
+        Returns:
+            Sequence: The sequence instance.
+        """
         return self._sequence(name, Context(context), sequence_type=sequence_type)
 
     @cachetools.func.ttl_cache()
     def _sequence(self, name: str, context: Context, *, sequence_type: Optional[Type[Sequence]] = None) -> Sequence:
+        """
+        Retrieves or creates a sequence based on the name, context, and optional type.
+
+        Args:
+            name (str): Name of the sequence.
+            context (Context): Contextual information for the sequence.
+            sequence_type (Type[Sequence], optional): Desired sequence type. Defaults to self._sequence_cls.
+
+        Returns:
+            Sequence: The sequence instance.
+        """
         ctx_idx = context.idx
         try:
             self._sequence_tree.subtree((ctx_idx, name)).last_key()
@@ -410,6 +554,12 @@ class ContainerSequenceMap(SequenceMap[Sequence]):
         return seq_cls(self._container, name=name, context=context)
 
     def __delitem__(self, item: Union[str, Tuple[str, Dict]]):
+        """
+        Deletes a sequence based on the given item (name or tuple of name and context).
+
+        Args:
+            item (Union[str, Tuple[str, Dict]]): Name of the sequence or a tuple of name and context.
+        """
         if self._container._is_readonly:
             raise ValueError('Cannot delete sequence from a readonly container.')
 

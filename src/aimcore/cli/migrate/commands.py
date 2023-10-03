@@ -15,6 +15,17 @@ from aimcore.cli.migrate import utils
 @click.option('--run', required=False, type=str, default=None)
 @click.option('-y', '--yes', is_flag=True, help='Automatically confirm prompt')
 def migrate(repo, run, yes):
+    """
+    Migrates the data format of a specified Aim repository.
+
+    This command checks the version of the data format used by the provided Aim repository.
+    If the repository is not up-to-date, the command will migrate its data to the
+    latest format. During migration, the original data is backed up in a separate directory,
+    ensuring data integrity and allowing for potential rollbacks if needed.
+
+    The migration process might be time-consuming, especially for large repositories.
+    Users are prompted to confirm the migration operation unless the `--yes` flag is provided.
+    """
     data_version = Repo.get_version(repo)
     if data_version is None:
         click.secho(f'Cannot run migration for directory \'{repo}\'. Data version is unknown.')

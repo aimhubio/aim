@@ -1,3 +1,10 @@
+"""
+The repo module contains implementation of class Repo; a core class for accessing the data logged in Aim.
+It provides interfaces for creating and managing Aim repositories, for both local and remote setups.
+Repo class can be used to query stored Containers and Sequences, as well as get the metadata about logs, such as
+registered types, actions, packages, summary of logged types, etc.
+"""
+
 import logging
 import os
 import shutil
@@ -28,14 +35,33 @@ logger = logging.getLogger(__name__)
 
 
 class Repo(object):
+    """
+    Represents an Aim repository, handling both local and remote repositories.
+    """
+
     _pool: Dict[str, 'Repo'] = WeakValueDictionary()
 
     @staticmethod
     def is_remote_path(path: str) -> bool:
+        """
+        Determines if the provided path refers to a remote repository.
+
+        Args:
+            path (str): The path to be checked.
+
+        Returns:
+            bool: True if the path is remote, otherwise False.
+        """
         return path.startswith('aim://')
 
     @classmethod
     def default(cls) -> 'Repo':
+        """
+        Retrieves the default repository instance.
+
+        Returns:
+            Repo: Default repository instance.
+        """
         return cls.from_path('aim://127.0.0.1:53800')
 
     @classmethod
@@ -60,6 +86,15 @@ class Repo(object):
 
     @classmethod
     def get_version(cls, path: str) -> Optional[Tuple[int, ...]]:
+        """
+        Retrieves the version of the Aim repository at the given path.
+
+        Args:
+            path (str): The repository path.
+
+        Returns:
+            Optional[Tuple[int, ...]]: Version tuple if the path refers to a valid Aim repository, otherwise None.
+        """
         if cls.is_remote_path(path):
             return None
         path = clean_repo_path(path)
@@ -72,6 +107,15 @@ class Repo(object):
 
     @classmethod
     def active_repo(cls) -> 'Repo':
+        """
+        Retrieves the currently active repository.
+
+        Returns:
+            Repo: The active repository instance.
+
+        Raises:
+            ValueError: If it's not possible to determine the active repository.
+        """
         if len(cls._pool) == 0:
             return cls.default()
         elif len(cls._pool) == 1:
@@ -80,7 +124,59 @@ class Repo(object):
         else:
             raise ValueError('Cannot determine active Repo. Please use Repo.from_path() instead.')
 
+    @classmethod
+    def exists(cls, path: str) -> bool:
+        """
+        Checks if an Aim repository exists at the given path.
+
+        Args:
+            path (str): The path to check.
+
+        Returns:
+            bool: True if the Aim repository exists, otherwise False.
+        """
+        aim_repo_path = os.path.join(clean_repo_path(path), get_aim_repo_name())
+        return os.path.exists(aim_repo_path)
+
+    @classmethod
+    def init(cls, path: str):
+        """
+        Initializes a new Aim repository at the given path.
+
+        Args:
+            path (str): Path where the Aim repository should be created.
+
+        Returns:
+            Repo: The newly initialized repository instance.
+        """
+        aim_repo_path = os.path.join(clean_repo_path(path), get_aim_repo_name())
+        os.makedirs(aim_repo_path, exist_ok=True)
+
+        version_file_path = os.path.join(aim_repo_path, 'VERSION')
+        with open(version_file_path, 'w') as version_fh:
+            version_fh.write('.'.join(map(str, get_data_version())) + '\n')
+
+        return cls.from_path(aim_repo_path, read_only=False)
+
+    @classmethod
+    def rm(cls, path: str):
+        """
+        Deletes an Aim repository at the given path.
+
+        Args:
+            path (str): The path to the Aim repository to be deleted.
+        """
+        aim_repo_path = os.path.join(clean_repo_path(path), get_aim_repo_name())
+        shutil.rmtree(aim_repo_path)
+
     def __init__(self, path: str, *, read_only: Optional[bool] = True):
+        """
+        Initializes a repository instance.
+
+        Args:
+            path (str): Path to the Aim repository.
+            read_only (bool, optional): If True, opens the repo in read-only mode. Default is True.
+        """
         self.read_only = read_only
         self._is_remote_repo = False
         if self.is_remote_path(path):
@@ -106,40 +202,27 @@ class Repo(object):
     def __hash__(self) -> int:
         return hash(self.path)
 
-    @classmethod
-    def exists(cls, path: str) -> bool:
-        aim_repo_path = os.path.join(clean_repo_path(path), get_aim_repo_name())
-        return os.path.exists(aim_repo_path)
-
-    @classmethod
-    def init(cls, path: str):
-        aim_repo_path = os.path.join(clean_repo_path(path), get_aim_repo_name())
-        os.makedirs(aim_repo_path, exist_ok=True)
-
-        version_file_path = os.path.join(aim_repo_path, 'VERSION')
-        with open(version_file_path, 'w') as version_fh:
-            version_fh.write('.'.join(map(str, get_data_version())) + '\n')
-
-        return cls.from_path(aim_repo_path, read_only=False)
-
-    @classmethod
-    def rm(cls, path: str):
-        aim_repo_path = os.path.join(clean_repo_path(path), get_aim_repo_name())
-        shutil.rmtree(aim_repo_path)
-
     @property
     def storage_engine(self) -> StorageEngine:
+        """
+        Returns the storage engine associated with the repository.
+
+        Returns:
+            StorageEngine: The storage engine instance.
+        """
         return self._storage_engine
 
     @property
     def resource_tracker(self) -> ResourceTracker:
+        """
+        Returns the resource tracker associated with the repository.
+
+        Returns:
+            ResourceTracker: The resource tracker instance.
+        """
         if self._system_tracker is None:
             self._system_tracker = ResourceTracker()
         return self._system_tracker
-
-    @property
-    def container_hashes(self):
-        return list(self._meta_tree.subtree('chunks').keys())
 
     @property
     def dev_package_dir(self) -> str:
@@ -169,12 +252,33 @@ class Repo(object):
         return encryption_key
 
     def tracked_container_types(self) -> List[str]:
+        """
+        Lists all container types being tracked in the repository.
+
+        Returns:
+            List[str]: List of tracked container types.
+        """
         return list(self._meta_tree.subtree(KeyNames.CONTAINERS).keys())
 
     def tracked_sequence_types(self) -> List[str]:
+        """
+        Lists all sequence types being tracked in the repository.
+
+        Returns:
+            List[str]: List of tracked sequence types.
+        """
         return list(self._meta_tree.subtree(KeyNames.SEQUENCES).keys())
 
     def tracked_sequence_infos(self, sequence_type: str) -> Dict[str, List]:
+        """
+        Retrieves information for a specific sequence type.
+
+        Args:
+            sequence_type (str): The sequence type to retrieve information for.
+
+        Returns:
+            Dict[str, List]: Dictionary of tracked sequence names/contexts.
+        """
         if sequence_type not in Sequence.registry:
             raise ValueError(f'Unknown sequence type \'{sequence_type}\'.')
         try:
@@ -189,27 +293,80 @@ class Repo(object):
         return seq_infos
 
     def tracked_params(self) -> Dict:
+        """
+        Retrieves all tracked parameters for the repository.
+
+        Returns:
+            Dict: Dictionary of tracked parameters.
+        """
         try:
             return self._meta_tree.collect('attrs', strict=False)
         except KeyError:
             return {}
 
     def registered_container_types(self) -> List[str]:
+        """
+        Lists all registered container types in the repository.
+
+        Returns:
+            List[str]: List of registered container types.
+        """
         return list(Container.registry.keys())
 
     def registered_sequence_types(self) -> List[str]:
+        """
+        Lists all registered sequence types in the repository.
+
+        Returns:
+            List[str]: List of registered sequence types.
+        """
         return list(Sequence.registry.keys())
 
     def registered_actions(self) -> List[str]:
+        """
+        Lists all registered actions in the repository.
+
+        Returns:
+            List[str]: List of registered actions.
+        """
         return list(Action.registry.keys())
 
+    @property
+    def container_hashes(self):
+        """
+        Retrieves a list of hashes for all tracked containers.
+
+        Returs:
+            List[str]: List of container hashes.
+        """
+        return list(self._meta_tree.subtree('chunks').keys())
+
     def get_container(self, hash_) -> Container:
+        """
+        Retrieves a container from the repository based on its hash.
+
+        Args:
+            hash_ (str): The hash of the container to retrieve.
+
+        Returns:
+            Container: The corresponding container object.
+        """
         return Container(hash_, repo=self, mode='READONLY')
 
     def containers(self,
                    query_: Optional[str] = None,
                    type_: Union[str, Type[Container]] = Container,
                    **kwargs) -> ContainerCollection:
+        """
+        Retrieves a collection of containers based on the query expression and type.
+
+        Args:
+            query_ (Optional[str]): The query string to filter containers.
+            type_ (Union[str, Type[Container]]): The type of containers to retrieve.
+
+        Returns:
+            ContainerCollection: The resulting collection of containers.
+        """
         q = construct_query_expression('container', query_, **kwargs)
 
         if isinstance(type_, str):
@@ -225,6 +382,16 @@ class Repo(object):
                   query_: Optional[str] = None,
                   type_: Union[str, Type[Sequence]] = Sequence,
                   **kwargs) -> SequenceCollection:
+        """
+        Retrieves a collection of sequences based on the query expression and type.
+
+        Args:
+            query_ (Optional[str]): The query string to filter sequences.
+            type_ (Union[str, Type[Sequence]]): The type of sequences to retrieve.
+
+        Returns:
+            SequenceCollection: The resulting collection of sequences.
+        """
         q = construct_query_expression('sequence', query_, **kwargs)
 
         if isinstance(type_, str):
@@ -235,6 +402,73 @@ class Repo(object):
             type_ = seq_types[0]
 
         return self._select(type_).filter(q) if q else self._select(type_)
+
+    def add_package(self, pkg_name: str) -> bool:
+        """
+        Adds a package to the repository.
+
+        Args:
+            pkg_name (str): The name of the package to be added.
+
+        Returns:
+            bool: True if the package was added successfully, False if it already exists.
+        """
+        if self._is_remote_repo:
+            return self._remote_repo_proxy.add_package(pkg_name)
+        active_pkg_file = os.path.join(self.path, 'active_pkg')
+        with open(active_pkg_file, 'a+') as apf:
+            apf.seek(0)
+            packages = set(line.strip() for line in apf.readlines())
+            if pkg_name in packages:
+                return False
+            packages.add(pkg_name)
+            apf.seek(0)
+            apf.truncate()
+            for package in packages:
+                apf.write(f"{package}\n")
+        return True
+
+    def remove_package(self, pkg_name: str) -> bool:
+        """
+        Removes a package from the repository.
+
+        Args:
+            pkg_name (str): The name of the package to be removed.
+
+        Returns:
+            bool: True if the package was removed successfully, False if it doesn't exist.
+        """
+        if self._is_remote_repo:
+            return self._remote_repo_proxy.remove_package(pkg_name)
+        active_pkg_file = os.path.join(self.path, 'active_pkg')
+        with open(active_pkg_file, 'a+') as apf:
+            apf.seek(0)
+            packages = set(line.strip() for line in apf.readlines())
+            if pkg_name not in packages:
+                return False
+            packages.remove(pkg_name)
+            apf.seek(0)
+            apf.truncate()
+            for package in packages:
+                apf.write(f"{package}\n")
+        return True
+
+    def load_active_packages(self):
+        """
+        Loads all active packages in the repository. Only applicable for local repositories.
+
+        Note:
+            This method doesn't return any value but has side effects on the state of loaded packages.
+        """
+        if self._is_remote_repo:
+            return
+        from aim._sdk.package_utils import Package
+        active_pkg_file = os.path.join(self.path, 'active_pkg')
+        if os.path.exists(active_pkg_file):
+            pkgs_dir = os.path.join(self.path, 'pkgs')
+            with open(active_pkg_file, 'r') as apf:
+                for pkg_name in apf.read().split():
+                    Package.load_package(pkg_name, pkgs_dir)
 
     def _select(self, type_: Type = None, **kwargs):
         if type_ is None:
@@ -273,7 +507,7 @@ class Repo(object):
             return SequenceCollection(query_context=query_context)
 
     def delete_containers(self, container_hashes: List[str]) -> Tuple[bool, List[str]]:
-        """Delete multiple Containers data from aim repository
+        """Deletes multiple Containers data from aim repository
 
         This action removes containers data permanently and cannot be reverted.
         If you want to archive container but keep it's data use `repo.get_container(container_hash).archived = True`.
@@ -457,53 +691,10 @@ class Repo(object):
 
     def prune(self):
         """
-        Utility function to remove dangling/orphan params/sequences with no referring containers.
+        Removes dangling/orphan params/sequences with no referring containers.
         """
         from aim._sdk.utils import prune
         if self._is_remote_repo:
             return self._remote_repo_proxy.prune()
 
         prune(self)
-
-    def add_package(self, pkg_name: str) -> bool:
-        if self._is_remote_repo:
-            return self._remote_repo_proxy.add_package(pkg_name)
-        active_pkg_file = os.path.join(self.path, 'active_pkg')
-        with open(active_pkg_file, 'a+') as apf:
-            apf.seek(0)
-            packages = set(line.strip() for line in apf.readlines())
-            if pkg_name in packages:
-                return False
-            packages.add(pkg_name)
-            apf.seek(0)
-            apf.truncate()
-            for package in packages:
-                apf.write(f"{package}\n")
-        return True
-
-    def remove_package(self, pkg_name: str) -> bool:
-        if self._is_remote_repo:
-            return self._remote_repo_proxy.remove_package(pkg_name)
-        active_pkg_file = os.path.join(self.path, 'active_pkg')
-        with open(active_pkg_file, 'a+') as apf:
-            apf.seek(0)
-            packages = set(line.strip() for line in apf.readlines())
-            if pkg_name not in packages:
-                return False
-            packages.remove(pkg_name)
-            apf.seek(0)
-            apf.truncate()
-            for package in packages:
-                apf.write(f"{package}\n")
-        return True
-
-    def load_active_packages(self):
-        if self._is_remote_repo:
-            return
-        from aim._sdk.package_utils import Package
-        active_pkg_file = os.path.join(self.path, 'active_pkg')
-        if os.path.exists(active_pkg_file):
-            pkgs_dir = os.path.join(self.path, 'pkgs')
-            with open(active_pkg_file, 'r') as apf:
-                for pkg_name in apf.read().split():
-                    Package.load_package(pkg_name, pkgs_dir)

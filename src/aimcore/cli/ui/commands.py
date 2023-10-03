@@ -47,14 +47,21 @@ from aim._ext.tracking import analytics
 @click.option('--profiler', is_flag=True, default=False)
 @click.option('--log-level', required=False, default='', type=str)
 @click.option('-y', '--yes', is_flag=True, help='Automatically confirm prompt')
-def ui(dev, host, port, workers, uds,
-       repo,
-       package,
+def ui(host, port, repo, package,
+       workers, uds,
        ssl_keyfile, ssl_certfile,
        base_path,
-       profiler, log_level, yes):
+       profiler, log_level, dev, yes):
     """
-    Start Aim UI with the --repo repository.
+    Launches the Aim web-based UI for interactive data exploration.
+
+    This command starts the Aim UI, allowing users to visually explore, compare,
+    and understand their machine learning experiments. The UI is customizable
+    with various options to determine the host, port, associated repository,
+    and more.
+
+    The UI can operate in either production or development mode, with the latter
+    offering features beneficial for Aim developers.
     """
     if not log_level:
         log_level = 'debug' if dev else 'warning'

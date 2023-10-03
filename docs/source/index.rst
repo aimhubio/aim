@@ -107,7 +107,7 @@ Aim can get really powerful as you build your own logging apps.
 .. toctree::
   :maxdepth: 1
   :caption: 📚 Reference
-  :hidden: True
+  :hidden:
 
   refs/cli.rst
   refs/sdk.rst

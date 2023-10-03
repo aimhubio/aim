@@ -35,6 +35,15 @@ from aim._ext.tracking import analytics
 def server(host, port,
            repo, ssl_keyfile, ssl_certfile,
            base_path, log_level, dev, yes):
+    """
+    Starts the Aim remote tracking server for real-time logging.
+
+    The Aim tracking server facilitates real-time logging of experiments
+    from remote locations. This command launches the server with specified
+    configurations, including host, port, and associated repository.
+
+    Like the UI, the server can also run in production or development mode.
+    """
     # TODO [MV, AT] remove code duplication with aim up cmd implementation
     if not log_level:
         log_level = 'debug' if dev else 'warning'
