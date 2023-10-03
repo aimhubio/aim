@@ -1,9 +1,10 @@
 # Changelog
 
-## 4.0.1
+## 4.0.1 Oct 3, 2023
 
 - Fix aim migrate command when list(float) with single value is tracked (alberttorosyan)
 - Remove dependency from unused packages (alberttorosyan)
+- Correct default value for context in run.py track (constd)
 
 
 ## 4.0.0 Sep 27, 2023
