@@ -2,7 +2,6 @@ import datetime
 import os
 import pathlib
 import uuid
-import pytz
 
 from typing import Union, Any, Tuple
 
@@ -55,7 +54,7 @@ def generate_hash(hash_length=24) -> str:
 
 
 def utc_now() -> datetime.datetime:
-    return datetime.datetime.now(pytz.utc)
+    return datetime.datetime.now(tz=datetime.timezone.utc)
 
 
 def utc_timestamp() -> float:
