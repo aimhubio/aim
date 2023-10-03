@@ -123,7 +123,7 @@ class Run(Container, Caller):
     def log_records(self) -> LogRecordSequence:
         return LogRecordSequence(self, name='__log_records', context={})
 
-    def track(self, value, name: str, step: Optional[int] = None, context: dict = Optional[None], **axis):
+    def track(self, value, name: str, step: Optional[int] = None, context: Optional[dict] = None, **axis):
         context = {} if context is None else context
         seq_type = self._get_sequence_type_from_value(value)
         sequence = self.sequences.typed_sequence(seq_type, name, context)
