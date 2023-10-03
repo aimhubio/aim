@@ -10,7 +10,6 @@ from typing import Union
 from enum import Enum
 from pathlib import Path
 from dataclasses import dataclass, field
-from dateutil.relativedelta import relativedelta
 from filelock import UnixFileLock, SoftFileLock, Timeout
 
 from aim._core.storage.locking import ContainerLock
@@ -39,18 +38,6 @@ class LockInfo:
     version: LockingVersion = field(default=LockingVersion.NEW)
     type: LockType = field(default=LockType.SOFT_LOCK)
     created_at: datetime.datetime = field(default=None)
-
-    def age(self, to=None) -> str:
-        if self.created_at is None:
-            return 'N/A'
-        to = to or datetime.datetime.now()
-        delta = relativedelta(to, self.created_at)
-        date_attrs = ('years', 'months', 'days', 'hours', 'minutes', 'seconds')
-        for attr in date_attrs:
-            if getattr(delta, attr) > 1:
-                return f'~{getattr(delta, attr)} {attr}'
-            elif getattr(delta, attr) == 1:
-                return f'~{getattr(delta, attr)} {attr[:-1]}'
 
 
 class SFRunLock(ContainerLock):
