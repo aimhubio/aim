@@ -3,6 +3,7 @@
 ## 4.0.1
 
 - Fix aim migrate command when list(float) with single value is tracked (alberttorosyan)
+- Remove dependency from unused packages (alberttorosyan)
 
 
 ## 4.0.0 Sep 27, 2023
