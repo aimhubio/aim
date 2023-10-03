@@ -10,7 +10,7 @@ from typing import Dict, Optional
 from aim import Repo
 from aim._core.storage.rockscontainer import RocksContainer
 from aim._core.storage.treeview import TreeView
-from aimstack.base import Run, SystemMetric
+from aimstack.base import Run, SystemMetric, Metric
 
 logger = logging.getLogger(__name__)
 
@@ -67,6 +67,9 @@ def migrate_v1_sequence_data(run: Run, trace_tree: TreeView, length: int, item_t
     if len(context_str) > 20:
         context_str = context_str[:16] + '...}'
     for (step, value), (_, time), (_, epoch) in trace_iter:
+        if isinstance(seq, (SystemMetric, Metric)):
+            if isinstance(value, (list, tuple)) and len(value) == 1:
+                value = value[0]
         trace_iter.set_description(f'Processing sequence context={context_str}, name=\'{name}\'')
         seq.track(value, step=step, epoch=epoch, time=time)
 
@@ -86,6 +89,8 @@ def migrate_v2_sequence_data(run: Run, trace_data_tree: TreeView, length: int, n
         context_str = context_str[:16] + '...}'
     for (_, step), (_, value), (_, time), (_, epoch) in trace_iter:
         trace_iter.set_description(f'Processing sequence context={context_str}, name=\'{name}\'')
+        if isinstance(value, (list, tuple)) and len(value) == 1:
+            value = value[0]
         seq.track(value, step=step, epoch=epoch, time=time)
 
 

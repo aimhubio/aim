@@ -1,29 +1,44 @@
 # Changelog
 
-## Unreleased 
+## 4.0.1
+
+- Fix aim migrate command when list(float) with single value is tracked (alberttorosyan)
+
+
+## 4.0.0 Sep 27, 2023
 
 ### Enhancements
 
+- Revamp Aim UI (roubkar, KaroMourad, arsengit)
+  - Explorers
+  - Apps
+  - Reports
+- Add UI components Python SDK (roubkar) 
+- Unify Aim Storage (mihran113)
+- Redesign Aim Tracking Server using websockets (mihran113)
+- Redesign Aim Python SDK (alberttorosyan)
+- Add ability to extend Aim via creating new apps, types and boards (alberttorosyan, roubkar)
 - Add the ability to track and visualize 3D figures (pabhermoso)
-- Add activeloop deeplake plugin (drahnreb)
-- Revamp grouping popovers design in Base Explorers (KaroMourad, arsengit)
-- Add the ability to group by `grid` type in Base Explorers (KaroMourad)
-- Add the ability to create Reports (roubkar, arsengit)
-- Add the ability to create custom UI boards (roubkar, arsengit, KaroMourad)
-- Relocate aim explorers to `Explorers` page (arsengit)
 - Add functionality for custom context in the PyTorch Ignite (tmynn)
-- Extend `aim.ext.tensorboard_tracker.run.Run` to allow stdout logging and system stats and parameter logging (alansaul)
-- Switch to patched version of official pynvml(mihran113)
-- Discover and register aimstack directory sub-modules as Aim packages (alberttorosyan)
-- Aim core & standard package separation (alberttorosyan)
-- Storage and tracking server unification (mihran113)
-- Serve boards from Aim package (alberttorosyan)
-- Add the ability for `TensorboardFolderTracker` to track `Histogram`'s as Aim `Distribution`'s (alansaul)
+- Switch to patched version of official pynvml (mihran113)
+- Add ceph to file system list by (jennifer12121)
 
 ### Fixes
+- Replace invalid typing in run.py (mauricekraus)
+- Improve performance of dict flattening for board runs (donderom)
+- Search on <Enter> on Windows (jgiannuzzi)
 
-- Convert NaNs and Infs in responses to strings (n-gao)
+## 3.17.5 Jun 2, 2023
+
+- Fix gpu stat collection when driver is not loaded (mihran113)
+- Fix issue with overflowing box content in full-view mode in Base Explorers (KaroMourad)
+- Resolve tags list visibility issue in tags page (arsengit)
+- Fix issue on git stat collection (mihran113)
 - Import `Image` and `Audio` for `TensorboardFolderTracker` (alansaul)
+- Extend `aim.ext.tensorboard_tracker.run.Run` to allow stdout logging and system stats and parameter logging (alansaul)
+- Add the ability for `TensorboardFolderTracker` to track `Histogram`'s as Aim `Distribution`'s (alansaul)
+- Convert NaNs and Infs in responses to strings (n-gao)
+- Add activeloop deeplake plugin (drahnreb)
 
 ## 3.17.4  May 4, 2023
 
