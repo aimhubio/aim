@@ -1,5 +1,4 @@
 import datetime
-import pytz
 import json
 import inspect
 import logging
@@ -80,13 +79,13 @@ class Run(Container, Caller):
 
     @property
     def created_at(self) -> datetime.datetime:
-        return datetime.datetime.fromtimestamp(self.creation_time, tz=pytz.utc)
+        return datetime.datetime.fromtimestamp(self.creation_time, tz=datetime.timezone.utc)
 
     @property
     def ended_at(self) -> Optional[datetime.datetime]:
         end_time = self.end_time
         if end_time is not None:
-            return datetime.datetime.fromtimestamp(end_time, tz=pytz.utc)
+            return datetime.datetime.fromtimestamp(end_time, tz=datetime.timezone.utc)
         else:
             return None
 
