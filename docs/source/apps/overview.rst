@@ -49,21 +49,21 @@ It takes one line to add these loggers to your training script and start logging
 
 It's plug and go. No need to change your training script or your workflow.
 
-- `PyTorch Ignite Tracker <./pytorch_ignite_tracker.html>`_
-- `PyTorch Lightning Tracker <./pytorch_lightning_tracker.html>`_
-- `HuggingFace Tracker <./huggingface_tracker.html>`_
-- `Keras Tracker <./keras_tracker.html>`_
-- `Keras Tuner Tracker <./keras_tuner_tracker.html>`_
-- `XGBoost Tracker <./xgboost_tracker.html>`_
-- `CatBoost Tracker <./catboost_tracker.html>`_
-- `LightGBM Tracker <./lightgbm_tracker.html>`_
-- `FastAI Tracker <./fastai_tracker.html>`_
-- `MXNet Tracker <./mxnet_tracker.html>`_
-- `Optuna Tracker <./optuna_tracker.html>`_
-- `Paddle Paddle Tracker <./paddle_paddle_tracker.html>`_
-- `Stable Baselines3 Tracker <./stable_baselines3_tracker.html>`_
-- `Acme Tracker <./acme_tracker.html>`_
-- `Prophet Tracker <./prophet_tracker.html>`_
+- `PyTorch Ignite Tracker <./experiment_tracker/pytorch_ignite_tracker.html>`_
+- `PyTorch Lightning Tracker <./experiment_tracker/pytorch_lightning_tracker.html>`_
+- `HuggingFace Tracker <./experiment_tracker/huggingface_tracker.html>`_
+- `Keras Tracker <./experiment_tracker/keras_tracker.html>`_
+- `Keras Tuner Tracker <./experiment_tracker/keras_tuner_tracker.html>`_
+- `XGBoost Tracker <./experiment_tracker/xgboost_tracker.html>`_
+- `CatBoost Tracker <./experiment_tracker/catboost_tracker.html>`_
+- `LightGBM Tracker <./experiment_tracker/lightgbm_tracker.html>`_
+- `FastAI Tracker <./experiment_tracker/fastai_tracker.html>`_
+- `MXNet Tracker <./experiment_tracker/mxnet_tracker.html>`_
+- `Optuna Tracker <./experiment_tracker/optuna_tracker.html>`_
+- `Paddle Paddle Tracker <./experiment_tracker/paddle_paddle_tracker.html>`_
+- `Stable Baselines3 Tracker <./experiment_tracker/stable_baselines3_tracker.html>`_
+- `Acme Tracker <./experiment_tracker/acme_tracker.html>`_
+- `Prophet Tracker <./experiment_tracker/prophet_tracker.html>`_
 
 AI Systems Tracking
 ====================================
