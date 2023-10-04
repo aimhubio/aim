@@ -1,5 +1,5 @@
 import paddle
-from aimstack.paddle_tracker.callbacks import BaseCallback as AimCallback
+from aimstack.experiment_tracker.paddle import Callback as AimCallback
 from paddle.vision.transforms import ToTensor
 
 train_dataset = paddle.vision.datasets.MNIST(mode="train", transform=ToTensor())

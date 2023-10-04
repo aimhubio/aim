@@ -11,7 +11,7 @@ We only require 2 steps to simply and easily inject Aim into PyTorch Lightning:
 
 .. code-block:: python
 
-    from aimstack.pytorch_lightning_tracker.loggers import BaseLogger as AimLogger
+    from aimstack.experiment_tracker.pytorch_lightning import Logger as AimLogger
 
 PyTorch Lightning provides trainer objects to simplify the training process of PyTorch models. One of the parameters is called logger. We can use the logger function defined by Aim to simplify the process of tracking experiments. This process is divided into 2 steps:
 

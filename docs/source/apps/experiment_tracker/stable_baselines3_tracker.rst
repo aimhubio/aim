@@ -12,7 +12,7 @@ Step 1: Explicitly import the `AimCallback` for tracking training metadata.
 
 .. code-block:: python
 
-    from aimstack.sb3_tracker.callbacks import BaseCallback as AimCallback
+    from aimstack.experiment_tracker.sb3 import Callback as AimCallback
 
 Step 2: Pass the callback to `callback` upon initiating your training.
 

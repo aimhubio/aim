@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from aimstack.prophet_tracker.loggers import BaseLogger as AimLogger
+from aimstack.experiment_tracker.prophet import Logger as AimLogger
 from prophet import Prophet
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 

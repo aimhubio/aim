@@ -12,7 +12,7 @@ Step 1: Explicitly import the `AimCallback` and `AimWriter` for tracking trainin
 
 .. code-block:: python
 
-    from aimstack.acme_tracker.callbacks import BaseWriter as AimWriter, BaseCallback as AimCallback
+    from aimstack.experiment_tracker.acme import Writer as AimWriter, Callback as AimCallback
 
 Step 2: Initialize an Aim Run via `AimCallback`, and create a log factory using the Run.
 

@@ -1,7 +1,7 @@
 import ignite
 import torch
 import torch.nn.functional as F
-from aimstack.pytorch_ignite_tracker.loggers import Logger as AimLogger
+from aimstack.experiment_tracker.pytorch_ignite import Logger as AimLogger
 from ignite.contrib.handlers import ProgressBar
 from ignite.engine import (Events, create_supervised_evaluator,
                            create_supervised_trainer)

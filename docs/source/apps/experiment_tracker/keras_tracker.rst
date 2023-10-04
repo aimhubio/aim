@@ -10,7 +10,7 @@ It only takes 2 steps to easily integrate aim in Keras to record experimental in
 
 .. code-block:: python
 
-    from aimstack.keras_tracker.callbacks import BaseCallback as AimCallback
+    from aimstack.experiment_tracker.keras import Callback as AimCallback
 
 
 In Keras, we call the `fit()` method of the model object to train the data. The callbacks are provided here. `AimCallback` inherits the usage specification of callbacks. We just need to add it to the callbacks list.

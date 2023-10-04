@@ -4,7 +4,7 @@ import torch.nn as nn
 import torchvision
 import torchvision.transforms as transforms
 from tqdm import tqdm
-from aimstack.base import Run
+from aimstack.experiment_tracker import TrainingRun as Run
 from aimstack.base.types.image import convert_to_aim_image_list
 
 # Initialize a new Run

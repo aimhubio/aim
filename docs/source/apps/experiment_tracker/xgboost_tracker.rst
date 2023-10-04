@@ -11,7 +11,7 @@ Step 1: Explicitly import the `AimCallback` for tracking training data.
 
 .. code-block:: python
 
-    from aimstack.xgboost_tracker.callbacks import BaseCallback as AimCallback
+    from aimstack.experiment_tracker.xgboost import Callback as AimCallback
 
 Step 2: XGBoost provides the `xgboost.train` method for model training, in which the callbacks parameter can call back data information from the outside. Here we pass in AimCallback designed for tracking data information
 

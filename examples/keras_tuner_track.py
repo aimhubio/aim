@@ -1,7 +1,7 @@
 import kerastuner as kt
 import tensorflow as tf
 import tensorflow_datasets as tfds
-from aimstack.keras_tuner_tracker.callbacks import BaseCallback as AimCallback
+from aimstack.experiment_tracker.keras_tuner import Callback as AimCallback
 
 
 def build_model(hp):

@@ -1,5 +1,5 @@
 import optuna
-from aimstack.optuna_tracker.callbacks import BaseCallback as AimCallback
+from aimstack.experiment_tracker.optuna import Callback as AimCallback
 
 # ------------------------------------------------ Version 1: Single Run ------------------------------------------------
 

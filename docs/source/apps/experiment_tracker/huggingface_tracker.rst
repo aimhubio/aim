@@ -13,7 +13,7 @@ Step 1: Import the SDK designed by Aim for Huggingface.
 
 .. code-block:: python
 
-    from aimstack.hugging_face_tracker.callbacks import BaseCallback as AimCallback
+    from aimstack.experiment_tracker.hugging_face import Callback as AimCallback
 
 Step 2: Hugging Face has a trainer API to help us simplify the training process. This API provides a callback function to return the information that the user needs. Therefore, aim has specially designed SDK to simplify the process of the user writing callback functions, we only need to initialize `AimCallback` object as follows:
 
