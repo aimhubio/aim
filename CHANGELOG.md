@@ -1,12 +1,9 @@
 # Changelog
 
-## Unreleased
-
-### Enhancements
+## 4.0.3 Oct 4, 2023
 
 - Move ML framework loggers under experiment_tracker app (alberttorosyan)
 
-### Fixes
 
 ## 4.0.2 Oct 3, 2023
 
