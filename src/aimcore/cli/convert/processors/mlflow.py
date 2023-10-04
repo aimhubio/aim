@@ -42,8 +42,17 @@ def parse_mlflow_logs(repo_inst, tracking_uri, experiment):
     client = mlflow.tracking.client.MlflowClient(tracking_uri=tracking_uri)
 
     if experiment is None:
+        # Due to MLflow API update, we need to check the version
+        # For versions >= 1.28.0, we need to use search_experiments
+        # Otherwise, we need to use list_experiments
+        from packaging import version
+        MLFLOW_VERSION = version.parse(mlflow.__version__) >= version.parse('1.28.0')
+
         # process all experiments
-        experiments = client.list_experiments()
+        if MLFLOW_VERSION:
+            experiments = client.search_experiments()
+        else:
+            experiments = client.list_experiments()
     else:
         try:
             ex = client.get_experiment(experiment)
