@@ -1,7 +1,7 @@
 import os
 
 import lightning.pytorch as pl
-from aimstack.pytorch_lightning_tracker.loggers import BaseLogger as AimLogger
+from aimstack.experiment_tracker.pytorch_lightning import Logger as AimLogger
 from torch import nn, optim, utils
 from torchvision.datasets import MNIST
 from torchvision.transforms import ToTensor

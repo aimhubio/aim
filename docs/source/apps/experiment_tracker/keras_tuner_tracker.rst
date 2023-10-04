@@ -8,7 +8,7 @@ It only takes 2 steps to easily integrate aim in Keras to record experimental in
 
 .. code-block:: python
 
-    from aimstack.keras_tuner_tracker.callbacks import BaseCallback as AimCallback
+    from aimstack.experiment_tracker.keras_tuner import Callback as AimCallback
 
 In KerasTuner, we call the `search()` method of the tuner object to perform a search for the best hyperparameter configurations. The callbacks are provided here. `AimCallback` inherits the usage specification of callbacks. We just need to add it to the callbacks list.
 

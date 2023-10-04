@@ -13,7 +13,7 @@ Step 1: Explicitly import the `AimCallback` for tracking training metadata.
 
 .. code-block:: python
 
-    from aimstack.optuna_tracker.callbacks import BaseCallback as AimCallback
+    from aimstack.experiment_tracker.optuna import Callback as AimCallback
 
 Step 2: Pass the callback to `cbs` list upon initiating your training.
 

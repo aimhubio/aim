@@ -12,7 +12,7 @@ Step 1: Explicitly import the `AimLogger`.
 
 .. code-block:: python
 
-    from aimstack.prophet_tracker.loggers import BaseLogger as AimLogger
+    from aimstack.experiment_tracker.prophet import Logger as AimLogger
 
 Step 2: After initializing a Prophet model, instantiate the AimLogger with your Prophet model.
 

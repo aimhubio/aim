@@ -1,1 +1,1 @@
-from aimstack.pytorch_ignite_tracker.loggers import base_logger as logger  # noqa
+from aimstack.pytorch_ignite_tracker.loggers.base_logger import Logger, OutputHandler, OptimizerParamsHandler # noqa

@@ -1,1 +1,1 @@
-from aimstack.mxnet_tracker.loggers import base_logger as logger  # noqa
+from aimstack.mxnet_tracker.loggers.base_logger import LoggingHandler # noqa

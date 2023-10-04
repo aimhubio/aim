@@ -1,6 +1,6 @@
 import evaluate
 import numpy as np
-from aimstack.hugging_face_tracker.callbacks import BaseCallback as AimCallback
+from aimstack.experiment_tracker.hugging_face import Callback as AimCallback
 from datasets import load_dataset
 from transformers import (AutoModelForSequenceClassification, AutoTokenizer,
                           Trainer, TrainingArguments)

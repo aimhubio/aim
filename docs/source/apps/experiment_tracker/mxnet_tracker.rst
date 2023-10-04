@@ -12,7 +12,7 @@ Step 1: Import the `AimLoggingHandler` for tracking training metadata.
 
 .. code-block:: python
 
-    from aimstack.mxnet_tracker.loggers import LoggingHandler as AimLoggingHandler
+    from aimstack.experiment_tracker.mxnet import LoggingHandler as AimLoggingHandler
 
 Step 2: Pass a callback instance to `event_handlers` list upon initiating your training.
 

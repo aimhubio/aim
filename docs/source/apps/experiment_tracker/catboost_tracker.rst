@@ -12,7 +12,7 @@ Step 1: Import `AimLogger` to track the training metadata.
 .. code-block:: python
 
     # call SDK aim.catboost 
-    from aimstack.catboost_tracker.loggers import BaseLogger as AimLogger
+    from aimstack.experiment_tracker.catboost import Logger as AimLogger
 
 Step 2: Pass the logger to the trainer.
 
