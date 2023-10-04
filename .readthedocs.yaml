@@ -9,6 +9,9 @@ build:
   os: ubuntu-20.04
   tools:
     python: "3.7"
+  jobs:
+    pre_build:
+      - pip install .
 
 # Build documentation in the docs/ directory with Sphinx
 # reference: https://docs.readthedocs.io/en/stable/config-file/v2.html#sphinx
