@@ -5,6 +5,7 @@ from typing import Dict, Any, Union, Optional
 
 from aim._core.storage.proxy import AimObjectProxy
 from aim._core.storage.types import SafeNone
+from aim._sdk.constants import KeyNames
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -44,7 +45,7 @@ class ContainerQueryProxy:
 
     @property
     def type(self):
-        return self._cont_tree['info_', 'cont_type']
+        return self._cont_tree[KeyNames.INFO_PREFIX, KeyNames.CONTAINER_TYPE].split('->')[-1]
 
     def __getattr__(self, item):
         return self[item]  # fallback to __getitem__

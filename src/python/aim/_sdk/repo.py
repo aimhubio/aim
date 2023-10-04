@@ -638,7 +638,7 @@ class Repo(object):
             for key, val in source_meta_container_attrs_tree_collected.items():
                 dest_meta_attrs_tree.merge(key, val)
 
-            cont_type = source_meta_container_tree_collected[KeyNames.INFO_PREFIX]['cont_type'].split('->')[-1]
+            cont_type = source_meta_container_tree_collected[KeyNames.INFO_PREFIX][KeyNames.CONTAINER_TYPE].split('->')[-1]
 
             dest_meta_tree[('cont_types_map', container_hash)] = source_meta_tree[('cont_types_map', container_hash)]
             dest_meta_tree[('containers', cont_type)] = 1
