@@ -1,5 +1,5 @@
 ###################
-LlamaIndex Retriever
+LlamaIndex Observer
 ###################
 
 LlamaIndex is a query engine tailored to answer questions over your data.

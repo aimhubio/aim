@@ -268,11 +268,11 @@ Aim comes pre-installed with a wide variety of apps. Here is the full list:
 
 | App Name             | Description                                                                                         | Category            | Docs     | Source  |
 |----------------------|-----------------------------------------------------------------------------------------------------|----------------------|----------|---------|
-| base                 | Base Aim app for general observability over anything logged with Aim. Includes base types to log common artifacts, such as Image, Audio object, Figure, Metric. | Base                | [docs](docs) | [source](https://github.com/aimhubio/aim/tree/main/pkgs/aimstack/base) |
+| base                 | Base Aim app for general observability over anything logged with Aim. Includes base types to log common artifacts, such as Image, Audio object, Figure, Metric. | Base | [docs](https://aimstack.readthedocs.io/en/latest/apps/base_app.html) | [source](https://github.com/aimhubio/aim/tree/main/pkgs/aimstack/base) |
 | docs                 | Use this Aim app to access Aim docs. | Docs | -        | [source](https://github.com/aimhubio/aim/tree/main/pkgs/aimstack/docs) |
 | langchain_debugger   | Debugger for LangChain that logs LLMs prompts and generations, tools inputs/outputs, and chains metadata. | AI Systems Tracing  | [docs](https://aimstack.readthedocs.io/en/latest/apps/langchain_debugger.html) | [source](https://github.com/aimhubio/aim/tree/main/pkgs/aimstack/langchain_debugger) |
 | llamaindex_observer  | Debugger and observer for LlamaIndex. Logs metadata like retrieval nodes, queries and responses, embeddings chunks, etc. | AI Systems Tracing  | [docs](https://aimstack.readthedocs.io/en/latest/apps/llamaindex_observer.html) | [source](https://github.com/aimhubio/aim/tree/main/pkgs/aimstack/llamaindex_observer) |
-| experiment_tracker   | App for tracking and exploring ML experiments. Integrations with various ML libraries, including Acme, CatBoost, fastai, Hugging Face Transformers, Keras, Keras Tuner, LightGBM, MXNet, Optuna, PaddlePaddle, PyTorch Ignite, SDB3, and XGBoost. | Experiment Tracking | [docs](docs) | [source](https://github.com/aimhubio/aim/tree/main/pkgs/aimstack/experiment_tracker) |
+| experiment_tracker   | App for tracking and exploring ML experiments. Integrations with various ML libraries, including Acme, CatBoost, fastai, Hugging Face Transformers, Keras, Keras Tuner, LightGBM, MXNet, Optuna, PaddlePaddle, PyTorch Ignite, SDB3, and XGBoost. | Experiment Tracking | [docs](https://aimstack.readthedocs.io/en/latest/apps/experiment_tracker.html) | [source](https://github.com/aimhubio/aim/tree/main/pkgs/aimstack/experiment_tracker) |
 
 # 🏁 Quick start
 
