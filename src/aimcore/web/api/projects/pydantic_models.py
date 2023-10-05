@@ -43,6 +43,7 @@ class PackageRegisteredModels(BaseModel):
     containers: List[str]
     actions: List[str]
     boards: List[str]
+    pages: List[Dict]
 
 
 ProjectNamesList = List[str]

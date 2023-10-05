@@ -4,9 +4,23 @@ import importlib
 import logging
 import sys
 
-from typing import Iterable, Dict, List, Optional
+from dataclasses import dataclass, field
+from typing import Iterable, Dict, List, Tuple, Optional
 
 logger = logging.getLogger(__name__)
+
+
+@dataclass(frozen=True)
+class Page:
+    name: str
+    board_path: str
+
+
+@dataclass
+class Boards:
+    boards_dir: str = 'boards'
+    pages: Tuple[Page, ...] = field(default_factory=tuple)
+    default: Optional[str] = None
 
 
 class Package:
@@ -21,13 +35,18 @@ class Package:
         self.hide_boards = getattr(pkg, '__hide_boards__', False)
 
         self._path = pathlib.Path(pkg.__path__[0])
-        self._boards_dir: pathlib.Path = None
-        self._boards: List[str] = []
+
         self._containers = []
         self._sequences = []
-        self._actions = []
         self.register_package_types(name, pkg)
+
+        self._actions = []
         self.register_package_actions(name, pkg)
+
+        self._boards: Boards = None
+        self._boards_dir: pathlib.Path = None
+        self._board_files: List[pathlib.Path] = []
+        self._pages: List[Dict] = []
         self.register_package_boards(pkg)
 
     @property
@@ -35,8 +54,12 @@ class Package:
         return self._boards_dir
 
     @property
-    def boards(self) -> List[str]:
-        return self._boards
+    def boards(self) -> List[pathlib.Path]:
+        return self._board_files
+
+    @property
+    def pages(self) -> List[Dict]:
+        return self._pages
 
     @property
     def containers(self) -> List:
@@ -108,11 +131,18 @@ class Package:
             self._actions.append(ac.name)
 
     def register_package_boards(self, pkg):
-        boards_path = getattr(pkg, '__aim_boards__', 'boards')
-        self._boards_dir: pathlib.Path = self._path / boards_path
+        if hasattr(pkg, '__aim_boards__'):
+            if isinstance(pkg.__aim_boards__, str):
+                self._boards = Boards(boards_dir=pkg.__aim_boards__)
+            else:
+                self._boards = pkg.__aim_boards__
+        else:
+            self._boards = Boards()
+        self._boards_dir = self._path / self._boards.boards_dir
         if self._boards_dir.exists():
             logger.debug(f'Registering boards for Aim package \'{pkg}\'.')
-            self._boards = list(map(lambda p: p.relative_to(self._boards_dir), self._boards_dir.glob('**/*.py')))
+            self._board_files = list(map(lambda p: p.relative_to(self._boards_dir), self._boards_dir.glob('**/*.py')))
+            self._pages = [{'name': page.name, 'board_path': page.board_path} for page in self._boards.pages]
 
 
 def register_aimstack_packages():
