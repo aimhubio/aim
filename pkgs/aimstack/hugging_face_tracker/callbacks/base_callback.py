@@ -110,7 +110,7 @@ class BaseCallback(TrainerCallback):
                     log_name = log_name[len(prefix):]
                     context = {'subset': prefix[:-1]}
                     if '_' in log_name:
-                        sub_dataset = AimCallback.find_most_common_substring(
+                        sub_dataset = BaseCallback.find_most_common_substring(
                             list(logs.keys())
                         ).split(prefix)[-1]
                         if sub_dataset != prefix.rstrip('_'):
