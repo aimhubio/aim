@@ -74,6 +74,7 @@
   <img src="https://user-images.githubusercontent.com/97726819/225954674-42fbfdb3-0351-492d-9ea3-1d3ab2b545f5.png" height="60" />
   <img src="https://user-images.githubusercontent.com/97726819/225954678-25f1b626-2cb1-4e7e-ad83-f7c8ab679c6f.png" height="60" />
   <img src="https://user-images.githubusercontent.com/97726819/225954702-d18d2706-dc87-4e09-a678-f010f6d95736.png" height="60" />
+  <img src="https://github.com/open-mmlab/mmengine/assets/58739961/e0583f12-b151-447a-9a73-7c3c453cae37" height="60" />
 </div>
 
 <br/>
