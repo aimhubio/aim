@@ -64,7 +64,6 @@ test_loader = utils.data.DataLoader(test_dataset)
 
 # create AimLogger and call the fit to start the training
 aim_logger = AimLogger(
-    repo='/home/ubuntu/aimdev/.aim3',
     experiment='example_experiment',
     train_metric_prefix='train_',
     test_metric_prefix='test_',
