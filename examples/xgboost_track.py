@@ -1,27 +1,31 @@
-
-# You should download and extract the data beforehand. Simply by doing this: 
+# You should download and extract the data beforehand. Simply by doing this:
 # wget https://archive.ics.uci.edu/ml/machine-learning-databases/dermatology/dermatology.data
 
 from __future__ import division
+
+import logging
 
 import numpy as np
 import xgboost as xgb
 from aim.xgboost import AimCallback
 
 # label need to be 0 to num_class -1
-data = np.loadtxt('./dermatology.data', delimiter=',',
-        converters={33: lambda x:int(x == '?'), 34: lambda x:int(x) - 1})
+data = np.loadtxt(
+    './dermatology.data',
+    delimiter=',',
+    converters={33: lambda x: int(x == '?'), 34: lambda x: int(x) - 1},
+)
 sz = data.shape
 
-train = data[:int(sz[0] * 0.7), :]
-test = data[int(sz[0] * 0.7):, :]
+train = data[: int(sz[0] * 0.7), :]
+test = data[int(sz[0] * 0.7) :, :]
 
 train_X = train[:, :33]
 train_Y = train[:, 34]
 
 test_X = test[:, :33]
 test_Y = test[:, 34]
-print(len(train_X))
+logging.info(len(train_X))
 
 xg_train = xgb.DMatrix(train_X, label=train_Y)
 xg_test = xgb.DMatrix(test_X, label=test_Y)
@@ -41,14 +45,20 @@ bst = xgb.train(param, xg_train, num_round, watchlist)
 # get prediction
 pred = bst.predict(xg_test)
 error_rate = np.sum(pred != test_Y) / test_Y.shape[0]
-print('Test error using softmax = {}'.format(error_rate))
+logging.info('Test error using softmax = {}'.format(error_rate))
 
 # do the same thing again, but output probabilities
 param['objective'] = 'multi:softprob'
-bst = xgb.train(param, xg_train, num_round, watchlist, callbacks=[AimCallback(repo='.', experiment='xgboost_test')])
+bst = xgb.train(
+    param,
+    xg_train,
+    num_round,
+    watchlist,
+    callbacks=[AimCallback(experiment_name='example_experiment')],
+)
 # Note: this convention has been changed since xgboost-unity
 # get prediction, this is in 1D array, need reshape to (ndata, nclass)
 pred_prob = bst.predict(xg_test).reshape(test_Y.shape[0], 6)
 pred_label = np.argmax(pred_prob, axis=1)
 error_rate = np.sum(pred_label != test_Y) / test_Y.shape[0]
-print('Test error using softprob = {}'.format(error_rate))
+logging.info('Test error using softprob = {}'.format(error_rate))
