@@ -1,8 +1,7 @@
 import tensorflow as tf
 from aim.ext.tensorboard_tracker import Run as AimRun
 
-
-aim_run = AimRun(sync_tensorboard_log_dir="logs/fit/")
+aim_run = AimRun(sync_tensorboard_log_dir='logs/fit/')
 mnist = tf.keras.datasets.mnist
 
 (x_train, y_train),(x_test, y_test) = mnist.load_data()
@@ -21,7 +20,7 @@ model.compile(optimizer='adam',
               loss='sparse_categorical_crossentropy',
               metrics=['accuracy'])
 
-log_dir = "logs/fit/"
+log_dir = 'logs/fit/'
 tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
 
 model.fit(x=x_train, 
