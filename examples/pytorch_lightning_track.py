@@ -1,6 +1,16 @@
+import importlib.util
 import os
 
-import lightning.pytorch as pl
+if importlib.util.find_spec("lightning"):
+    import lightning.pytorch as pl
+elif importlib.util.find_spec("pytorch_lightning"): # noqa F401
+    import pytorch_lightning as pl
+else:
+    raise RuntimeError(
+        'This contrib module requires PyTorch Lightning to be installed. '
+        'Please install it with command: \n pip install pytorch-lightning \n'
+        'or \n pip install lightning'
+    )
 from aim.pytorch_lightning import AimLogger
 from torch import nn, optim, utils
 from torchvision.datasets import MNIST
