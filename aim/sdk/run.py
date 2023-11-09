@@ -692,7 +692,8 @@ class BasicRun(BaseRun, StructuredRunMixin):
         if self._resources is None:
             return
         self._resources.close()
-        self._tracker.sequence_infos.clear()
+        if not self.read_only:
+            self._tracker.sequence_infos.clear()
         # de-reference trees and other resources
         del self._resources
         del self._props
