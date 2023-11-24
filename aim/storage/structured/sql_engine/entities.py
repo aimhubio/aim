@@ -28,6 +28,13 @@ from aim.storage.structured.sql_engine.utils import ModelMappedClassMeta, ModelM
 from aim.storage.structured.sql_engine.utils import ModelMappedProperty as Property
 
 
+def session_commit_or_flush(session):
+    if getattr(session, 'autocommit', True):
+        session.commit()
+    else:
+        session.flush()
+
+
 def timestamp_or_none(dt):
     if dt is None:
         return None
@@ -72,14 +79,14 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
             raise ValueError(f'Run with hash \'{runhash}\' already exists.')
         run = RunModel(runhash, created_at)
         session.add(run)
-        session.commit()
+        session_commit_or_flush(session)
         return ModelMappedRun(run, session)
 
     @classmethod
     def delete_run(cls, runhash: str, session) -> bool:
         try:
             rows_affected = session.query(RunModel).filter(RunModel.hash == runhash).delete()
-            session.commit()
+            session_commit_or_flush(session)
         except Exception:
             return False
         return rows_affected > 0
@@ -142,18 +149,19 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
 
     @property
     def info(self) -> Optional[IRunInfo]:
+        session = self._session
         if self._model:
             if self._model.info:
-                return ModelMappedRunInfo(self._model.info, self._session)
+                return ModelMappedRunInfo(self._model.info, session)
             else:
                 info = RunInfoModel()
 
                 self._model.info = info
-                self._session.add(info)
-                self._session.add(self._model)
-                self._session.commit()
+                session.add(info)
+                session.add(self._model)
+                session_commit_or_flush(session)
 
-                return ModelMappedRunInfo(self._model.info, self._session)
+                return ModelMappedRunInfo(self._model.info, session)
 
     @experiment.setter
     def experiment(self, value: str):
@@ -171,7 +179,7 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
         session = self._session
         unsafe_set_exp()
         try:
-            session.commit()
+            session_commit_or_flush(session)
         except IntegrityError:
             session.rollback()
             unsafe_set_exp()
@@ -197,7 +205,7 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
             session.add(tag)
         self._model.tags.append(tag)
         session.add(self._model)
-        session.commit()
+        session_commit_or_flush(session)
 
     def remove_tag(self, tag_name: str) -> bool:
         session = self._session
@@ -208,7 +216,7 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
                 tag_removed = True
                 break
         session.add(self._model)
-        session.commit()
+        session_commit_or_flush(session)
         return tag_removed
 
     @property
@@ -256,7 +264,7 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
         session.add(audit_log)
 
         session.add(self._model)
-        session.commit()
+        session_commit_or_flush(session)
 
         return note
 
@@ -273,7 +281,8 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
         session.add(audit_log)
 
         session.add(note)
-        session.commit()
+
+        session_commit_or_flush(session)
 
         return note
 
@@ -288,7 +297,7 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
                                                NoteModel.id == _id,)
         session.execute(delete_stmnt)
 
-        session.commit()
+        session_commit_or_flush(session)
 
 
 class ModelMappedExperiment(IExperiment, metaclass=ModelMappedClassMeta):
@@ -329,7 +338,7 @@ class ModelMappedExperiment(IExperiment, metaclass=ModelMappedClassMeta):
             raise ValueError(f'Experiment with name \'{name}\' already exists.')
         exp = ExperimentModel(name)
         session.add(exp)
-        session.commit()
+        session_commit_or_flush(session)
         return ModelMappedExperiment(exp, session)
 
     @property
@@ -409,7 +418,7 @@ class ModelMappedExperiment(IExperiment, metaclass=ModelMappedClassMeta):
         session.add(audit_log)
 
         session.add(self._model)
-        session.commit()
+        session_commit_or_flush(session)
 
         return note
 
@@ -426,7 +435,7 @@ class ModelMappedExperiment(IExperiment, metaclass=ModelMappedClassMeta):
         session.add(audit_log)
 
         session.add(note)
-        session.commit()
+        session_commit_or_flush(session)
 
         return note
 
@@ -440,7 +449,7 @@ class ModelMappedExperiment(IExperiment, metaclass=ModelMappedClassMeta):
         delete_stmnt = delete(NoteModel).where(NoteModel.experiment_id == self._model.id,
                                                NoteModel.id == _id, )
         session.execute(delete_stmnt)
-        session.commit()
+        session_commit_or_flush(session)
 
     def refresh_model(self):
         self._session.refresh(self._model)
@@ -483,7 +492,7 @@ class ModelMappedTag(ITag, metaclass=ModelMappedClassMeta):
             raise ValueError(f'Tag with name \'{name}\' already exists.')
         tag = TagModel(name)
         session.add(tag)
-        session.commit()
+        session_commit_or_flush(session)
         return ModelMappedTag(tag, session)
 
     @classmethod
@@ -527,7 +536,7 @@ class ModelMappedTag(ITag, metaclass=ModelMappedClassMeta):
         model_obj = session.query(TagModel).filter(TagModel.uuid == _id).first()
         if model_obj:
             session.delete(model_obj)
-            session.commit()
+            session_commit_or_flush(session)
             return True
         return False
 
@@ -595,7 +604,7 @@ class ModelMappedNote(INote, metaclass=ModelMappedClassMeta):
         model_obj = session.query(NoteModel).filter(NoteModel.id == _id).first()
         if model_obj:
             session.delete(model_obj)
-            session.commit()
+            session_commit_or_flush(session)
             return True
         return False
 
