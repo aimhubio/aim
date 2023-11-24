@@ -1,6 +1,7 @@
 import pytz
 
 from typing import Collection, Union, List, Optional
+from sqlalchemy import delete
 from sqlalchemy.orm import joinedload
 from sqlalchemy.exc import IntegrityError
 
@@ -71,14 +72,14 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
             raise ValueError(f'Run with hash \'{runhash}\' already exists.')
         run = RunModel(runhash, created_at)
         session.add(run)
-        session.flush()
+        session.commit()
         return ModelMappedRun(run, session)
 
     @classmethod
     def delete_run(cls, runhash: str, session) -> bool:
         try:
             rows_affected = session.query(RunModel).filter(RunModel.hash == runhash).delete()
-            session.flush()
+            session.commit()
         except Exception:
             return False
         return rows_affected > 0
@@ -150,7 +151,7 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
                 self._model.info = info
                 self._session.add(info)
                 self._session.add(self._model)
-                self._session.flush()
+                self._session.commit()
 
                 return ModelMappedRunInfo(self._model.info, self._session)
 
@@ -170,7 +171,7 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
         session = self._session
         unsafe_set_exp()
         try:
-            session.flush()
+            session.commit()
         except IntegrityError:
             session.rollback()
             unsafe_set_exp()
@@ -196,7 +197,7 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
             session.add(tag)
         self._model.tags.append(tag)
         session.add(self._model)
-        session.flush()
+        session.commit()
 
     def remove_tag(self, tag_name: str) -> bool:
         session = self._session
@@ -207,7 +208,7 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
                 tag_removed = True
                 break
         session.add(self._model)
-        session.flush()
+        session.commit()
         return tag_removed
 
     @property
@@ -248,13 +249,14 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
         note = NoteModel(content)
         session.add(note)
         self._model.notes.append(note)
+        session.flush()
 
         audit_log = NoteAuditLogModel(action="Created", before=None, after=content)
+        audit_log.note_id = note.id
         session.add(audit_log)
-        note.audit_logs.append(audit_log)
 
         session.add(self._model)
-        session.flush()
+        session.commit()
 
         return note
 
@@ -267,11 +269,11 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
         note.content = content
 
         audit_log = NoteAuditLogModel(action="Updated", before=before, after=content)
+        audit_log.note_id = _id
         session.add(audit_log)
-        note.audit_logs.append(audit_log)
 
         session.add(note)
-        session.flush()
+        session.commit()
 
         return note
 
@@ -282,11 +284,11 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
         audit_log.note_id = _id
         session.add(audit_log)
 
-        session.query(NoteModel).filter(
-            NoteModel.run_id == self._model.id,
-            NoteModel.id == _id,
-        ).delete()
-        session.flush()
+        delete_stmnt = delete(NoteModel).where(NoteModel.run_id == self._model.id,
+                                               NoteModel.id == _id,)
+        session.execute(delete_stmnt)
+
+        session.commit()
 
 
 class ModelMappedExperiment(IExperiment, metaclass=ModelMappedClassMeta):
@@ -327,7 +329,7 @@ class ModelMappedExperiment(IExperiment, metaclass=ModelMappedClassMeta):
             raise ValueError(f'Experiment with name \'{name}\' already exists.')
         exp = ExperimentModel(name)
         session.add(exp)
-        session.flush()
+        session.commit()
         return ModelMappedExperiment(exp, session)
 
     @property
@@ -400,13 +402,14 @@ class ModelMappedExperiment(IExperiment, metaclass=ModelMappedClassMeta):
         note = NoteModel(content)
         session.add(note)
         self._model.notes.append(note)
+        session.flush()
 
         audit_log = NoteAuditLogModel(action="Created", before=None, after=content)
+        audit_log.note_id = note.id
         session.add(audit_log)
-        note.audit_logs.append(audit_log)
 
         session.add(self._model)
-        session.flush()
+        session.commit()
 
         return note
 
@@ -419,11 +422,11 @@ class ModelMappedExperiment(IExperiment, metaclass=ModelMappedClassMeta):
         note.content = content
 
         audit_log = NoteAuditLogModel(action="Updated", before=before, after=content)
+        audit_log.note_id = note.id
         session.add(audit_log)
-        note.audit_logs.append(audit_log)
 
         session.add(note)
-        session.flush()
+        session.commit()
 
         return note
 
@@ -434,11 +437,10 @@ class ModelMappedExperiment(IExperiment, metaclass=ModelMappedClassMeta):
         audit_log.note_id = _id
         session.add(audit_log)
 
-        session.query(NoteModel).filter(
-            NoteModel.experiment_id == self._model.id,
-            NoteModel.id == _id,
-        ).delete()
-        session.flush()
+        delete_stmnt = delete(NoteModel).where(NoteModel.experiment_id == self._model.id,
+                                               NoteModel.id == _id, )
+        session.execute(delete_stmnt)
+        session.commit()
 
     def refresh_model(self):
         self._session.refresh(self._model)
@@ -481,7 +483,7 @@ class ModelMappedTag(ITag, metaclass=ModelMappedClassMeta):
             raise ValueError(f'Tag with name \'{name}\' already exists.')
         tag = TagModel(name)
         session.add(tag)
-        session.flush()
+        session.commit()
         return ModelMappedTag(tag, session)
 
     @classmethod
@@ -525,6 +527,7 @@ class ModelMappedTag(ITag, metaclass=ModelMappedClassMeta):
         model_obj = session.query(TagModel).filter(TagModel.uuid == _id).first()
         if model_obj:
             session.delete(model_obj)
+            session.commit()
             return True
         return False
 
@@ -592,6 +595,7 @@ class ModelMappedNote(INote, metaclass=ModelMappedClassMeta):
         model_obj = session.query(NoteModel).filter(NoteModel.id == _id).first()
         if model_obj:
             session.delete(model_obj)
+            session.commit()
             return True
         return False
 

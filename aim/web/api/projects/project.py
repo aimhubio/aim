@@ -21,6 +21,10 @@ class Project:
         self.repo.container_view_pool.clear()
         self.repo.persistent_pool.clear()
 
+    def cleanup_sql_caches(self):
+        for cache in self.repo.structured_db.caches.values():
+            cache.empty_cache()
+
     def exists(self):
         """
         Checks whether .aim repository is created

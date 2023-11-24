@@ -58,3 +58,4 @@ class ResourceCleanupMiddleware:
         # cleanup repo pools after each api call
         project = Project()
         project.cleanup_repo_pools()
+        project.cleanup_sql_caches()
