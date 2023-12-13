@@ -1,6 +1,13 @@
 # Changelog
 
+## 3.18.0
+
+### Enhancements:
+
+- Add support for `sqlalchemy 2.0` (mihran113)
+
 ## 3.17.6 
+
 - Switch to patched version of official `pynvml` (mihran113)
 - Remove telemetry tracking (mihran113)
 
