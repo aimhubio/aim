@@ -29,6 +29,10 @@ class ObjectCache:
             self._cached = True
         return list(self._data.keys())
 
+    def empty_cache(self):
+        self._data.clear()
+        self._cached = False
+
     def __setitem__(self, key, value):
         assert self._cached
         self._data[key] = value
@@ -56,7 +60,7 @@ class DB(ObjectFactory):
         self.readonly = readonly
         self.engine = create_engine(self.db_url,
                                     echo=(logging.INFO >= int(os.environ.get(AIM_LOG_LEVEL_KEY, logging.WARNING))))
-        self.session_cls = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=self.engine))
+        self.session_cls = scoped_session(sessionmaker(autoflush=False, bind=self.engine))
         self._upgraded = None
 
     @classmethod
@@ -85,7 +89,7 @@ class DB(ObjectFactory):
 
     def get_session(self, autocommit=True):
         session = self.session_cls()
-        session.autocommit = autocommit
+        setattr(session, 'autocommit', autocommit)
         return session
 
     def run_upgrades(self):
