@@ -1,5 +1,5 @@
 import React from 'react';
-import AudioPlayer from 'material-ui-audio-player';
+// import AudioPlayer from 'material-ui-audio-player';
 
 import { Button, Icon, Spinner, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
@@ -177,14 +177,14 @@ function AudioBox({
             </Button>
           ) : (
             <div className='AudioBox__controllers__player'>
-              <AudioPlayer
-                displaySlider={false}
-                volume={false}
-                displayCloseButton={false}
-                onPlayed={onPlayChange}
-                width='24px'
-                src={src}
-              />
+              {/*<AudioPlayer*/}
+              {/*  displaySlider={false}*/}
+              {/*  volume={false}*/}
+              {/*  displayCloseButton={false}*/}
+              {/*  onPlayed={onPlayChange}*/}
+              {/*  width='24px'*/}
+              {/*  src={src}*/}
+              {/*/>*/}
               {processing ? (
                 <Spinner
                   className='Icon__container'

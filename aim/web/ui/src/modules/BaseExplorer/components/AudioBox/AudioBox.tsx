@@ -1,5 +1,5 @@
 import React from 'react';
-import AudioPlayer from 'material-ui-audio-player';
+// import AudioPlayer from 'material-ui-audio-player';
 
 import { Tooltip } from '@material-ui/core';
 
@@ -201,14 +201,14 @@ function AudioBox(props: IBoxContentProps) {
               </Button>
             ) : (
               <>
-                <AudioPlayer
-                  displaySlider={false}
-                  volume={false}
-                  displayCloseButton={false}
-                  onPlayed={onPlayChange}
-                  width='24px'
-                  src={src}
-                />
+                {/*<AudioPlayer*/}
+                {/*  displaySlider={false}*/}
+                {/*  volume={false}*/}
+                {/*  displayCloseButton={false}*/}
+                {/*  onPlayed={onPlayChange}*/}
+                {/*  width='24px'*/}
+                {/*  src={src}*/}
+                {/*/>*/}
                 {processing ? (
                   <Spinner
                     className='Icon__container'
