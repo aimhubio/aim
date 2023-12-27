@@ -21,6 +21,7 @@ import { Toast, ToastProvider } from './Toast';
 import Tooltip from './Tooltip';
 import Tree from './Tree';
 import ToggleButton from './ToggleButton';
+import AudioPlayer from './AudioPlayer';
 
 export {
   Badge,
@@ -47,4 +48,5 @@ export {
   Tooltip,
   Tree,
   ToggleButton,
+  AudioPlayer,
 };

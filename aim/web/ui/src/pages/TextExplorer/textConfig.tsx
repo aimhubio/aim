@@ -18,7 +18,7 @@ import { LegendsModeEnum } from 'utils/d3';
 
 import getTextExplorerStaticContent from './getStaticContent';
 
-export enum TEXT_RNDERER_MODES {
+export enum TEXT_RENDERER_MODES {
   TEXT = 'text',
   MARKDOWN = 'markdown',
   HTML = 'html',

@@ -2,6 +2,7 @@ import React from 'react';
 import _ from 'lodash-es';
 
 import Text from '../Text';
+import { Caption } from '../Input/Input.style';
 
 import { ISliderProps } from './Slider.d';
 import {
@@ -34,26 +35,53 @@ const Slider = React.memo(
     value = [],
     defaultValue = [10],
     marks = [],
+    disabled = false,
     onValueChange,
+    onValueCommit,
+    showLabel = true,
     ...props
   }: ISliderProps): React.FunctionComponentElement<React.ReactNode> => {
     const [sliderValue, setSliderValue] =
       React.useState<number[]>(defaultValue);
+    const [errorMessage, setErrorMessage] = React.useState<string>('');
 
     React.useEffect(() => {
       if (value.length > 0 && !_.isEqual(value, sliderValue)) {
+        const { errMsg } = validate(value, min, max);
+        if (errMsg) {
+          setErrorMessage(errMsg);
+          setSliderValue([min]);
+          return;
+        }
         setSliderValue(value);
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [value]);
 
-    const onChange = React.useCallback((value: number[]) => {
-      setSliderValue(value);
-      if (onValueChange) {
-        onValueChange(value);
-      }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    const onChange = React.useCallback(
+      (value: number[]) => {
+        if (errorMessage) {
+          return;
+        }
+        setSliderValue(value);
+        if (onValueChange) {
+          onValueChange(value);
+        }
+      },
+      [errorMessage, onValueChange],
+    );
+
+    const onCommit = React.useCallback(
+      (value: number[]) => {
+        if (errorMessage) {
+          return;
+        }
+        if (onValueCommit) {
+          onValueCommit(value);
+        }
+      },
+      [errorMessage, onValueCommit],
+    );
 
     function getMarkPosition(mark: number) {
       // The mark position is calculated based on the min and max values
@@ -65,47 +93,68 @@ const Slider = React.memo(
     }
 
     return (
-      <SliderRoot
-        value={sliderValue}
-        defaultValue={defaultValue}
-        min={min}
-        max={max}
-        onValueChange={onChange}
-        data-testid='slider'
-        {...props}
-      >
-        <SliderTrack className='SliderTrack'>
-          <SliderRange className='SliderRange' />
-        </SliderTrack>
-        {sliderValue.map((value: number) => (
-          <SliderThumb className='SliderThumb' key={value}>
-            <SliderLabel className='SliderLabel'>{value}</SliderLabel>
-          </SliderThumb>
-        ))}
-
-        {marks.length > 0 &&
-          marks.map((mark) => {
-            return (
-              <SliderMark
-                key={mark.value}
-                data-active={
-                  sliderValue?.length > 1
-                    ? mark.value >= sliderValue?.[0] &&
-                      mark.value <= sliderValue[sliderValue.length - 1]
-                    : mark.value <= sliderValue?.[0]
-                }
-                css={{ left: `${getMarkPosition(mark.value)}` }}
-              >
-                <Text size='$1' css={{ marginTop: 33 }}>
-                  {mark.label}
-                </Text>
-              </SliderMark>
-            );
-          })}
-      </SliderRoot>
+      <>
+        <SliderRoot
+          value={sliderValue}
+          defaultValue={defaultValue}
+          disabled={disabled || !!errorMessage}
+          min={min}
+          max={max}
+          onValueChange={onChange}
+          onValueCommit={onCommit}
+          data-testid='slider'
+          {...props}
+        >
+          <SliderTrack className='SliderTrack'>
+            <SliderRange className='SliderRange' />
+          </SliderTrack>
+          {sliderValue.map((value: number, index) => (
+            <SliderThumb className='SliderThumb' key={index}>
+              {!showLabel || errorMessage ? null : (
+                <SliderLabel className='SliderLabel'>{value}</SliderLabel>
+              )}
+            </SliderThumb>
+          ))}
+          {!errorMessage &&
+            marks.length > 0 &&
+            marks.map((mark) => {
+              return (
+                <SliderMark
+                  key={mark.value}
+                  data-active={
+                    sliderValue?.length > 1
+                      ? mark.value >= sliderValue?.[0] &&
+                        mark.value <= sliderValue[sliderValue.length - 1]
+                      : mark.value <= sliderValue?.[0]
+                  }
+                  css={{ left: `${getMarkPosition(mark.value)}` }}
+                >
+                  <Text size='$1' css={{ marginTop: 33 }}>
+                    {mark.label}
+                  </Text>
+                </SliderMark>
+              );
+            })}
+        </SliderRoot>
+        {errorMessage ? <Caption error={true}>{errorMessage}</Caption> : null}
+      </>
     );
   },
 );
 
 Slider.displayName = 'Slider';
-export default React.memo(Slider);
+export default Slider;
+
+function validate(value: number[], min: number, max: number) {
+  const minValue = Math.min(...value);
+  const maxValue = Math.max(...value);
+  if (min >= max) {
+    return { errMsg: 'Min value should be less than max value' };
+  }
+  if (minValue < min || maxValue > max) {
+    return {
+      errMsg: `Value(s) should be between ${min} and ${max}`,
+    };
+  }
+  return { errMsg: '' };
+}

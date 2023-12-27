@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Slider as MaterialSlider } from '@material-ui/core';
+import MaterialSlider from '@material-ui/core/Slider';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 

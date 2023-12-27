@@ -3,7 +3,7 @@ import Editor from 'rich-markdown-editor';
 
 import { Text } from 'components/kit';
 
-import { TEXT_RNDERER_MODES } from 'pages/TextExplorer/textConfig';
+import { TEXT_RENDERER_MODES } from 'pages/TextExplorer/textConfig';
 
 import './TextBox.scss';
 
@@ -21,12 +21,12 @@ function TextBox(props: any) {
   const text = data.data.data;
 
   const content: Record<string, JSX.Element> = {
-    [TEXT_RNDERER_MODES.TEXT]: (
+    [TEXT_RENDERER_MODES.TEXT]: (
       <Text color={props.data.style.color} style={{ whiteSpace: 'normal' }}>
         {text}
       </Text>
     ),
-    [TEXT_RNDERER_MODES.MARKDOWN]: (
+    [TEXT_RENDERER_MODES.MARKDOWN]: (
       <Editor
         ref={null}
         value={text}
@@ -35,10 +35,10 @@ function TextBox(props: any) {
         disableExtensions={['table', 'image', 'container_notice']}
       />
     ),
-    [TEXT_RNDERER_MODES.HTML]: (
+    [TEXT_RENDERER_MODES.HTML]: (
       <div dangerouslySetInnerHTML={{ __html: text }} />
     ),
-    [TEXT_RNDERER_MODES.CODE]: (
+    [TEXT_RENDERER_MODES.CODE]: (
       <Text component='pre' color={props.data.style.color}>
         {text}
       </Text>

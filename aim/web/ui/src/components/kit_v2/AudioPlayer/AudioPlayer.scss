@@ -1,0 +1,48 @@
+@use 'src/styles/abstracts' as *;
+
+.AudioPlayer {
+  max-width: toRem(268px);
+  &__controllers {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: $space-xs;
+    background-color: $pico-5;
+    border-radius: $border-radius-main;
+    width: toRem(268px);
+    height: toRem(40px);
+    &__player {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      .Icon__container {
+        position: absolute;
+        z-index: 0;
+        font-size: $text-sm;
+      }
+      .MuiPaper-root {
+        height: 1.5rem;
+        width: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-self: center;
+        background-color: transparent;
+        box-shadow: unset;
+        .MuiGrid-root {
+          padding: 0;
+          display: flex;
+          svg {
+            font-size: $text-xxl;
+            color: transparent;
+            z-index: 1;
+            position: relative;
+            &:hover {
+              color: transparent;
+            }
+          }
+        }
+      }
+    }
+  }
+}
