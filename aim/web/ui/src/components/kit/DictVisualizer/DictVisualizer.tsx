@@ -67,7 +67,7 @@ function DictVisualizer(props: IDictVisualizerProps) {
 
       setRows(newRows);
     }
-  }, [collapsedItems, initialRows]);
+  }, [collapsedItems, initialRows, props.src]);
 
   return (
     <ErrorBoundary>
@@ -83,8 +83,8 @@ function DictVisualizer(props: IDictVisualizerProps) {
         <AutoSizer>
           {({ width, height }) => (
             <List
-              width={width}
-              height={height}
+              width={width || 0}
+              height={height || 0}
               itemCount={rows.length}
               itemSize={ROW_SIZE}
             >
@@ -177,7 +177,7 @@ function DictVisualizerRow(props: IDictVisualizerRowProps) {
       {row.copyContent && (
         <CopyToClipBoard
           className='DictVisualizer__row__copy'
-          iconSize='xxSmall'
+          iconSize='xs'
           copyContent={row.copyContent}
         />
       )}

@@ -6,6 +6,7 @@ const Container: any = styled('button', {
   all: 'unset',
   display: 'inline-flex',
   width: 'fit-content',
+  minWidth: 'fit-content',
   ai: 'center',
   jc: 'center',
   lineHeight: 1,
@@ -18,24 +19,29 @@ const Container: any = styled('button', {
     size: {
       xs: {
         height: '$sizes$1',
+        minHeight: '$sizes$1',
         fontSize: '$fontSizes$2',
         p: '0 $space$7',
       },
       sm: {
         height: '$sizes$2',
+        minHeight: '$sizes$2',
         fontSize: '$fontSizes$2',
         p: '0 $space$7',
       },
       md: {
         height: '$sizes$3',
+        minHeight: '$sizes$3',
         p: '0 $space$8',
       },
       lg: {
         height: '$sizes$5',
+        minHeight: '$sizes$5',
         p: '0 $space$9',
       },
       xl: {
         height: '$sizes$7',
+        minHeight: '$sizes$7',
         p: '0 $space$11',
       },
     },
