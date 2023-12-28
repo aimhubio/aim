@@ -5,7 +5,7 @@
 ### Enhancements:
 
 - Add support for `sqlalchemy 2.0` (mihran113)
-
+- Add `min/max/first` values tracking for metrics (mihran113)
 ## 3.17.6 
 
 - Switch to patched version of official `pynvml` (mihran113)
