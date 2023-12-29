@@ -6,7 +6,13 @@ import { styled } from 'config/stitches';
 
 import { IBoxProps } from './Box.d';
 
-const StyledBox = styled(Slot, {});
+const StyledBox = styled(Slot, {
+  '&[data-disabled=true]': {
+    pointerEvents: 'none',
+    userSelect: 'none',
+    opacity: 0.4,
+  },
+});
 
 /**
  * Polymorphic Box component
@@ -30,6 +36,7 @@ const Box = React.forwardRef<typeof StyledBox, IBoxProps>(
       const layoutKeys = [
         'display',
         'flex',
+        'gap',
         'fd',
         'fw',
         'ai',
@@ -54,14 +61,14 @@ const Box = React.forwardRef<typeof StyledBox, IBoxProps>(
         .reduce((obj, [key, value]) => {
           obj[key] = value;
           return obj;
-        }, {} as { [key: string]: any });
+        }, {} as Record<string, any>);
 
       const restProps = Object.entries(props)
         .filter(([key]) => !layoutKeys.includes(key))
         .reduce((obj, [key, value]) => {
           obj[key] = value;
           return obj;
-        }, {} as { [key: string]: any });
+        }, {} as Record<string, any>);
       return { layoutProps, restProps };
     }, [props]);
 

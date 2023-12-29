@@ -7,4 +7,9 @@ export interface ISliderProps extends SliderProps {
    * @optional
    */
   marks?: { label?: string; value: number }[];
+  /**
+   * Whether to show the label of the slider.
+   * @default true
+   */
+  showLabel?: boolean;
 }

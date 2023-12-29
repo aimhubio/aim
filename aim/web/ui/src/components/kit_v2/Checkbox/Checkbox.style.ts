@@ -5,7 +5,7 @@ import { styled } from 'config/stitches';
 const IndeterminateIcon = styled('span', {
   width: '6px',
   height: '6px',
-  bc: '$primary100',
+  bc: '$background-default-primary-plain',
   br: '$1',
   transition: 'all 0.2s ease-out',
 });
@@ -26,13 +26,14 @@ const IndicatorWrapper = styled('span', {
   display: 'flex',
   ai: 'center',
   jc: 'center',
-  bs: 'inset 0 0 0 1px $colors$secondary100',
+  bs: 'inset 0 0 0 1px $colors$icon-default-text-soft',
   br: '$2',
   transition: 'all 0.2s ease-out',
 });
 
 const StyledCheckbox = styled(CheckboxPrimitive.Root, {
-  size: '20px',
+  size: '$1',
+  minHeight: '$1',
   border: 'unset',
   bc: 'transparent',
   borderRadius: '$2',
@@ -44,50 +45,62 @@ const StyledCheckbox = styled(CheckboxPrimitive.Root, {
   transition: 'all 0.2s ease-out',
   '&:hover': {
     [`& ${IndicatorWrapper}`]: {
-      bs: 'inset 0 0 0 1px $colors$primary100',
+      bs: 'inset 0 0 0 1px $colors$icon-hover-primary-bold',
     },
   },
   '&:disabled': {
     pointerEvents: 'none',
     [`& ${IndicatorWrapper}`]: {
-      bs: 'inset 0 0 0 1px $colors$secondary50 !important',
+      bs: 'inset 0 0 0 1px $colors$icon-disable-text-pastel !important',
     },
   },
   '&[data-state=checked]': {
     '&:hover': {
       [`& ${IndicatorWrapper}`]: {
-        bc: '$primary110',
+        bc: '$icon-hover-primary-bold',
       },
     },
     '&:disabled': {
       [`& ${IndicatorWrapper}`]: {
-        bc: '$secondary50',
+        bs: 'unset !important',
+        bc: '$icon-disable-primary-soft',
       },
     },
     [`& ${IndicatorWrapper}`]: {
-      bc: '$primary100',
+      bc: '$icon-focus-primary-plain',
       bs: 'inset 0 0 0 1px transparent',
       '&:disabled': {
-        bc: '$secondary50 !important',
+        bc: '$background-text-disable-pastel !important',
       },
     },
   },
   '&[data-state=indeterminate]': {
+    [`& ${IndeterminateIcon}`]: {
+      bc: '$icon-default-text-soft',
+    },
     '&:hover': {
       [`& ${IndicatorWrapper}`]: {
-        bs: 'inset 0 0 0 1px $colors$primary110',
+        bs: 'inset 0 0 0 1px $colors$icon-hover-primary-bold',
       },
       [`& ${IndeterminateIcon}`]: {
-        bc: '$primary110',
+        bc: '$icon-hover-primary-bold',
       },
     },
     '&:disabled': {
       [`& ${IndeterminateIcon}`]: {
-        bc: '$secondary50',
+        bc: '$icon-disable-text-pastel',
       },
     },
     [`& ${IndicatorWrapper}`]: {
-      bs: 'inset 0 0 0 1px $colors$primary100',
+      bs: 'inset 0 0 0 1px $colors$icon-default-text-soft',
+    },
+  },
+  variants: {
+    hasLabel: {
+      true: {
+        height: 'fit-content',
+        width: 'fit-content',
+      },
     },
   },
 });

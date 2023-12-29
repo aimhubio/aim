@@ -12,9 +12,9 @@ export interface IEventSystemEngine {
     fire: (
       eventName: string,
       payload: any,
-      options: Record<string, any>,
+      options?: { savePayload: boolean },
     ) => void;
-    on: (eventName: string, callback: Callback) => Callback;
+    on: (eventName: string, callback: Callback) => () => void;
     unsubscribe: (eventName: string, callback: Callback) => void;
     once: (
       eventName: string,

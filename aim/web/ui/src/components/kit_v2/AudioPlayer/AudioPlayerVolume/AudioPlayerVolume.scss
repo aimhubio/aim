@@ -1,0 +1,40 @@
+@use 'src/styles/abstracts' as *;
+
+.AudioPlayerVolume {
+  margin: 0 $space-xxs 0 $space-xs;
+  position: relative;
+  &__button {
+    justify-content: flex-start;
+  }
+  &:hover {
+    .AudioPlayerVolume__slider {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+  &__slider {
+    background-color: $pico-5;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.18s ease-out;
+    bottom: -1rem;
+    left: 0;
+    position: absolute;
+    width: toRem(56px);
+    box-shadow: 0 0.125rem 0.25rem rgba(28, 40, 82, 0.15);
+    border-radius: $border-radius-xss;
+    height: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2;
+    .SliderThumb {
+      width: 6px;
+      height: 6px;
+      &:after {
+        top: 1px;
+        left: 1px;
+      }
+    }
+  }
+}

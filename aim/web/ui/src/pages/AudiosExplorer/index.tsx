@@ -1,5 +1,5 @@
 import renderer from 'modules/BaseExplorer';
-import AudioBox from 'modules/BaseExplorer/components/AudioBox';
+import Audio from 'modules/BaseExplorer/components/Audio';
 
 import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
 
@@ -23,7 +23,7 @@ const AudiosExplorer = renderer(
         controls: defaultConfig.controls,
         box: {
           ...defaultConfig.box,
-          component: AudioBox,
+          component: Audio,
         },
       },
     },

@@ -1,21 +1,21 @@
 import React from 'react';
 import { areEqual, VariableSizeList as List } from 'react-window';
 
-import { MediaTypeEnum } from 'components/MediaPanel/config';
-import AudioBox from 'components/kit/AudioBox';
-import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import AudioBox from 'components/AudioBox';
+import ImageBox from 'components/ImageBox';
+import ErrorBoundary from 'components/ErrorBoundary';
 
 import {
+  MediaTypeEnum,
   MEDIA_ITEMS_SIZES,
   MEDIA_LIST_HEIGHT,
 } from 'config/mediaConfigs/mediaConfigs';
 
 import getBiggestImageFromList from 'utils/getBiggestImageFromList';
 
-import ImageBox from './ImageBox';
 import { IMediaListProps } from './MediaList.d';
 
-const mediaBoxType: any = {
+const MediaBoxComponent: any = {
   [MediaTypeEnum.IMAGE]: ImageBox,
   [MediaTypeEnum.AUDIO]: AudioBox,
 };
@@ -36,9 +36,9 @@ function MediaList({
   const itemSize = React.useCallback(
     (index: number) => {
       if (mediaType === MediaTypeEnum.AUDIO) {
-        return MEDIA_ITEMS_SIZES[mediaType]().width;
+        return MEDIA_ITEMS_SIZES[MediaTypeEnum.AUDIO]().width;
       } else {
-        return MEDIA_ITEMS_SIZES[mediaType]({
+        return MEDIA_ITEMS_SIZES[MediaTypeEnum.IMAGE]({
           data,
           index,
           additionalProperties,
@@ -60,7 +60,7 @@ function MediaList({
     const { maxWidth, maxHeight } = getBiggestImageFromList(data);
     const { alignmentType, mediaItemSize } = additionalProperties;
     if (mediaType === MediaTypeEnum.IMAGE) {
-      return MEDIA_LIST_HEIGHT[mediaType]({
+      return MEDIA_LIST_HEIGHT[MediaTypeEnum.IMAGE]({
         alignmentType,
         maxHeight,
         maxWidth,
@@ -69,7 +69,7 @@ function MediaList({
         mediaItemHeight,
       });
     } else {
-      return MEDIA_LIST_HEIGHT[mediaType](mediaItemHeight);
+      return MEDIA_LIST_HEIGHT[MediaTypeEnum.AUDIO](mediaItemHeight);
     }
   }, [
     additionalProperties,
@@ -110,7 +110,7 @@ export default MediaList;
 
 const MediaBoxMemoized = React.memo(function MediaBoxMemoized(props: any) {
   const { index, style, data } = props;
-  const Component = mediaBoxType[data.mediaType];
+  const Component = MediaBoxComponent[data.mediaType];
 
   return (
     <ErrorBoundary>
