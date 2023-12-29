@@ -1,6 +1,11 @@
 import React from 'react';
 
-import Icon from 'components/kit/Icon';
+import { IconCheck } from '@tabler/icons-react';
+
+// import Icon from 'components/kit/Icon';
+
+import Text from '../Text';
+import Box from '../Box';
 
 import { ICheckboxProps } from './Checkbox.d';
 import {
@@ -21,7 +26,7 @@ import {
  * @example
  * <Checkbox checked={true} />
  */
-export const CheckBox = React.forwardRef<
+export const Checkbox = React.forwardRef<
   React.ElementRef<typeof StyledCheckbox>,
   ICheckboxProps
 >(
@@ -61,19 +66,25 @@ export const CheckBox = React.forwardRef<
         {...props}
         checked={isChecked}
         onCheckedChange={handleChange}
+        hasLabel={!!props.label}
         disabled={disabled}
         ref={forwardedRef}
       >
         <IndicatorWrapper>
           <StyledIndicator>
             {isChecked === 'indeterminate' ? <IndeterminateIcon /> : null}
-            {isChecked === true ? <Icon fontSize={6} name='check' /> : null}
+            {isChecked === true ? <IconCheck fontSize={6} /> : null}
           </StyledIndicator>
         </IndicatorWrapper>
+        {props.label && (
+          <Box ml='$5' as='label' className='Label' htmlFor={props.id}>
+            <Text>{props.label}</Text>
+          </Box>
+        )}
       </StyledCheckbox>
     );
   },
 );
 
-CheckBox.displayName = 'CheckBox';
-export default React.memo(CheckBox);
+Checkbox.displayName = 'Checkbox';
+export default React.memo(Checkbox);

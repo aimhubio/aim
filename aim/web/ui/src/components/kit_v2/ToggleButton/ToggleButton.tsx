@@ -16,6 +16,7 @@ import { IToggleButtonProps } from './ToggleButton.d';
  * @param {string} rightLabel - label of the right button
  * @param {string} color - color of the selected button
  * @param {function} onChange - callback function that is called when the button is clicked
+ * @param {boolean} disabled - disable state of the toggle button
  * @returns {React.FunctionComponentElement<React.ReactNode>} ToggleButton component
  */
 function ToggleButton({
@@ -27,25 +28,36 @@ function ToggleButton({
   rightLabel = 'true',
   color = 'primary',
   onChange,
+  disabled = false,
 }: IToggleButtonProps): React.FunctionComponentElement<React.ReactNode> {
   const [selected, setSelected] = React.useState(value);
 
   const handleToggle = React.useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
       const { value } = e.currentTarget.dataset;
-      if (value) {
+      if (value && !disabled) {
         setSelected(value);
         if (onChange) {
           onChange(value);
         }
       }
     },
-    [onChange],
+    [onChange, disabled],
   );
+
+  React.useEffect(() => {
+    if ([leftValue, rightValue].indexOf(value) === -1) {
+      setSelected(leftValue);
+      if (onChange) {
+        onChange(leftValue);
+      }
+    }
+  }, [leftValue, onChange, rightValue, value]);
 
   return (
     <Container>
       <Button
+        disabled={disabled}
         variant={selected === leftValue ? 'contained' : 'ghost'}
         css={{ borderRadius: '3px 0 0 3px' }}
         data-value={leftValue}
@@ -56,6 +68,7 @@ function ToggleButton({
         {leftLabel}
       </Button>
       <Button
+        disabled={disabled}
         variant={selected === rightValue ? 'contained' : 'ghost'}
         css={{ borderRadius: '0 3px 3px 0' }}
         data-value={rightValue}

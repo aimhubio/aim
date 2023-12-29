@@ -7,4 +7,8 @@ export const globalStyles: {} = {
       outline: 'none',
     },
   },
+
+  'input::-webkit-outer-spin-button, input::-webkit-inner-spin-button': {
+    margin: 0,
+  },
 };

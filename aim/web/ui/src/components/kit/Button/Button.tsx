@@ -70,7 +70,7 @@ function Button({
     height: withOnlyIcon
       ? withOnlyIconSizes[size || 'medium']
       : sizes[size || 'medium'],
-    minWidth: withOnlyIcon ? '1.25rem' : minWidthSizes[size || 'medium'],
+    minWidth: withOnlyIcon ? '1.75rem' : minWidthSizes[size || 'medium'],
     ...(withOnlyIcon && { width: withOnlyIconSizes[size || 'medium'] }),
   };
 
