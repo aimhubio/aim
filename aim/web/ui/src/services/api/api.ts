@@ -1,5 +1,12 @@
 import { getAPIHost } from 'config/config';
 
+const AUTH_TOKEN_KEY = 'Auth';
+
+export const CONTENT_TYPE = {
+  JSON: 'application/json',
+  FORM_DATA: 'application/x-www-form-urlencoded',
+};
+
 function createAPIRequestWrapper<ResponseDataType>(
   url: string,
   options: RequestInit = {},
@@ -145,15 +152,43 @@ function remove<ResponseDataType>(url: string, options?: RequestInit) {
   });
 }
 
+/**
+ * getTimezoneOffset is a function that returns the timezone offset
+ * @returns string
+ * @example
+ * const timezoneOffset = getTimezoneOffset();
+ */
 function getTimezoneOffset(): string {
   return `${new Date().getTimezoneOffset()}`;
 }
 
-function getRequestHeaders() {
-  return {
-    'Content-Type': 'application/json',
+/**
+ * getRequestHeaders is a function that returns the request headers
+ * @returns object
+ * @example
+ * const requestHeaders = getRequestHeaders();
+ * const response = await fetch(`${API_ROOT}${endpoint}`, {
+ *  method: "POST",
+ *  headers: requestHeaders,
+ *  body: JSON.stringify(data),
+ * });
+ */
+function getRequestHeaders(headers = {}) {
+  const requestHeaders: Record<string, string> = {
     'X-Timezone-Offset': getTimezoneOffset(),
+    'Content-Type': CONTENT_TYPE.JSON,
+    Authorization: getAuthToken(),
+    ...headers,
   };
+  return requestHeaders;
+}
+
+/**
+ * getAuthToken - Gets the token from local storage
+ * @returns {string} - The token
+ */
+function getAuthToken(): string {
+  return localStorage.getItem(AUTH_TOKEN_KEY) || '';
 }
 
 const API = {
