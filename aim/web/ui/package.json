@@ -43,7 +43,7 @@
     "memoize-one": "^5.2.1",
     "moment": "^2.29.4",
     "monaco-editor": "^0.33.0",
-    "plotly.js": "^2.7.0",
+    "plotly.js": "^2.25.2",
     "prop-types": "^15.7.2",
     "prosemirror-tables": "^1.1.1",
     "react": "^17.0.2",
