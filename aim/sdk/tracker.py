@@ -32,6 +32,8 @@ class SequenceInfo:
         self.initialized = False
         self.count = None
         self.dtype = None
+        self.max = None
+        self.min = None
         self.version = None
         self.val_view = None
         self.step_view = None
@@ -159,6 +161,14 @@ class RunTracker:
         series_tree = self.series_run_trees[seq_info.version]
         if seq_info.version == 2:
             seq_info.step_view = series_tree.subtree((ctx_id, name)).array('step', dtype='int64')
+            try:
+                seq_info.max = self.meta_run_tree['traces', ctx_id, name, 'max']
+            except KeyError:
+                seq_info.max = float('-inf')
+            try:
+                seq_info.min = self.meta_run_tree['traces', ctx_id, name, 'min']
+            except KeyError:
+                seq_info.min = float('inf')
         seq_info.val_view = series_tree.subtree((ctx_id, name)).array('val')
         seq_info.epoch_view = series_tree.subtree((ctx_id, name)).array('epoch', dtype='int64')
         seq_info.time_view = series_tree.subtree((ctx_id, name)).array('time', dtype='int64')
@@ -183,6 +193,8 @@ class RunTracker:
         series_tree = self.series_run_trees[seq_info.version]
         if seq_info.version == 2:
             seq_info.step_view = series_tree.subtree((ctx_id, name)).array('step', dtype='int64').allocate()
+            seq_info.max = float('-inf')
+            seq_info.min = float('inf')
         seq_info.val_view = series_tree.subtree((ctx_id, name)).array('val').allocate()
         seq_info.epoch_view = series_tree.subtree((ctx_id, name)).array('epoch', dtype='int64').allocate()
         seq_info.time_view = series_tree.subtree((ctx_id, name)).array('time', dtype='int64').allocate()
@@ -211,6 +223,7 @@ class RunTracker:
             self.meta_tree['traces_types', dtype, ctx_id, name] = 1
             self.meta_run_tree['traces', ctx_id, name, 'dtype'] = dtype
             self.meta_run_tree['traces', ctx_id, name, 'version'] = seq_info.version
+            self.meta_run_tree['traces', ctx_id, name, 'first'] = val
             self.meta_run_tree['traces', ctx_id, name, 'first_step'] = step
             seq_info.dtype = dtype
 
@@ -219,6 +232,14 @@ class RunTracker:
             self.meta_run_tree['traces', ctx_id, name, 'last_step'] = step
             seq_info.count = step + 1
 
+        if seq_info.version == 2:
+            # min/max is supported only for metrics
+            if val > seq_info.max:
+                self.meta_run_tree['traces', ctx_id, name, 'max'] = val
+                seq_info.max = val
+            if val < seq_info.min:
+                self.meta_run_tree['traces', ctx_id, name, 'min'] = val
+                seq_info.min = val
         if isinstance(val, (tuple, list)):
             record_max_length = max(seq_info.record_max_length, len(val))
             self.meta_run_tree['traces', ctx_id, name, 'record_max_length'] = record_max_length
