@@ -51,19 +51,16 @@ function createAPIRequestWrapper<ResponseDataType>(
                   exceptionHandler(body);
                 }
 
-                // @TODO: Add refresh token api
-                // return await checkCredentials<ResponseDataType>(
-                //   response,
-                //   url,
-                //   () =>
-                //     createAPIRequestWrapper<ResponseDataType>(
-                //       url,
-                //       options,
-                //       stream,
-                //     ).call(exceptionHandler),
-                // );
-
-                return;
+                return await checkCredentials<ResponseDataType>(
+                  response,
+                  url,
+                  () =>
+                    createAPIRequestWrapper<ResponseDataType>(
+                      url,
+                      options,
+                      stream,
+                    ).call(exceptionHandler),
+                );
               }
               const data = stream ? response.body : await response.json();
 
@@ -304,7 +301,6 @@ async function parseResponse<T>(response: Response): Promise<T> {
   }
 }
 
-// @TODO: Add refresh token api and after use the "checkCredentials" function
 async function checkCredentials<T>(
   response: Response,
   endpoint: string,

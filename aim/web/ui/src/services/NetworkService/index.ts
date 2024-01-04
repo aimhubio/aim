@@ -154,11 +154,9 @@ class NetworkService {
           }
 
           if (response.status >= 400) {
-            // @TODO: Add refresh token api
-            // return await this.checkCredentials(response, url, () =>
-            //   this.makeAPIRequest(partUrl, options),
-            // );
-            return reject(body);
+            return await this.checkCredentials(response, url, () =>
+              this.request(url, options),
+            );
           }
 
           return resolve({ body, headers });
@@ -347,7 +345,6 @@ class NetworkService {
     }
   }
 
-  // @TODO: Add refresh token api and after use the "checkCredentials" function
   public async checkCredentials<T>(
     response: Response,
     endpoint: string,
