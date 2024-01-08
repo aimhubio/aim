@@ -262,9 +262,13 @@ class NetworkService {
     const requestHeaders: Record<string, string> = {
       'X-Timezone-Offset': this.getTimezoneOffset(),
       'Content-Type': this.CONTENT_TYPE.JSON,
-      Authorization: this.getAuthToken(),
       ...headers,
     };
+
+    const Authorization = this.getAuthToken();
+    if (Authorization) {
+      requestHeaders.Authorization = Authorization;
+    }
     return requestHeaders;
   }
 
@@ -273,14 +277,16 @@ class NetworkService {
    * @returns IResponse<AuthToken>
    * @throws Error
    */
-  public refreshToken() {
-    return this.makeAPIGetRequest(
-      `${ENDPOINTS.AUTH.BASE}/${ENDPOINTS.AUTH.REFRESH}`,
+  public async refreshToken() {
+    const response = await fetch(
+      `${window.location.origin}/${ENDPOINTS.AUTH.BASE}/${ENDPOINTS.AUTH.REFRESH}`,
       {
+        headers: this.getRequestHeaders(),
         credentials:
           process.env.NODE_ENV === 'development' ? 'include' : 'same-origin',
       },
     );
+    return this.parseResponse<AuthToken>(response);
   }
 
   /**
@@ -356,7 +362,7 @@ class NetworkService {
         return this.parseResponse<T>(response);
       }
       // Refresh token
-      const token = (await this.refreshToken()).body;
+      const token = await this.refreshToken();
       if (token) {
         this.setAuthToken(token);
         return refetch();

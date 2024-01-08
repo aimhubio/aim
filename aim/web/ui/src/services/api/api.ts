@@ -209,9 +209,12 @@ function getRequestHeaders(headers = {}) {
   const requestHeaders: Record<string, string> = {
     'X-Timezone-Offset': getTimezoneOffset(),
     'Content-Type': CONTENT_TYPE.JSON,
-    Authorization: getAuthToken(),
     ...headers,
   };
+  const Authorization = getAuthToken();
+  if (Authorization) {
+    requestHeaders.Authorization = Authorization;
+  }
   return requestHeaders;
 }
 
@@ -268,15 +271,16 @@ function removeRefreshToken(): void {
  * @returns IResponse<AuthToken>
  * @throws Error
  */
-function refreshToken() {
-  return get<AuthToken>(
-    `${ENDPOINTS.AUTH.BASE}/${ENDPOINTS.AUTH.REFRESH}`,
-    undefined,
+async function refreshToken() {
+  const response = await fetch(
+    `${window.location.origin}/${ENDPOINTS.AUTH.BASE}/${ENDPOINTS.AUTH.REFRESH}`,
     {
+      headers: getRequestHeaders(),
       credentials:
         process.env.NODE_ENV === 'development' ? 'include' : 'same-origin',
     },
   );
+  return parseResponse<AuthToken>(response);
 }
 
 /**
@@ -312,7 +316,7 @@ async function checkCredentials<T>(
       return parseResponse<T>(response);
     }
     // Refresh token
-    const token = await refreshToken().call();
+    const token = await refreshToken();
     if (token) {
       setAuthToken(token);
       return refetch();
