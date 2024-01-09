@@ -279,7 +279,7 @@ class NetworkService {
    */
   public async refreshToken() {
     const response = await fetch(
-      `${window.location.origin}/${ENDPOINTS.AUTH.BASE}/${ENDPOINTS.AUTH.REFRESH}`,
+      `${window.location.origin}/api/${ENDPOINTS.AUTH.BASE}/${ENDPOINTS.AUTH.REFRESH}`,
       {
         headers: this.getRequestHeaders(),
         credentials:

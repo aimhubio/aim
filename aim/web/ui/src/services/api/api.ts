@@ -273,7 +273,7 @@ function removeRefreshToken(): void {
  */
 async function refreshToken() {
   const response = await fetch(
-    `${window.location.origin}/${ENDPOINTS.AUTH.BASE}/${ENDPOINTS.AUTH.REFRESH}`,
+    `${window.location.origin}/api/${ENDPOINTS.AUTH.BASE}/${ENDPOINTS.AUTH.REFRESH}`,
     {
       headers: getRequestHeaders(),
       credentials:
