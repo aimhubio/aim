@@ -33,7 +33,8 @@ export const CONTENT_TYPE = {
 function createAPIRequestWrapper<ResponseDataType>(
   url: string,
   options: RequestInit = {},
-  stream?: boolean,
+  stream: boolean = false,
+  apiHost: string = getAPIHost(),
 ) {
   const controller = new AbortController();
   const signal = controller.signal;
@@ -41,7 +42,7 @@ function createAPIRequestWrapper<ResponseDataType>(
   return {
     call: (exceptionHandler?: (error: ResponseDataType) => any) =>
       new Promise((resolve: (data: ResponseDataType) => void, reject) => {
-        fetch(`${getAPIHost()}/${url}`, { ...options, signal })
+        fetch(`${apiHost}/${url}`, { ...options, signal })
           .then(async (response) => {
             try {
               if (response.status >= 400) {
@@ -59,6 +60,7 @@ function createAPIRequestWrapper<ResponseDataType>(
                       url,
                       options,
                       stream,
+                      apiHost,
                     ).call(exceptionHandler),
                 );
               }
@@ -91,6 +93,7 @@ function getStream<ResponseDataType>(
   url: string,
   params?: {},
   options?: RequestInit,
+  apiHost: string = getAPIHost(),
 ) {
   return createAPIRequestWrapper<ResponseDataType>(
     `${url}${
@@ -109,6 +112,7 @@ function getStream<ResponseDataType>(
       }),
     },
     true,
+    apiHost,
   );
 }
 
@@ -116,6 +120,7 @@ function getStream1<ResponseDataType>(
   url: string,
   params?: {},
   options?: RequestInit,
+  apiHost: string = getAPIHost(),
 ) {
   return createAPIRequestWrapper<ResponseDataType>(
     `${url}${
@@ -132,6 +137,7 @@ function getStream1<ResponseDataType>(
       }),
     },
     true,
+    apiHost,
   );
 }
 
@@ -139,6 +145,7 @@ function get<ResponseDataType>(
   url: string,
   params?: {},
   options?: RequestInit,
+  apiHost: string = getAPIHost(),
 ) {
   return createAPIRequestWrapper<ResponseDataType>(
     `${url}${params ? '?' + new URLSearchParams(params).toString() : ''}`,
@@ -147,6 +154,8 @@ function get<ResponseDataType>(
       ...options,
       headers: getRequestHeaders(),
     },
+    false,
+    apiHost,
   );
 }
 
@@ -154,34 +163,55 @@ function post<ResponseDataType>(
   url: string,
   data: object,
   options?: RequestInit,
+  apiHost: string = getAPIHost(),
 ) {
-  return createAPIRequestWrapper<ResponseDataType>(url, {
-    method: 'POST',
-    ...options,
-    headers: getRequestHeaders(),
-    body: JSON.stringify(data),
-  });
+  return createAPIRequestWrapper<ResponseDataType>(
+    url,
+    {
+      method: 'POST',
+      ...options,
+      headers: getRequestHeaders(),
+      body: JSON.stringify(data),
+    },
+    false,
+    apiHost,
+  );
 }
 
 function put<ResponseDataType>(
   url: string,
   data: object,
   options?: RequestInit,
+  apiHost: string = getAPIHost(),
 ) {
-  return createAPIRequestWrapper<ResponseDataType>(url, {
-    method: 'PUT',
-    ...options,
-    headers: getRequestHeaders(),
-    body: JSON.stringify(data),
-  });
+  return createAPIRequestWrapper<ResponseDataType>(
+    url,
+    {
+      method: 'PUT',
+      ...options,
+      headers: getRequestHeaders(),
+      body: JSON.stringify(data),
+    },
+    false,
+    apiHost,
+  );
 }
 
-function remove<ResponseDataType>(url: string, options?: RequestInit) {
-  return createAPIRequestWrapper<ResponseDataType>(url, {
-    method: 'DELETE',
-    ...options,
-    headers: getRequestHeaders(),
-  });
+function remove<ResponseDataType>(
+  url: string,
+  options?: RequestInit,
+  apiHost: string = getAPIHost(),
+) {
+  return createAPIRequestWrapper<ResponseDataType>(
+    url,
+    {
+      method: 'DELETE',
+      ...options,
+      headers: getRequestHeaders(),
+    },
+    false,
+    apiHost,
+  );
 }
 
 /**
@@ -271,16 +301,16 @@ function removeRefreshToken(): void {
  * @returns IResponse<AuthToken>
  * @throws Error
  */
-async function refreshToken() {
-  const response = await fetch(
-    `${window.location.origin}/api/${ENDPOINTS.AUTH.BASE}/${ENDPOINTS.AUTH.REFRESH}`,
+function refreshToken() {
+  return get<AuthToken>(
+    `${ENDPOINTS.AUTH.BASE}/${ENDPOINTS.AUTH.REFRESH}`,
+    undefined,
     {
-      headers: getRequestHeaders(),
       credentials:
         process.env.NODE_ENV === 'development' ? 'include' : 'same-origin',
     },
+    `${window.location.origin}/api`,
   );
-  return parseResponse<AuthToken>(response);
 }
 
 /**
@@ -316,7 +346,7 @@ async function checkCredentials<T>(
       return parseResponse<T>(response);
     }
     // Refresh token
-    const token = await refreshToken();
+    const token = await refreshToken().call();
     if (token) {
       setAuthToken(token);
       return refetch();

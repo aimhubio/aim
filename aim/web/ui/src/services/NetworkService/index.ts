@@ -48,49 +48,63 @@ class NetworkService {
     this.uri = uri;
   }
 
-  public makeAPIGetRequest = (url: string, options: RequestOptions = {}) => {
+  public makeAPIGetRequest = (
+    url: string,
+    options: RequestOptions = {},
+    apiHost: string | undefined = this.uri,
+  ) => {
     options = options || {};
     options.method = HttpRequestMethods.GET;
-    return this.makeAPIRequest(url, options);
+    return this.makeAPIRequest(url, options, apiHost);
   };
 
-  public makeAPIPostRequest = (url: string, options: RequestOptions = {}) => {
+  public makeAPIPostRequest = (
+    url: string,
+    options: RequestOptions = {},
+    apiHost: string | undefined = this.uri,
+  ) => {
     options.method = HttpRequestMethods.POST;
-    return this.makeAPIRequest(url, options);
+    return this.makeAPIRequest(url, options, apiHost);
   };
 
   public makeAPIPutRequest = (
     urlPrefix: string,
     options: RequestOptions = {},
+    apiHost: string | undefined = this.uri,
   ) => {
     options.method = HttpRequestMethods.PUT;
-    return this.makeAPIRequest(urlPrefix, options);
+    return this.makeAPIRequest(urlPrefix, options, apiHost);
   };
 
   public makeAPIDeleteRequest = (
     urlPrefix: string,
     options: RequestOptions = {},
+    apiHost: string | undefined = this.uri,
   ) => {
     options.method = HttpRequestMethods.DELETE;
-    return this.makeAPIRequest(urlPrefix, options);
+    return this.makeAPIRequest(urlPrefix, options, apiHost);
   };
 
   public makeAPIPatchRequest = (
     urlPrefix: string,
     options: RequestOptions = {},
+    apiHost: string | undefined = this.uri,
   ) => {
     options.method = HttpRequestMethods.PATCH;
-    return this.makeAPIRequest(urlPrefix, options);
+    return this.makeAPIRequest(urlPrefix, options, apiHost);
   };
 
-  public createUrl = (arg: string | Array<string>): string => {
+  public createUrl = (
+    arg: string | Array<string>,
+    apiHost: string | undefined = this.uri,
+  ): string => {
     if (Array.isArray(arg)) {
-      return [this.uri, ...arg].join('/');
+      return [apiHost, ...arg].join('/');
     }
     if (arg) {
-      return `${this.uri}/${arg}`;
+      return `${apiHost}/${arg}`;
     }
-    return `${this.uri}`;
+    return `${apiHost}`;
   };
 
   private createQueryParams = (queryParams: Record<string, unknown>) => {
@@ -116,9 +130,10 @@ class NetworkService {
   public makeAPIRequest = (
     partUrl: string,
     options: RequestOptions = {},
+    apiHost: string | undefined = this.uri,
   ): Promise<{ body: any; headers: any }> => {
     return new Promise((resolve, reject) => {
-      let url = this.createUrl(partUrl);
+      let url = this.createUrl(partUrl, apiHost);
 
       this.request(url, options)
         .then(async (response: Response) => {
@@ -278,15 +293,15 @@ class NetworkService {
    * @throws Error
    */
   public async refreshToken() {
-    const response = await fetch(
-      `${window.location.origin}/api/${ENDPOINTS.AUTH.BASE}/${ENDPOINTS.AUTH.REFRESH}`,
+    return this.makeAPIGetRequest(
+      `${ENDPOINTS.AUTH.BASE}/${ENDPOINTS.AUTH.REFRESH}`,
       {
         headers: this.getRequestHeaders(),
         credentials:
           process.env.NODE_ENV === 'development' ? 'include' : 'same-origin',
       },
+      `${window.location.origin}/api`,
     );
-    return this.parseResponse<AuthToken>(response);
   }
 
   /**
@@ -362,7 +377,7 @@ class NetworkService {
         return this.parseResponse<T>(response);
       }
       // Refresh token
-      const token = await this.refreshToken();
+      const token = (await this.refreshToken()).body;
       if (token) {
         this.setAuthToken(token);
         return refetch();
