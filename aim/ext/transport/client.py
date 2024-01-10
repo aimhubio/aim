@@ -277,7 +277,10 @@ class Client:
 
         if queue_id != -1:
             self.get_queue(queue_id).wait_for_finish()
-        resp = self.remote.run_instruction(message_stream_generator(), metadata=self._request_metadata)
+        if method == "lock":  # Lock is special case - we want client to wait for it to be released on server side
+            resp = self.remote.run_instruction(message_stream_generator(), metadata=self._request_metadata, timeout=10)
+        else:
+            resp = self.remote.run_instruction(message_stream_generator(), metadata=self._request_metadata)
         status_msg = next(resp)
 
         assert status_msg.WhichOneof('instruction') == 'header'
