@@ -81,7 +81,8 @@ class AimLogger(Logger):
                     self._run_hash,
                     repo=self._repo_path,
                     system_tracking_interval=self._system_tracking_interval,
-                    capture_terminal_logs=self._capture_terminal_logs
+                    capture_terminal_logs=self._capture_terminal_logs,
+                    force_resume=True
                 )
                 if self._run_name is not None:
                     self._run.name = self._run_name
