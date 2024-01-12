@@ -42,6 +42,10 @@ const ENDPOINTS = {
     GET: '',
     GET_BY_TAG_NAME: 'tags',
   },
+  AUTH: {
+    BASE: 'auth',
+    REFRESH: 'refresh',
+  },
 };
 
 export default ENDPOINTS;
