@@ -48,49 +48,63 @@ class NetworkService {
     this.uri = uri;
   }
 
-  public makeAPIGetRequest = (url: string, options: RequestOptions = {}) => {
+  public makeAPIGetRequest = (
+    url: string,
+    options: RequestOptions = {},
+    apiHost: string | undefined = this.uri,
+  ) => {
     options = options || {};
     options.method = HttpRequestMethods.GET;
-    return this.makeAPIRequest(url, options);
+    return this.makeAPIRequest(url, options, apiHost);
   };
 
-  public makeAPIPostRequest = (url: string, options: RequestOptions = {}) => {
+  public makeAPIPostRequest = (
+    url: string,
+    options: RequestOptions = {},
+    apiHost: string | undefined = this.uri,
+  ) => {
     options.method = HttpRequestMethods.POST;
-    return this.makeAPIRequest(url, options);
+    return this.makeAPIRequest(url, options, apiHost);
   };
 
   public makeAPIPutRequest = (
     urlPrefix: string,
     options: RequestOptions = {},
+    apiHost: string | undefined = this.uri,
   ) => {
     options.method = HttpRequestMethods.PUT;
-    return this.makeAPIRequest(urlPrefix, options);
+    return this.makeAPIRequest(urlPrefix, options, apiHost);
   };
 
   public makeAPIDeleteRequest = (
     urlPrefix: string,
     options: RequestOptions = {},
+    apiHost: string | undefined = this.uri,
   ) => {
     options.method = HttpRequestMethods.DELETE;
-    return this.makeAPIRequest(urlPrefix, options);
+    return this.makeAPIRequest(urlPrefix, options, apiHost);
   };
 
   public makeAPIPatchRequest = (
     urlPrefix: string,
     options: RequestOptions = {},
+    apiHost: string | undefined = this.uri,
   ) => {
     options.method = HttpRequestMethods.PATCH;
-    return this.makeAPIRequest(urlPrefix, options);
+    return this.makeAPIRequest(urlPrefix, options, apiHost);
   };
 
-  public createUrl = (arg: string | Array<string>): string => {
+  public createUrl = (
+    arg: string | Array<string>,
+    apiHost: string | undefined = this.uri,
+  ): string => {
     if (Array.isArray(arg)) {
-      return [this.uri, ...arg].join('/');
+      return [apiHost, ...arg].join('/');
     }
     if (arg) {
-      return `${this.uri}/${arg}`;
+      return `${apiHost}/${arg}`;
     }
-    return `${this.uri}`;
+    return `${apiHost}`;
   };
 
   private createQueryParams = (queryParams: Record<string, unknown>) => {
@@ -116,9 +130,10 @@ class NetworkService {
   public makeAPIRequest = (
     partUrl: string,
     options: RequestOptions = {},
+    apiHost: string | undefined = this.uri,
   ): Promise<{ body: any; headers: any }> => {
     return new Promise((resolve, reject) => {
-      let url = this.createUrl(partUrl);
+      let url = this.createUrl(partUrl, apiHost);
 
       this.request(url, options)
         .then(async (response: Response) => {
@@ -154,11 +169,9 @@ class NetworkService {
           }
 
           if (response.status >= 400) {
-            // @TODO: Add refresh token api
-            // return await this.checkCredentials(response, url, () =>
-            //   this.makeAPIRequest(partUrl, options),
-            // );
-            return reject(body);
+            return await this.checkCredentials(response, url, () =>
+              this.request(url, options),
+            );
           }
 
           return resolve({ body, headers });
@@ -264,9 +277,13 @@ class NetworkService {
     const requestHeaders: Record<string, string> = {
       'X-Timezone-Offset': this.getTimezoneOffset(),
       'Content-Type': this.CONTENT_TYPE.JSON,
-      Authorization: this.getAuthToken(),
       ...headers,
     };
+
+    const Authorization = this.getAuthToken();
+    if (Authorization) {
+      requestHeaders.Authorization = Authorization;
+    }
     return requestHeaders;
   }
 
@@ -275,13 +292,15 @@ class NetworkService {
    * @returns IResponse<AuthToken>
    * @throws Error
    */
-  public refreshToken() {
+  public async refreshToken() {
     return this.makeAPIGetRequest(
       `${ENDPOINTS.AUTH.BASE}/${ENDPOINTS.AUTH.REFRESH}`,
       {
+        headers: this.getRequestHeaders(),
         credentials:
           process.env.NODE_ENV === 'development' ? 'include' : 'same-origin',
       },
+      `${window.location.origin}/api`,
     );
   }
 
@@ -347,7 +366,6 @@ class NetworkService {
     }
   }
 
-  // @TODO: Add refresh token api and after use the "checkCredentials" function
   public async checkCredentials<T>(
     response: Response,
     endpoint: string,
