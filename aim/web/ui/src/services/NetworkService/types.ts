@@ -26,6 +26,7 @@ export type RequestOptions = {
   headers?: Record<string, unknown>;
   body?: string | Record<string, any> | File | ReadableStream<any>;
   signal?: AbortSignal;
+  credentials?: RequestCredentials;
 };
 
 export interface RequestInit {
@@ -46,7 +47,7 @@ export interface RequestInit {
    *
    * Sets request's credentials.
    */
-  credentials?: Record<string, unknown>;
+  credentials?: RequestCredentials;
 
   /**
    * A Headers object, an object literal, or an array of two-item
