@@ -6,6 +6,8 @@
 
 - Add support for `sqlalchemy 2.0` (mihran113)
 - Add `min/max/first` values tracking for metrics (mihran113)
+- Fix bug in pytorch lightning raising lock timeout (inc0)
+
 ## 3.17.6 
 
 - Switch to patched version of official `pynvml` (mihran113)
