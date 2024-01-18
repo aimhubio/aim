@@ -686,7 +686,7 @@ function getParamsModelMethods(
         runProps,
       }),
     ];
-    const metricsSelectOptions = getMetricsSelectOptions(metricsColumns);
+    const metricsSelectOptions = getMetricsSelectOptions(metricsColumns, model);
     const sortOptions = [...groupingSelectOptions, ...metricsSelectOptions];
 
     const tableData = getDataAsTableRows(
@@ -706,6 +706,7 @@ function getParamsModelMethods(
       data[0]?.config,
       configData.table?.columnsOrder!,
       configData.table?.hiddenColumns!,
+      configData.table?.metricsValueKey,
       sortFields,
       onSortChange,
       configData.grouping as any,
@@ -922,14 +923,21 @@ function getParamsModelMethods(
       highLevelParams = highLevelParams.concat(
         getObjectPaths(run.params, run.params, '', false, true),
       );
-      let metricsLastValues: any = {};
+      const metricsValues: Record<
+        string,
+        Record<'min' | 'max' | 'last', number | string>
+      > = {};
       run.traces.metric.forEach((trace) => {
         metricsColumns[trace.name] = {
           ...metricsColumns[trace.name],
           [contextToString(trace.context) as string]: '-',
         };
         const metricHash = getMetricHash(trace.name, trace.context as any);
-        metricsLastValues[metricHash] = trace.last_value.last;
+        metricsValues[metricHash] = {
+          min: trace.last_value.min,
+          max: trace.last_value.max,
+          last: trace.last_value.last,
+        };
       });
       const paramKey = encode({ runHash: run.hash });
 
@@ -938,7 +946,7 @@ function getParamsModelMethods(
         isHidden: configData!.table.hiddenMetrics!.includes(paramKey),
         color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
         key: paramKey,
-        metricsLastValues,
+        metricsValues,
         dasharray: DASH_ARRAYS[0],
       });
     });
@@ -1087,7 +1095,7 @@ function getParamsModelMethods(
       config,
       groupingSelectOptions,
     );
-    const metricsSelectOptions = getMetricsSelectOptions(metricsColumns);
+    const metricsSelectOptions = getMetricsSelectOptions(metricsColumns, model);
     const sortOptions = [...groupingSelectOptions, ...metricsSelectOptions];
 
     const tableColumns: ITableColumn[] = getParamsTableColumns(
@@ -1097,6 +1105,7 @@ function getParamsModelMethods(
       data[0]?.config,
       config.table?.columnsOrder!,
       config.table?.hiddenColumns!,
+      config.table?.metricsValueKey,
       config.table?.sortFields,
       onSortChange,
       config.grouping as any,
@@ -1173,7 +1182,7 @@ function getParamsModelMethods(
         runProps,
       }),
     ];
-    const metricsSelectOptions = getMetricsSelectOptions(metricsColumns);
+    const metricsSelectOptions = getMetricsSelectOptions(metricsColumns, model);
     const sortOptions = [...groupingSelectOptions, ...metricsSelectOptions];
 
     const tableData = getDataAsTableRows(
@@ -1191,6 +1200,7 @@ function getParamsModelMethods(
       data[0]?.config,
       configData.table?.columnsOrder!,
       configData.table?.hiddenColumns!,
+      configData.table?.metricsValueKey,
       configData.table?.sortFields,
       onSortChange,
       configData.grouping as any,

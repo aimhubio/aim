@@ -1,4 +1,4 @@
-import { ResizeModeEnum } from 'config/enums/tableEnums';
+import { MetricsValueKeyEnum, ResizeModeEnum } from 'config/enums/tableEnums';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { DensityOptions } from 'config/enums/densityEnum';
 import { GroupNameEnum } from 'config/grouping/GroupingPopovers';
@@ -112,6 +112,7 @@ export interface ISelectConfig {
 }
 
 export interface ITableConfig {
+  metricsValueKey?: MetricsValueKeyEnum;
   resizeMode?: ResizeModeEnum;
   rowHeight: RowHeightSize;
   sortFields?: SortField[];

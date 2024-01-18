@@ -32,6 +32,8 @@ function RunOverviewTab({ runData, runHash }: IRunOverviewTabProps) {
     runHash,
   });
 
+  console.log('runData', runData);
+
   React.useEffect(() => {
     analytics.pageView(
       ANALYTICS_EVENT_KEYS.runDetails.tabs['overview'].tabView,

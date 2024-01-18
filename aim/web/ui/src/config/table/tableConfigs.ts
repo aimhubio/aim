@@ -1,4 +1,4 @@
-import { ResizeModeEnum } from 'config/enums/tableEnums';
+import { ResizeModeEnum, MetricsValueKeyEnum } from 'config/enums/tableEnums';
 
 import { AppNameEnum } from 'services/models/explorer';
 
@@ -39,6 +39,7 @@ export const VIEW_PORT_OFFSET = 500;
 
 export const TABLE_DEFAULT_CONFIG: Record<string, any> = {
   [AppNameEnum.RUNS]: {
+    metricsValueKey: MetricsValueKeyEnum.LAST,
     resizeMode: ResizeModeEnum.Resizable,
     rowHeight: RowHeightSize.md,
     sortFields: [],
@@ -55,6 +56,7 @@ export const TABLE_DEFAULT_CONFIG: Record<string, any> = {
     height: '0.5',
   },
   [AppNameEnum.METRICS]: {
+    metricsValueKey: MetricsValueKeyEnum.LAST,
     resizeMode: ResizeModeEnum.Resizable,
     rowHeight: RowHeightSize.md,
     sortFields: [],
@@ -70,6 +72,7 @@ export const TABLE_DEFAULT_CONFIG: Record<string, any> = {
     height: '0.5',
   },
   [AppNameEnum.PARAMS]: {
+    metricsValueKey: MetricsValueKeyEnum.LAST,
     resizeMode: ResizeModeEnum.Resizable,
     rowHeight: RowHeightSize.md,
     sortFields: [],
@@ -86,6 +89,7 @@ export const TABLE_DEFAULT_CONFIG: Record<string, any> = {
     height: '0.5',
   },
   [AppNameEnum.IMAGES]: {
+    metricsValueKey: MetricsValueKeyEnum.LAST,
     resizeMode: ResizeModeEnum.Resizable,
     rowHeight: RowHeightSize.md,
     sortFields: [],
@@ -101,6 +105,7 @@ export const TABLE_DEFAULT_CONFIG: Record<string, any> = {
     height: '0.5',
   },
   [AppNameEnum.SCATTERS]: {
+    metricsValueKey: MetricsValueKeyEnum.LAST,
     resizeMode: ResizeModeEnum.Resizable,
     rowHeight: RowHeightSize.md,
     sortFields: [],

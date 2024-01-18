@@ -45,6 +45,7 @@ function Runs(props: any): React.FunctionComponentElement<React.ReactNode> {
               onTableDiffShow={props.onTableDiffShow}
               onManageColumns={props.onManageColumns}
               onRowHeightChange={props.onRowHeightChange}
+              onMetricsValueKeyChange={props.onMetricsValueKeyChange}
               data={props.tableData}
               sameValueColumns={props.sameValueColumns}
               isInfiniteLoading={props.isInfiniteLoading}
@@ -52,6 +53,7 @@ function Runs(props: any): React.FunctionComponentElement<React.ReactNode> {
               hideSystemMetrics={props.hideSystemMetrics}
               onExportTableData={props.onExportTableData}
               tableRowHeight={props.tableRowHeight}
+              metricsValueKey={props.metricsValueKey}
               columns={props.tableColumns}
               runsList={props.tableData}
               requestStatus={props.requestStatus}

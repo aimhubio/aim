@@ -37,6 +37,8 @@ function RunsTable({
   requestStatus,
   onToggleColumnsColorScales,
   columnsColorScales,
+  metricsValueKey,
+  onMetricsValueKeyChange,
 }: IRunsTableProps): React.FunctionComponentElement<React.ReactNode> {
   const getLatestRunsDataRequestRef = React.useRef<any>(null);
   React.useEffect(() => {
@@ -72,12 +74,14 @@ function RunsTable({
             multiSelect
             // Table options
             topHeader
+            metricsValueKey={metricsValueKey}
             rowHeight={tableRowHeight}
             hiddenColumns={hiddenColumns}
             hideSystemMetrics={hideSystemMetrics}
             columnsOrder={columnsOrder}
             columnsWidths={columnsWidths}
             // Table actions
+            onMetricsValueKeyChange={onMetricsValueKeyChange}
             onManageColumns={onManageColumns}
             onColumnsVisibilityChange={onColumnsVisibilityChange}
             onTableDiffShow={onTableDiffShow}
