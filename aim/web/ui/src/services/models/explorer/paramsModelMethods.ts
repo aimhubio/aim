@@ -4,7 +4,7 @@ import _ from 'lodash-es';
 
 import COLORS from 'config/colors/colors';
 import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
-import { ResizeModeEnum } from 'config/enums/tableEnums';
+import { MetricsValueKeyEnum, ResizeModeEnum } from 'config/enums/tableEnums';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
@@ -925,7 +925,7 @@ function getParamsModelMethods(
       );
       const metricsValues: Record<
         string,
-        Record<'min' | 'max' | 'last', number | string>
+        Record<MetricsValueKeyEnum, number | string>
       > = {};
       run.traces.metric.forEach((trace) => {
         metricsColumns[trace.name] = {

@@ -402,7 +402,7 @@ function getRunsModelMethods(
       runProps = runProps.concat(getObjectPaths(run.props, run.props));
       const metricsValues: Record<
         string,
-        Record<'min' | 'max' | 'last', number | string>
+        Record<MetricsValueKeyEnum, number | string>
       > = {};
       run.traces.metric.forEach((trace) => {
         metricsColumns[trace.name] = {

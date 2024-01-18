@@ -95,7 +95,6 @@ function RunOverviewTabMetricsCard({
     [runBatch],
   );
 
-  console.log('tableData', tableData);
   return (
     <ErrorBoundary>
       <Card
