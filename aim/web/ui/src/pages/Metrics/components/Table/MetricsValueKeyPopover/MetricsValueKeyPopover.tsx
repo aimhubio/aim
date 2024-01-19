@@ -47,7 +47,7 @@ function MetricsValueKeyPopover({
               opened || metricsValueKeyChanged ? 'opened' : ''
             }`}
           >
-            <Icon name='row-height' />
+            <Icon name='metric-value' />
             <Text size={14} tint={100}>
               {metricsValueKey} Value
             </Text>
