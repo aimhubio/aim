@@ -5,7 +5,7 @@
 ### Enhancements:
 
 - Add support for `sqlalchemy 2.0` (mihran113)
-- Add `min/max/first` values tracking for metrics (mihran113)
+- Add the ability to view `min/max/first/last` values for metrics in Runs Explorer (mihran113, KaroMourad)
 - Fix bug in pytorch lightning raising lock timeout (inc0)
 
 ## 3.17.6 
