@@ -56,6 +56,12 @@ function MetricsValueKeyPopover({
         component={
           <div className='MetricsValueKeyPopover'>
             <MenuItem
+              selected={metricsValueKey === MetricsValueKeyEnum.FIRST}
+              onClick={() => onMetricsValueKeyChange(MetricsValueKeyEnum.FIRST)}
+            >
+              First Value
+            </MenuItem>
+            <MenuItem
               selected={metricsValueKey === MetricsValueKeyEnum.MAX}
               onClick={() => onMetricsValueKeyChange(MetricsValueKeyEnum.MAX)}
             >

@@ -2,6 +2,7 @@ enum MetricsValueKeyEnum {
   MIN = 'min',
   LAST = 'last',
   MAX = 'max',
+  FIRST = 'first',
 }
 
 enum RowHeightEnum {

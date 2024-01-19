@@ -937,6 +937,7 @@ function getParamsModelMethods(
           min: trace.last_value.min,
           max: trace.last_value.max,
           last: trace.last_value.last,
+          first: trace.last_value.first,
         };
       });
       const paramKey = encode({ runHash: run.hash });
