@@ -1,6 +1,7 @@
 import pytz
 
 from typing import Collection, Union, List, Optional
+from sqlalchemy import __version__ as sa_version
 from sqlalchemy import delete
 from sqlalchemy.orm import joinedload
 from sqlalchemy.exc import IntegrityError
@@ -29,7 +30,7 @@ from aim.storage.structured.sql_engine.utils import ModelMappedProperty as Prope
 
 
 def session_commit_or_flush(session):
-    if getattr(session, 'autocommit', True):
+    if getattr(session, 'autocommit', True) and sa_version >= '2.0.0':
         session.commit()
     else:
         session.flush()
