@@ -33,7 +33,7 @@ export interface ISequence<T> {
 export interface IParamTrace {
   name: string;
   context: { [key: string]: unknown };
-  last_value: {
+  values: {
     last: number | string;
     min: number | string;
     max: number | string;

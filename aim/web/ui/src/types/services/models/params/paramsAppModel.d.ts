@@ -60,6 +60,6 @@ export interface IParam {
   dasharray: string;
   metricsValues?: Record<
     string,
-    Record<'last' | 'min' | 'max', number | string>
+    Record<'last' | 'min' | 'max' | 'first', number | string>
   >;
 }

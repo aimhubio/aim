@@ -321,7 +321,7 @@ function getScattersModelMethods(
                       trace.name === value?.option_name &&
                       _.isEqual(trace.context, value?.context)
                     ) {
-                      let lastValue = trace.last_value.last;
+                      let lastValue = trace.values.last;
                       const formattedLastValue = formatValue(lastValue, '-');
                       values[i] = lastValue;
                       if (formattedLastValue !== '-') {
@@ -496,7 +496,7 @@ function getScattersModelMethods(
         const metricsRowValues = getMetricsInitialRowData(metricsColumns);
         metric.run.traces.metric.forEach((trace: any) => {
           const metricHash = getMetricHash(trace.name, trace.context as any);
-          metricsRowValues[metricHash] = formatValue(trace.last_value.last);
+          metricsRowValues[metricHash] = formatValue(trace.values.last);
         });
         const rowValues: any = {
           rowMeta: {
@@ -685,10 +685,10 @@ function getScattersModelMethods(
         };
         const metricHash = getMetricHash(trace.name, trace.context as any);
         metricsValues[metricHash] = {
-          min: trace.last_value.min,
-          max: trace.last_value.max,
-          last: trace.last_value.last,
-          first: trace.last_value.first,
+          min: trace.values.min,
+          max: trace.values.max,
+          last: trace.values.last,
+          first: trace.values.first,
         };
       });
       const paramKey = encode({ runHash: run.hash });

@@ -369,7 +369,7 @@ function getParamsModelMethods(
         const metricsRowValues = getMetricsInitialRowData(metricsColumns);
         metric.run.traces.metric.forEach((trace: any) => {
           const metricHash = getMetricHash(trace.name, trace.context);
-          metricsRowValues[metricHash] = formatValue(trace.last_value.last);
+          metricsRowValues[metricHash] = formatValue(trace.values.last);
         });
         const rowValues: any = {
           rowMeta: {
@@ -565,15 +565,15 @@ function getParamsModelMethods(
                       trace.name === value?.option_name &&
                       _.isEqual(trace.context, value?.context)
                     ) {
-                      values[metricHash] = trace.last_value.last;
+                      values[metricHash] = trace.values.last;
                       if (dimension[metricHash]) {
-                        dimension[metricHash].values.add(trace.last_value.last);
-                        if (typeof trace.last_value.last === 'string') {
+                        dimension[metricHash].values.add(trace.values.last);
+                        if (typeof trace.values.last === 'string') {
                           dimension[metricHash].scaleType = ScaleEnum.Point;
                         }
                       } else {
                         dimension[metricHash] = {
-                          values: new Set().add(trace.last_value.last),
+                          values: new Set().add(trace.values.last),
                           scaleType: ScaleEnum.Linear,
                           displayName: metricLabel,
                           dimensionType: 'metric',
@@ -934,10 +934,10 @@ function getParamsModelMethods(
         };
         const metricHash = getMetricHash(trace.name, trace.context as any);
         metricsValues[metricHash] = {
-          min: trace.last_value.min,
-          max: trace.last_value.max,
-          last: trace.last_value.last,
-          first: trace.last_value.first,
+          min: trace.values.min,
+          max: trace.values.max,
+          last: trace.values.last,
+          first: trace.values.first,
         };
       });
       const paramKey = encode({ runHash: run.hash });

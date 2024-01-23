@@ -411,10 +411,10 @@ function getRunsModelMethods(
         };
         const metricHash = getMetricHash(trace.name, trace.context as any);
         metricsValues[metricHash] = {
-          min: trace.last_value.min,
-          max: trace.last_value.max,
-          last: trace.last_value.last,
-          first: trace.last_value.first,
+          min: trace.values.min,
+          max: trace.values.max,
+          last: trace.values.last,
+          first: trace.values.first,
         };
       });
       runHashArray.push(run.hash);
@@ -659,7 +659,7 @@ function getRunsModelMethods(
         metric.run.traces.metric.forEach((trace: any) => {
           const metricHash = getMetricHash(trace.name, trace.context);
           metricsRowValues[metricHash] = formatValue(
-            trace.last_value[metricsValueKey],
+            trace.values[metricsValueKey],
           );
         });
 
