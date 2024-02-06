@@ -1,10 +1,19 @@
 import os
+import importlib.util
 from typing import Any, Dict, Optional, Union
 from argparse import Namespace
 
 import packaging.version
 
-try:
+if importlib.util.find_spec("lightning"):
+    import lightning.pytorch as pl
+
+    from lightning.pytorch.loggers.logger import (
+        Logger, rank_zero_experiment
+    )
+
+    from lightning.pytorch.utilities import rank_zero_only
+elif importlib.util.find_spec("pytorch_lightning"):
     import pytorch_lightning as pl
 
     if packaging.version.parse(pl.__version__) < packaging.version.parse("1.7"):
@@ -19,10 +28,11 @@ try:
         )
 
     from pytorch_lightning.utilities import rank_zero_only
-except ImportError:
+else:
     raise RuntimeError(
         'This contrib module requires PyTorch Lightning to be installed. '
         'Please install it with command: \n pip install pytorch-lightning'
+        'or \n pip install lightning'
     )
 
 from aim.sdk.run import Run
