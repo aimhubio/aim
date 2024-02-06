@@ -1,18 +1,17 @@
 # Changelog
 
-## 3.18.0
+## 3.18.0 Feb 6, 2024
 
 ### Enhancements:
 
 - Add support for `sqlalchemy 2.0` (mihran113)
-- Add `min/max/first` values tracking for metrics (mihran113)
-- Fix bug in pytorch lightning raising lock timeout (inc0)
+- Add `min/max/first` values tracking and visualization for metrics (mihran113, KaroMourad)
 
 ### Fixes 
-- Fix compatibility with `sqlalchemy < 2.0` versions
-
-## 3.17.6 
-
+- Fix pytorch_lightning aliases issue (popfido)
+- Fix typos in stat.py to collect gpu memory and power correctly ճ(ChanderG)
+- Fix bug in pytorch lightning raising lock timeout (inc0)
+- Fix compatibility with `sqlalchemy < 2.0` versions (mihran113)
 - Switch to patched version of official `pynvml` (mihran113)
 - Remove telemetry tracking (mihran113)
 

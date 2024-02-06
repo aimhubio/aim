@@ -161,9 +161,7 @@ class Stat(object):
                     memory = nvml.nvmlDeviceGetMemoryInfo(handle)
                     # Device memory usage
                     # 'memory_used': round10e5(memory.used / 1024 / 1024),
-                    gpu_info["gpu_memory_percent"] = (
-                        round10e5(memory.used * 100 / memory.total),
-                    )
+                    gpu_info["gpu_memory_percent"] = round10e5(memory.used * 100 / memory.total)
                 except nvml.NVMLError_NotSupported:
                     pass
                 try:
@@ -181,7 +179,7 @@ class Stat(object):
                     power_cap_watts = power_cap / 1000
                     power_watts / power_cap_watts * 100
                     # Power usage in watts and percent
-                    gpu_info["gpu_power_watts"]: round10e5(power_watts)
+                    gpu_info["gpu_power_watts"] = round10e5(power_watts)
                     # gpu_info["power_percent"] = round10e5(power_usage)
                 except nvml.NVMLError_NotSupported:
                     pass
