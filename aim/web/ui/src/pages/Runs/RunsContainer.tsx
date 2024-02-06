@@ -68,6 +68,7 @@ function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
         onSelectRunQueryChange={runsAppModel.onSelectRunQueryChange}
         onToggleColumnsColorScales={runsAppModel.onToggleColumnsColorScales}
         tableRowHeight={runsData?.config?.table?.rowHeight}
+        metricsValueKey={runsData?.config?.table?.metricsValueKey}
         sameValueColumns={runsData?.sameValueColumns!}
         tableRef={tableRef}
         columnsOrder={runsData?.config?.table.columnsOrder}
@@ -93,6 +94,7 @@ function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
         onRowSelect={runsAppModel.onRowSelect}
         archiveRuns={runsAppModel.archiveRuns}
         deleteRuns={runsAppModel.deleteRuns}
+        onMetricsValueKeyChange={runsAppModel.onMetricsValueKeyChange}
       />
     </ErrorBoundary>
   );

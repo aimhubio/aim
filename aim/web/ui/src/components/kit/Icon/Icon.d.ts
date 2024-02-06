@@ -159,4 +159,5 @@ export type IconName =
   | 'audios'
   | 'distributions'
   | 'dashboard'
-  | 'chart-legends';
+  | 'chart-legends'
+  | 'metric-value';

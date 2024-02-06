@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
+import { MetricsValueKeyEnum } from 'config/enums/tableEnums';
 
 import { IColumnsOrder } from 'types/services/models/explorer/createAppModel';
 import {
@@ -23,6 +24,7 @@ export interface IRunsTableProps {
   hiddenColumns: string[];
   hideSystemMetrics: boolean;
   columns: any;
+  metricsValueKey: MetricsValueKeyEnum;
   tableRowHeight: number;
   requestStatus: RequestStatusEnum;
   sameValueColumns: string[] | [];
@@ -30,8 +32,9 @@ export interface IRunsTableProps {
   onManageColumns: () => void;
   onColumnsVisibilityChange: (hiddenColumns: string[] | string) => void;
   onTableDiffShow: () => void;
+  onMetricsValueKeyChange: (key: MetricsValueKeyEnum) => void;
   onRowHeightChange: () => void;
-  getLastRunsData: (row: any) => void;
+  getLastRunsData: (row: any) => any;
   isLatest?: boolean;
   data: any;
   columnsWidths: { [key: string]: number };

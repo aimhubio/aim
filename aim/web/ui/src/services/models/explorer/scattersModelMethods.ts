@@ -6,7 +6,7 @@ import { IPoint } from 'components/ScatterPlot';
 
 import COLORS from 'config/colors/colors';
 import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
-import { ResizeModeEnum } from 'config/enums/tableEnums';
+import { MetricsValueKeyEnum, ResizeModeEnum } from 'config/enums/tableEnums';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
@@ -222,7 +222,7 @@ function getScattersModelMethods(
         runProps,
       }),
     ];
-    const metricsSelectOptions = getMetricsSelectOptions(metricsColumns);
+    const metricsSelectOptions = getMetricsSelectOptions(metricsColumns, model);
     const sortOptions = [...groupingSelectOptions, ...metricsSelectOptions];
 
     const tableData = getDataAsTableRows(
@@ -242,6 +242,7 @@ function getScattersModelMethods(
       data[0]?.config,
       configData.table?.columnsOrder!,
       configData.table?.hiddenColumns!,
+      configData.table?.metricsValueKey,
       sortFields,
       onSortChange,
       configData.grouping as any,
@@ -320,7 +321,7 @@ function getScattersModelMethods(
                       trace.name === value?.option_name &&
                       _.isEqual(trace.context, value?.context)
                     ) {
-                      let lastValue = trace.last_value.last;
+                      let lastValue = trace.values.last;
                       const formattedLastValue = formatValue(lastValue, '-');
                       values[i] = lastValue;
                       if (formattedLastValue !== '-') {
@@ -495,7 +496,7 @@ function getScattersModelMethods(
         const metricsRowValues = getMetricsInitialRowData(metricsColumns);
         metric.run.traces.metric.forEach((trace: any) => {
           const metricHash = getMetricHash(trace.name, trace.context as any);
-          metricsRowValues[metricHash] = formatValue(trace.last_value.last);
+          metricsRowValues[metricHash] = formatValue(trace.values.last);
         });
         const rowValues: any = {
           rowMeta: {
@@ -672,7 +673,10 @@ function getScattersModelMethods(
       highLevelParams = highLevelParams.concat(
         getObjectPaths(run.params, run.params, '', false, true),
       );
-      let metricsLastValues: { [key: string]: number | string } = {};
+      const metricsValues: Record<
+        string,
+        Record<MetricsValueKeyEnum, number | string>
+      > = {};
 
       run.traces.metric.forEach((trace) => {
         metricsColumns[trace.name] = {
@@ -680,7 +684,12 @@ function getScattersModelMethods(
           [contextToString(trace.context) as string]: '-',
         };
         const metricHash = getMetricHash(trace.name, trace.context as any);
-        metricsLastValues[metricHash] = trace.last_value.last;
+        metricsValues[metricHash] = {
+          min: trace.values.min,
+          max: trace.values.max,
+          last: trace.values.last,
+          first: trace.values.first,
+        };
       });
       const paramKey = encode({ runHash: run.hash });
       runs.push({
@@ -688,7 +697,7 @@ function getScattersModelMethods(
         isHidden: configData!.table.hiddenMetrics!.includes(paramKey),
         color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
         key: paramKey,
-        metricsLastValues,
+        metricsValues,
         dasharray: DASH_ARRAYS[0],
       });
     });
@@ -909,7 +918,7 @@ function getScattersModelMethods(
         runProps,
       }),
     ];
-    const metricsSelectOptions = getMetricsSelectOptions(metricsColumns);
+    const metricsSelectOptions = getMetricsSelectOptions(metricsColumns, model);
     const sortOptions = [...groupingSelectOptions, ...metricsSelectOptions];
 
     const tableData = getDataAsTableRows(
@@ -927,6 +936,7 @@ function getScattersModelMethods(
       data[0]?.config,
       configData.table?.columnsOrder!,
       configData.table?.hiddenColumns!,
+      configData.table?.metricsValueKey,
       configData.table?.sortFields,
       onSortChange,
       configData.grouping as any,
@@ -1082,7 +1092,7 @@ function getScattersModelMethods(
       config,
       groupingSelectOptions,
     );
-    const metricsSelectOptions = getMetricsSelectOptions(metricsColumns);
+    const metricsSelectOptions = getMetricsSelectOptions(metricsColumns, model);
     const sortOptions = [...groupingSelectOptions, ...metricsSelectOptions];
 
     const tableColumns: ITableColumn[] = getParamsTableColumns(
@@ -1092,6 +1102,7 @@ function getScattersModelMethods(
       data[0]?.config,
       config.table?.columnsOrder!,
       config.table?.hiddenColumns!,
+      config.table?.metricsValueKey,
       config.table?.sortFields,
       onSortChange,
       config.grouping as any,

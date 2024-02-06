@@ -1,3 +1,10 @@
+enum MetricsValueKeyEnum {
+  MIN = 'min',
+  LAST = 'last',
+  MAX = 'max',
+  FIRST = 'first',
+}
+
 enum RowHeightEnum {
   small = 22,
   medium = 28,
@@ -20,4 +27,10 @@ enum HideColumnsEnum {
   ShowSystemMetrics = 'Show System Metrics',
   All = 'All',
 }
-export { RowHeightEnum, HideRowsEnum, ResizeModeEnum, HideColumnsEnum };
+export {
+  RowHeightEnum,
+  HideRowsEnum,
+  ResizeModeEnum,
+  HideColumnsEnum,
+  MetricsValueKeyEnum,
+};

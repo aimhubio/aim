@@ -10,6 +10,7 @@ import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 import { DATE_EXPORTING_FORMAT, TABLE_DATE_FORMAT } from 'config/dates/dates';
 import { getSuggestionsByExplorer } from 'config/monacoConfig/monacoConfig';
 import { GroupNameEnum } from 'config/grouping/GroupingPopovers';
+import { MetricsValueKeyEnum } from 'config/enums/tableEnums';
 
 import {
   getRunsTableColumns,
@@ -77,17 +78,18 @@ import { processDurationTime } from 'utils/processDurationTime';
 import { getMetricsInitialRowData } from 'utils/app/getMetricsInitialRowData';
 import { getMetricHash } from 'utils/app/getMetricHash';
 import saveRecentSearches from 'utils/saveRecentSearches';
+import onMetricsValueKeyChange from 'utils/app/onMetricsValueKeyChange';
 
 import { InitialAppModelType } from './config';
 
-// ************ Runs App Model Methods
-
+// ************ Runs App Model Methods ************
 function getRunsModelMethods(
   initialApp: InitialAppModelType,
   appConfig: IAppInitialConfig,
 ) {
   const { appName, grouping, components, selectForm } = appConfig;
   const { model, setModelDefaultAppConfigData } = initialApp;
+
   let runsRequestRef: {
     call: (
       exceptionHandler: (detail: any) => void,
@@ -243,7 +245,6 @@ function getRunsModelMethods(
               count++;
             }
           }
-
           const { data, params, metricsColumns, selectedRows } =
             processData(runsData);
           const tableData = getDataAsTableRows(data, metricsColumns, params);
@@ -389,7 +390,7 @@ function getRunsModelMethods(
   } {
     const grouping = model.getState()?.config?.grouping;
     const paletteIndex: number = grouping?.paletteIndex || 0;
-    const metricsColumns: any = {};
+    const metricsColumns: Record<string, Record<string, any>> = {};
     const runHashArray: string[] = [];
     let selectedRows = model.getState()?.selectedRows;
     let runs: IParam[] = [];
@@ -399,14 +400,22 @@ function getRunsModelMethods(
     data?.forEach((run: IRun<IParamTrace>, index) => {
       params = params.concat(getObjectPaths(run.params, run.params));
       runProps = runProps.concat(getObjectPaths(run.props, run.props));
-      const metricsLastValues: any = {};
+      const metricsValues: Record<
+        string,
+        Record<MetricsValueKeyEnum, number | string>
+      > = {};
       run.traces.metric.forEach((trace) => {
         metricsColumns[trace.name] = {
           ...metricsColumns[trace.name],
           [contextToString(trace.context) as string]: '-',
         };
         const metricHash = getMetricHash(trace.name, trace.context as any);
-        metricsLastValues[metricHash] = trace.last_value.last;
+        metricsValues[metricHash] = {
+          min: trace.values.min,
+          max: trace.values.max,
+          last: trace.values.last,
+          first: trace.values.first,
+        };
       });
       runHashArray.push(run.hash);
       runs.push({
@@ -415,9 +424,10 @@ function getRunsModelMethods(
         color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
         key: encode({ runHash: run.hash }),
         dasharray: DASH_ARRAYS[0],
-        metricsLastValues,
+        metricsValues,
       });
     });
+
     const processedData = groupData(runs);
     const uniqParams = _.uniq(params).sort();
     const uniqProps = _.uniq(runProps).sort();
@@ -614,6 +624,9 @@ function getRunsModelMethods(
       };
     }
 
+    const metricsValueKey =
+      model.getState()?.config?.table.metricsValueKey ||
+      MetricsValueKeyEnum.LAST;
     const rows: any = processedData[0]?.config !== null ? {} : [];
     let rowIndex = 0;
     const sameValueColumns: string[] = [];
@@ -645,7 +658,9 @@ function getRunsModelMethods(
         const metricsRowValues = getMetricsInitialRowData(metricsColumns);
         metric.run.traces.metric.forEach((trace: any) => {
           const metricHash = getMetricHash(trace.name, trace.context);
-          metricsRowValues[metricHash] = formatValue(trace.last_value.last);
+          metricsRowValues[metricHash] = formatValue(
+            trace.values[metricsValueKey],
+          );
         });
 
         const rowValues: any = {
@@ -661,7 +676,6 @@ function getRunsModelMethods(
           experimentId: metric.run.props.experiment?.id ?? '',
           run: metric.run.props.name,
           description: metric.run.props?.description ?? '-',
-
           date: moment(metric.run.props.creation_time * 1000).format(
             TABLE_DATE_FORMAT,
           ),
@@ -1099,6 +1113,14 @@ function getRunsModelMethods(
   }
   if (components?.table) {
     Object.assign(methods, {
+      onMetricsValueKeyChange(metricsValueKey: MetricsValueKeyEnum): void {
+        onMetricsValueKeyChange({
+          metricsValueKey,
+          model,
+          appName,
+          updateModelData,
+        });
+      },
       onRowHeightChange(height: RowHeightSize): void {
         onRowHeightChange({ height, model, appName });
       },

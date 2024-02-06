@@ -671,7 +671,7 @@ class BasicRun(BaseRun, StructuredRunMixin):
                         'name': name,
                     }
                     if not skip_last_value:
-                        trace_data['last_value'] = value
+                        trace_data['values'] = value
                     for seq_type in dtype_to_sequence_type_map[dtype]:
                         traces_overview[seq_type].append(trace_data)
         return traces_overview
