@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.18.0 Feb 6, 2024
+## 3.18.1 Feb 7, 2024
 
 ### Enhancements:
 
