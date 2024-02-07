@@ -43,7 +43,7 @@ class AimCallback:
             will be logged as ``value_0`` and ``value_1``. The number of metrics must be
             the same as the number of values objective function returns.
         as_multirun:
-            Creates new runs for each trial and sets the metrics as run parametrs.
+            Creates new runs for each trial and sets the metrics as run parameters.
             Useful for exploring parameters in Aim UI
             (for more: https://aimstack.readthedocs.io/en/latest/ui/pages/explorers.html#params-explorer).
             If is false then all of the stats are tracked in a single run as Aim metrics.
