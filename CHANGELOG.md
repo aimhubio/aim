@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.18.0 Feb 6, 2024
+## 3.18.1 Feb 7, 2024
 
 ### Enhancements:
 
@@ -9,7 +9,7 @@
 
 ### Fixes 
 - Fix pytorch_lightning aliases issue (popfido)
-- Fix typos in stat.py to collect gpu memory and power correctly ճ(ChanderG)
+- Fix typos in stat.py to collect gpu memory and power correctly (ChanderG)
 - Fix bug in pytorch lightning raising lock timeout (inc0)
 - Fix compatibility with `sqlalchemy < 2.0` versions (mihran113)
 - Switch to patched version of official `pynvml` (mihran113)

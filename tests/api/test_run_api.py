@@ -23,7 +23,7 @@ class TestRunApi(PrefilledDataApiTestBase):
         for _, run in decoded_response.items():
             self.assertEqual(4, len(run['traces']['metric']))
             for trace in run['traces']['metric']:
-                self.assertAlmostEqual(0.99, trace['last_value']['last'])
+                self.assertAlmostEqual(0.99, trace['values']['last'])
 
     def test_search_runs_api_paginated(self):
         client = self.client

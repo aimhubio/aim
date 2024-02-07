@@ -199,6 +199,7 @@ function initializeAppModel(appConfig: IAppInitialConfig): InitialAppModelType {
         }
         if (components?.table) {
           config.table = {
+            metricsValueKey: TABLE_DEFAULT_CONFIG.runs.metricsValueKey,
             rowHeight: TABLE_DEFAULT_CONFIG.runs.rowHeight,
             hideSystemMetrics: TABLE_DEFAULT_CONFIG.runs.hideSystemMetrics,
             hiddenMetrics: TABLE_DEFAULT_CONFIG.runs.hiddenMetrics,

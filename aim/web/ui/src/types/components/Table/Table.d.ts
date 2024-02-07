@@ -2,6 +2,7 @@ import React from 'react';
 
 import { RowHeight, RowHeightSize } from 'config/table/tableConfigs';
 import {
+  MetricsValueKeyEnum,
   ResizeModeEnum,
   VisualizationElementEnum,
 } from 'config/enums/tableEnums';
@@ -21,6 +22,7 @@ export interface ITableProps {
   columns: any[];
   sameValueColumns?: string[] | [];
   height?: string;
+  metricsValueKey?: MetricsValueKeyEnum;
   rowHeight?: RowHeight;
   estimatedRowHeight?: number;
   onManageColumns?: (order: IColumnsOrderData) => void;
@@ -32,6 +34,7 @@ export interface ITableProps {
   onRowsChange?: (keys: string[]) => void;
   onExport?: (e: React.ChangeEvent<any>) => void;
   onRowHeightChange?: (height: RowHeightSize) => void;
+  onMetricsValueKeyChange?: (key: MetricsValueKeyEnum) => void;
   onTableResizeModeChange?: IMetricProps['onTableResizeModeChange'];
   navBarItems?: {
     name: string;

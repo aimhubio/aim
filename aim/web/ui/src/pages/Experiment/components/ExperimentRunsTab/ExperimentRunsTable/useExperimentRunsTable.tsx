@@ -94,12 +94,12 @@ function useExperimentRunsTable(experimentName: string, experimentId: string) {
 
           if (metricsValues.hasOwnProperty(metricHash)) {
             metricsValues[metricHash][hash] = [
-              trace.last_value.last_step,
-              trace.last_value.last,
+              trace.values.last_step,
+              trace.values.last,
             ];
           } else {
             metricsValues[metricHash] = {
-              [hash]: [trace.last_value.last_step, trace.last_value.last],
+              [hash]: [trace.values.last_step, trace.values.last],
             };
 
             const metricContext = contextToString(

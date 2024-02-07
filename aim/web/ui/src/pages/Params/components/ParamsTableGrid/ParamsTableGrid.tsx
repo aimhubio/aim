@@ -14,6 +14,7 @@ import ExperimentNameBox from 'components/ExperimentNameBox';
 
 import COLORS from 'config/colors/colors';
 import { TABLE_DEFAULT_CONFIG } from 'config/table/tableConfigs';
+import { MetricsValueKeyEnum } from 'config/enums/tableEnums';
 
 import { AppNameEnum } from 'services/models/explorer';
 
@@ -39,6 +40,7 @@ function getParamsTableColumns(
   groupFields: { [key: string]: unknown } | null,
   order: { left: string[]; middle: string[]; right: string[] },
   hiddenColumns: string[],
+  metricsValueKey: MetricsValueKeyEnum = MetricsValueKeyEnum.LAST,
   sortFields?: any[],
   onSort?: ({ sortFields, order, index, actionType }: any) => void,
   grouping?: { [key: string]: string[] },
@@ -178,7 +180,7 @@ function getParamsTableColumns(
         const metricHash = getMetricHash(metricName, metricContext);
         const metricLabel = getMetricLabel(metricName, metricContext);
 
-        const sortValueKey = `metricsLastValues.${metricHash}`;
+        const sortValueKey = `metricsValues.${metricHash}.${metricsValueKey}`;
         const sortItemIndex: number =
           sortFields?.findIndex((value: SortField) => {
             return value.value === sortValueKey;
