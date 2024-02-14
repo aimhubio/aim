@@ -94,8 +94,6 @@ class AimLogger(Logger):
                     capture_terminal_logs=self._capture_terminal_logs,
                     force_resume=True
                 )
-                if self._run_name is not None:
-                    self._run.name = self._run_name
             else:
                 self._run = Run(
                     repo=self._repo_path,
@@ -105,6 +103,8 @@ class AimLogger(Logger):
                     capture_terminal_logs=self._capture_terminal_logs,
                 )
                 self._run_hash = self._run.hash
+            if self._run_name is not None:
+                self._run.name = self._run_name
         return self._run
 
     @rank_zero_only
