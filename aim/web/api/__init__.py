@@ -4,36 +4,12 @@ from fastapi import FastAPI
 from fastapi.exceptions import HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
-from fastapi.responses import JSONResponse
 
 from aim.sdk.configs import get_aim_repo_name
 from aim.web.configs import AIM_PROFILER_KEY
 from aim.web.middlewares.profiler import PyInstrumentProfilerMiddleware
 from aim.web.utils import get_root_path
-
-
-async def http_exception_handler(request, exc):
-    message = str(exc.detail)
-    detail = None
-
-    if isinstance(exc.detail, dict):
-        message = exc.detail.pop('message', message)
-        detail = exc.detail.pop('detail', None)
-
-    response = {'message': message}
-    if detail:
-        response.update({'detail': detail})
-    else:
-        response.update({'detail': str(exc)})
-    return JSONResponse(response, status_code=exc.status_code)
-
-
-async def fallback_exception_handler(request, exc):
-    response = {
-        'message': f'\'{type(exc)}\' exception raised!',
-        'detail': str(exc)
-    }
-    return JSONResponse(response, status_code=500)
+from aim.ext.utils import http_exception_handler, fallback_exception_handler
 
 
 def create_app():

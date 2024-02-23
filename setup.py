@@ -73,6 +73,7 @@ REQUIRED = [
     'packaging>=15.0',
     'python-dateutil',
     'requests',
+    'websockets'
 ]
 
 if platform.machine() != 'arm64':
