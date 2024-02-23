@@ -43,10 +43,7 @@ def create_app():
         max_age=86400
     )
 
-    registry = ResourceTypeRegistry()
-    registry.register('TreeView', get_tree)
-    registry.register('FileManager', get_file_manager)
-    registry.register('Repo', get_repo)
+    registry = prepare_resource_registry()
 
     client_router = ClientRouter()
     tracking_router = TrackingRouter(registry)

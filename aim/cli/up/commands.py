@@ -134,7 +134,7 @@ def up(dev, host, port, workers, uds,
 
     try:
         server_cmd = build_uvicorn_command(
-            'aim._ext.web.run:app',
+            'aim.web.run:app',
             host=host, port=port,
             workers=workers, uds=uds,
             ssl_keyfile=ssl_keyfile, ssl_certfile=ssl_certfile,

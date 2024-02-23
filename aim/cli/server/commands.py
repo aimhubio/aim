@@ -100,10 +100,10 @@ def server(host, port,
     click.echo('Press Ctrl+C to exit')
 
     try:
-        cmd = build_uvicorn_command('aim.ext.tracking.run:app',
+        cmd = build_uvicorn_command('aim.ext.transport.run:app',
                                     host=host, port=port,
                                     ssl_keyfile=ssl_keyfile, ssl_certfile=ssl_certfile, log_level=log_level)
-        exec_cmd(cmd)
+        exec_cmd(cmd, stream_output=True)
     except Exception:
         click.echo('Failed to run Aim Tracking Server. '
                    'Please see the logs above for details.')

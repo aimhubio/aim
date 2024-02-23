@@ -1,6 +1,5 @@
 from importlib import import_module
 import os
-import subprocess
 
 from aim.web.configs import AIM_UI_MOUNTED_REPO_PATH
 from aim.sdk.configs import get_aim_repo_name
