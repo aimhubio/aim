@@ -91,12 +91,7 @@ class BasicRunAutoClean(AutoClean['BasicRun']):
 
     def empty_rpc_queue(self):
         if self.repo.is_remote_repo:
-            self.repo._client.get_queue(self.hash).wait_for_finish()
-
-    def finalize_rpc_queue(self):
-        if self.repo.is_remote_repo:
-            self.repo._client.get_queue(self.hash).stop()
-            self.repo._client.remove_queue(self.hash)
+            self.repo._client.get_queue().wait_for_finish()
 
     def _close(self) -> None:
         """
@@ -117,7 +112,6 @@ class BasicRunAutoClean(AutoClean['BasicRun']):
             self._checkins.close()
         if self._lock:
             self._lock.release()
-        self.finalize_rpc_queue()
 
 
 # TODO: [AT] generate automatically based on ModelMappedRun

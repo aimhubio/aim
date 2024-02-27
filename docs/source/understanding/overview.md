@@ -15,7 +15,7 @@ allows accessing the data as collection of dictionaries and arrays.
 and CLI.
 - **Aim UI**. Web app allowing to browse run metadata, metrics, images and other tracked data.
 - **Aim CLI**. A collection of command line utilities for running Aim web server, managing aim repositories, runs, etc.
-- **Remote Tracking server**. A [gRPC](https://grpc.io/about)-based service accepting incoming traffic and storing data on a centralized server.
+- **Remote Tracking server**. A fastapi/uvicorn based service accepting incoming traffic and storing data on a centralized server.
 
 
 The next sections will describe various concepts Aim introduces and provide more detailed look on
