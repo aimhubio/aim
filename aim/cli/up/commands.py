@@ -2,7 +2,13 @@ import os
 import click
 
 from aim.cli.utils import set_log_level
-from aim.cli.up.utils import build_db_upgrade_command, build_uvicorn_command, get_free_port_num
+from aim.cli.utils import (
+    build_db_upgrade_command,
+    build_uvicorn_command,
+    get_free_port_num,
+    exec_cmd,
+    ShellCommandException
+)
 from aim.web.configs import (
     AIM_ENV_MODE_KEY,
     AIM_TF_LOGS_PATH_KEY,
@@ -15,8 +21,6 @@ from aim.web.configs import (
 )
 from aim.sdk.repo import Repo, RepoStatus
 from aim.sdk.utils import clean_repo_path
-from aim.web.utils import exec_cmd
-from aim.web.utils import ShellCommandException
 
 
 @click.command()
@@ -42,14 +46,14 @@ from aim.web.utils import ShellCommandException
                                                                 dir_okay=False,
                                                                 readable=True))
 @click.option('--base-path', required=False, default='', type=str)
-@click.option('--force-init', is_flag=True, default=False)
 @click.option('--profiler', is_flag=True, default=False)
 @click.option('--log-level', required=False, default='', type=str)
+@click.option('-y', '--yes', is_flag=True, help='Automatically confirm prompt')
 def up(dev, host, port, workers, uds,
        repo, tf_logs,
        ssl_keyfile, ssl_certfile,
-       base_path, force_init,
-       profiler, log_level):
+       base_path, profiler,
+       log_level, yes):
     if dev:
         os.environ[AIM_ENV_MODE_KEY] = 'dev'
         log_level = log_level or 'debug'
@@ -71,7 +75,7 @@ def up(dev, host, port, workers, uds,
     repo_status = Repo.check_repo_status(repo_path)
     if repo_status == RepoStatus.MISSING:
         init_repo = None
-        if not force_init:
+        if not yes:
             init_repo = click.confirm(f'\'{repo_path}\' is not a valid Aim repository. Do you want to initialize it?')
         else:
             init_repo = True
@@ -129,7 +133,12 @@ def up(dev, host, port, workers, uds,
         os.environ[AIM_PROFILER_KEY] = '1'
 
     try:
-        server_cmd = build_uvicorn_command(host, port, workers, uds, ssl_keyfile, ssl_certfile, log_level)
+        server_cmd = build_uvicorn_command(
+            'aim.web.run:app',
+            host=host, port=port,
+            workers=workers, uds=uds,
+            ssl_keyfile=ssl_keyfile, ssl_certfile=ssl_certfile,
+            log_level=log_level)
         exec_cmd(server_cmd, stream_output=True)
     except ShellCommandException:
         click.echo('Failed to run Aim UI. Please see the logs above for details.')

@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.19.0 
+
+### Enhancements: 
+- Replace grpc with http/ws as transport for aim tracking server (mihran113)
+
 ## 3.18.1 Feb 7, 2024
 
 ### Enhancements:

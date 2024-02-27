@@ -3,25 +3,14 @@
 ### Overview
 
 Aim remote tracking server allows running experiments in a multi-host environment and collect tracked data in a centralized location.
-It provides SDK for client-server communications and utilized [gRPC](https://grpc.io/about/) protocol as its core transport layer.
+It provides SDK for client-server communications and utilizes http/ws protocols as its core transport layer.
 
-In this guide we will show you how to setup Aim remote tracking server and how to integrate it in client-side code.
+In this guide we will show you how to set up Aim remote tracking server and how to integrate it in client-side code.
 
 ### Prerequisites
 
 Remote tracking server assumes multi-host environments used to run multiple training experiments.
-The machine running the server have to accept incoming TCP traffic on a dedicated port (default is 53800).
-
-### Scaling
-
-Aim remote tracking server can be set up to use multiple workers to scale the bandwidth of receiving connections.
-But it comes with some caveats. When providing `--workers=n` argument to `aim server` command, `aim` uses `n + 1` sequential 
-ports starting from port number specified. Thus, all `p, ..., p + n` ports are required to be exposed to the client.
-No changes are needed on client side.
-
-_Note:_
-
-The default number of workers is 1. No additional ports are required to be opened in this case.
+The machine running the server have to accept incoming http traffic on a dedicated port (default is 53800).
 
 
 ### Server-side setup
@@ -220,23 +209,6 @@ To enable secure mode for server provide `--ssl-keyfile` and `--ssl-certfile` ar
 where `--ssl-keyfile` is the path to the private key file for the certificate and `--ssl-certfile` is the path to the signed certificate
 (check out the [Aim CLI](../refs/cli.html#server) here).
 
-In order to establish a secure connection with the server, the client has to be configured accordingly.
-Please set `__AIM_CLIENT_SSL_CERTIFICATES_FILE__` environment variable to the file, where PEM encoded root certificates are located, e.g.
-
-```shell
-export __AIM_CLIENT_SSL_CERTIFICATES_FILE__=/path/of/the/certs/file
-```
-
-### Message size limitations
-Aim Remote Tracking server uses gRPC as a transport layer. gRPC imposes message size limits on
-sending/receiving messages from/to server. Aim is configured to use 16MB message size limit by default.
-If you want to specify a different limit, use `__AIM_RT_MAX_MESSAGE_SIZE__` environment variable.
-```shell
-# max message size 128MB
-export __AIM_RT_MAX_MESSAGE_SIZE__=134217728
-```
-
-__*Note:*__ The message max size should be the same for both Aim Remote Tracking server and client code.
 
 ### Conclusion
 
