@@ -209,7 +209,6 @@ To enable secure mode for server provide `--ssl-keyfile` and `--ssl-certfile` ar
 where `--ssl-keyfile` is the path to the private key file for the certificate and `--ssl-certfile` is the path to the signed certificate
 (check out the [Aim CLI](../refs/cli.html#server) here).
 
-__*Note:*__ The message max size should be the same for both Aim Remote Tracking server and client code.
 
 ### Conclusion
 
