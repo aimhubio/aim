@@ -3,7 +3,7 @@
 ### Overview
 
 Aim remote tracking server allows running experiments in a multi-host environment and collect tracked data in a centralized location.
-It provides SDK for client-server communications and utilize http/ws protocols as its core transport layer.
+It provides SDK for client-server communications and utilizes http/ws protocols as its core transport layer.
 
 In this guide we will show you how to set up Aim remote tracking server and how to integrate it in client-side code.
 
