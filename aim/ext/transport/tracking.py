@@ -172,7 +172,7 @@ class TrackingRouter:
                     result = attr(*checked_args)
                 else:
                     result = attr
-
+            del resource
             return StreamingResponse(pack_stream(encode_tree(result)))
         except Exception as e:
             logger.debug(f'Caught exception {e}. Sending response 400.')
@@ -211,6 +211,7 @@ class TrackingRouter:
                         attr = getattr(resource, method_name)
                         assert callable(attr)
                         attr(*checked_args)
+                    del resource
 
                 await websocket.send_bytes(b'OK')
         except WebSocketDisconnect:
