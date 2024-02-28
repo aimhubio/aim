@@ -159,6 +159,8 @@ class Client:
 
     def disconnect(self):
         self._heartbeat_sender.stop()
+        if self._ws:
+            self._ws.close()
 
         endpoint = f'{self._http_protocol}{self._client_endpoint}/disconnect/{self.uri}/'
         response = requests.get(endpoint, headers=self.request_headers)
