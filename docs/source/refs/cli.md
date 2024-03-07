@@ -186,24 +186,10 @@ __storage subcommands__
 
 | Sub-command      | Description                                                                              |
 | ---------------- | ---------------------------------------------------------------------------------------- |
-| `upgrade 2to3`   | Upgrades legacy Aim repository from `2.x` to `3.0`.                                      |
 | `upgrade 3.11+`  | Update metric sequence data format for given runs. At least one run should be specified. |
 | `restore`        | Rollback `Run` to old metric format if run backup is available.                          |
 | `reindex`        | Update index to include all runs in Aim repo which are left in progress.                 |
 | `prune`          | Remove dangling params/sequences with no referring runs.                                 |
-
-
-**Sub-command: update 2to3**
-
-```shell
-$ aim storage ugrade 2to3 [ARGS]
-```
-
-| Args                  | Description                                                                                |
-| --------------------- | ------------------------------------------------------------------------------------------ |
-| `--skip-failed-runs`  | Use this flag to skip runs which are failed/have missing or incomplete data.               |
-| `--skip-checks`       | Use this flag to skip new repository consistency checks.                                   |
-| `--drop-existing`     | Use this flag to clear old `.aim` directory. By default old data is kept in `.aim_legacy`. |
 
 
 **Sub-command: update 3.11+**

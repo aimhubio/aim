@@ -1,9 +1,16 @@
 import os
 import click
 
-from aim.sdk.repo import Repo, RepoStatus
+from aim.sdk.repo import Repo
 from aim.sdk.utils import clean_repo_path
-from aim.cli.utils import set_log_level, build_uvicorn_command, get_free_port_num, exec_cmd
+from aim.cli.utils import (
+    ShellCommandException,
+    build_uvicorn_command,
+    exec_cmd,
+    get_free_port_num,
+    get_repo_instance,
+    set_log_level
+)
 from aim.ext.transport.config import (
     AIM_SERVER_DEFAULT_PORT,
     AIM_SERVER_DEFAULT_HOST,
@@ -67,31 +74,10 @@ def server(host, port,
             pass
 
     repo_path = clean_repo_path(repo) or Repo.default_repo_path()
-    repo_status = Repo.check_repo_status(repo_path)
-    if repo_status == RepoStatus.MISSING:
-        if yes:
-            init_repo = True
-        else:
-            init_repo = click.confirm(f'\'{repo_path}\' is not a valid Aim repository. Do you want to initialize it?')
-        if not init_repo:
-            click.echo('To initialize repo please run the following command:')
-            click.secho('aim init', fg='yellow')
-            return
-        repo_inst = Repo.from_path(repo_path, init=True)
-    elif repo_status == RepoStatus.UPDATE_REQUIRED:
-        if yes:
-            upgrade_repo = True
-        else:
-            upgrade_repo = click.confirm(f'\'{repo_path}\' requires upgrade. Do you want to run upgrade automatically?')
-        if upgrade_repo:
-            from aim.cli.upgrade.utils import convert_2to3
-            repo_inst = convert_2to3(repo_path, drop_existing=False, skip_failed_runs=False, skip_checks=False)
-        else:
-            click.echo('To upgrade repo please run the following command:')
-            click.secho(f'aim upgrade --repo {repo_path} 2to3', fg='yellow')
-            return
-    else:
-        repo_inst = Repo.from_path(repo_path)
+    repo_inst = get_repo_instance(repo_path, yes)
+
+    if not repo_inst:
+        return
 
     os.environ[AIM_SERVER_MOUNTED_REPO_PATH] = repo_inst.path
 
@@ -104,7 +90,7 @@ def server(host, port,
                                     host=host, port=port,
                                     ssl_keyfile=ssl_keyfile, ssl_certfile=ssl_certfile, log_level=log_level)
         exec_cmd(cmd, stream_output=True)
-    except Exception:
+    except ShellCommandException:
         click.echo('Failed to run Aim Tracking Server. '
                    'Please see the logs above for details.')
         exit(1)
