@@ -1,8 +1,12 @@
+import click
 import os
 import sys
 import logging
 import subprocess
 
+from typing import Optional
+
+from aim.sdk.repo import Repo, RepoStatus
 from aim.web.configs import AIM_ENV_MODE_KEY
 from aim.web.configs import AIM_LOG_LEVEL_KEY
 
@@ -118,3 +122,32 @@ def get_free_port_num():
     port_num = s.getsockname()[1]
     s.close()
     return port_num
+
+
+def get_repo_instance(repo_path: str, yes: bool) -> Optional['Repo']:
+    repo_status = Repo.check_repo_status(repo_path)
+    if repo_status == RepoStatus.MISSING:
+        if yes:
+            init_repo = True
+        else:
+            init_repo = click.confirm(f'\'{repo_path}\' is not a valid Aim repository. Do you want to initialize it?')
+        if not init_repo:
+            click.echo('To initialize repo please run the following command:')
+            click.secho('aim init', fg='yellow')
+            return
+        repo_inst = Repo.from_path(repo_path, init=True)
+    elif repo_status == RepoStatus.UPDATE_REQUIRED:
+        if yes:
+            reinit_repo = True
+        else:
+            reinit_repo = click.confirm('Found non-empty \'.aim\' directory. Would you like to overwrite it?')
+        if not reinit_repo:
+            click.echo('To re-initialize repo please run the following command:')
+            click.secho('aim init', fg='yellow')
+            return
+        Repo.rm(repo_path)
+        repo_inst = Repo.from_path(repo_path, init=True)
+    else:
+        repo_inst = Repo.from_path(repo_path)
+
+    return repo_inst
