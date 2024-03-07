@@ -16,11 +16,11 @@ study = optuna.create_study()
 study.optimize(objective, n_trials=10, callbacks=[aim_callback])
 
 
-# ------------------------------------------------ Version 2: Multy Run with decorator ----------------------------------
+# ------------------------------------------------ Version 2: Multi Run with decorator ----------------------------------
 
 # Aim logging in multirun mode.
 aim_callback = AimCallback(
-    as_multirun=True, experiment_name='example_experiment_multy_run_with_decorator'
+    as_multirun=True, experiment_name='example_experiment_multi_run_with_decorator'
 )
 
 
