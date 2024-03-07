@@ -3,7 +3,6 @@ import os
 from tqdm import tqdm
 
 from aim.cli.runs.utils import match_runs
-from aim.cli.upgrade.utils import convert_2to3
 
 from aim.sdk.maintenance_run import MaintenanceRun as Run
 from aim.sdk.utils import backup_run, restore_run_backup
@@ -27,16 +26,6 @@ def storage(ctx, repo):
 def upgrade(ctx):
     """Update Runs data for given run hashes to use new format."""
     pass
-
-
-@upgrade.command(name='2to3')
-@click.option('--drop-existing', required=False, is_flag=True, default=False)
-@click.option('--skip-failed-runs', required=False, is_flag=True, default=False)
-@click.option('--skip-checks', required=False, is_flag=True, default=False)
-@click.pass_context
-def v2to3(ctx, drop_existing, skip_failed_runs, skip_checks):
-    repo_path = ctx.obj['repo']
-    convert_2to3(repo_path, drop_existing, skip_failed_runs, skip_checks)
 
 
 @upgrade.command(name='3.11+')

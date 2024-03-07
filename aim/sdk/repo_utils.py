@@ -18,9 +18,7 @@ def get_repo(repo: Optional[Union[str, 'Repo', pathlib.Path]]) -> 'Repo':
     if isinstance(repo, str):
         repo_status = Repo.check_repo_status(repo)
         if repo_status == RepoStatus.UPDATE_REQUIRED:
-            logger.error(f'Trying to open repository {repo}, which is out of date. '
-                         f'Please upgrade repository with the following command: '
-                         f'`aim upgrade --repo {repo} 2to3`.')
+            logger.error(f'Trying to open repository {repo}, which is out of date. ')
             raise RuntimeError()
         elif repo_status == RepoStatus.MISSING:
             repo = Repo.from_path(repo, init=True)
