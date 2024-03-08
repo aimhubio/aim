@@ -1,10 +1,13 @@
 # Changelog
 
-## 3.19.0 
+## 3.19.0
 
-### Enhancements: 
+### Enhancements:
 - Replace grpc with http/ws as transport for aim tracking server (mihran113)
 - Remove `aim storage upgrade 2to3` command (mihran113)
+
+### Fixes
+- Allow the web UI to serve assets symlinked into the static files directory (martenlienen)
 
 ## 3.18.1 Feb 7, 2024
 
@@ -13,7 +16,7 @@
 - Add support for `sqlalchemy 2.0` (mihran113)
 - Add `min/max/first` values tracking and visualization for metrics (mihran113, KaroMourad)
 
-### Fixes 
+### Fixes
 - Fix pytorch_lightning aliases issue (popfido)
 - Fix typos in stat.py to collect gpu memory and power correctly (ChanderG)
 - Fix bug in pytorch lightning raising lock timeout (inc0)
