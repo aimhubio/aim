@@ -21,7 +21,7 @@ async def serve_static_files(path):
     # Ensure that no paths outside the root directory are accessed by checking that the
     # root directory is a prefix of the file path
     common_prefix = Path(os.path.commonpath([static_files_root, static_file_name]))
-    if common_prefix == static_files_root:
+    if common_prefix != static_files_root:
         raise HTTPException(status_code=404)
 
     compressed_file_name = Path(f'{static_file_name}.gz')
