@@ -29,7 +29,6 @@ from aim.sdk.objects.artifact import Artifact
 from aim.storage.treeview import TreeView
 from aim.storage.context import Context
 from aim.storage import treeutils
-from aim.storage.artifacts import registry
 
 from aim.ext.resource import ResourceTracker, DEFAULT_SYSTEM_TRACKING_INT
 from aim.ext.cleanup import AutoClean
