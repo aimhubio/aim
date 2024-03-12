@@ -8,4 +8,5 @@ export interface ICopyToClipBoardProps {
   className?: string;
   copyContent?: string | null;
   iconSize?: IButtonProps['size'];
+  isURL?: bool | null;
 }
