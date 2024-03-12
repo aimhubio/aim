@@ -39,3 +39,9 @@ stores, such as AWS S3, may be a better choice.
 
 When the artifacts URI is set, Aim will detect storage backend based on the URI scheme.
 Currently, S3 is the only supported backend for artifacts storage.
+
+#### S3 Artifacts Storage Backend
+
+Aim uses `boto3` Python package for accessing AWS resources. No additional credentials
+validation os done on the Aim side. More details on how credentials configuration os done
+for `boto3` is available [here](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/credentials.html).
