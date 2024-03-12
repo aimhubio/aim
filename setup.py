@@ -54,7 +54,6 @@ REQUIRED = [
     'aimrecords==0.0.7',
     'aimrocks==0.4.0',
     'cachetools>=4.0.0',
-    'boto3',
     'click>=7.0',
     'cryptography>=3.0',
     'filelock<4,>=3.3.0',
@@ -74,6 +73,8 @@ REQUIRED = [
     'packaging>=15.0',
     'python-dateutil',
     'requests',
+    'websockets',
+    'boto3',
 ]
 
 if platform.machine() != 'arm64':
