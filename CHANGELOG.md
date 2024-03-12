@@ -5,6 +5,7 @@
 ### Enhancements:
 - Replace grpc with http/ws as transport for aim tracking server (mihran113)
 - Remove `aim storage upgrade 2to3` command (mihran113)
+- Support artifacts logging and storage in AWS S3 (alberttorosyan)
 
 ### Fixes
 - Allow the web UI to serve assets symlinked into the static files directory (martenlienen)
