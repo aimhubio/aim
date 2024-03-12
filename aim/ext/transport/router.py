@@ -1,79 +1,43 @@
 import datetime
 
-from typing import List, TYPE_CHECKING
-
-import aim.ext.transport.proto.remote_router_pb2 as router_rpc
-import aim.ext.transport.proto.remote_router_pb2_grpc as router_pb2_grpc
-
-from aim.ext.transport.message_utils import build_exception
-
-if TYPE_CHECKING:
-    from aim.ext.transport.worker import RemoteWorker
+from fastapi import APIRouter
 
 
-class RemoteRouterServicer(router_pb2_grpc.RemoteRouterServiceServicer):
+class ClientRouter:
     client_heartbeat_pool = dict()
+    clients = []
 
-    def __init__(self, worker_pool: List['RemoteWorker']):
-        self.worker_pool = worker_pool
+    def __init__(self):
+        self.router = APIRouter()
+        self.router.add_api_route('/get-version/', self.get_version, methods=['GET'])
+        self.router.add_api_route('/heartbeat/{client_uri}/', self.heartbeat, methods=['GET'])
+        self.router.add_api_route('/connect/{client_uri}/', self.connect, methods=['GET'])
+        self.router.add_api_route('/reconnect/{client_uri}/', self.reconnect, methods=['GET'])
+        self.router.add_api_route('/disconnect/{client_uri}/', self.disconnect, methods=['GET'])
 
-    def new_client(self, client_uri):
-        sorted_workers_pool = sorted(self.worker_pool, key=lambda w: w.client_count)
+    @classmethod
+    def add_client(cls, client_uri):
+        cls.clients.append(client_uri)
 
-        worker = sorted_workers_pool[0]
-        worker.add_client(client_uri)
-        return worker
+    @classmethod
+    def remove_client(cls, client_uri):
+        if client_uri in cls.clients:
+            cls.clients.remove(client_uri)
 
-    def get_version(self, request: router_rpc.VersionRequest, _context):
+    async def get_version(self):
         from aim.__version__ import __version__ as aim_version
 
-        return router_rpc.VersionResponse(version=aim_version,
-                                          status=router_rpc.VersionResponse.Status.OK)
+        return {'version': aim_version}
 
-    def client_heartbeat(self, request: router_rpc.HeartbeatRequest, _context):
-        try:
-            client_uri = request.client_uri
-            self.client_heartbeat_pool[client_uri] = datetime.datetime.now().timestamp()
-            return router_rpc.HeartbeatResponse(status=router_rpc.HeartbeatResponse.Status.OK)
-        except Exception as e:
-            return router_rpc.HeartbeatResponse(
-                status=router_rpc.HeartbeatRequest.Status.ERROR,
-                exception=build_exception(e),
-            )
+    async def heartbeat(self, client_uri):
+        self.client_heartbeat_pool[client_uri] = datetime.datetime.now().timestamp()
 
-    def connect(self, request: router_rpc.ConnectRequest, _context):
-        try:
-            worker = self.new_client(request.client_uri)
-            return router_rpc.ConnectResponse(port=worker.port,
-                                              worker_index=worker.index,
-                                              status=router_rpc.ConnectResponse.Status.OK)
-        except Exception as e:
-            return router_rpc.ConnectResponse(status=router_rpc.ConnectResponse.Status.ERROR,
-                                              exception=build_exception(e))
+    async def connect(self, client_uri):
+        self.add_client(client_uri)
 
-    def reconnect(self, request: router_rpc.ReconnectRequest, _context):
-        try:
-            client_uri = request.client_uri
-            for worker in self.worker_pool:
-                if client_uri in worker.clients:
-                    worker.restart()
-                    return router_rpc.ReconnectResponse(port=worker.port,
-                                                        status=router_rpc.ReconnectResponse.Status.OK)
-            # if client wasn't found in the list of clients of any worker fallback to connection logic
-            worker = self.new_client(client_uri)
-            return router_rpc.ReconnectResponse(port=worker.port,
-                                                status=router_rpc.ReconnectResponse.Status.OK)
-        except Exception as e:
-            return router_rpc.ReconnectResponse(status=router_rpc.ReconnectResponse.Status.ERROR,
-                                                exception=build_exception(e))
+    async def reconnect(self, client_uri):
+        if client_uri not in self.clients:
+            self.add_client(client_uri)
 
-    def disconnect(self, request: router_rpc.DisconnectRequest, _context):
-        try:
-            client_uri = request.client_uri
-            for worker in self.worker_pool:
-                worker.remove_client(client_uri)
-
-            return router_rpc.DisconnectResponse(status=router_rpc.DisconnectResponse.Status.OK)
-        except Exception as e:
-            return router_rpc.DisconnectResponse(status=router_rpc.DisconnectResponse.Status.ERROR,
-                                                 exception=build_exception(e))
+    async def disconnect(self, client_uri):
+        self.remove_client(client_uri)

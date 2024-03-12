@@ -79,6 +79,8 @@ class RepoAutoClean(AutoClean):
         """Close the `Repo` and unmount the remote repository."""
         if self._client:
             self._client._heartbeat_sender.stop()
+            self._client.get_queue().wait_for_finish()
+            self._client.get_queue().stop()
             self._client.disconnect()
         if self._mount_root:
             logger.debug(f'Unmounting remote repository at {self._mount_root}')
@@ -933,7 +935,7 @@ class Repo:
     @contextmanager
     def atomic_track(self, queue_id):
         if self.is_remote_repo:
-            self._client.start_instructions_batch()
+            self._client.start_instructions_batch(queue_id)
         yield
         if self.is_remote_repo:
             self._client.flush_instructions_batch(queue_id)

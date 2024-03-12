@@ -372,7 +372,7 @@ MLFlow is an end-to-end ML Lifecycle tool.
 Aim is focused on training tracking.
 The main differences of Aim and MLflow are around the UI scalability and run comparison features.
 
-Aim and MLflow are a perfect match - check out the [aimlflow](https://github.com/aimhubio/aimlflow) - the tool that enables Aim supoerpowers on Mlflow.
+Aim and MLflow are a perfect match - check out the [aimlflow](https://github.com/aimhubio/aimlflow) - the tool that enables Aim superpowers on Mlflow.
 
 **Run comparison**
 

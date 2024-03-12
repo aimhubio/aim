@@ -1,5 +1,6 @@
 import logging
 import subprocess
+from fastapi.responses import JSONResponse
 
 logger = logging.getLogger(__name__)
 
@@ -71,3 +72,27 @@ def get_git_info():
     })
 
     return git_info
+
+
+async def http_exception_handler(request, exc):
+    message = str(exc.detail)
+    detail = None
+
+    if isinstance(exc.detail, dict):
+        message = exc.detail.pop('message', message)
+        detail = exc.detail.pop('detail', None)
+
+    response = {'message': message}
+    if detail:
+        response.update({'detail': detail})
+    else:
+        response.update({'detail': str(exc)})
+    return JSONResponse(response, status_code=exc.status_code)
+
+
+async def fallback_exception_handler(request, exc):
+    response = {
+        'message': f'\'{type(exc)}\' exception raised!',
+        'detail': str(exc)
+    }
+    return JSONResponse(response, status_code=500)

@@ -62,21 +62,22 @@ $ aim up [ARGS]
 
 ### server
 
-Run a gRPC server to collect tracked data from remote clients.
+Run a tracking server to collect tracked data from remote clients.
 
 ```shell
 $ aim server [ARGS]
 ```
 
-| Args                              | Description                                                                      |
-| --------------------------------- | -------------------------------------------------------------------------------- |
-| `--repo <repo_path>`              | Path to parent directory of `.aim` repo. _Current working directory by default_. |
-| `-h` &#124; `--host <host>`       | Specify host address.                                                            |
-| `-p` &#124; `--port <port>`       | Specify port to listen to. _Default is 53800_.                                   |
-| `-w` &#124; `--workers <N>`       | Specify number of gPRC workers. _Default is 1 worker_.                           |
-| `--ssl-keyfile`                   | Specify path to keyfile for secure connection.                                   |
-| `--ssl-certfile`                  | Specify path to cert. file for secure connection.                                |
-| `--log-level`                     | Specifies log level for python logging package. _`WARNING` by default_.          |
+| Args                         | Description                                                                                                      |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `--repo <repo_path>`         | Path to parent directory of `.aim` repo. _Current working directory by default_.                                 |
+| `-h` &#124; `--host <host>`  | Specify host address.                                                                                            |
+| `-p` &#124; `--port <port>`  | Specify port to listen to. _Default is 53800_.                                                                   |
+| `--ssl-keyfile`              | Specify path to keyfile for secure connection.                                                                   |
+| `--ssl-certfile`             | Specify path to cert. file for secure connection.                                                                |
+| `--dev`                      | Run UI in development mode.                                                                                      |                                
+| `--log-level`                | Specifies log level for python logging package. _`WARNING` by default, `DEBUG` when `--dev` option is provided_. |
+
 
 ### runs
 
@@ -185,24 +186,10 @@ __storage subcommands__
 
 | Sub-command      | Description                                                                              |
 | ---------------- | ---------------------------------------------------------------------------------------- |
-| `upgrade 2to3`   | Upgrades legacy Aim repository from `2.x` to `3.0`.                                      |
 | `upgrade 3.11+`  | Update metric sequence data format for given runs. At least one run should be specified. |
 | `restore`        | Rollback `Run` to old metric format if run backup is available.                          |
 | `reindex`        | Update index to include all runs in Aim repo which are left in progress.                 |
 | `prune`          | Remove dangling params/sequences with no referring runs.                                 |
-
-
-**Sub-command: update 2to3**
-
-```shell
-$ aim storage ugrade 2to3 [ARGS]
-```
-
-| Args                  | Description                                                                                |
-| --------------------- | ------------------------------------------------------------------------------------------ |
-| `--skip-failed-runs`  | Use this flag to skip runs which are failed/have missing or incomplete data.               |
-| `--skip-checks`       | Use this flag to skip new repository consistency checks.                                   |
-| `--drop-existing`     | Use this flag to clear old `.aim` directory. By default old data is kept in `.aim_legacy`. |
 
 
 **Sub-command: update 3.11+**
