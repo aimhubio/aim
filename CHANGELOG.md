@@ -5,6 +5,7 @@
 ### Enhancements:
 - Replace grpc with http/ws as transport for aim tracking server (mihran113)
 - Remove `aim storage upgrade 2to3` command (mihran113)
+- Allow HF callback to initialize run at on_init_end for tracking custom metrics with callback (dushyantbehl)
 
 ### Fixes
 - Allow the web UI to serve assets symlinked into the static files directory (martenlienen)
