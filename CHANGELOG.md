@@ -5,6 +5,7 @@
 ### Enhancements:
 - Replace grpc with http/ws as transport for aim tracking server (mihran113)
 - Remove `aim storage upgrade 2to3` command (mihran113)
+- Allow HF callback to initialize run at on_init_end for tracking custom metrics with callback (dushyantbehl)
 - Support artifacts logging and storage in AWS S3 (alberttorosyan)
 
 ### Fixes

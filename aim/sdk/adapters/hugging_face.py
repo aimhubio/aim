@@ -77,11 +77,14 @@ class AimCallback(TrainerCallback):
         #     model_config = model.config.to_dict()
         #     self._run['model'] = model_config
 
+    def on_init_end(self, args, state, control, **kwargs):
+        # Initialize the Aim run on init end so people can track any
+        # additional metric (like model load time) in the same aim run.
+        self.setup(state=state)
+
     def on_train_begin(self, args, state, control, model=None, **kwargs):
-        if not state.is_world_process_zero:
-            return
-        if not self._run:
-            self.setup(args, state, model)
+        # Call setup with args and model to store args and model parameters
+        self.setup(args, state, model)
 
     def on_train_end(self, args, state, control, **kwargs):
         if not state.is_world_process_zero:
