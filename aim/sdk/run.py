@@ -1,5 +1,6 @@
 import logging
 
+import os
 import datetime
 import json
 import pytz
@@ -23,6 +24,7 @@ from aim.sdk.utils import (
 
 from aim.sdk.types import AimObject
 from aim.sdk.logging import LogRecord, LogRecords
+from aim.sdk.objects.artifact import Artifact
 
 from aim.storage.treeview import TreeView
 from aim.storage.context import Context
@@ -320,6 +322,7 @@ class BasicRun(BaseRun, StructuredRunMixin):
         if experiment:
             self.experiment = experiment
 
+        self._run_artifacts_uri: str = None
         self._tracker = RunTracker(self)
         self._resources = BasicRunAutoClean(self)
 
@@ -406,6 +409,40 @@ class BasicRun(BaseRun, StructuredRunMixin):
         """
 
         self._tracker(value, name, step, epoch, context=context)
+
+    # artifacts logging API
+    @property
+    def artifacts_uri(self) -> str:
+        if self._run_artifacts_uri is None:
+            base_uri = self.meta_run_tree.get('artifacts_uri', None)
+            self._run_artifacts_uri = os.path.join(base_uri, self.hash)
+        return self._run_artifacts_uri
+
+    def set_artifacts_uri(self, uri: str):
+        self.meta_run_tree['artifacts_uri'] = uri
+        self._run_artifacts_uri = os.path.join(uri, self.hash)
+
+    @noexcept
+    def log_artifact(self, path: str, name: Optional[str] = None, *, block: bool = False):
+        artifact = Artifact(path, uri=self.artifacts_uri, name=name)
+        artifact.upload(block=block)
+        self.meta_run_tree.subtree('artifacts')[artifact.name] = artifact
+
+    @noexcept
+    def log_artifacts(self, path: str, name: Optional[str] = None, *, block: bool = False):
+        dir_path = pathlib.Path(path)
+        if name is None:
+            name = dir_path.name
+        for file_path in dir_path.glob('**/*'):
+            if file_path.is_file():
+                rel_path = file_path.relative_to(dir_path)
+                artifact = Artifact(path=str(file_path), uri=self.artifacts_uri, name=f'{name}/{rel_path}')
+                artifact.upload(block=block)
+                self.meta_run_tree.subtree('artifacts')[artifact.name] = artifact
+
+    @property
+    def artifacts(self) -> Dict[str, Artifact]:
+        return self.meta_run_tree.get('artifacts', {})
 
     # logging API
     def _log_message(self, level: int, msg: str, **params):
