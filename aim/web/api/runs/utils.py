@@ -101,6 +101,17 @@ def get_run_props(run: Run):
     }
 
 
+def get_run_artifacts(run: Run):
+    artifacts_info = []
+    for artifact in run.artifacts.values():
+        artifacts_info.append({
+            'name': artifact.name,
+            'path': artifact.path,
+            'uri': artifact.uri,
+        })
+    return artifacts_info
+
+
 def numpy_to_encodable(array: np.ndarray) -> Optional[dict]:
     encoded_numpy = {
         'type': 'numpy',

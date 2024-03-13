@@ -75,10 +75,17 @@ class MetricSearchRunView(BaseModel):
     props: PropsView
 
 
+class ArtifactInfo(BaseModel):
+    name: str
+    path: str
+    uri: str
+
+
 class RunInfoOut(BaseModel):
     params: dict
     traces: Dict[str, List[TraceOverview]]
     props: PropsView
+    artifacts: List[ArtifactInfo]
 
 
 RunMetricSearchApiOut = Dict[str, MetricSearchRunView]
