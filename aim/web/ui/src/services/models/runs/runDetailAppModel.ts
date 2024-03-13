@@ -78,6 +78,7 @@ function getRunInfo(runHash: string): IApiRequest<void> {
         runParams: data.params,
         runTraces: data.traces,
         runInfo: data.props,
+        runArtifacts: data.artifacts,
         experimentId: data.props.experiment.id,
         isRunInfoLoading: false,
       });

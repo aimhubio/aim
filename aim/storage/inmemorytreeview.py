@@ -91,6 +91,9 @@ class InMemoryTreeView(TreeView):
         path: Union[AimObjectKey, AimObjectPath],
         value: AimObject
     ):
+        if path == Ellipsis:
+            path = ()
+
         if isinstance(path, (int, str)):
             path = (path,)
         assert path
