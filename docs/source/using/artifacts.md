@@ -32,7 +32,7 @@ Once logged, artifact metadata will appear in the Aim UI Run details page:
 
 ### Storage backends
 
-Training artifacts may represent large files, and, depending on the use case, mighr require
+Training artifacts may represent large files, and, depending on the use case, might require
 different storage backends. For example, in case of small runs using the local file system,
 or network shared FS might be a good option. In case of the large models, cloud-based object
 stores, such as AWS S3, may be a better choice.
@@ -43,5 +43,5 @@ Currently, S3 is the only supported backend for artifacts storage.
 #### S3 Artifacts Storage Backend
 
 Aim uses `boto3` Python package for accessing AWS resources. No additional credentials
-validation os done on the Aim side. More details on how credentials configuration os done
+validation os done on the Aim side. More details on how credentials configuration is done
 for `boto3` is available [here](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/credentials.html).
