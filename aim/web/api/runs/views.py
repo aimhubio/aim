@@ -22,6 +22,7 @@ from aim.web.api.runs.utils import (
     get_run_or_404,
     get_run_params,
     get_run_props,
+    get_run_artifacts,
     metric_search_result_streamer,
     run_active_result_streamer,
     run_search_result_streamer,
@@ -151,7 +152,8 @@ async def run_params_api(run_id: str,
     response = {
         'params': get_run_params(run, skip_system=skip_system),
         'traces': run.collect_sequence_info(sequence, skip_last_value=True),
-        'props': get_run_props(run)
+        'props': get_run_props(run),
+        'artifacts': get_run_artifacts(run),
     }
     # Convert NaN and Inf to strings
     response = convert_nan_and_inf_to_str(response)

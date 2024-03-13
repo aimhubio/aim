@@ -15,6 +15,7 @@ function CopyToClipboard({
   className = '',
   copyContent = null,
   iconSize = 'medium',
+  isURL = false,
 }: ICopyToClipBoardProps): React.FunctionComponentElement<ICopyToClipBoardProps> {
   const { onCopy, copied, setCopied } = useCopy(copyContent ?? contentRef);
 
@@ -27,12 +28,13 @@ function CopyToClipboard({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [copied]);
 
+  const iconName = isURL ? 'link' : 'copy';
   return (
     <ErrorBoundary>
       <Tooltip title={copied ? 'Copied!' : 'Copy to clipboard'}>
         <span className={className} onClick={onCopy}>
           <Button withOnlyIcon color='secondary' size={iconSize}>
-            {copied ? <Icon name='check' /> : <Icon name='copy' />}
+            {copied ? <Icon name='check' /> : <Icon name={iconName} />}
           </Button>
         </span>
       </Tooltip>
