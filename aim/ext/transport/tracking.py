@@ -67,10 +67,20 @@ class TrackingRouter:
         self.router = APIRouter()
         self.router.add_api_route('/{client_uri}/get-resource/',
                                   self.get_resource, methods=['POST'])
+        self.router.add_api_route('/{client_uri}/get-resource',
+                                  self.get_resource, methods=['POST'], include_in_schema=False)
         self.router.add_api_route('/{client_uri}/release-resource/{resource_handler}/',
                                   self.release_resource, methods=['GET'])
-        self.router.add_api_route('/{client_uri}/read-instruction/', self.run_instruction, methods=['POST'])
-        self.router.add_api_websocket_route('/{client_uri}/write-instruction/', self.run_write_instructions)
+        self.router.add_api_route('/{client_uri}/release-resource/{resource_handler}',
+                                  self.release_resource, methods=['GET'], include_in_schema=False)
+        self.router.add_api_route('/{client_uri}/read-instruction/',
+                                  self.run_instruction, methods=['POST'])
+        self.router.add_api_route('/{client_uri}/read-instruction',
+                                  self.run_instruction, methods=['POST'], include_in_schema=False)
+        self.router.add_api_websocket_route('/{client_uri}/write-instruction/',
+                                            self.run_write_instructions)
+        self.router.add_api_websocket_route('/{client_uri}/write-instruction',
+                                            self.run_write_instructions)
 
     @classmethod
     def cleanup_client_resources(cls, dead_client_uri):
