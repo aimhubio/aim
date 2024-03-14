@@ -1,7 +1,7 @@
 mistune==0.8.4
 sphinx
 sphinx_rtd_theme
-m2r2==0.3.1
+m2r2==0.3.3.post2
 sphinx-copybutton
 Cython==3.0.0a9
 
