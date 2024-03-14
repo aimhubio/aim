@@ -10,10 +10,15 @@ class ClientRouter:
     def __init__(self):
         self.router = APIRouter()
         self.router.add_api_route('/get-version/', self.get_version, methods=['GET'])
+        self.router.add_api_route('/get-version', self.get_version, methods=['GET'], include_in_schema=False)
         self.router.add_api_route('/heartbeat/{client_uri}/', self.heartbeat, methods=['GET'])
+        self.router.add_api_route('/heartbeat/{client_uri}', self.heartbeat, methods=['GET'], include_in_schema=False)
         self.router.add_api_route('/connect/{client_uri}/', self.connect, methods=['GET'])
+        self.router.add_api_route('/connect/{client_uri}', self.connect, methods=['GET'], include_in_schema=False)
         self.router.add_api_route('/reconnect/{client_uri}/', self.reconnect, methods=['GET'])
+        self.router.add_api_route('/reconnect/{client_uri}', self.reconnect, methods=['GET'], include_in_schema=False)
         self.router.add_api_route('/disconnect/{client_uri}/', self.disconnect, methods=['GET'])
+        self.router.add_api_route('/disconnect/{client_uri}', self.disconnect, methods=['GET'], include_in_schema=False)
 
     @classmethod
     def add_client(cls, client_uri):

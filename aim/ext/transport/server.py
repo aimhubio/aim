@@ -64,6 +64,7 @@ def create_app():
     base_path = os.environ.get(AIM_SERVER_BASE_PATH, '')
     app.mount(f'{base_path}/', api_app)
 
+    @api_app.get('/status', include_in_schema=False)
     @api_app.get('/status/')
     async def status():
         return {'status': 'OK'}
