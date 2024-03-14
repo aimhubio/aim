@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.19.1
+- Accept calls on tracking server without trailing slashes (mihran113)
+
 ## 3.19.0 Mar 13, 2024
 
 ### Enhancements:
