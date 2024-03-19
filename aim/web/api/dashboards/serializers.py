@@ -8,9 +8,9 @@ def dashboard_response_serializer(dashboard_object, session):
 
     app = (
         session.query(ExploreState)
-        .filter(ExploreState.dashboard_id == dashboard_object.uuid, ExploreState.is_archived == False)
+        .filter(ExploreState.dashboard_id == dashboard_object.uuid, ExploreState.is_archived == False) # noqa: E712
         .first()
-    )  # noqa: E712
+    )
 
     response = {
         "id": dashboard_object.uuid,
