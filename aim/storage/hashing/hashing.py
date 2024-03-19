@@ -47,9 +47,7 @@ def hash_uniform(bad_hash):
     in real applications) craft / find such examples that `a != b` but
     `hash(a) == hash(b)`
     """
-    state = hashlib.blake2b(encode_int64(bad_hash),
-                            digest_size=_HASH_SIZE,
-                            salt=_HASH_UNIFORM_SALT)
+    state = hashlib.blake2b(encode_int64(bad_hash), digest_size=_HASH_SIZE, salt=_HASH_UNIFORM_SALT)
     return decode_int64(state.digest())
 
 
@@ -77,9 +75,7 @@ def hash_bool(obj: bool) -> int:
 def hash_bytes(obj: bytes) -> int:
     """Hash an `bytes` buffer"""
     # We use `blake2b` to hash the `bytes` object
-    state = hashlib.blake2b(obj,
-                            digest_size=_HASH_SIZE,
-                            salt=_HASH_BYTES_SALT)
+    state = hashlib.blake2b(obj, digest_size=_HASH_SIZE, salt=_HASH_BYTES_SALT)
     return decode_int64(state.digest())
 
 
@@ -89,9 +85,7 @@ def hash_string(obj: str) -> int:
     # First, we encode them to `utf-8` and then compute the hash
     # but *a different hash seed is provided* to make sure strings and their
     # utf-8 encoded blobs do not map to the same hash.
-    state = hashlib.blake2b(obj.encode('utf-8'),
-                            digest_size=_HASH_SIZE,
-                            salt=_HASH_STR_SALT)
+    state = hashlib.blake2b(obj.encode("utf-8"), digest_size=_HASH_SIZE, salt=_HASH_STR_SALT)
     return decode_int64(state.digest())
 
 
@@ -101,8 +95,7 @@ def hash_array(obj: AimObjectArray) -> int:
     We do not take into account whether it is a `list` or `tuple`, so
     `hash([1, 2, ['x', 5]]) == hash((1, 2, ('x', 5)))`
     """
-    state = hashlib.blake2b(digest_size=_HASH_SIZE,
-                            salt=_HASH_ARRAY_SALT)
+    state = hashlib.blake2b(digest_size=_HASH_SIZE, salt=_HASH_ARRAY_SALT)
     for i in obj:
         piece_hash = hash_auto(i)
         state.update(encode_int64(piece_hash))
@@ -124,8 +117,7 @@ def hash_object(obj: AimObjectDict) -> int:
     The implementation does not take into account the order
     `hash({'a': 5, 'b': 7}) == hash({'b': 7, 'a': 5})`
     """
-    state = hashlib.blake2b(digest_size=_HASH_SIZE,
-                            salt=_HASH_OBJECT_SALT)
+    state = hashlib.blake2b(digest_size=_HASH_SIZE, salt=_HASH_OBJECT_SALT)
     # Here we use `key_cmp` to run over the object keys in an (meaningless but)
     # deterministic order.
     for key_val_tuple in sorted(obj.items(), key=key_cmp):

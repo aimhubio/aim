@@ -12,7 +12,7 @@ def get_module(name, required=True):
         return import_module(name)
     except Exception:
         if required:
-            raise ValueError('No module named: \'{}\''.format(name))
+            raise ValueError("No module named: '{}'".format(name))
         return None
 
 
@@ -40,4 +40,4 @@ def get_root_path():
 
 
 def get_db_url():
-    return 'sqlite:///{}/{}/aim_db'.format(get_root_path(), get_aim_repo_name())
+    return "sqlite:///{}/{}/aim_db".format(get_root_path(), get_aim_repo_name())

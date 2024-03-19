@@ -10,10 +10,10 @@ from aim.ext.resource.utils import round10e5
 
 class StatDict(object):
     # Available aggregation functions
-    AGG_MODE_AVG = 'average'
-    AGG_MODE_MIN = 'min'
-    AGG_MODE_MAX = 'max'
-    AGG_MODE_DIFF = 'diff'
+    AGG_MODE_AVG = "average"
+    AGG_MODE_MIN = "min"
+    AGG_MODE_MAX = "max"
+    AGG_MODE_DIFF = "diff"
     AGG_DEFAULT = AGG_MODE_AVG
 
     @classmethod
@@ -30,13 +30,14 @@ class StatDict(object):
         elif mode == cls.AGG_MODE_DIFF:
             return round10e5(max(items) - min(items))
         else:
-            raise ValueError('unknown aggregation mode: \'{}\''.format(mode))
+            raise ValueError("unknown aggregation mode: '{}'".format(mode))
 
     @classmethod
-    def aggregate_items(cls,
-                        items: 'List[StatDict]',
-                        agg_mode: str = AGG_DEFAULT,
-                        ):
+    def aggregate_items(
+        cls,
+        items: "List[StatDict]",
+        agg_mode: str = AGG_DEFAULT,
+    ):
         """
         Aggregates array of `StatDict` items by a given `mode`
         """
@@ -65,8 +66,7 @@ class StatDict(object):
 
         # Aggregate system stats
         for k in aggregated_stat.system.keys():
-            aggregated_stat.system[k] = cls.aggregate(aggregated_stat.system[k],
-                                                      agg_mode)
+            aggregated_stat.system[k] = cls.aggregate(aggregated_stat.system[k], agg_mode)
 
         # Aggregate GPU device stats
         for g in range(len(gpu_stats)):
@@ -88,8 +88,8 @@ class StatDict(object):
         Returns system and GPU device statistics
         """
         return {
-            'system': self.system,
-            'gpus': self.gpus,
+            "system": self.system,
+            "gpus": self.gpus,
         }
 
 
@@ -123,24 +123,21 @@ class Stat(object):
         Get system statistics and assign to `self`
         """
         memory_usage = psutil.virtual_memory()
-        disk_usage = psutil.disk_usage('/')
+        disk_usage = psutil.disk_usage("/")
         # net = psutil.net_io_counters()
         system = {
             # CPU utilization percent(can be over 100%)
-            'cpu': round10e5(self._process.cpu_percent(0.0)),
-
+            "cpu": round10e5(self._process.cpu_percent(0.0)),
             # Whole system memory usage
             # 'memory_used': round10e5(memory_usage.used / 1024 / 1024),
-            'memory_percent': round10e5(memory_usage.used * 100 / memory_usage.total),
-
+            "memory_percent": round10e5(memory_usage.used * 100 / memory_usage.total),
             # Get the portion of memory occupied by a process
             # 'p_memory_rss': round10e5(self._process.memory_info().rss
             #                           / 1024 / 1024),
-            'p_memory_percent': round10e5(self._process.memory_percent()),
-
+            "p_memory_percent": round10e5(self._process.memory_percent()),
             # Disk usage
             # 'disk_used': round10e5(disk_usage.used / 1024 / 1024),
-            'disk_percent': round10e5(disk_usage.percent),
+            "disk_percent": round10e5(disk_usage.percent),
         }
 
         # Collect GPU statistics

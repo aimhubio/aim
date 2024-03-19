@@ -8,7 +8,7 @@ from performance_tests.utils import get_baseline, write_baseline
 class TestRandomAccess(StorageTestBase):
     @parameterized.expand({0: 50, 1: 250, 2: 500}.items())
     def test_random_access(self, test_key, density):
-        test_name = f'test_random_access_{test_key}'
+        test_name = f"test_random_access_{test_key}"
         repo = Repo.default_repo()
         query = 'metric.name == "metric 0"'
         execution_time = random_access_metric_values(repo, query, density)

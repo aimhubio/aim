@@ -8,8 +8,8 @@ try:
     from lightgbm.callback import CallbackEnv
 except ImportError:
     raise RuntimeError(
-        'This contrib module requires Lightgbm to be installed. '
-        'Please install it with command: \n pip install lightgbm'
+        "This contrib module requires Lightgbm to be installed. "
+        "Please install it with command: \n pip install lightgbm"
     )
 
 
@@ -20,12 +20,14 @@ class AimCallback:
     https://lightgbm.readthedocs.io/en/latest/pythonapi/lightgbm.record_evaluation.html
     """
 
-    def __init__(self, repo: Optional[str] = None,
-                 experiment: Optional[str] = None,
-                 system_tracking_interval: Optional[int]
-                 = DEFAULT_SYSTEM_TRACKING_INT,
-                 log_system_params: Optional[bool] = True,
-                 capture_terminal_logs: Optional[bool] = True,):
+    def __init__(
+        self,
+        repo: Optional[str] = None,
+        experiment: Optional[str] = None,
+        system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT,
+        log_system_params: Optional[bool] = True,
+        capture_terminal_logs: Optional[bool] = True,
+    ):
         self._repo_path = repo
         self._experiment = experiment
         self._system_tracking_interval = system_tracking_interval
@@ -65,11 +67,11 @@ class AimCallback:
             self._run_hash = self._run.hash
 
     def before_tracking(self, **kwargs):
-        """ Runs before tracking data """
+        """Runs before tracking data"""
         pass
 
     def after_tracking(self, **kwargs):
-        """ Runs after tracking data """
+        """Runs after tracking data"""
         pass
 
     def __call__(self, env: CallbackEnv):
@@ -81,13 +83,13 @@ class AimCallback:
         for item in env.evaluation_result_list:
             if len(item) == 4:
                 data_name, eval_name, result, _ = item
-                self._run.track(result, name=eval_name, context={'data_name': data_name})
+                self._run.track(result, name=eval_name, context={"data_name": data_name})
             else:
                 data_name, eval_name = item[1].split()
                 res_mean = item[2]
                 res_stdv = item[4]
-                self._run.track(res_mean, name=f'{eval_name}-mean', context={'data_name': data_name})
-                self._run.track(res_stdv, name=f'{eval_name}-stdv', context={'data_name': data_name})
+                self._run.track(res_mean, name=f"{eval_name}-mean", context={"data_name": data_name})
+                self._run.track(res_stdv, name=f"{eval_name}-stdv", context={"data_name": data_name})
 
         self.after_tracking(env=env)
 

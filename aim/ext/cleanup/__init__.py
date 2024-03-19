@@ -8,7 +8,7 @@ from abc import abstractmethod
 from typing import Dict, Generic, Tuple, TypeVar
 
 
-T = TypeVar('T')
+T = TypeVar("T")
 
 logger = logging.getLogger(__name__)
 
@@ -19,6 +19,7 @@ class RobustExec(threading.Thread):
     Users very often Ctrl-C to stop the program multiple times which leaves
     program no chance to clean up.
     """
+
     def __init__(self, *args, stop_signal, **kwargs):
         super().__init__(*args, **kwargs)
         self.stop_signal = stop_signal
@@ -31,15 +32,13 @@ class RobustExec(threading.Thread):
                 # will continue to run, until stop_signal is set.
                 return self.stop_signal.wait()
             except KeyboardInterrupt:
-                logger.warning('Received Ctrl-C. Closing gracefully.')
+                logger.warning("Received Ctrl-C. Closing gracefully.")
 
 
 class AutoClean(Generic[T]):
     PRIORITY = 10
     _registered_with_atexit = False
-    _finalizers: Dict[
-        T, Tuple[int, weakref.finalize]
-    ] = weakref.WeakKeyDictionary()
+    _finalizers: Dict[T, Tuple[int, weakref.finalize]] = weakref.WeakKeyDictionary()
 
     stop_signal = threading.Event()
 
@@ -80,10 +79,10 @@ class AutoClean(Generic[T]):
         """
 
         finalizers = sorted(AutoClean._finalizers.items(), key=lambda x: x[1][0])
-        logger.debug(f'Cleaning up...  Found {len(finalizers)} finalizers')
-        logger.debug('Cleaning up...  Iterating over instances in order')
+        logger.debug(f"Cleaning up...  Found {len(finalizers)} finalizers")
+        logger.debug("Cleaning up...  Iterating over instances in order")
         for key, (priority, finalizer) in reversed(finalizers):
-            logger.debug(f'Cleaning up...  with priority={priority} instance {key}')
+            logger.debug(f"Cleaning up...  with priority={priority} instance {key}")
             finalizer()
         AutoClean.stop_signal.set()
 
@@ -95,8 +94,8 @@ class AutoClean(Generic[T]):
         It also blocks until all the cleanup functions have finished to ensure
         data consistency.
         """
-        logger.debug('Cleaning up...  Blocking KeyboardInterrupts')
+        logger.debug("Cleaning up...  Blocking KeyboardInterrupts")
         example = RobustExec(stop_signal=AutoClean.stop_signal, target=AutoClean._cleanup)
         example.start()
         example.join()
-        logger.debug('Cleaning up...  Done')
+        logger.debug("Cleaning up...  Done")

@@ -62,8 +62,8 @@ def _decode_histogram_from_plugin(value):
     bin_range = (left_edge[0], right_edge[-1])
 
     is_empty = False
-    is_empty |= (left_right_bins.shape[0] == 0)
-    is_empty |= (bin_range[0] == bin_range[1])
+    is_empty |= left_right_bins.shape[0] == 0
+    is_empty |= bin_range[0] == bin_range[1]
     if is_empty:
         return None
 
@@ -103,9 +103,7 @@ class TensorboardTracker:
             return
         self._started = True
         self._thread.start()
-        self._consumer = TensorboardEventConsumer(
-            self._watcher_queue, self.tracker
-        )
+        self._consumer = TensorboardEventConsumer(self._watcher_queue, self.tracker)
         self._consumer.start()
 
     def stop(self):
@@ -210,13 +208,12 @@ class TensorboardFolderTracker:
                 continue
 
             if track_val is not None:
-                self.queue.put(TensorboardEvent(track_val, tag, step, context={'entry': self.folder_name}))
+                self.queue.put(TensorboardEvent(track_val, tag, step, context={"entry": self.folder_name}))
         if fail_count:
             logging.warning(f"Failed to process {fail_count} entries. First exception: {_err_info}")
 
 
 class TensorboardEvent:
-
     def __init__(self, value: Any, name: str, step: int, context: dict) -> None:
         self.value = value
         self.name = name
@@ -225,7 +222,6 @@ class TensorboardEvent:
 
 
 class TensorboardEventConsumer:
-
     def __init__(self, queue: queue.Queue, tracker) -> None:
         self._tracker = weakref.ref(tracker)
         self._queue = queue

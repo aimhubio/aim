@@ -20,17 +20,18 @@ class Session:
     _original_sigterm_handler = None
 
     @deprecated
-    def __init__(self, repo: Optional[str] = None,
-                 experiment: Optional[str] = None,
-                 flush_frequency: int = 0,  # unused
-                 block_termination: bool = True,  # unused
-                 run: Optional[str] = None,
-                 system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT):
-
+    def __init__(
+        self,
+        repo: Optional[str] = None,
+        experiment: Optional[str] = None,
+        flush_frequency: int = 0,  # unused
+        block_termination: bool = True,  # unused
+        run: Optional[str] = None,
+        system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT,
+    ):
         self._repo = Repo.from_path(repo) if repo else Repo.default_repo()
         self._repo_path = self._repo.path
-        self._run = Run(run, repo=self._repo, experiment=experiment,
-                        system_tracking_interval=system_tracking_interval)
+        self._run = Run(run, repo=self._repo, experiment=experiment, system_tracking_interval=system_tracking_interval)
         self._run_hash = self._run.hash
         self.active = True
 
@@ -51,11 +52,11 @@ class Session:
     @exception_resistant(silent=False)
     def track(self, *args, **kwargs):
         val = args[0]
-        name = kwargs.pop('name')
-        step = kwargs.pop('step', None)
-        epoch = kwargs.pop('epoch', None)
+        name = kwargs.pop("name")
+        step = kwargs.pop("step", None)
+        epoch = kwargs.pop("epoch", None)
         for key in kwargs.keys():
-            if key.startswith('__'):
+            if key.startswith("__"):
                 del kwargs[key]
 
         self._run.track(val, name=name, step=step, epoch=epoch, context=kwargs)
@@ -73,12 +74,11 @@ class Session:
     @exception_resistant(silent=False)
     def close(self):
         if not self.active:
-            raise Exception('session is closed')
+            raise Exception("session is closed")
         if self._run:
             del self._run
             self._run = None
-        if self._repo_path in Session.sessions \
-                and self in Session.sessions[self._repo_path]:
+        if self._repo_path in Session.sessions and self in Session.sessions[self._repo_path]:
             Session.sessions[self._repo_path].remove(self)
             if len(Session.sessions[self._repo_path]) == 0:
                 del Session.sessions[self._repo_path]

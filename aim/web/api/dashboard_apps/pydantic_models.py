@@ -18,8 +18,8 @@ class ExploreStateUpdateIn(BaseModel):
 class ExploreStateGetOut(BaseModel):
     id: UUID
     type: str
-    updated_at: datetime = 'Wed, 01 Jan 2021 16:12:07 GMT'
-    created_at: datetime = 'Wed, 01 Jan 2021 16:12:07 GMT'
+    updated_at: datetime = "Wed, 01 Jan 2021 16:12:07 GMT"
+    created_at: datetime = "Wed, 01 Jan 2021 16:12:07 GMT"
     state: dict
 
 

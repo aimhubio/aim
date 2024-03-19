@@ -6,14 +6,13 @@ from tests.utils import full_class_name
 
 
 class TestQuery(PrefilledDataTestBase):
-
     def test_query_metrics(self):
-        q = self.isolated_query_patch('run.hparams.batch_size == None and metric.context.is_training == True')
+        q = self.isolated_query_patch("run.hparams.batch_size == None and metric.context.is_training == True")
 
         trace_count = 0
         for trc in self.repo.query_metrics(query=q, report_mode=QueryReportMode.DISABLED):
-            self.assertIsNone(trc.run['hparams']['batch_size'])
-            self.assertTrue(trc.context['is_training'])
+            self.assertIsNone(trc.run["hparams"]["batch_size"])
+            self.assertTrue(trc.context["is_training"])
             trace_count += 1
         self.assertEqual(20, trace_count)
 
@@ -24,13 +23,13 @@ class TestQuery(PrefilledDataTestBase):
         self.assertEqual(40, trace_count)
 
     def test_query_runs(self):
-        q = self.isolated_query_patch('run.hparams.lr < 0.01 and run.run_index >= 5')
+        q = self.isolated_query_patch("run.hparams.lr < 0.01 and run.run_index >= 5")
 
         run_count = 0
         for run_trace_collection in self.repo.query_runs(query=q, report_mode=QueryReportMode.DISABLED).iter_runs():
             run = run_trace_collection.run
-            self.assertLess(run[('hparams', 'lr')], 0.01)
-            self.assertGreaterEqual(run['run_index'], 5)
+            self.assertLess(run[("hparams", "lr")], 0.01)
+            self.assertGreaterEqual(run["run_index"], 5)
             run_count += 1
         self.assertEqual(5, run_count)
 
@@ -49,15 +48,17 @@ class TestQuery(PrefilledDataTestBase):
             run_count += 1
         self.assertEqual(1, run_count)
 
-    @parameterized.expand([
-        ('run + context', 'run.hparams.batch_size == None and metric.context.is_training == True'),
-        ('run multiple filters', 'run.hparams.batch_size == None and run.hparams.lr == 0.01'),
-        ('context only', 'metric.context["is_training"] == False'),
-        ('context + metric name', 'metric.context.is_training == False and metric.name == "loss"'),
-        ('__getitem__ interface with tuple', 'run["hparams","lr"] == 0.01'),
-        ('__getitem__ interface chaining', 'run["hparams"]["lr"] == 0.01'),
-        ('mixed interface', 'run["hparams"].lr == 0.01'),
-    ])
+    @parameterized.expand(
+        [
+            ("run + context", "run.hparams.batch_size == None and metric.context.is_training == True"),
+            ("run multiple filters", "run.hparams.batch_size == None and run.hparams.lr == 0.01"),
+            ("context only", 'metric.context["is_training"] == False'),
+            ("context + metric name", 'metric.context.is_training == False and metric.name == "loss"'),
+            ("__getitem__ interface with tuple", 'run["hparams","lr"] == 0.01'),
+            ("__getitem__ interface chaining", 'run["hparams"]["lr"] == 0.01'),
+            ("mixed interface", 'run["hparams"].lr == 0.01'),
+        ]
+    )
     def test_query_execution(self, name, q):
         # crash/no-crash test
         # execute query and iterate over result
@@ -88,12 +89,14 @@ class TestQuery(PrefilledDataTestBase):
             self.assertEqual(19, se.offset)  # count for added ()
             self.assertEqual(1, se.lineno)
         else:
-            self.fail('SyntaxError is not raised')
+            self.fail("SyntaxError is not raised")
 
 
 class TestQueryDefaultExpression(PrefilledDataTestBase):
     def setUp(self):
-        self.run = next((run for run in self.repo.iter_runs() if run.get('testcase') == full_class_name(self.__class__)))
+        self.run = next(
+            (run for run in self.repo.iter_runs() if run.get("testcase") == full_class_name(self.__class__))
+        )
         self.run.archived = True
         self.run_hash = self.run.hash
 
@@ -109,7 +112,7 @@ class TestQueryDefaultExpression(PrefilledDataTestBase):
         self.assertNotIn(self.run_hash, run_hashes)
 
     def test_query_with_archived_expression_run_results(self):
-        q = self.isolated_query_patch('run.archived == True')
+        q = self.isolated_query_patch("run.archived == True")
         run_hashes = []
         for run in self.repo.query_runs(query=q, report_mode=QueryReportMode.DISABLED).iter_runs():
             run_hashes.append(run.run.hash)

@@ -26,14 +26,15 @@ def default_to_run_hash(context):
 
 
 run_tags = Table(
-    'run_tag', Base.metadata,
-    Column('run_id', Integer, ForeignKey('run.id'), primary_key=True, nullable=False),
-    Column('tag_id', Integer, ForeignKey('tag.id'), primary_key=True, nullable=False)
+    "run_tag",
+    Base.metadata,
+    Column("run_id", Integer, ForeignKey("run.id"), primary_key=True, nullable=False),
+    Column("tag_id", Integer, ForeignKey("tag.id"), primary_key=True, nullable=False),
 )
 
 
 class Run(Base):
-    __tablename__ = 'run'
+    __tablename__ = "run"
 
     id = Column(Integer, autoincrement=True, primary_key=True)
     # TODO: [AT] make run_hash immutable
@@ -47,11 +48,11 @@ class Run(Base):
     finalized_at = Column(DateTime, default=None)
 
     # relationships
-    experiment_id = Column(ForeignKey('experiment.id'), nullable=True)
+    experiment_id = Column(ForeignKey("experiment.id"), nullable=True)
 
-    experiment = relationship('Experiment', backref=backref('runs', uselist=True, order_by='Run.created_at.desc()'))
-    tags = relationship('Tag', secondary=run_tags, backref=backref('runs', uselist=True))
-    notes = relationship('Note', back_populates='run')
+    experiment = relationship("Experiment", backref=backref("runs", uselist=True, order_by="Run.created_at.desc()"))
+    tags = relationship("Tag", secondary=run_tags, backref=backref("runs", uselist=True))
+    notes = relationship("Note", back_populates="run")
 
     def __init__(self, run_hash, created_at=None):
         self.hash = run_hash
@@ -59,7 +60,7 @@ class Run(Base):
 
 
 class Experiment(Base):
-    __tablename__ = 'experiment'
+    __tablename__ = "experiment"
 
     id = Column(Integer, autoincrement=True, primary_key=True)
     uuid = Column(Text, index=True, unique=True, default=get_uuid)
@@ -68,7 +69,7 @@ class Experiment(Base):
 
     # relationships
 
-    notes = relationship('Note', back_populates='experiment')
+    notes = relationship("Note", back_populates="experiment")
 
     is_archived = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
@@ -79,7 +80,7 @@ class Experiment(Base):
 
 
 class Tag(Base):
-    __tablename__ = 'tag'
+    __tablename__ = "tag"
 
     id = Column(Integer, autoincrement=True, primary_key=True)
     uuid = Column(Text, index=True, unique=True, default=get_uuid)
@@ -94,36 +95,36 @@ class Tag(Base):
     def __init__(self, name):
         self.name = name
 
-    @validates('color')
+    @validates("color")
     def validate_color(self, _, color):
         # TODO: [AT] add color validation
         return color
 
 
 class Note(Base):
-    __tablename__ = 'note'
+    __tablename__ = "note"
 
     id = Column(Integer, autoincrement=True, primary_key=True)
-    content = Column(Text, nullable=False, default='')
-    run_id = Column(Integer, ForeignKey('run.id'))
-    experiment_id = Column(Integer, ForeignKey('experiment.id'))
+    content = Column(Text, nullable=False, default="")
+    run_id = Column(Integer, ForeignKey("run.id"))
+    experiment_id = Column(Integer, ForeignKey("experiment.id"))
 
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
 
-    run = relationship('Run', back_populates='notes')
-    experiment = relationship('Experiment', back_populates='notes')
-    audit_logs = relationship('NoteAuditLog', back_populates='note')
+    run = relationship("Run", back_populates="notes")
+    experiment = relationship("Experiment", back_populates="notes")
+    audit_logs = relationship("NoteAuditLog", back_populates="note")
 
     def __init__(self, content):
         self.content = content
 
 
 class NoteAuditLog(Base):
-    __tablename__ = 'note_audit_log'
+    __tablename__ = "note_audit_log"
 
     id = Column(Integer, autoincrement=True, primary_key=True)
-    note_id = Column(Integer, ForeignKey('note.id', ondelete='CASCADE'), nullable=False)
+    note_id = Column(Integer, ForeignKey("note.id", ondelete="CASCADE"), nullable=False)
 
     datetime = Column(DateTime, default=datetime.datetime.utcnow)
     action = Column(Text)
@@ -131,7 +132,7 @@ class NoteAuditLog(Base):
     before_edit = Column(Text, nullable=True)
     after_edit = Column(Text, nullable=True)
 
-    note = relationship('Note', back_populates='audit_logs')
+    note = relationship("Note", back_populates="audit_logs")
 
     def __init__(self, action, before, after):
         self.action = action
@@ -140,11 +141,11 @@ class NoteAuditLog(Base):
 
 
 class RunInfo(Base):
-    __tablename__ = 'run_info'
+    __tablename__ = "run_info"
 
     id = Column(Integer, autoincrement=True, primary_key=True)
-    run_id = Column(Integer, ForeignKey('run.id'))
+    run_id = Column(Integer, ForeignKey("run.id"))
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
     last_notification_index = Column(Integer, default=-1)
-    run = relationship('Run', uselist=False, backref=backref("info", uselist=False))
+    run = relationship("Run", uselist=False, backref=backref("info", uselist=False))

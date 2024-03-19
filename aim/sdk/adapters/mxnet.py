@@ -36,16 +36,19 @@ class AimLoggingHandler(TrainBegin, TrainEnd, EpochBegin, EpochEnd, BatchBegin, 
         handler is.
     """
 
-    def __init__(self, log_interval: Union[int, str] = 'epoch',
-                 repo: Optional[str] = None,
-                 experiment_name: Optional[str] = None,
-                 system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT,
-                 log_system_params: Optional[bool] = True,
-                 capture_terminal_logs: Optional[bool] = True,
-                 metrics: Optional[List[Any]] = None,
-                 priority=np.Inf,):
+    def __init__(
+        self,
+        log_interval: Union[int, str] = "epoch",
+        repo: Optional[str] = None,
+        experiment_name: Optional[str] = None,
+        system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT,
+        log_system_params: Optional[bool] = True,
+        capture_terminal_logs: Optional[bool] = True,
+        metrics: Optional[List[Any]] = None,
+        priority=np.Inf,
+    ):
         super().__init__()
-        if not isinstance(log_interval, int) and log_interval != 'epoch':
+        if not isinstance(log_interval, int) and log_interval != "epoch":
             raise ValueError("log_interval must be either an integer or string 'epoch'")
 
         self.metrics = _check_metrics(metrics)
@@ -72,9 +75,7 @@ class AimLoggingHandler(TrainBegin, TrainEnd, EpochBegin, EpochEnd, BatchBegin, 
         optimizer = trainer.optimizer.__class__.__name__
         lr = trainer.learning_rate
 
-        estimator.logger.info("Training begin: using optimizer %s "
-                              "with current learning rate %.4f ",
-                              optimizer, lr)
+        estimator.logger.info("Training begin: using optimizer %s " "with current learning rate %.4f ", optimizer, lr)
         if estimator.max_epoch:
             estimator.logger.info("Train for %d epochs.", estimator.max_epoch)
         else:
@@ -91,45 +92,46 @@ class AimLoggingHandler(TrainBegin, TrainEnd, EpochBegin, EpochEnd, BatchBegin, 
             "optimizer": optimizer,
             "lr": lr,
             "max_epoch": estimator.max_epoch,
-            "max_batch": estimator.max_batch
+            "max_batch": estimator.max_batch,
         }
 
         self.setup(estimator, params)
 
     def train_end(self, estimator: Optional[Estimator], *args, **kwargs):
         train_time = time.time() - self.train_start
-        msg = 'Train finished using total %ds with %d epochs. ' % (train_time, self.current_epoch)
+        msg = "Train finished using total %ds with %d epochs. " % (train_time, self.current_epoch)
         # log every result in train stats including train/validation loss & metrics
         for metric in self.metrics:
             name, value = metric.get()
-            msg += '%s: %.4f, ' % (name, value)
-        estimator.logger.info(msg.rstrip(', '))
+            msg += "%s: %.4f, " % (name, value)
+        estimator.logger.info(msg.rstrip(", "))
 
     def epoch_begin(self, estimator: Optional[Estimator], *args, **kwargs):
-        if isinstance(self.log_interval, int) or self.log_interval == 'epoch':
+        if isinstance(self.log_interval, int) or self.log_interval == "epoch":
             is_training = False
             for metric in self.metrics:
-                if 'training' in metric.name:
+                if "training" in metric.name:
                     is_training = True
             self.epoch_start = time.time()
             if is_training:
-                estimator.logger.info("[Epoch %d] Begin, current learning rate: %.4f",
-                                      self.current_epoch, estimator.trainer.learning_rate)
+                estimator.logger.info(
+                    "[Epoch %d] Begin, current learning rate: %.4f", self.current_epoch, estimator.trainer.learning_rate
+                )
             else:
                 estimator.logger.info("Validation Begin")
 
     def epoch_end(self, estimator: Optional[Estimator], *args, **kwargs):
-        if isinstance(self.log_interval, int) or self.log_interval == 'epoch':
+        if isinstance(self.log_interval, int) or self.log_interval == "epoch":
             epoch_time = time.time() - self.epoch_start
-            msg = '[Epoch %d] Finished in %.3fs, ' % (self.current_epoch, epoch_time)
+            msg = "[Epoch %d] Finished in %.3fs, " % (self.current_epoch, epoch_time)
             for metric in self.metrics:
                 name, value = metric.get()
-                msg += '%s: %.4f, ' % (name, value)
+                msg += "%s: %.4f, " % (name, value)
 
                 context_name, metric_name = name.split(" ")
-                context = {'subset': context_name}
+                context = {"subset": context_name}
                 self._run.track(value, metric_name, step=self.batch_index, context=context)
-            estimator.logger.info(msg.rstrip(', '))
+            estimator.logger.info(msg.rstrip(", "))
         self.current_epoch += 1
         self.batch_index = 0
 
@@ -140,22 +142,22 @@ class AimLoggingHandler(TrainBegin, TrainEnd, EpochBegin, EpochEnd, BatchBegin, 
     def batch_end(self, estimator: Optional[Estimator], *args, **kwargs):
         if isinstance(self.log_interval, int):
             batch_time = time.time() - self.batch_start
-            msg = '[Epoch %d][Batch %d]' % (self.current_epoch, self.batch_index)
-            self.processed_samples += kwargs['batch'][0].shape[0]
-            msg += '[Samples %s] ' % (self.processed_samples)
+            msg = "[Epoch %d][Batch %d]" % (self.current_epoch, self.batch_index)
+            self.processed_samples += kwargs["batch"][0].shape[0]
+            msg += "[Samples %s] " % (self.processed_samples)
             self.log_interval_time += batch_time
             if self.batch_index % self.log_interval == 0:
-                msg += 'time/interval: %.3fs ' % self.log_interval_time
+                msg += "time/interval: %.3fs " % self.log_interval_time
                 self.log_interval_time = 0
                 for metric in self.metrics:
                     # only log current training loss & metric after each interval
                     name, value = metric.get()
-                    msg += '%s: %.4f, ' % (name, value)
+                    msg += "%s: %.4f, " % (name, value)
 
                     context_name, metric_name = name.split(" ")
-                    context = {'subset': context_name}
+                    context = {"subset": context_name}
                     self._run.track(value, metric_name, step=self.batch_index, context=context)
-                estimator.logger.info(msg.rstrip(', '))
+                estimator.logger.info(msg.rstrip(", "))
         self.batch_index += 1
 
     @property
@@ -190,7 +192,7 @@ class AimLoggingHandler(TrainBegin, TrainEnd, EpochBegin, EpochEnd, BatchBegin, 
                 for key in args:
                     self._run.set(key, args[key], strict=False)
             except Exception as e:
-                estimator.logger.warning(f'Aim could not log config parameters -> {e}')
+                estimator.logger.warning(f"Aim could not log config parameters -> {e}")
 
     def __del__(self):
         if self._run and self._run.active:

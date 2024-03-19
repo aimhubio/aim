@@ -18,7 +18,7 @@ class ViewOnUncommittedDatasetWarning(UserWarning):
     pass
 
 
-@CustomObject.alias('deeplake.dataset')
+@CustomObject.alias("deeplake.dataset")
 class DeeplakeDataset(CustomObject):
     """
     Track Activeloop Deeplake Dataset with versioning.
@@ -53,7 +53,8 @@ class DeeplakeDataset(CustomObject):
         run = Run(system_tracking_interval=None)
         run['deeplake_ds'] = DeeplakeDataset(ds)
     """
-    AIM_NAME = 'deeplake.dataset'
+
+    AIM_NAME = "deeplake.dataset"
 
     def __init__(self, dataset: deeplake.Dataset, auto_commit: bool = False, auto_save_view: bool = False):
         super().__init__()
@@ -93,23 +94,20 @@ class DeeplakeDataset(CustomObject):
         if dataset.is_view:
             if auto_save_view and not dataset.has_head_changes:
                 self.view_info = dataset._get_view_info()
-                view_id = self.view_info.get('id', None)
+                view_id = self.view_info.get("id", None)
                 try:
                     vds_path = dataset.save_view(message="autosave on aim run.", id=view_id, optimize=False)
                 except (NotImplementedError, ReadOnlyModeError) as e:
                     # views of in-memory datasets and read-only datasets cannot be saved. but keep the view id.
-                    logger.info(f'autosave view on run: {str(e)} for dataset {dataset.path}.')
+                    logger.info(f"autosave view on run: {str(e)} for dataset {dataset.path}.")
                 else:
-                    logger.info(f'autosave view on run: dataset {dataset.path} with id {view_id} saved to {vds_path}.')
+                    logger.info(f"autosave view on run: dataset {dataset.path} with id {view_id} saved to {vds_path}.")
         else:
             if auto_commit and dataset.has_head_changes:
                 commit_id = dataset.commit(message="autocommit on aim run")
-                logger.info(f'autocommit on run: dataset {dataset.path} with commit id {commit_id}.')
+                logger.info(f"autocommit on run: dataset {dataset.path} with commit id {commit_id}.")
 
-        self.storage['dataset'] = {
-            'source': 'deeplake',
-            'meta': self._get_ds_meta(dataset)
-        }
+        self.storage["dataset"] = {"source": "deeplake", "meta": self._get_ds_meta(dataset)}
 
     def _get_ds_meta(self, ds: deeplake.Dataset):
         return {
@@ -126,7 +124,7 @@ class DeeplakeDataset(CustomObject):
             "view_info": self.view_info,
             "tensors": {group: self._tensor_meta(tensor) for group, tensor in ds.tensors.items()},
             "size_approx": ds.size_approx(),
-            "deeplake_version": ds.meta.version
+            "deeplake_version": ds.meta.version,
         }
 
     def _tensor_meta(self, tensor: deeplake.Tensor):

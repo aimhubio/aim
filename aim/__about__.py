@@ -4,7 +4,7 @@ import time
 
 here = os.path.abspath(os.path.dirname(__file__))
 
-version_file = f'{here}/VERSION'
+version_file = f"{here}/VERSION"
 
 __version__ = None
 with open(version_file) as vf:
@@ -18,9 +18,7 @@ __copyright__ = f"2019-{_this_year}, {__author__}."
 __homepage__ = "https://github.com/aimhubio/aim"
 __docs_url__ = "https://github.com/aimhubio/aim"
 # this has to be simple string, see: https://github.com/pypa/twine/issues/522
-__docs__ = (
-    "Aim is a lightweight library for ML researchers to store and retrieve AI metadata."
-)
+__docs__ = "Aim is a lightweight library for ML researchers to store and retrieve AI metadata."
 __long_docs__ = """
 """
 

@@ -66,22 +66,25 @@ class TrackingRouter:
     def __init__(self, resource_registry: ResourceTypeRegistry):
         self.registry = resource_registry
         self.router = APIRouter()
-        self.router.add_api_route('/{client_uri}/get-resource/',
-                                  self.get_resource, methods=['POST'])
-        self.router.add_api_route('/{client_uri}/get-resource',
-                                  self.get_resource, methods=['POST'], include_in_schema=False)
-        self.router.add_api_route('/{client_uri}/release-resource/{resource_handler}/',
-                                  self.release_resource, methods=['GET'])
-        self.router.add_api_route('/{client_uri}/release-resource/{resource_handler}',
-                                  self.release_resource, methods=['GET'], include_in_schema=False)
-        self.router.add_api_route('/{client_uri}/read-instruction/',
-                                  self.run_instruction, methods=['POST'])
-        self.router.add_api_route('/{client_uri}/read-instruction',
-                                  self.run_instruction, methods=['POST'], include_in_schema=False)
-        self.router.add_api_websocket_route('/{client_uri}/write-instruction/',
-                                            self.run_write_instructions)
-        self.router.add_api_websocket_route('/{client_uri}/write-instruction',
-                                            self.run_write_instructions)
+        self.router.add_api_route("/{client_uri}/get-resource/", self.get_resource, methods=["POST"])
+        self.router.add_api_route(
+            "/{client_uri}/get-resource", self.get_resource, methods=["POST"], include_in_schema=False
+        )
+        self.router.add_api_route(
+            "/{client_uri}/release-resource/{resource_handler}/", self.release_resource, methods=["GET"]
+        )
+        self.router.add_api_route(
+            "/{client_uri}/release-resource/{resource_handler}",
+            self.release_resource,
+            methods=["GET"],
+            include_in_schema=False,
+        )
+        self.router.add_api_route("/{client_uri}/read-instruction/", self.run_instruction, methods=["POST"])
+        self.router.add_api_route(
+            "/{client_uri}/read-instruction", self.run_instruction, methods=["POST"], include_in_schema=False
+        )
+        self.router.add_api_websocket_route("/{client_uri}/write-instruction/", self.run_write_instructions)
+        self.router.add_api_websocket_route("/{client_uri}/write-instruction", self.run_write_instructions)
 
     @classmethod
     def cleanup_client_resources(cls, dead_client_uri):
@@ -97,13 +100,15 @@ class TrackingRouter:
         if not res_info or res_info[0] != client_uri:
             raise UnauthorizedRequestError(resource_handler)
 
-    async def get_resource(self,
-                           client_uri: str,
-                           request: Request,):
+    async def get_resource(
+        self,
+        client_uri: str,
+        request: Request,
+    ):
         request_data = await request.json()
-        resource_handler = request_data.get('resource_handler')
-        resource_type = request_data.get('resource_type')
-        args = request_data.get('args')
+        resource_handler = request_data.get("resource_handler")
+        resource_type = request_data.get("resource_type")
+        args = request_data.get("args")
 
         if not resource_handler:
             resource_handler = get_handler()
@@ -115,7 +120,7 @@ class TrackingRouter:
                 checked_kwargs = {}
                 for argname, arg in kwargs.items():
                     if isinstance(arg, ResourceObject):
-                        handler = arg.storage['handler']
+                        handler = arg.storage["handler"]
                         self._verify_resource_handler(handler, client_uri)
                         checked_kwargs[argname] = self.resource_pool[handler][1].ref
                     else:
@@ -126,7 +131,7 @@ class TrackingRouter:
                 res = resource_cls()
 
             self.resource_pool[resource_handler] = (client_uri, res)
-            return {'handler': resource_handler}
+            return {"handler": resource_handler}
 
         except Exception as e:
             try:
@@ -136,28 +141,37 @@ class TrackingRouter:
             except KeyError:
                 pass
 
-            logger.debug(f'Caught exception {e}. Sending response 400.')
-            return JSONResponse({
-                'exception': build_exception(e),
-            }, status_code=400)
+            logger.debug(f"Caught exception {e}. Sending response 400.")
+            return JSONResponse(
+                {
+                    "exception": build_exception(e),
+                },
+                status_code=400,
+            )
 
     async def release_resource(self, client_uri, resource_handler):
         try:
             self._verify_resource_handler(resource_handler, client_uri)
             del self.resource_pool[resource_handler]
         except Exception as e:
-            logger.debug(f'Caught exception {e}. Sending response 400.')
-            return JSONResponse({
-                'exception': build_exception(e),
-            }, status_code=400)
+            logger.debug(f"Caught exception {e}. Sending response 400.")
+            return JSONResponse(
+                {
+                    "exception": build_exception(e),
+                },
+                status_code=400,
+            )
 
-    async def run_instruction(self, client_uri: str,
-                              request: Request,):
+    async def run_instruction(
+        self,
+        client_uri: str,
+        request: Request,
+    ):
         try:
             request_data = await request.json()
-            resource_handler = request_data.get('resource_handler')
-            method_name = request_data.get('method_name')
-            args = request_data.get('args')
+            resource_handler = request_data.get("resource_handler")
+            method_name = request_data.get("method_name")
+            args = request_data.get("args")
 
             self._verify_resource_handler(resource_handler, client_uri)
 
@@ -166,15 +180,15 @@ class TrackingRouter:
             checked_args = []
             for arg in args:
                 if isinstance(arg, ResourceObject):
-                    handler = arg.storage['handler']
+                    handler = arg.storage["handler"]
                     self._verify_resource_handler(handler, client_uri)
                     checked_args.append(self.resource_pool[handler][1].ref)
                 else:
                     checked_args.append(arg)
 
             resource = self.resource_pool[resource_handler][1].ref
-            if method_name.endswith('.setter'):
-                attr_name = method_name.split('.')[0]
+            if method_name.endswith(".setter"):
+                attr_name = method_name.split(".")[0]
                 setattr(resource, attr_name, checked_args[0])
                 result = None
             else:
@@ -186,10 +200,13 @@ class TrackingRouter:
             del resource
             return StreamingResponse(pack_stream(encode_tree(result)))
         except Exception as e:
-            logger.debug(f'Caught exception {e}. Sending response 400.')
-            return JSONResponse({
-                'exception': build_exception(e),
-            }, status_code=400)
+            logger.debug(f"Caught exception {e}. Sending response 400.")
+            return JSONResponse(
+                {
+                    "exception": build_exception(e),
+                },
+                status_code=400,
+            )
 
     async def run_write_instructions(self, websocket: WebSocket, client_uri: str):
         await self.manager.connect(websocket)
@@ -197,26 +214,22 @@ class TrackingRouter:
         try:
             while True:
                 raw_message = await websocket.receive_bytes()
-                write_instructions = decode_tree(
-                    unpack_args(raw_message))
+                write_instructions = decode_tree(unpack_args(raw_message))
                 for instruction in write_instructions:
                     resource_handler, method_name, args = instruction
-                    self._verify_resource_handler(
-                        resource_handler, client_uri)
+                    self._verify_resource_handler(resource_handler, client_uri)
                     checked_args = []
                     for arg in args:
                         if isinstance(arg, ResourceObject):
-                            handler = arg.storage['handler']
-                            self._verify_resource_handler(
-                                handler, client_uri)
-                            checked_args.append(
-                                self.resource_pool[handler][1].ref)
+                            handler = arg.storage["handler"]
+                            self._verify_resource_handler(handler, client_uri)
+                            checked_args.append(self.resource_pool[handler][1].ref)
                         else:
                             checked_args.append(arg)
 
                     resource = self.resource_pool[resource_handler][1].ref
-                    if method_name.endswith('.setter'):
-                        attr_name = method_name.split('.')[0]
+                    if method_name.endswith(".setter"):
+                        attr_name = method_name.split(".")[0]
                         setattr(resource, attr_name, checked_args[0])
                     else:
                         attr = getattr(resource, method_name)
@@ -224,7 +237,7 @@ class TrackingRouter:
                         attr(*checked_args)
                     del resource
 
-                await websocket.send_bytes(b'OK')
+                await websocket.send_bytes(b"OK")
         except WebSocketDisconnect:
             self.manager.disconnect(websocket)
 

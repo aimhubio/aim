@@ -6,7 +6,7 @@ from aim.cli.configs import UP_NAME, VERSION_NAME
 
 
 # Error message prefix for aim commands
-ERROR_MSG_PREFIX = b'Error:'
+ERROR_MSG_PREFIX = b"Error:"
 
 # returned by get_execution_context
 _COLAB_EXEC_CONTEXT = "_COLAB_EXEC_CONTEXT"
@@ -44,7 +44,7 @@ def get_execution_context():
     else:
         ipython = IPython.get_ipython()
         # @TODO find a stable way to get colab context
-        if ipython is not None and 'google.colab' in str(ipython):
+        if ipython is not None and "google.colab" in str(ipython):
             # We are in Colab notebook context
             # global _CURRENT_CONTEXT
             # _CURRENT_CONTEXT = _COLAB_EXEC_CONTEXT
@@ -62,38 +62,34 @@ def get_execution_context():
 
 def get_argument_options(line):
     """
-        Returns parsed argument options and command from magic cell as  dict (command, options)
-        currently parse only --<name>=value style to dict
-        Set default values for the required fields, otherwise the provided fields
-        Will omit unsupported args @TODO notify about unsupported args
-        @TODO add process args all styles to dict
+    Returns parsed argument options and command from magic cell as  dict (command, options)
+    currently parse only --<name>=value style to dict
+    Set default values for the required fields, otherwise the provided fields
+    Will omit unsupported args @TODO notify about unsupported args
+    @TODO add process args all styles to dict
     """
     # @TODO improve this logic
     # --proxy-url is useful to print the right url, and set UI's url into iframe correctly
-    supported_args = ['--port', '--host', '--repo', '--proxy-url']
+    supported_args = ["--port", "--host", "--repo", "--proxy-url"]
 
     args = shlex.split(line)
     command = args[0]
 
-    options = {
-        '--host': '127.0.0.1',
-        '--port': '43801',
-        '--base-path': _NOTEBOOK_PATH_POSTFIX
-    }
+    options = {"--host": "127.0.0.1", "--port": "43801", "--base-path": _NOTEBOOK_PATH_POSTFIX}
     for arg in args[1:]:
-        key, value = arg.split('=', 1)
+        key, value = arg.split("=", 1)
         if key in supported_args:
             options[key] = value
     # if --proxy-url passed
-    if options.get('--proxy-url'):
-        options['--base-path'] = f'/proxy/absolute/{options["--port"]}{_SAGE_MAKER_NOTEBOOK_PATH_POSTFIX}'
+    if options.get("--proxy-url"):
+        options["--base-path"] = f'/proxy/absolute/{options["--port"]}{_SAGE_MAKER_NOTEBOOK_PATH_POSTFIX}'
 
     return command, options
 
 
 def display_colab(port, display):
     """Display Aim instance in a Colab output frame.
-       It need go through the proxy
+    It need go through the proxy
     """
     import IPython.display
 
@@ -124,15 +120,15 @@ def display_colab(port, display):
 
 
 def display_notebook(host, port, display, proxy_url=None):
-    """Display Aim instance in an ipython context output frame.
-    """
+    """Display Aim instance in an ipython context output frame."""
     import IPython.display
+
     url = "{}:{}{}".format(host, port, _NOTEBOOK_PATH_POSTFIX)
 
     # @TODO add warning if proxy_url is not defined
     if proxy_url:
         # jupyter-server-proxy supports absolute paths by using it with /proxy/absolute/<port> path
-        url = "{}{}{}{}/".format(proxy_url, '/proxy/absolute/', port, _SAGE_MAKER_NOTEBOOK_PATH_POSTFIX)
+        url = "{}{}{}{}/".format(proxy_url, "/proxy/absolute/", port, _SAGE_MAKER_NOTEBOOK_PATH_POSTFIX)
         print(url)
 
     shell = """
@@ -146,10 +142,10 @@ def display_notebook(host, port, display, proxy_url=None):
 
 def up(options, context):
     """
-        Calls to run `aim up` command width corresponding arguments
-        Handles the result of the command
-        Renders the <iframe> tag for the notebook and message for the shell users
-        The <iframe> renders width the corresponding way for different execution contexts (mainly for notebooks)
+    Calls to run `aim up` command width corresponding arguments
+    Handles the result of the command
+    Renders the <iframe> tag for the notebook and message for the shell users
+    The <iframe> renders width the corresponding way for different execution contexts (mainly for notebooks)
     """
 
     try:
@@ -200,21 +196,18 @@ def version(options, context):
 # Those are aim magic function available commands
 # This is why we are not using constants from aim.cli.commands
 # It is possible to add commands outside aim cli
-handlers = {
-    UP_NAME: up,
-    VERSION_NAME: version
-}
+handlers = {UP_NAME: up, VERSION_NAME: version}
 
 
 def execute_magic_aim(line):
-    """ `aim` line magic function
-        We are trying to keep similarity with the native aim cli commands as much as possible
+    """`aim` line magic function
+    We are trying to keep similarity with the native aim cli commands as much as possible
     """
     context = get_execution_context()
     command, options = get_argument_options(line)
     # check command existence
     if command not in handlers:
-        print('Invalid operation.')
+        print("Invalid operation.")
         return
 
     # call corresponding handler

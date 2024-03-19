@@ -21,4 +21,4 @@ class On:
 on = On()
 
 
-__all__ = ['on']
+__all__ = ["on"]

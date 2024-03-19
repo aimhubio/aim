@@ -12,30 +12,30 @@ if TYPE_CHECKING:
     from aim.storage.types import AimObjectPath
 
 
-def generate_resource_path(prefix_view: 'PrefixView', additional_path: 'AimObjectPath') -> str:
+def generate_resource_path(prefix_view: "PrefixView", additional_path: "AimObjectPath") -> str:
     prefix_path = decode_path(prefix_view.prefix)
     encoded_path = encode_path((*prefix_path, *additional_path))
     return encoded_path.hex()
 
 
 class URIService:
-    SEPARATOR = '__'
+    SEPARATOR = "__"
 
-    def __init__(self, repo: 'Repo'):
+    def __init__(self, repo: "Repo"):
         self.repo = repo
         self.runs_pool = defaultdict(list)
 
     @classmethod
-    def generate_uri(cls, repo: 'Repo', run_name: str, sub_name: str, resource_path: str = None) -> str:
+    def generate_uri(cls, repo: "Repo", run_name: str, sub_name: str, resource_path: str = None) -> str:
         encryptor = Fernet(key=repo.encryption_key)
-        to_be_encrypted = f'{run_name}{URIService.SEPARATOR}{sub_name}'
+        to_be_encrypted = f"{run_name}{URIService.SEPARATOR}{sub_name}"
         if resource_path:
-            to_be_encrypted = f'{to_be_encrypted}{URIService.SEPARATOR}{resource_path}'
+            to_be_encrypted = f"{to_be_encrypted}{URIService.SEPARATOR}{resource_path}"
 
         return encryptor.encrypt(to_be_encrypted.encode()).decode()
 
     @classmethod
-    def decode_uri(cls, repo: 'Repo', uri: str) -> List[Optional[str]]:
+    def decode_uri(cls, repo: "Repo", uri: str) -> List[Optional[str]]:
         decryptor = Fernet(key=repo.encryption_key)
         decrypted_uri = decryptor.decrypt(uri.encode()).decode()
         result = decrypted_uri.split(URIService.SEPARATOR, maxsplit=2)
@@ -72,7 +72,7 @@ class URIService:
         self.runs_pool.clear()
 
     def _get_container(self, run_name: str, sub_name: str):
-        if sub_name == 'meta':
+        if sub_name == "meta":
             container = self.repo.request(sub_name, run_name, from_union=True, read_only=True)
         else:
             container = self.repo.request(sub_name, run_name, read_only=True)

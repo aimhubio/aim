@@ -62,13 +62,10 @@ class AimCallback:
         log_system_params: Optional[bool] = True,
         capture_terminal_logs: Optional[bool] = True,
     ) -> None:
-
         _imports.check()
 
         if not isinstance(metric_name, Sequence):
-            raise TypeError(
-                f"Expected metric_name to be string or sequence of strings, got {type(metric_name)}."
-            )
+            raise TypeError(f"Expected metric_name to be string or sequence of strings, got {type(metric_name)}.")
 
         self._metric_name = metric_name
         self._as_multirun = as_multirun
@@ -84,7 +81,6 @@ class AimCallback:
             self.setup()
 
     def __call__(self, study: optuna.study.Study, trial: optuna.trial.FrozenTrial) -> None:
-
         if isinstance(self._metric_name, str):
             if len(trial.values) > 1:
                 # Broadcast default name for multi-objective optimization.
@@ -115,13 +111,13 @@ class AimCallback:
             self._run.name = f"trial-{trial.number}"
 
         for key, value in attributes.items():
-            self._run.set(('hparams', key), value, strict=False)
+            self._run.set(("hparams", key), value, strict=False)
 
         self._run.set("study_name", study.study_name)
 
         if self._as_multirun:
             for key, value in trial.params.items():
-                self._run.set(('hparams', key), value, strict=False)
+                self._run.set(("hparams", key), value, strict=False)
 
             for key, value in metrics.items():
                 self._run.set(key, value, strict=False)
@@ -186,5 +182,7 @@ class AimCallback:
                     self.setup()
                     self._run.name = f"trial-{trial.number}"
                 return func(trial)
+
             return wrapper
+
         return decorator

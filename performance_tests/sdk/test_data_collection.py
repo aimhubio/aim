@@ -9,7 +9,7 @@ class TestDataCollectionExecutionTime(SDKTestBase):
     @parameterized.expand(queries.items())
     def test_collect_runs_data(self, query_key, query):
         query_execution_time = collect_runs_data(query)
-        test_name = f'test_collect_runs_data_{query_key}'
+        test_name = f"test_collect_runs_data_{query_key}"
         baseline = get_baseline(test_name)
         if baseline:
             self.assertInRange(query_execution_time, baseline)
@@ -19,7 +19,7 @@ class TestDataCollectionExecutionTime(SDKTestBase):
     @parameterized.expand(queries.items())
     def test_collect_metrics_data(self, query_key, query):
         query_execution_time = collect_metrics_data(query)
-        test_name = f'test_collect_metrics_data_{query_key}'
+        test_name = f"test_collect_metrics_data_{query_key}"
         baseline = get_baseline(test_name)
         if baseline:
             self.assertInRange(query_execution_time, baseline)

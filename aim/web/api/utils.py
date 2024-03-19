@@ -12,6 +12,7 @@ from starlette.types import ASGIApp, Receive, Scope, Send
 
 def object_factory():
     from aim.web.api.projects.project import Project
+
     project = Project()
     if not project.exists():
         raise HTTPException(status_code=404)
@@ -30,14 +31,10 @@ class APIRouter(FastAPIRouter):
         if path.endswith("/"):
             path = path[:-1]
 
-        add_path = super().api_route(
-            path, include_in_schema=include_in_schema, **kwargs
-        )
+        add_path = super().api_route(path, include_in_schema=include_in_schema, **kwargs)
 
         alternate_path = path + "/"
-        add_alternate_path = super().api_route(
-            alternate_path, include_in_schema=False, **kwargs
-        )
+        add_alternate_path = super().api_route(alternate_path, include_in_schema=False, **kwargs)
 
         def decorator(func: DecoratedCallable) -> DecoratedCallable:
             add_alternate_path(func)
@@ -47,13 +44,12 @@ class APIRouter(FastAPIRouter):
 
 
 class ResourceCleanupMiddleware:
-    def __init__(
-        self, app: ASGIApp
-    ) -> None:
+    def __init__(self, app: ASGIApp) -> None:
         self.app = app
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         from aim.web.api.projects.project import Project
+
         await self.app(scope, receive, send)
 
         # cleanup repo pools after each api call

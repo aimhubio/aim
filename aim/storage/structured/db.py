@@ -46,8 +46,8 @@ class ObjectCache:
 
 
 class DB(ObjectFactory):
-    _DIALECT = 'sqlite'
-    _DB_NAME = 'run_metadata.sqlite'
+    _DIALECT = "sqlite"
+    _DB_NAME = "run_metadata.sqlite"
     _pool = WeakValueDictionary()
 
     _caches = dict()
@@ -55,12 +55,14 @@ class DB(ObjectFactory):
     # TODO: [AT] implement readonly if needed
     def __init__(self, path: str, readonly: bool = False):
         import logging
+
         super().__init__()
         self.path = path
         self.db_url = self.get_db_url(path)
         self.readonly = readonly
-        self.engine = create_engine(self.db_url,
-                                    echo=(logging.INFO >= int(os.environ.get(AIM_LOG_LEVEL_KEY, logging.WARNING))))
+        self.engine = create_engine(
+            self.db_url, echo=(logging.INFO >= int(os.environ.get(AIM_LOG_LEVEL_KEY, logging.WARNING)))
+        )
         self.session_cls = scoped_session(sessionmaker(autoflush=False, bind=self.engine))
         self._upgraded = None
 
@@ -74,15 +76,15 @@ class DB(ObjectFactory):
 
     @staticmethod
     def get_default_url():
-        return DB.get_db_url('.aim')
+        return DB.get_db_url(".aim")
 
     @staticmethod
     def get_db_url(path: str) -> str:
         if os.path.exists(path):
-            db_url = f'{DB._DIALECT}:///{path}/{DB._DB_NAME}'
+            db_url = f"{DB._DIALECT}:///{path}/{DB._DB_NAME}"
             return db_url
         else:
-            raise RuntimeError(f'Cannot find database {path}. Please init first.')
+            raise RuntimeError(f"Cannot find database {path}. Please init first.")
 
     @property
     def caches(self):
@@ -90,7 +92,7 @@ class DB(ObjectFactory):
 
     def get_session(self, autocommit=True):
         session = self.session_cls()
-        setattr(session, 'autocommit', autocommit)
+        setattr(session, "autocommit", autocommit)
         return session
 
     def run_upgrades(self):

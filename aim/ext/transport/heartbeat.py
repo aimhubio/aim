@@ -12,19 +12,19 @@ logger = logging.getLogger(__name__)
 
 
 class HeartbeatSender(object):
-
     HEARTBEAT_INTERVAL_DEFAULT = 10
     NETWORK_CHECK_INTERVAL = 180
 
-    NETWORK_UNSTABLE_WARNING_TEMPLATE = 'Network connection between client `{}` ' \
-                                        'and server `{}` appears to be unstable.'
-    NETWORK_ABSENT_WARNING_TEMPLATE = 'Network connection between client `{}` ' \
-                                      'and server `{}` appears to be absent.'
+    NETWORK_UNSTABLE_WARNING_TEMPLATE = (
+        "Network connection between client `{}` " "and server `{}` appears to be unstable."
+    )
+    NETWORK_ABSENT_WARNING_TEMPLATE = "Network connection between client `{}` " "and server `{}` appears to be absent."
 
-    def __init__(self,
-                 client,
-                 interval: Union[int, float] = HEARTBEAT_INTERVAL_DEFAULT,
-                 ):
+    def __init__(
+        self,
+        client,
+        interval: Union[int, float] = HEARTBEAT_INTERVAL_DEFAULT,
+    ):
         self._remote_client = weakref.ref(client)
         self._heartbeat_send_interval = interval
 
@@ -58,12 +58,12 @@ class HeartbeatSender(object):
             try:
                 response = self._remote_client().client_heartbeat()
                 if response.status_code == 200:
-                    self._heartbeat_responses['success'] += 1
+                    self._heartbeat_responses["success"] += 1
                 else:
-                    self._heartbeat_responses['fail'] += 1
+                    self._heartbeat_responses["fail"] += 1
             except Exception:
                 # at the moment we don't care about failures for heartbeats
-                self._heartbeat_responses['fail'] += 1
+                self._heartbeat_responses["fail"] += 1
 
     def _target_f(self):
         heartbeat_interval_counter = 0
@@ -89,24 +89,30 @@ class HeartbeatSender(object):
 
     def _check_network_state(self):
         def reset_responses():
-            self._heartbeat_responses['fail'] = 0
-            self._heartbeat_responses['success'] = 0
+            self._heartbeat_responses["fail"] = 0
+            self._heartbeat_responses["success"] = 0
 
-        if not self._heartbeat_responses['fail']:
+        if not self._heartbeat_responses["fail"]:
             reset_responses()
             return
 
-        if self._heartbeat_responses['success'] and not self._network_unstable_warned:
+        if self._heartbeat_responses["success"] and not self._network_unstable_warned:
             self._network_unstable_warned = True
-            logger.warning(HeartbeatSender.NETWORK_UNSTABLE_WARNING_TEMPLATE
-                           .format(self._remote_client().uri, self._remote_client().remote_path))
+            logger.warning(
+                HeartbeatSender.NETWORK_UNSTABLE_WARNING_TEMPLATE.format(
+                    self._remote_client().uri, self._remote_client().remote_path
+                )
+            )
             reset_responses()
             return
 
         if not self._network_absent_warned:
             self._network_absent_warned = True
-            logger.warning(HeartbeatSender.NETWORK_ABSENT_WARNING_TEMPLATE
-                           .format(self._remote_client().uri, self._remote_client().remote_path))
+            logger.warning(
+                HeartbeatSender.NETWORK_ABSENT_WARNING_TEMPLATE.format(
+                    self._remote_client().uri, self._remote_client().remote_path
+                )
+            )
 
         reset_responses()
 
@@ -114,10 +120,7 @@ class HeartbeatSender(object):
 class HeartbeatWatcher:
     CLIENT_KEEP_ALIVE_TIME_DEFAULT = 30 * 60  # 30 minutes
 
-    def __init__(self,
-                 heartbeat_pool,
-                 keep_alive_time: Union[int, float] = CLIENT_KEEP_ALIVE_TIME_DEFAULT):
-
+    def __init__(self, heartbeat_pool, keep_alive_time: Union[int, float] = CLIENT_KEEP_ALIVE_TIME_DEFAULT):
         self._heartbeat_pool = heartbeat_pool
 
         self._client_keep_alive_time = keep_alive_time
@@ -142,9 +145,10 @@ class HeartbeatWatcher:
         self._th_collector.join()
 
     def _release_client_resources(self, dead_client_uri):
-        logger.warning(f'Cleaning up resources for client `{dead_client_uri}`.')
+        logger.warning(f"Cleaning up resources for client `{dead_client_uri}`.")
         from aim.ext.transport.router import ClientRouter
         from aim.ext.transport.tracking import TrackingRouter
+
         TrackingRouter.cleanup_client_resources(dead_client_uri)
         ClientRouter.remove_client(dead_client_uri)
 

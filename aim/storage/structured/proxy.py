@@ -16,20 +16,17 @@ class RunProxyAutoClean(RemoteResourceAutoClean):
 
 
 class StructuredRunProxy:
-    def __init__(self, client: 'Client',
-                 hash_: str,
-                 read_only: bool,
-                 created_at: 'datetime' = None):
+    def __init__(self, client: "Client", hash_: str, read_only: bool, created_at: "datetime" = None):
         self._resources: RunProxyAutoClean = None
         self._rpc_client = client
         kwargs = {
-            'hash_': hash_,
-            'read_only': read_only,
-            'created_at': created_at.timestamp() if created_at is not None else created_at
+            "hash_": hash_,
+            "read_only": read_only,
+            "created_at": created_at.timestamp() if created_at is not None else created_at,
         }
 
         self.init_args = pack_args(encode_tree(kwargs))
-        self.resource_type = 'StructuredRun'
+        self.resource_type = "StructuredRun"
         handler = self._rpc_client.get_resource_handler(self, self.resource_type, args=self.init_args)
 
         self._hash = hash_
@@ -42,50 +39,50 @@ class StructuredRunProxy:
 
     @property
     def name(self):
-        return self._rpc_client.run_instruction(self._hash, self._handler, 'name', [])
+        return self._rpc_client.run_instruction(self._hash, self._handler, "name", [])
 
     @name.setter
     def name(self, value):
-        self._rpc_client.run_instruction(self._hash, self._handler, 'name.setter', (value,), is_write_only=True)
+        self._rpc_client.run_instruction(self._hash, self._handler, "name.setter", (value,), is_write_only=True)
 
     @property
     def description(self):
-        return self._rpc_client.run_instruction(self._hash, self._handler, 'description', [])
+        return self._rpc_client.run_instruction(self._hash, self._handler, "description", [])
 
     @description.setter
     def description(self, value):
-        self._rpc_client.run_instruction(self._hash, self._handler, 'description.setter', (value,), is_write_only=True)
+        self._rpc_client.run_instruction(self._hash, self._handler, "description.setter", (value,), is_write_only=True)
 
     @property
     def archived(self):
-        return self._rpc_client.run_instruction(self._hash, self._handler, 'archived', [])
+        return self._rpc_client.run_instruction(self._hash, self._handler, "archived", [])
 
     @archived.setter
     def archived(self, value):
-        self._rpc_client.run_instruction(self._hash, self._handler, 'archived.setter', (value,), is_write_only=True)
+        self._rpc_client.run_instruction(self._hash, self._handler, "archived.setter", (value,), is_write_only=True)
 
     @property
     def creation_time(self):
-        return self._rpc_client.run_instruction(self._hash, self._handler, 'creation_time', [])
+        return self._rpc_client.run_instruction(self._hash, self._handler, "creation_time", [])
 
     @property
     def end_time(self):
-        return self._rpc_client.run_instruction(self._hash, self._handler, 'end_time', [])
+        return self._rpc_client.run_instruction(self._hash, self._handler, "end_time", [])
 
     @property
     def experiment(self):
-        return self._rpc_client.run_instruction(self._hash, self._handler, 'experiment', [])
+        return self._rpc_client.run_instruction(self._hash, self._handler, "experiment", [])
 
     @experiment.setter
     def experiment(self, value: str):
-        self._rpc_client.run_instruction(self._hash, self._handler, 'experiment.setter', (value,), is_write_only=True)
+        self._rpc_client.run_instruction(self._hash, self._handler, "experiment.setter", (value,), is_write_only=True)
 
     @property
     def tags(self) -> List[str]:
-        return self._rpc_client.run_instruction(self._hash, self._handler, 'tags', [])
+        return self._rpc_client.run_instruction(self._hash, self._handler, "tags", [])
 
     def add_tag(self, value: str) -> str:
-        return self._rpc_client.run_instruction(self._hash, self._handler, 'add_tag', (value,))
+        return self._rpc_client.run_instruction(self._hash, self._handler, "add_tag", (value,))
 
     def remove_tag(self, value: str) -> bool:
-        return self._rpc_client.run_instruction(self._hash, self._handler, 'remove_tag', (value,))
+        return self._rpc_client.run_instruction(self._hash, self._handler, "remove_tag", (value,))

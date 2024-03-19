@@ -38,7 +38,7 @@ class CustomObjectApiConfig:
     @staticmethod
     def check_density(density):
         if density <= 0:
-            raise HTTPException(status_code=400, detail='Density must be greater than 0.')
+            raise HTTPException(status_code=400, detail="Density must be greater than 0.")
 
     @classmethod
     def register_endpoints(cls, router):
@@ -46,16 +46,23 @@ class CustomObjectApiConfig:
         seq_name = cls.sequence_type.sequence_name()
 
         # search API
-        search_endpoint = f'/search/{seq_name}/'
+        search_endpoint = f"/search/{seq_name}/"
 
-        @router.get(search_endpoint, response_model=Dict[str, ObjectSearchRunView],
-                    responses={400: {'model': QuerySyntaxErrorOut}})
-        async def search_api(q: Optional[str] = '',
-                             skip_system: Optional[bool] = True,
-                             record_range: Optional[str] = '', record_density: Optional[int] = 50,
-                             index_range: Optional[str] = '', index_density: Optional[int] = 5,
-                             report_progress: Optional[bool] = True,
-                             x_timezone_offset: int = Header(default=0),):
+        @router.get(
+            search_endpoint,
+            response_model=Dict[str, ObjectSearchRunView],
+            responses={400: {"model": QuerySyntaxErrorOut}},
+        )
+        async def search_api(
+            q: Optional[str] = "",
+            skip_system: Optional[bool] = True,
+            record_range: Optional[str] = "",
+            record_density: Optional[int] = 50,
+            index_range: Optional[str] = "",
+            index_density: Optional[int] = 5,
+            report_progress: Optional[bool] = True,
+            x_timezone_offset: int = Header(default=0),
+        ):
             # search Sequence API
             repo = get_project_repo()
             query = checked_query(q)
@@ -66,11 +73,13 @@ class CustomObjectApiConfig:
 
             # TODO [MV, AT]: move to `repo.py` when `SELECT` statements are introduced
             repo._prepare_runs_cache()
-            query_iterator = QuerySequenceCollection(repo=repo,
-                                                     seq_cls=cls.sequence_type,
-                                                     query=query,
-                                                     report_mode=QueryReportMode.PROGRESS_TUPLE,
-                                                     timezone_offset=x_timezone_offset)
+            query_iterator = QuerySequenceCollection(
+                repo=repo,
+                seq_cls=cls.sequence_type,
+                query=query,
+                report_mode=QueryReportMode.PROGRESS_TUPLE,
+                timezone_offset=x_timezone_offset,
+            )
 
             api = CustomObjectApi(seq_name, resolve_blobs=cls.resolve_blobs)
             api.set_dump_data_fn(cls.dump_record_fn)
@@ -80,13 +89,17 @@ class CustomObjectApiConfig:
             return StreamingResponse(streamer)
 
         # run sequence batch API
-        sequence_batch_endpoint = f'/{{run_id}}/{seq_name}/get-batch/'
+        sequence_batch_endpoint = f"/{{run_id}}/{seq_name}/get-batch/"
 
         @router.post(sequence_batch_endpoint, response_model=List[ObjectSequenceBaseView])
-        async def sequence_batch_api(run_id: str,
-                                     requested_traces: RunTracesBatchApiIn,
-                                     record_range: Optional[str] = '', record_density: Optional[int] = 50,
-                                     index_range: Optional[str] = '', index_density: Optional[int] = 5):
+        async def sequence_batch_api(
+            run_id: str,
+            requested_traces: RunTracesBatchApiIn,
+            record_range: Optional[str] = "",
+            record_density: Optional[int] = 50,
+            index_range: Optional[str] = "",
+            index_density: Optional[int] = 5,
+        ):
             # get Sequence batch API
             record_range = checked_range(record_range)
             index_range = checked_range(index_range)
@@ -104,20 +117,23 @@ class CustomObjectApiConfig:
 
         if not cls.resolve_blobs:
             # get BLOB batch API
-            uri_batch_endpoint = f'/{seq_name}/get-batch'
+            uri_batch_endpoint = f"/{seq_name}/get-batch"
 
             @router.post(uri_batch_endpoint)
             def blobs_batch_api(uri_batch: URIBatchIn):
                 return StreamingResponse(get_blobs_batch(uri_batch, get_project_repo()))
 
         # run sequence batch API
-        step_of_sequence_endpoint = f'/{{run_id}}/{seq_name}/get-step/'
+        step_of_sequence_endpoint = f"/{{run_id}}/{seq_name}/get-step/"
 
         @router.post(step_of_sequence_endpoint, response_model=List[ObjectSequenceBaseView])
-        async def step_of_sequence(run_id: str,
-                                   requested_traces: RunTracesBatchApiIn,
-                                   index_range: Optional[str] = '', index_density: Optional[int] = 5,
-                                   record_step: int = -1):
+        async def step_of_sequence(
+            run_id: str,
+            requested_traces: RunTracesBatchApiIn,
+            index_range: Optional[str] = "",
+            index_density: Optional[int] = 5,
+            record_step: int = -1,
+        ):
             # get last step by default
 
             index_range = checked_range(index_range)

@@ -165,9 +165,7 @@ class CheckIn:
     flag_name: str = field(default="check_in", compare=False, repr=True)
 
     # We keep per-run cache to memoize the first time we've seen check-ins
-    per_run_cache: ClassVar[Dict[str, LRUCache]] = defaultdict(
-        lambda: LRUCache(maxsize=3)
-    )
+    per_run_cache: ClassVar[Dict[str, LRUCache]] = defaultdict(lambda: LRUCache(maxsize=3))
 
     def __bool__(self) -> bool:
         return bool(self.idx)
@@ -213,9 +211,7 @@ class CheckIn:
         if isinstance(path, str):
             path = Path(path)
 
-        run_hash, str_idx, flag_name, utc_time, str_expect_next_in = path.name.rsplit(
-            "-", maxsplit=4
-        )
+        run_hash, str_idx, flag_name, utc_time, str_expect_next_in = path.name.rsplit("-", maxsplit=4)
 
         idx = int(str_idx)
         expect_next_in = int(str_expect_next_in)
@@ -334,10 +330,7 @@ class CheckIn:
             flag_name=self.flag_name,
         )
 
-        cleanup_file_pattern = self.generate_filename(
-            run_hash=run_hash,
-            flag_name=self.flag_name
-        ) if cleanup else None
+        cleanup_file_pattern = self.generate_filename(run_hash=run_hash, flag_name=self.flag_name) if cleanup else None
 
         file_mgr.touch(filename, cleanup_file_pattern)
 
@@ -362,6 +355,7 @@ class TimedTask:
     Only the `time` field is used for comparison. The `overwritten` field is
     to mock deletion of the task from the priority queue.
     """
+
     when: float = field(compare=True)
     flag_name: str = field(compare=False)
     overwritten: bool = field(default=False, compare=False)
@@ -462,7 +456,7 @@ class RunStatusReporter:
         if flag_name in self.physical_check_ins and self.physical_check_ins[flag_name].idx == check_in.idx:
             logger.debug(f"Skipping touching `{flag_name}` as it is already up to date")
             self.timed_tasks.pop(flag_name, None)
-            logger.debug(f'{flag_name} is not scheduled anymore. It will be invoked as soon as next one appears')
+            logger.debug(f"{flag_name} is not scheduled anymore. It will be invoked as soon as next one appears")
             return
 
         # Now let's touch the file on the filesystem
@@ -474,10 +468,7 @@ class RunStatusReporter:
         self.physical_check_ins[flag_name] = new_check_in
 
         # We will take the target (recommended) flush time much shorter.
-        expiry_date = min(
-            new_check_in.expiry_date,
-            time.monotonic() + MAX_SUSPEND_TIME
-        )
+        expiry_date = min(new_check_in.expiry_date, time.monotonic() + MAX_SUSPEND_TIME)
         # Now we reschedule the check-in for the next flush.
         new_timed_task = TimedTask(
             when=expiry_date,
@@ -514,11 +505,7 @@ class RunStatusReporter:
 
         logger.debug(f"incrementing {flag_name} idx -> {idx}")
 
-        check_in = CheckIn(
-            idx=idx,
-            expect_next_in=expect_next_in,
-            flag_name=flag_name
-        )
+        check_in = CheckIn(idx=idx, expect_next_in=expect_next_in, flag_name=flag_name)
 
         self.last_check_ins[flag_name] = check_in
         # * If there was no such check-in with the same flag name, we will
@@ -557,7 +544,7 @@ class RunStatusReporter:
         for reporting progress from anywhere in the code.
         """
         try:
-            default_instance, = cls.instances
+            (default_instance,) = cls.instances
         except ValueError:
             if cls.instances:
                 raise ValueError(
@@ -604,7 +591,7 @@ class RunStatusReporter:
             with self.refresh_condition:
                 logger.debug(f"no interesting things to do, sleeping for {remaining}")
                 logger.debug("until woken up")
-                logger.debug(f'unfinished tasks: {self.queue.unfinished_tasks}')
+                logger.debug(f"unfinished tasks: {self.queue.unfinished_tasks}")
                 self.refresh_condition.wait(timeout=remaining)
 
             timed_task: Optional[TimedTask]
@@ -616,21 +603,21 @@ class RunStatusReporter:
                 assert isinstance(timed_task, TimedTask)
 
                 if timed_task.overwritten:
-                    logger.debug('detected overwritten task... done')
+                    logger.debug("detected overwritten task... done")
                     self.queue.task_done()
                     continue
 
                 remaining = timed_task.when - time.monotonic() - PLAN_ADVANCE_TIME
                 # remaining = max(remaining, MIN_SUSPEND_TIME)
                 remaining = min(remaining, MAX_SUSPEND_TIME)
-                logger.debug(f'time remaining: {remaining}')
+                logger.debug(f"time remaining: {remaining}")
 
                 if remaining > 0:
                     # TODO Should we push a little late?
                     self._schedule(timed_task)
-                    logger.debug(f'too soon, {remaining} remaining')
-                    logger.debug(f'putting back for the future: {timed_task}')
-                    logger.debug(f'now: {time.monotonic()}... scheduled for: {timed_task.when}')
+                    logger.debug(f"too soon, {remaining} remaining")
+                    logger.debug(f"putting back for the future: {timed_task}")
+                    logger.debug(f"now: {time.monotonic()}... scheduled for: {timed_task.when}")
                     self.queue.task_done()
                     # Mark the task to signal about the clean state.
                     timed_task = None
@@ -646,7 +633,7 @@ class RunStatusReporter:
                 if self.stop_signal.is_set():
                     return
             else:
-                logger.debug(f'only {remaining} remaining... flushing one task')
+                logger.debug(f"only {remaining} remaining... flushing one task")
                 self._touch_flag(timed_task.flag_name)
                 self.queue.task_done()
                 # Let's immediately proceed to the next iteration to check if
@@ -783,12 +770,13 @@ REPORT_INTERVAL = 5  # 5 seconds
 
 
 class ScheduledStatusReporter(object):
-    def __init__(self,
-                 status_reporter: RunStatusReporter,
-                 flag: str = 'progress',
-                 touch_path: Optional[Path] = None,
-                 interval: int = REPORT_INTERVAL
-                 ):
+    def __init__(
+        self,
+        status_reporter: RunStatusReporter,
+        flag: str = "progress",
+        touch_path: Optional[Path] = None,
+        interval: int = REPORT_INTERVAL,
+    ):
         self.status_reporter = status_reporter
         self.flag = flag
         self.touch_path = touch_path

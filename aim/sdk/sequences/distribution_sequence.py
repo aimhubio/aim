@@ -13,4 +13,4 @@ class Distributions(Sequence):
 
     @classmethod
     def sequence_name(cls) -> str:
-        return 'distributions'
+        return "distributions"

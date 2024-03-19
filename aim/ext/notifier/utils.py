@@ -13,21 +13,21 @@ here = os.path.abspath(os.path.dirname(__file__))
 def get_working_directory(base_dir: Union[str, Path]) -> Path:
     if not isinstance(base_dir, Path):
         base_dir = Path(base_dir)
-    work_dir = base_dir / 'ext' / 'notifications'
+    work_dir = base_dir / "ext" / "notifications"
     work_dir.mkdir(parents=True, exist_ok=True)
     return work_dir
 
 
 def get_config_path(base_dir: Union[str, Path]) -> Path:
-    return get_working_directory(base_dir) / 'config.json'
+    return get_working_directory(base_dir) / "config.json"
 
 
 def get_default_config_path() -> Path:
-    return Path(here) / 'config_default.json'
+    return Path(here) / "config_default.json"
 
 
 def get_empty_config_path() -> Path:
-    return Path(here) / 'config_empty.json'
+    return Path(here) / "config_empty.json"
 
 
 def has_watcher_config(base_dir: Union[str, Path]) -> bool:

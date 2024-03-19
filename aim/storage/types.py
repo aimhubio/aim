@@ -6,21 +6,10 @@ NoneType = type(None)
 
 AimObjectKey = Union[int, str]
 AimObjectPath = Tuple[AimObjectKey, ...]
-AimObjectPrimitive = Union[
-    NoneType,
-    bool,
-    int,
-    float,
-    str,
-    bytes
-]
-AimObjectArray = Union[List['AimObject'], Tuple['AimObject', ...]]
-AimObjectDict = Dict[AimObjectKey, 'AimObject']
-AimObject = Union[
-    AimObjectPrimitive,
-    AimObjectArray,
-    AimObjectDict
-]
+AimObjectPrimitive = Union[NoneType, bool, int, float, str, bytes]
+AimObjectArray = Union[List["AimObject"], Tuple["AimObject", ...]]
+AimObjectDict = Dict[AimObjectKey, "AimObject"]
+AimObject = Union[AimObjectPrimitive, AimObjectArray, AimObjectDict]
 
 
 class Singleton(type):
@@ -28,8 +17,7 @@ class Singleton(type):
 
     def __call__(cls, *args, **kwargs):
         if cls not in cls._instances:
-            cls._instances[cls] = super(Singleton, cls).__call__(*args,
-                                                                 **kwargs)
+            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
         return cls._instances[cls]
 
 
@@ -38,7 +26,7 @@ class SafeNone(metaclass=Singleton):
         return self
 
     def __repr__(self):
-        return 'None'
+        return "None"
 
     def __call__(self, *args, **kwargs):
         return self

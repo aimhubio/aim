@@ -3,16 +3,13 @@ import hub
 from aim.storage.object import CustomObject
 
 
-@CustomObject.alias('hub.dataset')
+@CustomObject.alias("hub.dataset")
 class HubDataset(CustomObject):
-    AIM_NAME = 'hub.dataset'
+    AIM_NAME = "hub.dataset"
 
     def __init__(self, dataset: hub.Dataset):
         super().__init__()
-        self.storage['dataset'] = {
-            'source': 'hub',
-            'meta': self._get_ds_meta(dataset)
-        }
+        self.storage["dataset"] = {"source": "hub", "meta": self._get_ds_meta(dataset)}
 
     def _get_ds_meta(self, ds: hub.Dataset):
         return {

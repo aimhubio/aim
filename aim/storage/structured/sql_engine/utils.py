@@ -7,18 +7,24 @@ from sqlalchemy import text
 try:
     from typing import GenericMeta
 except ImportError:
+
     class GenericMeta(type):
         pass
 
-T = TypeVar('T')
+
+T = TypeVar("T")
 
 
 class ModelMappedProperty:
-    def __init__(self, name: str, mapped_name: str = None,
-                 get_modifier: Callable = None,
-                 with_setter: bool = True,
-                 direct_setter: bool = False,
-                 autogenerate: bool = True):
+    def __init__(
+        self,
+        name: str,
+        mapped_name: str = None,
+        get_modifier: Callable = None,
+        with_setter: bool = True,
+        direct_setter: bool = False,
+        autogenerate: bool = True,
+    ):
         self.name = name
         self.mapped_name = mapped_name or self.name
         self.get_modifier = get_modifier
@@ -35,19 +41,20 @@ class ModelMappedProperty:
 
         setter = None
         if self.with_setter or self.direct_setter:
+
             def direct_setter(object_, value):
                 engine = object_._session.bind
                 table_name = object_._model.__tablename__
                 with engine.begin() as conn:
-                    sql = text(f'UPDATE {table_name} SET {self.mapped_name} = :val WHERE id = :id')
-                    conn.execute(sql, {'val': value, 'id': object_._id})
+                    sql = text(f"UPDATE {table_name} SET {self.mapped_name} = :val WHERE id = :id")
+                    conn.execute(sql, {"val": value, "id": object_._id})
 
             def setter(object_, value):
                 assert object_._model
                 try:
                     setattr(object_._model, self.mapped_name, value)
                     object_._session.add(object_._model)
-                    if getattr(object_._session, 'autocommit', True):
+                    if getattr(object_._session, "autocommit", True):
                         object_._session.commit()
                     else:
                         object_._session.flush()
@@ -63,13 +70,12 @@ class ModelMappedProperty:
 class ModelMappedCollection(Collection[T]):
     def __init__(self, session, **kwargs):
         # TODO: [AT] Find elegant way to check mutually exclusive args
-        if ('query' not in kwargs and 'collection' not in kwargs) \
-                or ('query' in kwargs and 'collection' in kwargs):
-            raise ValueError('Cannot initialize ModelMappedCollection. Please provide \'query\' or \'collection\'.')
+        if ("query" not in kwargs and "collection" not in kwargs) or ("query" in kwargs and "collection" in kwargs):
+            raise ValueError("Cannot initialize ModelMappedCollection. Please provide 'query' or 'collection'.")
 
         self.session = session
-        self.query = kwargs.get('query')
-        self._cache = kwargs.get('collection')
+        self.query = kwargs.get("query")
+        self._cache = kwargs.get("collection")
 
     def _create_cache(self):
         self._it_cls = self.__orig_class__.__args__[0]
@@ -109,10 +115,10 @@ class ModelMappedClassMeta(GenericMeta, ABCMeta):
     __mapping__ = {}
 
     def __new__(mcls, name, bases, namespace, **kwargs):
-        model = namespace.get('__model__')
-        mapped_properties = namespace.get('__mapped_properties__')
+        model = namespace.get("__model__")
+        mapped_properties = namespace.get("__mapped_properties__")
         if not model:
-            raise TypeError(f'Model-mapped class \'{name}\' attribute \'__model__\' must be set to mapped model.')
+            raise TypeError(f"Model-mapped class '{name}' attribute '__model__' must be set to mapped model.")
 
         if mcls.__mapping__.get(model):
             return mcls.__mapping__.get(model)
@@ -120,16 +126,16 @@ class ModelMappedClassMeta(GenericMeta, ABCMeta):
         schema = []
         for attribute in mapped_properties:
             if not isinstance(attribute, ModelMappedProperty):
-                raise TypeError(f'Mapped property \'{attribute.name}\' should be of type \'MappedProperty\'.')
+                raise TypeError(f"Mapped property '{attribute.name}' should be of type 'MappedProperty'.")
             schema.append(attribute.name)
             if attribute.autogenerate:
                 namespace[attribute.name] = attribute.generate_property()
-        namespace['__schema__'] = tuple(schema)
+        namespace["__schema__"] = tuple(schema)
 
         def fields(cls):
             return cls.__schema__
 
-        namespace['fields'] = classmethod(fields)
+        namespace["fields"] = classmethod(fields)
         type_ = ABCMeta.__new__(mcls, name, bases, namespace, **kwargs)
         mcls.__mapping__[model] = type_
         return type_

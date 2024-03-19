@@ -28,9 +28,7 @@ class HFDataset(CustomObject):
         elif isinstance(dataset, Dataset):
             dataset_info = vars(dataset._info)
         else:
-            raise NotImplementedError(
-                f"Failed to find dataset instance of type {type(dataset)}"
-            )
+            raise NotImplementedError(f"Failed to find dataset instance of type {type(dataset)}")
         return {
             "description": dataset_info.get("description"),
             "citation": dataset_info.get("citation"),
@@ -64,9 +62,7 @@ class HFDataset(CustomObject):
     def _get_task_templates(self, dataset_info):
         try:
             if dataset_info.get("task_templates"):
-                return [
-                    str(template) for template in dataset_info.get("task_templates")
-                ]
+                return [str(template) for template in dataset_info.get("task_templates")]
         except LookupError:
             logger.warning("Failed to get task templates information")
 
@@ -77,12 +73,8 @@ class HFDataset(CustomObject):
                     {
                         subset: {
                             "num_bytes": dataset_info.get("splits")[subset].num_bytes,
-                            "num_examples": dataset_info.get("splits")[
-                                subset
-                            ].num_examples,
-                            "dataset_name": dataset_info.get("splits")[
-                                subset
-                            ].dataset_name,
+                            "num_examples": dataset_info.get("splits")[subset].num_examples,
+                            "dataset_name": dataset_info.get("splits")[subset].dataset_name,
                         }
                     }
                     for subset in dataset_info.get("splits")

@@ -7,13 +7,12 @@ from tests.utils import full_class_name
 
 
 class TestTensorboardRun(TestBase):
-
     def test_tensorboard_tracker_run__default_no_capture(self):
         # Given
         run = TensorboardRun(sync_tensorboard_log_dir="dummy", repo=self.repo)
-        run['testcase'] = full_class_name(TensorboardRun)
+        run["testcase"] = full_class_name(TensorboardRun)
         run_hash = run.hash
-        console_statement = 'no console capture is being done'
+        console_statement = "no console capture is being done"
 
         # When
         print(console_statement)
@@ -26,10 +25,8 @@ class TestTensorboardRun(TestBase):
 
     def test_tensorboard_tracker_run__system_stats_captured(self):
         # Given
-        run = TensorboardRun(
-            sync_tensorboard_log_dir="dummy", repo=self.repo, system_tracking_interval=1
-        )
-        run['testcase'] = full_class_name(TensorboardRun)
+        run = TensorboardRun(sync_tensorboard_log_dir="dummy", repo=self.repo, system_tracking_interval=1)
+        run["testcase"] = full_class_name(TensorboardRun)
         run_hash = run.hash
 
         # When
@@ -38,17 +35,19 @@ class TestTensorboardRun(TestBase):
 
         # Then
         tracked_run = self.repo.get_run(run_hash)
-        metrics_recorded = set(tracked_run.metrics().dataframe()['metric.name'].unique())
+        metrics_recorded = set(tracked_run.metrics().dataframe()["metric.name"].unique())
         self.assertTrue("__system__cpu" in metrics_recorded)
 
     def test_tensorboard_tracker_run__terminal_capture(self):
         # Given
         run = TensorboardRun(
-            sync_tensorboard_log_dir="dummy", repo=self.repo, capture_terminal_logs=True,
+            sync_tensorboard_log_dir="dummy",
+            repo=self.repo,
+            capture_terminal_logs=True,
         )
-        run['testcase'] = full_class_name(TensorboardRun)
+        run["testcase"] = full_class_name(TensorboardRun)
         run_hash = run.hash
-        console_statement = 'no console capture has worked'
+        console_statement = "no console capture has worked"
 
         # When
         print(console_statement)
@@ -69,10 +68,8 @@ class TestTensorboardRun(TestBase):
 
     def test_tensorboard_tracker_run__system_params_captured(self):
         # Given
-        run = TensorboardRun(
-            sync_tensorboard_log_dir="dummy", repo=self.repo, log_system_params=True
-        )
-        run['testcase'] = full_class_name(TensorboardRun)
+        run = TensorboardRun(sync_tensorboard_log_dir="dummy", repo=self.repo, log_system_params=True)
+        run["testcase"] = full_class_name(TensorboardRun)
         run_hash = run.hash
 
         # When
@@ -81,5 +78,5 @@ class TestTensorboardRun(TestBase):
 
         # Then
         tracked_run = self.repo.get_run(run_hash)
-        system_params = tracked_run.get('__system_params')
+        system_params = tracked_run.get("__system_params")
         self.assertIsNotNone(system_params)

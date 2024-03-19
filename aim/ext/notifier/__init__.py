@@ -16,4 +16,4 @@ def get_notifier(base_dir) -> Notifier:
     return builder.build()
 
 
-__all__ = ['Notifier', 'NotificationSendError', 'Config', 'get_config', 'get_notifier']
+__all__ = ["Notifier", "NotificationSendError", "Config", "get_config", "get_notifier"]

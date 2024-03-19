@@ -10,16 +10,14 @@ logger = logging.getLogger(__name__)
 
 class FileManager(object):
     @abstractmethod
-    def poll(self, pattern: str) -> Optional[str]:
-        ...
+    def poll(self, pattern: str) -> Optional[str]: ...
 
     @abstractmethod
-    def touch(self, filename: str, cleanup_file_pattern: Optional[str] = None):
-        ...
+    def touch(self, filename: str, cleanup_file_pattern: Optional[str] = None): ...
 
 
 class LocalFileManager(FileManager):
-    def __init__(self, base_dir: Union[Path, str], watch_dir_name: Optional[str] = 'check_ins'):
+    def __init__(self, base_dir: Union[Path, str], watch_dir_name: Optional[str] = "check_ins"):
         if not isinstance(base_dir, Path):
             base_dir = Path(base_dir)
 

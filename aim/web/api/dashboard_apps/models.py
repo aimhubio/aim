@@ -17,7 +17,7 @@ class AppMixin(object):
 
     @declared_attr
     def dashboard_id(cls):
-        return sa.Column('dashboard_id', sa.ForeignKey('dashboards.uuid'))
+        return sa.Column("dashboard_id", sa.ForeignKey("dashboards.uuid"))
 
     @declared_attr
     def dashboard(cls):
@@ -25,7 +25,7 @@ class AppMixin(object):
 
 
 class ExploreState(AppMixin, Base):
-    __tablename__ = 'explore_states'
+    __tablename__ = "explore_states"
 
     type = sa.Column(sa.Text, nullable=False)
     state = sa.Column(sa.Text)

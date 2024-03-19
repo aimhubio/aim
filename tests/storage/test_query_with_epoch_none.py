@@ -11,9 +11,9 @@ class TestTrack(TestBase):
     def test_query_metrics_default_epoch(self):
         run = Run(repo=self.repo, system_tracking_interval=None, capture_terminal_logs=False)
         for i in range(10):
-            run.track(random.random(), name='epoch_none')
-            run.track(random.random(), name='with_epoch', epoch=i)
-            run.track(random.random(), name='with_epoch_and_step', step=i, epoch=i)
+            run.track(random.random(), name="epoch_none")
+            run.track(random.random(), name="with_epoch", epoch=i)
+            run.track(random.random(), name="with_epoch_and_step", step=i, epoch=i)
 
         q = 'metric.name == "epoch_none"'
 
@@ -32,7 +32,7 @@ class TestTrack(TestBase):
         for trc in self.repo.query_metrics(query=q, report_mode=QueryReportMode.DISABLED):
             trc.epochs.sparse_numpy()
             trc.epochs.values_numpy()
-        q = ''
+        q = ""
         for trc in self.repo.query_metrics(query=q, report_mode=QueryReportMode.DISABLED):
             trc.epochs.sparse_numpy()
             trc.epochs.values_numpy()
