@@ -415,10 +415,6 @@ The high-level features we are going to work on the next few months:
 
 **In progress**
 
-- [ ] Aim SDK low-level interface
-- [ ] Dashboards – customizable layouts with embedded explorers
-- [ ] Ergonomic UI kit
-- [ ] Text Explorer
 
 <details>
 <summary>
@@ -427,23 +423,14 @@ The high-level features we are going to work on the next few months:
 
 </br>
 
-**Aim UI**
+**UI**
 
-- Runs management
-    - Runs explorer – query and visualize runs data(images, audio, distributions, ...) in a central dashboard
-- Explorers
-    - Distributions Explorer
+- Reports
 
 **SDK and Storage**
 
-- Scalability
-    - Smooth UI and SDK experience with over 10.000 runs
-- Runs management
-    - CLI commands
-        - Reporting - runs summary and run details in a CLI compatible format
-        - Manipulations – copy, move, delete runs, params and sequences
-- Cloud storage support – store runs blob(e.g. images) data on the cloud
 - Artifact storage – store files, model checkpoints, and beyond
+- Open Benchmarks on Aim backend performance
 
 **Integrations**
 
@@ -462,6 +449,8 @@ The high-level features we are going to work on the next few months:
 
 </br>
 
+  - [x] Ergonomic UI kit
+  - [x] Text Explorer
   - [x] Live updates (Shipped: _Oct 18 2021_)
   - [x] Images tracking and visualization (Start: _Oct 18 2021_, Shipped: _Nov 19 2021_)
   - [x] Distributions tracking and visualization (Start: _Nov 10 2021_, Shipped: _Dec 3 2021_)
