@@ -6,12 +6,9 @@ from aim.storage.types import AimObject, AimObjectKey
 
 
 class Context:
-    __slots__ = ('_context', '_hash')
+    __slots__ = ("_context", "_hash")
 
-    def __init__(
-        self,
-        context: AimObject
-    ):
+    def __init__(self, context: AimObject):
         if context is None:
             context = {}
         self._context = deepcopy(context)
@@ -22,7 +19,7 @@ class Context:
         return hash(self)
 
     def __repr__(self) -> str:
-        return f'<Context#{hash(self)} {self._context}>'
+        return f"<Context#{hash(self)} {self._context}>"
 
     def to_dict(self) -> AimObject:
         return self._context
@@ -44,7 +41,7 @@ class Context:
             self._hash = self._calc_hash()
         return self._hash
 
-    def __eq__(self, other: 'Context') -> bool:
+    def __eq__(self, other: "Context") -> bool:
         if hash(self) != hash(other):
             return False
         return self._context == other._context

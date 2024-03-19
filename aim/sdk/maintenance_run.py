@@ -1,9 +1,10 @@
 import logging
 
-from typing import Union, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional, Union
 
-from aim.sdk.base_run import BaseRun
 from aim.ext.cleanup import AutoClean
+from aim.sdk.base_run import BaseRun
+
 
 if TYPE_CHECKING:
     from aim.sdk import Repo
@@ -11,10 +12,10 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class RunAutoClean(AutoClean['MaintenanceRun']):
+class RunAutoClean(AutoClean["MaintenanceRun"]):
     PRIORITY = 90
 
-    def __init__(self, instance: 'MaintenanceRun') -> None:
+    def __init__(self, instance: "MaintenanceRun") -> None:
         """
         Prepare the `Run` for automatic cleanup.
 
@@ -31,7 +32,7 @@ class RunAutoClean(AutoClean['MaintenanceRun']):
 
 
 class MaintenanceRun(BaseRun):
-    def __init__(self, run_hash: str, repo: Optional[Union[str, 'Repo']] = None):
+    def __init__(self, run_hash: str, repo: Optional[Union[str, "Repo"]] = None):
         self._resources: Optional[RunAutoClean] = None
         super().__init__(run_hash, repo=repo, read_only=False)
         self._resources = RunAutoClean(self)

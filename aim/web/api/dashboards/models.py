@@ -1,4 +1,5 @@
 import uuid
+
 import sqlalchemy as sa
 
 from aim.web.api.db import Base
@@ -6,7 +7,7 @@ from aim.web.api.utils import datetime_now
 
 
 class Dashboard(Base):
-    __tablename__ = 'dashboards'
+    __tablename__ = "dashboards"
     uuid = sa.Column(sa.Text, primary_key=True)
     name = sa.Column(sa.Text)
     description = sa.Column(sa.Text)

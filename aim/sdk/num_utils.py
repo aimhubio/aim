@@ -2,20 +2,20 @@ def get_inst_type_str(inst):
     """
     Get instance type and class type full names
     """
-    obj_name = obj_module = obj_cls_name = obj_cls_module = ''
+    obj_name = obj_module = obj_cls_name = obj_cls_module = ""
 
-    if hasattr(inst, '__name__'):
+    if hasattr(inst, "__name__"):
         obj_name = inst.__name__
-    if hasattr(inst, '__module__'):
+    if hasattr(inst, "__module__"):
         obj_module = inst.__module__
-    if hasattr(inst, '__class__'):
-        if hasattr(inst.__class__, '__name__'):
+    if hasattr(inst, "__class__"):
+        if hasattr(inst.__class__, "__name__"):
             obj_cls_name = inst.__class__.__name__
-        if hasattr(inst.__class__, '__module__'):
+        if hasattr(inst.__class__, "__module__"):
             obj_cls_module = inst.__class__.__module__
 
-    obj_full = '{}.{}'.format(obj_name, obj_module)
-    obj_cls_full = '{}.{}'.format(obj_cls_name, obj_cls_module)
+    obj_full = "{}.{}".format(obj_name, obj_module)
+    obj_cls_full = "{}.{}".format(obj_cls_name, obj_cls_module)
 
     return obj_full, obj_cls_full
 
@@ -56,20 +56,20 @@ def is_pytorch_tensor(inst):
     """
     Check whether `inst` is instance of pytorch tensor
     """
-    return inst_has_typename(inst, ['torch', 'Tensor'])
+    return inst_has_typename(inst, ["torch", "Tensor"])
 
 
 def is_tf_tensor(inst):
-    return inst_has_typename(inst, ['tensorflow', 'Tensor'])
+    return inst_has_typename(inst, ["tensorflow", "Tensor"])
 
 
 def is_jax_device_array(inst):
     """
     Check whether `inst` is instance of jax device array
     """
-    if inst_has_typename(inst, ['jaxlib', 'xla_extension', 'Array']):
+    if inst_has_typename(inst, ["jaxlib", "xla_extension", "Array"]):
         return True
-    if inst_has_typename(inst, ['jaxlib', 'xla_extension', 'DeviceArray']):
+    if inst_has_typename(inst, ["jaxlib", "xla_extension", "DeviceArray"]):
         return True
     return False
 
@@ -78,7 +78,7 @@ def is_numpy_array(inst):
     """
     Check whether `inst` is instance of numpy array
     """
-    return inst_has_typename(inst, ['numpy', 'ndarray'])
+    return inst_has_typename(inst, ["numpy", "ndarray"])
 
 
 def is_numpy_number(inst):
@@ -86,7 +86,7 @@ def is_numpy_number(inst):
     Check whether `inst` is numpy number
     """
 
-    return inst_has_typename(inst, ['numpy'])
+    return inst_has_typename(inst, ["numpy"])
 
 
 def is_py_number(value):
@@ -143,4 +143,4 @@ def convert_to_py_number(value) -> object:
     if is_tf_tensor(value):
         return value.numpy().item()
 
-    raise ValueError('not a number')
+    raise ValueError("not a number")

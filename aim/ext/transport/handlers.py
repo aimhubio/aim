@@ -1,24 +1,24 @@
 import os
-import uuid
 import pathlib
-import pytz
+import uuid
 
 from datetime import datetime
 
-from aim.ext.transport.config import AIM_SERVER_MOUNTED_REPO_PATH
+import pytz
 
+from aim.ext.cleanup import AutoClean
+from aim.ext.transport.config import AIM_SERVER_MOUNTED_REPO_PATH
 from aim.sdk import Repo
 from aim.sdk.reporter import RunStatusReporter, ScheduledStatusReporter
 from aim.sdk.reporter.file_manager import LocalFileManager
-from aim.ext.cleanup import AutoClean
 
 
-class ResourceRefAutoClean(AutoClean['ResourceRef']):
+class ResourceRefAutoClean(AutoClean["ResourceRef"]):
     @staticmethod
     def noop(res: object):
         return
 
-    def __init__(self, instance: 'ResourceRef'):
+    def __init__(self, instance: "ResourceRef"):
         super().__init__(instance)
         self._finalizer_func = instance._finalizer_func
         self._resource = instance._resource
@@ -48,13 +48,13 @@ def get_tree(**kwargs):
         repo = Repo.from_path(repo_path)
     else:
         repo = Repo.default_repo()
-    name = kwargs['name']
-    sub = kwargs['sub']
-    read_only = kwargs['read_only']
-    from_union = kwargs['from_union']
-    index = kwargs['index']
-    timeout = kwargs['timeout']
-    no_cache = kwargs.get('no_cache', False)
+    name = kwargs["name"]
+    sub = kwargs["sub"]
+    read_only = kwargs["read_only"]
+    from_union = kwargs["from_union"]
+    index = kwargs["index"]
+    timeout = kwargs["timeout"]
+    no_cache = kwargs.get("no_cache", False)
     if index:
         return ResourceRef(repo._get_index_tree(name, timeout))
     else:
@@ -87,9 +87,10 @@ def get_lock(**kwargs):
         repo = Repo.from_path(repo_path)
     else:
         repo = Repo.default_repo()
-    run_hash = kwargs['run_hash']
+    run_hash = kwargs["run_hash"]
     # TODO Do we need to import SFRunLock here?
     from aim.sdk.lock_manager import SFRunLock
+
     return ResourceRef(repo.request_run_lock(run_hash), SFRunLock.release)
 
 
@@ -100,9 +101,10 @@ def get_run_heartbeat(run_hash, **kwargs):
     else:
         repo = Repo.default_repo()
     status_reporter = RunStatusReporter(run_hash, LocalFileManager(repo.path))
-    progress_flag_path = pathlib.Path(repo.path) / 'meta' / 'progress' / run_hash
-    return ResourceRef(ScheduledStatusReporter(status_reporter, touch_path=progress_flag_path),
-                       ScheduledStatusReporter.stop)
+    progress_flag_path = pathlib.Path(repo.path) / "meta" / "progress" / run_hash
+    return ResourceRef(
+        ScheduledStatusReporter(status_reporter, touch_path=progress_flag_path), ScheduledStatusReporter.stop
+    )
 
 
 def get_file_manager(**kwargs):

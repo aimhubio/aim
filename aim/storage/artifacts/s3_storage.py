@@ -1,16 +1,18 @@
 import pathlib
 import tempfile
 
-from urllib.parse import urlparse
+from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import wait as wait_for_finish
 from typing import Optional
-from concurrent.futures import ThreadPoolExecutor, wait as wait_for_finish
+from urllib.parse import urlparse
 
 from aim.ext.cleanup import AutoClean
+
 from .artifact_storage import AbstractArtifactStorage
 
 
-class S3ArtifactsStorageAutoClean(AutoClean['S3ArtifactStorage']):
-    def __init__(self, instance: 'S3ArtifactStorage') -> None:
+class S3ArtifactsStorageAutoClean(AutoClean["S3ArtifactStorage"]):
+    def __init__(self, instance: "S3ArtifactStorage") -> None:
         super().__init__(instance)
         self._futures = instance._futures
         self._thread_pool = instance._thread_pool
@@ -25,12 +27,12 @@ class S3ArtifactStorage(AbstractArtifactStorage):
         super().__init__(url)
         res = urlparse(self.url)
         path = res.path
-        if path.startswith('/'):
+        if path.startswith("/"):
             path = path[1:]
         self._bucket = res.netloc
         self._prefix = path
         self._client = self._get_s3_client()
-        self._thread_pool = ThreadPoolExecutor(max_workers=4, thread_name_prefix='s3-upload')
+        self._thread_pool = ThreadPoolExecutor(max_workers=4, thread_name_prefix="s3-upload")
         self._futures = set()
         self._resources = S3ArtifactsStorageAutoClean(self)
 
@@ -66,5 +68,6 @@ class S3ArtifactStorage(AbstractArtifactStorage):
 
     def _get_s3_client(self):
         import boto3
-        client = boto3.client('s3')
+
+        client = boto3.client("s3")
         return client

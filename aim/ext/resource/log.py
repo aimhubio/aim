@@ -1,17 +1,17 @@
 from typing import Tuple, Union
 
-from aim.storage.object import CustomObject
-from aim.sdk.sequence import MediaSequenceBase
 from aim.sdk.objects.text import Text
+from aim.sdk.sequence import MediaSequenceBase
+from aim.storage.object import CustomObject
 
 
-@CustomObject.alias('aim.log_line')
+@CustomObject.alias("aim.log_line")
 class LogLine(Text):
-    AIM_NAME = 'aim.log_line'
+    AIM_NAME = "aim.log_line"
 
     def __init__(self, line):
         if not isinstance(line, str):
-            raise TypeError('`line` must be a string.')
+            raise TypeError("`line` must be a string.")
 
         super().__init__(line)
 
@@ -26,4 +26,4 @@ class Logs(MediaSequenceBase):
 
     @classmethod
     def sequence_name(cls) -> str:
-        return 'logs'
+        return "logs"

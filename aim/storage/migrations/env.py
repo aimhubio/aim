@@ -1,22 +1,21 @@
 import os
+
 from logging.config import fileConfig
 
-from sqlalchemy import create_engine
-
+from aim.storage.structured.sql_engine.models import Base
+from aim.web.configs import AIM_ENV_MODE_KEY
 from alembic import context
 from alembic.config import Config
+from sqlalchemy import create_engine
 
-from aim.web.configs import AIM_ENV_MODE_KEY
-from aim.storage.structured.sql_engine.models import *
-from aim.storage.structured.db import DB
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
 
-if os.getenv(AIM_ENV_MODE_KEY, 'prod') != 'prod':
+if os.getenv(AIM_ENV_MODE_KEY, "prod") != "prod":
     here = os.path.abspath(os.path.dirname(__file__))
-    config = Config(os.path.join(here, 'alembic_dev.ini'))
+    config = Config(os.path.join(here, "alembic_dev.ini"))
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
@@ -46,7 +45,7 @@ def run_migrations_offline():
     script output.
 
     """
-    sqlalchemy_url = os.environ.get('AIM_RUN_META_DATA_DB_URL')
+    sqlalchemy_url = os.environ.get("AIM_RUN_META_DATA_DB_URL")
     context.configure(
         url=sqlalchemy_url,
         target_metadata=target_metadata,
@@ -65,13 +64,11 @@ def run_migrations_online():
     and associate a connection with the context.
 
     """
-    sqlalchemy_url = os.environ.get('AIM_RUN_META_DATA_DB_URL')
+    sqlalchemy_url = os.environ.get("AIM_RUN_META_DATA_DB_URL")
     connectable = create_engine(sqlalchemy_url)
 
     with connectable.connect() as connection:
-        context.configure(
-            connection=connection, target_metadata=target_metadata
-        )
+        context.configure(connection=connection, target_metadata=target_metadata)
 
         with context.begin_transaction():
             context.run_migrations()

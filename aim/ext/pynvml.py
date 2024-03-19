@@ -60,9 +60,7 @@ NVML_BRAND_UNKNOWN = 0
 NVML_BRAND_QUADRO = 1
 NVML_BRAND_TESLA = 2
 NVML_BRAND_NVS = 3
-NVML_BRAND_GRID = (
-    4  # Deprecated from API reporting. Keeping definition for backward compatibility.
-)
+NVML_BRAND_GRID = 4  # Deprecated from API reporting. Keeping definition for backward compatibility.
 NVML_BRAND_GEFORCE = 5
 NVML_BRAND_TITAN = 6
 NVML_BRAND_NVIDIA_VAPPS = 7  # NVIDIA Virtual Applications
@@ -70,7 +68,9 @@ NVML_BRAND_NVIDIA_VPC = 8  # NVIDIA Virtual PC
 NVML_BRAND_NVIDIA_VCS = 9  # NVIDIA Virtual Compute Server
 NVML_BRAND_NVIDIA_VWS = 10  # NVIDIA RTX Virtual Workstation
 NVML_BRAND_NVIDIA_CLOUD_GAMING = 11  # NVIDIA Cloud Gaming
-NVML_BRAND_NVIDIA_VGAMING = NVML_BRAND_NVIDIA_CLOUD_GAMING  # Deprecated from API reporting. Keeping definition for backward compatibility.
+NVML_BRAND_NVIDIA_VGAMING = (
+    NVML_BRAND_NVIDIA_CLOUD_GAMING  # Deprecated from API reporting. Keeping definition for backward compatibility.
+)
 NVML_BRAND_QUADRO_RTX = 12
 NVML_BRAND_NVIDIA_RTX = 13
 NVML_BRAND_NVIDIA = 14
@@ -466,24 +466,12 @@ NVML_FI_DEV_ECC_SBE_AGG_L1 = 18  # L1 cache single bit aggregate (persistent) EC
 NVML_FI_DEV_ECC_DBE_AGG_L1 = 19  # L1 cache double bit aggregate (persistent) ECC errors
 NVML_FI_DEV_ECC_SBE_AGG_L2 = 20  # L2 cache single bit aggregate (persistent) ECC errors
 NVML_FI_DEV_ECC_DBE_AGG_L2 = 21  # L2 cache double bit aggregate (persistent) ECC errors
-NVML_FI_DEV_ECC_SBE_AGG_DEV = (
-    22  # Device memory single bit aggregate (persistent) ECC errors
-)
-NVML_FI_DEV_ECC_DBE_AGG_DEV = (
-    23  # Device memory double bit aggregate (persistent) ECC errors
-)
-NVML_FI_DEV_ECC_SBE_AGG_REG = (
-    24  # Register File single bit aggregate (persistent) ECC errors
-)
-NVML_FI_DEV_ECC_DBE_AGG_REG = (
-    25  # Register File double bit aggregate (persistent) ECC errors
-)
-NVML_FI_DEV_ECC_SBE_AGG_TEX = (
-    26  # Texture memory single bit aggregate (persistent) ECC errors
-)
-NVML_FI_DEV_ECC_DBE_AGG_TEX = (
-    27  # Texture memory double bit aggregate (persistent) ECC errors
-)
+NVML_FI_DEV_ECC_SBE_AGG_DEV = 22  # Device memory single bit aggregate (persistent) ECC errors
+NVML_FI_DEV_ECC_DBE_AGG_DEV = 23  # Device memory double bit aggregate (persistent) ECC errors
+NVML_FI_DEV_ECC_SBE_AGG_REG = 24  # Register File single bit aggregate (persistent) ECC errors
+NVML_FI_DEV_ECC_DBE_AGG_REG = 25  # Register File double bit aggregate (persistent) ECC errors
+NVML_FI_DEV_ECC_SBE_AGG_TEX = 26  # Texture memory single bit aggregate (persistent) ECC errors
+NVML_FI_DEV_ECC_DBE_AGG_TEX = 27  # Texture memory double bit aggregate (persistent) ECC errors
 NVML_FI_DEV_ECC_DBE_AGG_CBU = 28  # CBU double bit aggregate ECC errors
 
 # Page Retirement
@@ -492,50 +480,22 @@ NVML_FI_DEV_RETIRED_DBE = 30  # Number of retired pages because of double bit er
 NVML_FI_DEV_RETIRED_PENDING = 31  # If any pages are pending retirement. 1=yes. 0=no.
 
 # NvLink Flit Error Counters
-NVML_FI_DEV_NVLINK_CRC_FLIT_ERROR_COUNT_L0 = (
-    32  # NVLink flow control CRC  Error Counter for Lane 0
-)
-NVML_FI_DEV_NVLINK_CRC_FLIT_ERROR_COUNT_L1 = (
-    33  # NVLink flow control CRC  Error Counter for Lane 1
-)
-NVML_FI_DEV_NVLINK_CRC_FLIT_ERROR_COUNT_L2 = (
-    34  # NVLink flow control CRC  Error Counter for Lane 2
-)
-NVML_FI_DEV_NVLINK_CRC_FLIT_ERROR_COUNT_L3 = (
-    35  # NVLink flow control CRC  Error Counter for Lane 3
-)
-NVML_FI_DEV_NVLINK_CRC_FLIT_ERROR_COUNT_L4 = (
-    36  # NVLink flow control CRC  Error Counter for Lane 4
-)
-NVML_FI_DEV_NVLINK_CRC_FLIT_ERROR_COUNT_L5 = (
-    37  # NVLink flow control CRC  Error Counter for Lane 5
-)
-NVML_FI_DEV_NVLINK_CRC_FLIT_ERROR_COUNT_TOTAL = (
-    38  # NVLink flow control CRC  Error Counter total for all Lanes
-)
+NVML_FI_DEV_NVLINK_CRC_FLIT_ERROR_COUNT_L0 = 32  # NVLink flow control CRC  Error Counter for Lane 0
+NVML_FI_DEV_NVLINK_CRC_FLIT_ERROR_COUNT_L1 = 33  # NVLink flow control CRC  Error Counter for Lane 1
+NVML_FI_DEV_NVLINK_CRC_FLIT_ERROR_COUNT_L2 = 34  # NVLink flow control CRC  Error Counter for Lane 2
+NVML_FI_DEV_NVLINK_CRC_FLIT_ERROR_COUNT_L3 = 35  # NVLink flow control CRC  Error Counter for Lane 3
+NVML_FI_DEV_NVLINK_CRC_FLIT_ERROR_COUNT_L4 = 36  # NVLink flow control CRC  Error Counter for Lane 4
+NVML_FI_DEV_NVLINK_CRC_FLIT_ERROR_COUNT_L5 = 37  # NVLink flow control CRC  Error Counter for Lane 5
+NVML_FI_DEV_NVLINK_CRC_FLIT_ERROR_COUNT_TOTAL = 38  # NVLink flow control CRC  Error Counter total for all Lanes
 
 # NvLink CRC Data Error Counters
-NVML_FI_DEV_NVLINK_CRC_DATA_ERROR_COUNT_L0 = (
-    39  # NVLink data CRC Error Counter for Lane 0
-)
-NVML_FI_DEV_NVLINK_CRC_DATA_ERROR_COUNT_L1 = (
-    40  # NVLink data CRC Error Counter for Lane 1
-)
-NVML_FI_DEV_NVLINK_CRC_DATA_ERROR_COUNT_L2 = (
-    41  # NVLink data CRC Error Counter for Lane 2
-)
-NVML_FI_DEV_NVLINK_CRC_DATA_ERROR_COUNT_L3 = (
-    42  # NVLink data CRC Error Counter for Lane 3
-)
-NVML_FI_DEV_NVLINK_CRC_DATA_ERROR_COUNT_L4 = (
-    43  # NVLink data CRC Error Counter for Lane 4
-)
-NVML_FI_DEV_NVLINK_CRC_DATA_ERROR_COUNT_L5 = (
-    44  # NVLink data CRC Error Counter for Lane 5
-)
-NVML_FI_DEV_NVLINK_CRC_DATA_ERROR_COUNT_TOTAL = (
-    45  # NvLink data CRC Error Counter total for all Lanes
-)
+NVML_FI_DEV_NVLINK_CRC_DATA_ERROR_COUNT_L0 = 39  # NVLink data CRC Error Counter for Lane 0
+NVML_FI_DEV_NVLINK_CRC_DATA_ERROR_COUNT_L1 = 40  # NVLink data CRC Error Counter for Lane 1
+NVML_FI_DEV_NVLINK_CRC_DATA_ERROR_COUNT_L2 = 41  # NVLink data CRC Error Counter for Lane 2
+NVML_FI_DEV_NVLINK_CRC_DATA_ERROR_COUNT_L3 = 42  # NVLink data CRC Error Counter for Lane 3
+NVML_FI_DEV_NVLINK_CRC_DATA_ERROR_COUNT_L4 = 43  # NVLink data CRC Error Counter for Lane 4
+NVML_FI_DEV_NVLINK_CRC_DATA_ERROR_COUNT_L5 = 44  # NVLink data CRC Error Counter for Lane 5
+NVML_FI_DEV_NVLINK_CRC_DATA_ERROR_COUNT_TOTAL = 45  # NvLink data CRC Error Counter total for all Lanes
 
 # NvLink Replay Error Counters
 NVML_FI_DEV_NVLINK_REPLAY_ERROR_COUNT_L0 = 46  # NVLink Replay Error Counter for Lane 0
@@ -544,94 +504,44 @@ NVML_FI_DEV_NVLINK_REPLAY_ERROR_COUNT_L2 = 48  # NVLink Replay Error Counter for
 NVML_FI_DEV_NVLINK_REPLAY_ERROR_COUNT_L3 = 49  # NVLink Replay Error Counter for Lane 3
 NVML_FI_DEV_NVLINK_REPLAY_ERROR_COUNT_L4 = 50  # NVLink Replay Error Counter for Lane 4
 NVML_FI_DEV_NVLINK_REPLAY_ERROR_COUNT_L5 = 51  # NVLink Replay Error Counter for Lane 5
-NVML_FI_DEV_NVLINK_REPLAY_ERROR_COUNT_TOTAL = (
-    52  # NVLink Replay Error Counter total for all Lanes
-)
+NVML_FI_DEV_NVLINK_REPLAY_ERROR_COUNT_TOTAL = 52  # NVLink Replay Error Counter total for all Lanes
 
 # NvLink Recovery Error Counters
-NVML_FI_DEV_NVLINK_RECOVERY_ERROR_COUNT_L0 = (
-    53  # NVLink Recovery Error Counter for Lane 0
-)
-NVML_FI_DEV_NVLINK_RECOVERY_ERROR_COUNT_L1 = (
-    54  # NVLink Recovery Error Counter for Lane 1
-)
-NVML_FI_DEV_NVLINK_RECOVERY_ERROR_COUNT_L2 = (
-    55  # NVLink Recovery Error Counter for Lane 2
-)
-NVML_FI_DEV_NVLINK_RECOVERY_ERROR_COUNT_L3 = (
-    56  # NVLink Recovery Error Counter for Lane 3
-)
-NVML_FI_DEV_NVLINK_RECOVERY_ERROR_COUNT_L4 = (
-    57  # NVLink Recovery Error Counter for Lane 4
-)
-NVML_FI_DEV_NVLINK_RECOVERY_ERROR_COUNT_L5 = (
-    58  # NVLink Recovery Error Counter for Lane 5
-)
-NVML_FI_DEV_NVLINK_RECOVERY_ERROR_COUNT_TOTAL = (
-    59  # NVLink Recovery Error Counter total for all Lanes
-)
+NVML_FI_DEV_NVLINK_RECOVERY_ERROR_COUNT_L0 = 53  # NVLink Recovery Error Counter for Lane 0
+NVML_FI_DEV_NVLINK_RECOVERY_ERROR_COUNT_L1 = 54  # NVLink Recovery Error Counter for Lane 1
+NVML_FI_DEV_NVLINK_RECOVERY_ERROR_COUNT_L2 = 55  # NVLink Recovery Error Counter for Lane 2
+NVML_FI_DEV_NVLINK_RECOVERY_ERROR_COUNT_L3 = 56  # NVLink Recovery Error Counter for Lane 3
+NVML_FI_DEV_NVLINK_RECOVERY_ERROR_COUNT_L4 = 57  # NVLink Recovery Error Counter for Lane 4
+NVML_FI_DEV_NVLINK_RECOVERY_ERROR_COUNT_L5 = 58  # NVLink Recovery Error Counter for Lane 5
+NVML_FI_DEV_NVLINK_RECOVERY_ERROR_COUNT_TOTAL = 59  # NVLink Recovery Error Counter total for all Lanes
 
 # NvLink Bandwidth Counters
-NVML_FI_DEV_NVLINK_BANDWIDTH_C0_L0 = (
-    60  # NVLink Bandwidth Counter for Counter Set 0, Lane 0
-)
-NVML_FI_DEV_NVLINK_BANDWIDTH_C0_L1 = (
-    61  # NVLink Bandwidth Counter for Counter Set 0, Lane 1
-)
-NVML_FI_DEV_NVLINK_BANDWIDTH_C0_L2 = (
-    62  # NVLink Bandwidth Counter for Counter Set 0, Lane 2
-)
-NVML_FI_DEV_NVLINK_BANDWIDTH_C0_L3 = (
-    63  # NVLink Bandwidth Counter for Counter Set 0, Lane 3
-)
-NVML_FI_DEV_NVLINK_BANDWIDTH_C0_L4 = (
-    64  # NVLink Bandwidth Counter for Counter Set 0, Lane 4
-)
-NVML_FI_DEV_NVLINK_BANDWIDTH_C0_L5 = (
-    65  # NVLink Bandwidth Counter for Counter Set 0, Lane 5
-)
-NVML_FI_DEV_NVLINK_BANDWIDTH_C0_TOTAL = (
-    66  # NVLink Bandwidth Counter Total for Counter Set 0, All Lanes
-)
+NVML_FI_DEV_NVLINK_BANDWIDTH_C0_L0 = 60  # NVLink Bandwidth Counter for Counter Set 0, Lane 0
+NVML_FI_DEV_NVLINK_BANDWIDTH_C0_L1 = 61  # NVLink Bandwidth Counter for Counter Set 0, Lane 1
+NVML_FI_DEV_NVLINK_BANDWIDTH_C0_L2 = 62  # NVLink Bandwidth Counter for Counter Set 0, Lane 2
+NVML_FI_DEV_NVLINK_BANDWIDTH_C0_L3 = 63  # NVLink Bandwidth Counter for Counter Set 0, Lane 3
+NVML_FI_DEV_NVLINK_BANDWIDTH_C0_L4 = 64  # NVLink Bandwidth Counter for Counter Set 0, Lane 4
+NVML_FI_DEV_NVLINK_BANDWIDTH_C0_L5 = 65  # NVLink Bandwidth Counter for Counter Set 0, Lane 5
+NVML_FI_DEV_NVLINK_BANDWIDTH_C0_TOTAL = 66  # NVLink Bandwidth Counter Total for Counter Set 0, All Lanes
 
 # NvLink Bandwidth Counters
-NVML_FI_DEV_NVLINK_BANDWIDTH_C1_L0 = (
-    67  # NVLink Bandwidth Counter for Counter Set 1, Lane 0
-)
-NVML_FI_DEV_NVLINK_BANDWIDTH_C1_L1 = (
-    68  # NVLink Bandwidth Counter for Counter Set 1, Lane 1
-)
-NVML_FI_DEV_NVLINK_BANDWIDTH_C1_L2 = (
-    69  # NVLink Bandwidth Counter for Counter Set 1, Lane 2
-)
-NVML_FI_DEV_NVLINK_BANDWIDTH_C1_L3 = (
-    70  # NVLink Bandwidth Counter for Counter Set 1, Lane 3
-)
-NVML_FI_DEV_NVLINK_BANDWIDTH_C1_L4 = (
-    71  # NVLink Bandwidth Counter for Counter Set 1, Lane 4
-)
-NVML_FI_DEV_NVLINK_BANDWIDTH_C1_L5 = (
-    72  # NVLink Bandwidth Counter for Counter Set 1, Lane 5
-)
-NVML_FI_DEV_NVLINK_BANDWIDTH_C1_TOTAL = (
-    73  # NVLink Bandwidth Counter Total for Counter Set 1, All Lanes
-)
+NVML_FI_DEV_NVLINK_BANDWIDTH_C1_L0 = 67  # NVLink Bandwidth Counter for Counter Set 1, Lane 0
+NVML_FI_DEV_NVLINK_BANDWIDTH_C1_L1 = 68  # NVLink Bandwidth Counter for Counter Set 1, Lane 1
+NVML_FI_DEV_NVLINK_BANDWIDTH_C1_L2 = 69  # NVLink Bandwidth Counter for Counter Set 1, Lane 2
+NVML_FI_DEV_NVLINK_BANDWIDTH_C1_L3 = 70  # NVLink Bandwidth Counter for Counter Set 1, Lane 3
+NVML_FI_DEV_NVLINK_BANDWIDTH_C1_L4 = 71  # NVLink Bandwidth Counter for Counter Set 1, Lane 4
+NVML_FI_DEV_NVLINK_BANDWIDTH_C1_L5 = 72  # NVLink Bandwidth Counter for Counter Set 1, Lane 5
+NVML_FI_DEV_NVLINK_BANDWIDTH_C1_TOTAL = 73  # NVLink Bandwidth Counter Total for Counter Set 1, All Lanes
 
 # Perf Policy Counters
 NVML_FI_DEV_PERF_POLICY_POWER = 74  # Perf Policy Counter for Power Policy
 NVML_FI_DEV_PERF_POLICY_THERMAL = 75  # Perf Policy Counter for Thermal Policy
 NVML_FI_DEV_PERF_POLICY_SYNC_BOOST = 76  # Perf Policy Counter for Sync boost Policy
 NVML_FI_DEV_PERF_POLICY_BOARD_LIMIT = 77  # Perf Policy Counter for Board Limit
-NVML_FI_DEV_PERF_POLICY_LOW_UTILIZATION = (
-    78  # Perf Policy Counter for Low GPU Utilization Policy
-)
+NVML_FI_DEV_PERF_POLICY_LOW_UTILIZATION = 78  # Perf Policy Counter for Low GPU Utilization Policy
 NVML_FI_DEV_PERF_POLICY_RELIABILITY = 79  # Perf Policy Counter for Reliability Policy
-NVML_FI_DEV_PERF_POLICY_TOTAL_APP_CLOCKS = (
-    80  # Perf Policy Counter for Total App Clock Policy
-)
-NVML_FI_DEV_PERF_POLICY_TOTAL_BASE_CLOCKS = (
-    81  # Perf Policy Counter for Total Base Clocks Policy
-)
+NVML_FI_DEV_PERF_POLICY_TOTAL_APP_CLOCKS = 80  # Perf Policy Counter for Total App Clock Policy
+NVML_FI_DEV_PERF_POLICY_TOTAL_BASE_CLOCKS = 81  # Perf Policy Counter for Total Base Clocks Policy
 
 # Memory temperatures
 NVML_FI_DEV_MEMORY_TEMP = 82  # Memory temperature for the device
@@ -662,116 +572,52 @@ NVML_FI_DEV_PCIE_REPLAY_COUNTER = 94
 NVML_FI_DEV_PCIE_REPLAY_ROLLOVER_COUNTER = 95
 
 # NvLink Flit Error Counters
-NVML_FI_DEV_NVLINK_CRC_FLIT_ERROR_COUNT_L6 = (
-    96  # NVLink flow control CRC  Error Counter for Lane 6
-)
-NVML_FI_DEV_NVLINK_CRC_FLIT_ERROR_COUNT_L7 = (
-    97  # NVLink flow control CRC  Error Counter for Lane 7
-)
-NVML_FI_DEV_NVLINK_CRC_FLIT_ERROR_COUNT_L8 = (
-    98  # NVLink flow control CRC  Error Counter for Lane 8
-)
-NVML_FI_DEV_NVLINK_CRC_FLIT_ERROR_COUNT_L9 = (
-    99  # NVLink flow control CRC  Error Counter for Lane 9
-)
-NVML_FI_DEV_NVLINK_CRC_FLIT_ERROR_COUNT_L10 = (
-    100  # NVLink flow control CRC  Error Counter for Lane 10
-)
-NVML_FI_DEV_NVLINK_CRC_FLIT_ERROR_COUNT_L11 = (
-    101  # NVLink flow control CRC  Error Counter for Lane 11
-)
+NVML_FI_DEV_NVLINK_CRC_FLIT_ERROR_COUNT_L6 = 96  # NVLink flow control CRC  Error Counter for Lane 6
+NVML_FI_DEV_NVLINK_CRC_FLIT_ERROR_COUNT_L7 = 97  # NVLink flow control CRC  Error Counter for Lane 7
+NVML_FI_DEV_NVLINK_CRC_FLIT_ERROR_COUNT_L8 = 98  # NVLink flow control CRC  Error Counter for Lane 8
+NVML_FI_DEV_NVLINK_CRC_FLIT_ERROR_COUNT_L9 = 99  # NVLink flow control CRC  Error Counter for Lane 9
+NVML_FI_DEV_NVLINK_CRC_FLIT_ERROR_COUNT_L10 = 100  # NVLink flow control CRC  Error Counter for Lane 10
+NVML_FI_DEV_NVLINK_CRC_FLIT_ERROR_COUNT_L11 = 101  # NVLink flow control CRC  Error Counter for Lane 11
 
 # NvLink CRC Data Error Counters
-NVML_FI_DEV_NVLINK_CRC_DATA_ERROR_COUNT_L6 = (
-    102  # NVLink data CRC Error Counter for Lane 6
-)
-NVML_FI_DEV_NVLINK_CRC_DATA_ERROR_COUNT_L7 = (
-    103  # NVLink data CRC Error Counter for Lane 7
-)
-NVML_FI_DEV_NVLINK_CRC_DATA_ERROR_COUNT_L8 = (
-    104  # NVLink data CRC Error Counter for Lane 8
-)
-NVML_FI_DEV_NVLINK_CRC_DATA_ERROR_COUNT_L9 = (
-    105  # NVLink data CRC Error Counter for Lane 9
-)
-NVML_FI_DEV_NVLINK_CRC_DATA_ERROR_COUNT_L10 = (
-    106  # NVLink data CRC Error Counter for Lane 10
-)
-NVML_FI_DEV_NVLINK_CRC_DATA_ERROR_COUNT_L11 = (
-    107  # NVLink data CRC Error Counter for Lane 11
-)
+NVML_FI_DEV_NVLINK_CRC_DATA_ERROR_COUNT_L6 = 102  # NVLink data CRC Error Counter for Lane 6
+NVML_FI_DEV_NVLINK_CRC_DATA_ERROR_COUNT_L7 = 103  # NVLink data CRC Error Counter for Lane 7
+NVML_FI_DEV_NVLINK_CRC_DATA_ERROR_COUNT_L8 = 104  # NVLink data CRC Error Counter for Lane 8
+NVML_FI_DEV_NVLINK_CRC_DATA_ERROR_COUNT_L9 = 105  # NVLink data CRC Error Counter for Lane 9
+NVML_FI_DEV_NVLINK_CRC_DATA_ERROR_COUNT_L10 = 106  # NVLink data CRC Error Counter for Lane 10
+NVML_FI_DEV_NVLINK_CRC_DATA_ERROR_COUNT_L11 = 107  # NVLink data CRC Error Counter for Lane 11
 
 # NvLink Replay Error Counters
 NVML_FI_DEV_NVLINK_REPLAY_ERROR_COUNT_L6 = 108  # NVLink Replay Error Counter for Lane 6
 NVML_FI_DEV_NVLINK_REPLAY_ERROR_COUNT_L7 = 109  # NVLink Replay Error Counter for Lane 7
 NVML_FI_DEV_NVLINK_REPLAY_ERROR_COUNT_L8 = 110  # NVLink Replay Error Counter for Lane 8
 NVML_FI_DEV_NVLINK_REPLAY_ERROR_COUNT_L9 = 111  # NVLink Replay Error Counter for Lane 9
-NVML_FI_DEV_NVLINK_REPLAY_ERROR_COUNT_L10 = (
-    112  # NVLink Replay Error Counter for Lane 10
-)
-NVML_FI_DEV_NVLINK_REPLAY_ERROR_COUNT_L11 = (
-    113  # NVLink Replay Error Counter for Lane 11
-)
+NVML_FI_DEV_NVLINK_REPLAY_ERROR_COUNT_L10 = 112  # NVLink Replay Error Counter for Lane 10
+NVML_FI_DEV_NVLINK_REPLAY_ERROR_COUNT_L11 = 113  # NVLink Replay Error Counter for Lane 11
 
 # NvLink Recovery Error Counters
-NVML_FI_DEV_NVLINK_RECOVERY_ERROR_COUNT_L6 = (
-    114  # NVLink Recovery Error Counter for Lane 6
-)
-NVML_FI_DEV_NVLINK_RECOVERY_ERROR_COUNT_L7 = (
-    115  # NVLink Recovery Error Counter for Lane 7
-)
-NVML_FI_DEV_NVLINK_RECOVERY_ERROR_COUNT_L8 = (
-    116  # NVLink Recovery Error Counter for Lane 8
-)
-NVML_FI_DEV_NVLINK_RECOVERY_ERROR_COUNT_L9 = (
-    117  # NVLink Recovery Error Counter for Lane 9
-)
-NVML_FI_DEV_NVLINK_RECOVERY_ERROR_COUNT_L10 = (
-    118  # NVLink Recovery Error Counter for Lane 10
-)
-NVML_FI_DEV_NVLINK_RECOVERY_ERROR_COUNT_L11 = (
-    119  # NVLink Recovery Error Counter for Lane 11
-)
+NVML_FI_DEV_NVLINK_RECOVERY_ERROR_COUNT_L6 = 114  # NVLink Recovery Error Counter for Lane 6
+NVML_FI_DEV_NVLINK_RECOVERY_ERROR_COUNT_L7 = 115  # NVLink Recovery Error Counter for Lane 7
+NVML_FI_DEV_NVLINK_RECOVERY_ERROR_COUNT_L8 = 116  # NVLink Recovery Error Counter for Lane 8
+NVML_FI_DEV_NVLINK_RECOVERY_ERROR_COUNT_L9 = 117  # NVLink Recovery Error Counter for Lane 9
+NVML_FI_DEV_NVLINK_RECOVERY_ERROR_COUNT_L10 = 118  # NVLink Recovery Error Counter for Lane 10
+NVML_FI_DEV_NVLINK_RECOVERY_ERROR_COUNT_L11 = 119  # NVLink Recovery Error Counter for Lane 11
 
 # NvLink Bandwidth Counters
-NVML_FI_DEV_NVLINK_BANDWIDTH_C0_L6 = (
-    120  # NVLink Bandwidth Counter for Counter Set 0, Lane 6
-)
-NVML_FI_DEV_NVLINK_BANDWIDTH_C0_L7 = (
-    121  # NVLink Bandwidth Counter for Counter Set 0, Lane 7
-)
-NVML_FI_DEV_NVLINK_BANDWIDTH_C0_L8 = (
-    122  # NVLink Bandwidth Counter for Counter Set 0, Lane 8
-)
-NVML_FI_DEV_NVLINK_BANDWIDTH_C0_L9 = (
-    123  # NVLink Bandwidth Counter for Counter Set 0, Lane 9
-)
-NVML_FI_DEV_NVLINK_BANDWIDTH_C0_L10 = (
-    124  # NVLink Bandwidth Counter for Counter Set 0, Lane 10
-)
-NVML_FI_DEV_NVLINK_BANDWIDTH_C0_L11 = (
-    125  # NVLink Bandwidth Counter for Counter Set 0, Lane 11
-)
+NVML_FI_DEV_NVLINK_BANDWIDTH_C0_L6 = 120  # NVLink Bandwidth Counter for Counter Set 0, Lane 6
+NVML_FI_DEV_NVLINK_BANDWIDTH_C0_L7 = 121  # NVLink Bandwidth Counter for Counter Set 0, Lane 7
+NVML_FI_DEV_NVLINK_BANDWIDTH_C0_L8 = 122  # NVLink Bandwidth Counter for Counter Set 0, Lane 8
+NVML_FI_DEV_NVLINK_BANDWIDTH_C0_L9 = 123  # NVLink Bandwidth Counter for Counter Set 0, Lane 9
+NVML_FI_DEV_NVLINK_BANDWIDTH_C0_L10 = 124  # NVLink Bandwidth Counter for Counter Set 0, Lane 10
+NVML_FI_DEV_NVLINK_BANDWIDTH_C0_L11 = 125  # NVLink Bandwidth Counter for Counter Set 0, Lane 11
 
 # NvLink Bandwidth Counters
-NVML_FI_DEV_NVLINK_BANDWIDTH_C1_L6 = (
-    126  # NVLink Bandwidth Counter for Counter Set 1, Lane 6
-)
-NVML_FI_DEV_NVLINK_BANDWIDTH_C1_L7 = (
-    127  # NVLink Bandwidth Counter for Counter Set 1, Lane 7
-)
-NVML_FI_DEV_NVLINK_BANDWIDTH_C1_L8 = (
-    128  # NVLink Bandwidth Counter for Counter Set 1, Lane 8
-)
-NVML_FI_DEV_NVLINK_BANDWIDTH_C1_L9 = (
-    129  # NVLink Bandwidth Counter for Counter Set 1, Lane 9
-)
-NVML_FI_DEV_NVLINK_BANDWIDTH_C1_L10 = (
-    130  # NVLink Bandwidth Counter for Counter Set 1, Lane 10
-)
-NVML_FI_DEV_NVLINK_BANDWIDTH_C1_L11 = (
-    131  # NVLink Bandwidth Counter for Counter Set 1, Lane 11
-)
+NVML_FI_DEV_NVLINK_BANDWIDTH_C1_L6 = 126  # NVLink Bandwidth Counter for Counter Set 1, Lane 6
+NVML_FI_DEV_NVLINK_BANDWIDTH_C1_L7 = 127  # NVLink Bandwidth Counter for Counter Set 1, Lane 7
+NVML_FI_DEV_NVLINK_BANDWIDTH_C1_L8 = 128  # NVLink Bandwidth Counter for Counter Set 1, Lane 8
+NVML_FI_DEV_NVLINK_BANDWIDTH_C1_L9 = 129  # NVLink Bandwidth Counter for Counter Set 1, Lane 9
+NVML_FI_DEV_NVLINK_BANDWIDTH_C1_L10 = 130  # NVLink Bandwidth Counter for Counter Set 1, Lane 10
+NVML_FI_DEV_NVLINK_BANDWIDTH_C1_L11 = 131  # NVLink Bandwidth Counter for Counter Set 1, Lane 11
 
 # NVLink Speed
 NVML_FI_DEV_NVLINK_SPEED_MBPS_L6 = 132
@@ -800,62 +646,28 @@ NVML_FI_DEV_NVLINK_REMOTE_NVLINK_ID = 146
 NVML_FI_DEV_NVSWITCH_CONNECTED_LINK_COUNT = 147
 
 # NvLink ECC Data Error Counters
-NVML_FI_DEV_NVLINK_ECC_DATA_ERROR_COUNT_L0 = (
-    148  # < NVLink data ECC Error Counter for Link 0
-)
-NVML_FI_DEV_NVLINK_ECC_DATA_ERROR_COUNT_L1 = (
-    149  # < NVLink data ECC Error Counter for Link 1
-)
-NVML_FI_DEV_NVLINK_ECC_DATA_ERROR_COUNT_L2 = (
-    150  # < NVLink data ECC Error Counter for Link 2
-)
-NVML_FI_DEV_NVLINK_ECC_DATA_ERROR_COUNT_L3 = (
-    151  # < NVLink data ECC Error Counter for Link 3
-)
-NVML_FI_DEV_NVLINK_ECC_DATA_ERROR_COUNT_L4 = (
-    152  # < NVLink data ECC Error Counter for Link 4
-)
-NVML_FI_DEV_NVLINK_ECC_DATA_ERROR_COUNT_L5 = (
-    153  # < NVLink data ECC Error Counter for Link 5
-)
-NVML_FI_DEV_NVLINK_ECC_DATA_ERROR_COUNT_L6 = (
-    154  # < NVLink data ECC Error Counter for Link 6
-)
-NVML_FI_DEV_NVLINK_ECC_DATA_ERROR_COUNT_L7 = (
-    155  # < NVLink data ECC Error Counter for Link 7
-)
-NVML_FI_DEV_NVLINK_ECC_DATA_ERROR_COUNT_L8 = (
-    156  # < NVLink data ECC Error Counter for Link 8
-)
-NVML_FI_DEV_NVLINK_ECC_DATA_ERROR_COUNT_L9 = (
-    157  # < NVLink data ECC Error Counter for Link 9
-)
-NVML_FI_DEV_NVLINK_ECC_DATA_ERROR_COUNT_L10 = (
-    158  # < NVLink data ECC Error Counter for Link 10
-)
-NVML_FI_DEV_NVLINK_ECC_DATA_ERROR_COUNT_L11 = (
-    159  # < NVLink data ECC Error Counter for Link 11
-)
-NVML_FI_DEV_NVLINK_ECC_DATA_ERROR_COUNT_TOTAL = (
-    160  # < NvLink data ECC Error Counter total for all Links
-)
+NVML_FI_DEV_NVLINK_ECC_DATA_ERROR_COUNT_L0 = 148  # < NVLink data ECC Error Counter for Link 0
+NVML_FI_DEV_NVLINK_ECC_DATA_ERROR_COUNT_L1 = 149  # < NVLink data ECC Error Counter for Link 1
+NVML_FI_DEV_NVLINK_ECC_DATA_ERROR_COUNT_L2 = 150  # < NVLink data ECC Error Counter for Link 2
+NVML_FI_DEV_NVLINK_ECC_DATA_ERROR_COUNT_L3 = 151  # < NVLink data ECC Error Counter for Link 3
+NVML_FI_DEV_NVLINK_ECC_DATA_ERROR_COUNT_L4 = 152  # < NVLink data ECC Error Counter for Link 4
+NVML_FI_DEV_NVLINK_ECC_DATA_ERROR_COUNT_L5 = 153  # < NVLink data ECC Error Counter for Link 5
+NVML_FI_DEV_NVLINK_ECC_DATA_ERROR_COUNT_L6 = 154  # < NVLink data ECC Error Counter for Link 6
+NVML_FI_DEV_NVLINK_ECC_DATA_ERROR_COUNT_L7 = 155  # < NVLink data ECC Error Counter for Link 7
+NVML_FI_DEV_NVLINK_ECC_DATA_ERROR_COUNT_L8 = 156  # < NVLink data ECC Error Counter for Link 8
+NVML_FI_DEV_NVLINK_ECC_DATA_ERROR_COUNT_L9 = 157  # < NVLink data ECC Error Counter for Link 9
+NVML_FI_DEV_NVLINK_ECC_DATA_ERROR_COUNT_L10 = 158  # < NVLink data ECC Error Counter for Link 10
+NVML_FI_DEV_NVLINK_ECC_DATA_ERROR_COUNT_L11 = 159  # < NVLink data ECC Error Counter for Link 11
+NVML_FI_DEV_NVLINK_ECC_DATA_ERROR_COUNT_TOTAL = 160  # < NvLink data ECC Error Counter total for all Links
 
 NVML_FI_MAX = 161  # One greater than the largest field ID defined above
 
 ## Enums needed for the method nvmlDeviceGetVirtualizationMode and nvmlDeviceSetVirtualizationMode
 NVML_GPU_VIRTUALIZATION_MODE_NONE = 0  # Represents Bare Metal GPU
-NVML_GPU_VIRTUALIZATION_MODE_PASSTHROUGH = (
-    1  # Device is associated with GPU-Passthorugh
-)
-NVML_GPU_VIRTUALIZATION_MODE_VGPU = (
-    2  # Device is associated with vGPU inside virtual machine.
-)
-NVML_GPU_VIRTUALIZATION_MODE_HOST_VGPU = (
-    3  # Device is associated with VGX hypervisor in vGPU mode
-)
-NVML_GPU_VIRTUALIZATION_MODE_HOST_VSGA = (
-    4  # Device is associated with VGX hypervisor in vSGA mode
-)
+NVML_GPU_VIRTUALIZATION_MODE_PASSTHROUGH = 1  # Device is associated with GPU-Passthorugh
+NVML_GPU_VIRTUALIZATION_MODE_VGPU = 2  # Device is associated with vGPU inside virtual machine.
+NVML_GPU_VIRTUALIZATION_MODE_HOST_VGPU = 3  # Device is associated with VGX hypervisor in vGPU mode
+NVML_GPU_VIRTUALIZATION_MODE_HOST_VSGA = 4  # Device is associated with VGX hypervisor in vSGA mode
 
 ## Lib loading ##
 nvmlLib = None
@@ -874,9 +686,7 @@ _nvmlGridLicenseFeatureCode_t = c_uint
 NVML_GRID_LICENSE_FEATURE_CODE_UNKNOWN = 0
 NVML_GRID_LICENSE_FEATURE_CODE_VGPU = 1
 NVML_GRID_LICENSE_FEATURE_CODE_NVIDIA_RTX = 2
-NVML_GRID_LICENSE_FEATURE_CODE_VWORKSTATION = (
-    2  # deprecated, use NVML_GRID_LICENSE_FEATURE_CODE_NVIDIA_RTX.
-)
+NVML_GRID_LICENSE_FEATURE_CODE_VWORKSTATION = 2  # deprecated, use NVML_GRID_LICENSE_FEATURE_CODE_NVIDIA_RTX.
 NVML_GRID_LICENSE_FEATURE_CODE_GAMING = 3
 NVML_GRID_LICENSE_FEATURE_CODE_COMPUTE = 4
 
@@ -959,9 +769,7 @@ class NVMLError(Exception):
     def __str__(self):
         try:
             if self.value not in NVMLError._errcode_to_string:
-                NVMLError._errcode_to_string[self.value] = str(
-                    nvmlErrorString(self.value)
-                )
+                NVMLError._errcode_to_string[self.value] = str(nvmlErrorString(self.value))
             return NVMLError._errcode_to_string[self.value]
         except NVMLError:
             return "NVML Error with code %d" % self.value
@@ -990,9 +798,7 @@ def _extractNVMLErrorsAsClasses():
     nvmlErrorsNames = [x for x in dir(this_module) if x.startswith("NVML_ERROR_")]
     for err_name in nvmlErrorsNames:
         # e.g. Turn NVML_ERROR_ALREADY_INITIALIZED into NVMLError_AlreadyInitialized
-        class_name = "NVMLError_" + string.capwords(
-            err_name.replace("NVML_ERROR_", ""), "_"
-        ).replace("_", "")
+        class_name = "NVMLError_" + string.capwords(err_name.replace("NVML_ERROR_", ""), "_").replace("_", "")
         err_val = getattr(this_module, err_name)
 
         def gen_new(val):
@@ -1018,9 +824,7 @@ def _nvmlCheckReturn(ret):
 
 
 ## Function access ##
-_nvmlGetFunctionPointer_cache = (
-    dict()
-)  # function pointers are cached to prevent unnecessary libLoadLock locking
+_nvmlGetFunctionPointer_cache = dict()  # function pointers are cached to prevent unnecessary libLoadLock locking
 
 
 def _nvmlGetFunctionPointer(name):
@@ -2010,9 +1814,7 @@ def _LoadNvmlLibrary():
                     # If nvml.dll is not found in System32, it should be in ProgramFiles
                     # load nvml.dll from %ProgramFiles%/NVIDIA Corporation/NVSMI/nvml.dll
                     search_paths = [
-                        os.path.join(
-                            os.getenv("WINDIR", "C:/Windows"), "System32/nvml.dll"
-                        ),
+                        os.path.join(os.getenv("WINDIR", "C:/Windows"), "System32/nvml.dll"),
                         os.path.join(
                             os.getenv("ProgramFiles", "C:/Program Files"),
                             "NVIDIA Corporation/NVSMI/nvml.dll",
@@ -2895,9 +2697,7 @@ def nvmlDeviceGetComputeRunningProcesses_v3(handle):
     fn = None
     for suffix in ("_v3", "_v2", ""):
         try:
-            fn = _nvmlGetFunctionPointer(
-                f"nvmlDeviceGetComputeRunningProcesses{suffix}"
-            )
+            fn = _nvmlGetFunctionPointer(f"nvmlDeviceGetComputeRunningProcesses{suffix}")
             break
         except NVMLError:
             pass
@@ -2944,9 +2744,7 @@ def nvmlDeviceGetGraphicsRunningProcesses_v3(handle):
     fn = None
     for suffix in ("_v3", "_v2", ""):
         try:
-            fn = _nvmlGetFunctionPointer(
-                f"nvmlDeviceGetGraphicsRunningProcesses{suffix}"
-            )
+            fn = _nvmlGetFunctionPointer(f"nvmlDeviceGetGraphicsRunningProcesses{suffix}")
             break
         except NVMLError:
             pass
@@ -2997,9 +2795,7 @@ def nvmlDeviceGetMPSComputeRunningProcesses_v3(handle):
     fn = None
     for suffix in ("_v3", "_v2", ""):
         try:
-            fn = _nvmlGetFunctionPointer(
-                f"nvmlDeviceGetMPSComputeRunningProcesses{suffix}"
-            )
+            fn = _nvmlGetFunctionPointer(f"nvmlDeviceGetMPSComputeRunningProcesses{suffix}")
             break
         except NVMLError:
             pass
@@ -3387,10 +3183,7 @@ def nvmlDeviceGetRetiredPages_v2(device, sourceFilter):
     c_times = times_array()
     ret = fn(device, c_source, byref(c_count), c_pages, c_times)
     _nvmlCheckReturn(ret)
-    return [
-        {"address": int(c_pages[i]), "timestamp": int(c_times[i])}
-        for i in range(c_count.value)
-    ]
+    return [{"address": int(c_pages[i]), "timestamp": int(c_times[i])} for i in range(c_count.value)]
 
 
 def nvmlDeviceGetRetiredPagesPendingStatus(device):
@@ -3974,9 +3767,7 @@ def nvmlVgpuInstanceGetGpuInstanceId(vgpuInstance):
 def nvmlVgpuInstanceGetGpuPciId(vgpuInstance):
     c_vgpuPciId = create_string_buffer(NVML_DEVICE_PCI_BUS_ID_BUFFER_SIZE)
     fn = _nvmlGetFunctionPointer("nvmlVgpuInstanceGetGpuPciId")
-    ret = fn(
-        vgpuInstance, c_vgpuPciId, byref(c_uint(NVML_DEVICE_PCI_BUS_ID_BUFFER_SIZE))
-    )
+    ret = fn(vgpuInstance, c_vgpuPciId, byref(c_uint(NVML_DEVICE_PCI_BUS_ID_BUFFER_SIZE)))
     _nvmlCheckReturn(ret)
     return c_vgpuPciId.value
 
@@ -3988,9 +3779,7 @@ def nvmlDeviceGetVgpuUtilization(handle, timeStamp):
     c_sample_value_type = _nvmlValueType_t()
 
     fn = _nvmlGetFunctionPointer("nvmlDeviceGetVgpuUtilization")
-    ret = fn(
-        handle, c_time_stamp, byref(c_sample_value_type), byref(c_vgpu_count), None
-    )
+    ret = fn(handle, c_time_stamp, byref(c_sample_value_type), byref(c_vgpu_count), None)
 
     if ret == NVML_SUCCESS:
         # special case, no active vGPUs
@@ -4164,9 +3953,7 @@ def nvmlVgpuInstanceGetEncoderStats(vgpuInstance):
     c_encodeFps = c_ulonglong(0)
     c_encoderLatency = c_ulonglong(0)
     fn = _nvmlGetFunctionPointer("nvmlVgpuInstanceGetEncoderStats")
-    ret = fn(
-        vgpuInstance, byref(c_encoderCount), byref(c_encodeFps), byref(c_encoderLatency)
-    )
+    ret = fn(vgpuInstance, byref(c_encoderCount), byref(c_encodeFps), byref(c_encoderLatency))
     _nvmlCheckReturn(ret)
     return (c_encoderCount.value, c_encodeFps.value, c_encoderLatency.value)
 
@@ -4429,9 +4216,7 @@ def nvmlDeviceGetGpuInstanceRemainingCapacity(device, profileId):
     return c_count.value
 
 
-def nvmlDeviceGetGpuInstancePossiblePlacements(
-    device, profileId, placementsRef, countRef
-):
+def nvmlDeviceGetGpuInstancePossiblePlacements(device, profileId, placementsRef, countRef):
     fn = _nvmlGetFunctionPointer("nvmlDeviceGetGpuInstancePossiblePlacements_v2")
     ret = fn(device, profileId, placementsRef, countRef)
     _nvmlCheckReturn(ret)
@@ -4484,9 +4269,7 @@ def nvmlGpuInstanceGetInfo(gpuInstance):
     return c_info
 
 
-def nvmlGpuInstanceGetComputeInstanceProfileInfo(
-    device, profile, engProfile, version=2
-):
+def nvmlGpuInstanceGetComputeInstanceProfileInfo(device, profile, engProfile, version=2):
     if version == 2:
         c_info = c_nvmlComputeInstanceProfileInfo_v2_t()
         fn = _nvmlGetFunctionPointer("nvmlGpuInstanceGetComputeInstanceProfileInfoV")
@@ -4501,9 +4284,7 @@ def nvmlGpuInstanceGetComputeInstanceProfileInfo(
 
 
 # Define function alias for the API exposed by NVML
-nvmlGpuInstanceGetComputeInstanceProfileInfoV = (
-    nvmlGpuInstanceGetComputeInstanceProfileInfo
-)
+nvmlGpuInstanceGetComputeInstanceProfileInfoV = nvmlGpuInstanceGetComputeInstanceProfileInfo
 
 
 def nvmlGpuInstanceGetComputeInstanceRemainingCapacity(gpuInstance, profileId):
@@ -4529,9 +4310,7 @@ def nvmlComputeInstanceDestroy(computeInstance):
     return ret
 
 
-def nvmlGpuInstanceGetComputeInstances(
-    gpuInstance, profileId, computeInstancesRef, countRef
-):
+def nvmlGpuInstanceGetComputeInstances(gpuInstance, profileId, computeInstancesRef, countRef):
     fn = _nvmlGetFunctionPointer("nvmlGpuInstanceGetComputeInstances")
     ret = fn(gpuInstance, profileId, computeInstancesRef, countRef)
     _nvmlCheckReturn(ret)

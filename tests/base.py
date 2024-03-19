@@ -1,11 +1,10 @@
 import unittest
-from fastapi.testclient import TestClient
 
-from tests.utils import truncate_api_db, full_class_name, fill_up_test_data
 from aim.sdk.repo import Repo
 from aim.sdk.run import Run
-
 from aim.web.run import app
+from fastapi.testclient import TestClient
+from tests.utils import fill_up_test_data, full_class_name, truncate_api_db
 
 
 class TestBase(unittest.TestCase):
@@ -22,7 +21,7 @@ class TestBase(unittest.TestCase):
     @classmethod
     def create_run(cls, **kwargs):
         run = Run(**kwargs)
-        run['testcase'] = full_class_name(cls)
+        run["testcase"] = full_class_name(cls)
         return run
 
     @classmethod
@@ -37,7 +36,7 @@ class PrefilledDataTestBase(TestBase):
     @classmethod
     def setUpClass(cls) -> None:
         super().setUpClass()
-        fill_up_test_data(extra_params={'testcase': full_class_name(cls)})
+        fill_up_test_data(extra_params={"testcase": full_class_name(cls)})
 
 
 class ApiTestBase(TestBase):

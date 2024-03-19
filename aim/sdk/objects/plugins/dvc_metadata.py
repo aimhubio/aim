@@ -1,24 +1,30 @@
-from aim.storage.object import CustomObject
 import logging
+
 from pathlib import Path
+
 import yaml
 
+from aim.storage.object import CustomObject
+
+
 try:
-    from dvc.repo import Repo
     import dvc.api as api
+
+    from dvc.repo import Repo
 except ImportError:
     raise ImportError("module dvc could not be imported")
 
 
-@CustomObject.alias('dvc.metadata')
+@CustomObject.alias("dvc.metadata")
 class DvcData(CustomObject):
     """
     Wrapper over DVC's LIST interface.
     Find DVC tracked files and stores the list into aim storage.
     """
-    AIM_NAME = 'dvc.metadata'
 
-    def __init__(self, url='.', path=None, rev=None, recursive=False, dvc_only=False):
+    AIM_NAME = "dvc.metadata"
+
+    def __init__(self, url=".", path=None, rev=None, recursive=False, dvc_only=False):
         """
         Please refer to DVC reference for kwarg definitions.
 
@@ -27,24 +33,18 @@ class DvcData(CustomObject):
 
         super().__init__()
 
-        self.storage['dataset'] = {
-            'source': 'dvc',
-            'version': self._get_dvc_lock(url),
-            'params': self._get_dvc_params(url),
-            'tracked_files': self._get_dvc_tracked_files(
-                **dict(
-                    url=url,
-                    path=path,
-                    rev=rev,
-                    recursive=recursive,
-                    dvc_only=dvc_only
-                )
+        self.storage["dataset"] = {
+            "source": "dvc",
+            "version": self._get_dvc_lock(url),
+            "params": self._get_dvc_params(url),
+            "tracked_files": self._get_dvc_tracked_files(
+                **dict(url=url, path=path, rev=rev, recursive=recursive, dvc_only=dvc_only)
             ),
         }
 
     def _get_dvc_tracked_files(self, **ls_kwargs):
         entries = Repo.ls(**ls_kwargs)
-        return [entry['path'] for entry in entries]
+        return [entry["path"] for entry in entries]
 
     def _get_dvc_params(self, url):
         try:
@@ -55,7 +55,7 @@ class DvcData(CustomObject):
 
     def _get_dvc_lock(self, url):
         try:
-            with open(Path(url).joinpath('dvc.lock'), 'r') as f:
+            with open(Path(url).joinpath("dvc.lock"), "r") as f:
                 try:
                     content = yaml.safe_load(f)
                     return content

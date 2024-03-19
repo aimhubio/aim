@@ -1,6 +1,6 @@
-import numpy as np
-
 from typing import Any, Iterator, List, Tuple, Union
+
+import numpy as np
 
 
 class ArrayView:
@@ -9,8 +9,7 @@ class ArrayView:
     when index values are not important.
     """
 
-    def __iter__(self) -> Iterator[Any]:
-        ...
+    def __iter__(self) -> Iterator[Any]: ...
 
     def keys(self) -> Iterator[int]:
         """Return sparse indices iterator.
@@ -44,52 +43,36 @@ class ArrayView:
         """
         ...
 
-    def __len__(self) -> int:
-        ...
+    def __len__(self) -> int: ...
 
-    def __getitem__(
-        self,
-        idx: Union[int, slice]
-    ):
-        ...
+    def __getitem__(self, idx: Union[int, slice]): ...
 
     # TODO implement append
 
-    def __setitem__(
-        self,
-        idx: int,
-        val: Any
-    ):
-        ...
+    def __setitem__(self, idx: int, val: Any): ...
 
     def sparse_list(self) -> Tuple[List[int], List[Any]]:
-        """Get sparse indices and values as :obj:`list`s.
-        """
+        """Get sparse indices and values as :obj:`list`s."""
         ...
 
     def indices_list(self) -> List[int]:
-        """Get sparse indices as a :obj:`list`.
-        """
+        """Get sparse indices as a :obj:`list`."""
         ...
 
     def values_list(self) -> List[Any]:
-        """Get values as a :obj:`list`.
-        """
+        """Get values as a :obj:`list`."""
         ...
 
     def sparse_numpy(self) -> Tuple[np.ndarray, np.ndarray]:
-        """Get sparse indices and values as numpy arrays.
-        """
+        """Get sparse indices and values as numpy arrays."""
         ...
 
     def indices_numpy(self) -> np.ndarray:
-        """Get sparse indices as numpy array.
-        """
+        """Get sparse indices as numpy array."""
         ...
 
     def values_numpy(self) -> np.ndarray:
-        """Get values as numpy array.
-        """
+        """Get values as numpy array."""
         ...
 
     def tolist(self) -> List[Any]:
@@ -97,31 +80,25 @@ class ArrayView:
         ...
 
     def first(self) -> Tuple[int, Any]:
-        """First index and value of the array.
-        """
+        """First index and value of the array."""
         ...
 
     def first_idx(self) -> int:
-        """First index of the array.
-        """
+        """First index of the array."""
         ...
 
     def first_value(self) -> Any:
-        """First value of the array.
-        """
+        """First value of the array."""
         ...
 
     def last(self) -> Tuple[int, Any]:
-        """Last index and value of the array.
-        """
+        """Last index and value of the array."""
         ...
 
     def last_idx(self) -> int:
-        """Last index of the array.
-        """
+        """Last index of the array."""
         ...
 
     def last_value(self) -> Any:
-        """Last value of the array.
-        """
+        """Last value of the array."""
         ...

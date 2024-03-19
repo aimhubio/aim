@@ -1,16 +1,15 @@
-from typing import Iterator, Tuple, Union
-
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Iterator, Tuple, Union
 
 from aim.storage import utils
 from aim.storage.utils import interfaces
+
 
 if TYPE_CHECKING:
     from aim.storage.treeview import TreeView
     from aim.storage.types import BLOB
 
 ContainerKey = bytes
-ContainerValue = Union[bytes, 'BLOB']
+ContainerValue = Union[bytes, "BLOB"]
 
 
 class Container:
@@ -31,7 +30,7 @@ class Container:
         """Close all the resources."""
         ...
 
-    def finalize(self, index: 'Container'):
+    def finalize(self, index: "Container"):
         """Finalize the Container.
 
         Perform operations of compactions, indexing, optimization, etc.
@@ -113,7 +112,7 @@ class Container:
         """
         ...
 
-    def items(self, prefix: ContainerKey = b'') -> Iterator[Tuple[ContainerKey, ContainerValue]]:
+    def items(self, prefix: ContainerKey = b"") -> Iterator[Tuple[ContainerKey, ContainerValue]]:
         """Iterate over all the key-value records in the prefix key range.
 
         The iteration is always performed in lexicographic order w.r.t keys.
@@ -133,7 +132,7 @@ class Container:
         """
         ...
 
-    def keys(self, prefix: ContainerKey = b'') -> Iterator[ContainerKey]:
+    def keys(self, prefix: ContainerKey = b"") -> Iterator[ContainerKey]:
         """Iterate over all the keys in the prefix range.
 
         The iteration is always performed in lexicographic order.
@@ -153,7 +152,7 @@ class Container:
         """
         return utils.KeysIterator(self.items(prefix=prefix))
 
-    def values(self, prefix: ContainerKey = b'') -> Iterator[ContainerValue]:
+    def values(self, prefix: ContainerKey = b"") -> Iterator[ContainerValue]:
         """Iterate over all the values in the given prefix key range.
 
         The iteration is always performed in lexicographic order w.r.t keys.
@@ -173,7 +172,7 @@ class Container:
         """
         return utils.ValuesIterator(self.items(prefix=prefix))
 
-    def view(self, prefix: ContainerKey = b'') -> 'Container':
+    def view(self, prefix: ContainerKey = b"") -> "Container":
         """Return a view (even mutable ones) that enable access to the container
         but with modifications.
 
@@ -198,7 +197,7 @@ class Container:
         """
         ...
 
-    def tree(self) -> 'TreeView':
+    def tree(self) -> "TreeView":
         """Return a :obj:`TreeView` which enables hierarchical view and access
         to the container records.
 
@@ -217,7 +216,7 @@ class Container:
         """
         ...
 
-    def walk(self, prefix: ContainerKey = b''):
+    def walk(self, prefix: ContainerKey = b""):
         """A bi-directional generator to walk over the collection of records on
         any arbitrary order. The `prefix` sent to the generator (lets call it
         a `walker`) seeks for lower-bound key in the collection.
@@ -233,53 +232,53 @@ class Container:
         """
         ...
 
-    def next_key(self, key: ContainerKey = b'') -> ContainerKey:
+    def next_key(self, key: ContainerKey = b"") -> ContainerKey:
         """Returns the key that comes (lexicographically) right after the
         provided `key`.
         """
         key, _ = self.next_item(key)
         return key
 
-    def next_value(self, key: ContainerKey = b'') -> ContainerValue:
+    def next_value(self, key: ContainerKey = b"") -> ContainerValue:
         """Returns the value for the key that comes (lexicographically) right
         after the provided `key`.
         """
         _, value = self.next_item(key)
         return value
 
-    def next_key_value(self, key: ContainerKey = b'') -> Tuple[ContainerKey, ContainerValue]:
+    def next_key_value(self, key: ContainerKey = b"") -> Tuple[ContainerKey, ContainerValue]:
         """Returns `(key, value)` for the key that comes (lexicographically)
         right after the provided `key`.
         """
         return self.next_item(key)
 
-    def next_item(self, key: ContainerKey = b'') -> Tuple[ContainerKey, ContainerValue]:
+    def next_item(self, key: ContainerKey = b"") -> Tuple[ContainerKey, ContainerValue]:
         """Returns `(key, value)` for the key that comes (lexicographically)
         right after the provided `key`.
         """
         ...
 
-    def prev_key(self, key: ContainerKey = b'') -> ContainerKey:
+    def prev_key(self, key: ContainerKey = b"") -> ContainerKey:
         """Returns the key that comes (lexicographically) right before the
         provided `key`.
         """
         key, _ = self.prev_item()
         return key
 
-    def prev_value(self, key: ContainerKey = b'') -> ContainerValue:
+    def prev_value(self, key: ContainerKey = b"") -> ContainerValue:
         """Returns the value for the key that comes (lexicographically) right
         before the provided `key`.
         """
         _, value = self.prev_item()
         return value
 
-    def prev_key_value(self, key: ContainerKey = b'') -> Tuple[ContainerKey, ContainerValue]:
+    def prev_key_value(self, key: ContainerKey = b"") -> Tuple[ContainerKey, ContainerValue]:
         """Returns `(key, value)` for the key that comes (lexicographically)
         right before the provided `key`.
         """
         return self.prev_item(key)
 
-    def prev_item(self, key: ContainerKey = b'') -> Tuple[ContainerKey, ContainerValue]:
+    def prev_item(self, key: ContainerKey = b"") -> Tuple[ContainerKey, ContainerValue]:
         """Returns `(key, value)` for the key that comes (lexicographically)
         right before the provided `key`.
         """

@@ -1,6 +1,5 @@
-from tests.base import TestBase
-
 from aim.sdk.run import Run
+from tests.base import TestBase
 
 
 class TestRunCreationChecks(TestBase):
@@ -12,18 +11,12 @@ class TestRunCreationChecks(TestBase):
 
     def test_reopen_existing_run_in_write_mode(self):
         run = Run(
-            self.existing_run_hash,
-            system_tracking_interval=None,
-            log_system_params=False,
-            capture_terminal_logs=False
+            self.existing_run_hash, system_tracking_interval=None, log_system_params=False, capture_terminal_logs=False
         )
         self.assertEqual(run.hash, self.existing_run_hash)
 
     def test_reopen_existing_run_in_read_mode(self):
-        run = Run(
-            self.existing_run_hash,
-            read_only=True
-        )
+        run = Run(self.existing_run_hash, read_only=True)
         self.assertEqual(run.hash, self.existing_run_hash)
 
     # TODO [deprecation] Uncomment the line below

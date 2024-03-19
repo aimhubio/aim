@@ -31,10 +31,10 @@ class ArrayFlagType:
     def __repr__(self):
         return "<ArrayFlag>"
 
-    def __copy__(self) -> 'ArrayFlagType':
+    def __copy__(self) -> "ArrayFlagType":
         return self
 
-    def __deepcopy__(self, memo) -> 'ArrayFlagType':
+    def __deepcopy__(self, memo) -> "ArrayFlagType":
         return self
 
 
@@ -45,10 +45,10 @@ class ObjectFlagType:
     def __repr__(self):
         return "<ObjectFlag>"
 
-    def __copy__(self) -> 'ObjectFlagType':
+    def __copy__(self) -> "ObjectFlagType":
         return self
 
-    def __deepcopy__(self, memo) -> 'ObjectFlagType':
+    def __deepcopy__(self, memo) -> "ObjectFlagType":
         return self
 
 
@@ -64,11 +64,7 @@ class CustomObjectFlagType:
 
 
 class BLOB:
-    def __init__(
-        self,
-        data=None,
-        loader_fn=None
-    ):
+    def __init__(self, data=None, loader_fn=None):
         self.data = data
         self.loader_fn = loader_fn
 
