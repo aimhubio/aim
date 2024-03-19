@@ -1,7 +1,6 @@
 from tests.base import TestBase
 
 from aim.sdk.run import Run
-from aim.sdk.sequences.metric import Metric
 from aim.storage.context import Context
 
 

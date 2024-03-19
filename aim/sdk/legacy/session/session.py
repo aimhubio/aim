@@ -7,7 +7,6 @@ from typing import Optional
 from aim.ext.exception_resistant import exception_resistant
 from aim.sdk.legacy.deprecation_warning import deprecated
 from aim.ext.resource.configs import DEFAULT_SYSTEM_TRACKING_INT
-from aim.ext.resource.tracker import ResourceTracker
 
 from aim.sdk.repo import Repo
 from aim.sdk.run import Run

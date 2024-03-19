@@ -49,11 +49,11 @@ def collect_metrics_data(query):
 @timing()
 def query_runs(query):
     repo = Repo.default_repo()
-    runs = list(repo.query_runs(query=query, report_mode=QueryReportMode.DISABLED).iter_runs())
+    _ = list(repo.query_runs(query=query, report_mode=QueryReportMode.DISABLED).iter_runs())
 
 
 @timing()
 def query_metrics(query):
     repo = Repo.default_repo()
-    metrics = list(repo.query_metrics(query=query, report_mode=QueryReportMode.DISABLED).iter())
+    _ = list(repo.query_metrics(query=query, report_mode=QueryReportMode.DISABLED).iter())
 

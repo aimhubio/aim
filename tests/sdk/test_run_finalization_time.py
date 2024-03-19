@@ -1,10 +1,8 @@
 import time
-import os
 
 from tests.base import TestBase
 
 from aim.sdk.run import Run
-from aim.sdk.configs import AIM_ENABLE_TRACKING_THREAD
 
 
 class TestRunFinalizedAt(TestBase):

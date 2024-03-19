@@ -1,0 +1,5 @@
+[lint.per-file-ignores]
+"__init__.py" = ["F401"]
+
+[lint.flake8-quotes]
+inline-quotes = "double"

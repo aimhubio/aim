@@ -10,8 +10,6 @@ from alembic.config import Config
 from aim.web.configs import AIM_ENV_MODE_KEY
 from aim.web.api.db import engine
 from aim.web.utils import get_db_url
-from aim.web.api.dashboards import models
-from aim.web.api.dashboard_apps import models
 from aim.web.api.db import Base
 
 # this is the Alembic Config object, which provides

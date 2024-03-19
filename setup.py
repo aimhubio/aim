@@ -1,6 +1,5 @@
 import sys
 import os
-import platform
 
 from shutil import rmtree
 from setuptools import find_packages, setup, Command, Extension
