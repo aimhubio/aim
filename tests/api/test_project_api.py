@@ -1,12 +1,11 @@
-import pytz
-
-from tests.base import PrefilledDataApiTestBase, ApiTestBase
-from tests.utils import generate_image_set
-
-from parameterized import parameterized
 import datetime
 
+import pytz
+
 from aim.sdk.run import Run
+from parameterized import parameterized
+from tests.base import ApiTestBase, PrefilledDataApiTestBase
+from tests.utils import generate_image_set
 
 
 class TestProjectApi(PrefilledDataApiTestBase):

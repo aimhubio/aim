@@ -1,5 +1,6 @@
-import click
 import os
+
+import click
 
 from aim.sdk.repo import Repo
 from aim.sdk.utils import clean_repo_path

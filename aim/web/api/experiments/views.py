@@ -1,21 +1,24 @@
-from datetime import timedelta
 from collections import Counter
-from fastapi import Request, HTTPException, Depends, Header
-from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
+from datetime import timedelta
 from typing import Optional
 
-from aim.web.api.projects.project import Project
-from aim.web.api.utils import object_factory
 from aim.web.api.experiments.pydantic_models import (
+    ExperimentActivityApiOut,
+    ExperimentCreateIn,
     ExperimentGetOut,
-    ExperimentUpdateOut,
     ExperimentGetRunsOut,
     ExperimentListOut,
-    ExperimentCreateIn,
     ExperimentUpdateIn,
-    ExperimentActivityApiOut,
+    ExperimentUpdateOut,
 )
+from aim.web.api.projects.project import Project
 from aim.web.api.runs.pydantic_models import NoteIn
+from aim.web.api.utils import (
+    APIRouter,  # wrapper for fastapi.APIRouter
+    object_factory,
+)
+from fastapi import Depends, Header, HTTPException, Request
+
 
 experiment_router = APIRouter()
 

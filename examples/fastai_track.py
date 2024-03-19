@@ -2,11 +2,23 @@ import logging
 import os
 
 import regex as re
+
 from aim.fastai import AimCallback
-from fastai.vision.all import (CategoryBlock, CrossEntropyLossFlat, DataBlock,
-                               GrandparentSplitter, ImageBlock, Normalize,
-                               Resize, accuracy, aug_transforms, cnn_learner,
-                               get_image_files, imagenet_stats, resnet18)
+from fastai.vision.all import (
+    CategoryBlock,
+    CrossEntropyLossFlat,
+    DataBlock,
+    GrandparentSplitter,
+    ImageBlock,
+    Normalize,
+    Resize,
+    accuracy,
+    aug_transforms,
+    cnn_learner,
+    get_image_files,
+    imagenet_stats,
+    resnet18,
+)
 
 
 def get_arabic_mnist_labels(file_path):

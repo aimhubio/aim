@@ -1,21 +1,21 @@
 import json
-import time
-import queue
 import logging
+import queue
+import time
 
-from threading import Thread
-from pathlib import Path
-from cachetools.func import ttl_cache
-from typing import Dict, Optional, Generic, TypeVar
 from abc import abstractmethod
 from collections import OrderedDict
+from pathlib import Path
+from threading import Thread
+from typing import Dict, Generic, Optional, TypeVar
 
+from aim.ext.cleanup import AutoClean
+from aim.ext.notifier import NotificationSendError, Notifier, get_config, get_notifier
+from aim.ext.notifier.utils import get_working_directory
 from aim.sdk.repo import Repo
 from aim.sdk.run import Run
 from aim.storage.locking import AutoFileLock
-from aim.ext.notifier import get_config, get_notifier, Notifier, NotificationSendError
-from aim.ext.notifier.utils import get_working_directory
-from aim.ext.cleanup import AutoClean
+from cachetools.func import ttl_cache
 
 
 logger = logging.getLogger(__name__)

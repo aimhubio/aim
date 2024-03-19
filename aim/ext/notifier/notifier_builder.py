@@ -1,9 +1,10 @@
 import logging
 
 from aim.ext.notifier.logging_notifier import LoggingNotifier
+from aim.ext.notifier.notifier import Notifier
 from aim.ext.notifier.slack_notifier import SlackNotifier
 from aim.ext.notifier.workplace_notifier import WorkplaceNotifier
-from aim.ext.notifier.notifier import Notifier
+
 
 logger = logging.getLogger(__name__)
 

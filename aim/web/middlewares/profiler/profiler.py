@@ -6,12 +6,14 @@ Credits to the author of the repo.
 import json
 import os.path
 import time
-from typing import Optional
-from logging import getLogger
 
-from starlette.routing import Router
+from logging import getLogger
+from typing import Optional
+
 from starlette.requests import Request
+from starlette.routing import Router
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
+
 
 logger = getLogger("profiler")
 

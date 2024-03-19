@@ -1,5 +1,5 @@
-import unittest
 import os
+import unittest
 
 from aim.sdk.configs import AIM_REPO_NAME
 from performance_tests.conftest import TEST_REPO_PATHS

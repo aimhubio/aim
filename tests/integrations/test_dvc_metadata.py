@@ -1,8 +1,8 @@
-import pytest
+from unittest.mock import patch
 
+import pytest
 from tests.base import TestBase
 from tests.utils import is_package_installed
-from unittest.mock import patch
 
 
 class TestDVCIntegration(TestBase):
@@ -10,8 +10,8 @@ class TestDVCIntegration(TestBase):
     @patch("aim.sdk.objects.plugins.dvc_metadata.Repo")
     @pytest.mark.skipif(not is_package_installed('dvc'), reason="'dvc' is not installed. skipping.")
     def test_dvc_files_as_run_param(self, mRepo):
-        from aim.sdk.objects.plugins.dvc_metadata import DvcData
         from aim.sdk import Run
+        from aim.sdk.objects.plugins.dvc_metadata import DvcData
 
         tracked_files = (
             {'path': 'test_file_1.txt'},

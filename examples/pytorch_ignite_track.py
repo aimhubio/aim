@@ -1,15 +1,16 @@
 import ignite
 import torch
 import torch.nn.functional as F
+
 from aim.pytorch_ignite import AimLogger
 from ignite.contrib.handlers import ProgressBar
-from ignite.engine import (Events, create_supervised_evaluator,
-                           create_supervised_trainer)
+from ignite.engine import Events, create_supervised_evaluator, create_supervised_trainer
 from ignite.handlers import EarlyStopping, global_step_from_engine
 from ignite.metrics import Accuracy, ConfusionMatrix, Loss, RunningAverage
 from torch import nn, optim
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
+
 
 # transform to normalize the data
 transform = transforms.Compose(

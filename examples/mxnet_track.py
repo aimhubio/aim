@@ -1,10 +1,12 @@
 import warnings
 
 import mxnet as mx
+
 from aim.mxnet import AimLoggingHandler
 from mxnet import gluon
 from mxnet.gluon.contrib.estimator import estimator
 from mxnet.gluon.model_zoo import vision
+
 
 gpu_count = mx.context.num_gpus()
 ctx = [mx.gpu(i) for i in range(gpu_count)] if gpu_count > 0 else mx.cpu()

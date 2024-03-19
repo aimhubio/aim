@@ -1,10 +1,13 @@
-import sys
 import os
+import sys
 
 from shutil import rmtree
-from setuptools import find_packages, setup, Command, Extension
-from Cython.Build import cythonize
+
 from aimrocks import lib_utils
+from Cython.Build import cythonize
+from setuptools import Command, Extension, find_packages, setup
+
+
 # TODO This `setup.py` assumes that `Cython` and `aimrocks` are installed.
 # This is okay for now as users are expected to install `aim` from wheels.
 

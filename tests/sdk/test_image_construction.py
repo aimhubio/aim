@@ -1,10 +1,9 @@
+import numpy as np
 import pytest
 
+from aim.sdk import Image
 from tests.base import TestBase
 from tests.utils import is_package_installed
-
-from aim.sdk import Image
-import numpy as np
 
 
 class TestImageConstruction(TestBase):

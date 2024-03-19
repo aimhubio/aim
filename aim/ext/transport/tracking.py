@@ -1,20 +1,21 @@
-import uuid
 import base64
 import logging
+import uuid
 
-from typing import Dict, Union, List
-from fastapi import WebSocket, Request, APIRouter, WebSocketDisconnect
-from fastapi.responses import StreamingResponse, JSONResponse
+from typing import Dict, List, Union
 
 from aim.ext.transport.message_utils import (
-    encode_tree,
+    ResourceObject,
+    build_exception,
     decode_tree,
-    unpack_args,
+    encode_tree,
     pack_args,
     pack_stream,
-    build_exception,
-    ResourceObject,
+    unpack_args,
 )
+from fastapi import APIRouter, Request, WebSocket, WebSocketDisconnect
+from fastapi.responses import JSONResponse, StreamingResponse
+
 
 logger = logging.getLogger(__name__)
 

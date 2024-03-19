@@ -1,6 +1,8 @@
 from abc import ABCMeta
-from typing import Iterator, Collection, TypeVar, Union, Callable
+from typing import Callable, Collection, Iterator, TypeVar, Union
+
 from sqlalchemy import text
+
 
 try:
     from typing import GenericMeta

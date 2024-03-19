@@ -1,19 +1,19 @@
 import contextlib
-import time
 import datetime
-import pytz
 import logging
 import os
+import time
 
-from threading import Thread
 from pathlib import Path
-
+from threading import Thread
 from typing import Iterable
 
+import pytz
 
 from aim.sdk.repo import Repo
 from aim.sdk.run_status_watcher import Event
 from aim.storage.locking import RefreshLock
+
 
 logger = logging.getLogger(__name__)
 

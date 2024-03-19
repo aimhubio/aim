@@ -1,5 +1,4 @@
 import pytest
-
 from tests.base import TestBase
 from tests.utils import is_package_installed
 
@@ -10,10 +9,9 @@ class TestHFDatasetsIntegration(TestBase):
         reason="'datasets' is not installed. skipping.",
     )
     def test_datasets_as_run_param(self):
-        from datasets import load_dataset
-
-        from aim.sdk.objects.plugins.hf_datasets_metadata import HFDataset
         from aim.sdk import Run
+        from aim.sdk.objects.plugins.hf_datasets_metadata import HFDataset
+        from datasets import load_dataset
 
         # create dataset object
         dataset = load_dataset("rotten_tomatoes")

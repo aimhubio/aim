@@ -1,3 +1,6 @@
+import datetime
+import uuid
+
 from sqlalchemy import (
     Boolean,
     Column,
@@ -7,11 +10,9 @@ from sqlalchemy import (
     Table,
     Text,
 )
-from sqlalchemy.orm import relationship, backref, validates
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import backref, relationship, validates
 
-import uuid
-import datetime
 
 Base = declarative_base()
 

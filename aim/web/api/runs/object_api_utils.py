@@ -1,24 +1,23 @@
 import asyncio
 import time
 
-from typing import Iterable, Iterator, List, Tuple, Union, Optional
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Iterable, Iterator, List, Optional, Tuple, Union
 
+from aim.sdk.sequence import Sequence
+from aim.sdk.sequence_collection import SequenceCollection
+from aim.sdk.uri_service import URIService, generate_resource_path
+from aim.storage.context import Context
+from aim.storage.treeutils import encode_tree
 from aim.web.api.runs.utils import (
     ASYNC_SLEEP_INTERVAL,
     PROGRESS_KEY_SUFFIX,
     IndexRange,
     collect_streamable_data,
-    get_run_props,
     get_run_params,
+    get_run_props,
 )
 from aim.web.configs import AIM_PROGRESS_REPORT_INTERVAL
-from aim.sdk.uri_service import URIService, generate_resource_path
-from aim.sdk.sequence_collection import SequenceCollection
-from aim.sdk.sequence import Sequence
 
-from aim.storage.treeutils import encode_tree
-from aim.storage.context import Context
 
 if TYPE_CHECKING:
     from aim.sdk.repo import Repo

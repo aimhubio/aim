@@ -2,9 +2,9 @@ import json
 import os
 
 import click
-from tqdm import tqdm
 
 from aim import Audio, Image, Run
+from tqdm import tqdm
 
 
 def parse_tb_logs(tb_logs, repo_inst, flat=False, no_cache=False):
@@ -20,8 +20,9 @@ def parse_tb_logs(tb_logs, repo_inst, flat=False, no_cache=False):
     try:
         # This import statement takes long to complete
         import tensorflow as tf
-        from tensorflow.python.summary.summary_iterator import summary_iterator
+
         from tensorboard.util import tensor_util
+        from tensorflow.python.summary.summary_iterator import summary_iterator
     except ImportError:
         click.echo(
             'Could not process TensorBoard logs - failed to import tensorflow module.', err=True

@@ -1,8 +1,9 @@
 # The module is heavily based on `wrapt` package sources
 # See: https://github.com/GrahamDumpleton/wrapt/blob/develop/src/wrapt/wrappers.py
 
-from functools import lru_cache
 import operator
+
+from functools import lru_cache
 
 
 def with_metaclass(meta, *bases):

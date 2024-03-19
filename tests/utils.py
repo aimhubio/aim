@@ -1,18 +1,19 @@
 import datetime
 import itertools
-import numpy
-from PIL import Image as pil_image
+import struct
 
 from typing import Iterator
-import struct
-from sqlalchemy import text as sa_text
 
+import numpy
+
+from aim.sdk.objects.image import Image as AimImage
 from aim.sdk.repo import Repo
 from aim.sdk.run import Run
-from aim.sdk.objects.image import Image as AimImage
 from aim.storage.structured.sql_engine.models import Base as StructuredBase
-from aim.web.api.db import get_contexted_session
 from aim.web.api.db import Base as ApiBase
+from aim.web.api.db import get_contexted_session
+from PIL import Image as pil_image
+from sqlalchemy import text as sa_text
 
 
 def decode_encoded_tree_stream(stream: Iterator[bytes], concat_chunks=False) -> bytes:

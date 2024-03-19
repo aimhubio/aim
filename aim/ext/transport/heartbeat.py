@@ -7,6 +7,7 @@ from collections import Counter
 from threading import Thread
 from typing import Union
 
+
 logger = logging.getLogger(__name__)
 
 
@@ -142,8 +143,8 @@ class HeartbeatWatcher:
 
     def _release_client_resources(self, dead_client_uri):
         logger.warning(f'Cleaning up resources for client `{dead_client_uri}`.')
-        from aim.ext.transport.tracking import TrackingRouter
         from aim.ext.transport.router import ClientRouter
+        from aim.ext.transport.tracking import TrackingRouter
         TrackingRouter.cleanup_client_resources(dead_client_uri)
         ClientRouter.remove_client(dead_client_uri)
 

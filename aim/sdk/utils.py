@@ -1,16 +1,17 @@
 import os
-import shutil
-import tarfile
 import pathlib
 import re
+import shutil
+import tarfile
 import uuid
+
 from contextlib import contextmanager
-from typing import Union, Any, Tuple, Optional, Callable
+from logging import getLogger
+from typing import Any, Callable, Optional, Tuple, Union
 
 from aim.sdk.configs import get_aim_repo_name
-
 from aim.storage.object import CustomObject
-from logging import getLogger
+
 
 logger = getLogger(__name__)
 
@@ -144,8 +145,9 @@ def restore_run_backup(repo, run_hash):
 
 
 def prune(repo):
-    from tqdm import tqdm
     from collections.abc import MutableMapping
+
+    from tqdm import tqdm
 
     def flatten(d, parent_path=None):
         if parent_path and not isinstance(parent_path, tuple):

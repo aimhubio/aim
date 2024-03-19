@@ -1,12 +1,13 @@
 import datetime
+
+from typing import Any, Callable
+
 import pytz
 
 from fastapi import APIRouter as FastAPIRouter
 from fastapi import HTTPException
 from fastapi.types import DecoratedCallable
 from starlette.types import ASGIApp, Receive, Scope, Send
-
-from typing import Any, Callable
 
 
 def object_factory():

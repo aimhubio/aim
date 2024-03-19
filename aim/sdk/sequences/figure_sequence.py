@@ -1,7 +1,7 @@
-from typing import Union, Tuple
+from typing import Tuple, Union
 
-from aim.sdk.sequence import Sequence
 from aim.sdk.objects.figure import Figure
+from aim.sdk.sequence import Sequence
 
 
 class Figures(Sequence):

@@ -1,10 +1,8 @@
-from parameterized import parameterized
-
-from tests.base import PrefilledDataTestBase
-from tests.utils import full_class_name
-
 from aim.sdk.types import QueryReportMode
 from aim.storage.query import syntax_error_check
+from parameterized import parameterized
+from tests.base import PrefilledDataTestBase
+from tests.utils import full_class_name
 
 
 class TestQuery(PrefilledDataTestBase):

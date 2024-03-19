@@ -1,8 +1,9 @@
 from typing import Optional
 
-from aim.sdk.run import Run
-from aim.sdk.adapters.keras_mixins import TrackerKerasCallbackMetricsEpochEndMixin
 from aim.ext.resource.configs import DEFAULT_SYSTEM_TRACKING_INT
+from aim.sdk.adapters.keras_mixins import TrackerKerasCallbackMetricsEpochEndMixin
+from aim.sdk.run import Run
+
 
 try:
     from tensorflow.keras.callbacks import Callback

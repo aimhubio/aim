@@ -1,32 +1,29 @@
+from typing import Collection, List, Optional, Union
+
 import pytz
 
-from typing import Collection, Union, List, Optional
+from aim.storage.structured.entities import Experiment as IExperiment
+from aim.storage.structured.entities import Note as INote
+from aim.storage.structured.entities import NoteCollection, RunCollection, TagCollection
+from aim.storage.structured.entities import Run as IRun
+from aim.storage.structured.entities import RunInfo as IRunInfo
+from aim.storage.structured.entities import Tag as ITag
+from aim.storage.structured.sql_engine.models import Experiment as ExperimentModel
+from aim.storage.structured.sql_engine.models import Note as NoteModel
+from aim.storage.structured.sql_engine.models import NoteAuditLog as NoteAuditLogModel
+from aim.storage.structured.sql_engine.models import Run as RunModel
+from aim.storage.structured.sql_engine.models import RunInfo as RunInfoModel
+from aim.storage.structured.sql_engine.models import Tag as TagModel
+from aim.storage.structured.sql_engine.utils import (
+    ModelMappedClassMeta,
+    ModelMappedCollection,
+)
+from aim.storage.structured.sql_engine.utils import ModelMappedProperty as Property
+from aim.storage.types import SafeNone
 from sqlalchemy import __version__ as sa_version
 from sqlalchemy import delete
-from sqlalchemy.orm import joinedload
 from sqlalchemy.exc import IntegrityError
-
-from aim.storage.types import SafeNone
-from aim.storage.structured.entities import (
-    Run as IRun,
-    Experiment as IExperiment,
-    Tag as ITag,
-    Note as INote,
-    RunInfo as IRunInfo,
-    RunCollection,
-    TagCollection,
-    NoteCollection
-)
-from aim.storage.structured.sql_engine.models import (
-    Run as RunModel,
-    RunInfo as RunInfoModel,
-    Experiment as ExperimentModel,
-    Tag as TagModel,
-    Note as NoteModel,
-    NoteAuditLog as NoteAuditLogModel
-)
-from aim.storage.structured.sql_engine.utils import ModelMappedClassMeta, ModelMappedCollection
-from aim.storage.structured.sql_engine.utils import ModelMappedProperty as Property
+from sqlalchemy.orm import joinedload
 
 
 def session_commit_or_flush(session):

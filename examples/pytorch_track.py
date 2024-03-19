@@ -4,8 +4,10 @@ import torch
 import torch.nn as nn
 import torchvision
 import torchvision.transforms as transforms
+
 from aim import Run
 from aim.pytorch import track_gradients_dists, track_params_dists
+
 
 # Initialize a new Run
 aim_run = Run()

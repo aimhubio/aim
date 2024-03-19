@@ -1,12 +1,11 @@
+from typing import TYPE_CHECKING, Any, Iterator, List, Tuple, Union
+
 from aim.ext.transport.message_utils import ResourceObject, pack_args
 from aim.ext.transport.remote_resource import RemoteResourceAutoClean
-
-from aim.storage.treeview import TreeView
-from aim.storage.treeutils import encode_tree
 from aim.storage.treearrayview import TreeArrayView
+from aim.storage.treeutils import encode_tree
+from aim.storage.treeview import TreeView
 from aim.storage.types import AimObject, AimObjectKey, AimObjectPath
-
-from typing import TYPE_CHECKING, Any, Iterator, Tuple, Union, List
 
 
 if TYPE_CHECKING:

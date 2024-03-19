@@ -1,7 +1,9 @@
 import shlex
 
-from aim.cli.configs import VERSION_NAME, UP_NAME
 import aim.cli.manager.manager as manager
+
+from aim.cli.configs import UP_NAME, VERSION_NAME
+
 
 # Error message prefix for aim commands
 ERROR_MSG_PREFIX = b'Error:'

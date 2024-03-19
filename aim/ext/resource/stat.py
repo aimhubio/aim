@@ -1,10 +1,11 @@
-import psutil
 import json
+
 from typing import List
 
-from aim.ext.resource.utils import round10e5
-
 import aim.ext.pynvml as nvml
+import psutil
+
+from aim.ext.resource.utils import round10e5
 
 
 class StatDict(object):

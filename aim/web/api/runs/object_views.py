@@ -1,33 +1,32 @@
-from typing import Optional, Dict, List
+from typing import Dict, List, Optional
 
-from fastapi import HTTPException, Header
-from pydantic import BaseModel
-from starlette.responses import StreamingResponse
-
-from aim import Images, Texts, Distributions, Audios, Figures
+from aim import Audios, Distributions, Figures, Images, Texts
 from aim.sdk.sequence import Sequence
 from aim.sdk.sequence_collection import QuerySequenceCollection
 from aim.sdk.types import QueryReportMode
+from aim.web.api.runs.object_api_utils import CustomObjectApi, get_blobs_batch
 from aim.web.api.runs.pydantic_models import (
-    RunTracesBatchApiIn,
-    URIBatchIn,
-    QuerySyntaxErrorOut,
-    ImageList,
-    TextList,
     AudioList,
     DistributionInfo,
     FigureInfo,
+    ImageList,
     ObjectSearchRunView,
     ObjectSequenceBaseView,
+    QuerySyntaxErrorOut,
+    RunTracesBatchApiIn,
+    TextList,
+    URIBatchIn,
 )
 from aim.web.api.runs.utils import (
     checked_query,
     checked_range,
     get_project_repo,
+    get_run_or_404,
     numpy_to_encodable,
-    get_run_or_404
 )
-from aim.web.api.runs.object_api_utils import CustomObjectApi, get_blobs_batch
+from fastapi import Header, HTTPException
+from pydantic import BaseModel
+from starlette.responses import StreamingResponse
 
 
 class CustomObjectApiConfig:

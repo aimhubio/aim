@@ -1,5 +1,7 @@
 import optuna
+
 from aim.optuna import AimCallback
+
 
 # ------------------------------------------------ Version 1: Single Run ------------------------------------------------
 

@@ -1,12 +1,11 @@
-import pytest
 import numpy as np
-from parameterized import parameterized
+import pytest
 
-from tests.base import PrefilledDataApiTestBase, ApiTestBase
-from tests.utils import decode_encoded_tree_stream
-
-from aim.storage.treeutils import decode_tree
 from aim.sdk.run import Run
+from aim.storage.treeutils import decode_tree
+from parameterized import parameterized
+from tests.base import ApiTestBase, PrefilledDataApiTestBase
+from tests.utils import decode_encoded_tree_stream
 
 
 class TestRunApi(PrefilledDataApiTestBase):

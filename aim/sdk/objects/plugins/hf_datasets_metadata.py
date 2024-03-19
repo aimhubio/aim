@@ -1,6 +1,8 @@
-from datasets import Dataset, DatasetDict
-from aim.storage.object import CustomObject
 from logging import getLogger
+
+from aim.storage.object import CustomObject
+from datasets import Dataset, DatasetDict
+
 
 logger = getLogger(__name__)
 

@@ -1,6 +1,7 @@
 import importlib.util
 import os
 
+
 if importlib.util.find_spec("lightning"):
     import lightning.pytorch as pl
 elif importlib.util.find_spec("pytorch_lightning"): # noqa F401
@@ -15,6 +16,7 @@ from aim.pytorch_lightning import AimLogger
 from torch import nn, optim, utils
 from torchvision.datasets import MNIST
 from torchvision.transforms import ToTensor
+
 
 # define any number of nn.Modules (or use your current ones)
 encoder = nn.Sequential(nn.Linear(28 * 28, 128), nn.ReLU(), nn.Linear(128, 3))

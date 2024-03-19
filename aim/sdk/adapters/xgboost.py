@@ -3,6 +3,7 @@ from typing import Optional
 from aim.ext.resource.configs import DEFAULT_SYSTEM_TRACKING_INT
 from aim.sdk.run import Run
 
+
 try:
     from xgboost.callback import TrainingCallback
 except ImportError:

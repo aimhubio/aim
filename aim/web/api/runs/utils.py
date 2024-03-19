@@ -1,25 +1,25 @@
 import asyncio
-import numpy as np
 import random
 import struct
 import time
 
 from collections import namedtuple
 from itertools import chain
-from typing import Iterator, Tuple, Optional, List
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Iterator, List, Optional, Tuple
 
-from fastapi import HTTPException
+import numpy as np
 
-from aim.storage.context import Context
 from aim.sdk import Run
-from aim.sdk.sequences.metric import Metric
 from aim.sdk.sequence_collection import SequenceCollection
+from aim.sdk.sequences.metric import Metric
+from aim.storage.context import Context
 from aim.storage.query import syntax_error_check
-from aim.web.configs import AIM_PROGRESS_REPORT_INTERVAL
+from aim.storage.treeutils import encode_tree
 from aim.web.api.projects.project import Project
 from aim.web.api.runs.pydantic_models import AlignedRunIn, TraceBase
-from aim.storage.treeutils import encode_tree
+from aim.web.configs import AIM_PROGRESS_REPORT_INTERVAL
+from fastapi import HTTPException
+
 
 if TYPE_CHECKING:
     from aim.sdk import Repo

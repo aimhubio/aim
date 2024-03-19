@@ -1,5 +1,7 @@
 import tensorflow as tf
+
 from aim.ext.tensorboard_tracker import Run as AimRun
+
 
 aim_run = AimRun(sync_tensorboard_log_dir='logs/fit/')
 mnist = tf.keras.datasets.mnist

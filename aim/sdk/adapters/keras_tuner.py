@@ -1,7 +1,8 @@
-from typing import Optional, List
+from typing import List, Optional
 
-from aim.sdk.run import Run
 from aim.ext.resource.configs import DEFAULT_SYSTEM_TRACKING_INT
+from aim.sdk.run import Run
+
 
 try:
     from kerastuner.engine.tuner_utils import TunerCallback

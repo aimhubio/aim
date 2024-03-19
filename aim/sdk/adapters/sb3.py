@@ -1,12 +1,13 @@
 import logging
+
+from typing import Any, Dict, Optional, Tuple, Union
+
 import numpy as np
-from typing import Optional, Dict, Any, Union, Tuple
 
-from stable_baselines3.common.logger import KVWriter, Logger
-from stable_baselines3.common.callbacks import BaseCallback  # type: ignore
-
-from aim.sdk.run import Run
 from aim.ext.resource.configs import DEFAULT_SYSTEM_TRACKING_INT
+from aim.sdk.run import Run
+from stable_baselines3.common.callbacks import BaseCallback  # type: ignore
+from stable_baselines3.common.logger import KVWriter, Logger
 
 
 logger = logging.getLogger(__name__)

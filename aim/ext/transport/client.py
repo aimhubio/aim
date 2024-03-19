@@ -1,4 +1,3 @@
-import requests
 import base64
 import logging
 import os
@@ -8,19 +7,22 @@ import weakref
 
 from copy import deepcopy
 from typing import Tuple
-from websockets.sync.client import connect
 
-from aim.ext.transport.utils import handle_exception
+import requests
+
+from aim.ext.transport.heartbeat import HeartbeatSender
 from aim.ext.transport.message_utils import (
-    raise_exception,
-    pack_args,
-    unpack_stream,
-    unpack_args,
+    decode_tree,
     encode_tree,
-    decode_tree
+    pack_args,
+    raise_exception,
+    unpack_args,
+    unpack_stream,
 )
 from aim.ext.transport.request_queue import RequestQueue
-from aim.ext.transport.heartbeat import HeartbeatSender
+from aim.ext.transport.utils import handle_exception
+from websockets.sync.client import connect
+
 
 AIM_CLIENT_QUEUE_MAX_MEMORY = '__AIM_CLIENT_QUEUE_MAX_MEMORY__'
 DEFAULT_RETRY_INTERVAL = 0.1  # 100 ms

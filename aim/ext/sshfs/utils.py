@@ -1,11 +1,12 @@
+import logging
 import os
 import platform
 import shutil
 import subprocess
 import time
-import logging
 
 from typing import Optional, Tuple
+
 
 logger = logging.getLogger(__name__)
 

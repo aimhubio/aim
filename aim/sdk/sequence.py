@@ -1,15 +1,25 @@
-from typing import Generic, Union, Tuple, TypeVar, Dict, Iterator, Any, List
-from itertools import islice
-import numpy as np
 import logging
 
+from itertools import islice
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    Generic,
+    Iterator,
+    List,
+    Tuple,
+    TypeVar,
+    Union,
+)
+
+import numpy as np
+
 from aim.sdk.tracker import STEP_HASH_FUNCTIONS
-from aim.storage.treeview import TreeView
 from aim.storage.arrayview import ArrayView
 from aim.storage.context import Context
 from aim.storage.hashing import hash_auto
-
-from typing import TYPE_CHECKING
+from aim.storage.treeview import TreeView
 
 
 if TYPE_CHECKING:

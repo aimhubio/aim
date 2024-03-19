@@ -1,8 +1,10 @@
 import logging
 import time
+
 from typing import List, Optional
 
 from aim.ext.notifier.base_notifier import BaseNotifier
+
 
 logger = logging.getLogger(__name__)
 

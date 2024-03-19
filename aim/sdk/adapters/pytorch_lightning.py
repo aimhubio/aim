@@ -1,17 +1,16 @@
-import os
 import importlib.util
-from typing import Any, Dict, Optional, Union
+import os
+
 from argparse import Namespace
+from typing import Any, Dict, Optional, Union
 
 import packaging.version
+
 
 if importlib.util.find_spec("lightning"):
     import lightning.pytorch as pl
 
-    from lightning.pytorch.loggers.logger import (
-        Logger, rank_zero_experiment
-    )
-
+    from lightning.pytorch.loggers.logger import Logger, rank_zero_experiment
     from lightning.pytorch.utilities import rank_zero_only
 elif importlib.util.find_spec("pytorch_lightning"):
     import pytorch_lightning as pl
@@ -19,6 +18,8 @@ elif importlib.util.find_spec("pytorch_lightning"):
     if packaging.version.parse(pl.__version__) < packaging.version.parse("1.7"):
         from pytorch_lightning.loggers.base import (
             LightningLoggerBase as Logger,
+        )
+        from pytorch_lightning.loggers.base import (
             rank_zero_experiment,
         )
     else:
@@ -35,10 +36,10 @@ else:
         'or \n pip install lightning'
     )
 
-from aim.sdk.run import Run
-from aim.sdk.repo import Repo
-from aim.sdk.utils import clean_repo_path, get_aim_repo_name
 from aim.ext.resource.configs import DEFAULT_SYSTEM_TRACKING_INT
+from aim.sdk.repo import Repo
+from aim.sdk.run import Run
+from aim.sdk.utils import clean_repo_path, get_aim_repo_name
 
 
 class AimLogger(Logger):

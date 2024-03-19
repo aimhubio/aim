@@ -1,10 +1,11 @@
 import fnmatch
-import os
-
-from typing import List, Tuple, TYPE_CHECKING
 import io
+import os
 import zipfile
+
 from datetime import datetime
+from typing import TYPE_CHECKING, List, Tuple
+
 
 if TYPE_CHECKING:
     from aim.sdk.repo import Repo

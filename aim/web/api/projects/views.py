@@ -1,12 +1,11 @@
 import os
+
+from collections import Counter
 from datetime import timedelta
 from typing import Optional, Tuple
 
-from collections import Counter
-from fastapi import Depends, HTTPException, Query, Header
-from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
-
-from aim.web.configs import AIM_PROJECT_SETTINGS_FILE
+from aim.sdk.index_manager import RepoIndexManager
+from aim.storage.locking import AutoFileLock
 from aim.web.api.projects.project import Project
 from aim.web.api.projects.pydantic_models import (
     ProjectActivityApiOut,
@@ -15,9 +14,13 @@ from aim.web.api.projects.pydantic_models import (
     ProjectPinnedSequencesApiIn,
     ProjectPinnedSequencesApiOut,
 )
-from aim.web.api.utils import object_factory
-from aim.sdk.index_manager import RepoIndexManager
-from aim.storage.locking import AutoFileLock
+from aim.web.api.utils import (
+    APIRouter,  # wrapper for fastapi.APIRouter
+    object_factory,
+)
+from aim.web.configs import AIM_PROJECT_SETTINGS_FILE
+from fastapi import Depends, Header, HTTPException, Query
+
 
 projects_router = APIRouter()
 

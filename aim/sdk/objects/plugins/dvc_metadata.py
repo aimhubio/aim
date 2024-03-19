@@ -1,11 +1,16 @@
-from aim.storage.object import CustomObject
 import logging
+
 from pathlib import Path
+
 import yaml
 
+from aim.storage.object import CustomObject
+
+
 try:
-    from dvc.repo import Repo
     import dvc.api as api
+
+    from dvc.repo import Repo
 except ImportError:
     raise ImportError("module dvc could not be imported")
 

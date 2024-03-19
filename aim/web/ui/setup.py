@@ -2,6 +2,7 @@ import os
 
 from setuptools import setup
 
+
 here = os.path.abspath(os.path.dirname(__file__))
 
 version_file = os.path.join(here, 'aim_ui/VERSION')

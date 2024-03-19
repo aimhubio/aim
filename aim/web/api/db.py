@@ -2,12 +2,13 @@ import logging
 import os
 
 from contextlib import contextmanager
+
+from aim.web.configs import AIM_LOG_LEVEL_KEY
+from aim.web.utils import get_db_url
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-from aim.web.configs import AIM_LOG_LEVEL_KEY
-from aim.web.utils import get_db_url
 
 engine = create_engine(
     get_db_url(),

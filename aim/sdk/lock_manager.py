@@ -1,20 +1,22 @@
 import datetime
-import uuid
-import psutil
+import logging
 import os
 import time
-import logging
+import uuid
 import weakref
 
-from typing import Union
+from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-from dataclasses import dataclass, field
-from dateutil.relativedelta import relativedelta
-from filelock import UnixFileLock, SoftFileLock, Timeout
+from typing import Union
+
+import psutil
 
 from aim.sdk.errors import RunLockingError
 from aim.storage.locking import RunLock
+from dateutil.relativedelta import relativedelta
+from filelock import SoftFileLock, Timeout, UnixFileLock
+
 
 logger = logging.getLogger(__name__)
 

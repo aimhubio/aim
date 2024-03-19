@@ -4,9 +4,11 @@ import torch
 import torch.nn as nn
 import torchvision
 import torchvision.transforms as transforms
+
 from aim import Run
 from aim.sdk.objects.image import convert_to_aim_image_list
 from tqdm import tqdm
+
 
 # Initialize a new Run
 aim_run = Run()

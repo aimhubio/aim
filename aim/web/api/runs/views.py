@@ -1,54 +1,56 @@
-from fastapi import Depends, HTTPException, Query, Header
-from fastapi.responses import JSONResponse, StreamingResponse
-from starlette import status
-
-from aim.web.api.runs.object_views import (
-    ImageApiConfig,
-    TextApiConfig,
-    DistributionApiConfig,
-    AudioApiConfig,
-    FigureApiConfig
-)
-from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
 from typing import Optional, Tuple
 
 from aim.sdk.types import QueryReportMode
+from aim.web.api.runs.object_views import (
+    AudioApiConfig,
+    DistributionApiConfig,
+    FigureApiConfig,
+    ImageApiConfig,
+    TextApiConfig,
+)
+from aim.web.api.runs.pydantic_models import (
+    MetricAlignApiIn,
+    NoteIn,
+    QuerySyntaxErrorOut,
+    RunActiveOut,
+    RunInfoOut,
+    RunMetricCustomAlignApiOut,
+    RunMetricsBatchApiOut,
+    RunMetricSearchApiOut,
+    RunsBatchIn,
+    RunSearchApiOut,
+    RunTracesBatchApiIn,
+    StructuredRunAddTagIn,
+    StructuredRunAddTagOut,
+    StructuredRunRemoveTagOut,
+    StructuredRunsArchivedOut,
+    StructuredRunUpdateIn,
+    StructuredRunUpdateOut,
+)
 from aim.web.api.runs.utils import (
     checked_query,
     collect_requested_metric_traces,
     convert_nan_and_inf_to_str,
     custom_aligned_metrics_streamer,
     get_project_repo,
+    get_run_artifacts,
     get_run_or_404,
     get_run_params,
     get_run_props,
-    get_run_artifacts,
     metric_search_result_streamer,
     run_active_result_streamer,
-    run_search_result_streamer,
-    run_logs_streamer,
     run_log_records_streamer,
+    run_logs_streamer,
+    run_search_result_streamer,
 )
-from aim.web.api.runs.pydantic_models import (
-    MetricAlignApiIn,
-    QuerySyntaxErrorOut,
-    RunActiveOut,
-    RunTracesBatchApiIn,
-    RunMetricCustomAlignApiOut,
-    RunMetricSearchApiOut,
-    RunInfoOut,
-    RunsBatchIn,
-    RunSearchApiOut,
-    RunMetricsBatchApiOut,
-    StructuredRunUpdateIn,
-    StructuredRunUpdateOut,
-    StructuredRunAddTagIn,
-    StructuredRunAddTagOut,
-    StructuredRunRemoveTagOut,
-    StructuredRunsArchivedOut,
-    NoteIn,
+from aim.web.api.utils import (
+    APIRouter,  # wrapper for fastapi.APIRouter
+    object_factory,
 )
-from aim.web.api.utils import object_factory
+from fastapi import Depends, Header, HTTPException, Query
+from fastapi.responses import JSONResponse, StreamingResponse
+from starlette import status
+
 
 runs_router = APIRouter()
 
@@ -102,8 +104,8 @@ async def run_metric_search_api(q: Optional[str] = '',
                                 skip_system: Optional[bool] = True,
                                 report_progress: Optional[bool] = True,
                                 x_timezone_offset: int = Header(default=0),):
-    from aim.sdk.sequences.metric import Metric
     from aim.sdk.sequence_collection import QuerySequenceCollection
+    from aim.sdk.sequences.metric import Metric
 
     steps_num = p
 

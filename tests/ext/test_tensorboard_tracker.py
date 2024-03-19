@@ -1,17 +1,17 @@
 from queue import Queue
+
 import numpy as np
-from PIL import ImageChops as PILImageChops
 import tensorflow as tf
-from tensorboard.compat.proto.summary_pb2 import SummaryMetadata, Summary
+
+from aim import Distribution, Image
+from aim.ext.tensorboard_tracker.tracker import TensorboardFolderTracker
+from PIL import ImageChops as PILImageChops
+from tensorboard.compat.proto.event_pb2 import Event
+from tensorboard.compat.proto.summary_pb2 import Summary, SummaryMetadata
 from tensorboard.compat.proto.tensor_pb2 import TensorProto
 from tensorboard.compat.proto.tensor_shape_pb2 import TensorShapeProto
-from tensorboard.compat.proto.event_pb2 import Event
 from tensorboard.util.tensor_util import make_tensor_proto
-from torch.utils.tensorboard.summary import image, scalar, histogram, histogram_raw
-
-from aim import Image, Distribution
-from aim.ext.tensorboard_tracker.tracker import TensorboardFolderTracker
-
+from torch.utils.tensorboard.summary import histogram, histogram_raw, image, scalar
 from tests.base import TestBase
 
 

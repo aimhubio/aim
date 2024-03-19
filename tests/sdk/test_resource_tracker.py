@@ -1,9 +1,8 @@
 import time
 
-from tests.base import TestBase
-
-from aim.sdk.types import QueryReportMode
 from aim.sdk import Run
+from aim.sdk.types import QueryReportMode
+from tests.base import TestBase
 
 
 class TestRunResourceTracker(TestBase):

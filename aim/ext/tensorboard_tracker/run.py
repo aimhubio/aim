@@ -1,9 +1,8 @@
-from typing import Optional, Union
+from typing import TYPE_CHECKING, Optional, Union
 
-from aim.sdk.run import Run as SdkRun
 from aim.ext.tensorboard_tracker.tracker import TensorboardTracker
+from aim.sdk.run import Run as SdkRun
 
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from aim.sdk.repo import Repo

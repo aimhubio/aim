@@ -1,12 +1,11 @@
 import os
 
-from tests.base import TestBase
-
 from aim.sdk import Run
-from aim.storage.context import Context
 from aim.storage.containertreeview import ContainerTreeView
-from aim.storage.rockscontainer import RocksContainer
+from aim.storage.context import Context
 from aim.storage.hashing import hash_auto
+from aim.storage.rockscontainer import RocksContainer
+from tests.base import TestBase
 
 
 class TestRunContainerData(TestBase):

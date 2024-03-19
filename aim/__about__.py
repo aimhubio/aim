@@ -1,5 +1,6 @@
-import time
 import os
+import time
+
 
 here = os.path.abspath(os.path.dirname(__file__))
 

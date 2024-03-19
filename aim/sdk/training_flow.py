@@ -1,7 +1,7 @@
-from typing import Dict, Any
+from typing import Any, Dict
 
-from aim.sdk.run import Run
 from aim.sdk.callbacks import Caller, event
+from aim.sdk.run import Run
 
 
 # TODO [AT]: This is a draft version. Final list of methods/signatures TBD.

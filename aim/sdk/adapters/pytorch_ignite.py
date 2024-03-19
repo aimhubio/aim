@@ -3,6 +3,7 @@ from typing import Any, Callable, Dict, List, Optional, Union
 from aim import Run
 from aim.ext.resource.configs import DEFAULT_SYSTEM_TRACKING_INT
 
+
 try:
     from torch.optim import Optimizer
 except ImportError:
@@ -11,7 +12,11 @@ except ImportError:
         'Please install it with command: \n pip install torch'
     )
 try:
-    from ignite.contrib.handlers.base_logger import BaseLogger, BaseOptimizerParamsHandler, BaseOutputHandler
+    from ignite.contrib.handlers.base_logger import (
+        BaseLogger,
+        BaseOptimizerParamsHandler,
+        BaseOutputHandler,
+    )
     from ignite.engine import Engine, Events
 except ImportError:
     raise RuntimeError(
@@ -85,7 +90,7 @@ class AimLogger(BaseLogger):
     def log_params(self, params: dict):
         # Handle OmegaConf object
         try:
-            from omegaconf import OmegaConf, Container
+            from omegaconf import Container, OmegaConf
         except ModuleNotFoundError:
             pass
         else:

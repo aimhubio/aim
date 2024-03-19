@@ -1,15 +1,16 @@
 import datetime
-import pytz
 
-from typing import Any, Union
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Union
+
+import pytz
 
 from aim.storage.context import Context
 from aim.storage.proxy import AimObjectProxy
 from aim.storage.structured.entities import StructuredObject
+from aim.storage.structured.sql_engine.entities import ModelMappedRun
 from aim.storage.treeview import TreeView
 from aim.storage.types import AimObject, AimObjectKey, AimObjectPath, SafeNone
-from aim.storage.structured.sql_engine.entities import ModelMappedRun
+
 
 if TYPE_CHECKING:
     from aim.sdk.run import Run

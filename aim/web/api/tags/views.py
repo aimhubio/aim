@@ -1,17 +1,21 @@
-from fastapi import HTTPException, Depends
-from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
 from typing import Optional
 
 from aim.web.api.projects.project import Project
-from aim.web.api.utils import object_factory
 from aim.web.api.tags.pydantic_models import (
     TagCreateIn,
+    TagGetOut,
+    TagGetRunsOut,
+    TagListOut,
     TagUpdateIn,
     TagUpdateOut,
-    TagGetOut,
-    TagListOut,
-    TagGetRunsOut,
 )
+from aim.web.api.utils import (
+    APIRouter,  # wrapper for fastapi.APIRouter
+    object_factory,
+)
+from fastapi import Depends, HTTPException
+
+
 tags_router = APIRouter()
 
 

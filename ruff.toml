@@ -3,3 +3,14 @@
 
 [lint.flake8-quotes]
 inline-quotes = "double"
+
+[lint]
+extend-select = ["I"]
+
+[lint.isort]
+no-lines-before = ["future", "standard-library", "first-party"]
+lines-between-types = 1
+lines-after-imports = 2
+
+[lint.isort.sections]
+"aim" = ["aim"]

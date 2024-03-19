@@ -5,7 +5,6 @@ import sys
 import time
 import weakref
 
-from psutil import Process, cpu_percent
 from threading import Thread
 from typing import Union
 from weakref import WeakValueDictionary
@@ -13,6 +12,8 @@ from weakref import WeakValueDictionary
 from aim.ext.resource.configs import AIM_RESOURCE_METRIC_PREFIX
 from aim.ext.resource.log import LogLine
 from aim.ext.resource.stat import Stat
+from psutil import Process, cpu_percent
+
 
 logger = logging.getLogger(__name__)
 

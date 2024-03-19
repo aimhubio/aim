@@ -1,12 +1,13 @@
-import click
 import os
-import tqdm
 
 from multiprocessing.pool import ThreadPool
-from psutil import cpu_count
 
-from aim.cli.runs.utils import match_runs, make_zip_archive, upload_repo_runs
+import click
+import tqdm
+
+from aim.cli.runs.utils import make_zip_archive, match_runs, upload_repo_runs
 from aim.sdk.repo import Repo
+from psutil import cpu_count
 
 
 @click.group()

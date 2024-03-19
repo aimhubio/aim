@@ -1,12 +1,11 @@
-from parameterized import parameterized
 import random
 
+from aim.sdk.run import Run
+from aim.storage.context import Context
+from aim.storage.treeutils import decode_tree
+from parameterized import parameterized
 from tests.base import ApiTestBase
 from tests.utils import decode_encoded_tree_stream, generate_image_set
-
-from aim.storage.treeutils import decode_tree
-from aim.storage.context import Context
-from aim.sdk.run import Run
 
 
 class TestNoImagesRunQueryApi(ApiTestBase):

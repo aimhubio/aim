@@ -1,8 +1,10 @@
 import logging
 
 import numpy as np
+
 from aim.catboost import AimLogger
 from catboost import CatBoostClassifier, Pool
+
 
 # initialize data
 train_data = np.random.randint(0, 100, size=(100, 10))

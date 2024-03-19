@@ -1,12 +1,12 @@
-import time
-from abc import abstractmethod
-
 import atexit
-import weakref
 import logging
 import threading
+import time
+import weakref
 
-from typing import Generic, Tuple, TypeVar, Dict
+from abc import abstractmethod
+from typing import Dict, Generic, Tuple, TypeVar
+
 
 T = TypeVar('T')
 

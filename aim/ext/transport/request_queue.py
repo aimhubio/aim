@@ -1,8 +1,9 @@
-import time
-import queue
 import logging
+import queue
 import threading
+import time
 import weakref
+
 
 logger = logging.getLogger(__name__)
 

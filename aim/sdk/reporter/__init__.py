@@ -96,22 +96,24 @@ This is only possible if there is a single run instance in the process.
 """
 
 import math
-import time
 import queue
 import threading
+import time
+
 from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import ClassVar, Dict, Optional, Tuple, Set, Union, TYPE_CHECKING
-
-from cachetools import LRUCache
+from typing import TYPE_CHECKING, ClassVar, Dict, Optional, Set, Tuple, Union
 
 from aim.sdk.reporter.file_manager import FileManager
+from cachetools import LRUCache
+
 
 if TYPE_CHECKING:
     from aim.sdk import Run
 
 import logging
+
 
 logger = logging.getLogger(__name__)
 

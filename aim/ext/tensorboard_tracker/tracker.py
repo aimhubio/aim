@@ -1,17 +1,19 @@
-from tensorboard.backend.event_processing.directory_watcher import DirectoryWatcher
-from tensorboard.backend.event_processing import event_file_loader
-import tensorflow as tf
-from tensorboard.util import tensor_util
-import time
-import threading
-from pathlib import Path
 import logging
 import os
-import weakref
 import queue
+import threading
+import time
+import weakref
 
+from pathlib import Path
 from typing import Any
-from aim import Audio, Image, Distribution
+
+import tensorflow as tf
+
+from aim import Audio, Distribution, Image
+from tensorboard.backend.event_processing import event_file_loader
+from tensorboard.backend.event_processing.directory_watcher import DirectoryWatcher
+from tensorboard.util import tensor_util
 
 
 def _decode_histogram(value):

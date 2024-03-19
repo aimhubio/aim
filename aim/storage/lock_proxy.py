@@ -2,9 +2,9 @@ from typing import TYPE_CHECKING
 
 from aim.ext.transport.message_utils import pack_args
 from aim.ext.transport.remote_resource import RemoteResourceAutoClean
-
 from aim.storage.locking import RunLock
 from aim.storage.treeutils import encode_tree
+
 
 if TYPE_CHECKING:
     from aim.ext.transport.client import Client

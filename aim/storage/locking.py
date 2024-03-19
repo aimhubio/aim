@@ -1,16 +1,16 @@
-import os
 import logging
+import os
 import pathlib
 import threading
-import uuid
 import time
+import uuid
 
-from filelock import BaseFileLock, SoftFileLock, UnixFileLock, has_fcntl
+from typing import Dict, Optional, Set, Tuple, Union
 
 from cachetools.func import ttl_cache
+from filelock import BaseFileLock, SoftFileLock, UnixFileLock, has_fcntl
 from psutil import disk_partitions
 
-from typing import Optional, Union, Dict, Set, Tuple
 
 logger = logging.getLogger(__name__)
 

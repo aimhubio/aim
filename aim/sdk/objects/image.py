@@ -1,19 +1,18 @@
 import logging
 import os.path
 
-from PIL import (
-    Image as PILImage,
-    ImageSequence as PILImageSequence
-)
-
 from io import BytesIO
 from itertools import chain, repeat
 from typing import List
+
 import numpy as np
 
 from aim.sdk.num_utils import inst_has_typename
 from aim.storage.object import CustomObject
 from aim.storage.types import BLOB
+from PIL import Image as PILImage
+from PIL import ImageSequence as PILImageSequence
+
 
 logger = logging.getLogger(__name__)
 

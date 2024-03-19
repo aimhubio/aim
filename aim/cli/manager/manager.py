@@ -1,9 +1,10 @@
+import enum
 import subprocess
 import time
-import enum
 
-from aim.cli.configs import VERSION_NAME, UP_NAME
 from aim.__version__ import __version__
+from aim.cli.configs import UP_NAME, VERSION_NAME
+
 
 # Error message prefix for aim commands
 ERROR_MSG_PREFIX = 'Error:'

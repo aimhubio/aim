@@ -1,14 +1,14 @@
-import click
-import os
-import sys
 import logging
+import os
 import subprocess
+import sys
 
 from typing import Optional
 
+import click
+
 from aim.sdk.repo import Repo, RepoStatus
-from aim.web.configs import AIM_ENV_MODE_KEY
-from aim.web.configs import AIM_LOG_LEVEL_KEY
+from aim.web.configs import AIM_ENV_MODE_KEY, AIM_LOG_LEVEL_KEY
 
 
 class ShellCommandException(Exception):

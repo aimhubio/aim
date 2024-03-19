@@ -1,13 +1,14 @@
 from logging import getLogger
 from typing import Optional
-from aim.sdk.run import Run
 
 from aim.ext.resource.configs import DEFAULT_SYSTEM_TRACKING_INT
+from aim.sdk.run import Run
+
 
 try:
-    from fastai.learner import Callback
-    from fastcore.basics import store_attr, detuplify, ignore_exceptions
     from fastai.callback.hook import total_params
+    from fastai.learner import Callback
+    from fastcore.basics import detuplify, ignore_exceptions, store_attr
 except ImportError:
     raise RuntimeError(
         'This contrib module requires fastai to be installed. '

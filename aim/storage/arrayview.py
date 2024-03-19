@@ -1,6 +1,6 @@
-import numpy as np
-
 from typing import Any, Iterator, List, Tuple, Union
+
+import numpy as np
 
 
 class ArrayView:

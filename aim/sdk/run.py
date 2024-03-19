@@ -1,59 +1,54 @@
-import logging
-
-import os
 import datetime
 import json
-import pytz
-import sys
+import logging
+import os
 import pathlib
+import sys
 
 from collections import defaultdict
 from functools import partialmethod
 from inspect import currentframe, getframeinfo
+from typing import TYPE_CHECKING, Any, Dict, Iterator, Optional, Tuple, Union
 
+import pytz
+
+from aim.ext.cleanup import AutoClean
+from aim.ext.exception_resistant import noexcept
+from aim.ext.resource import DEFAULT_SYSTEM_TRACKING_INT, ResourceTracker
+from aim.ext.utils import (
+    get_environment_variables,
+    get_git_info,
+    get_installed_packages,
+)
 from aim.sdk.base_run import BaseRun
-from aim.sdk.sequence import Sequence
-from aim.sdk.tracker import RunTracker
+from aim.sdk.logging import LogRecord, LogRecords
+from aim.sdk.objects.artifact import Artifact
+from aim.sdk.remote_run_reporter import RemoteFileManager, RemoteRunHeartbeatReporter
 from aim.sdk.reporter import RunStatusReporter, ScheduledStatusReporter
 from aim.sdk.reporter.file_manager import LocalFileManager
-from aim.sdk.remote_run_reporter import RemoteRunHeartbeatReporter, RemoteFileManager
+from aim.sdk.sequence import Sequence
 from aim.sdk.sequence_collection import SingleRunSequenceCollection
+from aim.sdk.tracker import RunTracker
+from aim.sdk.types import AimObject
 from aim.sdk.utils import (
     backup_run,
 )
-
-from aim.sdk.types import AimObject
-from aim.sdk.logging import LogRecord, LogRecords
-from aim.sdk.objects.artifact import Artifact
-
-from aim.storage.treeview import TreeView
-from aim.storage.context import Context
 from aim.storage import treeutils
+from aim.storage.context import Context
+from aim.storage.treeview import TreeView
 
-from aim.ext.resource import ResourceTracker, DEFAULT_SYSTEM_TRACKING_INT
-from aim.ext.cleanup import AutoClean
-from aim.ext.utils import (
-    get_environment_variables,
-    get_installed_packages,
-    get_git_info,
-)
-from aim.ext.exception_resistant import noexcept
-
-from typing import Any, Dict, Iterator, Optional, Tuple, Union
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from pandas import DataFrame
-
-    from aim.sdk.sequences.metric import Metric
-    from aim.sdk.sequences.image_sequence import Images
+    from aim.ext.resource.log import Logs
+    from aim.sdk.repo import Repo
+    from aim.sdk.sequence_collection import SequenceCollection
     from aim.sdk.sequences.audio_sequence import Audios
     from aim.sdk.sequences.distribution_sequence import Distributions
     from aim.sdk.sequences.figure_sequence import Figures
+    from aim.sdk.sequences.image_sequence import Images
+    from aim.sdk.sequences.metric import Metric
     from aim.sdk.sequences.text_sequence import Texts
-    from aim.sdk.sequence_collection import SequenceCollection
-    from aim.ext.resource.log import Logs
-    from aim.sdk.repo import Repo
+    from pandas import DataFrame
 
 logger = logging.getLogger(__name__)
 

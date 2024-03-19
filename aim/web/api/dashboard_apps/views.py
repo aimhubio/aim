@@ -1,18 +1,18 @@
 import json
 
-from fastapi import Depends, HTTPException
-from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
-from sqlalchemy.orm import Session
-
 from aim.web.api.dashboard_apps.models import ExploreState
 from aim.web.api.dashboard_apps.pydantic_models import (
     ExploreStateCreateIn,
-    ExploreStateUpdateIn,
     ExploreStateGetOut,
-    ExploreStateListOut
+    ExploreStateListOut,
+    ExploreStateUpdateIn,
 )
 from aim.web.api.dashboard_apps.serializers import explore_state_response_serializer
 from aim.web.api.db import get_session
+from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
+from fastapi import Depends, HTTPException
+from sqlalchemy.orm import Session
+
 
 dashboard_apps_router = APIRouter()
 

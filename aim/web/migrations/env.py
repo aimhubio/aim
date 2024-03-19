@@ -1,16 +1,15 @@
 from __future__ import with_statement
-
 import logging
 import os
+
 from logging.config import fileConfig
 
+from aim.web.api.db import Base, engine
+from aim.web.configs import AIM_ENV_MODE_KEY
+from aim.web.utils import get_db_url
 from alembic import context
 from alembic.config import Config
 
-from aim.web.configs import AIM_ENV_MODE_KEY
-from aim.web.api.db import engine
-from aim.web.utils import get_db_url
-from aim.web.api.db import Base
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

@@ -1,5 +1,6 @@
 import logging
 
+
 logger = logging.getLogger(__name__)
 
 DEFAULT_MSG_TEMPLATE = 'This functionality will be removed in'

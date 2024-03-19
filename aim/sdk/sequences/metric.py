@@ -1,11 +1,10 @@
 import datetime
 import json
 
+from typing import TYPE_CHECKING, Tuple, Union
+
 from aim.sdk.sequence import Sequence
 from aim.storage import treeutils
-
-from typing import Union, Tuple
-from typing import TYPE_CHECKING
 
 
 if TYPE_CHECKING:

@@ -1,9 +1,14 @@
 import evaluate
 import numpy as np
+
 from aim.hugging_face import AimCallback
 from datasets import load_dataset
-from transformers import (AutoModelForSequenceClassification, AutoTokenizer,
-                          Trainer, TrainingArguments)
+from transformers import (
+    AutoModelForSequenceClassification,
+    AutoTokenizer,
+    Trainer,
+    TrainingArguments,
+)
 
 
 def tokenize_function(examples):

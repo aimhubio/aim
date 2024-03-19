@@ -1,18 +1,18 @@
 import logging
-from abc import abstractmethod
-from typing import Iterator
-from typing import TYPE_CHECKING
-from tqdm import tqdm
 
+from abc import abstractmethod
+from typing import TYPE_CHECKING, Iterator
+
+from aim.sdk.query_utils import RunView, SequenceView
 from aim.sdk.sequence import Sequence
 from aim.sdk.types import QueryReportMode
-from aim.sdk.query_utils import RunView, SequenceView
 from aim.storage.query import RestrictedPythonQuery
+from tqdm import tqdm
 
 
 if TYPE_CHECKING:
-    from aim.sdk.run import Run
     from aim.sdk.repo import Repo
+    from aim.sdk.run import Run
     from pandas import DataFrame
 
 logger = logging.getLogger(__name__)

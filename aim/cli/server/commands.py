@@ -1,22 +1,23 @@
 import os
+
 import click
 
-from aim.sdk.repo import Repo
-from aim.sdk.utils import clean_repo_path
 from aim.cli.utils import (
     ShellCommandException,
     build_uvicorn_command,
     exec_cmd,
     get_free_port_num,
     get_repo_instance,
-    set_log_level
+    set_log_level,
 )
 from aim.ext.transport.config import (
-    AIM_SERVER_DEFAULT_PORT,
+    AIM_SERVER_BASE_PATH,
     AIM_SERVER_DEFAULT_HOST,
+    AIM_SERVER_DEFAULT_PORT,
     AIM_SERVER_MOUNTED_REPO_PATH,
-    AIM_SERVER_BASE_PATH
 )
+from aim.sdk.repo import Repo
+from aim.sdk.utils import clean_repo_path
 from aim.web.configs import AIM_ENV_MODE_KEY
 
 

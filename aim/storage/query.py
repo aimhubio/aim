@@ -1,20 +1,20 @@
 import logging
 
 from abc import abstractmethod
-from functools import lru_cache
 from datetime import datetime, timedelta
+from functools import lru_cache
 
 from RestrictedPython import (
+    compile_restricted,
+    limited_builtins,
     safe_builtins,
     utility_builtins,
-    limited_builtins,
-    compile_restricted
 )
 from RestrictedPython.Eval import default_guarded_getitem
 from RestrictedPython.Guards import (
     full_write_guard,
     guarded_iter_unpack_sequence,
-    guarded_unpack_sequence
+    guarded_unpack_sequence,
 )
 
 

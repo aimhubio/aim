@@ -1,7 +1,6 @@
-from tests.base import TestBase
-
 from aim.sdk.run import Run
 from aim.storage.context import Context
+from tests.base import TestBase
 
 
 class TestRunSequenceHomogeneousValues(TestBase):

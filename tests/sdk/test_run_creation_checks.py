@@ -1,6 +1,5 @@
-from tests.base import TestBase
-
 from aim.sdk.run import Run
+from tests.base import TestBase
 
 
 class TestRunCreationChecks(TestBase):

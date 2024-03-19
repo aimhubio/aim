@@ -1,7 +1,8 @@
 import logging
 
 from functools import wraps
-from typing import Type, Optional
+from typing import Optional, Type
+
 
 logger = logging.getLogger(__name__)
 

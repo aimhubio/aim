@@ -1,10 +1,13 @@
-import logging
 import inspect
+import logging
 import traceback
-from collections import defaultdict
-from typing import Callable, List, Optional, Dict, Any
 
-from aim.sdk.callbacks.helpers import handles_events, get_handler_event_names
+from collections import defaultdict
+from typing import Any, Callable, Dict, List, Optional
+
+from aim.sdk.callbacks.helpers import get_handler_event_names, handles_events
+
+
 logger = logging.getLogger(__name__)
 
 

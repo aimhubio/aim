@@ -1,7 +1,9 @@
+import logging
+
 import cython
 import pyximport
 
-import logging
+
 logger = logging.getLogger(__name__)
 
 

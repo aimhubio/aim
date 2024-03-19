@@ -1,9 +1,9 @@
+from typing import Any, Iterator, List, Tuple, Union
+
 import numpy as np
 
-from typing import Any, Iterator, List, Tuple, Union
-from aim.storage.treeview import TreeView
-
 from aim.storage.arrayview import ArrayView
+from aim.storage.treeview import TreeView
 
 
 class TreeArrayView(ArrayView):

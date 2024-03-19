@@ -1,11 +1,13 @@
 import pathlib
 import tempfile
 
-from urllib.parse import urlparse
+from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import wait as wait_for_finish
 from typing import Optional
-from concurrent.futures import ThreadPoolExecutor, wait as wait_for_finish
+from urllib.parse import urlparse
 
 from aim.ext.cleanup import AutoClean
+
 from .artifact_storage import AbstractArtifactStorage
 
 

@@ -1,7 +1,12 @@
-from aim.storage.container import Container, ContainerItemsIterator, ContainerKey, ContainerValue
-from aim.storage.containertreeview import ContainerTreeView
-
 from typing import Iterator, Tuple
+
+from aim.storage.container import (
+    Container,
+    ContainerItemsIterator,
+    ContainerKey,
+    ContainerValue,
+)
+from aim.storage.containertreeview import ContainerTreeView
 
 
 class PrefixView(Container):

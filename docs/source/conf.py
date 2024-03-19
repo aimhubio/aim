@@ -10,11 +10,13 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-import os
-import sys
 import glob
-from importlib.util import module_from_spec, spec_from_file_location
+import os
 import shutil
+import sys
+
+from importlib.util import module_from_spec, spec_from_file_location
+
 
 sys.path.insert(0, os.path.abspath('..'))
 

@@ -9,11 +9,17 @@ This is different from CPython's implementation because of many reasons:
 
 import hashlib
 
-from aim.storage.encoding import encode_int64, decode_int64  # noqa
-from aim.storage.hashing import c_hash
-from aim.storage.types import AimObject, AimObjectArray, AimObjectKey, AimObjectDict, NoneType
-
 from typing import Tuple, Union
+
+from aim.storage.encoding import decode_int64, encode_int64  # noqa
+from aim.storage.hashing import c_hash
+from aim.storage.types import (
+    AimObject,
+    AimObjectArray,
+    AimObjectDict,
+    AimObjectKey,
+    NoneType,
+)
 
 
 # We use 8-byte digest for Aim hashes

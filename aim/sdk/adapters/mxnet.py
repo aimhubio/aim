@@ -1,10 +1,21 @@
 import time
+
+from typing import Any, List, Optional, Union
+
 import numpy as np
-from mxnet.gluon.contrib.estimator.utils import _check_metrics
-from mxnet.gluon.contrib.estimator import TrainBegin, TrainEnd, EpochBegin, EpochEnd, BatchBegin, BatchEnd, Estimator
-from typing import Optional, Union, Any, List
-from aim.sdk.run import Run
+
 from aim.ext.resource.configs import DEFAULT_SYSTEM_TRACKING_INT
+from aim.sdk.run import Run
+from mxnet.gluon.contrib.estimator import (
+    BatchBegin,
+    BatchEnd,
+    EpochBegin,
+    EpochEnd,
+    Estimator,
+    TrainBegin,
+    TrainEnd,
+)
+from mxnet.gluon.contrib.estimator.utils import _check_metrics
 
 
 class AimLoggingHandler(TrainBegin, TrainEnd, EpochBegin, EpochEnd, BatchBegin, BatchEnd):

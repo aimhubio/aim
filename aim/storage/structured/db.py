@@ -3,13 +3,14 @@ import os
 from collections import defaultdict
 from weakref import WeakValueDictionary
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, scoped_session
-
 from aim.storage.migrations.utils import upgrade_database
-from aim.storage.structured.sql_engine.factory import ModelMappedFactory as ObjectFactory
+from aim.storage.structured.sql_engine.factory import (
+    ModelMappedFactory as ObjectFactory,
+)
 from aim.storage.types import SafeNone
 from aim.web.configs import AIM_LOG_LEVEL_KEY
+from sqlalchemy import create_engine
+from sqlalchemy.orm import scoped_session, sessionmaker
 
 
 class ObjectCache:

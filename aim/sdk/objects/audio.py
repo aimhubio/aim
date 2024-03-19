@@ -7,6 +7,7 @@ from aim.sdk.objects.io import wavfile
 from aim.storage.object import CustomObject
 from aim.storage.types import BLOB
 
+
 logger = logging.getLogger(__name__)
 
 

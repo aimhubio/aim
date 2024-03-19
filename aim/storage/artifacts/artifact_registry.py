@@ -1,10 +1,10 @@
-from urllib.parse import urlparse
 from functools import lru_cache
-from typing import Type, Dict
+from typing import TYPE_CHECKING, Dict, Type
+from urllib.parse import urlparse
 
 from .s3_storage import S3ArtifactStorage
 
-from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from .artifact_storage import AbstractArtifactStorage
 

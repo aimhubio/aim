@@ -1,7 +1,8 @@
-import threading
-import queue
 import atexit
 import logging
+import queue
+import threading
+
 
 logger = logging.getLogger(__name__)
 

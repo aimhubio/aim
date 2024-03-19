@@ -1,13 +1,12 @@
-import time
 import logging
+import time
 
-from inspect import getframeinfo, currentframe
-from typing import Optional, Union, Tuple
-
-from aim.storage.object import CustomObject
-from aim.storage.hashing import hash_auto
+from inspect import currentframe, getframeinfo
+from typing import Optional, Tuple, Union
 
 from aim.sdk.sequence import Sequence
+from aim.storage.hashing import hash_auto
+from aim.storage.object import CustomObject
 
 
 @CustomObject.alias('aim.log_record')

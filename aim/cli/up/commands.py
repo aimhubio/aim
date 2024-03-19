@@ -1,4 +1,5 @@
 import os
+
 import click
 
 from aim.cli.utils import (
@@ -8,20 +9,20 @@ from aim.cli.utils import (
     exec_cmd,
     get_free_port_num,
     get_repo_instance,
-    set_log_level
+    set_log_level,
 )
+from aim.sdk.repo import Repo
+from aim.sdk.utils import clean_repo_path
 from aim.web.configs import (
     AIM_ENV_MODE_KEY,
+    AIM_PROFILER_KEY,
+    AIM_PROXY_URL,
     AIM_TF_LOGS_PATH_KEY,
     AIM_UI_BASE_PATH,
     AIM_UI_DEFAULT_HOST,
     AIM_UI_DEFAULT_PORT,
     AIM_UI_MOUNTED_REPO_PATH,
-    AIM_PROXY_URL,
-    AIM_PROFILER_KEY
 )
-from aim.sdk.repo import Repo
-from aim.sdk.utils import clean_repo_path
 
 
 @click.command()

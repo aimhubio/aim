@@ -1,5 +1,6 @@
-from aim.storage.object import CustomObject
 import hub
+
+from aim.storage.object import CustomObject
 
 
 @CustomObject.alias('hub.dataset')
