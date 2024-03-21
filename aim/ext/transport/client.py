@@ -49,13 +49,13 @@ class Client:
 
         self._http_protocol = 'http://'
         self._ws_protocol = 'ws://'
+        self.request_headers = {}
         self.protocol_probe()
 
         self._resource_pool = weakref.WeakValueDictionary()
 
         self._client_endpoint = f'{self.remote_path}/client'
         self._tracking_endpoint = f'{self.remote_path}/tracking'
-        self.request_headers = {}
         self.connect()
 
         self._heartbeat_sender = HeartbeatSender(self)
@@ -66,7 +66,7 @@ class Client:
     def protocol_probe(self):
         endpoint = f'http://{self.remote_path}/status/'
         try:
-            response = requests.get(endpoint)
+            response = requests.get(endpoint, headers=self.request_headers)
             if response.status_code == 200:
                 if response.url.startswith('https://'):
                     self._http_protocol = 'https://'
@@ -77,7 +77,7 @@ class Client:
 
         endpoint = f'https://{self.remote_path}/status/'
         try:
-            response = requests.get(endpoint)
+            response = requests.get(endpoint, headers=self.request_headers)
             if response.status_code == 200:
                 self._http_protocol = 'https://'
                 self._ws_protocol = 'wss://'
