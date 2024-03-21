@@ -66,18 +66,18 @@ class Client:
     def protocol_probe(self):
         endpoint = f'http://{self.remote_path}/status/'
         try:
-            response = requests.get(endpoint, headers=self.request_headers)
+            response = requests.get(endpoint)
             if response.status_code == 200:
                 if response.url.startswith('https://'):
                     self._http_protocol = 'https://'
                     self._ws_protocol = 'wss://'
-                return
+                    return
         except Exception:
             pass
 
         endpoint = f'https://{self.remote_path}/status/'
         try:
-            response = requests.get(endpoint, headers=self.request_headers)
+            response = requests.get(endpoint)
             if response.status_code == 200:
                 self._http_protocol = 'https://'
                 self._ws_protocol = 'wss://'
