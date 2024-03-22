@@ -2,6 +2,7 @@ import { version } from '../../package.json';
 
 interface GlobalScope extends Window {
   API_BASE_PATH?: string;
+  API_AUTH_TOKEN?: string;
 }
 
 let globalScope: GlobalScope;
@@ -37,6 +38,14 @@ function setAPIBasePath(basePath: string) {
     : `${getBasePath()}/api`;
 }
 
+function setAPIAuthToken(authToken: string) {
+  globalScope.API_AUTH_TOKEN = authToken;
+}
+
+function getAPIAuthToken() {
+  return `${globalScope.API_AUTH_TOKEN}`;
+}
+
 export const AIM_VERSION = version;
 
 const PATHS_TO_SHOW_CACHE_BANNERS = ['notebook', 'aim-sage'];
@@ -48,4 +57,11 @@ export function checkIsBasePathInCachedEnv(basePath: string) {
   return PATHS_TO_SHOW_CACHE_BANNERS.includes(parsed_path);
 }
 
-export { isDEVModeOn, getBasePath, getAPIHost, setAPIBasePath };
+export {
+  isDEVModeOn,
+  getBasePath,
+  getAPIHost,
+  setAPIBasePath,
+  setAPIAuthToken,
+  getAPIAuthToken,
+};
