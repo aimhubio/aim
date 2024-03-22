@@ -49,13 +49,13 @@ class Client:
 
         self._http_protocol = 'http://'
         self._ws_protocol = 'ws://'
+        self.request_headers = {}
         self.protocol_probe()
 
         self._resource_pool = weakref.WeakValueDictionary()
 
         self._client_endpoint = f'{self.remote_path}/client'
         self._tracking_endpoint = f'{self.remote_path}/tracking'
-        self.request_headers = {}
         self.connect()
 
         self._heartbeat_sender = HeartbeatSender(self)
@@ -71,7 +71,7 @@ class Client:
                 if response.url.startswith('https://'):
                     self._http_protocol = 'https://'
                     self._ws_protocol = 'wss://'
-                return
+                    return
         except Exception:
             pass
 
