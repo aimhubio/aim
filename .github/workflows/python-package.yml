@@ -17,7 +17,7 @@ on:
 
 jobs:
   aim-ui-dist:
-    if: ${{ github.event_name == 'schedule' || github.actor == 'gorarakelyan' || github.actor == 'alberttorosyan' || github.actor == 'roubkar' }}
+    if: ${{ github.event_name == 'schedule' || github.actor == 'mihran113' || github.actor == 'alberttorosyan' || github.actor == 'roubkar' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
@@ -59,7 +59,7 @@ jobs:
           python -m twine upload -u __token__ -p "${PYPI_PASSWORD}" dist/*
 
   linux-dist:
-    if: ${{ github.event_name == 'schedule' || github.actor == 'gorarakelyan' || github.actor == 'alberttorosyan' || github.actor == 'roubkar' }}
+    if: ${{ github.event_name == 'schedule' || github.actor == 'mihran113' || github.actor == 'alberttorosyan' || github.actor == 'roubkar' }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -125,7 +125,7 @@ jobs:
         run: . create-docker-image.sh
 
   macos-dist:
-    if: ${{ github.event_name == 'schedule' || github.actor == 'gorarakelyan' || github.actor == 'alberttorosyan' || github.actor == 'roubkar' }}
+    if: ${{ github.event_name == 'schedule' || github.actor == 'mihran113' || github.actor == 'alberttorosyan' || github.actor == 'roubkar' }}
     runs-on: m1
     strategy:
       fail-fast: false

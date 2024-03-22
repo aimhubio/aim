@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.19.2  Mar 22, 2024
+- Resolve live update failing issue (mihran113)
+- Resolve issue with remote tracking protocol probe fail (mihran113)
+
 ## 3.19.1 Mar 14, 2024
 - Accept calls on tracking server without trailing slashes (mihran113)
 

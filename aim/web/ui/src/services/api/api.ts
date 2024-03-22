@@ -1,6 +1,6 @@
 import Cookies from 'js-cookie';
 
-import { getAPIHost } from 'config/config';
+import { getAPIHost, getAPIAuthToken } from 'config/config';
 
 import ENDPOINTS from './endpoints';
 
@@ -253,6 +253,9 @@ function getRequestHeaders(headers = {}) {
  * @returns {string} - The token
  */
 function getAuthToken(): string {
+  if (typeof window === 'undefined') {
+    return getAPIAuthToken();
+  }
   return localStorage.getItem(AUTH_TOKEN_KEY) || '';
 }
 
