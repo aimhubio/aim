@@ -1,6 +1,7 @@
 # Changelog
 
-## 3.19.2
+## 3.19.2 
+- Resolve live update failing issue (mihran113)
 - Resolve issue with remote tracking protocol probe fail (mihran113)
 
 ## 3.19.1 Mar 14, 2024
