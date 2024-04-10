@@ -348,7 +348,7 @@ async function checkCredentials<T>(
   if (response.status === 401) {
     if (endpoint === `${ENDPOINTS.AUTH.BASE}/${ENDPOINTS.AUTH.REFRESH}`) {
       removeAuthToken();
-      window.location.assign(`${window.location.origin}/api`);
+      window.location.assign(`${window.location.origin}/sign-in`);
       return parseResponse<T>(response);
     }
     if (localStorage.getItem('refreshing') !== 'true') {
