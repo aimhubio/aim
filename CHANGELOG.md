@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.19.3 
+- Resolve issue with new runs after tracking queue shutdown (mihran113)
+
 ## 3.19.2  Mar 22, 2024
 - Resolve live update failing issue (mihran113)
 - Resolve issue with remote tracking protocol probe fail (mihran113)
