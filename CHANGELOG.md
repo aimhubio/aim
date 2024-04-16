@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.19.3
+- Reset base path when opening new tabs (mihran113)
+
 ## 3.19.2  Mar 22, 2024
 - Resolve live update failing issue (mihran113)
 - Resolve issue with remote tracking protocol probe fail (mihran113)
