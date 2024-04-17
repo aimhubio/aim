@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.19.3 
+## 3.19.3 Apr 17, 2024
 - Resolve issue with new runs after tracking queue shutdown (mihran113)
 - Reset base path when opening new tabs (mihran113)
 
