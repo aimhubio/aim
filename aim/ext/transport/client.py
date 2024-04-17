@@ -32,16 +32,7 @@ logger = logging.getLogger(__name__)
 class Client:
     _thread_local = threading.local()
 
-    _queue = RequestQueue(
-        'remote_tracker',
-        max_queue_memory=os.getenv(AIM_CLIENT_QUEUE_MAX_MEMORY, 1024 * 1024 * 1024),
-        retry_count=DEFAULT_RETRY_COUNT,
-        retry_interval=DEFAULT_RETRY_INTERVAL
-    )
-
     def __init__(self, remote_path: str):
-        # temporary workaround for M1 build
-
         self._id = str(uuid.uuid4())
         if remote_path.endswith('/'):
             remote_path = remote_path[:-1]
@@ -58,6 +49,12 @@ class Client:
         self._tracking_endpoint = f'{self.remote_path}/tracking'
         self.connect()
 
+        self._queue = RequestQueue(
+            f'remote_tracker_{self._id}',
+            max_queue_memory=os.getenv(AIM_CLIENT_QUEUE_MAX_MEMORY, 1024 * 1024 * 1024),
+            retry_count=DEFAULT_RETRY_COUNT,
+            retry_interval=DEFAULT_RETRY_INTERVAL
+        )
         self._heartbeat_sender = HeartbeatSender(self)
         self._heartbeat_sender.start()
         self._thread_local.atomic_instructions = {}
