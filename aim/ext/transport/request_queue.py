@@ -33,7 +33,7 @@ class RequestQueue(object):
             self._client = weakref.ref(client)
 
         if self._shutdown:
-            logger.debug('Cannot register task: rpc task queue is stopped.')
+            logger.debug('Cannot register task: task queue is stopped.')
             return
 
         arg_size = self._calculate_size(args)
@@ -100,7 +100,7 @@ class RequestQueue(object):
     def stop(self):
         pending_task_count = self._queue.qsize()
         if pending_task_count:
-            logger.warning(f'Processing {pending_task_count} pending tasks in the rpc queue \'{self._name}\'... '
+            logger.warning(f'Processing {pending_task_count} pending tasks in the task queue \'{self._name}\'... '
                            f'Please do not kill the process.')
             self._queue.join()
         logger.debug('No pending tasks left.')
