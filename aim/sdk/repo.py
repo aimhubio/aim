@@ -792,10 +792,6 @@ class Repo:
         if self.is_remote_repo:
             return self._remote_repo_proxy.delete_run(run_hash)
 
-        # check run lock info. in progress runs can't be deleted
-        if self._lock_manager.get_run_lock_info(run_hash).locked:
-            raise RuntimeError(f'Cannot delete Run \'{run_hash}\'. Run is locked.')
-
         with self.structured_db:  # rollback db entity delete if subsequent actions fail.
             # remove database entry
             self.structured_db.delete_run(run_hash)
@@ -817,6 +813,11 @@ class Repo:
                     os.remove(seqs_path)
                 else:
                     shutil.rmtree(seqs_path, ignore_errors=True)
+
+            # remove dangling locks
+            lock_path = os.path.join(self.path, 'locks', f'{run_hash}.softlock')
+            if os.path.exists(lock_path):
+                os.remove(lock_path)
 
     def _copy_run(self, run_hash, dest_repo):
         def copy_trees():
