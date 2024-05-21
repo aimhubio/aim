@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.19.4
+- Repurpose aim reindex command for index db recreation (mihran113)
+
 ## 3.19.3 Apr 17, 2024
 - Resolve issue with new runs after tracking queue shutdown (mihran113)
 - Reset base path when opening new tabs (mihran113)
