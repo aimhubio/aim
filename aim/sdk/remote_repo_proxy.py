@@ -49,4 +49,3 @@ class RemoteRepoProxy:
 
     def _recreate_index(self):
         return self._rpc_client.run_instruction(-1, self._handler, '_recreate_index', [])
-
