@@ -7,6 +7,7 @@ import cachetools.func
 
 from pathlib import Path
 
+from aimrocks.errors import RocksIOError
 from aim.storage.encoding import encode_path
 from aim.storage.container import Container, ContainerItemsIterator
 from aim.storage.prefixview import PrefixView
@@ -46,23 +47,51 @@ class ItemsIterator(ContainerItemsIterator):
         raise NotImplementedError
 
     def seek_to_first(self):
+        corrupted_dbs = set()
         for prefix, iterator in self._iterators.items():
-            iterator.seek_to_first()
+            try:
+                iterator.seek_to_first()
+            except RocksIOError:
+                corrupted_dbs.add(prefix)
+        for prefix in corrupted_dbs:
+            del self._iterators[prefix]
+            del self._priority[prefix]
         self._init_heap()
 
     def seek_to_last(self):
+        corrupted_dbs = set()
         for prefix, iterator in self._iterators.items():
-            iterator.seek_to_last()
+            try:
+                iterator.seek_to_last()
+            except RocksIOError:
+                corrupted_dbs.add(prefix)
+        for prefix in corrupted_dbs:
+            del self._iterators[prefix]
+            del self._priority[prefix]
         self._init_heap()
 
     def seek(self, key: bytes):
+        corrupted_dbs = set()
         for prefix, iterator in self._iterators.items():
-            iterator.seek(key)
+            try:
+                iterator.seek(key)
+            except RocksIOError:
+                corrupted_dbs.add(prefix)
+        for prefix in corrupted_dbs:
+            del self._iterators[prefix]
+            del self._priority[prefix]
         self._init_heap()
 
     def seek_for_prev(self, key):
+        corrupted_dbs = set()
         for prefix, iterator in self._iterators.items():
-            iterator.seek_for_prev(key)
+            try:
+                iterator.seek_for_prev(key)
+            except RocksIOError:
+                corrupted_dbs.add(prefix)
+        for prefix in corrupted_dbs:
+            del self._iterators[prefix]
+            del self._priority[prefix]
         max_key = self._init_heap()
         self.seek(max_key)
 
