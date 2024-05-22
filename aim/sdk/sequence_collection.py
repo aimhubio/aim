@@ -170,6 +170,8 @@ class QuerySequenceCollection(SequenceCollection):
             progress_bar = tqdm(total=total_runs)
 
         for run in runs_iterator:
+            if run._corrupted:
+                continue
             seq_collection = SingleRunSequenceCollection(run, self.seq_cls, self.query,
                                                          runs_proxy_cache=self.runs_proxy_cache,
                                                          timezone_offset=self._timezone_offset)

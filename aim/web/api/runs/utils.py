@@ -278,6 +278,8 @@ async def run_search_result_streamer(runs: SequenceCollection,
             if not run_trace_collection:
                 continue
             run = run_trace_collection.run
+            if run._corrupted:
+                continue
             run_dict = {
                 run.hash: {
                     'props': get_run_props(run)

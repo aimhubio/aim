@@ -138,6 +138,8 @@ async def get_experiment_runs_api(exp_id: str,
 
     for run_hash in run_hashes:
         run = Run(run_hash, repo=project.repo, read_only=True)
+        if run._corrupted:
+            continue
         exp_runs.append({
             'run_id': run.hash,
             'name': run.name,
