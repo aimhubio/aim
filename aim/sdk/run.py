@@ -9,8 +9,17 @@ import pathlib
 
 from collections import defaultdict
 from functools import partialmethod
-from inspect import currentframe, getframeinfo
+from inspect import (
+    currentframe,
+    getframeinfo,
+    getmembers,
+    getmro,
+    ismethod,
+    isfunction
+)
+from types import MethodType
 
+from aimrocks.errors import RocksIOError
 from aim.sdk.base_run import BaseRun
 from aim.sdk.sequence import Sequence
 from aim.sdk.tracker import RunTracker
@@ -56,6 +65,34 @@ if TYPE_CHECKING:
     from aim.sdk.repo import Repo
 
 logger = logging.getLogger(__name__)
+
+
+def disable_run(obj):
+    property_names = set()
+    orig_cls = obj.__class__
+
+    # Traverse the MRO to collect property names
+    for cls in getmro(obj.__class__):
+        for name, member in cls.__dict__.items():
+            if isinstance(member, property):
+                property_names.add(name)
+
+    class NoOpClass:
+        def __getattr__(self, item):
+            if item.startswith('_'):
+                return orig_cls.__getattr__(self, item)
+            if item in property_names:
+                return None
+            return lambda *args, **kwargs: None
+
+        def __setattr__(self, item, value):
+            if item.startswith('_'):
+                return orig_cls.__setattr__(self, item, value)
+
+        def __delattr__(self, item):
+            pass
+
+    obj.__class__ = NoOpClass
 
 
 class BasicRunAutoClean(AutoClean['BasicRun']):
@@ -268,63 +305,72 @@ class BasicRun(BaseRun, StructuredRunMixin):
                  experiment: Optional[str] = None,
                  force_resume: bool = False,
                  ):
-        self._resources: Optional[BasicRunAutoClean] = None
-        super().__init__(run_hash, repo=repo, read_only=read_only, force_resume=force_resume)
-
-        self.meta_attrs_tree: TreeView = self.meta_tree.subtree('attrs')
-        self.meta_run_attrs_tree: TreeView = self.meta_run_tree.subtree('attrs')
-
-        if not read_only:
-            logger.debug(f'Opening Run {self.hash} in write mode')
-
-            if self.check_metrics_version():
-                if self.repo.is_remote_repo:
-                    logger.warning(f'Cannot track Run with remote repo {self.repo.path}. Please upgrade repo first '
-                                   f'with the following command:')
-                    logger.warning(f'aim storage --repo {self.repo.path} upgrade 3.11+ \'*\'')
-                    raise RuntimeError
-                else:
-                    logger.warning(f'Detected sub-optimal format metrics for Run {self.hash}. Upgrading...')
-                    backup_path = backup_run(self)
-                    try:
-                        self.update_metrics()
-                        logger.warning(f'Successfully converted Run {self.hash}')
-                        logger.warning(f'Run backup can be found at {backup_path}. '
-                                       f'In case of any issues the following command can be used to restore data: '
-                                       f'`aim storage --repo {self.repo.root_path} restore {self.hash}`')
-                    except Exception as e:
-                        logger.error(f'Failed to convert metrics. {e}')
-                        logger.warning(f'Run backup can be found at {backup_path}. '
-                                       f'To restore data please run the following command: '
-                                       f'`aim storage --repo {self.repo.root_path} restore {self.hash}`')
-                        raise
-
         self._props = None
         self._checkins = None
         self._heartbeat = None
-
-        if not read_only:
-            if not self.repo.is_remote_repo:
-                self._checkins = RunStatusReporter(self.hash, LocalFileManager(self.repo.path))
-                progress_flag_path = pathlib.Path(self.repo.path) / 'meta' / 'progress' / self.hash
-                self._heartbeat = ScheduledStatusReporter(self._checkins, touch_path=progress_flag_path)
-            else:
-                self._checkins = RunStatusReporter(self.hash, RemoteFileManager(self.repo._client, self.hash))
-                self._heartbeat = RemoteRunHeartbeatReporter(self.repo._client, self.hash)
-
-            try:
-                self.meta_run_attrs_tree.first_key()
-            except (KeyError, StopIteration):
-                # no run params are set. use empty dict
-                self[...] = {}
-            self.meta_run_tree['end_time'] = None
-            self.props
-        if experiment:
-            self.experiment = experiment
-
         self._run_artifacts_uri: str = None
-        self._tracker = RunTracker(self)
-        self._resources = BasicRunAutoClean(self)
+
+        try:
+            self._resources: Optional[BasicRunAutoClean] = None
+            super().__init__(run_hash, repo=repo, read_only=read_only, force_resume=force_resume)
+
+            self.meta_attrs_tree: TreeView = self.meta_tree.subtree('attrs')
+            self.meta_run_attrs_tree: TreeView = self.meta_run_tree.subtree('attrs')
+
+            if not read_only:
+                logger.debug(f'Opening Run {self.hash} in write mode')
+
+                if self.check_metrics_version():
+                    if self.repo.is_remote_repo:
+                        logger.warning(f'Cannot track Run with remote repo {self.repo.path}. Please upgrade repo first '
+                                       f'with the following command:')
+                        logger.warning(f'aim storage --repo {self.repo.path} upgrade 3.11+ \'*\'')
+                        raise RuntimeError
+                    else:
+                        logger.warning(f'Detected sub-optimal format metrics for Run {self.hash}. Upgrading...')
+                        backup_path = backup_run(self)
+                        try:
+                            self.update_metrics()
+                            logger.warning(f'Successfully converted Run {self.hash}')
+                            logger.warning(f'Run backup can be found at {backup_path}. '
+                                           f'In case of any issues the following command can be used to restore data: '
+                                           f'`aim storage --repo {self.repo.root_path} restore {self.hash}`')
+                        except Exception as e:
+                            logger.error(f'Failed to convert metrics. {e}')
+                            logger.warning(f'Run backup can be found at {backup_path}. '
+                                           f'To restore data please run the following command: '
+                                           f'`aim storage --repo {self.repo.root_path} restore {self.hash}`')
+                            raise
+            else:
+                # read end_time property to check the trigger corruption check
+                self.end_time  # noqa
+
+            if not read_only:
+                if not self.repo.is_remote_repo:
+                    self._checkins = RunStatusReporter(self.hash, LocalFileManager(self.repo.path))
+                    progress_flag_path = pathlib.Path(self.repo.path) / 'meta' / 'progress' / self.hash
+                    self._heartbeat = ScheduledStatusReporter(self._checkins, touch_path=progress_flag_path)
+                else:
+                    self._checkins = RunStatusReporter(self.hash, RemoteFileManager(self.repo._client, self.hash))
+                    self._heartbeat = RemoteRunHeartbeatReporter(self.repo._client, self.hash)
+
+                try:
+                    self.meta_run_attrs_tree.first_key()
+                except (KeyError, StopIteration):
+                    # no run params are set. use empty dict
+                    self[...] = {}
+                self.meta_run_tree['end_time'] = None
+                self.props
+            if experiment:
+                self.experiment = experiment
+
+            self._tracker = RunTracker(self)
+            self._resources = BasicRunAutoClean(self)
+            self._corrupted = False
+        except RocksIOError as e:
+            logger.warning(f'Run {self.hash} is corrupted. Reason:\n{e}.')
+            self._corrupted = True
+            disable_run(self)
 
     def __hash__(self) -> int:
         return super().__hash__()
