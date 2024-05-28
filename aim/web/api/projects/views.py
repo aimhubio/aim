@@ -48,26 +48,6 @@ async def project_api():
     }
 
 
-@projects_router.get('/check-index/')
-async def project_api():
-    project = Project()
-
-    if not project.exists():
-        raise HTTPException(status_code=404)
-
-    # check if the index db was corrupted and deleted
-    corruption_marker = os.path.join(project.repo_path, 'meta', 'index', '.corrupted')
-    warning_message = ''
-    if os.path.exists(corruption_marker):
-        warning_message = 'Index db was corrupted and deleted. ' \
-                          'Please run `aim storage reindex` command to restore optimal performance.'
-        logger.warning(warning_message)
-
-    return {
-        'warn': bool(warning_message),
-    }
-
-
 @projects_router.get('/activity/', response_model=ProjectActivityApiOut)
 async def project_activity_api(x_timezone_offset: int = Header(default=0),
                                factory=Depends(object_factory)):
