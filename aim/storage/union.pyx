@@ -12,7 +12,7 @@ from aim.storage.container import Container, ContainerItemsIterator
 from aim.storage.prefixview import PrefixView
 from aim.storage.rockscontainer import RocksContainer, optimize_db_for_read
 
-from typing import Dict, List, NamedTuple, Tuple
+from typing import Dict, List, NamedTuple, Tuple, Set
 
 
 logger = logging.getLogger(__name__)
@@ -27,10 +27,11 @@ class Racer(NamedTuple):
 
 
 class ItemsIterator(ContainerItemsIterator):
-    def __init__(self, dbs: Dict[bytes, "aimrocks.DB"], *args, **kwargs):
+    def __init__(self, dbs: Dict[bytes, "aimrocks.DB"], corrupted_dbs: Set[bytes], *args, **kwargs):
         self.args = args
         self.kwargs = kwargs
         self._iterators = {}
+        self._corrupted_dbs = corrupted_dbs
         for key, value in dbs.items():
             self._iterators[key] = value.iteritems(*args, **kwargs)
         self._priority: Dict[bytes, int] = {
@@ -46,23 +47,55 @@ class ItemsIterator(ContainerItemsIterator):
         raise NotImplementedError
 
     def seek_to_first(self):
+        corrupted_dbs = set()
         for prefix, iterator in self._iterators.items():
-            iterator.seek_to_first()
+            try:
+                iterator.seek_to_first()
+            except (aimrocks.errorsRocksIOError, aimrocks.errors.Corruption):
+                corrupted_dbs.add(prefix)
+        self._corrupted_dbs.update(corrupted_dbs)
+        for prefix in corrupted_dbs:
+            del self._iterators[prefix]
+            del self._priority[prefix]
         self._init_heap()
 
     def seek_to_last(self):
+        corrupted_dbs = set()
         for prefix, iterator in self._iterators.items():
-            iterator.seek_to_last()
+            try:
+                iterator.seek_to_last()
+            except (aimrocks.errors.RocksIOError, aimrocks.errors.Corruption):
+                corrupted_dbs.add(prefix)
+        self._corrupted_dbs.update(corrupted_dbs)
+        for prefix in corrupted_dbs:
+            del self._iterators[prefix]
+            del self._priority[prefix]
         self._init_heap()
 
     def seek(self, key: bytes):
+        corrupted_dbs = set()
         for prefix, iterator in self._iterators.items():
-            iterator.seek(key)
+            try:
+                iterator.seek(key)
+            except (aimrocks.errors.RocksIOError, aimrocks.errors.Corruption):
+                corrupted_dbs.add(prefix)
+        self._corrupted_dbs.update(corrupted_dbs)
+        for prefix in corrupted_dbs:
+            del self._iterators[prefix]
+            del self._priority[prefix]
         self._init_heap()
 
     def seek_for_prev(self, key):
+        corrupted_dbs = set()
         for prefix, iterator in self._iterators.items():
-            iterator.seek_for_prev(key)
+            try:
+                iterator.seek_for_prev(key)
+            except (aimrocks.errors.RocksIOError, aimrocks.errors.Corruption):
+                corrupted_dbs.add(prefix)
+        self._corrupted_dbs.update(corrupted_dbs)
+        for prefix in corrupted_dbs:
+            del self._iterators[prefix]
+            del self._priority[prefix]
         max_key = self._init_heap()
         self.seek(max_key)
 
@@ -151,6 +184,7 @@ class DB(object):
         self.db_name = db_name
         self.opts = opts
         self._dbs: Dict[bytes, aimrocks.DB] = dict()
+        self._corrupted_dbs: Set[bytes] = set()
 
     def _get_db(
         self,
@@ -193,7 +227,10 @@ class DB(object):
         for prefix in self._list_dir(db_dir):
             path = os.path.join(self.db_path, self.db_name, "chunks", prefix)
             prefix = encode_path((self.db_name, "chunks", prefix))
-            self._get_db(prefix, path, self._dbs, new_dbs)
+            try:
+                self._get_db(prefix, path, self._dbs, new_dbs)
+            except (aimrocks.errors.RocksIOError, aimrocks.errors.Corruption):
+                self._corrupted_dbs.add(prefix)
 
         if index_db is not None:
             new_dbs[b""] = index_db
@@ -213,17 +250,17 @@ class DB(object):
     def iteritems(
         self, *args, **kwargs
     ) -> "ItemsIterator":
-        return ItemsIterator(self.dbs, *args, **kwargs)
+        return ItemsIterator(self.dbs, self._corrupted_dbs, *args, **kwargs)
 
     def iterkeys(
         self, *args, **kwargs
     ) -> "KeysIterator":
-        return KeysIterator(self.dbs, *args, **kwargs)
+        return KeysIterator(self.dbs, self._corrupted_dbs, *args, **kwargs)
 
     def itervalues(
         self, *args, **kwargs
     ) -> "ValuesIterator":
-        return ValuesIterator(self.dbs, *args, **kwargs)
+        return ValuesIterator(self.dbs, self._corrupted_dbs, *args, **kwargs)
 
 
 class RocksUnionContainer(RocksContainer):
@@ -248,6 +285,12 @@ class RocksUnionContainer(RocksContainer):
             raise e
 
         return self._db
+
+    @property
+    def corrupted_dbs(self) -> Set[bytes]:
+        # trigger db corruption checks
+        self.db.iteritems().seek_to_first()
+        return self.db._corrupted_dbs
 
     def view(
         self,
