@@ -1,7 +1,7 @@
 import os
 from datetime import timedelta
 from typing import Optional, Tuple
-
+from logging import getLogger
 from collections import Counter
 from fastapi import Depends, HTTPException, Query, Header
 from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
@@ -21,6 +21,8 @@ from aim.storage.locking import AutoFileLock
 
 projects_router = APIRouter()
 
+logger = getLogger()
+
 
 @projects_router.get('/', response_model=ProjectApiOut)
 async def project_api():
@@ -29,11 +31,20 @@ async def project_api():
     if not project.exists():
         raise HTTPException(status_code=404)
 
+    # check if the index db was corrupted and deleted
+    corruption_marker = os.path.join(project.repo_path, 'meta', 'index', '.corrupted')
+    warning_message = ''
+    if os.path.exists(corruption_marker):
+        warning_message = 'Index db was corrupted and deleted. ' \
+                          'Please run `aim storage reindex` command to restore optimal performance.'
+        logger.warning(warning_message)
+
     return {
         'name': project.name,
         'path': project.path,
         'description': project.description,
         'telemetry_enabled': 0,
+        'warn_index': bool(warning_message),
     }
 
 

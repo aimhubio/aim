@@ -1,7 +1,12 @@
 # Changelog
 
-## 3.19.4
+## 3.20.0 
+
+### Enhancements:
 - Repurpose aim reindex command for index db recreation (mihran113)
+
+### Fixes
+- Handle index db corruption and warn in UI (mihran113) 
 
 ## 3.19.3 Apr 17, 2024
 - Resolve issue with new runs after tracking queue shutdown (mihran113)

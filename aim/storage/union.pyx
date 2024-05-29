@@ -1,6 +1,8 @@
 import heapq
 import logging
 import os
+import shutil
+
 import aimrocks
 
 import cachetools.func
@@ -145,6 +147,8 @@ class ValuesIterator(ItemsIterator):
 
 
 class DB(object):
+    _corruption_warned = False
+
     def __init__(self, db_path: str, db_name: str, opts, read_only: bool = False):
         assert read_only
         self.db_path = db_path
@@ -181,6 +185,18 @@ class DB(object):
         index_path = os.path.join(self.db_path, self.db_name, "index")
         try:
             index_db = self._get_db(index_prefix, index_path, self._dbs)
+            # do a random read to check if index db is corrupted or not
+            index_db.get(index_prefix)
+        except aimrocks.errors.RocksIOError:
+            # delete index db and mark as corrupted
+            corruption_marker = Path(index_path) / '.corrupted'
+            if not corruption_marker.exists():
+                logger.warning('Corrupted index db. Deleting the index db to avoid errors. '
+                               'Please run `aim storage reindex command to restore optimal performance.`')
+                shutil.rmtree(index_path)
+                Path(index_path).mkdir()
+                corruption_marker.touch()
+            index_db = None
         except Exception:
             index_db = None
             logger.info('No index was detected')
