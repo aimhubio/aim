@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
+import { useModel } from 'hooks';
 
 import { loader } from '@monaco-editor/react';
 
@@ -16,7 +17,11 @@ import PageWrapper from 'pages/PageWrapper';
 
 import routes from 'routes/routes';
 
+import projectsModel from 'services/models/projects/projectsModel';
+
 import { inIframe } from 'utils/helper';
+
+import { IProjectsModelState } from './types/services/models/projects/projectsModel';
 
 import './App.scss';
 
@@ -32,6 +37,7 @@ loader.config({
 });
 
 function App(): React.FunctionComponentElement<React.ReactNode> {
+  const projectsData = useModel<Partial<IProjectsModelState>>(projectsModel);
   React.useEffect(() => {
     let timeoutId: number;
     const preloader = document.getElementById('preload-spinner');
@@ -54,6 +60,12 @@ function App(): React.FunctionComponentElement<React.ReactNode> {
           <AlertBanner type='warning' isVisiblePermanently={true}>
             You are using UI from notebook env, please make sure to
             <b>keep server running</b> for a better experience
+          </AlertBanner>
+        )}
+        {projectsData?.project?.warn_index && (
+          <AlertBanner type='warning'>
+            Index db was corrupted and deleted. Please run
+            <b>`aim storage reindex`</b> command to restore optimal performance.
           </AlertBanner>
         )}
         <div className='pageContainer'>
