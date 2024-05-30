@@ -1,4 +1,5 @@
 import os
+import pathlib
 import shutil
 import logging
 
@@ -405,6 +406,10 @@ class Repo:
 
     def run_exists(self, run_hash: str) -> bool:
         return run_hash in self._all_run_hashes()
+
+    def is_index_corrupted(self) -> bool:
+        corruption_marker = os.path.join(self.path, 'meta', 'index', '.corrupted')
+        return os.path.exists(corruption_marker)
 
     @ttl_cache(ttl=0.5)
     def _all_run_hashes(self) -> Set[str]:

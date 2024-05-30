@@ -32,19 +32,26 @@ async def project_api():
         raise HTTPException(status_code=404)
 
     # check if the index db was corrupted and deleted
-    corruption_marker = os.path.join(project.repo_path, 'meta', 'index', '.corrupted')
-    warning_message = ''
-    if os.path.exists(corruption_marker):
-        warning_message = 'Index db was corrupted and deleted. ' \
-                          'Please run `aim storage reindex` command to restore optimal performance.'
-        logger.warning(warning_message)
+    index_corrupted = project.repo.is_index_corrupted()
+    if index_corrupted:
+        runs_corrupted = False  # prevent multiple alert banners in UI
+        logger.warning('Index db was corrupted and deleted. '
+                       'Please run `aim storage reindex` command to restore optimal performance.')
+    else:
+        # check are there any corrupted run chunks
+        runs_corrupted = len(project.repo.list_corrupted_runs()) > 0
+        if runs_corrupted:
+            logger.warning('Corrupted Runs were detected. '
+                           'Please run `aim runs rm --corrupted` command to remove corrupted runs. '
+                           'You can list corrupted run hashes using `aim runs ls --corrupted` command.')
 
     return {
         'name': project.name,
         'path': project.path,
         'description': project.description,
         'telemetry_enabled': 0,
-        'warn_index': bool(warning_message),
+        'warn_index': index_corrupted,
+        'warn_runs': runs_corrupted,
     }
 
 
