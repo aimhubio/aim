@@ -68,6 +68,12 @@ function App(): React.FunctionComponentElement<React.ReactNode> {
             <b>`aim storage reindex`</b> command to restore optimal performance.
           </AlertBanner>
         )}
+        {projectsData?.project?.warn_runs && (
+          <AlertBanner type='warning'>
+            Corrupted runs were detected. Please run
+            <b>`aim runs rm --corrupted`</b> command to remove corrupted runs.
+          </AlertBanner>
+        )}
         <div className='pageContainer'>
           <ErrorBoundary>
             <SideBar />

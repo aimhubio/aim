@@ -5,6 +5,7 @@ export interface IProject {
   path?: string;
   telemetry_enabled?: string | boolean;
   warn_index?: boolean;
+  warn_runs?: boolean;
 }
 
 export interface IProjectParamsMetrics {
