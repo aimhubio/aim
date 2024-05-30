@@ -54,6 +54,7 @@ class ItemsIterator(ContainerItemsIterator):
             try:
                 iterator.seek_to_first()
             except (aimrocks.errorsRocksIOError, aimrocks.errors.Corruption):
+                logger.debug(f'Detected corrupted db chunk \'{prefix}\'.')
                 corrupted_dbs.add(prefix)
         self._corrupted_dbs.update(corrupted_dbs)
         for prefix in corrupted_dbs:
@@ -67,6 +68,7 @@ class ItemsIterator(ContainerItemsIterator):
             try:
                 iterator.seek_to_last()
             except (aimrocks.errors.RocksIOError, aimrocks.errors.Corruption):
+                logger.debug(f'Detected corrupted db chunk \'{prefix}\'.')
                 corrupted_dbs.add(prefix)
         self._corrupted_dbs.update(corrupted_dbs)
         for prefix in corrupted_dbs:
@@ -80,6 +82,7 @@ class ItemsIterator(ContainerItemsIterator):
             try:
                 iterator.seek(key)
             except (aimrocks.errors.RocksIOError, aimrocks.errors.Corruption):
+                logger.debug(f'Detected corrupted db chunk \'{prefix}\'.')
                 corrupted_dbs.add(prefix)
         self._corrupted_dbs.update(corrupted_dbs)
         for prefix in corrupted_dbs:
@@ -93,6 +96,7 @@ class ItemsIterator(ContainerItemsIterator):
             try:
                 iterator.seek_for_prev(key)
             except (aimrocks.errors.RocksIOError, aimrocks.errors.Corruption):
+                logger.debug(f'Detected corrupted db chunk \'{prefix}\'.')
                 corrupted_dbs.add(prefix)
         self._corrupted_dbs.update(corrupted_dbs)
         for prefix in corrupted_dbs:
@@ -221,7 +225,7 @@ class DB(object):
             index_db = self._get_db(index_prefix, index_path, self._dbs)
             # do a random read to check if index db is corrupted or not
             index_db.get(index_prefix)
-        except aimrocks.errors.RocksIOError:
+        except (aimrocks.errors.RocksIOError, aimrocks.errors.Corruption):
             # delete index db and mark as corrupted
             corruption_marker = Path(index_path) / '.corrupted'
             if not corruption_marker.exists():
@@ -246,6 +250,7 @@ class DB(object):
             try:
                 self._get_db(prefix, path, self._dbs, new_dbs)
             except (aimrocks.errors.RocksIOError, aimrocks.errors.Corruption):
+                logger.debug(f'Detected corrupted db chunk \'{prefix}\'.')
                 self._corrupted_dbs.add(prefix)
 
         if index_db is not None:
