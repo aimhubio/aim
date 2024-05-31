@@ -974,3 +974,26 @@ class Repo:
             optimize_container(seqs_db_path, extra_options={})
         if index_manager.run_needs_indexing(run_hash):
             index_manager.index(run_hash)
+
+    def _recreate_index(self):
+        from tqdm import tqdm
+        if self.is_remote_repo:
+            self._remote_repo_proxy._recreate_index()
+            return
+
+        from aim.sdk.index_manager import RepoIndexManager
+        index_manager = RepoIndexManager.get_index_manager(self)
+
+        # force delete the index db and the locks
+
+        index_lock_path = os.path.join(self.path, 'locks', 'index')
+        if os.path.exists(index_lock_path):
+            os.remove(index_lock_path)
+
+        index_db_path = os.path.join(self.path, 'meta', 'index')
+        shutil.rmtree(index_db_path, ignore_errors=True)
+
+        # recreate the index db
+        run_hashes = self._all_run_hashes()
+        for run_hash in tqdm(run_hashes, desc='Indexing runs', total=len(run_hashes)):
+            index_manager.index(run_hash)
