@@ -1,7 +1,6 @@
 INIT_NAME = 'init'
 VERSION_NAME = 'version'
 UP_NAME = 'up'
-REINDEX_NAME = 'reindex'
 SERVER_NAME = 'server'
 RUNS_NAME = 'runs'
 CONVERT = 'convert'
