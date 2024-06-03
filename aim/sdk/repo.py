@@ -1,5 +1,4 @@
 import os
-import pathlib
 import shutil
 import logging
 
