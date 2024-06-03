@@ -8,6 +8,7 @@ class ProjectApiOut(BaseModel):
     description: str
     telemetry_enabled: int
     warn_index: Optional[bool] = False
+    warn_runs: Optional[bool] = False
 
 
 class ProjectParamsOut(BaseModel):

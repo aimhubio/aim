@@ -56,16 +56,16 @@ function App(): React.FunctionComponentElement<React.ReactNode> {
     <BrowserRouter basename={basePath}>
       <ProjectWrapper />
       <Theme>
-        {isVisibleCacheBanner && (
-          <AlertBanner type='warning' isVisiblePermanently={true}>
-            You are using UI from notebook env, please make sure to
-            <b>keep server running</b> for a better experience
-          </AlertBanner>
-        )}
         {projectsData?.project?.warn_index && (
           <AlertBanner type='warning'>
             Index db was corrupted and deleted. Please run
             <b>`aim storage reindex`</b> command to restore optimal performance.
+          </AlertBanner>
+        )}
+        {projectsData?.project?.warn_runs && (
+          <AlertBanner type='warning'>
+            Corrupted runs were detected. Please run
+            <b>`aim runs rm --corrupted`</b> command to remove corrupted runs.
           </AlertBanner>
         )}
         <div className='pageContainer'>
