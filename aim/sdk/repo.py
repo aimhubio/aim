@@ -406,6 +406,10 @@ class Repo:
     def run_exists(self, run_hash: str) -> bool:
         return run_hash in self._all_run_hashes()
 
+    def is_index_corrupted(self) -> bool:
+        corruption_marker = os.path.join(self.path, 'meta', 'index', '.corrupted')
+        return os.path.exists(corruption_marker)
+
     @ttl_cache(ttl=0.5)
     def _all_run_hashes(self) -> Set[str]:
         if self.is_remote_repo:
@@ -419,6 +423,15 @@ class Repo:
 
     def list_all_runs(self) -> List[str]:
         return list(self._all_run_hashes())
+
+    def list_corrupted_runs(self) -> List[str]:
+        from aim.storage.encoding import decode_path
+
+        def get_run_hash_from_prefix(prefix: bytes):
+            return decode_path(prefix)[-1]
+
+        container = RocksUnionContainer(os.path.join(self.path, 'meta'), read_only=True)
+        return list(map(get_run_hash_from_prefix, container.corrupted_dbs))
 
     def _active_run_hashes(self) -> Set[str]:
         if self.is_remote_repo:
@@ -792,10 +805,6 @@ class Repo:
         if self.is_remote_repo:
             return self._remote_repo_proxy.delete_run(run_hash)
 
-        # check run lock info. in progress runs can't be deleted
-        if self._lock_manager.get_run_lock_info(run_hash).locked:
-            raise RuntimeError(f'Cannot delete Run \'{run_hash}\'. Run is locked.')
-
         with self.structured_db:  # rollback db entity delete if subsequent actions fail.
             # remove database entry
             self.structured_db.delete_run(run_hash)
@@ -817,6 +826,11 @@ class Repo:
                     os.remove(seqs_path)
                 else:
                     shutil.rmtree(seqs_path, ignore_errors=True)
+
+            # remove dangling locks
+            lock_path = os.path.join(self.path, 'locks', f'{run_hash}.softlock')
+            if os.path.exists(lock_path):
+                os.remove(lock_path)
 
     def _copy_run(self, run_hash, dest_repo):
         def copy_trees():
