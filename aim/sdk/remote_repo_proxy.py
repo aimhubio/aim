@@ -46,3 +46,6 @@ class RemoteRepoProxy:
 
     def _close_run(self, hash_):
         return self._rpc_client.run_instruction(-1, self._handler, '_close_run', [hash_])
+
+    def _recreate_index(self):
+        return self._rpc_client.run_instruction(-1, self._handler, '_recreate_index', [])

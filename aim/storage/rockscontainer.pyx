@@ -165,7 +165,8 @@ class RocksContainer(Container):
         for k, v in self.items():
             index[k] = v
 
-        self._progress_path.unlink()
+        if self._progress_path.exists():
+            self._progress_path.unlink()
         self._progress_path = None
 
     def close(self):

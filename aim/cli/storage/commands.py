@@ -122,12 +122,22 @@ def prune(ctx):
 
 
 @storage.command('reindex')
-@click.option('--finalize-only', required=False, is_flag=True, default=False)
+@click.option('-y', '--yes', is_flag=True, help='Automatically confirm prompt')
 @click.pass_context
-def reindex(ctx, finalize_only):
-    """ Process runs left in 'in progress' state. """
-    from aim.utils.deprecation import deprecation_warning
+def reindex(ctx, yes):
+    """ Recreate index database from scratch. """
+    repo_path = ctx.obj['repo']
+    repo = Repo.from_path(repo_path)
+    click.secho(f'This command will forcefully recreate index db for Aim Repo \'{repo_path}\'.\n'
+                f'Please stop the Aim UI to not interfere with the procedure.')
 
-    deprecation_warning(remove_version='3.16', msg='`aim storage reindex` is deprecated! '
-                                                   'Use `aim runs close` command instead.')
+    if yes:
+        confirmed = True
+    else:
+        confirmed = click.confirm('Do you want to proceed?')
+    if not confirmed:
+        return
+
+    repo._recreate_index()
+
     return
