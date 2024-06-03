@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.20.0 
+## 3.20.0 Jun 3, 2024
 
 ### Enhancements:
 - Repurpose aim reindex command for index db recreation (mihran113)
