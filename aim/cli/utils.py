@@ -93,7 +93,7 @@ def build_uvicorn_command(app,
                           ssl_certfile=None,
                           log_level='warning',
                           ):
-    cmd = [sys.executable, '-m', 'uvicorn',
+    cmd = [sys.executable, '-m', 'uvicorn', '--ws-max-size', '1073741824',
            '--host', host, '--port', f'{port}',
            '--workers', f'{workers}']
 
