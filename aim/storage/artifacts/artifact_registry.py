@@ -3,6 +3,7 @@ from functools import lru_cache
 from typing import Type, Dict
 
 from .s3_storage import S3ArtifactStorage
+from .filesystem_storage import FilesystemArtifactStorage
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -29,3 +30,4 @@ class ArtifactStorageRegistry:
 
 registry = ArtifactStorageRegistry()
 registry.register('s3', S3ArtifactStorage)
+registry.register('file', FilesystemArtifactStorage)
