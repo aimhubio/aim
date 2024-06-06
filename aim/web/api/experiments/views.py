@@ -75,6 +75,18 @@ async def get_experiment_api(exp_id: str, factory=Depends(object_factory)):
     }
     return response
 
+@experiment_router.delete('/{exp_id}/')
+async def delete_experiment_api(exp_id: str, factory=Depends(object_factory)):
+    success = factory.delete_experiment(exp_id)
+    if not success:
+        raise HTTPException(status_code=400, detail=(
+            f'Failed to delete experiment \'{exp_id}\'.'
+        ))
+
+    return {
+        'status': 'OK'
+    }
+
 
 @experiment_router.put('/{exp_id}/', response_model=ExperimentUpdateOut)
 async def update_experiment_properties_api(exp_id: str, exp_in: ExperimentUpdateIn, factory=Depends(object_factory)):
