@@ -64,6 +64,18 @@ async function updateExperimentById(
 }
 
 /**
+ * function deleteExperimentById
+ * this call is used for deleting an experiment by id.
+ * @param id - experiment hash
+ * @returns {Promise<{status: string}>}
+ */
+async function deleteExperimentById(id: string): Promise<{ status: string }> {
+  return (
+    await api.makeAPIDeleteRequest(`${ENDPOINTS.EXPERIMENTS.DELETE}${id}`)
+  ).body;
+}
+
+/**
  * function createExperiment
  * this call is used for create an experiment.
  * @param  reqBody -  query body params
@@ -201,6 +213,7 @@ export {
   getExperimentById,
   updateExperimentById,
   createExperiment,
+  deleteExperimentById,
   getRunsOfExperiment,
   getExperimentContributions,
   getExperimentNote,

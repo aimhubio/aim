@@ -30,6 +30,7 @@ function useExperimentState(experimentId: string) {
     experimentsState,
     getExperimentsData: engine.fetchExperimentsData,
     updateExperiment: engine.updateExperiment,
+    deleteExperiment: engine.deleteExperiment,
   };
 }
 
