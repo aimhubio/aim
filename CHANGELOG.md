@@ -1,5 +1,10 @@
 # Changelog
 
+## unreleased
+
+### Fixes:
+- Increase websockets max_size for large images sent to server (jasonmads)
+
 ## 3.20.1 Jun 3, 2024
 
 ### Enhancements:
