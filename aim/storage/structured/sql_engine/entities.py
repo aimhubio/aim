@@ -370,9 +370,9 @@ class ModelMappedExperiment(IExperiment, metaclass=ModelMappedClassMeta):
             joinedload(ExperimentModel.runs),
         ])
         return ModelMappedExperimentCollection(session, query=q)
-    
+
     @classmethod
-    def delete_experiment(cls, _id: str,  **kwargs) -> bool:
+    def delete_experiment(cls, _id: str, **kwargs) -> bool:
         session = kwargs.get('session')
         if not session:
             return False
