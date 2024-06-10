@@ -1,6 +1,7 @@
 from datetime import timedelta
 from collections import Counter
 from fastapi import Request, HTTPException, Depends, Header
+from aim.web.api.runs.utils import get_project_repo
 from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
 from typing import Optional
 
@@ -75,9 +76,11 @@ async def get_experiment_api(exp_id: str, factory=Depends(object_factory)):
     }
     return response
 
+
 @experiment_router.delete('/{exp_id}/')
-async def delete_experiment_api(exp_id: str, factory=Depends(object_factory)):
-    success = factory.delete_experiment(exp_id)
+async def delete_experiment_api(exp_id: str):
+    repo = get_project_repo()
+    success = repo.delete_experiment(exp_id)
     if not success:
         raise HTTPException(status_code=400, detail=(
             f'Failed to delete experiment \'{exp_id}\'.'
