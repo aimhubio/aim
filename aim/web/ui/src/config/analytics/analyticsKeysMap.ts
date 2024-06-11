@@ -273,6 +273,7 @@ export const ANALYTICS_EVENT_KEYS = {
       },
       settings: {
         tabView: '[Experiment] [Settings] Tab view',
+        deleteExperiment: '[Experiment] [Settings] Delete experiment',
       },
     },
     table: {

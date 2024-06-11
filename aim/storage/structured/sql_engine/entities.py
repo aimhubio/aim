@@ -372,6 +372,22 @@ class ModelMappedExperiment(IExperiment, metaclass=ModelMappedClassMeta):
         return ModelMappedExperimentCollection(session, query=q)
 
     @classmethod
+    def delete_experiment(cls, _id: str, **kwargs) -> bool:
+        session = kwargs.get('session')
+        if not session:
+            return False
+        try:
+            exp = session.query(ExperimentModel).filter(ExperimentModel.uuid == _id).first()
+            # delete all runs and notes and experiment
+            session.query(RunModel).filter(RunModel.experiment_id == exp.id).delete()
+            session.query(NoteModel).filter(NoteModel.experiment_id == exp.id).delete()
+            rows_affected = session.query(ExperimentModel).filter(ExperimentModel.uuid == _id).delete()
+            session_commit_or_flush(session)
+        except Exception:
+            return False
+        return rows_affected > 0
+
+    @classmethod
     def search(cls, term: str, **kwargs) -> Collection[IExperiment]:
         session = kwargs.get('session')
         if not session:

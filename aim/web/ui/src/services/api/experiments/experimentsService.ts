@@ -8,6 +8,7 @@ const endpoints = {
   EXPERIMENTS: 'experiments',
   GET_EXPERIMENT_BY_ID: (id: string) => `experiments/${id}`,
   UPDATE_EXPERIMENT_BY_ID: (id: string) => `experiments/${id}`,
+  DELETE_EXPERIMENT_BY_ID: (id: string) => `experiments/${id}`,
   SEARCH_EXPERIMENT: (query: string) => `experiments/search=${query}`,
   GET_RUNS_BY_EXPERIMENT_ID: (id: string) => `experiments/${id}/runs`,
 };
@@ -22,6 +23,10 @@ function searchExperiment(query: string): IApiRequest<IExperimentData> {
 
 function getExperimentById(id: string): IApiRequest<IExperimentData> {
   return API.get(endpoints.GET_EXPERIMENT_BY_ID(id));
+}
+
+function deleteExperimentById(id: string): IApiRequest<{ status: string }> {
+  return API.delete(endpoints.DELETE_EXPERIMENT_BY_ID(id));
 }
 
 function updateExperimentById(
@@ -52,6 +57,7 @@ const experimentsService = {
   updateExperimentById,
   createExperiment,
   getRunsOfExperiment,
+  deleteExperimentById,
 };
 
 export default experimentsService;

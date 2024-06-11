@@ -4,5 +4,21 @@
   padding: $space-lg 0;
   &__actionCardsCnt {
     margin: 0 toRem(164px);
+
+    &__btn__delete {
+      .MuiButton-label {
+        display: initial;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+
+      background-color: $error-color;
+
+      &:hover {
+        background-color: $error-color;
+      }
+    }
+
   }
 }

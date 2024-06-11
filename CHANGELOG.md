@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+### Enhancements:
+- Add feature to delete full experiments (mauricekraus)
+
 ## 3.20.1 Jun 3, 2024
 
 ### Enhancements:
