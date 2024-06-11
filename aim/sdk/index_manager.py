@@ -1,6 +1,8 @@
 import contextlib
 import time
 import datetime
+
+import aimrocks.errors
 import pytz
 import logging
 import os
@@ -41,6 +43,7 @@ class RepoIndexManager:
 
         self._indexing_in_progress = False
         self._reindex_thread: Thread = None
+        self._corrupted_runs = set()
 
     @property
     def repo_status(self):
@@ -82,7 +85,7 @@ class RepoIndexManager:
                 time.sleep(sleep_interval)
 
     def _runs_with_progress(self) -> Iterable[str]:
-        runs_with_progress = os.listdir(self.progress_dir)
+        runs_with_progress = filter(lambda x: x not in self._corrupted_runs, os.listdir(self.progress_dir))
         run_hashes = sorted(runs_with_progress, key=lambda r: os.path.getmtime(os.path.join(self.progress_dir, r)))
         return run_hashes
 
@@ -168,10 +171,14 @@ class RepoIndexManager:
         lock = RefreshLock(self._index_lock_path(), timeout=10)
         with self.lock_index(lock):
             index = self.repo._get_index_tree('meta', 0).view(())
-            meta_tree = self.repo.request_tree(
-                'meta', run_hash, read_only=True, from_union=False, no_cache=True).subtree('meta')
-            meta_run_tree = meta_tree.subtree('chunks').subtree(run_hash)
-            meta_run_tree.finalize(index=index)
-            if meta_run_tree['end_time'] is None:
-                index['meta', 'chunks', run_hash, 'end_time'] = datetime.datetime.now(pytz.utc).timestamp()
+            try:
+                meta_tree = self.repo.request_tree(
+                    'meta', run_hash, read_only=True, from_union=False, no_cache=True).subtree('meta')
+                meta_run_tree = meta_tree.subtree('chunks').subtree(run_hash)
+                meta_run_tree.finalize(index=index)
+                if meta_run_tree['end_time'] is None:
+                    index['meta', 'chunks', run_hash, 'end_time'] = datetime.datetime.now(pytz.utc).timestamp()
+            except (aimrocks.errors.RocksIOError, aimrocks.errors.Corruption):
+                logger.warning(f'Indexing thread detected corrupted run \'{run_hash}\'. Skipping.')
+                self._corrupted_runs.add(run_hash)
             return True
