@@ -94,6 +94,7 @@ jobs:
         run: |
           python -m pip install -r requirements.dev.txt
           python -m pip install -r requirements.txt
+
       - name: Build bdist wheels for 'cp37-cp37m'
         uses: nick-fields/retry@v2
         with:
@@ -103,25 +104,45 @@ jobs:
           command: docker run  -e PYTHON_VERSION='cp37-cp37m' --mount type=bind,source=$PWD,target=/opt/aim quay.io/pypa/${{ matrix.manylinux-version }} bash /opt/aim/docker/build-wheels.sh
 
       - name: Build bdist wheels for 'cp38-cp38'
-        run: |
-          docker run  -e PYTHON_VERSION='cp38-cp38' --mount type=bind,source=$PWD,target=/opt/aim quay.io/pypa/${{ matrix.manylinux-version }} bash /opt/aim/docker/build-wheels.sh
+        uses: nick-fields/retry@v2
+        with:
+          max_attempts: 3
+          timeout_minutes: 30
+          retry_wait_seconds: 60
+          command: docker run  -e PYTHON_VERSION='cp38-cp38' --mount type=bind,source=$PWD,target=/opt/aim quay.io/pypa/${{ matrix.manylinux-version }} bash /opt/aim/docker/build-wheels.sh
 
       - name: Build bdist wheels for 'cp39-cp39'
-        run: |
-          docker run  -e PYTHON_VERSION='cp39-cp39' --mount type=bind,source=$PWD,target=/opt/aim quay.io/pypa/${{ matrix.manylinux-version }} bash /opt/aim/docker/build-wheels.sh
-          
+        uses: nick-fields/retry@v2
+        with:
+          max_attempts: 3
+          timeout_minutes: 30
+          retry_wait_seconds: 60
+          command: docker run  -e PYTHON_VERSION='cp39-cp39' --mount type=bind,source=$PWD,target=/opt/aim quay.io/pypa/${{ matrix.manylinux-version }} bash /opt/aim/docker/build-wheels.sh
+
       - name: Build bdist wheels for 'cp310-cp310'
-        run: |
-          docker run  -e PYTHON_VERSION='cp310-cp310' --mount type=bind,source=$PWD,target=/opt/aim quay.io/pypa/${{ matrix.manylinux-version }} bash /opt/aim/docker/build-wheels.sh
+        uses: nick-fields/retry@v2
+        with:
+          max_attempts: 3
+          timeout_minutes: 30
+          retry_wait_seconds: 60
+          command: docker run  -e PYTHON_VERSION='cp310-cp310' --mount type=bind,source=$PWD,target=/opt/aim quay.io/pypa/${{ matrix.manylinux-version }} bash /opt/aim/docker/build-wheels.sh
 
       - name: Build bdist wheels for 'cp311-cp311'
-        run: |
-          docker run  -e PYTHON_VERSION='cp311-cp311' --mount type=bind,source=$PWD,target=/opt/aim quay.io/pypa/${{ matrix.manylinux-version }} bash /opt/aim/docker/build-wheels.sh
+        uses: nick-fields/retry@v2
+        with:
+          max_attempts: 3
+          timeout_minutes: 30
+          retry_wait_seconds: 60
+          command: docker run  -e PYTHON_VERSION='cp311-cp311' --mount type=bind,source=$PWD,target=/opt/aim quay.io/pypa/${{ matrix.manylinux-version }} bash /opt/aim/docker/build-wheels.sh
 
       - name: Build bdist wheels for 'cp312-cp312'
         if: matrix.manylinux-version == 'manylinux_2_28_x86_64'
-        run: |
-          docker run  -e PYTHON_VERSION='cp312-cp312' --mount type=bind,source=$PWD,target=/opt/aim quay.io/pypa/${{ matrix.manylinux-version }} bash /opt/aim/docker/build-wheels.sh
+        uses: nick-fields/retry@v2
+        with:
+          max_attempts: 3
+          timeout_minutes: 30
+          retry_wait_seconds: 60
+          command: docker run  -e PYTHON_VERSION='cp312-cp312' --mount type=bind,source=$PWD,target=/opt/aim quay.io/pypa/${{ matrix.manylinux-version }} bash /opt/aim/docker/build-wheels.sh
 
       - name: Publish wheels
         env:
