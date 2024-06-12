@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Enhancements:
+- Add feature to delete full experiments (mauricekraus)
+- Add support for python 3.12 (mahnerak)
+
 ## 3.20.1 Jun 3, 2024
 
 ### Enhancements:

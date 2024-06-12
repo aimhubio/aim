@@ -268,6 +268,10 @@ class ObjectFactory:
         ...
 
     @abstractmethod
+    def delete_experiment(self, _id: str) -> bool:
+        ...
+
+    @abstractmethod
     def tags(self) -> TagCollection:
         ...
 
