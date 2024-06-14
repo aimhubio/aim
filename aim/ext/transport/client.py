@@ -274,13 +274,15 @@ class Client:
         del self._thread_local.atomic_instructions[hash_]
 
     def refresh_ws(self):
-        self._ws = connect(f'{self._ws_protocol}{self._tracking_endpoint}/{self.uri}/write-instruction/')
+        self._ws = connect(f'{self._ws_protocol}{self._tracking_endpoint}/{self.uri}/write-instruction/',
+                           max_size=None)
 
     @property
     def ws(self):
         if self._ws is None:
             self._ws = connect(f'{self._ws_protocol}{self._tracking_endpoint}/{self.uri}/write-instruction/',
-                               additional_headers=self.request_headers)
+                               additional_headers=self.request_headers,
+                               max_size=None)
 
         return self._ws
 
