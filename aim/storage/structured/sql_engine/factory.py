@@ -63,6 +63,9 @@ class ModelMappedFactory(ObjectFactory):
     def create_experiment(self, name: str) -> Experiment:
         return ModelMappedExperiment.from_name(name, session=self._session or self.get_session())
 
+    def delete_experiment(self, _id: str) -> bool:
+        return ModelMappedExperiment.delete_experiment(_id, session=self._session or self.get_session())
+
     def tags(self) -> TagCollection:
         return ModelMappedTag.all(session=self._session or self.get_session())
 

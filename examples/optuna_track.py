@@ -27,8 +27,8 @@ aim_callback = AimCallback(
 @aim_callback.track_in_aim()
 def objective(trial):
     x = trial.suggest_float('x', -10, 10)
-    aim_callback.experiment.track_auto(2, name='power')
-    aim_callback.experiment.track_auto(x - 2, name='base of metric')
+    aim_callback.experiment.track(2, name='power')
+    aim_callback.experiment.track(x - 2, name='base of metric')
 
     return (x - 2) ** 2
 
