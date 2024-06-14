@@ -8,6 +8,7 @@
 
 ### Fixes:
 - Increase websockets max_size for large images sent to server (jasonmads)
+- Correct flags when running Aim UI in Jupiter notebooks (synapticarbors)
 
 ## 3.20.1 Jun 3, 2024
 
