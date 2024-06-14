@@ -7,7 +7,7 @@ from aim.storage.container import Container
 from aim.storage import treeutils
 from aim.storage.treearrayview import TreeArrayView
 
-from typing import Any, Iterator, Tuple, Union
+from typing import Any, Iterator, List, Tuple, Union
 from aim.storage.treeview import TreeView
 
 
@@ -153,6 +153,13 @@ class ContainerTreeView(TreeView):
         for path, value in treeutils.iter_decode_tree(it, level=1, skip_top_level=True):
             key, = path
             yield key, value
+
+    def update(
+        self,
+        values: List[Tuple[Union[AimObjectPath, AimObjectKey], AimObject]],
+    ) -> None:
+        for key, value in values:
+            self.set(key, value)
 
     def iterlevel(
         self,
