@@ -45,14 +45,14 @@ readme_text = open('/'.join((here, readme_file)), encoding="utf-8").read()
 LONG_DESCRIPTION = readme_text.strip()
 
 SETUP_REQUIRED = [
-    'Cython==3.0.0a11',
+    'Cython==3.0.10',
 ]
 
 # What packages are required for this module to be executed?
 REQUIRED = [
     f'aim-ui=={__version__}',
     'aimrecords==0.0.7',
-    'aimrocks==0.4.0',
+    'aimrocks==0.5.*',
     'cachetools>=4.0.0',
     'click>=7.0',
     'cryptography>=3.0',

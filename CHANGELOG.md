@@ -1,6 +1,10 @@
 # Changelog
 
-## unreleased
+## Unreleased
+
+### Enhancements:
+- Add feature to delete full experiments (mauricekraus)
+- Add support for python 3.12 (mahnerak)
 
 ### Fixes:
 - Increase websockets max_size for large images sent to server (jasonmads)
