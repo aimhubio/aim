@@ -89,6 +89,7 @@ class ContainerTreeView(TreeView):
         value: AimObject,
         strict: bool = True
     ):
+        import click
         if path == Ellipsis:
             path = ()
         if not isinstance(path, (tuple, list)):
