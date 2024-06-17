@@ -89,7 +89,6 @@ class ContainerTreeView(TreeView):
         value: AimObject,
         strict: bool = True
     ):
-        import click
         if path == Ellipsis:
             path = ()
         if not isinstance(path, (tuple, list)):
@@ -100,7 +99,6 @@ class ContainerTreeView(TreeView):
         self.container.delete_range(encoded_path, encoded_path + b'\xff',
                                     store_batch=batch)
         for key, val in treeutils.encode_tree(value, strict=strict):
-            click.echo(f"path {encoded_path + key} val {val}")
             self.container.set(encoded_path + key, val,
                                store_batch=batch)
         self.container.commit(batch)
@@ -162,9 +160,6 @@ class ContainerTreeView(TreeView):
         values: List[Tuple[Union[AimObjectPath, AimObjectKey], AimObject]],
     ) -> None:
         for key, value in values:
-            import click
-            click.echo(path)
-            click.echo(key)
             self.set(path + [key], value)
 
     def iterlevel(
