@@ -99,6 +99,7 @@ class ContainerTreeView(TreeView):
         self.container.delete_range(encoded_path, encoded_path + b'\xff',
                                     store_batch=batch)
         for key, val in treeutils.encode_tree(value, strict=strict):
+            click.echo(f"path {encoded_path + key} val {val}")
             self.container.set(encoded_path + key, val,
                                store_batch=batch)
         self.container.commit(batch)
@@ -160,7 +161,6 @@ class ContainerTreeView(TreeView):
     ) -> None:
         import click
         for key, value in values:
-            click.echo(f"Setting {key} to {value}")
             self.set(key, value)
 
     def iterlevel(
