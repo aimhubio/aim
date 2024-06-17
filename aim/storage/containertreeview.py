@@ -158,7 +158,9 @@ class ContainerTreeView(TreeView):
         self,
         values: List[Tuple[Union[AimObjectPath, AimObjectKey], AimObject]],
     ) -> None:
+        import click
         for key, value in values:
+            click.echo(f"Setting {key} to {value}")
             self.set(key, value)
 
     def iterlevel(
