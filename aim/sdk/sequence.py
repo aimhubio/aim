@@ -198,6 +198,8 @@ class SequenceV2Data(SequenceData):
         sort_indices = steps.argsort()
         columns = [arr[sort_indices] for arr in columns]
         steps = steps[sort_indices]
+        if len(steps) == 0:
+            print(f"{self.run.name} sequence {self.name} last_step {last_step}")
         if last_step is not None and last_step != steps[-1]:
             step_hash = self.step_hash(last_step)
             # The `last_step` is provided by the meta tree which may potentially
