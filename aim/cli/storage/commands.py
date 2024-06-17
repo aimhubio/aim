@@ -123,8 +123,9 @@ def prune(ctx):
 
 @storage.command('reindex')
 @click.option('-y', '--yes', is_flag=True, help='Automatically confirm prompt')
+@click.option('-v', '--verbose', is_flag=True, help='Verbose output')
 @click.pass_context
-def reindex(ctx, yes):
+def reindex(ctx, yes, verbose):
     """ Recreate index database from scratch. """
     repo_path = ctx.obj['repo']
     repo = Repo.from_path(repo_path)
@@ -138,6 +139,6 @@ def reindex(ctx, yes):
     if not confirmed:
         return
 
-    repo._recreate_index()
+    repo._recreate_index(verbose=verbose)
 
     return
