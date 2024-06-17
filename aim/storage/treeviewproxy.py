@@ -254,7 +254,6 @@ class SubtreeView(TreeView):
 
     def update(
         self,
-        path: Union[AimObjectKey, AimObjectPath],
         values: List[Tuple[Union[AimObjectPath, AimObjectKey], AimObject]],
     ):
         self.tree.update(self.absolute_path(path), values)
