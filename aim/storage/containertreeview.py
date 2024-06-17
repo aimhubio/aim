@@ -158,11 +158,11 @@ class ContainerTreeView(TreeView):
 
     def update(
         self,
+        path: Union[AimObjectKey, AimObjectPath],
         values: List[Tuple[Union[AimObjectPath, AimObjectKey], AimObject]],
     ) -> None:
-        import click
         for key, value in values:
-            self.set(key, value)
+            self.set(path + (key,), value)
 
     def iterlevel(
         self,
