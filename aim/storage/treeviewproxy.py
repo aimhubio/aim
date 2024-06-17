@@ -256,7 +256,7 @@ class SubtreeView(TreeView):
         self,
         values: List[Tuple[Union[AimObjectPath, AimObjectKey], AimObject]],
     ):
-        self.tree.update(self.absolute_path(path), values)
+        self.tree.update(self.absolute_path(()), values)
 
     def iterlevel(
         self,
