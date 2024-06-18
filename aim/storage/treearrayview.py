@@ -36,7 +36,7 @@ class TreeArrayView(ArrayView):
         yield from self.tree.items()
 
     def update(self, values: List[Tuple[int, Any]]):
-        self.tree.update([], values)
+        self.tree.update((), values)
 
     def __len__(self) -> int:
         # TODO lazier
