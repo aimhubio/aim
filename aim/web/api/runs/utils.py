@@ -216,7 +216,6 @@ async def metric_search_result_streamer(traces: SequenceCollection,
             for trace in run_trace_collection.iter():
                 if not run:
                     run = run_trace_collection.run
-                print(f"run {run.name} trace {trace}")
                 iters, (values, epochs, timestamps) = trace.data.sample(steps_num).numpy()
 
                 x_axis_trace = run.get_metric(x_axis, trace.context) if x_axis else None
