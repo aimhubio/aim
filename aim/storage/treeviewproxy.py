@@ -189,7 +189,7 @@ class SubtreeView(TreeView):
             path = ()
         if not isinstance(path, (tuple, list)):
             path = (path,)
-        return self.prefix + path
+        return tuple(self.prefix) + tuple(path)
 
     def preload(self):
         self.tree.preload()

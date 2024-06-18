@@ -160,7 +160,7 @@ class ContainerTreeView(TreeView):
         values: List[Tuple[Union[AimObjectPath, AimObjectKey], AimObject]],
     ) -> None:
         for key, value in values:
-            self.set(path + (key,), value)
+            self.set(tuple(path) + (key,), value)
 
     def iterlevel(
         self,
