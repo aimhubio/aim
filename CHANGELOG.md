@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.22.0 Jun 20, 2024
+
+### Enhancements:
+- Add filesystem-based backend for artifact storage (gpascale)
+
 ## 3.21.0 Jun 17, 2024
 
 ### Enhancements:
