@@ -17,6 +17,9 @@ import aim
 run = aim.Run()
 # Use S3 as artifacts storage
 run.set_artifacts_uri('s3://aim/artifacts/')
+
+# Use file-system as artifacts storage
+run.set_artifacts_uri('file:///home/user/aim/artifacts/')
 ```
 Aim will create directory with the name of `run.hash` and store all artifacts there. 
 Note that setting artifacts storage URI is required only once per run.
@@ -38,10 +41,18 @@ or network shared FS might be a good option. In case of the large models, cloud-
 stores, such as AWS S3, may be a better choice.
 
 When the artifacts URI is set, Aim will detect storage backend based on the URI scheme.
-Currently, S3 is the only supported backend for artifacts storage.
+Currently supported backends for artifacts storage are.
+- S3
+- File System
 
 #### S3 Artifacts Storage Backend
 
 Aim uses `boto3` Python package for accessing AWS resources. No additional credentials
 validation os done on the Aim side. More details on how credentials configuration is done
 for `boto3` is available [here](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/credentials.html).
+
+#### File-system Artifacts Storage Backend
+
+Aim provides ability to use mounted FS as an artifact storage. Any kind of storage that provides a mounted FS
+interface can thus be used as Aim artifact storage. However, performance of the solution should be considered
+when choosing this approach.
