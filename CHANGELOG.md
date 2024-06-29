@@ -1,5 +1,37 @@
 # Changelog
 
+## 3.22.0 Jun 20, 2024
+
+### Enhancements:
+- Add filesystem-based backend for artifact storage (gpascale)
+
+## 3.21.0 Jun 17, 2024
+
+### Enhancements:
+- Add feature to delete full experiments (mauricekraus)
+- Add support for python 3.12 (mahnerak)
+
+### Fixes:
+- Increase websockets max_size for large images sent to server (jasonmads)
+- Correct flags when running Aim UI in Jupiter notebooks (synapticarbors)
+
+## 3.20.1 Jun 3, 2024
+
+### Enhancements:
+- Repurpose aim reindex command for index db recreation (mihran113)
+
+### Fixes
+- Handle index db corruption and warn in UI (mihran113) 
+- Handle and skip corrupted runs (alberttorosyan)
+
+## 3.19.3 Apr 17, 2024
+- Resolve issue with new runs after tracking queue shutdown (mihran113)
+- Reset base path when opening new tabs (mihran113)
+
+## 3.19.2  Mar 22, 2024
+- Resolve live update failing issue (mihran113)
+- Resolve issue with remote tracking protocol probe fail (mihran113)
+
 ## 3.19.1 Mar 14, 2024
 - Accept calls on tracking server without trailing slashes (mihran113)
 

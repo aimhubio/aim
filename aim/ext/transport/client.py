@@ -34,16 +34,7 @@ logger = logging.getLogger(__name__)
 class Client:
     _thread_local = threading.local()
 
-    _queue = RequestQueue(
-        'remote_tracker',
-        max_queue_memory=os.getenv(AIM_CLIENT_QUEUE_MAX_MEMORY, 1024 * 1024 * 1024),
-        retry_count=DEFAULT_RETRY_COUNT,
-        retry_interval=DEFAULT_RETRY_INTERVAL,
-    )
-
     def __init__(self, remote_path: str):
-        # temporary workaround for M1 build
-
         self._id = str(uuid.uuid4())
         if remote_path.endswith('/'):
             remote_path = remote_path[:-1]
@@ -51,15 +42,21 @@ class Client:
 
         self._http_protocol = 'http://'
         self._ws_protocol = 'ws://'
+        self.request_headers = {}
         self.protocol_probe()
 
         self._resource_pool = weakref.WeakValueDictionary()
 
         self._client_endpoint = f'{self.remote_path}/client'
         self._tracking_endpoint = f'{self.remote_path}/tracking'
-        self.request_headers = {}
         self.connect()
 
+        self._queue = RequestQueue(
+            f'remote_tracker_{self._id}',
+            max_queue_memory=os.getenv(AIM_CLIENT_QUEUE_MAX_MEMORY, 1024 * 1024 * 1024),
+            retry_count=DEFAULT_RETRY_COUNT,
+            retry_interval=DEFAULT_RETRY_INTERVAL
+        )
         self._heartbeat_sender = HeartbeatSender(self)
         self._heartbeat_sender.start()
         self._thread_local.atomic_instructions = {}
@@ -73,7 +70,7 @@ class Client:
                 if response.url.startswith('https://'):
                     self._http_protocol = 'https://'
                     self._ws_protocol = 'wss://'
-                return
+                    return
         except Exception:
             pass
 
@@ -291,15 +288,15 @@ class Client:
         del self._thread_local.atomic_instructions[hash_]
 
     def refresh_ws(self):
-        self._ws = connect(f'{self._ws_protocol}{self._tracking_endpoint}/{self.uri}/write-instruction/')
+        self._ws = connect(f'{self._ws_protocol}{self._tracking_endpoint}/{self.uri}/write-instruction/',
+                           max_size=None)
 
     @property
     def ws(self):
         if self._ws is None:
-            self._ws = connect(
-                f'{self._ws_protocol}{self._tracking_endpoint}/{self.uri}/write-instruction/',
-                additional_headers=self.request_headers,
-            )
+            self._ws = connect(f'{self._ws_protocol}{self._tracking_endpoint}/{self.uri}/write-instruction/',
+                               additional_headers=self.request_headers,
+                               max_size=None)
 
         return self._ws
 

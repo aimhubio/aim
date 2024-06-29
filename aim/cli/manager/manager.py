@@ -54,7 +54,9 @@ def run_up(args):
             args_list.append(p + '=' + args[p])
 
     child_process = subprocess.Popen(
-        ['aim', UP_NAME] + args_list + ['--force-init'], stderr=subprocess.PIPE, stdout=subprocess.PIPE
+        ['aim', UP_NAME] + args_list,
+        stderr=subprocess.PIPE,
+        stdout=subprocess.PIPE
     )
     # Runs `aim up <args>` command
     info = {'port': args['--port'], 'host': 'http://' + args['--host']}

@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING, Dict, Type
 from urllib.parse import urlparse
 
 from .s3_storage import S3ArtifactStorage
+from .filesystem_storage import FilesystemArtifactStorage
 
 
 if TYPE_CHECKING:
@@ -29,3 +30,4 @@ class ArtifactStorageRegistry:
 
 registry = ArtifactStorageRegistry()
 registry.register('s3', S3ArtifactStorage)
+registry.register('file', FilesystemArtifactStorage)

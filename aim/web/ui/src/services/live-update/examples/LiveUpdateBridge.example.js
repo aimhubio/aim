@@ -37,6 +37,7 @@ class UpdateService {
 
     this.instance = new LUWorker();
     this.instance.replaceBasePath(window.API_BASE_PATH);
+    this.instance.setAuthToken(localStorage.getItem('Auth') || '');
     this.instance.setConfig(
       appName,
       embeddedAppNames[this.appName].endpoint,

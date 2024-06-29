@@ -405,6 +405,10 @@ class Repo:
     def run_exists(self, run_hash: str) -> bool:
         return run_hash in self._all_run_hashes()
 
+    def is_index_corrupted(self) -> bool:
+        corruption_marker = os.path.join(self.path, 'meta', 'index', '.corrupted')
+        return os.path.exists(corruption_marker)
+
     @ttl_cache(ttl=0.5)
     def _all_run_hashes(self) -> Set[str]:
         if self.is_remote_repo:
@@ -418,6 +422,15 @@ class Repo:
 
     def list_all_runs(self) -> List[str]:
         return list(self._all_run_hashes())
+
+    def list_corrupted_runs(self) -> List[str]:
+        from aim.storage.encoding import decode_path
+
+        def get_run_hash_from_prefix(prefix: bytes):
+            return decode_path(prefix)[-1]
+
+        container = RocksUnionContainer(os.path.join(self.path, 'meta'), read_only=True)
+        return list(map(get_run_hash_from_prefix, container.corrupted_dbs))
 
     def _active_run_hashes(self) -> Set[str]:
         if self.is_remote_repo:
@@ -577,9 +590,28 @@ class Repo:
         else:
             return True, []
 
-    def query_metrics(
-        self, query: str = '', report_mode: QueryReportMode = QueryReportMode.PROGRESS_BAR
-    ) -> QuerySequenceCollection:
+    def delete_experiment(self, exp_id: str) -> bool:
+        """Delete Experiment data from aim repository
+
+        This action removes experiment data permanently and cannot be reverted.
+        If you want to archive experiment but keep it's data use `repo.get_experiment(exp_id).archived = True`.
+
+        Args:
+            exp_id (:obj:`str`): Experiment to be deleted.
+
+        Returns:
+            True if experiment and corresponding runs got deleted successfully, False otherwise.
+        """
+        try:
+            self._delete_experiment(exp_id)
+            return True
+        except Exception as e:
+            logger.warning(f'Error while trying to delete experiment \'{exp_id}\'. {str(e)}.')
+            return False
+
+    def query_metrics(self,
+                      query: str = '',
+                      report_mode: QueryReportMode = QueryReportMode.PROGRESS_BAR) -> QuerySequenceCollection:
         """Get metrics satisfying query expression.
 
         Args:
@@ -796,35 +828,49 @@ class Repo:
         db.init_cache(cache_name, db.runs, lambda run: run.hash)
         self.run_props_cache_hint = cache_name
 
+    def _delete_experiment(self, exp_id):
+        with self.structured_db:
+            exp = self.structured_db.find_experiment(exp_id)
+            # delete all runs locally first
+            for run in exp.runs:
+                # remove data from index container
+                self._delete_local_run_data(run.hash)
+
+            # batch delete operation for all runs, notes etc.
+            self.structured_db.delete_experiment(exp_id)
+
+    def _delete_local_run_data(self, run_hash: str):
+        # remove data from index container
+        index_tree = self._get_index_container('meta', timeout=0).tree()
+        del index_tree.subtree(('meta', 'chunks'))[run_hash]
+
+        # delete rocksdb containers data
+        sub_dirs = ('chunks', 'progress', 'locks')
+        for sub_dir in sub_dirs:
+            meta_path = os.path.join(self.path, 'meta', sub_dir, run_hash)
+            if os.path.isfile(meta_path):
+                os.remove(meta_path)
+            else:
+                shutil.rmtree(meta_path, ignore_errors=True)
+            seqs_path = os.path.join(self.path, 'seqs', sub_dir, run_hash)
+            if os.path.isfile(seqs_path):
+                os.remove(seqs_path)
+            else:
+                shutil.rmtree(seqs_path, ignore_errors=True)
+
+        # remove dangling locks
+        lock_path = os.path.join(self.path, 'locks', f'{run_hash}.softlock')
+        if os.path.exists(lock_path):
+            os.remove(lock_path)
+
     def _delete_run(self, run_hash):
         if self.is_remote_repo:
             return self._remote_repo_proxy.delete_run(run_hash)
 
-        # check run lock info. in progress runs can't be deleted
-        if self._lock_manager.get_run_lock_info(run_hash).locked:
-            raise RuntimeError(f"Cannot delete Run '{run_hash}'. Run is locked.")
-
         with self.structured_db:  # rollback db entity delete if subsequent actions fail.
             # remove database entry
             self.structured_db.delete_run(run_hash)
-
-            # remove data from index container
-            index_tree = self._get_index_container('meta', timeout=0).tree()
-            del index_tree.subtree(('meta', 'chunks'))[run_hash]
-
-            # delete rocksdb containers data
-            sub_dirs = ('chunks', 'progress', 'locks')
-            for sub_dir in sub_dirs:
-                meta_path = os.path.join(self.path, 'meta', sub_dir, run_hash)
-                if os.path.isfile(meta_path):
-                    os.remove(meta_path)
-                else:
-                    shutil.rmtree(meta_path, ignore_errors=True)
-                seqs_path = os.path.join(self.path, 'seqs', sub_dir, run_hash)
-                if os.path.isfile(seqs_path):
-                    os.remove(seqs_path)
-                else:
-                    shutil.rmtree(seqs_path, ignore_errors=True)
+            self._delete_local_run_data(run_hash)
 
     def _copy_run(self, run_hash, dest_repo):
         def copy_trees():
@@ -971,4 +1017,27 @@ class Repo:
             optimize_container(meta_db_path, extra_options={'compaction': True})
             optimize_container(seqs_db_path, extra_options={})
         if index_manager.run_needs_indexing(run_hash):
+            index_manager.index(run_hash)
+
+    def _recreate_index(self):
+        from tqdm import tqdm
+        if self.is_remote_repo:
+            self._remote_repo_proxy._recreate_index()
+            return
+
+        from aim.sdk.index_manager import RepoIndexManager
+        index_manager = RepoIndexManager.get_index_manager(self)
+
+        # force delete the index db and the locks
+
+        index_lock_path = os.path.join(self.path, 'locks', 'index')
+        if os.path.exists(index_lock_path):
+            os.remove(index_lock_path)
+
+        index_db_path = os.path.join(self.path, 'meta', 'index')
+        shutil.rmtree(index_db_path, ignore_errors=True)
+
+        # recreate the index db
+        run_hashes = self._all_run_hashes()
+        for run_hash in tqdm(run_hashes, desc='Indexing runs', total=len(run_hashes)):
             index_manager.index(run_hash)

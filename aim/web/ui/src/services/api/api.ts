@@ -1,6 +1,6 @@
 import Cookies from 'js-cookie';
 
-import { getAPIHost } from 'config/config';
+import { getAPIHost, getAPIAuthToken } from 'config/config';
 
 import ENDPOINTS from './endpoints';
 
@@ -24,6 +24,7 @@ export interface AuthToken {
 
 const AUTH_TOKEN_KEY = 'Auth';
 const AUTH_REFRESH_TOKEN_KEY = 'token';
+const AUTH_USER_KEY = 'user';
 
 export const CONTENT_TYPE = {
   JSON: 'application/json',
@@ -253,6 +254,9 @@ function getRequestHeaders(headers = {}) {
  * @returns {string} - The token
  */
 function getAuthToken(): string {
+  if (typeof window === 'undefined') {
+    return getAPIAuthToken();
+  }
   return localStorage.getItem(AUTH_TOKEN_KEY) || '';
 }
 
@@ -262,6 +266,7 @@ function getAuthToken(): string {
  */
 function removeAuthToken(): void {
   localStorage.removeItem(AUTH_TOKEN_KEY);
+  localStorage.removeItem(AUTH_USER_KEY);
   removeRefreshToken();
 }
 
@@ -343,13 +348,20 @@ async function checkCredentials<T>(
   if (response.status === 401) {
     if (endpoint === `${ENDPOINTS.AUTH.BASE}/${ENDPOINTS.AUTH.REFRESH}`) {
       removeAuthToken();
+      window.location.assign(`${window.location.origin}/sign-in`);
       return parseResponse<T>(response);
     }
-    // Refresh token
-    const token = await refreshToken().call();
-    if (token) {
-      setAuthToken(token);
-      return refetch();
+    if (localStorage.getItem('refreshing') !== 'true') {
+      localStorage.setItem('refreshing', 'true');
+      // Refresh token
+      const token = await refreshToken().call();
+      if (token) {
+        setAuthToken(token);
+        localStorage.setItem('refreshing', 'false');
+        window.location.reload();
+        return refetch();
+      }
+      localStorage.setItem('refreshing', 'false');
     }
   }
   return parseResponse<T>(response);
