@@ -55,7 +55,7 @@ class Client:
             f'remote_tracker_{self._id}',
             max_queue_memory=os.getenv(AIM_CLIENT_QUEUE_MAX_MEMORY, 1024 * 1024 * 1024),
             retry_count=DEFAULT_RETRY_COUNT,
-            retry_interval=DEFAULT_RETRY_INTERVAL
+            retry_interval=DEFAULT_RETRY_INTERVAL,
         )
         self._heartbeat_sender = HeartbeatSender(self)
         self._heartbeat_sender.start()
@@ -288,15 +288,16 @@ class Client:
         del self._thread_local.atomic_instructions[hash_]
 
     def refresh_ws(self):
-        self._ws = connect(f'{self._ws_protocol}{self._tracking_endpoint}/{self.uri}/write-instruction/',
-                           max_size=None)
+        self._ws = connect(f'{self._ws_protocol}{self._tracking_endpoint}/{self.uri}/write-instruction/', max_size=None)
 
     @property
     def ws(self):
         if self._ws is None:
-            self._ws = connect(f'{self._ws_protocol}{self._tracking_endpoint}/{self.uri}/write-instruction/',
-                               additional_headers=self.request_headers,
-                               max_size=None)
+            self._ws = connect(
+                f'{self._ws_protocol}{self._tracking_endpoint}/{self.uri}/write-instruction/',
+                additional_headers=self.request_headers,
+                max_size=None,
+            )
 
         return self._ws
 

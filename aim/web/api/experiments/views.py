@@ -88,13 +88,9 @@ async def delete_experiment_api(exp_id: str):
     repo = get_project_repo()
     success = repo.delete_experiment(exp_id)
     if not success:
-        raise HTTPException(status_code=400, detail=(
-            f'Failed to delete experiment \'{exp_id}\'.'
-        ))
+        raise HTTPException(status_code=400, detail=(f"Failed to delete experiment '{exp_id}'."))
 
-    return {
-        'status': 'OK'
-    }
+    return {'status': 'OK'}
 
 
 @experiment_router.put('/{exp_id}/', response_model=ExperimentUpdateOut)

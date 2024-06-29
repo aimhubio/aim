@@ -181,12 +181,13 @@ class RepoIndexManager:
             index = self.repo._get_index_tree('meta', 0).view(())
             try:
                 meta_tree = self.repo.request_tree(
-                    'meta', run_hash, read_only=True, from_union=False, no_cache=True).subtree('meta')
+                    'meta', run_hash, read_only=True, from_union=False, no_cache=True
+                ).subtree('meta')
                 meta_run_tree = meta_tree.subtree('chunks').subtree(run_hash)
                 meta_run_tree.finalize(index=index)
                 if meta_run_tree['end_time'] is None:
                     index['meta', 'chunks', run_hash, 'end_time'] = datetime.datetime.now(pytz.utc).timestamp()
             except (aimrocks.errors.RocksIOError, aimrocks.errors.Corruption):
-                logger.warning(f'Indexing thread detected corrupted run \'{run_hash}\'. Skipping.')
+                logger.warning(f"Indexing thread detected corrupted run '{run_hash}'. Skipping.")
                 self._corrupted_runs.add(run_hash)
             return True

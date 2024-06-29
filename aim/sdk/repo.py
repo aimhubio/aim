@@ -606,12 +606,12 @@ class Repo:
             self._delete_experiment(exp_id)
             return True
         except Exception as e:
-            logger.warning(f'Error while trying to delete experiment \'{exp_id}\'. {str(e)}.')
+            logger.warning(f"Error while trying to delete experiment '{exp_id}'. {str(e)}.")
             return False
 
-    def query_metrics(self,
-                      query: str = '',
-                      report_mode: QueryReportMode = QueryReportMode.PROGRESS_BAR) -> QuerySequenceCollection:
+    def query_metrics(
+        self, query: str = '', report_mode: QueryReportMode = QueryReportMode.PROGRESS_BAR
+    ) -> QuerySequenceCollection:
         """Get metrics satisfying query expression.
 
         Args:
@@ -1021,11 +1021,13 @@ class Repo:
 
     def _recreate_index(self):
         from tqdm import tqdm
+
         if self.is_remote_repo:
             self._remote_repo_proxy._recreate_index()
             return
 
         from aim.sdk.index_manager import RepoIndexManager
+
         index_manager = RepoIndexManager.get_index_manager(self)
 
         # force delete the index db and the locks

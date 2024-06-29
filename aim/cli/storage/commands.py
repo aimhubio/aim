@@ -127,11 +127,13 @@ def prune(ctx):
 @click.option('-y', '--yes', is_flag=True, help='Automatically confirm prompt')
 @click.pass_context
 def reindex(ctx, yes):
-    """ Recreate index database from scratch. """
+    """Recreate index database from scratch."""
     repo_path = ctx.obj['repo']
     repo = Repo.from_path(repo_path)
-    click.secho(f'This command will forcefully recreate index db for Aim Repo \'{repo_path}\'.\n'
-                f'Please stop the Aim UI to not interfere with the procedure.')
+    click.secho(
+        f"This command will forcefully recreate index db for Aim Repo '{repo_path}'.\n"
+        f'Please stop the Aim UI to not interfere with the procedure.'
+    )
 
     if yes:
         confirmed = True

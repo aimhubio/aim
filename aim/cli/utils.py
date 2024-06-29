@@ -81,18 +81,29 @@ def build_db_upgrade_command():
     return [sys.executable, '-m', 'alembic', '-c', ini_file, 'upgrade', 'head']
 
 
-def build_uvicorn_command(app,
-                          host='0.0.0.0',
-                          port=0,
-                          workers=1,
-                          uds=None,
-                          ssl_keyfile=None,
-                          ssl_certfile=None,
-                          log_level='warning',
-                          ):
-    cmd = [sys.executable, '-m', 'uvicorn', '--ws-max-size', '1073741824',
-           '--host', host, '--port', f'{port}',
-           '--workers', f'{workers}']
+def build_uvicorn_command(
+    app,
+    host='0.0.0.0',
+    port=0,
+    workers=1,
+    uds=None,
+    ssl_keyfile=None,
+    ssl_certfile=None,
+    log_level='warning',
+):
+    cmd = [
+        sys.executable,
+        '-m',
+        'uvicorn',
+        '--ws-max-size',
+        '1073741824',
+        '--host',
+        host,
+        '--port',
+        f'{port}',
+        '--workers',
+        f'{workers}',
+    ]
 
     if os.getenv(AIM_ENV_MODE_KEY, 'prod') == 'prod':
         log_level = log_level or 'error'

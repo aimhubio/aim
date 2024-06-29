@@ -61,8 +61,10 @@ def remove_runs(ctx, hashes, corrupted, yes):
     if yes:
         confirmed = True
     else:
-        confirmed = click.confirm(f'This command will permanently delete {len(run_hashes)} runs from aim repo '
-                                  f'located at \'{repo_path}\'. Do you want to proceed?')
+        confirmed = click.confirm(
+            f'This command will permanently delete {len(run_hashes)} runs from aim repo '
+            f"located at '{repo_path}'. Do you want to proceed?"
+        )
     if not confirmed:
         return
 
