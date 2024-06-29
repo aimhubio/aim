@@ -1,24 +1,23 @@
 import asyncio
 import time
 
-from typing import Iterable, Iterator, List, Tuple, Union, Optional
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Iterable, Iterator, List, Optional, Tuple, Union
 
+from aim.sdk.sequence import Sequence
+from aim.sdk.sequence_collection import SequenceCollection
+from aim.sdk.uri_service import URIService, generate_resource_path
+from aim.storage.context import Context
+from aim.storage.treeutils import encode_tree
 from aim.web.api.runs.utils import (
     ASYNC_SLEEP_INTERVAL,
     PROGRESS_KEY_SUFFIX,
     IndexRange,
     collect_streamable_data,
-    get_run_props,
     get_run_params,
+    get_run_props,
 )
 from aim.web.configs import AIM_PROGRESS_REPORT_INTERVAL
-from aim.sdk.uri_service import URIService, generate_resource_path
-from aim.sdk.sequence_collection import SequenceCollection
-from aim.sdk.sequence import Sequence
 
-from aim.storage.treeutils import encode_tree
-from aim.storage.context import Context
 
 if TYPE_CHECKING:
     from aim.sdk.repo import Repo
@@ -36,7 +35,7 @@ class CustomObjectApi:
     def __init__(self, seq_type: str, resolve_blobs: bool):
         seq_cls = Sequence.registry.get(seq_type, None)
         if seq_cls is None:
-            raise ValueError(f'\'{self.seq_type}\' is not a valid sequence type.')
+            raise ValueError(f"'{self.seq_type}' is not a valid sequence type.")
         self.seq_type = seq_cls.sequence_name()
         self.resolve_blobs = resolve_blobs
         self.use_list = seq_cls.collections_allowed
@@ -76,12 +75,14 @@ class CustomObjectApi:
                 continue
             self.requested_traces.append(trace)
 
-    def set_ranges(self,
-                   record_range: IndexRange,
-                   record_density: int,
-                   index_range: Optional[IndexRange] = None,
-                   index_density: Optional[int] = None,
-                   record_step: Optional[int] = None):
+    def set_ranges(
+        self,
+        record_range: IndexRange,
+        record_density: int,
+        index_range: Optional[IndexRange] = None,
+        index_density: Optional[int] = None,
+        record_step: Optional[int] = None,
+    ):
         self.record_range = record_range
         self.record_density = record_density
 
@@ -111,10 +112,7 @@ class CustomObjectApi:
 
     async def search_result_streamer(self, skip_system: bool, report_progress: bool):
         def _pack_run_data(run_: 'Run', traces_: list):
-            ranges = {
-                'record_range_used': self.record_range,
-                'record_range_total': self.total_record_range
-            }
+            ranges = {'record_range_used': self.record_range, 'record_range_total': self.total_record_range}
             if self.use_list:
                 ranges['index_range_used'] = self.index_range
                 ranges['index_range_total'] = self.total_index_range
@@ -123,10 +121,11 @@ class CustomObjectApi:
                     'ranges': ranges,
                     'params': get_run_params(run_, skip_system=skip_system),
                     'traces': traces_,
-                    'props': get_run_props(run_)
+                    'props': get_run_props(run_),
                 }
             }
             return collect_streamable_data(encode_tree(run_dict))
+
         try:
             last_reported_progress_time = time.time()
             run_info = None
@@ -135,11 +134,12 @@ class CustomObjectApi:
                 run_info = self.trace_cache[key]
                 await asyncio.sleep(ASYNC_SLEEP_INTERVAL)
                 if report_progress and time.time() - last_reported_progress_time > AIM_PROGRESS_REPORT_INTERVAL:
-                    yield collect_streamable_data(encode_tree(
-                        {f'progress_{progress_reports_sent}_{PROGRESS_KEY_SUFFIX}': run_info['progress']}
-                    ))
-                    yield collect_streamable_data(encode_tree({f'progress_{progress_reports_sent}':
-                                                               run_info['progress']}))
+                    yield collect_streamable_data(
+                        encode_tree({f'progress_{progress_reports_sent}_{PROGRESS_KEY_SUFFIX}': run_info['progress']})
+                    )
+                    yield collect_streamable_data(
+                        encode_tree({f'progress_{progress_reports_sent}': run_info['progress']})
+                    )
                     progress_reports_sent += 1
                     last_reported_progress_time = time.time()
                 if run_info.get('traces') and run_info.get('run'):
@@ -148,16 +148,16 @@ class CustomObjectApi:
                         traces_list.append(self._get_trace_info(trace, True, True))
                     yield _pack_run_data(run_info['run'], traces_list)
                     if report_progress:
-                        yield collect_streamable_data(encode_tree({f'progress_{progress_reports_sent}':
-                                                                   run_info['progress']}))
+                        yield collect_streamable_data(
+                            encode_tree({f'progress_{progress_reports_sent}': run_info['progress']})
+                        )
                         progress_reports_sent += 1
                         last_reported_progress_time = time.time()
 
                 del self.trace_cache[key]
             self.traces = None
             if report_progress and run_info:
-                yield collect_streamable_data(encode_tree({f'progress_{progress_reports_sent}':
-                                                           run_info['progress']}))
+                yield collect_streamable_data(encode_tree({f'progress_{progress_reports_sent}': run_info['progress']}))
         except asyncio.CancelledError:
             pass
 
@@ -183,28 +183,29 @@ class CustomObjectApi:
         steps = []
         values = []
 
-        steps_vals = trace.data.view('val').\
-            range(self.record_range.start, self.record_range.stop).\
-            sample(self.record_density)
+        steps_vals = (
+            trace.data.view('val').range(self.record_range.start, self.record_range.stop).sample(self.record_density)
+        )
 
         for step, (val,) in steps_vals:
             steps.append(step)
             values.append(self._value_retriever(step, val, trace))
 
-        result = {
-            'name': trace.name,
-            'context': trace.context.to_dict(),
-            'values': values,
-            'iters': steps
-        }
+        result = {'name': trace.name, 'context': trace.context.to_dict(), 'values': values, 'iters': steps}
         if include_epochs:
-            result['epochs'] = trace.data.view('epoch').\
-                range(self.record_range.start, self.record_range.stop).\
-                sample(self.record_density).values_list()
+            result['epochs'] = (
+                trace.data.view('epoch')
+                .range(self.record_range.start, self.record_range.stop)
+                .sample(self.record_density)
+                .values_list()
+            )
         if include_timestamps:
-            result['timestamps'] = trace.data.view('time').\
-                range(self.record_range.start, self.record_range.stop).\
-                sample(self.record_density).values_list()
+            result['timestamps'] = (
+                trace.data.view('time')
+                .range(self.record_range.start, self.record_range.stop)
+                .sample(self.record_density)
+                .values_list()
+            )
         return result
 
     def _record_to_encodable(self, step: int, record, trace: Sequence) -> dict:
@@ -218,7 +219,7 @@ class CustomObjectApi:
         return rec_json
 
     def _record_collection_to_encodable(self, step: int, record_collection: Iterable, trace: Sequence) -> List[dict]:
-        assert self.use_list, f'Sequence \'{self.seq_type}\' does not support record collections.'
+        assert self.use_list, f"Sequence '{self.seq_type}' does not support record collections."
         result = []
         for idx, record in record_collection:
             rec_json = record.json()
@@ -260,18 +261,12 @@ class CustomObjectApi:
                     run_traces.append(trace)
                     callback(trace)
                 if run_traces:
-                    self.trace_cache[run.hash].update({
-                        'run': run,
-                        'traces': run_traces
-                    })
+                    self.trace_cache[run.hash].update({'run': run, 'traces': run_traces})
         elif self.requested_traces:
             for trace in self.requested_traces:
                 callback(trace)
             assert self.run is not None
-            self.trace_cache[self.run.hash] = {
-                'run': self.run,
-                'traces': self.requested_traces
-            }
+            self.trace_cache[self.run.hash] = {'run': self.run, 'traces': self.requested_traces}
 
     def _calculate_ranges(self) -> Union[IndexRange, Tuple[IndexRange, IndexRange]]:
         rec_start = None
@@ -280,12 +275,14 @@ class CustomObjectApi:
         idx_stop = -1
 
         if self.use_list:
+
             def _update_ranges(trace: Sequence):
                 nonlocal rec_start, rec_stop, idx_stop
                 rec_start = min(trace.first_step(), rec_start) if rec_start else trace.first_step()
                 rec_stop = max(trace.last_step(), rec_stop)
                 idx_stop = max(trace.record_length() or 1, idx_stop)
         else:
+
             def _update_ranges(trace: Sequence):
                 nonlocal rec_start, rec_stop, idx_stop
                 rec_start = min(trace.first_step(), rec_start) if rec_start else trace.first_step()

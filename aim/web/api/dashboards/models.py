@@ -1,4 +1,5 @@
 import uuid
+
 import sqlalchemy as sa
 
 from aim.web.api.db import Base

@@ -1,5 +1,6 @@
 def track_params_dists(model, run):
     from aim import Distribution
+
     data_hist = get_model_layers(model, 'data')
 
     for name, params in data_hist.items():
@@ -10,7 +11,7 @@ def track_params_dists(model, run):
                 context={
                     'type': 'data',
                     'params': 'weights',
-                }
+                },
             )
         if 'bias' in params:
             run.track(
@@ -19,12 +20,13 @@ def track_params_dists(model, run):
                 context={
                     'type': 'data',
                     'params': 'biases',
-                }
+                },
             )
 
 
 def track_gradients_dists(model, run):
     from aim import Distribution
+
     grad_hist = get_model_layers(model, 'grad')
 
     for name, params in grad_hist.items():
@@ -35,7 +37,7 @@ def track_gradients_dists(model, run):
                 context={
                     'type': 'gradients',
                     'params': 'weights',
-                }
+                },
             )
         if 'bias' in params:
             run.track(
@@ -44,16 +46,14 @@ def track_gradients_dists(model, run):
                 context={
                     'type': 'gradients',
                     'params': 'biases',
-                }
+                },
             )
 
 
 def get_model_layers(model, dt, parent_name=None):
     layers = {}
     for name, m in model.named_children():
-        layer_name = '{}__{}'.format(parent_name, name) \
-            if parent_name \
-            else name
+        layer_name = '{}__{}'.format(parent_name, name) if parent_name else name
         layer_name += '.{}'.format(type(m).__name__)
 
         if len(list(m.named_children())):

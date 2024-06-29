@@ -1,15 +1,14 @@
 import os
 
-from fastapi import FastAPI
-from fastapi.exceptions import HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.middleware.gzip import GZipMiddleware
-
+from aim.ext.utils import fallback_exception_handler, http_exception_handler
 from aim.sdk.configs import get_aim_repo_name
 from aim.web.configs import AIM_PROFILER_KEY
 from aim.web.middlewares.profiler import PyInstrumentProfilerMiddleware
 from aim.web.utils import get_root_path
-from aim.ext.utils import http_exception_handler, fallback_exception_handler
+from fastapi import FastAPI
+from fastapi.exceptions import HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 
 
 def create_app():
@@ -19,25 +18,22 @@ def create_app():
         CORSMiddleware,
         allow_origins=['*'],
         allow_methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'HEAD'],
-        allow_headers=['Origin', 'X-Requested-With',
-                       'Content-Type', 'Accept', 'Authorization', 'X-Timezone-Offset'],
+        allow_headers=['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization', 'X-Timezone-Offset'],
         allow_credentials=True,
-        max_age=86400
+        max_age=86400,
     )
 
-    from aim.web.api.runs.views import runs_router
-    from aim.web.api.runs.views import add_api_routes
-    from aim.web.api.tags.views import tags_router
-    from aim.web.api.experiments.views import experiment_router
+    from aim.sdk.index_manager import RepoIndexManager
     from aim.web.api.dashboard_apps.views import dashboard_apps_router
     from aim.web.api.dashboards.views import dashboards_router
-    from aim.web.api.projects.views import projects_router
-    from aim.web.api.views import statics_router
-    from aim.web.api.utils import ResourceCleanupMiddleware
-    from aim.web.configs import AIM_UI_BASE_PATH
-
+    from aim.web.api.experiments.views import experiment_router
     from aim.web.api.projects.project import Project
-    from aim.sdk.index_manager import RepoIndexManager
+    from aim.web.api.projects.views import projects_router
+    from aim.web.api.runs.views import add_api_routes, runs_router
+    from aim.web.api.tags.views import tags_router
+    from aim.web.api.utils import ResourceCleanupMiddleware
+    from aim.web.api.views import statics_router
+    from aim.web.configs import AIM_UI_BASE_PATH
 
     # The indexing thread has to run in the same process as the uvicorn app itself.
     # This allows sharing state of indexing using memory instead of process synchronization methods.
@@ -50,9 +46,10 @@ def create_app():
     api_app.add_exception_handler(HTTPException, http_exception_handler)
     api_app.add_exception_handler(Exception, fallback_exception_handler)
 
-    if os.environ.get(AIM_PROFILER_KEY) == "1":
-        api_app.add_middleware(PyInstrumentProfilerMiddleware,
-                               repo_path=os.path.join(get_root_path(), get_aim_repo_name()))
+    if os.environ.get(AIM_PROFILER_KEY) == '1':
+        api_app.add_middleware(
+            PyInstrumentProfilerMiddleware, repo_path=os.path.join(get_root_path(), get_aim_repo_name())
+        )
 
     add_api_routes()
 

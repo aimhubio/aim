@@ -1,9 +1,10 @@
 import random
-import numpy as np
-from tests.base import TestBase
 
-from aim.sdk.types import QueryReportMode
+import numpy as np
+
 from aim.sdk.repo import Run
+from aim.sdk.types import QueryReportMode
+from tests.base import TestBase
 
 
 class TestTrack(TestBase):

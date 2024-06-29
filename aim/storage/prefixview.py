@@ -1,7 +1,12 @@
-from aim.storage.container import Container, ContainerItemsIterator, ContainerKey, ContainerValue
-from aim.storage.containertreeview import ContainerTreeView
-
 from typing import Iterator, Tuple
+
+from aim.storage.container import (
+    Container,
+    ContainerItemsIterator,
+    ContainerKey,
+    ContainerValue,
+)
+from aim.storage.containertreeview import ContainerTreeView
 
 
 class PrefixView(Container):
@@ -29,13 +34,7 @@ class PrefixView(Container):
         container (:obj:`Container`): the parent container to build the view on
     """
 
-    def __init__(
-        self,
-        *,
-        prefix: bytes = b'',
-        container: Container,
-        read_only: bool = None
-    ) -> None:
+    def __init__(self, *, prefix: bytes = b'', container: Container, read_only: bool = None) -> None:
         self.prefix = prefix
         self.parent = container
 
@@ -65,10 +64,7 @@ class PrefixView(Container):
         index.delete_range(prefix, prefix + b'\xff')  # TODO check validity
         self.parent.finalize(index=index)
 
-    def absolute_path(
-        self,
-        path: bytes = None
-    ) -> bytes:
+    def absolute_path(self, path: bytes = None) -> bytes:
         """Returns the absolute path for the given relative `path`.
 
         Path separators / sentinels should be handled in higher level so that
@@ -80,11 +76,7 @@ class PrefixView(Container):
             return self.prefix
         return self.prefix + path
 
-    def get(
-        self,
-        key: ContainerKey,
-        default=None
-    ) -> ContainerValue:
+    def get(self, key: ContainerKey, default=None) -> ContainerValue:
         """Returns the value by the given `key` if it exists else `default`.
 
         The `default` is :obj:`None` by default.
@@ -92,20 +84,12 @@ class PrefixView(Container):
         path = self.absolute_path(key)
         return self.parent.get(path, default)
 
-    def __getitem__(
-        self,
-        key: ContainerKey
-    ) -> ContainerValue:
+    def __getitem__(self, key: ContainerKey) -> ContainerValue:
         """Returns the value by the given `key`."""
         path = self.absolute_path(key)
         return self.parent[path]
 
-    def set(
-        self,
-        key: ContainerKey,
-        value: ContainerValue,
-        store_batch=None
-    ) -> None:
+    def set(self, key: ContainerKey, value: ContainerValue, store_batch=None) -> None:
         """Set a value for given key, optionally store in a batch.
 
         If `store_batch` is provided, instead of the `(key, value)` being added
@@ -117,20 +101,12 @@ class PrefixView(Container):
         path = self.absolute_path(key)
         self.parent.set(path, value, store_batch=store_batch)
 
-    def __setitem__(
-        self,
-        key: ContainerKey,
-        value: ContainerValue
-    ) -> None:
+    def __setitem__(self, key: ContainerKey, value: ContainerValue) -> None:
         """Set a value for given key."""
         path = self.absolute_path(key)
         self.parent[path] = value
 
-    def delete(
-        self,
-        key: ContainerKey,
-        store_batch=None
-    ):
+    def delete(self, key: ContainerKey, store_batch=None):
         """Delete a key-value record by the given key,
         optionally store in a batch.
 
@@ -143,30 +119,18 @@ class PrefixView(Container):
         path = self.absolute_path(key)
         return self.parent.delete(path, store_batch=store_batch)
 
-    def __delitem__(
-        self,
-        key: ContainerKey
-    ) -> None:
+    def __delitem__(self, key: ContainerKey) -> None:
         """Delete a key-value record by the given key."""
         path = self.absolute_path(key)
         del self.parent[path]
 
-    def delete_range(
-        self,
-        begin: ContainerKey,
-        end: ContainerKey,
-        store_batch=None
-    ):
+    def delete_range(self, begin: ContainerKey, end: ContainerKey, store_batch=None):
         """Delete all the records in the given `[begin, end)` key range."""
         begin_path = self.absolute_path(begin)
         end_path = self.absolute_path(end)
-        self.parent.delete_range(begin_path, end_path,
-                                 store_batch=store_batch)
+        self.parent.delete_range(begin_path, end_path, store_batch=store_batch)
 
-    def next_item(
-        self,
-        key: ContainerKey = b''
-    ) -> Tuple[ContainerKey, ContainerValue]:
+    def next_item(self, key: ContainerKey = b'') -> Tuple[ContainerKey, ContainerValue]:
         """Returns `(key, value)` for the key that comes (lexicographically)
         right after the provided `key`.
         """
@@ -178,10 +142,7 @@ class PrefixView(Container):
                 raise KeyError
         return keys, value
 
-    def prev_item(
-        self,
-        key: ContainerKey = b''
-    ) -> Tuple[ContainerKey, ContainerValue]:
+    def prev_item(self, key: ContainerKey = b'') -> Tuple[ContainerKey, ContainerValue]:
         """Returns `(key, value)` for the key that comes (lexicographically)
         right before the provided `key`.
         """
@@ -193,10 +154,7 @@ class PrefixView(Container):
                 raise KeyError
         return keys, value
 
-    def walk(
-        self,
-        key: ContainerKey = b''
-    ):
+    def walk(self, key: ContainerKey = b''):
         """A bi-directional generator to walk over the collection of records on
         any arbitrary order. The `prefix` sent to the generator (lets call it
         a `walker`) seeks for lower-bound key in the collection.
@@ -229,10 +187,7 @@ class PrefixView(Container):
             key = yield next_key
             p = self.absolute_path(key)
 
-    def items(
-        self,
-        key: ContainerKey = b''
-    ) -> Iterator[Tuple[ContainerKey, ContainerValue]]:
+    def items(self, key: ContainerKey = b'') -> Iterator[Tuple[ContainerKey, ContainerValue]]:
         """Iterate over all the key-value records in the prefix key range.
 
         The iteration is always performed in lexiographic order w.r.t keys.
@@ -252,10 +207,7 @@ class PrefixView(Container):
         """
         return PrefixViewItemsIterator(self, key)
 
-    def view(
-        self,
-        prefix: bytes = b''
-    ) -> Container:
+    def view(self, prefix: bytes = b'') -> Container:
         """Return a view (even mutable ones) that enable access to the container
         but with modifications.
 
@@ -281,9 +233,7 @@ class PrefixView(Container):
         # TODO *args instead?
         return self.parent.view(self.prefix + prefix)
 
-    def tree(
-        self
-    ) -> ContainerTreeView:
+    def tree(self) -> ContainerTreeView:
         """Return a :obj:`ContainerTreeView` which enables hierarchical view and access
         to the container records.
 
@@ -313,10 +263,7 @@ class PrefixView(Container):
         """
         return self.parent.batch()
 
-    def commit(
-        self,
-        batch
-    ):
+    def commit(self, batch):
         """Execute the accumulated write operations in the given `batch`.
 
         Depending on the :obj:`Container` implementation, this may feature
@@ -326,7 +273,6 @@ class PrefixView(Container):
 
 
 class PrefixViewItemsIterator(ContainerItemsIterator):
-
     def __init__(self, prefix_view, key):
         self.prefix_view = prefix_view
         self.path = prefix_view.absolute_path(key)
@@ -343,4 +289,4 @@ class PrefixViewItemsIterator(ContainerItemsIterator):
         keys = item[0]
         value = item[1]
 
-        return keys[self.prefix_len:], value
+        return keys[self.prefix_len :], value

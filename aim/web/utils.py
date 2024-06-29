@@ -1,9 +1,10 @@
-from importlib import import_module
 import os
 
-from aim.web.configs import AIM_UI_MOUNTED_REPO_PATH
+from importlib import import_module
+
 from aim.sdk.configs import get_aim_repo_name
 from aim.sdk.utils import clean_repo_path
+from aim.web.configs import AIM_UI_MOUNTED_REPO_PATH
 
 
 def get_module(name, required=True):
@@ -11,7 +12,7 @@ def get_module(name, required=True):
         return import_module(name)
     except Exception:
         if required:
-            raise ValueError('No module named: \'{}\''.format(name))
+            raise ValueError("No module named: '{}'".format(name))
         return None
 
 

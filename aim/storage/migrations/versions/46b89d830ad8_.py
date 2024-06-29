@@ -5,8 +5,10 @@ Revises: b07e7b07c8ce
 Create Date: 2022-11-09 05:05:48.794990
 
 """
-from alembic import op
+
 import sqlalchemy as sa
+
+from alembic import op
 
 
 # revision identifiers, used by Alembic.
@@ -24,14 +26,18 @@ def upgrade():
     with op.batch_alter_table('note') as batch_op:
         batch_op.create_foreign_key('fk_experiment_note', 'experiment', ['experiment_id'], ['id'])
 
-    op.create_table('run_info',
-    sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
-    sa.Column('run_id', sa.Integer(), nullable=True),
-    sa.Column('created_at', sa.DateTime(), nullable=True),
-    sa.Column('updated_at', sa.DateTime(), nullable=True),
-    sa.Column('last_notification_index', sa.Integer(), nullable=True),
-    sa.ForeignKeyConstraint(['run_id'], ['run.id'], ),
-    sa.PrimaryKeyConstraint('id')
+    op.create_table(
+        'run_info',
+        sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
+        sa.Column('run_id', sa.Integer(), nullable=True),
+        sa.Column('created_at', sa.DateTime(), nullable=True),
+        sa.Column('updated_at', sa.DateTime(), nullable=True),
+        sa.Column('last_notification_index', sa.Integer(), nullable=True),
+        sa.ForeignKeyConstraint(
+            ['run_id'],
+            ['run.id'],
+        ),
+        sa.PrimaryKeyConstraint('id'),
     )
     # ### end Alembic commands ###
 

@@ -1,8 +1,7 @@
 from aim import Repo
-
 from performance_tests.base import StorageTestBase
-from performance_tests.utils import get_baseline, write_baseline
 from performance_tests.storage.utils import iterative_access_metric_values
+from performance_tests.utils import get_baseline, write_baseline
 
 
 class TestIterativeAccessExecutionTime(StorageTestBase):

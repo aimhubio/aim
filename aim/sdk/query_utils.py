@@ -1,15 +1,16 @@
 import datetime
-import pytz
 
-from typing import Any, Union
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Union
+
+import pytz
 
 from aim.storage.context import Context
 from aim.storage.proxy import AimObjectProxy
 from aim.storage.structured.entities import StructuredObject
+from aim.storage.structured.sql_engine.entities import ModelMappedRun
 from aim.storage.treeview import TreeView
 from aim.storage.types import AimObject, AimObjectKey, AimObjectPath, SafeNone
-from aim.storage.structured.sql_engine.entities import ModelMappedRun
+
 
 if TYPE_CHECKING:
     from aim.sdk.run import Run
@@ -39,13 +40,15 @@ class RunView:
                 if not end_time:
                     return None
                 else:
-                    return datetime.datetime.fromtimestamp(end_time, tz=pytz.utc).replace(tzinfo=None)\
-                        - datetime.timedelta(minutes=self._timezone_offset)
+                    return datetime.datetime.fromtimestamp(end_time, tz=pytz.utc).replace(
+                        tzinfo=None
+                    ) - datetime.timedelta(minutes=self._timezone_offset)
             else:
                 return end_time
         if item == 'created_at':
-            return getattr(self.db.caches['runs_cache'][self.hash], item)\
-                - datetime.timedelta(minutes=self._timezone_offset)
+            return getattr(self.db.caches['runs_cache'][self.hash], item) - datetime.timedelta(
+                minutes=self._timezone_offset
+            )
         if item in ('active', 'duration'):
             return getattr(self.run, item)
         elif item in self.structured_run_cls.fields():
@@ -70,14 +73,9 @@ class RunView:
                     self.proxy_cache[key] = res
             return res
 
-        return AimObjectProxy(safe_collect, view=self.meta_run_attrs_tree.subtree(key),
-                              cache=self.proxy_cache)
+        return AimObjectProxy(safe_collect, view=self.meta_run_attrs_tree.subtree(key), cache=self.proxy_cache)
 
-    def get(
-        self,
-        key,
-        default: Any = None
-    ) -> AimObject:
+    def get(self, key, default: Any = None) -> AimObject:
         try:
             return self.__getitem__(key)
         except KeyError:
@@ -135,11 +133,7 @@ class ContextView:
     def __getitem__(self, key):
         return self.context[key]
 
-    def get(
-            self,
-            key,
-            default: Any = None
-    ) -> AimObject:
+    def get(self, key, default: Any = None) -> AimObject:
         try:
             return self.__getitem__(key)
         except KeyError:
@@ -171,8 +165,6 @@ class SequenceView:
                 return SafeNone()
 
         if not self._sequence_meta_tree:
-            self._sequence_meta_tree = self.run.meta_run_tree.subtree(('traces',
-                                                                       Context(self._context).idx,
-                                                                       self.name))
+            self._sequence_meta_tree = self.run.meta_run_tree.subtree(('traces', Context(self._context).idx, self.name))
 
         return AimObjectProxy(safe_collect, view=self._sequence_meta_tree.subtree(item))

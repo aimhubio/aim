@@ -1,3 +1,6 @@
+import datetime
+import uuid
+
 from sqlalchemy import (
     Boolean,
     Column,
@@ -7,11 +10,9 @@ from sqlalchemy import (
     Table,
     Text,
 )
-from sqlalchemy.orm import relationship, backref, validates
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import backref, relationship, validates
 
-import uuid
-import datetime
 
 Base = declarative_base()
 
@@ -25,9 +26,10 @@ def default_to_run_hash(context):
 
 
 run_tags = Table(
-    'run_tag', Base.metadata,
+    'run_tag',
+    Base.metadata,
     Column('run_id', Integer, ForeignKey('run.id'), primary_key=True, nullable=False),
-    Column('tag_id', Integer, ForeignKey('tag.id'), primary_key=True, nullable=False)
+    Column('tag_id', Integer, ForeignKey('tag.id'), primary_key=True, nullable=False),
 )
 
 
@@ -146,4 +148,4 @@ class RunInfo(Base):
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
     last_notification_index = Column(Integer, default=-1)
-    run = relationship('Run', uselist=False, backref=backref("info", uselist=False))
+    run = relationship('Run', uselist=False, backref=backref('info', uselist=False))

@@ -1,7 +1,7 @@
-from typing import Union, Tuple
+from typing import Tuple, Union
 
-from aim.sdk.sequence import Sequence
 from aim.sdk.objects.figure import Figure
+from aim.sdk.sequence import Sequence
 
 
 class Figures(Sequence):
@@ -13,4 +13,4 @@ class Figures(Sequence):
 
     @classmethod
     def sequence_name(cls) -> str:
-        return "figures"
+        return 'figures'

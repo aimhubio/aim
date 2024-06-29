@@ -1,21 +1,21 @@
 import logging
-
-import click
 import uuid
 
-from click import core
 from collections import OrderedDict
-from typing import Optional, Mapping
+from typing import Mapping, Optional
+
+import click
 
 from aim.ext.notifier import get_config
 from aim.ext.notifier.utils import has_watcher_config, set_default_config
-from aim.sdk.run_status_watcher import RunStatusWatcher
 from aim.sdk.repo import Repo
+from aim.sdk.run_status_watcher import RunStatusWatcher
+from click import core
 
 
 core._verify_python3_env = lambda: None
 DEFAULT_MESSAGE_TEMPLATE = "❗️ Something wrong with Run '{run.hash}'. Please check. ❗️"
-MESSAGE_PROMPT = "Stuck Runs notification message"
+MESSAGE_PROMPT = 'Stuck Runs notification message'
 
 
 class OrderedGroup(click.Group):
@@ -30,7 +30,7 @@ class OrderedGroup(click.Group):
 
 def check_configuration(ctx: click.Context, repo: Repo) -> bool:
     if not has_watcher_config(repo.path):
-        click.echo(f'Repo \'{repo.path}\' has no configured notifiers.')
+        click.echo(f"Repo '{repo.path}' has no configured notifiers.")
         if click.confirm('Would you like to configure notifiers?', default=True):
             ctx.invoke(add_config)
         elif click.confirm('Would you like to use default configuration?'):
@@ -50,13 +50,12 @@ def dump_notifier_config(cfg: dict):
 
 
 @click.group()
-@click.option('--repo',
-              required=False,
-              help='Aim Repo to check Run statuses.',
-              type=click.Path(exists=True,
-                              file_okay=False,
-                              dir_okay=True,
-                              writable=True))
+@click.option(
+    '--repo',
+    required=False,
+    help='Aim Repo to check Run statuses.',
+    type=click.Path(exists=True, file_okay=False, dir_okay=True, writable=True),
+)
 @click.pass_context
 def cli_entry_point(ctx, repo):
     """Service for detecting and reporting training Run failures."""
@@ -75,7 +74,7 @@ def start_watcher(ctx):
     repo = ctx.obj['repo']
     if check_configuration(ctx, repo):
         watcher = RunStatusWatcher(repo)
-        click.secho(f'Starting Aim watcher for repo \'{repo.path}\'...', fg='yellow')
+        click.secho(f"Starting Aim watcher for repo '{repo.path}'...", fg='yellow')
         click.echo('Press Ctrl+C to exit')
 
         watcher.start_watcher()
@@ -95,7 +94,7 @@ def dump_config(ctx):
     cfg = ctx.obj['config']
     if not cfg.exists():
         repo = ctx.obj['repo']
-        click.echo(f'Cannot find notifier configuration for Repo \'{repo.path}\'.')
+        click.echo(f"Cannot find notifier configuration for Repo '{repo.path}'.")
         return
 
     click.echo(cfg.dump())
@@ -108,12 +107,12 @@ def list_config(ctx):
     cfg = ctx.obj['config']
     if not cfg.exists():
         repo = ctx.obj['repo']
-        click.echo(f'Cannot find notifier configuration for Repo \'{repo.path}\'.')
+        click.echo(f"Cannot find notifier configuration for Repo '{repo.path}'.")
         return
 
-    click.echo("{:<40} {:<10} {:<10}".format('NOTIFIER ID', 'TYPE', 'STATUS'))
+    click.echo('{:<40} {:<10} {:<10}'.format('NOTIFIER ID', 'TYPE', 'STATUS'))
     for notifier in cfg.notifiers.values():
-        click.echo("{:<40} {:<10} {:<10}".format(notifier['id'], notifier['type'], notifier['status']))
+        click.echo('{:<40} {:<10} {:<10}'.format(notifier['id'], notifier['type'], notifier['status']))
 
 
 @click.command(name='get-log-level')
@@ -123,7 +122,7 @@ def get_log_level(ctx):
     cfg = ctx.obj['config']
     if not cfg.exists():
         repo = ctx.obj['repo']
-        click.echo(f'Cannot find notifier configuration for Repo \'{repo.path}\'.')
+        click.echo(f"Cannot find notifier configuration for Repo '{repo.path}'.")
         return
 
     click.echo(f'Log level: {logging.getLevelName(cfg.log_level)}')
@@ -142,7 +141,7 @@ def set_log_level(ctx, level):
     cfg = ctx.obj['config']
     if not cfg.exists():
         repo = ctx.obj['repo']
-        click.echo(f'Cannot find notifier configuration for Repo \'{repo.path}\'.')
+        click.echo(f"Cannot find notifier configuration for Repo '{repo.path}'.")
         return
 
     cfg.log_level = getattr(logging, level)
@@ -175,7 +174,7 @@ def remove_config(ctx, notifier_id):
     cfg = ctx.obj['config']
     if not cfg.exists():
         repo = ctx.obj['repo']
-        click.echo(f'Cannot find notifier configuration for Repo \'{repo.path}\'.')
+        click.echo(f"Cannot find notifier configuration for Repo '{repo.path}'.")
         return
 
     if notifier_id in cfg.notifiers:
@@ -195,7 +194,7 @@ def enable_config(ctx, notifier_id):
     cfg = ctx.obj['config']
     if not cfg.exists():
         repo = ctx.obj['repo']
-        click.echo(f'Cannot find notifier configuration for Repo \'{repo.path}\'.')
+        click.echo(f"Cannot find notifier configuration for Repo '{repo.path}'.")
         return
 
     if notifier_id in cfg.notifiers:
@@ -213,7 +212,7 @@ def disable_config(ctx, notifier_id):
     cfg = ctx.obj['config']
     if not cfg.exists():
         repo = ctx.obj['repo']
-        click.echo(f'Cannot find notifier configuration for Repo \'{repo.path}\'.')
+        click.echo(f"Cannot find notifier configuration for Repo '{repo.path}'.")
         return
 
     if notifier_id in cfg.notifiers:
@@ -226,8 +225,9 @@ def disable_config(ctx, notifier_id):
 @add_config.command(name='workplace')
 @click.option('--group-id', prompt=True, required=True, type=int)
 @click.option('--access-token', prompt=True, required=True, type=str)
-@click.option('--message', prompt=MESSAGE_PROMPT, required=False, type=str,
-              default=DEFAULT_MESSAGE_TEMPLATE, show_default=True)
+@click.option(
+    '--message', prompt=MESSAGE_PROMPT, required=False, type=str, default=DEFAULT_MESSAGE_TEMPLATE, show_default=True
+)
 @click.pass_context
 def workplace_config(ctx, group_id, access_token, message):
     cfg = ctx.obj['config']
@@ -238,7 +238,7 @@ def workplace_config(ctx, group_id, access_token, message):
             'group_id': group_id,
             'access_token': access_token,
             'message': message,
-        }
+        },
     }
     dump_notifier_config(new_cfg)
     click.confirm('Save notifier configuration above?', default=True, abort=True)
@@ -248,8 +248,9 @@ def workplace_config(ctx, group_id, access_token, message):
 
 @add_config.command(name='slack')
 @click.option('--webhook-url', prompt=True, required=True, type=str)
-@click.option('--message', prompt=MESSAGE_PROMPT, required=False, type=str,
-              default=DEFAULT_MESSAGE_TEMPLATE, show_default=True)
+@click.option(
+    '--message', prompt=MESSAGE_PROMPT, required=False, type=str, default=DEFAULT_MESSAGE_TEMPLATE, show_default=True
+)
 @click.pass_context
 def slack_config(ctx, webhook_url, message):
     cfg = ctx.obj['config']
@@ -259,7 +260,7 @@ def slack_config(ctx, webhook_url, message):
         'arguments': {
             'url': webhook_url,
             'message': message,
-        }
+        },
     }
     dump_notifier_config(new_cfg)
     click.confirm('Save notifier configuration above?', default=True, abort=True)
@@ -268,8 +269,9 @@ def slack_config(ctx, webhook_url, message):
 
 
 @add_config.command(name='logger')
-@click.option('--message', prompt=MESSAGE_PROMPT, required=False, type=str,
-              default=DEFAULT_MESSAGE_TEMPLATE, show_default=True)
+@click.option(
+    '--message', prompt=MESSAGE_PROMPT, required=False, type=str, default=DEFAULT_MESSAGE_TEMPLATE, show_default=True
+)
 @click.pass_context
 def logger_config(ctx, message):
     cfg = ctx.obj['config']
@@ -278,7 +280,7 @@ def logger_config(ctx, message):
         'type': 'logger',
         'arguments': {
             'message': message,
-        }
+        },
     }
     dump_notifier_config(new_cfg)
     click.confirm('Save notifier configuration above?', default=True, abort=True)

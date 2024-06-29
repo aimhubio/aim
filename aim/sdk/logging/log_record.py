@@ -1,25 +1,26 @@
-import time
 import logging
+import time
 
-from inspect import getframeinfo, currentframe
-from typing import Optional, Union, Tuple
-
-from aim.storage.object import CustomObject
-from aim.storage.hashing import hash_auto
+from inspect import currentframe, getframeinfo
+from typing import Optional, Tuple, Union
 
 from aim.sdk.sequence import Sequence
+from aim.storage.hashing import hash_auto
+from aim.storage.object import CustomObject
 
 
 @CustomObject.alias('aim.log_record')
 class LogRecord(CustomObject):
     AIM_NAME = 'aim.log_record'
 
-    def __init__(self,
-                 message: str,
-                 level: int,
-                 timestamp: Optional[float] = None,
-                 logger_info: Optional[Tuple[str, int]] = None,
-                 **kwargs):
+    def __init__(
+        self,
+        message: str,
+        level: int,
+        timestamp: Optional[float] = None,
+        logger_info: Optional[Tuple[str, int]] = None,
+        **kwargs,
+    ):
         super().__init__()
         self.storage['message'] = message
         self.storage['log_level'] = level
@@ -45,7 +46,7 @@ class LogRecord(CustomObject):
             'message': self.message,
             'log_level': logging.getLevelName(self.level),
             'timestamp': self.storage['timestamp'],
-            'args': self.storage.get('extra_args', None)
+            'args': self.storage.get('extra_args', None),
         }
 
     def __hash__(self):

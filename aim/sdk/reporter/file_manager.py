@@ -1,20 +1,19 @@
-from pathlib import Path
-from typing import Union, Optional
-from abc import abstractmethod
-
 import logging
+
+from abc import abstractmethod
+from pathlib import Path
+from typing import Optional, Union
+
 
 logger = logging.getLogger(__name__)
 
 
 class FileManager(object):
     @abstractmethod
-    def poll(self, pattern: str) -> Optional[str]:
-        ...
+    def poll(self, pattern: str) -> Optional[str]: ...
 
     @abstractmethod
-    def touch(self, filename: str, cleanup_file_pattern: Optional[str] = None):
-        ...
+    def touch(self, filename: str, cleanup_file_pattern: Optional[str] = None): ...
 
 
 class LocalFileManager(FileManager):
@@ -36,23 +35,23 @@ class LocalFileManager(FileManager):
     def touch(self, filename: str, cleanup_file_pattern: Optional[str] = None):
         self.base_dir.mkdir(parents=True, exist_ok=True)
         new_path = self.base_dir / filename
-        logger.debug(f"touching check-in: {new_path}")
+        logger.debug(f'touching check-in: {new_path}')
         new_path.touch(exist_ok=True)
         if cleanup_file_pattern is not None:
             self._cleanup(cleanup_file_pattern)
 
     def _cleanup(self, pattern: str) -> Path:
         *paths_to_remove, max_path = sorted(self.base_dir.glob(pattern))
-        logger.debug(f"found {len(paths_to_remove)} check-ins:")
-        logger.debug(f"the acting one: {max_path}")
+        logger.debug(f'found {len(paths_to_remove)} check-ins:')
+        logger.debug(f'the acting one: {max_path}')
 
         for path in paths_to_remove:
-            logger.debug(f"check-in {path} is being removed")
+            logger.debug(f'check-in {path} is being removed')
             try:
                 # Ignore errors, as the file may have been removed already.
                 path.unlink()
             except OSError:
                 pass
-            logger.debug(f"check-in {path} removed")
+            logger.debug(f'check-in {path} removed')
 
         return max_path

@@ -4,6 +4,7 @@ from aim.sdk.num_utils import inst_has_typename
 from aim.storage.object import CustomObject
 from aim.storage.types import BLOB
 
+
 logger = logging.getLogger(__name__)
 
 
@@ -53,11 +54,13 @@ class Figure(CustomObject):
             raise ModuleNotFoundError('Plotly is required to track matplotlib figure.')
 
         try:
-            logger.warning('Tracking a matplotlib object using "aim.Figure" might not behave as expected.'
-                           'In such cases, consider tracking with "aim.Image".')
+            logger.warning(
+                'Tracking a matplotlib object using "aim.Figure" might not behave as expected.'
+                'In such cases, consider tracking with "aim.Image".'
+            )
             for ax in obj.axes:
                 for collection in ax.collections:
-                    if not hasattr(collection, "get_offset_position"):
+                    if not hasattr(collection, 'get_offset_position'):
                         collection.get_offset_position = matplotlib_get_offset_position.__get__(collection)
             plotly_obj = mpl_to_plotly(obj)
         except ValueError as err:
@@ -67,11 +70,7 @@ class Figure(CustomObject):
 
     def json(self):
         """Dump figure metadata to a dict"""
-        return {
-            'source': self.storage['source'],
-            'format': self.storage['format'],
-            'version': self.storage['version']
-        }
+        return {'source': self.storage['source'], 'format': self.storage['format'], 'version': self.storage['version']}
 
     def to_plotly_figure(self):
         try:

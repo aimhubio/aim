@@ -3,13 +3,14 @@ import os
 from collections import defaultdict
 from weakref import WeakValueDictionary
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, scoped_session
-
 from aim.storage.migrations.utils import upgrade_database
-from aim.storage.structured.sql_engine.factory import ModelMappedFactory as ObjectFactory
+from aim.storage.structured.sql_engine.factory import (
+    ModelMappedFactory as ObjectFactory,
+)
 from aim.storage.types import SafeNone
 from aim.web.configs import AIM_LOG_LEVEL_KEY
+from sqlalchemy import create_engine
+from sqlalchemy.orm import scoped_session, sessionmaker
 
 
 class ObjectCache:
@@ -54,12 +55,14 @@ class DB(ObjectFactory):
     # TODO: [AT] implement readonly if needed
     def __init__(self, path: str, readonly: bool = False):
         import logging
+
         super().__init__()
         self.path = path
         self.db_url = self.get_db_url(path)
         self.readonly = readonly
-        self.engine = create_engine(self.db_url,
-                                    echo=(logging.INFO >= int(os.environ.get(AIM_LOG_LEVEL_KEY, logging.WARNING))))
+        self.engine = create_engine(
+            self.db_url, echo=(logging.INFO >= int(os.environ.get(AIM_LOG_LEVEL_KEY, logging.WARNING)))
+        )
         self.session_cls = scoped_session(sessionmaker(autoflush=False, bind=self.engine))
         self._upgraded = None
 

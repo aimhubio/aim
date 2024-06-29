@@ -1,22 +1,30 @@
 from abc import ABCMeta
-from typing import Iterator, Collection, TypeVar, Union, Callable
+from typing import Callable, Collection, Iterator, TypeVar, Union
+
 from sqlalchemy import text
+
 
 try:
     from typing import GenericMeta
 except ImportError:
+
     class GenericMeta(type):
         pass
+
 
 T = TypeVar('T')
 
 
 class ModelMappedProperty:
-    def __init__(self, name: str, mapped_name: str = None,
-                 get_modifier: Callable = None,
-                 with_setter: bool = True,
-                 direct_setter: bool = False,
-                 autogenerate: bool = True):
+    def __init__(
+        self,
+        name: str,
+        mapped_name: str = None,
+        get_modifier: Callable = None,
+        with_setter: bool = True,
+        direct_setter: bool = False,
+        autogenerate: bool = True,
+    ):
         self.name = name
         self.mapped_name = mapped_name or self.name
         self.get_modifier = get_modifier
@@ -33,6 +41,7 @@ class ModelMappedProperty:
 
         setter = None
         if self.with_setter or self.direct_setter:
+
             def direct_setter(object_, value):
                 engine = object_._session.bind
                 table_name = object_._model.__tablename__
@@ -61,9 +70,8 @@ class ModelMappedProperty:
 class ModelMappedCollection(Collection[T]):
     def __init__(self, session, **kwargs):
         # TODO: [AT] Find elegant way to check mutually exclusive args
-        if ('query' not in kwargs and 'collection' not in kwargs) \
-                or ('query' in kwargs and 'collection' in kwargs):
-            raise ValueError('Cannot initialize ModelMappedCollection. Please provide \'query\' or \'collection\'.')
+        if ('query' not in kwargs and 'collection' not in kwargs) or ('query' in kwargs and 'collection' in kwargs):
+            raise ValueError("Cannot initialize ModelMappedCollection. Please provide 'query' or 'collection'.")
 
         self.session = session
         self.query = kwargs.get('query')
@@ -110,7 +118,7 @@ class ModelMappedClassMeta(GenericMeta, ABCMeta):
         model = namespace.get('__model__')
         mapped_properties = namespace.get('__mapped_properties__')
         if not model:
-            raise TypeError(f'Model-mapped class \'{name}\' attribute \'__model__\' must be set to mapped model.')
+            raise TypeError(f"Model-mapped class '{name}' attribute '__model__' must be set to mapped model.")
 
         if mcls.__mapping__.get(model):
             return mcls.__mapping__.get(model)
@@ -118,7 +126,7 @@ class ModelMappedClassMeta(GenericMeta, ABCMeta):
         schema = []
         for attribute in mapped_properties:
             if not isinstance(attribute, ModelMappedProperty):
-                raise TypeError(f'Mapped property \'{attribute.name}\' should be of type \'MappedProperty\'.')
+                raise TypeError(f"Mapped property '{attribute.name}' should be of type 'MappedProperty'.")
             schema.append(attribute.name)
             if attribute.autogenerate:
                 namespace[attribute.name] = attribute.generate_property()

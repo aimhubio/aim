@@ -1,5 +1,6 @@
-from pydantic import BaseModel
 from typing import Dict, List, Optional
+
+from pydantic import BaseModel
 
 
 class ProjectApiOut(BaseModel):
@@ -26,7 +27,7 @@ class ProjectActivityApiOut(BaseModel):
     num_runs: int
     num_archived_runs: int
     num_active_runs: int
-    activity_map: Dict[str, int] = {"2021-01-01": 54}
+    activity_map: Dict[str, int] = {'2021-01-01': 54}
 
 
 class Sequence(BaseModel):

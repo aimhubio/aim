@@ -16,13 +16,11 @@ class TrackerKerasCallbackMetricsEpochEndMixin(object):
 
         track_func = self._run.track
 
-        train_logs = {k: v for k, v in logs.items() if
-                      not k.startswith('val_')}
+        train_logs = {k: v for k, v in logs.items() if not k.startswith('val_')}
         for name, value in train_logs.items():
             track_func(value, name=name, epoch=epoch, context={'subset': 'train'})
 
-        val_logs = {k: v for k, v in logs.items() if
-                    k.startswith('val_')}
+        val_logs = {k: v for k, v in logs.items() if k.startswith('val_')}
         for name, value in val_logs.items():
             track_func(value, name=name[4:], epoch=epoch, context={'subset': 'val'})
 

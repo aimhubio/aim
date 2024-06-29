@@ -1,4 +1,5 @@
 import logging
+
 from typing import Optional
 
 from aim.ext.notifier.base_notifier import BaseNotifier

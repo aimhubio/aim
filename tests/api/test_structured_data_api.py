@@ -73,8 +73,10 @@ class TestStructuredRunApi(PrefilledDataApiTestBase):
         matching_runs = self.repo.structured_db.search_runs('Run number 3')
         run = next(iter(matching_runs))
         client = self.client
-        resp = client.put(f'/api/runs/{run.hash}', json={'description': f'long text {self.test_id}',
-                                                         'name': f'best run {self.test_id}'})
+        resp = client.put(
+            f'/api/runs/{run.hash}',
+            json={'description': f'long text {self.test_id}', 'name': f'best run {self.test_id}'},
+        )
         self.assertEqual(200, resp.status_code)
 
         resp = client.get(f'/api/runs/{run.hash}/info/').json()
@@ -129,9 +131,10 @@ class TestStructuredRunApi(PrefilledDataApiTestBase):
         tag = next(iter(self.repo.structured_db.tags()))
         self.assertEqual(None, tag.color)
         client = self.client
-        response = client.put(f'/api/tags/{tag.uuid}/', json={'name': 'my awesome tag',
-                                                              'color': '#FFFFFF',
-                                                              'description': 'new description'})
+        response = client.put(
+            f'/api/tags/{tag.uuid}/',
+            json={'name': 'my awesome tag', 'color': '#FFFFFF', 'description': 'new description'},
+        )
         self.assertEqual(200, response.status_code)
 
         response = client.get(f'/api/tags/{tag.uuid}/').json()
@@ -278,5 +281,5 @@ class TestStructuredRunApi(PrefilledDataApiTestBase):
 
         response = client.put(f'/api/experiments/{exp_uuid}/', json={'archived': True})
         self.assertEqual(response.status_code, 400)
-        error_msg = f'Cannot archive experiment \'{exp_uuid}\'. Experiment has associated runs.'
+        error_msg = f"Cannot archive experiment '{exp_uuid}'. Experiment has associated runs."
         self.assertEqual(response.json()['message'], error_msg)

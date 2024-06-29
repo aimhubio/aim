@@ -1,10 +1,11 @@
 import fnmatch
-import os
-
-from typing import List, Tuple, TYPE_CHECKING
 import io
+import os
 import zipfile
+
 from datetime import datetime
+from typing import TYPE_CHECKING, List, Tuple
+
 
 if TYPE_CHECKING:
     from aim.sdk.repo import Repo
@@ -47,8 +48,7 @@ def upload_repo_runs(buffer: io.BytesIO, bucket_name: str) -> Tuple[bool, str]:
         import boto3
     except ImportError:
         raise RuntimeError(
-            'This command requires \'boto3\' to be installed. '
-            'Please install it with command: \n pip install boto3'
+            "This command requires 'boto3' to be installed. " 'Please install it with command: \n pip install boto3'
         )
 
     try:

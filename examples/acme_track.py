@@ -1,6 +1,7 @@
 from typing import Optional
 
 import dm_env
+
 from acme import specs, wrappers
 from acme.agents.jax import d4pg
 from acme.jax import experiments
@@ -59,6 +60,4 @@ experiment_config = experiments.ExperimentConfig(
 )  # Each episode is 1000 steps.
 
 
-experiments.run_experiment(
-    experiment=experiment_config, eval_every=1000, num_eval_episodes=1
-)
+experiments.run_experiment(experiment=experiment_config, eval_every=1000, num_eval_episodes=1)

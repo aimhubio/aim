@@ -3,6 +3,7 @@ from typing import Optional
 from aim.ext.resource.configs import DEFAULT_SYSTEM_TRACKING_INT
 from aim.sdk.run import Run
 
+
 try:
     from xgboost.callback import TrainingCallback
 except ImportError:
@@ -13,13 +14,14 @@ except ImportError:
 
 
 class AimCallback(TrainingCallback):
-
-    def __init__(self, repo: Optional[str] = None,
-                 experiment: Optional[str] = None,
-                 system_tracking_interval: Optional[int]
-                 = DEFAULT_SYSTEM_TRACKING_INT,
-                 log_system_params: Optional[bool] = True,
-                 capture_terminal_logs: Optional[bool] = True,):
+    def __init__(
+        self,
+        repo: Optional[str] = None,
+        experiment: Optional[str] = None,
+        system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT,
+        log_system_params: Optional[bool] = True,
+        capture_terminal_logs: Optional[bool] = True,
+    ):
         super().__init__()
         self._repo_path = repo
         self._experiment = experiment

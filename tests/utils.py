@@ -1,20 +1,19 @@
 import datetime
 import itertools
-import os.path
-import shutil
-import numpy
-from PIL import Image as pil_image
+import struct
 
 from typing import Iterator
-import struct
-from sqlalchemy import text as sa_text
 
+import numpy
+
+from aim.sdk.objects.image import Image as AimImage
 from aim.sdk.repo import Repo
 from aim.sdk.run import Run
-from aim.sdk.objects.image import Image as AimImage
 from aim.storage.structured.sql_engine.models import Base as StructuredBase
-from aim.web.api.db import get_contexted_session
 from aim.web.api.db import Base as ApiBase
+from aim.web.api.db import get_contexted_session
+from PIL import Image as pil_image
+from sqlalchemy import text as sa_text
 
 
 def decode_encoded_tree_stream(stream: Iterator[bytes], concat_chunks=False) -> bytes:
@@ -58,8 +57,9 @@ def generate_image_set(img_count, caption_prefix='Image', img_size=(16, 16)):
     return [
         AimImage(
             pil_image.fromarray((numpy.random.rand(img_size[0], img_size[1], 3) * 255).astype('uint8')),
-            caption=f'{caption_prefix} {idx}'
-        ) for idx in range(img_count)
+            caption=f'{caption_prefix} {idx}',
+        )
+        for idx in range(img_count)
     ]
 
 
@@ -79,19 +79,18 @@ def truncate_api_db():
 
 
 def create_run_params():
-    return {
-        'lr': 0.001,
-        'batch_size': None
-    }
+    return {'lr': 0.001, 'batch_size': None}
 
 
 def fill_up_test_data(extra_params: dict = None):
     # put dummy data into test repo with 10 runs, tracking 2 metrics over 3 contexts
     repo = Repo.default_repo()
 
-    contexts = [{'is_training': True, 'subset': 'train'},
-                {'is_training': True, 'subset': 'val'},
-                {'is_training': False}]
+    contexts = [
+        {'is_training': True, 'subset': 'train'},
+        {'is_training': True, 'subset': 'val'},
+        {'is_training': False},
+    ]
     metrics = ['loss', 'accuracy']
 
     with repo.structured_db:
@@ -122,6 +121,7 @@ def fill_up_test_data(extra_params: dict = None):
 
 def is_package_installed(pkg_name: str) -> bool:
     import importlib
+
     try:
         spec = importlib.util.find_spec(pkg_name)
     except (ModuleNotFoundError, AttributeError):

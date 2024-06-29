@@ -24,15 +24,15 @@ class Distribution(CustomObject):
 
         if samples is not None:
             if hist is not None:
-                raise ValueError("hist should not be specified if samples is specified.")
+                raise ValueError('hist should not be specified if samples is specified.')
             hist, bin_edges = np.histogram(samples, bins=bin_count)
         elif hist is not None:
             if bin_range is None:
-                raise ValueError("Please specify bin_range of (start, end) bins.")
+                raise ValueError('Please specify bin_range of (start, end) bins.')
             bin_count = len(hist)
             bin_edges = np.linspace(bin_range[0], bin_range[-1], num=bin_count + 1)
         else:
-            raise ValueError("Please specify either samples or hist.")
+            raise ValueError('Please specify either samples or hist.')
 
         hist = np.asanyarray(hist)
         bin_edges = np.asanyarray(bin_edges)
@@ -64,8 +64,8 @@ class Distribution(CustomObject):
     def bin_count(self):
         """Stored distribution bin count
 
-            :getter: Returns distribution bin_count.
-            :type: string
+        :getter: Returns distribution bin_count.
+        :type: string
         """
         return self.storage['bin_count']
 
@@ -73,8 +73,8 @@ class Distribution(CustomObject):
     def range(self):
         """Stored distribution range
 
-            :getter: Returns distribution range.
-            :type: List
+        :getter: Returns distribution range.
+        :type: List
         """
         return self.storage['range']
 
@@ -82,21 +82,19 @@ class Distribution(CustomObject):
     def weights(self):
         """Stored distribution weights
 
-            :getter: Returns distribution weights as `np.array`.
-            :type: np.ndarray
+        :getter: Returns distribution weights as `np.array`.
+        :type: np.ndarray
         """
-        return np.frombuffer(self.storage['data'].load(),
-                             dtype=self.storage['dtype'],
-                             count=self.storage['bin_count'])
+        return np.frombuffer(self.storage['data'].load(), dtype=self.storage['dtype'], count=self.storage['bin_count'])
 
     @property
     def ranges(self):
         """Stored distribution ranges
 
-            :getter: Returns distribution ranges as `np.array`.
-            :type: np.ndarray
+        :getter: Returns distribution ranges as `np.array`.
+        :type: np.ndarray
         """
-        assert (len(self.range) == 2)
+        assert len(self.range) == 2
         return np.linspace(self.range[0], self.range[1], num=self.bin_count + 1)
 
     def json(self):
@@ -109,7 +107,7 @@ class Distribution(CustomObject):
     def _from_np_histogram(self, hist: np.ndarray, bin_edges: np.ndarray):
         bin_count = len(hist)
         if 1 > bin_count > 512:
-            raise ValueError("Supported range for `bin_count` is [1, 512].")
+            raise ValueError('Supported range for `bin_count` is [1, 512].')
 
         self.storage['data'] = BLOB(data=hist.tobytes())
         self.storage['dtype'] = str(hist.dtype)

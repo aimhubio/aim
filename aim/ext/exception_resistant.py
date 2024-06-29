@@ -27,13 +27,16 @@ def exception_resistant(silent: bool):
                     elif num_fails == max_fails + 1:
                         print('The rest of the `{}` errors are hidden.'.format(func_name))
         else:
+
             @wraps(func)
             def wrapper(*args, **kwargs):
                 try:
                     return func(*args, **kwargs)
                 except Exception:
                     pass
+
         return wrapper
+
     return inner
 
 

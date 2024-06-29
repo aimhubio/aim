@@ -1,20 +1,22 @@
 import datetime
-import uuid
-import psutil
+import logging
 import os
 import time
-import logging
+import uuid
 import weakref
 
-from typing import Union
+from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-from dataclasses import dataclass, field
-from dateutil.relativedelta import relativedelta
-from filelock import UnixFileLock, SoftFileLock, Timeout
+from typing import Union
+
+import psutil
 
 from aim.sdk.errors import RunLockingError
 from aim.storage.locking import RunLock
+from dateutil.relativedelta import relativedelta
+from filelock import SoftFileLock, Timeout, UnixFileLock
+
 
 logger = logging.getLogger(__name__)
 
@@ -120,13 +122,17 @@ class LockManager(object):
         lock_path = Path(run_lock.lock_file)
 
         if force:
-            logger.warning(f'Force-releasing locks for Run \'{run_hash}\'. Data corruption may occur if there is '
-                           f'active process writing to Run \'{run_hash}\'.')
+            logger.warning(
+                f"Force-releasing locks for Run '{run_hash}'. Data corruption may occur if there is "
+                f"active process writing to Run '{run_hash}'."
+            )
             self.release_locks(run_hash, force=True)
         elif not self.release_locks(run_hash, force=False):
-            raise RunLockingError(f'Cannot acquire lock for Run \'{run_hash}\'. '
-                                  f'Make sure no process uses Run \'{run_hash}\' and close it via Aim CLI:\n'
-                                  f'`aim runs close --force {run_hash}`')
+            raise RunLockingError(
+                f"Cannot acquire lock for Run '{run_hash}'. "
+                f"Make sure no process uses Run '{run_hash}' and close it via Aim CLI:\n"
+                f'`aim runs close --force {run_hash}`'
+            )
         run_lock.acquire()
         with open(lock_path, 'w') as lock_metadata_fh:
             lock_metadata_fh.write(f'{self.machine_id}-{self.pid}-{time.time()}')
@@ -153,7 +159,7 @@ class LockManager(object):
                 success = False
             elif lock_info.locked and self.is_stalled_lock(lock_path):
                 assert lock_info.version == LockingVersion.NEW
-                logger.info(f'Detected stalled lock for Run \'{run_hash}\'. Removing lock.')
+                logger.info(f"Detected stalled lock for Run '{run_hash}'. Removing lock.")
                 lock_path.unlink()
         return success
 

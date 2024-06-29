@@ -2,12 +2,13 @@
 # wget https://archive.ics.uci.edu/ml/machine-learning-databases/dermatology/dermatology.data
 
 from __future__ import division
-
 import logging
 
 import numpy as np
 import xgboost as xgb
+
 from aim.xgboost import AimCallback
+
 
 # label need to be 0 to num_class -1
 data = np.loadtxt(

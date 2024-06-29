@@ -1,8 +1,10 @@
 import numpy as np
 import pandas as pd
+
 from aim.prophet import AimLogger
 from prophet import Prophet
 from sklearn.metrics import mean_absolute_error, mean_squared_error
+
 
 # Generate synthetic time series data
 np.random.seed(2019)

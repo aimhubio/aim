@@ -2,15 +2,27 @@ import logging
 import os
 
 import regex as re
+
 from aim.fastai import AimCallback
-from fastai.vision.all import (CategoryBlock, CrossEntropyLossFlat, DataBlock,
-                               GrandparentSplitter, ImageBlock, Normalize,
-                               Resize, accuracy, aug_transforms, cnn_learner,
-                               get_image_files, imagenet_stats, resnet18)
+from fastai.vision.all import (
+    CategoryBlock,
+    CrossEntropyLossFlat,
+    DataBlock,
+    GrandparentSplitter,
+    ImageBlock,
+    Normalize,
+    Resize,
+    accuracy,
+    aug_transforms,
+    cnn_learner,
+    get_image_files,
+    imagenet_stats,
+    resnet18,
+)
 
 
 def get_arabic_mnist_labels(file_path):
-    regex = "label_(.+).png"
+    regex = 'label_(.+).png'
     label = re.search(regex, str(file_path)).group(1)
     return arabic_mnist_labels[int(label) - 1]
 
@@ -25,9 +37,7 @@ def download_arabic_mnist():
     except Exception as e:
         logging.info(f'Failed to download the dataset: {e}')
     try:
-        os.system(
-            f'mkdir -p {output_dir} && tar -xzf {output_zip_file} -C {output_dir}'
-        )
+        os.system(f'mkdir -p {output_dir} && tar -xzf {output_zip_file} -C {output_dir}')
     except Exception as e:
         logging.info(f'failed to unzip the dataset file: {e}')
 

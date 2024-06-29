@@ -1,6 +1,6 @@
+from aim.sdk.utils import generate_run_hash
 from tests.base import PrefilledDataTestBase
 
-from aim.sdk.utils import generate_run_hash
 
 class TestStructuredDatabase(PrefilledDataTestBase):
     def test_entity_chaining_syntax(self):

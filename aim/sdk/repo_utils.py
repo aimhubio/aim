@@ -1,6 +1,8 @@
 import logging
-from typing import Optional, Union, TYPE_CHECKING
 import pathlib
+
+from typing import TYPE_CHECKING, Optional, Union
+
 
 if TYPE_CHECKING:
     from aim.sdk.repo import Repo

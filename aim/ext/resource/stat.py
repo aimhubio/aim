@@ -1,10 +1,11 @@
-import psutil
 import json
+
 from typing import List
 
-from aim.ext.resource.utils import round10e5
-
 import aim.ext.pynvml as nvml
+import psutil
+
+from aim.ext.resource.utils import round10e5
 
 
 class StatDict(object):
@@ -29,13 +30,14 @@ class StatDict(object):
         elif mode == cls.AGG_MODE_DIFF:
             return round10e5(max(items) - min(items))
         else:
-            raise ValueError('unknown aggregation mode: \'{}\''.format(mode))
+            raise ValueError("unknown aggregation mode: '{}'".format(mode))
 
     @classmethod
-    def aggregate_items(cls,
-                        items: 'List[StatDict]',
-                        agg_mode: str = AGG_DEFAULT,
-                        ):
+    def aggregate_items(
+        cls,
+        items: 'List[StatDict]',
+        agg_mode: str = AGG_DEFAULT,
+    ):
         """
         Aggregates array of `StatDict` items by a given `mode`
         """
@@ -64,8 +66,7 @@ class StatDict(object):
 
         # Aggregate system stats
         for k in aggregated_stat.system.keys():
-            aggregated_stat.system[k] = cls.aggregate(aggregated_stat.system[k],
-                                                      agg_mode)
+            aggregated_stat.system[k] = cls.aggregate(aggregated_stat.system[k], agg_mode)
 
         # Aggregate GPU device stats
         for g in range(len(gpu_stats)):
@@ -127,16 +128,13 @@ class Stat(object):
         system = {
             # CPU utilization percent(can be over 100%)
             'cpu': round10e5(self._process.cpu_percent(0.0)),
-
             # Whole system memory usage
             # 'memory_used': round10e5(memory_usage.used / 1024 / 1024),
             'memory_percent': round10e5(memory_usage.used * 100 / memory_usage.total),
-
             # Get the portion of memory occupied by a process
             # 'p_memory_rss': round10e5(self._process.memory_info().rss
             #                           / 1024 / 1024),
             'p_memory_percent': round10e5(self._process.memory_percent()),
-
             # Disk usage
             # 'disk_used': round10e5(disk_usage.used / 1024 / 1024),
             'disk_percent': round10e5(disk_usage.percent),
@@ -153,7 +151,7 @@ class Stat(object):
                 try:
                     util = nvml.nvmlDeviceGetUtilizationRates(handle)
                     # GPU utilization percent
-                    gpu_info["gpu"] = round10e5(util.gpu)
+                    gpu_info['gpu'] = round10e5(util.gpu)
                 except nvml.NVMLError_NotSupported:
                     pass
                 try:
@@ -161,7 +159,7 @@ class Stat(object):
                     memory = nvml.nvmlDeviceGetMemoryInfo(handle)
                     # Device memory usage
                     # 'memory_used': round10e5(memory.used / 1024 / 1024),
-                    gpu_info["gpu_memory_percent"] = round10e5(memory.used * 100 / memory.total)
+                    gpu_info['gpu_memory_percent'] = round10e5(memory.used * 100 / memory.total)
                 except nvml.NVMLError_NotSupported:
                     pass
                 try:
@@ -169,7 +167,7 @@ class Stat(object):
                     nvml_tmp = nvml.NVML_TEMPERATURE_GPU
                     temp = nvml.nvmlDeviceGetTemperature(handle, nvml_tmp)
                     # Device temperature
-                    gpu_info["gpu_temp"] = round10e5(temp)
+                    gpu_info['gpu_temp'] = round10e5(temp)
                 except nvml.NVMLError_NotSupported:
                     pass
                 try:
@@ -179,7 +177,7 @@ class Stat(object):
                     power_cap_watts = power_cap / 1000
                     power_watts / power_cap_watts * 100
                     # Power usage in watts and percent
-                    gpu_info["gpu_power_watts"] = round10e5(power_watts)
+                    gpu_info['gpu_power_watts'] = round10e5(power_watts)
                     # gpu_info["power_percent"] = round10e5(power_usage)
                 except nvml.NVMLError_NotSupported:
                     pass

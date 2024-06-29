@@ -1,17 +1,17 @@
 # The module is heavily based on `wrapt` package sources
 # See: https://github.com/GrahamDumpleton/wrapt/blob/develop/src/wrapt/wrappers.py
 
-from functools import lru_cache
 import operator
+
+from functools import lru_cache
 
 
 def with_metaclass(meta, *bases):
     """Create a base class with a metaclass."""
-    return meta("NewBase", bases, {})
+    return meta('NewBase', bases, {})
 
 
 class _ObjectProxyMethods(object):
-
     # We use properties to override the values of __module__ and
     # __doc__. If we add these in ObjectProxy, the derived class
     # __dict__ will still be setup to have string variants of these
@@ -67,7 +67,6 @@ class _ObjectProxyMetaType(type):
 
 
 class Eager1:
-
     __slots__ = ('name', 'wrapped')
 
     def __init__(self, wrapped, name):
@@ -91,7 +90,6 @@ class Eager1:
 
 
 class Eager2:
-
     __slots__ = ('view', 'name', 'cache')
 
     def __init__(self, view, name, cache):
@@ -129,7 +127,6 @@ class Eager2:
 
 
 class Eager3:
-
     __slots__ = ('wrapped', 'key')
 
     def __init__(self, wrapped, key):
@@ -149,7 +146,6 @@ class Eager3:
 
 
 class Eager4:
-
     __slots__ = ('view', 'key', 'cache')
 
     def __init__(self, view, key, cache):
@@ -182,7 +178,6 @@ class Eager4:
 
 
 class AimObjectProxy(with_metaclass(_ObjectProxyMetaType)):
-
     __slots__ = ('__wrapped__', '__view__')
 
     @property
@@ -197,7 +192,7 @@ class AimObjectProxy(with_metaclass(_ObjectProxyMetaType)):
     def __class__(self):
         return self.__wrapped__().__class__
 
-    @__class__.setter # noqa
+    @__class__.setter  # noqa
     def __class__(self, value):  # noqa
         self.__wrapped__().__class__ = value
 
@@ -220,9 +215,8 @@ class AimObjectProxy(with_metaclass(_ObjectProxyMetaType)):
 
     def __repr__(self):
         return '<{} at 0x{:x} for {} at 0x{:x}>'.format(
-            type(self).__name__, id(self),
-            type(self.__wrapped__()).__name__,
-            id(self.__wrapped__()))
+            type(self).__name__, id(self), type(self.__wrapped__()).__name__, id(self.__wrapped__())
+        )
 
     def __reversed__(self):
         return reversed(self.__wrapped__())
@@ -421,22 +415,13 @@ class AimObjectProxy(with_metaclass(_ObjectProxyMetaType)):
         if self.__view__ is None:
             return AimObjectProxy(Eager1(self.__wrapped__, name))
 
-        return AimObjectProxy(
-            Eager2(self.__view__, name, self.cache),
-            self.__view__.view(name),
-            self.cache
-        )
+        return AimObjectProxy(Eager2(self.__view__, name, self.cache), self.__view__.view(name), self.cache)
 
     def __getitem__(self, key):
-
         if self.__view__ is None:
             return AimObjectProxy(Eager3(self.__wrapped__, key))
 
-        return AimObjectProxy(
-            Eager4(self.__view__, key, self.cache),
-            self.__view__.view(key),
-            self.cache
-        )
+        return AimObjectProxy(Eager4(self.__view__, key, self.cache), self.__view__.view(key), self.cache)
 
     def __call__(self, *args, **kwargs):
         return self.__wrapped__()(*args, **kwargs)

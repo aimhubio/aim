@@ -1,17 +1,20 @@
+from datetime import datetime
+from typing import List
+
 from aim.storage.structured.entities import (
-    ObjectFactory,
-    Run, Experiment, Tag,
-    RunCollection,
+    Experiment,
     ExperimentCollection,
+    ObjectFactory,
+    Run,
+    RunCollection,
+    Tag,
     TagCollection,
 )
 from aim.storage.structured.sql_engine.entities import (
-    ModelMappedRun,
     ModelMappedExperiment,
+    ModelMappedRun,
     ModelMappedTag,
 )
-from typing import List
-from datetime import datetime
 
 
 class ModelMappedFactory(ObjectFactory):

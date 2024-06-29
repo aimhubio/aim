@@ -1,7 +1,7 @@
 from typing import Tuple
 
-from aim.sdk.sequence import Sequence
 from aim.sdk.objects.distribution import Distribution
+from aim.sdk.sequence import Sequence
 
 
 class Distributions(Sequence):

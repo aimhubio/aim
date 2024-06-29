@@ -1,15 +1,25 @@
-from typing import Generic, Union, Tuple, TypeVar, Dict, Iterator, Any, List
-from itertools import islice
-import numpy as np
 import logging
 
+from itertools import islice
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    Generic,
+    Iterator,
+    List,
+    Tuple,
+    TypeVar,
+    Union,
+)
+
+import numpy as np
+
 from aim.sdk.tracker import STEP_HASH_FUNCTIONS
-from aim.storage.treeview import TreeView
 from aim.storage.arrayview import ArrayView
 from aim.storage.context import Context
 from aim.storage.hashing import hash_auto
-
-from typing import TYPE_CHECKING
+from aim.storage.treeview import TreeView
 
 
 if TYPE_CHECKING:
@@ -90,11 +100,7 @@ class SequenceData:
 
 class SequenceV1Data(SequenceData):
     def __init__(
-            self,
-            series_tree, *,
-            columns: List[Tuple[str, str]],
-            step_range: Tuple[int, int] = None,
-            n_items: int = -1
+        self, series_tree, *, columns: List[Tuple[str, str]], step_range: Tuple[int, int] = None, n_items: int = -1
     ):
         super().__init__(series_tree, version=1, columns=columns)
         self.step_range = step_range
@@ -102,7 +108,8 @@ class SequenceV1Data(SequenceData):
 
     def view(self, columns: List[str]) -> 'SequenceData':
         return SequenceV1Data(
-            self.series_tree, columns=self._checked_columns(columns), step_range=self.step_range, n_items=self.n_items)
+            self.series_tree, columns=self._checked_columns(columns), step_range=self.step_range, n_items=self.n_items
+        )
 
     def range(self, start, stop) -> 'SequenceData':
         return SequenceV1Data(self.series_tree, columns=self.columns, step_range=(start, stop), n_items=self.n_items)
@@ -155,12 +162,7 @@ class SequenceV1Data(SequenceData):
 
 
 class SequenceV2Data(SequenceData):
-    def __init__(
-            self,
-            meta_tree, series_tree, *,
-            columns: List[Tuple[str, str]],
-            n_items: int = -1
-    ):
+    def __init__(self, meta_tree, series_tree, *, columns: List[Tuple[str, str]], n_items: int = -1):
         super().__init__(series_tree, version=2, columns=columns)
         # `SequenceV2Data` has access to both metadata and series data
         # trees that are not necessarily based on the same physical storage.
@@ -172,7 +174,8 @@ class SequenceV2Data(SequenceData):
 
     def view(self, columns: List[str]) -> 'SequenceData':
         return SequenceV2Data(
-            self.meta_tree, self.series_tree, columns=self._checked_columns(columns), n_items=self.n_items)
+            self.meta_tree, self.series_tree, columns=self._checked_columns(columns), n_items=self.n_items
+        )
 
     def range(self, start, stop) -> 'SequenceData':
         raise ValueError('Range selection cannot be applied to data stored with reservoir sampling.')
@@ -240,7 +243,7 @@ class Sequence(Generic[T]):
         self,
         name: str,
         context: Context,  # TODO ?dict
-        run: 'Run'
+        run: 'Run',
     ):
         self._hash: int = None
         self._version: int = None
@@ -271,11 +274,7 @@ class Sequence(Generic[T]):
         ...
 
     def _calc_hash(self):
-        return hash_auto(
-            (self.name,
-             hash(self.context),
-             hash(self.run))
-        )
+        return hash_auto((self.name, hash(self.context), hash(self.run)))
 
     def __hash__(self) -> int:
         if self._hash is None:
@@ -307,7 +306,7 @@ class Sequence(Generic[T]):
     def values(self) -> ArrayView:
         """Tracked values array as :obj:`ArrayView`.
 
-            :getter: Returns values ArrayView.
+        :getter: Returns values ArrayView.
         """
         return self.data._get_array('val')
 
@@ -315,7 +314,7 @@ class Sequence(Generic[T]):
     def epochs(self) -> ArrayView:
         """Tracked epochs array as :obj:`ArrayView`.
 
-            :getter: Returns epochs ArrayView.
+        :getter: Returns epochs ArrayView.
         """
         return self.data._get_array('epoch', dtype='float64')
 
@@ -323,7 +322,7 @@ class Sequence(Generic[T]):
     def timestamps(self) -> ArrayView:
         """Tracked timestamps array as :obj:`ArrayView`.
 
-            :getter: Returns timestamps ArrayView.
+        :getter: Returns timestamps ArrayView.
         """
         return self.data._get_array('time', dtype='float64')
 

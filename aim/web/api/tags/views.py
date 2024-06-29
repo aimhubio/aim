@@ -1,40 +1,51 @@
-from fastapi import HTTPException, Depends
-from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
 from typing import Optional
 
 from aim.web.api.projects.project import Project
-from aim.web.api.utils import object_factory
 from aim.web.api.tags.pydantic_models import (
     TagCreateIn,
+    TagGetOut,
+    TagGetRunsOut,
+    TagListOut,
     TagUpdateIn,
     TagUpdateOut,
-    TagGetOut,
-    TagListOut,
-    TagGetRunsOut,
 )
+from aim.web.api.utils import (
+    APIRouter,  # wrapper for fastapi.APIRouter
+    object_factory,
+)
+from fastapi import Depends, HTTPException
+
+
 tags_router = APIRouter()
 
 
 @tags_router.get('/', response_model=TagListOut)
 async def get_tags_list_api(factory=Depends(object_factory)):
-    return [{'id': tag.uuid,
-             'name': tag.name,
-             'color': tag.color,
-             'description': tag.description,
-             'run_count': len(tag.runs),
-             'archived': tag.archived}
-            for tag in factory.tags()]
+    return [
+        {
+            'id': tag.uuid,
+            'name': tag.name,
+            'color': tag.color,
+            'description': tag.description,
+            'run_count': len(tag.runs),
+            'archived': tag.archived,
+        }
+        for tag in factory.tags()
+    ]
 
 
 @tags_router.get('/search/', response_model=TagListOut)
 async def search_tags_by_name_api(q: Optional[str] = '', factory=Depends(object_factory)):
-    return [{'id': tag.uuid,
-             'name': tag.name,
-             'color': tag.color,
-             'description'
-             'run_count': len(tag.runs),
-             'archived': tag.archived}
-            for tag in factory.search_tags(q.strip())]
+    return [
+        {
+            'id': tag.uuid,
+            'name': tag.name,
+            'color': tag.color,
+            'description' 'run_count': len(tag.runs),
+            'archived': tag.archived,
+        }
+        for tag in factory.search_tags(q.strip())
+    ]
 
 
 @tags_router.post('/', response_model=TagUpdateOut)
@@ -49,10 +60,7 @@ async def create_tag_api(tag_in: TagCreateIn, factory=Depends(object_factory)):
         except ValueError as e:
             raise HTTPException(status_code=400, detail=str(e))
 
-    return {
-        'id': tag.uuid,
-        'status': 'OK'
-    }
+    return {'id': tag.uuid, 'status': 'OK'}
 
 
 @tags_router.get('/{tag_id}/', response_model=TagGetOut)
@@ -67,7 +75,7 @@ async def get_tag_api(tag_id: str, factory=Depends(object_factory)):
         'color': tag.color,
         'description': tag.description,
         'archived': tag.archived,
-        'run_count': len(tag.runs)
+        'run_count': len(tag.runs),
     }
     return response
 
@@ -88,10 +96,7 @@ async def update_tag_properties_api(tag_id: str, tag_in: TagUpdateIn, factory=De
         if tag_in.archived is not None:
             tag.archived = tag_in.archived
 
-    return {
-        'id': tag.uuid,
-        'status': 'OK'
-    }
+    return {'id': tag.uuid, 'status': 'OK'}
 
 
 @tags_router.delete('/{tag_id}/')
@@ -119,19 +124,18 @@ async def get_tagged_runs_api(tag_id: str, factory=Depends(object_factory)):
     tag_runs = []
     for tagged_run in tag.runs:
         run = Run(tagged_run.hash, repo=project.repo, read_only=True)
-        tag_runs.append({
-            'run_id': tagged_run.hash,
-            'name': tagged_run.name,
-            'creation_time': run.creation_time,
-            'end_time': run.end_time,
-            'experiment': tagged_run.experiment if tagged_run.experiment else None
-        })
+        tag_runs.append(
+            {
+                'run_id': tagged_run.hash,
+                'name': tagged_run.name,
+                'creation_time': run.creation_time,
+                'end_time': run.end_time,
+                'experiment': tagged_run.experiment if tagged_run.experiment else None,
+            }
+        )
 
     project.repo.structured_db.invalidate_cache(cache_name)
     project.repo.run_props_cache_hint = None
 
-    response = {
-        'id': tag.uuid,
-        'runs': tag_runs
-    }
+    response = {'id': tag.uuid, 'runs': tag_runs}
     return response

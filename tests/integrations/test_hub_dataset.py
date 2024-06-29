@@ -1,5 +1,4 @@
 import pytest
-
 from tests.base import TestBase
 from tests.utils import is_package_installed
 
@@ -9,8 +8,8 @@ class TestHubDatasetIntegration(TestBase):
     def test_dataset_as_run_param(self):
         import hub
 
-        from aim.sdk.objects.plugins.hub_dataset import HubDataset
         from aim.sdk import Run
+        from aim.sdk.objects.plugins.hub_dataset import HubDataset
 
         # create dataset object
         ds = hub.dataset('hub://activeloop/cifar100-test')

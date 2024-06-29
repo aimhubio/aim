@@ -1,10 +1,8 @@
-from parameterized import parameterized
-
 from aim import Repo
-
+from parameterized import parameterized
 from performance_tests.base import StorageTestBase
-from performance_tests.utils import get_baseline, write_baseline
 from performance_tests.storage.utils import random_access_metric_values
+from performance_tests.utils import get_baseline, write_baseline
 
 
 class TestRandomAccess(StorageTestBase):

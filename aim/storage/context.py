@@ -8,10 +8,7 @@ from aim.storage.types import AimObject, AimObjectKey
 class Context:
     __slots__ = ('_context', '_hash')
 
-    def __init__(
-        self,
-        context: AimObject
-    ):
+    def __init__(self, context: AimObject):
         if context is None:
             context = {}
         self._context = deepcopy(context)

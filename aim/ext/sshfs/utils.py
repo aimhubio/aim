@@ -1,11 +1,12 @@
+import logging
 import os
 import platform
 import shutil
 import subprocess
 import time
-import logging
 
 from typing import Optional, Tuple
+
 
 logger = logging.getLogger(__name__)
 
@@ -34,17 +35,21 @@ def check_sshfs_installation():
     sshfs_executable = shutil.which('sshfs')
     if not sshfs_executable:
         if platform.system().lower() == 'darwin':
-            raise subprocess.SubprocessError('Could not find sshfs installation. \n'
-                                             'To install sshfs please run the following commands:\n'
-                                             'brew install macfuse \n'
-                                             'brew install gromgit/fuse/sshfs\n'
-                                             'or alternatively follow the instructions here:'
-                                             'https://osxfuse.github.io/')
+            raise subprocess.SubprocessError(
+                'Could not find sshfs installation. \n'
+                'To install sshfs please run the following commands:\n'
+                'brew install macfuse \n'
+                'brew install gromgit/fuse/sshfs\n'
+                'or alternatively follow the instructions here:'
+                'https://osxfuse.github.io/'
+            )
         else:
-            raise subprocess.SubprocessError('Could not find sshfs installation. \n'
-                                             'To install sshfs please run the following commands:\n'
-                                             'apt-get update\n'
-                                             'apt-get install sshfs')
+            raise subprocess.SubprocessError(
+                'Could not find sshfs installation. \n'
+                'To install sshfs please run the following commands:\n'
+                'apt-get update\n'
+                'apt-get install sshfs'
+            )
 
     # check user permission to execute sshfs
     if not os.access(sshfs_executable, os.EX_OK):
@@ -151,10 +156,12 @@ def mount_remote_repo(remote_path: str) -> Tuple[str, str]:
         # and print the command that was used, so it'll be easier for the user to perform manual mounting
         sshfs_process.wait()
         unmount_remote_repo(mount_point, mount_root)
-        raise subprocess.SubprocessError(f'Could not mount remote repository using command: \n'
-                                         f'{" ".join(cmd)} \n'
-                                         f'Please try to mount manually '
-                                         f'and use the local mount point as a usual repo path.')
+        raise subprocess.SubprocessError(
+            f'Could not mount remote repository using command: \n'
+            f'{" ".join(cmd)} \n'
+            f'Please try to mount manually '
+            f'and use the local mount point as a usual repo path.'
+        )
 
     # check if the user has permissions to perform write operations on local mount point (which means that the
     # remote user also can perform write operations on remote repo path as well)
@@ -189,8 +196,8 @@ def unmount_remote_repo(mount_point: str, mount_root: str):
     exit_code = child.wait()
     if exit_code != 0:
         # in case of failure log warning so the user can unmount manually if needed
-        logger.warning(f'Could not unmount path: {mount_point}.\n'
-                       f'Please unmount manually using command:\n'
-                       f'{" ".join(cmd)}')
+        logger.warning(
+            f'Could not unmount path: {mount_point}.\n' f'Please unmount manually using command:\n' f'{" ".join(cmd)}'
+        )
     else:
         shutil.rmtree(mount_root)

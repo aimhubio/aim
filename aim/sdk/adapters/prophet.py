@@ -4,7 +4,8 @@ from aim import Run
 from aim.ext.resource import DEFAULT_SYSTEM_TRACKING_INT
 from aim.storage.types import AimObject
 
-Prophet = TypeVar("Prophet")
+
+Prophet = TypeVar('Prophet')
 
 
 class AimLogger:
@@ -79,6 +80,6 @@ class AimLogger:
         NOTE: if context is not provided, it's assumed all metrics are validation metrics.
         """
         if context is None:
-            context = {"subset": "val"}
+            context = {'subset': 'val'}
         for metric, value in metrics.items():
             self._run.track(value, name=metric, context=context)

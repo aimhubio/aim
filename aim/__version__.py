@@ -1,5 +1,6 @@
 import os
 
+
 here = os.path.abspath(os.path.dirname(__file__))
 
 version_file = f'{here}/VERSION'

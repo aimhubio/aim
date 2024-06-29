@@ -2,8 +2,8 @@ import json
 import logging
 import uuid
 
-from typing import Dict
 from pathlib import Path
+from typing import Dict
 
 from aim.ext.notifier.utils import get_empty_config_path
 

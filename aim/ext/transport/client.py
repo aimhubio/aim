@@ -1,4 +1,3 @@
-import requests
 import base64
 import logging
 import os
@@ -8,19 +7,22 @@ import weakref
 
 from copy import deepcopy
 from typing import Tuple
-from websockets.sync.client import connect
 
-from aim.ext.transport.utils import handle_exception
+import requests
+
+from aim.ext.transport.heartbeat import HeartbeatSender
 from aim.ext.transport.message_utils import (
-    raise_exception,
-    pack_args,
-    unpack_stream,
-    unpack_args,
+    decode_tree,
     encode_tree,
-    decode_tree
+    pack_args,
+    raise_exception,
+    unpack_args,
+    unpack_stream,
 )
 from aim.ext.transport.request_queue import RequestQueue
-from aim.ext.transport.heartbeat import HeartbeatSender
+from aim.ext.transport.utils import handle_exception
+from websockets.sync.client import connect
+
 
 AIM_CLIENT_QUEUE_MAX_MEMORY = '__AIM_CLIENT_QUEUE_MAX_MEMORY__'
 DEFAULT_RETRY_INTERVAL = 0.1  # 100 ms
@@ -53,7 +55,7 @@ class Client:
             f'remote_tracker_{self._id}',
             max_queue_memory=os.getenv(AIM_CLIENT_QUEUE_MAX_MEMORY, 1024 * 1024 * 1024),
             retry_count=DEFAULT_RETRY_COUNT,
-            retry_interval=DEFAULT_RETRY_INTERVAL
+            retry_interval=DEFAULT_RETRY_INTERVAL,
         )
         self._heartbeat_sender = HeartbeatSender(self)
         self._heartbeat_sender.start()
@@ -91,18 +93,24 @@ class Client:
         for handler in handlers_list:
             self.reinitialize_resource(handler)
 
-    @handle_exception(requests.ConnectionError,
-                      error_message='Failed to connect to Aim Server. Have you forgot to run `aim server` command?')
+    @handle_exception(
+        requests.ConnectionError,
+        error_message='Failed to connect to Aim Server. Have you forgot to run `aim server` command?',
+    )
     def _check_remote_version_compatibility(self):
         from aim.__version__ import __version__ as client_version
 
-        error_message_template = 'The Aim Remote tracking server version ({}) '\
-                                 'is not compatible with the Aim client version ({}).'\
-                                 'Please upgrade either the Aim Client or the Aim Remote.'
+        error_message_template = (
+            'The Aim Remote tracking server version ({}) '
+            'is not compatible with the Aim client version ({}).'
+            'Please upgrade either the Aim Client or the Aim Remote.'
+        )
 
-        warning_message_template = 'The Aim Remote tracking server version ({}) ' \
-                                   'and the Aim client version ({}) do not match.' \
-                                   'Consider upgrading either the client or remote tracking server.'
+        warning_message_template = (
+            'The Aim Remote tracking server version ({}) '
+            'and the Aim client version ({}) do not match.'
+            'Consider upgrading either the client or remote tracking server.'
+        )
 
         remote_version = self.get_version()
 
@@ -131,8 +139,10 @@ class Client:
 
         return response
 
-    @handle_exception(requests.ConnectionError,
-                      error_message='Failed to connect to Aim Server. Have you forgot to run `aim server` command?')
+    @handle_exception(
+        requests.ConnectionError,
+        error_message='Failed to connect to Aim Server. Have you forgot to run `aim server` command?',
+    )
     def connect(self):
         endpoint = f'{self._http_protocol}{self._client_endpoint}/connect/{self.uri}/'
         response = requests.get(endpoint, headers=self.request_headers)
@@ -167,7 +177,9 @@ class Client:
 
         return response
 
-    def get_version(self,):
+    def get_version(
+        self,
+    ):
         endpoint = f'{self._http_protocol}{self._client_endpoint}/get-version/'
         response = requests.get(endpoint, headers=self.request_headers)
         response_json = response.json()
@@ -183,7 +195,7 @@ class Client:
         request_data = {
             'resource_handler': handler,
             'resource_type': resource_type,
-            'args': base64.b64encode(args).decode()
+            'args': base64.b64encode(args).decode(),
         }
 
         response = requests.post(endpoint, json=request_data, headers=self.request_headers)
@@ -217,14 +229,16 @@ class Client:
 
         if is_write_only:
             assert queue_id != -1
-            if getattr(self._thread_local, 'atomic_instructions', None) is not None and \
-                    self._thread_local.atomic_instructions.get(queue_id, None) is not None:
+            if (
+                getattr(self._thread_local, 'atomic_instructions', None) is not None
+                and self._thread_local.atomic_instructions.get(queue_id, None) is not None
+            ):
                 self._thread_local.atomic_instructions[queue_id].append((resource, method, args))
                 return
 
             self.get_queue().register_task(
-                self,
-                self._run_write_instructions, list(encode_tree([(resource, method, args)], strict=False)))
+                self, self._run_write_instructions, list(encode_tree([(resource, method, args)], strict=False))
+            )
             return
 
         return self._run_read_instructions(queue_id, resource, method, args)
@@ -235,7 +249,7 @@ class Client:
         request_data = {
             'resource_handler': resource,
             'method_name': method,
-            'args': base64.b64encode(pack_args(encode_tree(args))).decode()
+            'args': base64.b64encode(pack_args(encode_tree(args))).decode(),
         }
 
         if queue_id != -1:
@@ -269,20 +283,21 @@ class Client:
             return
 
         self.get_queue().register_task(
-            self,
-            self._run_write_instructions, list(encode_tree(self._thread_local.atomic_instructions[hash_])))
+            self, self._run_write_instructions, list(encode_tree(self._thread_local.atomic_instructions[hash_]))
+        )
         del self._thread_local.atomic_instructions[hash_]
 
     def refresh_ws(self):
-        self._ws = connect(f'{self._ws_protocol}{self._tracking_endpoint}/{self.uri}/write-instruction/',
-                           max_size=None)
+        self._ws = connect(f'{self._ws_protocol}{self._tracking_endpoint}/{self.uri}/write-instruction/', max_size=None)
 
     @property
     def ws(self):
         if self._ws is None:
-            self._ws = connect(f'{self._ws_protocol}{self._tracking_endpoint}/{self.uri}/write-instruction/',
-                               additional_headers=self.request_headers,
-                               max_size=None)
+            self._ws = connect(
+                f'{self._ws_protocol}{self._tracking_endpoint}/{self.uri}/write-instruction/',
+                additional_headers=self.request_headers,
+                max_size=None,
+            )
 
         return self._ws
 

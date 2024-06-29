@@ -1,14 +1,13 @@
-import os
 import atexit
+import os
 import signal
 import threading
+
 from typing import Optional
 
 from aim.ext.exception_resistant import exception_resistant
-from aim.sdk.legacy.deprecation_warning import deprecated
 from aim.ext.resource.configs import DEFAULT_SYSTEM_TRACKING_INT
-from aim.ext.resource.tracker import ResourceTracker
-
+from aim.sdk.legacy.deprecation_warning import deprecated
 from aim.sdk.repo import Repo
 from aim.sdk.run import Run
 
@@ -21,17 +20,18 @@ class Session:
     _original_sigterm_handler = None
 
     @deprecated
-    def __init__(self, repo: Optional[str] = None,
-                 experiment: Optional[str] = None,
-                 flush_frequency: int = 0,  # unused
-                 block_termination: bool = True,  # unused
-                 run: Optional[str] = None,
-                 system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT):
-
+    def __init__(
+        self,
+        repo: Optional[str] = None,
+        experiment: Optional[str] = None,
+        flush_frequency: int = 0,  # unused
+        block_termination: bool = True,  # unused
+        run: Optional[str] = None,
+        system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT,
+    ):
         self._repo = Repo.from_path(repo) if repo else Repo.default_repo()
         self._repo_path = self._repo.path
-        self._run = Run(run, repo=self._repo, experiment=experiment,
-                        system_tracking_interval=system_tracking_interval)
+        self._run = Run(run, repo=self._repo, experiment=experiment, system_tracking_interval=system_tracking_interval)
         self._run_hash = self._run.hash
         self.active = True
 
@@ -78,8 +78,7 @@ class Session:
         if self._run:
             del self._run
             self._run = None
-        if self._repo_path in Session.sessions \
-                and self in Session.sessions[self._repo_path]:
+        if self._repo_path in Session.sessions and self in Session.sessions[self._repo_path]:
             Session.sessions[self._repo_path].remove(self)
             if len(Session.sessions[self._repo_path]) == 0:
                 del Session.sessions[self._repo_path]

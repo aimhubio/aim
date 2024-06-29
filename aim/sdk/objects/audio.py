@@ -7,6 +7,7 @@ from aim.sdk.objects.io import wavfile
 from aim.storage.object import CustomObject
 from aim.storage.types import BLOB
 
+
 logger = logging.getLogger(__name__)
 
 
@@ -63,18 +64,12 @@ class Audio(CustomObject):
         if not isinstance(data, bytes):
             raise TypeError('Content is not a byte-stream object')
 
-        extra = {
-            'caption': caption,
-            'format': audio_format
-        }
+        extra = {'caption': caption, 'format': audio_format}
         self._prepare(data, **extra)
 
     def json(self):
         """Dump audio metadata to a dict"""
-        return {
-            'caption': self.storage['caption'],
-            'format': self.storage['format']
-        }
+        return {'caption': self.storage['caption'], 'format': self.storage['format']}
 
     def _prepare(self, data, **extra) -> None:
         assert isinstance(data, bytes)

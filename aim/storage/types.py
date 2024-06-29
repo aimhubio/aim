@@ -1,27 +1,15 @@
-from typing import Dict, List, Tuple, Union
-
 from aim.storage.utils import BLOB  # noqa F401
+from typing import Dict, List, Tuple, Union
 
 NoneType = type(None)
 
 
 AimObjectKey = Union[int, str]
 AimObjectPath = Tuple[AimObjectKey, ...]
-AimObjectPrimitive = Union[
-    NoneType,
-    bool,
-    int,
-    float,
-    str,
-    bytes
-]
+AimObjectPrimitive = Union[NoneType, bool, int, float, str, bytes]
 AimObjectArray = Union[List['AimObject'], Tuple['AimObject', ...]]
 AimObjectDict = Dict[AimObjectKey, 'AimObject']
-AimObject = Union[
-    AimObjectPrimitive,
-    AimObjectArray,
-    AimObjectDict
-]
+AimObject = Union[AimObjectPrimitive, AimObjectArray, AimObjectDict]
 
 
 class Singleton(type):
@@ -29,8 +17,7 @@ class Singleton(type):
 
     def __call__(cls, *args, **kwargs):
         if cls not in cls._instances:
-            cls._instances[cls] = super(Singleton, cls).__call__(*args,
-                                                                 **kwargs)
+            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
         return cls._instances[cls]
 
 

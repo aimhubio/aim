@@ -1,30 +1,31 @@
 from logging import getLogger
 from typing import Optional
-from aim.sdk.run import Run
 
 from aim.ext.resource.configs import DEFAULT_SYSTEM_TRACKING_INT
+from aim.sdk.run import Run
+
 
 try:
-    from fastai.learner import Callback
-    from fastcore.basics import store_attr, detuplify, ignore_exceptions
     from fastai.callback.hook import total_params
+    from fastai.learner import Callback
+    from fastcore.basics import detuplify, ignore_exceptions, store_attr
 except ImportError:
     raise RuntimeError(
-        'This contrib module requires fastai to be installed. '
-        'Please install it with command: \n pip install fastai'
+        'This contrib module requires fastai to be installed. ' 'Please install it with command: \n pip install fastai'
     )
 
 logger = getLogger(__name__)
 
 
 class AimCallback(Callback):
-    def __init__(self,
-                 repo: Optional[str] = None,
-                 experiment_name: Optional[str] = None,
-                 system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT,
-                 log_system_params: [bool] = True,
-                 capture_terminal_logs: Optional[bool] = True,
-                 ):
+    def __init__(
+        self,
+        repo: Optional[str] = None,
+        experiment_name: Optional[str] = None,
+        system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT,
+        log_system_params: [bool] = True,
+        capture_terminal_logs: Optional[bool] = True,
+    ):
         store_attr()
         self.repo = repo
         self.experiment_name = experiment_name
@@ -105,8 +106,9 @@ class AimCallback(Callback):
             n_inp = self.dls.train.n_inp
             args['n_inp'] = n_inp
             xb = self.dls.valid.one_batch()[:n_inp]
-            args.update({f'input {n+1} dim {i+1}': d for n in range(n_inp)
-                        for i, d in enumerate(list(detuplify(xb[n]).shape))})
+            args.update(
+                {f'input {n+1} dim {i+1}': d for n in range(n_inp) for i, d in enumerate(list(detuplify(xb[n]).shape))}
+            )
         except Exception:
             logger.warning('Failed to gather input dimensions')
         # other args

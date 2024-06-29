@@ -1,18 +1,18 @@
 import json
 
-from fastapi import Depends, HTTPException
-from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
-from sqlalchemy.orm import Session
-
 from aim.web.api.dashboard_apps.models import ExploreState
 from aim.web.api.dashboard_apps.pydantic_models import (
     ExploreStateCreateIn,
-    ExploreStateUpdateIn,
     ExploreStateGetOut,
-    ExploreStateListOut
+    ExploreStateListOut,
+    ExploreStateUpdateIn,
 )
 from aim.web.api.dashboard_apps.serializers import explore_state_response_serializer
 from aim.web.api.db import get_session
+from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
+from fastapi import Depends, HTTPException
+from sqlalchemy.orm import Session
+
 
 dashboard_apps_router = APIRouter()
 
@@ -40,9 +40,9 @@ async def dashboard_apps_create_api(explore_state_in: ExploreStateCreateIn, sess
 
 @dashboard_apps_router.get('/{app_id}/', response_model=ExploreStateGetOut)
 async def dashboard_apps_get_api(app_id: str, session: Session = Depends(get_session)):
-    explore_state = session.query(ExploreState) \
-        .filter(ExploreState.uuid == app_id, ExploreState.is_archived == False) \
-        .first()
+    explore_state = (
+        session.query(ExploreState).filter(ExploreState.uuid == app_id, ExploreState.is_archived == False).first()  # noqa: E712
+    )
     if not explore_state:
         raise HTTPException(status_code=404)
 
@@ -50,11 +50,12 @@ async def dashboard_apps_get_api(app_id: str, session: Session = Depends(get_ses
 
 
 @dashboard_apps_router.put('/{app_id}/', response_model=ExploreStateGetOut)
-async def dashboard_apps_put_api(app_id: str, explore_state_in: ExploreStateUpdateIn,
-                                 session: Session = Depends(get_session)):
-    explore_state = session.query(ExploreState) \
-        .filter(ExploreState.uuid == app_id, ExploreState.is_archived == False) \
-        .first() # noqa
+async def dashboard_apps_put_api(
+    app_id: str, explore_state_in: ExploreStateUpdateIn, session: Session = Depends(get_session)
+):
+    explore_state = (
+        session.query(ExploreState).filter(ExploreState.uuid == app_id, ExploreState.is_archived == False).first()  # noqa: E712
+    )
     if not explore_state:
         raise HTTPException(status_code=404)
 
@@ -70,9 +71,9 @@ async def dashboard_apps_put_api(app_id: str, explore_state_in: ExploreStateUpda
 
 @dashboard_apps_router.delete('/{app_id}/')
 async def dashboard_apps_delete_api(app_id: str, session: Session = Depends(get_session)):
-    explore_state = session.query(ExploreState) \
-        .filter(ExploreState.uuid == app_id, ExploreState.is_archived == False) \
-        .first()  # noqa
+    explore_state = (
+        session.query(ExploreState).filter(ExploreState.uuid == app_id, ExploreState.is_archived == False).first()  # noqa: E712
+    )
     if not explore_state:
         raise HTTPException(status_code=404)
 

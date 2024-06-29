@@ -1,30 +1,28 @@
 import datetime
-import os
 import logging
+import os
+
 from collections import defaultdict
 from copy import deepcopy
-from typing import Dict, Tuple, TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict, Tuple
 
 import pytz
 
 from aim.sdk.configs import AIM_ENABLE_TRACKING_THREAD
-from aim.sdk.num_utils import is_number, convert_to_py_number
-from aim.sdk.utils import get_object_typename, check_types_compatibility
-
-from aim.storage.hashing import hash_auto
+from aim.sdk.num_utils import convert_to_py_number, is_number
+from aim.sdk.utils import check_types_compatibility, get_object_typename
 from aim.storage.context import Context
+from aim.storage.hashing import hash_auto
 from aim.storage.object import CustomObject
 from aim.storage.types import AimObject
+
 
 if TYPE_CHECKING:
     from aim.sdk import Run
 
 logger = logging.getLogger(__name__)
 
-STEP_HASH_FUNCTIONS = {
-    1: lambda s: s,
-    2: lambda s: hash_auto(s)
-}
+STEP_HASH_FUNCTIONS = {1: lambda s: s, 2: lambda s: hash_auto(s)}
 
 
 class SequenceInfo:
@@ -54,8 +52,10 @@ class RunTracker:
     def track_rate_warn(cls):
         if not cls._track_warning_shown:
             # TODO [AT] add link to FAQ section in docs.
-            logger.warning('Tracking task queue is almost full which might cause performance degradation. '
-                           'Consider tracking at lower pace.')
+            logger.warning(
+                'Tracking task queue is almost full which might cause performance degradation. '
+                'Consider tracking at lower pace.'
+            )
             cls._track_warning_shown = True
 
     def __init__(self, run: 'Run'):
@@ -101,7 +101,8 @@ class RunTracker:
         if self._non_blocking:
             val = deepcopy(value)
             self.repo.tracking_queue.register_task(
-                self._track, val, track_time, name, step, epoch, context=context) or self.track_rate_warn()
+                self._track, val, track_time, name, step, epoch, context=context
+            ) or self.track_rate_warn()
         else:
             self._track(value, track_time, name, step, epoch, context=context)
 
@@ -209,15 +210,16 @@ class RunTracker:
         dtype = get_object_typename(val)
 
         if seq_info.dtype is not None:
+
             def update_trace_dtype(old_dtype: str, new_dtype: str):
-                logger.warning(f'Updating sequence \'{name}\' data type from {old_dtype} to {new_dtype}.')
+                logger.warning(f"Updating sequence '{name}' data type from {old_dtype} to {new_dtype}.")
                 self.meta_tree['traces_types', new_dtype, ctx_id, name] = 1
                 self.meta_run_tree['traces', ctx_id, name, 'dtype'] = new_dtype
                 seq_info.dtype = new_dtype
 
             compatible = check_types_compatibility(dtype, seq_info.dtype, update_trace_dtype)
             if not compatible:
-                raise ValueError(f'Cannot log value \'{val}\' on sequence \'{name}\'. Incompatible data types.')
+                raise ValueError(f"Cannot log value '{val}' on sequence '{name}'. Incompatible data types.")
 
         if seq_info.count == 0:
             self.meta_tree['traces_types', dtype, ctx_id, name] = 1
@@ -272,9 +274,9 @@ class RunTracker:
 
         if isinstance(value, dict):
             if name is not None:
-                raise ValueError('\'name\' should be None when tracking values dictionary.')
+                raise ValueError("'name' should be None when tracking values dictionary.")
             return {str(k): _normalize_single_value(v) for k, v in value.items()}
         else:
             if name is None:
-                raise ValueError('\'name\' should not be None.')
+                raise ValueError("'name' should not be None.")
             return {name: _normalize_single_value(value)}

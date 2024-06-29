@@ -1,9 +1,9 @@
 from performance_tests.base import StorageTestBase
-from performance_tests.utils import get_baseline, write_baseline
 from performance_tests.storage.utils import (
     collect_sequence_containers,
-    open_containers_for_read
+    open_containers_for_read,
 )
+from performance_tests.utils import get_baseline, write_baseline
 
 
 class TestContainerOpenExecutionTime(StorageTestBase):

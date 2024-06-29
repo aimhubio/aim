@@ -1,12 +1,14 @@
 from typing import TYPE_CHECKING, List
 
-from aim.storage.treeutils import encode_tree
 from aim.ext.transport.message_utils import pack_args
 from aim.ext.transport.remote_resource import RemoteResourceAutoClean
+from aim.storage.treeutils import encode_tree
+
 
 if TYPE_CHECKING:
-    from aim.ext.transport.client import Client
     from datetime import datetime
+
+    from aim.ext.transport.client import Client
 
 
 class RunProxyAutoClean(RemoteResourceAutoClean):
@@ -14,16 +16,13 @@ class RunProxyAutoClean(RemoteResourceAutoClean):
 
 
 class StructuredRunProxy:
-    def __init__(self, client: 'Client',
-                 hash_: str,
-                 read_only: bool,
-                 created_at: 'datetime' = None):
+    def __init__(self, client: 'Client', hash_: str, read_only: bool, created_at: 'datetime' = None):
         self._resources: RunProxyAutoClean = None
         self._rpc_client = client
         kwargs = {
             'hash_': hash_,
             'read_only': read_only,
-            'created_at': created_at.timestamp() if created_at is not None else created_at
+            'created_at': created_at.timestamp() if created_at is not None else created_at,
         }
 
         self.init_args = pack_args(encode_tree(kwargs))

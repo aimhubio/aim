@@ -1,8 +1,8 @@
 from typing import Tuple, Union
 
-from aim.storage.object import CustomObject
-from aim.sdk.sequence import MediaSequenceBase
 from aim.sdk.objects.text import Text
+from aim.sdk.sequence import MediaSequenceBase
+from aim.storage.object import CustomObject
 
 
 @CustomObject.alias('aim.log_line')

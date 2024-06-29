@@ -2,9 +2,9 @@ import json
 import os
 
 import click
-from tqdm import tqdm
 
 from aim import Audio, Image, Run
+from tqdm import tqdm
 
 
 def parse_tb_logs(tb_logs, repo_inst, flat=False, no_cache=False):
@@ -20,12 +20,11 @@ def parse_tb_logs(tb_logs, repo_inst, flat=False, no_cache=False):
     try:
         # This import statement takes long to complete
         import tensorflow as tf
-        from tensorflow.python.summary.summary_iterator import summary_iterator
+
         from tensorboard.util import tensor_util
+        from tensorflow.python.summary.summary_iterator import summary_iterator
     except ImportError:
-        click.echo(
-            'Could not process TensorBoard logs - failed to import tensorflow module.', err=True
-        )
+        click.echo('Could not process TensorBoard logs - failed to import tensorflow module.', err=True)
         return
 
     supported_plugins = ('images', 'scalars')
@@ -73,7 +72,7 @@ def parse_tb_logs(tb_logs, repo_inst, flat=False, no_cache=False):
 
     def create_ndarray(tensor):
         res = tensor_util.make_ndarray(tensor)
-        if res.dtype == "object":
+        if res.dtype == 'object':
             return None
         else:
             return res
@@ -111,16 +110,18 @@ def parse_tb_logs(tb_logs, repo_inst, flat=False, no_cache=False):
         run_dir_candidates_filtered.add(new_run_dir)
 
     if run_dir_ignored:
-        click.echo('WARN: Found directory entries with unorganized even files!\n'
-                   'Please read the preparation instructions to properly process these files.\n'
-                   'Event files in the following directories will be ignored:', err=True)
+        click.echo(
+            'WARN: Found directory entries with unorganized even files!\n'
+            'Please read the preparation instructions to properly process these files.\n'
+            'Event files in the following directories will be ignored:',
+            err=True,
+        )
         for c, r in enumerate(run_dir_ignored, start=1):
             click.echo(f'{c}: {r}', err=True)
 
-    for path in tqdm(run_dir_candidates_filtered,
-                     desc='Converting TensorBoard logs',
-                     total=len(run_dir_candidates_filtered)):
-
+    for path in tqdm(
+        run_dir_candidates_filtered, desc='Converting TensorBoard logs', total=len(run_dir_candidates_filtered)
+    ):
         events = {}
         for root, dirs, files in os.walk(path):
             for file in files:
@@ -131,11 +132,7 @@ def parse_tb_logs(tb_logs, repo_inst, flat=False, no_cache=False):
                     entry = None
                 else:
                     entry = os.path.basename(os.path.dirname(file_path))
-                events[file_path] = {
-                    'context': {
-                        'entry': entry
-                    }
-                }
+                events[file_path] = {'context': {'entry': entry}}
 
         if path not in tb_logs_cache:
             tb_logs_cache[path] = {}
@@ -157,10 +154,12 @@ def parse_tb_logs(tb_logs, repo_inst, flat=False, no_cache=False):
                 capture_terminal_logs=False,
             )
             run['tensorboard_logdir'] = path
-            run_cache.update({
-                'run_hash': run.hash,
-                'events': {},
-            })
+            run_cache.update(
+                {
+                    'run_hash': run.hash,
+                    'events': {},
+                }
+            )
         run_tb_events = run_cache['events']
 
         events_to_process = []
@@ -209,7 +208,7 @@ def parse_tb_logs(tb_logs, repo_inst, flat=False, no_cache=False):
                                     'Found unsupported plugin type in the log file. '
                                     'Data for these wont be processed. '
                                     'Supported plugin types are: {}'.format(', '.join(supported_plugins)),
-                                    err=True
+                                    err=True,
                                 )
                                 unsupported_plugin_noticed = True
                             continue
@@ -219,12 +218,10 @@ def parse_tb_logs(tb_logs, repo_inst, flat=False, no_cache=False):
                                 # TODO: [MV] check the case when audios are passed via tensor
                                 if plugin_name == 'images':
                                     tensor = value.tensor.string_val[2:]
-                                    track_val = [
-                                        Image(tf.image.decode_image(t).numpy()) for t in tensor
-                                    ]
+                                    track_val = [Image(tf.image.decode_image(t).numpy()) for t in tensor]
                                     if len(track_val) == 1:
                                         track_val = track_val[0]
-                                elif plugin_name == "scalars" or plugin_name == "":
+                                elif plugin_name == 'scalars' or plugin_name == '':
                                     track_val = create_ndarray(value.tensor)
                                 else:
                                     track_val = value.tensor.float_val[0]
@@ -243,10 +240,7 @@ def parse_tb_logs(tb_logs, repo_inst, flat=False, no_cache=False):
                                 _err_info = str(exc)
                             continue
 
-                        run_tb_log['values'][value_id] = {
-                            'step': step,
-                            'timestamp': timestamp
-                        }
+                        run_tb_log['values'][value_id] = {'step': step, 'timestamp': timestamp}
                         if track_val is not None:
                             run._tracker._track(track_val, timestamp, tag, step, context=event_context)
                     if fail_count:

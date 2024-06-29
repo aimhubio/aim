@@ -29,7 +29,7 @@ class ValuesIterator:
 
 class ArrayFlagType:
     def __repr__(self):
-        return "<ArrayFlag>"
+        return '<ArrayFlag>'
 
     def __copy__(self) -> 'ArrayFlagType':
         return self
@@ -43,7 +43,7 @@ ArrayFlag = ArrayFlagType()
 
 class ObjectFlagType:
     def __repr__(self):
-        return "<ObjectFlag>"
+        return '<ObjectFlag>'
 
     def __copy__(self) -> 'ObjectFlagType':
         return self
@@ -60,15 +60,11 @@ class CustomObjectFlagType:
         self.aim_name = aim_name
 
     def __repr__(self):
-        return f"<CustomObjectFlag type={self.aim_name}>"
+        return f'<CustomObjectFlag type={self.aim_name}>'
 
 
 class BLOB:
-    def __init__(
-        self,
-        data=None,
-        loader_fn=None
-    ):
+    def __init__(self, data=None, loader_fn=None):
         self.data = data
         self.loader_fn = loader_fn
 

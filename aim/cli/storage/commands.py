@@ -1,19 +1,17 @@
-import click
 import os
-from tqdm import tqdm
+
+import click
 
 from aim.cli.runs.utils import match_runs
-
-from aim.sdk.maintenance_run import MaintenanceRun as Run
-from aim.sdk.utils import backup_run, restore_run_backup
-from aim.sdk.repo import Repo
 from aim.sdk.index_manager import RepoIndexManager
+from aim.sdk.maintenance_run import MaintenanceRun as Run
+from aim.sdk.repo import Repo
+from aim.sdk.utils import backup_run, restore_run_backup
+from tqdm import tqdm
 
 
 @click.group()
-@click.option('--repo', required=False,
-              default=os.getcwd(),
-              type=str)
+@click.option('--repo', required=False, default=os.getcwd(), type=str)
 @click.pass_context
 def storage(ctx, repo):
     """Manage aim repository data & format updates."""
@@ -45,9 +43,11 @@ def to_3_11(ctx, hashes, yes):
     if yes:
         confirmed = True
     else:
-        confirmed = click.confirm(f'This command will optimize the metrics data for {len(matched_hashes)} '
-                                  f'runs from aim repo located at \'{repo_path}\'. This process might take a while. '
-                                  f'Do you want to proceed?')
+        confirmed = click.confirm(
+            f'This command will optimize the metrics data for {len(matched_hashes)} '
+            f"runs from aim repo located at '{repo_path}'. This process might take a while. "
+            f'Do you want to proceed?'
+        )
     if not confirmed:
         return
 
@@ -70,7 +70,7 @@ def to_3_11(ctx, hashes, yes):
         click.echo('Finished optimizing metric data. The following runs were skipped:')
         click.secho(' '.join(remaining_runs), fg='yellow')
     click.echo('In case of any issues the following command can be used to restore data:')
-    click.secho(f'aim storage --repo {repo.root_path} restore \'*\'', fg='yellow')
+    click.secho(f"aim storage --repo {repo.root_path} restore '*'", fg='yellow')
 
 
 @storage.command(name='restore')
@@ -78,7 +78,7 @@ def to_3_11(ctx, hashes, yes):
 @click.pass_context
 @click.option('-y', '--yes', is_flag=True, help='Automatically confirm prompt')
 def restore_runs(ctx, hashes, yes):
-    """Rollback Runs data for given run hashes to the previous metric format. """
+    """Rollback Runs data for given run hashes to the previous metric format."""
     if len(hashes) == 0:
         click.echo('Please specify at least one Run to delete.')
         exit(1)
@@ -89,8 +89,10 @@ def restore_runs(ctx, hashes, yes):
     if yes:
         confirmed = True
     else:
-        confirmed = click.confirm(f'This command will restore {len(matched_hashes)} runs from aim repo '
-                                  f'located at \'{repo_path}\'. Do you want to proceed?')
+        confirmed = click.confirm(
+            f'This command will restore {len(matched_hashes)} runs from aim repo '
+            f"located at '{repo_path}'. Do you want to proceed?"
+        )
     if not confirmed:
         return
 
@@ -101,7 +103,7 @@ def restore_runs(ctx, hashes, yes):
             restore_run_backup(repo, run_hash)
             index_manager.index(run_hash)
         except Exception as e:
-            click.echo(f'Error while trying to restore run \'{run_hash}\'. {str(e)}.', err=True)
+            click.echo(f"Error while trying to restore run '{run_hash}'. {str(e)}.", err=True)
             remaining_runs.append(run_hash)
 
     if not remaining_runs:
@@ -125,11 +127,13 @@ def prune(ctx):
 @click.option('-y', '--yes', is_flag=True, help='Automatically confirm prompt')
 @click.pass_context
 def reindex(ctx, yes):
-    """ Recreate index database from scratch. """
+    """Recreate index database from scratch."""
     repo_path = ctx.obj['repo']
     repo = Repo.from_path(repo_path)
-    click.secho(f'This command will forcefully recreate index db for Aim Repo \'{repo_path}\'.\n'
-                f'Please stop the Aim UI to not interfere with the procedure.')
+    click.secho(
+        f"This command will forcefully recreate index db for Aim Repo '{repo_path}'.\n"
+        f'Please stop the Aim UI to not interfere with the procedure.'
+    )
 
     if yes:
         confirmed = True
