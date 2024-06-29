@@ -7,8 +7,8 @@ from aim.sdk.utils import clean_repo_path
 
 
 @click.command()
-@click.option("--repo", required=False, type=click.Path(exists=True, file_okay=False, dir_okay=True, writable=True))
-@click.option("-y", "--yes", is_flag=True, help="Automatically confirm prompt")
+@click.option('--repo', required=False, type=click.Path(exists=True, file_okay=False, dir_okay=True, writable=True))
+@click.option('-y', '--yes', is_flag=True, help='Automatically confirm prompt')
 def init(repo, yes):
     """
     Initializes new repository in the --repo directory.
@@ -22,7 +22,7 @@ def init(repo, yes):
             re_init = True
         else:
             re_init = click.confirm(
-                "Aim repository is already initialized. " "Do you want to re-initialize to empty Aim repository?"
+                'Aim repository is already initialized. ' 'Do you want to re-initialize to empty Aim repository?'
             )
         if not re_init:
             return
@@ -31,6 +31,6 @@ def init(repo, yes):
 
     repo = Repo.from_path(repo_path, init=True)
     if re_init:
-        click.echo("Re-initialized empty Aim repository at {}".format(repo.root_path))
+        click.echo('Re-initialized empty Aim repository at {}'.format(repo.root_path))
     else:
-        click.echo("Initialized a new Aim repository at {}".format(repo.root_path))
+        click.echo('Initialized a new Aim repository at {}'.format(repo.root_path))

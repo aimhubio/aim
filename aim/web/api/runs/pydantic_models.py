@@ -6,10 +6,10 @@ from pydantic import BaseModel
 
 # response models
 class EncodedNumpyArray(BaseModel):
-    type: str = "numpy"
+    type: str = 'numpy'
     shape: int = 0
-    dtype: str = "float64"
-    blob: bytes = ""
+    dtype: str = 'float64'
+    blob: bytes = ''
 
 
 class TraceBase(BaseModel):
@@ -136,11 +136,11 @@ class StructuredRunUpdateIn(BaseModel):
 
 class StructuredRunUpdateOut(BaseModel):
     id: str
-    status: str = "OK"
+    status: str = 'OK'
 
 
 class StructuredRunsArchivedOut(BaseModel):
-    status: str = "OK"
+    status: str = 'OK'
 
 
 class StructuredRunAddTagIn(BaseModel):
@@ -150,13 +150,13 @@ class StructuredRunAddTagIn(BaseModel):
 class StructuredRunAddTagOut(BaseModel):
     id: str
     tag_id: UUID
-    status: str = "OK"
+    status: str = 'OK'
 
 
 class StructuredRunRemoveTagOut(BaseModel):
     id: str
     removed: bool
-    status: str = "OK"
+    status: str = 'OK'
 
 
 class QuerySyntaxErrorOut(BaseModel):

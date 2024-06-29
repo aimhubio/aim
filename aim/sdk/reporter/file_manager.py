@@ -17,7 +17,7 @@ class FileManager(object):
 
 
 class LocalFileManager(FileManager):
-    def __init__(self, base_dir: Union[Path, str], watch_dir_name: Optional[str] = "check_ins"):
+    def __init__(self, base_dir: Union[Path, str], watch_dir_name: Optional[str] = 'check_ins'):
         if not isinstance(base_dir, Path):
             base_dir = Path(base_dir)
 
@@ -35,23 +35,23 @@ class LocalFileManager(FileManager):
     def touch(self, filename: str, cleanup_file_pattern: Optional[str] = None):
         self.base_dir.mkdir(parents=True, exist_ok=True)
         new_path = self.base_dir / filename
-        logger.debug(f"touching check-in: {new_path}")
+        logger.debug(f'touching check-in: {new_path}')
         new_path.touch(exist_ok=True)
         if cleanup_file_pattern is not None:
             self._cleanup(cleanup_file_pattern)
 
     def _cleanup(self, pattern: str) -> Path:
         *paths_to_remove, max_path = sorted(self.base_dir.glob(pattern))
-        logger.debug(f"found {len(paths_to_remove)} check-ins:")
-        logger.debug(f"the acting one: {max_path}")
+        logger.debug(f'found {len(paths_to_remove)} check-ins:')
+        logger.debug(f'the acting one: {max_path}')
 
         for path in paths_to_remove:
-            logger.debug(f"check-in {path} is being removed")
+            logger.debug(f'check-in {path} is being removed')
             try:
                 # Ignore errors, as the file may have been removed already.
                 path.unlink()
             except OSError:
                 pass
-            logger.debug(f"check-in {path} removed")
+            logger.debug(f'check-in {path} removed')
 
         return max_path

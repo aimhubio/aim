@@ -25,10 +25,10 @@ core._verify_python3_env = lambda: None
 
 
 @click.group()
-@click.option("-v", "--verbose", is_flag=True)
+@click.option('-v', '--verbose', is_flag=True)
 def cli_entry_point(verbose):
     if verbose:
-        click.echo("Verbose mode is on")
+        click.echo('Verbose mode is on')
 
 
 cli_entry_point.add_command(init_commands.init, INIT_NAME)

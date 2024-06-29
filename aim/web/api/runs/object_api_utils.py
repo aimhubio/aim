@@ -24,7 +24,7 @@ if TYPE_CHECKING:
     from aim.sdk.run import Run
 
 
-def get_blobs_batch(uri_batch: List[str], repo: "Repo") -> Iterator[bytes]:
+def get_blobs_batch(uri_batch: List[str], repo: 'Repo') -> Iterator[bytes]:
     uri_service = URIService(repo=repo)
     batch_iterator = uri_service.request_batch(uri_batch=uri_batch)
     for it in batch_iterator:
@@ -65,7 +65,7 @@ class CustomObjectApi:
     def set_trace_collection(self, traces: SequenceCollection):
         self.traces = traces
 
-    def set_requested_traces(self, run: "Run", requested_traces):
+    def set_requested_traces(self, run: 'Run', requested_traces):
         self.run = run
         for requested_trace in requested_traces:
             trace_name = requested_trace.name
@@ -111,17 +111,17 @@ class CustomObjectApi:
         return self._calculate_ranges()
 
     async def search_result_streamer(self, skip_system: bool, report_progress: bool):
-        def _pack_run_data(run_: "Run", traces_: list):
-            ranges = {"record_range_used": self.record_range, "record_range_total": self.total_record_range}
+        def _pack_run_data(run_: 'Run', traces_: list):
+            ranges = {'record_range_used': self.record_range, 'record_range_total': self.total_record_range}
             if self.use_list:
-                ranges["index_range_used"] = self.index_range
-                ranges["index_range_total"] = self.total_index_range
+                ranges['index_range_used'] = self.index_range
+                ranges['index_range_total'] = self.total_index_range
             run_dict = {
                 run_.hash: {
-                    "ranges": ranges,
-                    "params": get_run_params(run_, skip_system=skip_system),
-                    "traces": traces_,
-                    "props": get_run_props(run_),
+                    'ranges': ranges,
+                    'params': get_run_params(run_, skip_system=skip_system),
+                    'traces': traces_,
+                    'props': get_run_props(run_),
                 }
             }
             return collect_streamable_data(encode_tree(run_dict))
@@ -135,21 +135,21 @@ class CustomObjectApi:
                 await asyncio.sleep(ASYNC_SLEEP_INTERVAL)
                 if report_progress and time.time() - last_reported_progress_time > AIM_PROGRESS_REPORT_INTERVAL:
                     yield collect_streamable_data(
-                        encode_tree({f"progress_{progress_reports_sent}_{PROGRESS_KEY_SUFFIX}": run_info["progress"]})
+                        encode_tree({f'progress_{progress_reports_sent}_{PROGRESS_KEY_SUFFIX}': run_info['progress']})
                     )
                     yield collect_streamable_data(
-                        encode_tree({f"progress_{progress_reports_sent}": run_info["progress"]})
+                        encode_tree({f'progress_{progress_reports_sent}': run_info['progress']})
                     )
                     progress_reports_sent += 1
                     last_reported_progress_time = time.time()
-                if run_info.get("traces") and run_info.get("run"):
+                if run_info.get('traces') and run_info.get('run'):
                     traces_list = []
-                    for trace in run_info["traces"]:
+                    for trace in run_info['traces']:
                         traces_list.append(self._get_trace_info(trace, True, True))
-                    yield _pack_run_data(run_info["run"], traces_list)
+                    yield _pack_run_data(run_info['run'], traces_list)
                     if report_progress:
                         yield collect_streamable_data(
-                            encode_tree({f"progress_{progress_reports_sent}": run_info["progress"]})
+                            encode_tree({f'progress_{progress_reports_sent}': run_info['progress']})
                         )
                         progress_reports_sent += 1
                         last_reported_progress_time = time.time()
@@ -157,7 +157,7 @@ class CustomObjectApi:
                 del self.trace_cache[key]
             self.traces = None
             if report_progress and run_info:
-                yield collect_streamable_data(encode_tree({f"progress_{progress_reports_sent}": run_info["progress"]}))
+                yield collect_streamable_data(encode_tree({f'progress_{progress_reports_sent}': run_info['progress']}))
         except asyncio.CancelledError:
             pass
 
@@ -166,13 +166,13 @@ class CustomObjectApi:
             for key in list(self.trace_cache.keys()):
                 run_info = self.trace_cache[key]
                 await asyncio.sleep(ASYNC_SLEEP_INTERVAL)
-                for trace in run_info["traces"]:
+                for trace in run_info['traces']:
                     trace_dict = self._get_trace_info(trace, False, False)
-                    trace_dict["record_range_used"] = self.record_range
-                    trace_dict["record_range_total"] = self.total_record_range
+                    trace_dict['record_range_used'] = self.record_range
+                    trace_dict['record_range_total'] = self.total_record_range
                     if self.use_list:
-                        trace_dict["index_range"] = self.index_range
-                        trace_dict["index_range_total"] = self.total_index_range
+                        trace_dict['index_range'] = self.index_range
+                        trace_dict['index_range_total'] = self.total_index_range
                     yield collect_streamable_data(encode_tree(trace_dict))
                 del self.trace_cache[key]
             self.run = None
@@ -184,24 +184,24 @@ class CustomObjectApi:
         values = []
 
         steps_vals = (
-            trace.data.view("val").range(self.record_range.start, self.record_range.stop).sample(self.record_density)
+            trace.data.view('val').range(self.record_range.start, self.record_range.stop).sample(self.record_density)
         )
 
         for step, (val,) in steps_vals:
             steps.append(step)
             values.append(self._value_retriever(step, val, trace))
 
-        result = {"name": trace.name, "context": trace.context.to_dict(), "values": values, "iters": steps}
+        result = {'name': trace.name, 'context': trace.context.to_dict(), 'values': values, 'iters': steps}
         if include_epochs:
-            result["epochs"] = (
-                trace.data.view("epoch")
+            result['epochs'] = (
+                trace.data.view('epoch')
                 .range(self.record_range.start, self.record_range.stop)
                 .sample(self.record_density)
                 .values_list()
             )
         if include_timestamps:
-            result["timestamps"] = (
-                trace.data.view("time")
+            result['timestamps'] = (
+                trace.data.view('time')
                 .range(self.record_range.start, self.record_range.stop)
                 .sample(self.record_density)
                 .values_list()
@@ -211,11 +211,11 @@ class CustomObjectApi:
     def _record_to_encodable(self, step: int, record, trace: Sequence) -> dict:
         rec_json = record.json()
         if self.resolve_blobs:
-            rec_json["data"] = self.dump_fn(record)
+            rec_json['data'] = self.dump_fn(record)
         else:
             # TODO make path generation more abstract
-            data_path = generate_resource_path(trace.values.tree.container, (step, "data"))
-            rec_json["blob_uri"] = URIService.generate_uri(trace.run.repo, trace.run.hash, "seqs", data_path)
+            data_path = generate_resource_path(trace.values.tree.container, (step, 'data'))
+            rec_json['blob_uri'] = URIService.generate_uri(trace.run.repo, trace.run.hash, 'seqs', data_path)
         return rec_json
 
     def _record_collection_to_encodable(self, step: int, record_collection: Iterable, trace: Sequence) -> List[dict]:
@@ -223,13 +223,13 @@ class CustomObjectApi:
         result = []
         for idx, record in record_collection:
             rec_json = record.json()
-            rec_json["index"] = idx
+            rec_json['index'] = idx
             if self.resolve_blobs:
-                rec_json["data"] = self.dump_fn(record)
+                rec_json['data'] = self.dump_fn(record)
             else:
                 # TODO make path generation more abstract
-                data_path = generate_resource_path(trace.values.tree.container, (step, idx, "data"))
-                rec_json["blob_uri"] = URIService.generate_uri(trace.run.repo, trace.run.hash, "seqs", data_path)
+                data_path = generate_resource_path(trace.values.tree.container, (step, idx, 'data'))
+                rec_json['blob_uri'] = URIService.generate_uri(trace.run.repo, trace.run.hash, 'seqs', data_path)
             result.append(rec_json)
         return result
 
@@ -240,7 +240,7 @@ class CustomObjectApi:
             return self._record_collection_to_encodable(step, sliced_val, trace)
         elif self.index_range.start == 0:
             res = self._record_to_encodable(step, val, trace)
-            res["index"] = 0
+            res['index'] = 0
             return [res]
         else:
             return []
@@ -255,18 +255,18 @@ class CustomObjectApi:
                 if not run_trace_collection:
                     continue
                 run = run_trace_collection.run
-                self.trace_cache[run.hash] = {"progress": progress}
+                self.trace_cache[run.hash] = {'progress': progress}
                 run_traces = []
                 for trace in run_trace_collection.iter():
                     run_traces.append(trace)
                     callback(trace)
                 if run_traces:
-                    self.trace_cache[run.hash].update({"run": run, "traces": run_traces})
+                    self.trace_cache[run.hash].update({'run': run, 'traces': run_traces})
         elif self.requested_traces:
             for trace in self.requested_traces:
                 callback(trace)
             assert self.run is not None
-            self.trace_cache[self.run.hash] = {"run": self.run, "traces": self.requested_traces}
+            self.trace_cache[self.run.hash] = {'run': self.run, 'traces': self.requested_traces}
 
     def _calculate_ranges(self) -> Union[IndexRange, Tuple[IndexRange, IndexRange]]:
         rec_start = None

@@ -14,7 +14,7 @@ class TestImageConstruction(TestBase):
     # RGB, dims = (3,2,2)
     img3 = np.array([[[0, 1], [1, 0]], [[0, 1], [1, 0]], [[0, 1], [1, 0]]], np.uint8)
 
-    @pytest.mark.skipif(not is_package_installed("torch"), reason="'torch' is not installed. skipping.")
+    @pytest.mark.skipif(not is_package_installed('torch'), reason="'torch' is not installed. skipping.")
     def test_image_from_torch_tensor(self):
         import torch
 
@@ -32,7 +32,7 @@ class TestImageConstruction(TestBase):
             Image(torch.tensor(self.img3.astype(np.float32))), Image(255 * np.transpose(self.img3, (1, 2, 0)))
         )
 
-    @pytest.mark.skipif(not is_package_installed("tensorflow"), reason="'tensorflow' is not installed. skipping.")
+    @pytest.mark.skipif(not is_package_installed('tensorflow'), reason="'tensorflow' is not installed. skipping.")
     def test_image_from_tf_tensor(self):
         import tensorflow as tf
 
@@ -47,6 +47,6 @@ class TestImageConstruction(TestBase):
         self.assertEqual(Image(tf.convert_to_tensor(self.img3, tf.float32)), Image(255 * self.img3))
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     TestImageConstruction().test_image_from_torch_tensor()
     TestImageConstruction().test_image_from_tf_tensor()

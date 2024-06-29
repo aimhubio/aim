@@ -15,7 +15,7 @@ from starlette.routing import Router
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
 
-logger = getLogger("profiler")
+logger = getLogger('profiler')
 
 
 class PyInstrumentProfilerMiddleware:
@@ -31,7 +31,7 @@ class PyInstrumentProfilerMiddleware:
         try:
             from pyinstrument import Profiler, __version__
 
-            if tuple(map(int, __version__.split("."))) < (3,):
+            if tuple(map(int, __version__.split('.'))) < (3,):
                 raise ImportError
         except ImportError:
             raise RuntimeError(
@@ -47,11 +47,11 @@ class PyInstrumentProfilerMiddleware:
 
         self._profiler_interval = profiler_interval
         self._profiler_timestamp = str(time.time())
-        self._profiler_log_path = os.path.join(repo_path, "profiler", self._profiler_timestamp)
+        self._profiler_log_path = os.path.join(repo_path, 'profiler', self._profiler_timestamp)
         os.makedirs(self._profiler_log_path, exist_ok=True)
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
-        if scope["type"] != "http":
+        if scope['type'] != 'http':
             await self.app(scope, receive, send)
             return
 
@@ -71,9 +71,9 @@ class PyInstrumentProfilerMiddleware:
         status_code = 500
 
         async def wrapped_send(message: Message) -> None:
-            if message["type"] == "http.response.start":
+            if message['type'] == 'http.response.start':
                 nonlocal status_code
-                status_code = message["status"]
+                status_code = message['status']
             await send(message)
 
         try:
@@ -88,20 +88,20 @@ class PyInstrumentProfilerMiddleware:
             path = request.url.path
             params = dict(request.query_params)
 
-            file_name = "{timestamp}_{method}_{path}".format(
-                timestamp=request_time, method=method.lower(), path="_".join(path.strip("/").split("/")).lower()
+            file_name = '{timestamp}_{method}_{path}'.format(
+                timestamp=request_time, method=method.lower(), path='_'.join(path.strip('/').split('/')).lower()
             )
-            request_data = json.dumps({"path": path, "method": method, "params": params}, separators=(",", ":"))
+            request_data = json.dumps({'path': path, 'method': method, 'params': params}, separators=(',', ':'))
 
             # inject request data
             html_output = profiler.output_html(**self._profiler_kwargs)
-            body_tag = "<body>"
+            body_tag = '<body>'
             body_tag_idx_end = html_output.find(body_tag) + len(body_tag)
             html_output = (
-                f"{html_output[:body_tag_idx_end]}"
-                f"<pre><code>{request_data}</code></pre>"
-                f"{html_output[body_tag_idx_end:]}"
+                f'{html_output[:body_tag_idx_end]}'
+                f'<pre><code>{request_data}</code></pre>'
+                f'{html_output[body_tag_idx_end:]}'
             )
 
-            with open(os.path.join(self._profiler_log_path, f"{file_name}.html"), "w") as fp:
+            with open(os.path.join(self._profiler_log_path, f'{file_name}.html'), 'w') as fp:
                 fp.write(html_output)

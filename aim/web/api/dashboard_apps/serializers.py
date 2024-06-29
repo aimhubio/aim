@@ -8,11 +8,11 @@ def explore_state_response_serializer(es_object):
         return None
 
     response_schema = {
-        "id": es_object.uuid,
-        "type": es_object.type,
-        "updated_at": es_object.updated_at,
-        "created_at": es_object.created_at,
-        "state": json.loads(es_object.state),
+        'id': es_object.uuid,
+        'type': es_object.type,
+        'updated_at': es_object.updated_at,
+        'created_at': es_object.created_at,
+        'state': json.loads(es_object.state),
     }
 
     return response_schema

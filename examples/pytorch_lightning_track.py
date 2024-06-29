@@ -2,15 +2,15 @@ import importlib.util
 import os
 
 
-if importlib.util.find_spec("lightning"):
+if importlib.util.find_spec('lightning'):
     import lightning.pytorch as pl
-elif importlib.util.find_spec("pytorch_lightning"):  # noqa F401
+elif importlib.util.find_spec('pytorch_lightning'):  # noqa F401
     import pytorch_lightning as pl
 else:
     raise RuntimeError(
-        "This contrib module requires PyTorch Lightning to be installed. "
-        "Please install it with command: \n pip install pytorch-lightning \n"
-        "or \n pip install lightning"
+        'This contrib module requires PyTorch Lightning to be installed. '
+        'Please install it with command: \n pip install pytorch-lightning \n'
+        'or \n pip install lightning'
     )
 from aim.pytorch_lightning import AimLogger
 from torch import nn, optim, utils
@@ -39,7 +39,7 @@ class LitAutoEncoder(pl.LightningModule):
         x_hat = self.decoder(z)
         loss = nn.functional.mse_loss(x_hat, x)
         # Logging to TensorBoard (if installed) by default
-        self.log("train_loss", loss)
+        self.log('train_loss', loss)
         return loss
 
     def test_step(self, batch, batch_idx):
@@ -51,7 +51,7 @@ class LitAutoEncoder(pl.LightningModule):
         x_hat = self.decoder(z)
         loss = nn.functional.mse_loss(x_hat, x)
         # Logging to TensorBoard (if installed) by default
-        self.log("test_loss", loss)
+        self.log('test_loss', loss)
         return loss
 
     def configure_optimizers(self):
@@ -75,10 +75,10 @@ test_loader = utils.data.DataLoader(test_dataset)
 
 # create AimLogger and call the fit to start the training
 aim_logger = AimLogger(
-    experiment="example_experiment",
-    train_metric_prefix="train_",
-    test_metric_prefix="test_",
-    val_metric_prefix="val_",
+    experiment='example_experiment',
+    train_metric_prefix='train_',
+    test_metric_prefix='test_',
+    val_metric_prefix='val_',
 )
 
 

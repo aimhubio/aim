@@ -41,7 +41,7 @@ class InMemoryTreeView(TreeView):
         self, path: Union[AimObjectKey, AimObjectPath] = (), strict: bool = True, resolve_objects: bool = False
     ) -> AimObject:
         if not strict:
-            raise NotImplementedError("Non-strict mode is not supported yet.")
+            raise NotImplementedError('Non-strict mode is not supported yet.')
 
         if path == Ellipsis:
             path = ()
@@ -92,7 +92,7 @@ class InMemoryTreeView(TreeView):
         self, path: Union[AimObjectKey, AimObjectPath] = (), level: int = 0
     ) -> Iterator[Union[AimObjectPath, AimObjectKey]]:
         if level > 0:
-            raise NotImplementedError("Level iteration not supported yet.")
+            raise NotImplementedError('Level iteration not supported yet.')
         container = self.container
         for key in path:
             container = container[key]
@@ -112,7 +112,7 @@ class InMemoryTreeView(TreeView):
     def iterlevel(
         self, path: Union[AimObjectKey, AimObjectPath] = (), level: int = 1
     ) -> Iterator[Tuple[AimObjectPath, AimObject]]:
-        raise NotImplementedError("Level iteration not supported yet.")
+        raise NotImplementedError('Level iteration not supported yet.')
 
     def array(self, path: Union[AimObjectKey, AimObjectPath] = (), dtype: Any = None) -> TreeArrayView:
         return TreeArrayView(self.subtree(path), dtype=dtype)

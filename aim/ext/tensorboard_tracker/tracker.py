@@ -86,16 +86,16 @@ class TensorboardTracker:
         while True:
             if self._shutdown:
                 break
-            for event_file in set(Path(self.sync_tensorboard_log_dir).rglob("*.tfevents*")):
+            for event_file in set(Path(self.sync_tensorboard_log_dir).rglob('*.tfevents*')):
                 dir = str(event_file.parent.absolute())
                 if dir not in self.directories_track_status:
-                    self.directories_track_status[dir] = "NOT_STARTED"
+                    self.directories_track_status[dir] = 'NOT_STARTED'
             for dir, status in self.directories_track_status.items():
-                if status == "NOT_STARTED":
+                if status == 'NOT_STARTED':
                     tensorboard_folder_watcher = TensorboardFolderTracker(dir, self._watcher_queue)
                     tensorboard_folder_watcher.start()
                     self.tensorboard_folder_watchers.append(tensorboard_folder_watcher)
-                    self.directories_track_status[dir] = "STARTED"
+                    self.directories_track_status[dir] = 'STARTED'
             time.sleep(5)
 
     def start(self):
@@ -123,7 +123,7 @@ class TensorboardTracker:
 class TensorboardFolderTracker:
     def __init__(self, tensorboard_event_folder: str, queue: queue.Queue) -> None:
         self.queue = queue
-        self.supported_plugins = ("images", "scalars", "histograms")
+        self.supported_plugins = ('images', 'scalars', 'histograms')
         self.unsupported_plugin_noticed = False
         self.folder_name = os.path.basename(tensorboard_event_folder)
         self._thread = threading.Thread(target=self._process_event)
@@ -154,7 +154,7 @@ class TensorboardFolderTracker:
     def _process_tb_event(self, event):
         def create_ndarray(tensor):
             res = tensor_util.make_ndarray(tensor)
-            if res.dtype == "object":
+            if res.dtype == 'object':
                 return None
             else:
                 return res
@@ -169,35 +169,35 @@ class TensorboardFolderTracker:
             if len(plugin_name) > 0 and plugin_name not in self.supported_plugins:
                 if not self.unsupported_plugin_noticed:
                     logging.warning(
-                        "Found unsupported plugin type({}) in the log file. "
-                        "Data for these wont be processed. "
-                        "Supported plugin types are: {}".format(plugin_name, ", ".join(self.supported_plugins)),
+                        'Found unsupported plugin type({}) in the log file. '
+                        'Data for these wont be processed. '
+                        'Supported plugin types are: {}'.format(plugin_name, ', '.join(self.supported_plugins)),
                     )
                     self.unsupported_plugin_noticed = True
                 continue
             track_val = None
             try:
-                if value.HasField("tensor"):
+                if value.HasField('tensor'):
                     # TODO: [MV] check the case when audios are passed via tensor
-                    if plugin_name == "images":
+                    if plugin_name == 'images':
                         tensor = value.tensor.string_val[2:]
                         track_val = [Image(tf.image.decode_image(t).numpy()) for t in tensor]
                         if len(track_val) == 1:
                             track_val = track_val[0]
-                    elif plugin_name == "histograms":
+                    elif plugin_name == 'histograms':
                         track_val = _decode_histogram_from_plugin(value)
-                    elif plugin_name == "scalars" or plugin_name == "":
+                    elif plugin_name == 'scalars' or plugin_name == '':
                         track_val = create_ndarray(value.tensor)
                     else:
                         track_val = value.tensor.float_val[0]
-                elif value.HasField("simple_value"):
+                elif value.HasField('simple_value'):
                     track_val = value.simple_value
-                elif value.HasField("image"):
+                elif value.HasField('image'):
                     track_val = Image(tf.image.decode_image(value.image.encoded_image_string).numpy())
-                elif value.HasField("audio"):
+                elif value.HasField('audio'):
                     tf_audio, sample_rate = tf.audio.decode_wav(value.audio.encoded_audio_string)
                     track_val = Audio(tf_audio.numpy(), rate=sample_rate)
-                elif value.HasField("histo"):
+                elif value.HasField('histo'):
                     track_val = _decode_histogram(value)
 
             except RuntimeError as exc:
@@ -208,9 +208,9 @@ class TensorboardFolderTracker:
                 continue
 
             if track_val is not None:
-                self.queue.put(TensorboardEvent(track_val, tag, step, context={"entry": self.folder_name}))
+                self.queue.put(TensorboardEvent(track_val, tag, step, context={'entry': self.folder_name}))
         if fail_count:
-            logging.warning(f"Failed to process {fail_count} entries. First exception: {_err_info}")
+            logging.warning(f'Failed to process {fail_count} entries. First exception: {_err_info}')
 
 
 class TensorboardEvent:

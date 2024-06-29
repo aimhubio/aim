@@ -4,7 +4,7 @@ from aim.storage.object import CustomObject
 from aim.storage.types import BLOB
 
 
-@CustomObject.alias("aim.distribution")
+@CustomObject.alias('aim.distribution')
 class Distribution(CustomObject):
     """Distribution object used to store distribution objects in Aim repository.
 
@@ -17,22 +17,22 @@ class Distribution(CustomObject):
         bin_range (:obj:`tuple`, optional): Tuple of (start, end) bin range.
     """
 
-    AIM_NAME = "aim.distribution"
+    AIM_NAME = 'aim.distribution'
 
     def __init__(self, samples=None, bin_count=64, *, hist=None, bin_range=None):
         super().__init__()
 
         if samples is not None:
             if hist is not None:
-                raise ValueError("hist should not be specified if samples is specified.")
+                raise ValueError('hist should not be specified if samples is specified.')
             hist, bin_edges = np.histogram(samples, bins=bin_count)
         elif hist is not None:
             if bin_range is None:
-                raise ValueError("Please specify bin_range of (start, end) bins.")
+                raise ValueError('Please specify bin_range of (start, end) bins.')
             bin_count = len(hist)
             bin_edges = np.linspace(bin_range[0], bin_range[-1], num=bin_count + 1)
         else:
-            raise ValueError("Please specify either samples or hist.")
+            raise ValueError('Please specify either samples or hist.')
 
         hist = np.asanyarray(hist)
         bin_edges = np.asanyarray(bin_edges)
@@ -67,7 +67,7 @@ class Distribution(CustomObject):
         :getter: Returns distribution bin_count.
         :type: string
         """
-        return self.storage["bin_count"]
+        return self.storage['bin_count']
 
     @property
     def range(self):
@@ -76,7 +76,7 @@ class Distribution(CustomObject):
         :getter: Returns distribution range.
         :type: List
         """
-        return self.storage["range"]
+        return self.storage['range']
 
     @property
     def weights(self):
@@ -85,7 +85,7 @@ class Distribution(CustomObject):
         :getter: Returns distribution weights as `np.array`.
         :type: np.ndarray
         """
-        return np.frombuffer(self.storage["data"].load(), dtype=self.storage["dtype"], count=self.storage["bin_count"])
+        return np.frombuffer(self.storage['data'].load(), dtype=self.storage['dtype'], count=self.storage['bin_count'])
 
     @property
     def ranges(self):
@@ -100,19 +100,19 @@ class Distribution(CustomObject):
     def json(self):
         """Dump distribution metadata to a dict"""
         return {
-            "bin_count": self.bin_count,
-            "range": self.range,
+            'bin_count': self.bin_count,
+            'range': self.range,
         }
 
     def _from_np_histogram(self, hist: np.ndarray, bin_edges: np.ndarray):
         bin_count = len(hist)
         if 1 > bin_count > 512:
-            raise ValueError("Supported range for `bin_count` is [1, 512].")
+            raise ValueError('Supported range for `bin_count` is [1, 512].')
 
-        self.storage["data"] = BLOB(data=hist.tobytes())
-        self.storage["dtype"] = str(hist.dtype)
-        self.storage["range"] = [bin_edges[0].item(), bin_edges[-1].item()]
-        self.storage["bin_count"] = bin_count
+        self.storage['data'] = BLOB(data=hist.tobytes())
+        self.storage['dtype'] = str(hist.dtype)
+        self.storage['range'] = [bin_edges[0].item(), bin_edges[-1].item()]
+        self.storage['bin_count'] = bin_count
 
     def to_np_histogram(self):
         """Return `np.histogram` compatible format of the distribution"""

@@ -33,10 +33,10 @@ class RepoIndexManager:
     def __init__(self, repo: Repo):
         self.repo_path = repo.path
         self.repo = repo
-        self.progress_dir = Path(self.repo_path) / "meta" / "progress"
+        self.progress_dir = Path(self.repo_path) / 'meta' / 'progress'
         self.progress_dir.mkdir(parents=True, exist_ok=True)
 
-        self.heartbeat_dir = Path(self.repo_path) / "check_ins"
+        self.heartbeat_dir = Path(self.repo_path) / 'check_ins'
         self.run_heartbeat_cache = {}
 
         self._indexing_in_progress = False
@@ -45,10 +45,10 @@ class RepoIndexManager:
     @property
     def repo_status(self):
         if self._indexing_in_progress is True:
-            return "indexing in progress"
+            return 'indexing in progress'
         if self.reindex_needed:
-            return "needs indexing"
-        return "up-to-date"
+            return 'needs indexing'
+        return 'up-to-date'
 
     @property
     def reindex_needed(self) -> bool:
@@ -65,7 +65,7 @@ class RepoIndexManager:
         while True:
             self._indexing_in_progress = False
             for run_hash in self._next_stalled_run():
-                logger.info(f"Found un-indexed run {run_hash}. Indexing...")
+                logger.info(f'Found un-indexed run {run_hash}. Indexing...')
                 self._indexing_in_progress = True
                 idle_cycles = 0
                 self.index(run_hash)
@@ -78,8 +78,8 @@ class RepoIndexManager:
                 idle_cycles += 1
                 sleep_interval = 2 * idle_cycles if idle_cycles < 5 else 10
                 logger.info(
-                    f"No un-indexed runs found. Next check will run in {sleep_interval} seconds. "
-                    f"Waiting for un-indexed run..."
+                    f'No un-indexed runs found. Next check will run in {sleep_interval} seconds. '
+                    f'Waiting for un-indexed run...'
                 )
                 time.sleep(sleep_interval)
 
@@ -95,7 +95,7 @@ class RepoIndexManager:
 
     def _is_run_stalled(self, run_hash: str) -> bool:
         stalled = False
-        heartbeat_files = list(sorted(self.heartbeat_dir.glob(f"{run_hash}-*-progress-*-*"), reverse=True))
+        heartbeat_files = list(sorted(self.heartbeat_dir.glob(f'{run_hash}-*-progress-*-*'), reverse=True))
         if heartbeat_files:
             last_heartbeat = Event(heartbeat_files[0].name)
             last_recorded_heartbeat = self.run_heartbeat_cache.get(run_hash)
@@ -112,7 +112,7 @@ class RepoIndexManager:
         return stalled
 
     def _index_lock_path(self):
-        return Path(self.repo.path) / "locks" / "index"
+        return Path(self.repo.path) / 'locks' / 'index'
 
     @contextlib.contextmanager
     def lock_index(self, lock: RefreshLock):
@@ -129,12 +129,12 @@ class RepoIndexManager:
         while True:
             try:
                 lock.acquire()
-                logger.debug("Lock is acquired!")
+                logger.debug('Lock is acquired!')
                 break
             except TimeoutError:
                 owner_id = lock.owner_id()
                 if owner_id != last_owner_id:
-                    logger.debug(f"Lock has been acquired by {owner_id}")
+                    logger.debug(f'Lock has been acquired by {owner_id}')
                     last_owner_id = owner_id
                     prev_touch_time = None
                 else:  # same holder as from prev. iteration
@@ -142,11 +142,11 @@ class RepoIndexManager:
                     if last_touch_time != prev_touch_time:
                         prev_touch_time = last_touch_time
                         last_touch_seen = time.time()
-                        logger.debug(f"Lock has been refreshed. Touch time: {last_touch_time}")
+                        logger.debug(f'Lock has been refreshed. Touch time: {last_touch_time}')
                         continue
                     assert last_touch_seen is not None
                     if time.time() - last_touch_seen > RefreshLock.GRACE_PERIOD:
-                        logger.debug("Grace period exceeded. Force-acquiring the lock.")
+                        logger.debug('Grace period exceeded. Force-acquiring the lock.')
                         with lock.meta_lock():
                             # double check holder ID
                             if lock.owner_id() != last_owner_id:  # someone else grabbed lock
@@ -155,14 +155,14 @@ class RepoIndexManager:
                                 lock.force_release()
                                 try:
                                     lock.acquire()
-                                    logger.debug("lock has been forcefully acquired!")
+                                    logger.debug('lock has been forcefully acquired!')
                                     break
                                 except TimeoutError:
                                     continue
                     else:
                         logger.debug(
-                            f"Countdown to force-acquire lock. "
-                            f"Time remaining: {RefreshLock.GRACE_PERIOD - (time.time() - last_touch_seen)}"
+                            f'Countdown to force-acquire lock. '
+                            f'Time remaining: {RefreshLock.GRACE_PERIOD - (time.time() - last_touch_seen)}'
                         )
 
     def run_needs_indexing(self, run_hash: str) -> bool:
@@ -174,12 +174,12 @@ class RepoIndexManager:
     ) -> bool:
         lock = RefreshLock(self._index_lock_path(), timeout=10)
         with self.lock_index(lock):
-            index = self.repo._get_index_tree("meta", 0).view(())
+            index = self.repo._get_index_tree('meta', 0).view(())
             meta_tree = self.repo.request_tree(
-                "meta", run_hash, read_only=True, from_union=False, no_cache=True
-            ).subtree("meta")
-            meta_run_tree = meta_tree.subtree("chunks").subtree(run_hash)
+                'meta', run_hash, read_only=True, from_union=False, no_cache=True
+            ).subtree('meta')
+            meta_run_tree = meta_tree.subtree('chunks').subtree(run_hash)
             meta_run_tree.finalize(index=index)
-            if meta_run_tree["end_time"] is None:
-                index["meta", "chunks", run_hash, "end_time"] = datetime.datetime.now(pytz.utc).timestamp()
+            if meta_run_tree['end_time'] is None:
+                index['meta', 'chunks', run_hash, 'end_time'] = datetime.datetime.now(pytz.utc).timestamp()
             return True

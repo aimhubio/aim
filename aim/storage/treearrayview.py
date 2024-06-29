@@ -7,7 +7,7 @@ from aim.storage.treeview import TreeView
 
 
 class TreeArrayView(ArrayView):
-    def __init__(self, tree: "TreeView", dtype: Any = None):
+    def __init__(self, tree: 'TreeView', dtype: Any = None):
         self.tree = tree
         self.dtype = dtype
 

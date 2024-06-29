@@ -52,11 +52,11 @@ class Session:
     @exception_resistant(silent=False)
     def track(self, *args, **kwargs):
         val = args[0]
-        name = kwargs.pop("name")
-        step = kwargs.pop("step", None)
-        epoch = kwargs.pop("epoch", None)
+        name = kwargs.pop('name')
+        step = kwargs.pop('step', None)
+        epoch = kwargs.pop('epoch', None)
         for key in kwargs.keys():
-            if key.startswith("__"):
+            if key.startswith('__'):
                 del kwargs[key]
 
         self._run.track(val, name=name, step=step, epoch=epoch, context=kwargs)
@@ -74,7 +74,7 @@ class Session:
     @exception_resistant(silent=False)
     def close(self):
         if not self.active:
-            raise Exception("session is closed")
+            raise Exception('session is closed')
         if self._run:
             del self._run
             self._run = None

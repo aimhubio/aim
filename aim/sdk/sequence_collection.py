@@ -33,15 +33,15 @@ class SequenceCollection:
         include_context=True,
         include_props=True,
         include_params=True,
-    ) -> "DataFrame":
+    ) -> 'DataFrame':
         # TODO [GA]: Separate runs and sequences dataframes collection
         dfs = []
-        if self._item == "run":
+        if self._item == 'run':
             dfs = [
                 run.run.dataframe(include_props=include_props, include_params=include_params)
                 for run in self.iter_runs()
             ]
-        elif self._item == "sequence":
+        elif self._item == 'sequence':
             dfs = [
                 metric.dataframe(
                     include_run=include_run,
@@ -70,7 +70,7 @@ class SequenceCollection:
         ...
 
     @abstractmethod
-    def iter_runs(self) -> Iterator["SequenceCollection"]:
+    def iter_runs(self) -> Iterator['SequenceCollection']:
         """Get SequenceCollection iterator for collection's runs.
 
         Yields:
@@ -95,22 +95,22 @@ class SingleRunSequenceCollection(SequenceCollection):
 
     def __init__(
         self,
-        run: "Run",
+        run: 'Run',
         seq_cls=Sequence,
-        query: str = "",
+        query: str = '',
         runs_proxy_cache: dict = None,
         timezone_offset: int = 0,
     ):
-        self.run: "Run" = run
+        self.run: 'Run' = run
         self.seq_cls = seq_cls
-        self._item = "sequence"
+        self._item = 'sequence'
         self.query = RestrictedPythonQuery(query)
         self.runs_proxy_cache = runs_proxy_cache
         self._timezone_offset = timezone_offset
 
-    def iter_runs(self) -> Iterator["SequenceCollection"]:
+    def iter_runs(self) -> Iterator['SequenceCollection']:
         """"""
-        logger.warning("Run is already bound to the Collection")
+        logger.warning('Run is already bound to the Collection')
         raise StopIteration
 
     def iter(self) -> Iterator[Sequence]:
@@ -120,7 +120,7 @@ class SingleRunSequenceCollection(SequenceCollection):
         for seq_name, ctx, run in self.run.iter_sequence_info_by_type(allowed_dtypes):
             run_view = RunView(run, self.runs_proxy_cache, self._timezone_offset)
             seq_view = SequenceView(seq_name, ctx.to_dict(), run_view)
-            match = self.query.check(**{"run": run_view, seq_var: seq_view})
+            match = self.query.check(**{'run': run_view, seq_var: seq_view})
             if not match:
                 continue
             yield self.seq_cls(seq_name, ctx, run)
@@ -144,21 +144,21 @@ class QuerySequenceCollection(SequenceCollection):
 
     def __init__(
         self,
-        repo: "Repo",
+        repo: 'Repo',
         seq_cls=Sequence,
-        query: str = "",
+        query: str = '',
         report_mode: QueryReportMode = QueryReportMode.PROGRESS_BAR,
         timezone_offset: int = 0,
     ):
-        self.repo: "Repo" = repo
+        self.repo: 'Repo' = repo
         self.seq_cls = seq_cls
-        self._item = "sequence"
+        self._item = 'sequence'
         self.query = query
         self.report_mode = report_mode
         self.runs_proxy_cache = dict()
         self._timezone_offset = timezone_offset
 
-    def iter_runs(self) -> Iterator["SequenceCollection"]:
+    def iter_runs(self) -> Iterator['SequenceCollection']:
         """"""
         if self.repo.structured_db:
             runs_iterator = self.repo.iter_runs_from_cache()
@@ -212,18 +212,18 @@ class QueryRunSequenceCollection(SequenceCollection):
 
     def __init__(
         self,
-        repo: "Repo",
+        repo: 'Repo',
         seq_cls=Sequence,
-        query: str = "",
+        query: str = '',
         paginated: bool = False,
         offset: str = None,
         report_mode: QueryReportMode = QueryReportMode.PROGRESS_BAR,
         timezone_offset: int = 0,
     ):
-        self.repo: "Repo" = repo
+        self.repo: 'Repo' = repo
         self.seq_cls = seq_cls
         self.query = query
-        self._item = "run"
+        self._item = 'run'
         self.paginated = paginated
         self.offset = offset
         self.query = RestrictedPythonQuery(query)
@@ -239,7 +239,7 @@ class QueryRunSequenceCollection(SequenceCollection):
             for run_seq in self.iter_runs():
                 yield from run_seq
 
-    def iter_runs(self) -> Iterator["SequenceCollection"]:
+    def iter_runs(self) -> Iterator['SequenceCollection']:
         """"""
         if self.repo.structured_db:
             runs_iterator = self.repo.iter_runs_from_cache(offset=self.offset)

@@ -15,14 +15,14 @@ from alembic.config import Config
 # access to the values within the .ini file in use.
 config = context.config
 
-if os.getenv(AIM_ENV_MODE_KEY, "prod") != "prod":
+if os.getenv(AIM_ENV_MODE_KEY, 'prod') != 'prod':
     here = os.path.abspath(os.path.dirname(__file__))
-    config = Config(os.path.join(here, "alembic_dev.ini"))
+    config = Config(os.path.join(here, 'alembic_dev.ini'))
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
 fileConfig(config.config_file_name)
-logger = logging.getLogger("alembic.env")
+logger = logging.getLogger('alembic.env')
 
 # add your model's MetaData object here
 # for 'autogenerate' support
@@ -64,11 +64,11 @@ def run_migrations_online():
     # when there are no changes to the schema
     # reference: http://alembic.zzzcomputing.com/en/latest/cookbook.html
     def process_revision_directives(context, revision, directives):
-        if getattr(config.cmd_opts, "autogenerate", False):
+        if getattr(config.cmd_opts, 'autogenerate', False):
             script = directives[0]
             if script.upgrade_ops.is_empty():
                 directives[:] = []
-                logger.info("No changes in schema detected.")
+                logger.info('No changes in schema detected.')
 
     connectable = engine
 

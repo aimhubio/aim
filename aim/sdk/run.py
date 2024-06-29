@@ -53,10 +53,10 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class BasicRunAutoClean(AutoClean["BasicRun"]):
+class BasicRunAutoClean(AutoClean['BasicRun']):
     PRIORITY = 90
 
-    def __init__(self, instance: "Run") -> None:
+    def __init__(self, instance: 'Run') -> None:
         """
         Prepare the `Run` for automatic cleanup.
 
@@ -84,7 +84,7 @@ class BasicRunAutoClean(AutoClean["BasicRun"]):
         """
         Finalize the run by indexing all the data.
         """
-        self.meta_run_tree["end_time"] = datetime.datetime.now(pytz.utc).timestamp()
+        self.meta_run_tree['end_time'] = datetime.datetime.now(pytz.utc).timestamp()
 
     def empty_rpc_queue(self):
         if self.repo.is_remote_repo:
@@ -95,10 +95,10 @@ class BasicRunAutoClean(AutoClean["BasicRun"]):
         Close the `Run` instance resources and trigger indexing.
         """
         if self.read_only:
-            logger.debug(f"Run {self.hash} is read-only, skipping cleanup")
+            logger.debug(f'Run {self.hash} is read-only, skipping cleanup')
             return
         for res in reversed(self.extra_resources):
-            logger.debug(f"Closing resource {res}")
+            logger.debug(f'Closing resource {res}')
             res.close()
 
         self.empty_rpc_queue()
@@ -184,7 +184,7 @@ class StructuredRunMixin:
         :getter: Returns run finalization time.
         """
         try:
-            return self.meta_run_tree["end_time"]
+            return self.meta_run_tree['end_time']
         except KeyError:
             # run saved with old version. fallback to sqlite data
             return self.props.end_time
@@ -261,7 +261,7 @@ class BasicRun(BaseRun, StructuredRunMixin):
         self,
         run_hash: Optional[str] = None,
         *,
-        repo: Optional[Union[str, "Repo", pathlib.Path]] = None,
+        repo: Optional[Union[str, 'Repo', pathlib.Path]] = None,
         read_only: bool = False,
         experiment: Optional[str] = None,
         force_resume: bool = False,
@@ -269,37 +269,37 @@ class BasicRun(BaseRun, StructuredRunMixin):
         self._resources: Optional[BasicRunAutoClean] = None
         super().__init__(run_hash, repo=repo, read_only=read_only, force_resume=force_resume)
 
-        self.meta_attrs_tree: TreeView = self.meta_tree.subtree("attrs")
-        self.meta_run_attrs_tree: TreeView = self.meta_run_tree.subtree("attrs")
+        self.meta_attrs_tree: TreeView = self.meta_tree.subtree('attrs')
+        self.meta_run_attrs_tree: TreeView = self.meta_run_tree.subtree('attrs')
 
         if not read_only:
-            logger.debug(f"Opening Run {self.hash} in write mode")
+            logger.debug(f'Opening Run {self.hash} in write mode')
 
             if self.check_metrics_version():
                 if self.repo.is_remote_repo:
                     logger.warning(
-                        f"Cannot track Run with remote repo {self.repo.path}. Please upgrade repo first "
-                        f"with the following command:"
+                        f'Cannot track Run with remote repo {self.repo.path}. Please upgrade repo first '
+                        f'with the following command:'
                     )
                     logger.warning(f"aim storage --repo {self.repo.path} upgrade 3.11+ '*'")
                     raise RuntimeError
                 else:
-                    logger.warning(f"Detected sub-optimal format metrics for Run {self.hash}. Upgrading...")
+                    logger.warning(f'Detected sub-optimal format metrics for Run {self.hash}. Upgrading...')
                     backup_path = backup_run(self)
                     try:
                         self.update_metrics()
-                        logger.warning(f"Successfully converted Run {self.hash}")
+                        logger.warning(f'Successfully converted Run {self.hash}')
                         logger.warning(
-                            f"Run backup can be found at {backup_path}. "
-                            f"In case of any issues the following command can be used to restore data: "
-                            f"`aim storage --repo {self.repo.root_path} restore {self.hash}`"
+                            f'Run backup can be found at {backup_path}. '
+                            f'In case of any issues the following command can be used to restore data: '
+                            f'`aim storage --repo {self.repo.root_path} restore {self.hash}`'
                         )
                     except Exception as e:
-                        logger.error(f"Failed to convert metrics. {e}")
+                        logger.error(f'Failed to convert metrics. {e}')
                         logger.warning(
-                            f"Run backup can be found at {backup_path}. "
-                            f"To restore data please run the following command: "
-                            f"`aim storage --repo {self.repo.root_path} restore {self.hash}`"
+                            f'Run backup can be found at {backup_path}. '
+                            f'To restore data please run the following command: '
+                            f'`aim storage --repo {self.repo.root_path} restore {self.hash}`'
                         )
                         raise
 
@@ -310,7 +310,7 @@ class BasicRun(BaseRun, StructuredRunMixin):
         if not read_only:
             if not self.repo.is_remote_repo:
                 self._checkins = RunStatusReporter(self.hash, LocalFileManager(self.repo.path))
-                progress_flag_path = pathlib.Path(self.repo.path) / "meta" / "progress" / self.hash
+                progress_flag_path = pathlib.Path(self.repo.path) / 'meta' / 'progress' / self.hash
                 self._heartbeat = ScheduledStatusReporter(self._checkins, touch_path=progress_flag_path)
             else:
                 self._checkins = RunStatusReporter(self.hash, RemoteFileManager(self.repo._client, self.hash))
@@ -321,7 +321,7 @@ class BasicRun(BaseRun, StructuredRunMixin):
             except (KeyError, StopIteration):
                 # no run params are set. use empty dict
                 self[...] = {}
-            self.meta_run_tree["end_time"] = None
+            self.meta_run_tree['end_time'] = None
             self.props
         if experiment:
             self.experiment = experiment
@@ -418,43 +418,43 @@ class BasicRun(BaseRun, StructuredRunMixin):
     @property
     def artifacts_uri(self) -> str:
         if self._run_artifacts_uri is None:
-            base_uri = self.meta_run_tree.get("artifacts_uri", None)
+            base_uri = self.meta_run_tree.get('artifacts_uri', None)
             self._run_artifacts_uri = os.path.join(base_uri, self.hash)
         return self._run_artifacts_uri
 
     def set_artifacts_uri(self, uri: str):
-        self.meta_run_tree["artifacts_uri"] = uri
+        self.meta_run_tree['artifacts_uri'] = uri
         self._run_artifacts_uri = os.path.join(uri, self.hash)
 
     @noexcept
     def log_artifact(self, path: str, name: Optional[str] = None, *, block: bool = False):
         artifact = Artifact(path, uri=self.artifacts_uri, name=name)
         artifact.upload(block=block)
-        self.meta_run_tree.subtree("artifacts")[artifact.name] = artifact
+        self.meta_run_tree.subtree('artifacts')[artifact.name] = artifact
 
     @noexcept
     def log_artifacts(self, path: str, name: Optional[str] = None, *, block: bool = False):
         dir_path = pathlib.Path(path)
         if name is None:
             name = dir_path.name
-        for file_path in dir_path.glob("**/*"):
+        for file_path in dir_path.glob('**/*'):
             if file_path.is_file():
                 rel_path = file_path.relative_to(dir_path)
-                artifact = Artifact(path=str(file_path), uri=self.artifacts_uri, name=f"{name}/{rel_path}")
+                artifact = Artifact(path=str(file_path), uri=self.artifacts_uri, name=f'{name}/{rel_path}')
                 artifact.upload(block=block)
-                self.meta_run_tree.subtree("artifacts")[artifact.name] = artifact
+                self.meta_run_tree.subtree('artifacts')[artifact.name] = artifact
 
     @property
     def artifacts(self) -> Dict[str, Artifact]:
-        return self.meta_run_tree.get("artifacts", {})
+        return self.meta_run_tree.get('artifacts', {})
 
     # logging API
     def _log_message(self, level: int, msg: str, **params):
         frame_info = getframeinfo(currentframe().f_back)
         logger_info = (frame_info.filename, frame_info.lineno)
-        self.track(LogRecord(msg, level, logger_info=logger_info, **params), name="__log_records")
+        self.track(LogRecord(msg, level, logger_info=logger_info, **params), name='__log_records')
         block = level > logging.WARNING
-        self._checkins.check_in(flag_name="new_logs", block=block)
+        self._checkins.check_in(flag_name='new_logs', block=block)
 
     log_error = partialmethod(_log_message, logging.ERROR)
     log_warning = partialmethod(_log_message, logging.WARNING)
@@ -467,7 +467,7 @@ class BasicRun(BaseRun, StructuredRunMixin):
         Returns:
             :obj:`Sequence` object if exists, `None` otherwise.
         """
-        return self._get_sequence("log_records", "__log_records", Context({}))
+        return self._get_sequence('log_records', '__log_records', Context({}))
 
     @property
     def props(self):
@@ -475,16 +475,16 @@ class BasicRun(BaseRun, StructuredRunMixin):
             self._props = self.repo.request_props(self.hash, self.read_only)
         return self._props
 
-    def iter_metrics_info(self) -> Iterator[Tuple[str, Context, "Run"]]:
+    def iter_metrics_info(self) -> Iterator[Tuple[str, Context, 'Run']]:
         """Iterator for all run metrics info.
 
         Yields:
             tuples of (name, context, run) where run is the Run object itself and
             name, context defines Metric type sequence (with values of `float` and `int`).
         """
-        yield from self.iter_sequence_info_by_type(("float", "int"))
+        yield from self.iter_sequence_info_by_type(('float', 'int'))
 
-    def iter_sequence_info_by_type(self, dtypes: Union[str, Tuple[str, ...]]) -> Iterator[Tuple[str, Context, "Run"]]:
+    def iter_sequence_info_by_type(self, dtypes: Union[str, Tuple[str, ...]]) -> Iterator[Tuple[str, Context, 'Run']]:
         """Iterator for run sequence infos for the given object data types
 
         Args:
@@ -496,7 +496,7 @@ class BasicRun(BaseRun, StructuredRunMixin):
         """
         if isinstance(dtypes, str):
             dtypes = (dtypes,)
-        for ctx_idx, run_ctx_dict in self.meta_run_tree.subtree("traces").items():
+        for ctx_idx, run_ctx_dict in self.meta_run_tree.subtree('traces').items():
             assert isinstance(ctx_idx, int)
             ctx = self.idx_to_ctx(ctx_idx)
             # run_ctx_view = run_meta_traces.view(ctx_idx)
@@ -505,10 +505,10 @@ class BasicRun(BaseRun, StructuredRunMixin):
                 # skip sequences not matching dtypes.
                 # sequences with no dtype are considered to be float sequences.
                 # '*' stands for all data types
-                if "*" in dtypes or run_ctx_dict[seq_name].get("dtype", "float") in dtypes:
+                if '*' in dtypes or run_ctx_dict[seq_name].get('dtype', 'float') in dtypes:
                     yield seq_name, ctx, self
 
-    def metrics(self) -> "SequenceCollection":
+    def metrics(self) -> 'SequenceCollection':
         """Get iterable object for all run tracked metrics.
 
         Returns:
@@ -524,10 +524,10 @@ class BasicRun(BaseRun, StructuredRunMixin):
         self.repo._prepare_runs_cache()
         return SingleRunSequenceCollection(self, seq_cls=Metric)
 
-    def __eq__(self, other: "Run") -> bool:
+    def __eq__(self, other: 'Run') -> bool:
         return self.hash == other.hash and self.repo == other.repo
 
-    def get_metric(self, name: str, context: Context) -> Optional["Metric"]:
+    def get_metric(self, name: str, context: Context) -> Optional['Metric']:
         """Retrieve metric sequence by it's name and context.
 
         Args:
@@ -540,15 +540,15 @@ class BasicRun(BaseRun, StructuredRunMixin):
         if self.read_only and not Run._metric_version_warning_shown:
             if self.check_metrics_version():
                 logger.warning(
-                    f"Detected sub-optimal format metrics for Run {self.hash}. Consider upgrading repo "
-                    f"to improve queries performance:"
+                    f'Detected sub-optimal format metrics for Run {self.hash}. Consider upgrading repo '
+                    f'to improve queries performance:'
                 )
                 logger.warning(f"aim storage --repo {self.repo.path} upgrade 3.11+ '*'")
                 Run._metric_version_warning_shown = True
 
-        return self._get_sequence("metric", name, context)
+        return self._get_sequence('metric', name, context)
 
-    def get_image_sequence(self, name: str, context: Context) -> Optional["Images"]:
+    def get_image_sequence(self, name: str, context: Context) -> Optional['Images']:
         """Retrieve images sequence by it's name and context.
 
         Args:
@@ -558,9 +558,9 @@ class BasicRun(BaseRun, StructuredRunMixin):
         Returns:
             :obj:`Images` object if exists, `None` otherwise.
         """
-        return self._get_sequence("images", name, context)
+        return self._get_sequence('images', name, context)
 
-    def get_figure_sequence(self, name: str, context: Context) -> Optional["Figures"]:
+    def get_figure_sequence(self, name: str, context: Context) -> Optional['Figures']:
         """Retrieve figure sequence by its name and context.
 
         Args:
@@ -570,9 +570,9 @@ class BasicRun(BaseRun, StructuredRunMixin):
         Returns:
             :obj:`Figures` object if exists, `None` otherwise.
         """
-        return self._get_sequence("figures", name, context)
+        return self._get_sequence('figures', name, context)
 
-    def get_audio_sequence(self, name: str, context: Context) -> Optional["Audios"]:
+    def get_audio_sequence(self, name: str, context: Context) -> Optional['Audios']:
         """Retrieve audios sequence by its name and context.
 
         Args:
@@ -582,9 +582,9 @@ class BasicRun(BaseRun, StructuredRunMixin):
         Returns:
             :obj:`Audios` object if exists, `None` otherwise.
         """
-        return self._get_sequence("audios", name, context)
+        return self._get_sequence('audios', name, context)
 
-    def get_distribution_sequence(self, name: str, context: Context) -> Optional["Distributions"]:
+    def get_distribution_sequence(self, name: str, context: Context) -> Optional['Distributions']:
         """Retrieve distributions sequence by it's name and context.
 
         Args:
@@ -594,17 +594,17 @@ class BasicRun(BaseRun, StructuredRunMixin):
         Returns:
             :obj:`Distributions` object if exists, `None` otherwise.
         """
-        return self._get_sequence("distributions", name, context)
+        return self._get_sequence('distributions', name, context)
 
-    def get_terminal_logs(self) -> Optional["Logs"]:
+    def get_terminal_logs(self) -> Optional['Logs']:
         """Retrieve duplicated terminal logs for a run
 
         Returns:
             :obj:`Logs` object if exists, `None` otherwise.
         """
-        return self._get_sequence("logs", "logs", Context({}))
+        return self._get_sequence('logs', 'logs', Context({}))
 
-    def get_text_sequence(self, name: str, context: Context) -> Optional["Texts"]:
+    def get_text_sequence(self, name: str, context: Context) -> Optional['Texts']:
         """Retrieve texts sequence by it's name and context.
 
         Args:
@@ -614,14 +614,14 @@ class BasicRun(BaseRun, StructuredRunMixin):
         Returns:
             :obj:`Texts` object if exists, `None` otherwise.
         """
-        return self._get_sequence("texts", name, context)
+        return self._get_sequence('texts', name, context)
 
     def _get_sequence_dtype(self, sequence_name: str, context: Context) -> str:
         try:
-            return self.meta_run_tree.subtree(("traces", hash(context), sequence_name, "dtype")).collect()
+            return self.meta_run_tree.subtree(('traces', hash(context), sequence_name, 'dtype')).collect()
         except KeyError:
             # fallback to `float`, cause in older versions there was no `dtype`
-            return "float"
+            return 'float'
 
     def _get_sequence(self, seq_type: str, sequence_name: str, context: Context) -> Optional[Sequence]:
         seq_cls = Sequence.registry.get(seq_type, None)
@@ -647,7 +647,7 @@ class BasicRun(BaseRun, StructuredRunMixin):
         Returns:
              :obj:`list`: list of sequence's `context`, `name` and optionally last tracked value triplets.
         """
-        traces = self.meta_run_tree.subtree("traces")
+        traces = self.meta_run_tree.subtree('traces')
         traces_overview = {}
 
         # build reverse map of sequence supported dtypes
@@ -667,14 +667,14 @@ class BasicRun(BaseRun, StructuredRunMixin):
         for idx in traces.keys():
             ctx_dict = self.idx_to_ctx(idx).to_dict()
             for name, value in traces[idx].items():
-                dtype = value.get("dtype", "float")  # old sequences without dtype set are considered float sequences
+                dtype = value.get('dtype', 'float')  # old sequences without dtype set are considered float sequences
                 if dtype in dtype_to_sequence_type_map:
                     trace_data = {
-                        "context": ctx_dict,
-                        "name": name,
+                        'context': ctx_dict,
+                        'name': name,
                     }
                     if not skip_last_value:
-                        trace_data["values"] = value
+                        trace_data['values'] = value
                     for seq_type in dtype_to_sequence_type_map[dtype]:
                         traces_overview[seq_type].append(trace_data)
         return traces_overview
@@ -713,7 +713,7 @@ class BasicRun(BaseRun, StructuredRunMixin):
         self,
         include_props: bool = True,
         include_params: bool = True,
-    ) -> "DataFrame":
+    ) -> 'DataFrame':
         """Get run properties and params as pandas DataFrame
 
         Args:
@@ -721,33 +721,33 @@ class BasicRun(BaseRun, StructuredRunMixin):
              include_params: (:obj:`int`, optional): If true, include run parameters
         """
         data = {
-            "hash": self.hash,
+            'hash': self.hash,
         }
 
         if include_props:
             # TODO [GA]: Auto collect props based on StructuredRunMixin:
             #  - Exclude created_at, updated_at, finalized_at auto-populated fields
             #  - Collect list of representations in case of ModelMappedCollection's
-            data["name"] = self.props.name
-            data["description"] = self.props.description
-            data["archived"] = self.props.archived
-            data["creation_time"] = self.props.creation_time
-            data["end_time"] = self.end_time
-            data["active"] = self.active
-            data["experiment"] = self.props.experiment
-            data["tags"] = json.dumps(self.props.tags)
+            data['name'] = self.props.name
+            data['description'] = self.props.description
+            data['archived'] = self.props.archived
+            data['creation_time'] = self.props.creation_time
+            data['end_time'] = self.end_time
+            data['active'] = self.active
+            data['experiment'] = self.props.experiment
+            data['tags'] = json.dumps(self.props.tags)
 
         if include_params:
             # TODO [GA]:
             #  - Move run params collection to utility function
             #  - Remove code duplication from Metric.dataframe
             for path, val in treeutils.unfold_tree(self[...], unfold_array=False, depth=3):
-                s = ""
+                s = ''
                 for key in path:
                     if isinstance(key, str):
-                        s += f".{key}" if len(s) else f"{key}"
+                        s += f'.{key}' if len(s) else f'{key}'
                     else:
-                        s += f"[{key}]"
+                        s += f'[{key}]'
 
                 if isinstance(val, (tuple, list, dict)):
                     val = json.dumps(val)
@@ -776,7 +776,7 @@ class BasicRun(BaseRun, StructuredRunMixin):
             block: (:obj:`bool`, optional): If true, block the thread until the report is written to filesystem.
         """
         if self._checkins is None:
-            raise ValueError("Progress reports are not enabled for this run")
+            raise ValueError('Progress reports are not enabled for this run')
         self._checkins._check_in(expect_next_in=expect_next_in, block=block)
 
     def report_successful_finish(
@@ -792,7 +792,7 @@ class BasicRun(BaseRun, StructuredRunMixin):
             block: (:obj:`bool`, optional): If true, block the thread until the report is written to filesystem.
         """
         if self._checkins is None:
-            raise ValueError("Progress reports are not enabled for this run")
+            raise ValueError('Progress reports are not enabled for this run')
         self._checkins._report_successful_finish(block=block)
 
 
@@ -823,7 +823,7 @@ class Run(BasicRun):
         self,
         run_hash: Optional[str] = None,
         *,
-        repo: Optional[Union[str, "Repo", pathlib.Path]] = None,
+        repo: Optional[Union[str, 'Repo', pathlib.Path]] = None,
         read_only: bool = False,
         experiment: Optional[str] = None,
         force_resume: bool = False,
@@ -836,12 +836,12 @@ class Run(BasicRun):
         self._system_resource_tracker: ResourceTracker = None
         if not read_only:
             if log_system_params:
-                self["__system_params"] = {
-                    "packages": get_installed_packages(),
-                    "env_variables": get_environment_variables(),
-                    "git_info": get_git_info(),
-                    "executable": sys.executable,
-                    "arguments": sys.argv,
+                self['__system_params'] = {
+                    'packages': get_installed_packages(),
+                    'env_variables': get_environment_variables(),
+                    'git_info': get_git_info(),
+                    'executable': sys.executable,
+                    'arguments': sys.argv,
                 }
 
             if ResourceTracker.check_interval(system_tracking_interval) or capture_terminal_logs:

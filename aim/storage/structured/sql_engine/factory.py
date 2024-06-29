@@ -48,7 +48,7 @@ class ModelMappedFactory(ObjectFactory):
 
     def create_run(self, runhash: str, created_at: datetime = None) -> Run:
         run = ModelMappedRun.from_hash(runhash, created_at, session=self._session or self.get_session())
-        run.experiment = "default"
+        run.experiment = 'default'
         return run
 
     def delete_run(self, runhash: str) -> bool:

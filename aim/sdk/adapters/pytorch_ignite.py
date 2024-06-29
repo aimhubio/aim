@@ -8,7 +8,7 @@ try:
     from torch.optim import Optimizer
 except ImportError:
     raise RuntimeError(
-        "This contrib module requires PyTorch to be installed. " "Please install it with command: \n pip install torch"
+        'This contrib module requires PyTorch to be installed. ' 'Please install it with command: \n pip install torch'
     )
 try:
     from ignite.contrib.handlers.base_logger import (
@@ -19,8 +19,8 @@ try:
     from ignite.engine import Engine, Events
 except ImportError:
     raise RuntimeError(
-        "This contrib module requires PyTorch Ignite to be installed. "
-        "Please install it with command: \n pip install pytorch-ignite"
+        'This contrib module requires PyTorch Ignite to be installed. '
+        'Please install it with command: \n pip install pytorch-ignite'
     )
 
 
@@ -44,9 +44,9 @@ class AimLogger(BaseLogger):
         self,
         repo: Optional[str] = None,
         experiment: Optional[str] = None,
-        train_metric_prefix: Optional[str] = "train_",
-        val_metric_prefix: Optional[str] = "val_",
-        test_metric_prefix: Optional[str] = "test_",
+        train_metric_prefix: Optional[str] = 'train_',
+        val_metric_prefix: Optional[str] = 'val_',
+        test_metric_prefix: Optional[str] = 'test_',
         system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT,
         log_system_params: Optional[bool] = True,
         capture_terminal_logs: Optional[bool] = True,
@@ -99,7 +99,7 @@ class AimLogger(BaseLogger):
                 params = OmegaConf.to_container(params, resolve=True)
 
         for key, value in params.items():
-            self.experiment.set(("hparams", key), value, strict=False)
+            self.experiment.set(('hparams', key), value, strict=False)
 
     def log_metrics(self, metrics: Dict[str, float], step: Optional[int] = None):
         for k, v in metrics.items():
@@ -107,13 +107,13 @@ class AimLogger(BaseLogger):
             context = {}
             if self._train_metric_prefix and name.startswith(self._train_metric_prefix):
                 name = name[len(self._train_metric_prefix) :]
-                context["subset"] = "train"
+                context['subset'] = 'train'
             elif self._test_metric_prefix and name.startswith(self._test_metric_prefix):
                 name = name[len(self._test_metric_prefix) :]
-                context["subset"] = "test"
+                context['subset'] = 'test'
             elif self._val_metric_prefix and name.startswith(self._val_metric_prefix):
                 name = name[len(self._val_metric_prefix) :]
-                context["subset"] = "val"
+                context['subset'] = 'val'
             self.experiment.track(v, step=step, name=name, context=context)
 
     @property
@@ -137,10 +137,10 @@ class AimLogger(BaseLogger):
     def __del__(self):
         self.close()
 
-    def _create_output_handler(self, *args: Any, **kwargs: Any) -> "OutputHandler":
+    def _create_output_handler(self, *args: Any, **kwargs: Any) -> 'OutputHandler':
         return OutputHandler(*args, **kwargs)
 
-    def _create_opt_params_handler(self, *args: Any, **kwargs: Any) -> "OptimizerParamsHandler":
+    def _create_opt_params_handler(self, *args: Any, **kwargs: Any) -> 'OptimizerParamsHandler':
         return OptimizerParamsHandler(*args, **kwargs)
 
 
@@ -185,13 +185,13 @@ class OutputHandler(BaseOutputHandler):
 
         if not isinstance(global_step, int):
             raise TypeError(
-                f"global_step must be int, got {type(global_step)}."
-                " Please check the output of global_step_transform."
+                f'global_step must be int, got {type(global_step)}.'
+                ' Please check the output of global_step_transform.'
             )
 
         metrics = {}
         for keys, value in rendered_metrics.items():
-            key = "_".join(keys)
+            key = '_'.join(keys)
             metrics[key] = value
 
         logger.log_metrics(metrics, step=global_step)
@@ -207,17 +207,17 @@ class OptimizerParamsHandler(BaseOptimizerParamsHandler):
         tag: common title for all produced plots. For example, 'generator'
     """
 
-    def __init__(self, optimizer: Optimizer, param_name: str = "lr", tag: Optional[str] = None):
+    def __init__(self, optimizer: Optimizer, param_name: str = 'lr', tag: Optional[str] = None):
         super(OptimizerParamsHandler, self).__init__(optimizer, param_name, tag)
 
     def __call__(self, engine: Engine, logger: AimLogger, event_name: Union[str, Events]) -> None:
         if not isinstance(logger, AimLogger):
-            raise TypeError("Handler OptimizerParamsHandler works only with AimLogger")
+            raise TypeError('Handler OptimizerParamsHandler works only with AimLogger')
 
         global_step = engine.state.get_event_attrib_value(event_name)
-        tag_prefix = f"{self.tag}_" if self.tag else ""
+        tag_prefix = f'{self.tag}_' if self.tag else ''
         params = {
-            f"{tag_prefix}{self.param_name}_group_{i}": float(param_group[self.param_name])
+            f'{tag_prefix}{self.param_name}_group_{i}': float(param_group[self.param_name])
             for i, param_group in enumerate(self.optimizer.param_groups)
         }
 

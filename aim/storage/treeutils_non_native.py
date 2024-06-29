@@ -26,6 +26,6 @@ def convert_to_native_object(
         if not strict:
             obj = repr(obj)
         else:
-            raise TypeError(f"Unhandled non-native value `{obj}` of type `{type(obj)}`.")
+            raise TypeError(f'Unhandled non-native value `{obj}` of type `{type(obj)}`.')
 
     return obj

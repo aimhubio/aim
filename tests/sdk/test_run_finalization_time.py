@@ -17,7 +17,7 @@ class TestRunFinalizedAt(TestBase):
             run_hash.append(run.hash)
             self.assertIsNone(run.end_time)
             for i in range(10):
-                run.track(i, name="seq")
+                run.track(i, name='seq')
             self.assertIsNone(run.end_time)
 
         _func()
@@ -29,7 +29,7 @@ class TestRunFinalizedAt(TestBase):
         run = Run(system_tracking_interval=None)
         run_hash = run.hash
         for i in range(10):
-            run.track(i, name="seq")
+            run.track(i, name='seq')
         del run
         time.sleep(0.1)
         self.assertIsNotNone(self._query_run_finalized_at(run_hash))
@@ -37,7 +37,7 @@ class TestRunFinalizedAt(TestBase):
     def test_explicit_run_finalize(self):
         run = Run(system_tracking_interval=None)
         for i in range(10):
-            run.track(i, name="seq")
+            run.track(i, name='seq')
         self.assertIsNone(run.end_time)
         run.finalize()
         self.assertIsNotNone(run.end_time)

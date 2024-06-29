@@ -41,19 +41,19 @@ class LockInfo:
 
     def age(self, to=None) -> str:
         if self.created_at is None:
-            return "N/A"
+            return 'N/A'
         to = to or datetime.datetime.now()
         delta = relativedelta(to, self.created_at)
-        date_attrs = ("years", "months", "days", "hours", "minutes", "seconds")
+        date_attrs = ('years', 'months', 'days', 'hours', 'minutes', 'seconds')
         for attr in date_attrs:
             if getattr(delta, attr) > 1:
-                return f"~{getattr(delta, attr)} {attr}"
+                return f'~{getattr(delta, attr)} {attr}'
             elif getattr(delta, attr) == 1:
-                return f"~{getattr(delta, attr)} {attr[:-1]}"
+                return f'~{getattr(delta, attr)} {attr[:-1]}'
 
 
 class SFRunLock(RunLock):
-    def __init__(self, lock_manager: "LockManager", run_hash: str, path: Path, timeout: int):
+    def __init__(self, lock_manager: 'LockManager', run_hash: str, path: Path, timeout: int):
         self.run_hash = run_hash
         self._lock_manager = weakref.ref(lock_manager)
         self._sf_lock = SoftFileLock(path, timeout=timeout)
@@ -71,12 +71,12 @@ class LockManager(object):
 
     def __init__(self, repo_path: Union[str, Path]):
         self.repo_path = Path(repo_path)
-        self.locks_path = self.repo_path / "locks"
+        self.locks_path = self.repo_path / 'locks'
         self.locks_path.mkdir(parents=True, exist_ok=True)
 
     @staticmethod
     def softlock_fname(name: str) -> str:
-        return f"{name}.softlock"
+        return f'{name}.softlock'
 
     def get_run_lock_info(self, run_hash: str) -> LockInfo:
         # check locks created prior to 3.15 version
@@ -93,8 +93,8 @@ class LockManager(object):
             lock_type = LockType.SOFT_LOCK
         else:
             # consider Run as locked if one of it's containers is locked
-            for container_dir in ("meta", "seqs"):
-                lock_dir = self.repo_path / container_dir / "locks"
+            for container_dir in ('meta', 'seqs'):
+                lock_dir = self.repo_path / container_dir / 'locks'
                 lock_path = lock_dir / run_hash
                 soft_lock_path = lock_dir / self.softlock_fname(run_hash)
                 if lock_path.exists():
@@ -131,22 +131,22 @@ class LockManager(object):
             raise RunLockingError(
                 f"Cannot acquire lock for Run '{run_hash}'. "
                 f"Make sure no process uses Run '{run_hash}' and close it via Aim CLI:\n"
-                f"`aim runs close --force {run_hash}`"
+                f'`aim runs close --force {run_hash}`'
             )
         run_lock.acquire()
-        with open(lock_path, "w") as lock_metadata_fh:
-            lock_metadata_fh.write(f"{self.machine_id}-{self.pid}-{time.time()}")
+        with open(lock_path, 'w') as lock_metadata_fh:
+            lock_metadata_fh.write(f'{self.machine_id}-{self.pid}-{time.time()}')
 
     def release_locks(self, run_hash: str, force: bool) -> bool:
         success = True
         lock_path = self.locks_path / self.softlock_fname(run_hash)
         if force:
             # Force-release container locks if any
-            for container_dir in ("meta", "seqs"):
-                soft_lock_path = self.repo_path / container_dir / "locks" / self.softlock_fname(run_hash)
+            for container_dir in ('meta', 'seqs'):
+                soft_lock_path = self.repo_path / container_dir / 'locks' / self.softlock_fname(run_hash)
                 if soft_lock_path.exists():
                     soft_lock_path.unlink()
-                unix_lock_path = self.repo_path / container_dir / "locks" / run_hash
+                unix_lock_path = self.repo_path / container_dir / 'locks' / run_hash
                 if unix_lock_path.exists():
                     unix_lock_path.unlink()
 
@@ -164,8 +164,8 @@ class LockManager(object):
         return success
 
     def is_stalled_lock(self, lock_file_path: Path) -> bool:
-        with open(lock_file_path, mode="r") as lock_metadata_fh:
-            machine_id, pid, *_ = lock_metadata_fh.read().split("-")
+        with open(lock_file_path, mode='r') as lock_metadata_fh:
+            machine_id, pid, *_ = lock_metadata_fh.read().split('-')
             if int(machine_id) == self.machine_id and not psutil.pid_exists(int(pid)):
                 return True
         return False

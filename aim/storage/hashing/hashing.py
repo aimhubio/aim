@@ -85,7 +85,7 @@ def hash_string(obj: str) -> int:
     # First, we encode them to `utf-8` and then compute the hash
     # but *a different hash seed is provided* to make sure strings and their
     # utf-8 encoded blobs do not map to the same hash.
-    state = hashlib.blake2b(obj.encode("utf-8"), digest_size=_HASH_SIZE, salt=_HASH_STR_SALT)
+    state = hashlib.blake2b(obj.encode('utf-8'), digest_size=_HASH_SIZE, salt=_HASH_STR_SALT)
     return decode_int64(state.digest())
 
 

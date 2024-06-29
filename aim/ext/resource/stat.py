@@ -10,10 +10,10 @@ from aim.ext.resource.utils import round10e5
 
 class StatDict(object):
     # Available aggregation functions
-    AGG_MODE_AVG = "average"
-    AGG_MODE_MIN = "min"
-    AGG_MODE_MAX = "max"
-    AGG_MODE_DIFF = "diff"
+    AGG_MODE_AVG = 'average'
+    AGG_MODE_MIN = 'min'
+    AGG_MODE_MAX = 'max'
+    AGG_MODE_DIFF = 'diff'
     AGG_DEFAULT = AGG_MODE_AVG
 
     @classmethod
@@ -35,7 +35,7 @@ class StatDict(object):
     @classmethod
     def aggregate_items(
         cls,
-        items: "List[StatDict]",
+        items: 'List[StatDict]',
         agg_mode: str = AGG_DEFAULT,
     ):
         """
@@ -88,8 +88,8 @@ class StatDict(object):
         Returns system and GPU device statistics
         """
         return {
-            "system": self.system,
-            "gpus": self.gpus,
+            'system': self.system,
+            'gpus': self.gpus,
         }
 
 
@@ -123,21 +123,21 @@ class Stat(object):
         Get system statistics and assign to `self`
         """
         memory_usage = psutil.virtual_memory()
-        disk_usage = psutil.disk_usage("/")
+        disk_usage = psutil.disk_usage('/')
         # net = psutil.net_io_counters()
         system = {
             # CPU utilization percent(can be over 100%)
-            "cpu": round10e5(self._process.cpu_percent(0.0)),
+            'cpu': round10e5(self._process.cpu_percent(0.0)),
             # Whole system memory usage
             # 'memory_used': round10e5(memory_usage.used / 1024 / 1024),
-            "memory_percent": round10e5(memory_usage.used * 100 / memory_usage.total),
+            'memory_percent': round10e5(memory_usage.used * 100 / memory_usage.total),
             # Get the portion of memory occupied by a process
             # 'p_memory_rss': round10e5(self._process.memory_info().rss
             #                           / 1024 / 1024),
-            "p_memory_percent": round10e5(self._process.memory_percent()),
+            'p_memory_percent': round10e5(self._process.memory_percent()),
             # Disk usage
             # 'disk_used': round10e5(disk_usage.used / 1024 / 1024),
-            "disk_percent": round10e5(disk_usage.percent),
+            'disk_percent': round10e5(disk_usage.percent),
         }
 
         # Collect GPU statistics
@@ -151,7 +151,7 @@ class Stat(object):
                 try:
                     util = nvml.nvmlDeviceGetUtilizationRates(handle)
                     # GPU utilization percent
-                    gpu_info["gpu"] = round10e5(util.gpu)
+                    gpu_info['gpu'] = round10e5(util.gpu)
                 except nvml.NVMLError_NotSupported:
                     pass
                 try:
@@ -159,7 +159,7 @@ class Stat(object):
                     memory = nvml.nvmlDeviceGetMemoryInfo(handle)
                     # Device memory usage
                     # 'memory_used': round10e5(memory.used / 1024 / 1024),
-                    gpu_info["gpu_memory_percent"] = round10e5(memory.used * 100 / memory.total)
+                    gpu_info['gpu_memory_percent'] = round10e5(memory.used * 100 / memory.total)
                 except nvml.NVMLError_NotSupported:
                     pass
                 try:
@@ -167,7 +167,7 @@ class Stat(object):
                     nvml_tmp = nvml.NVML_TEMPERATURE_GPU
                     temp = nvml.nvmlDeviceGetTemperature(handle, nvml_tmp)
                     # Device temperature
-                    gpu_info["gpu_temp"] = round10e5(temp)
+                    gpu_info['gpu_temp'] = round10e5(temp)
                 except nvml.NVMLError_NotSupported:
                     pass
                 try:
@@ -177,7 +177,7 @@ class Stat(object):
                     power_cap_watts = power_cap / 1000
                     power_watts / power_cap_watts * 100
                     # Power usage in watts and percent
-                    gpu_info["gpu_power_watts"] = round10e5(power_watts)
+                    gpu_info['gpu_power_watts'] = round10e5(power_watts)
                     # gpu_info["power_percent"] = round10e5(power_usage)
                 except nvml.NVMLError_NotSupported:
                     pass

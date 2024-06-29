@@ -7,9 +7,9 @@ from performance_tests.utils import timing
 
 @timing(10)
 def open_containers_for_read(container_paths_list):
-    sequences_subdir = f"{get_aim_repo_name()}/seqs/chunks/"
+    sequences_subdir = f'{get_aim_repo_name()}/seqs/chunks/'
     for path in container_paths_list:
-        container_path = f"{sequences_subdir}/{path}"
+        container_path = f'{sequences_subdir}/{path}'
         container = RocksContainer(container_path, read_only=True)
         container.db
 

@@ -29,7 +29,7 @@ class TaskQueue(object):
     def register_task(self, task_func, *args, **kwargs):
         warn_queue_full = False
         if self._stopped:
-            logger.debug("Cannot register task: task queue is stopped.")
+            logger.debug('Cannot register task: task queue is stopped.')
         else:
             backlog_size = self._queue.qsize()
             if backlog_size > self.max_backlog * 0.8:  # queue is 80% full
@@ -40,7 +40,7 @@ class TaskQueue(object):
     def worker(self):
         while True:
             if self._shutdown:
-                logger.debug(f"Shutting down worker thread {threading.get_ident()}.")
+                logger.debug(f'Shutting down worker thread {threading.get_ident()}.')
                 break
             task_f, args, kwargs = self._queue.get()
             task_f(*args, **kwargs)
@@ -57,11 +57,11 @@ class TaskQueue(object):
         if pending_task_count:
             logger.warning(
                 f"Processing {pending_task_count} pending tasks in queue '{self.name}'... "
-                f"Please do not kill the process."
+                f'Please do not kill the process.'
             )
             self._queue.join()
         self._shutdown = True
-        logger.debug("No pending tasks left.")
+        logger.debug('No pending tasks left.')
 
     def __del__(self):
         self.stop_workers()

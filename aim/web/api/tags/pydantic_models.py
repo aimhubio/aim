@@ -6,12 +6,12 @@ from pydantic import BaseModel
 
 class TagCreateIn(BaseModel):
     name: str
-    color: Optional[str] = ""
-    description: Optional[str] = ""
+    color: Optional[str] = ''
+    description: Optional[str] = ''
 
 
 class TagUpdateIn(BaseModel):
-    name: Optional[str] = ""
+    name: Optional[str] = ''
     color: Optional[str] = None
     description: Optional[str] = None
     archived: Optional[bool] = None
@@ -19,7 +19,7 @@ class TagUpdateIn(BaseModel):
 
 class TagUpdateOut(BaseModel):
     id: UUID
-    status: str = "OK"
+    status: str = 'OK'
 
 
 class TagGetOut(BaseModel):

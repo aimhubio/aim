@@ -34,7 +34,7 @@ class PrefixView(Container):
         container (:obj:`Container`): the parent container to build the view on
     """
 
-    def __init__(self, *, prefix: bytes = b"", container: Container, read_only: bool = None) -> None:
+    def __init__(self, *, prefix: bytes = b'', container: Container, read_only: bool = None) -> None:
         self.prefix = prefix
         self.parent = container
 
@@ -61,7 +61,7 @@ class PrefixView(Container):
         """
         prefix = self.absolute_path()
         # Shadowing
-        index.delete_range(prefix, prefix + b"\xff")  # TODO check validity
+        index.delete_range(prefix, prefix + b'\xff')  # TODO check validity
         self.parent.finalize(index=index)
 
     def absolute_path(self, path: bytes = None) -> bytes:
@@ -130,7 +130,7 @@ class PrefixView(Container):
         end_path = self.absolute_path(end)
         self.parent.delete_range(begin_path, end_path, store_batch=store_batch)
 
-    def next_item(self, key: ContainerKey = b"") -> Tuple[ContainerKey, ContainerValue]:
+    def next_item(self, key: ContainerKey = b'') -> Tuple[ContainerKey, ContainerValue]:
         """Returns `(key, value)` for the key that comes (lexicographically)
         right after the provided `key`.
         """
@@ -142,7 +142,7 @@ class PrefixView(Container):
                 raise KeyError
         return keys, value
 
-    def prev_item(self, key: ContainerKey = b"") -> Tuple[ContainerKey, ContainerValue]:
+    def prev_item(self, key: ContainerKey = b'') -> Tuple[ContainerKey, ContainerValue]:
         """Returns `(key, value)` for the key that comes (lexicographically)
         right before the provided `key`.
         """
@@ -154,7 +154,7 @@ class PrefixView(Container):
                 raise KeyError
         return keys, value
 
-    def walk(self, key: ContainerKey = b""):
+    def walk(self, key: ContainerKey = b''):
         """A bi-directional generator to walk over the collection of records on
         any arbitrary order. The `prefix` sent to the generator (lets call it
         a `walker`) seeks for lower-bound key in the collection.
@@ -187,7 +187,7 @@ class PrefixView(Container):
             key = yield next_key
             p = self.absolute_path(key)
 
-    def items(self, key: ContainerKey = b"") -> Iterator[Tuple[ContainerKey, ContainerValue]]:
+    def items(self, key: ContainerKey = b'') -> Iterator[Tuple[ContainerKey, ContainerValue]]:
         """Iterate over all the key-value records in the prefix key range.
 
         The iteration is always performed in lexiographic order w.r.t keys.
@@ -207,7 +207,7 @@ class PrefixView(Container):
         """
         return PrefixViewItemsIterator(self, key)
 
-    def view(self, prefix: bytes = b"") -> Container:
+    def view(self, prefix: bytes = b'') -> Container:
         """Return a view (even mutable ones) that enable access to the container
         but with modifications.
 

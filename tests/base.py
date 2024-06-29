@@ -21,7 +21,7 @@ class TestBase(unittest.TestCase):
     @classmethod
     def create_run(cls, **kwargs):
         run = Run(**kwargs)
-        run["testcase"] = full_class_name(cls)
+        run['testcase'] = full_class_name(cls)
         return run
 
     @classmethod
@@ -36,7 +36,7 @@ class PrefilledDataTestBase(TestBase):
     @classmethod
     def setUpClass(cls) -> None:
         super().setUpClass()
-        fill_up_test_data(extra_params={"testcase": full_class_name(cls)})
+        fill_up_test_data(extra_params={'testcase': full_class_name(cls)})
 
 
 class ApiTestBase(TestBase):

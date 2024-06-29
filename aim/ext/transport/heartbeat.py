@@ -16,9 +16,9 @@ class HeartbeatSender(object):
     NETWORK_CHECK_INTERVAL = 180
 
     NETWORK_UNSTABLE_WARNING_TEMPLATE = (
-        "Network connection between client `{}` " "and server `{}` appears to be unstable."
+        'Network connection between client `{}` ' 'and server `{}` appears to be unstable.'
     )
-    NETWORK_ABSENT_WARNING_TEMPLATE = "Network connection between client `{}` " "and server `{}` appears to be absent."
+    NETWORK_ABSENT_WARNING_TEMPLATE = 'Network connection between client `{}` ' 'and server `{}` appears to be absent.'
 
     def __init__(
         self,
@@ -58,12 +58,12 @@ class HeartbeatSender(object):
             try:
                 response = self._remote_client().client_heartbeat()
                 if response.status_code == 200:
-                    self._heartbeat_responses["success"] += 1
+                    self._heartbeat_responses['success'] += 1
                 else:
-                    self._heartbeat_responses["fail"] += 1
+                    self._heartbeat_responses['fail'] += 1
             except Exception:
                 # at the moment we don't care about failures for heartbeats
-                self._heartbeat_responses["fail"] += 1
+                self._heartbeat_responses['fail'] += 1
 
     def _target_f(self):
         heartbeat_interval_counter = 0
@@ -89,14 +89,14 @@ class HeartbeatSender(object):
 
     def _check_network_state(self):
         def reset_responses():
-            self._heartbeat_responses["fail"] = 0
-            self._heartbeat_responses["success"] = 0
+            self._heartbeat_responses['fail'] = 0
+            self._heartbeat_responses['success'] = 0
 
-        if not self._heartbeat_responses["fail"]:
+        if not self._heartbeat_responses['fail']:
             reset_responses()
             return
 
-        if self._heartbeat_responses["success"] and not self._network_unstable_warned:
+        if self._heartbeat_responses['success'] and not self._network_unstable_warned:
             self._network_unstable_warned = True
             logger.warning(
                 HeartbeatSender.NETWORK_UNSTABLE_WARNING_TEMPLATE.format(
@@ -145,7 +145,7 @@ class HeartbeatWatcher:
         self._th_collector.join()
 
     def _release_client_resources(self, dead_client_uri):
-        logger.warning(f"Cleaning up resources for client `{dead_client_uri}`.")
+        logger.warning(f'Cleaning up resources for client `{dead_client_uri}`.')
         from aim.ext.transport.router import ClientRouter
         from aim.ext.transport.tracking import TrackingRouter
 

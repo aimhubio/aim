@@ -7,28 +7,28 @@ import click
 from aim import Audio, Image, Run, Text
 
 
-IMAGE_EXTENSIONS = ("jpg", "bmp", "jpeg", "png", "gif", "svg")
-HTML_EXTENSIONS = ("html",)
+IMAGE_EXTENSIONS = ('jpg', 'bmp', 'jpeg', 'png', 'gif', 'svg')
+HTML_EXTENSIONS = ('html',)
 TEXT_EXTENSIONS = (
-    "txt",
-    "log",
-    "py",
-    "js",
-    "yaml",
-    "yml",
-    "json",
-    "csv",
-    "tsv",
-    "md",
-    "rst",
-    "jsonnet",
+    'txt',
+    'log',
+    'py',
+    'js',
+    'yaml',
+    'yml',
+    'json',
+    'csv',
+    'tsv',
+    'md',
+    'rst',
+    'jsonnet',
 )
 
 # Audio is not handled in mlflow but including here just in case
 AUDIO_EXTENSIONS = (
-    "flac",
-    "mp3",
-    "wav",
+    'flac',
+    'mp3',
+    'wav',
 )
 
 
@@ -64,13 +64,13 @@ def parse_mlflow_logs(repo_inst, tracking_uri, experiment):
                 capture_terminal_logs=False,
                 experiment=ex.experiment_id,
             )
-            aim_run["mlflow_run_id"] = run.info.run_id
-            aim_run["mlflow_run_name"] = run.data.tags.get("mlflow.runName")
-            aim_run.description = run.data.tags.get("mlflow.note.content")
+            aim_run['mlflow_run_id'] = run.info.run_id
+            aim_run['mlflow_run_name'] = run.data.tags.get('mlflow.runName')
+            aim_run.description = run.data.tags.get('mlflow.note.content')
 
             # Collect params & tags
-            aim_run["params"] = run.data.params
-            aim_run["tags"] = {k: v for k, v in run.data.tags.items() if not k.startswith("mlflow")}
+            aim_run['params'] = run.data.params
+            aim_run['tags'] = {k: v for k, v in run.data.tags.items() if not k.startswith('mlflow')}
 
             # Collect metrics
             for key in run.data.metrics.keys():
@@ -79,7 +79,7 @@ def parse_mlflow_logs(repo_inst, tracking_uri, experiment):
 
             # Collect artifacts
             __html_warning_issued = False
-            with TemporaryDirectory(prefix=f"mlflow_{run.info.run_id}_") as temp_path:
+            with TemporaryDirectory(prefix=f'mlflow_{run.info.run_id}_') as temp_path:
                 # click.secho(f'Downloading artifacts to {temp_path}', fg='green')
                 artifact_loc_stack = [None]
                 while artifact_loc_stack:
@@ -100,7 +100,7 @@ def parse_mlflow_logs(repo_inst, tracking_uri, experiment):
                             # TODO [AP] plotly does not provide interface to load from html
                             # TODO [AP] need to implement html custom object?
                             if not __html_warning_issued:
-                                click.secho("Handler for html file types is not yet implemented.", fg="yellow")
+                                click.secho('Handler for html file types is not yet implemented.', fg='yellow')
                                 __html_warning_issued = True
                             continue
                         elif file_info.path.endswith(IMAGE_EXTENSIONS):
@@ -114,20 +114,20 @@ def parse_mlflow_logs(repo_inst, tracking_uri, experiment):
                             kwargs = dict(text=content)
                             container = text_batch
                         elif file_info.path.endswith(AUDIO_EXTENSIONS):
-                            audio_format = os.path.splitext(file_info.path)[1].lstrip(".")
+                            audio_format = os.path.splitext(file_info.path)[1].lstrip('.')
                             aim_object = Audio
                             kwargs = dict(data=downloaded_path, caption=file_info.path, format=audio_format)
                             container = audio_batch
                         else:
-                            click.secho(f"Unresolved or unsupported type for artifact {file_info.path}", fg="yellow")
+                            click.secho(f'Unresolved or unsupported type for artifact {file_info.path}', fg='yellow')
                             continue
 
                         try:
                             item = aim_object(**kwargs)
                         except Exception as exc:
-                            click.echo(f"Could not convert artifact {file_info.path} into aim object - {exc}", err=True)
+                            click.echo(f'Could not convert artifact {file_info.path} into aim object - {exc}', err=True)
                             continue
                         container.append(item)
 
-                    for content_type, seq in (("image", img_batch), ("text", text_batch), ("audio", audio_batch)):
-                        aim_run.track(seq, step=0, name=loc or "root", context={"type": content_type})
+                    for content_type, seq in (('image', img_batch), ('text', text_batch), ('audio', audio_batch)):
+                        aim_run.track(seq, step=0, name=loc or 'root', context={'type': content_type})

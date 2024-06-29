@@ -18,7 +18,7 @@ class ContainerTreeView(TreeView):
     def preload(self):
         self.container.preload()
 
-    def finalize(self, index: "ContainerTreeView"):
+    def finalize(self, index: 'ContainerTreeView'):
         self.container.finalize(index=index.container)
 
     def view(self, path: Union[AimObjectKey, AimObjectPath], resolve: bool = False):
@@ -30,7 +30,7 @@ class ContainerTreeView(TreeView):
         if not resolve:
             return tree_view
 
-        flag = decode(container_view.get(b"", default=b"\0"))
+        flag = decode(container_view.get(b'', default=b'\0'))
         if isinstance(flag, CustomObjectFlagType):
             return CustomObject._aim_decode(flag.aim_name, tree_view)
 
@@ -52,7 +52,7 @@ class ContainerTreeView(TreeView):
         try:
             return treeutils.decode_tree(it, strict=strict, resolve_objects=resolve_objects)
         except KeyError:
-            raise KeyError("No key {} is present.".format(path))
+            raise KeyError('No key {} is present.'.format(path))
 
     def __delitem__(self, path: Union[AimObjectKey, AimObjectPath]):
         if path == Ellipsis:
@@ -60,7 +60,7 @@ class ContainerTreeView(TreeView):
         if not isinstance(path, (tuple, list)):
             path = (path,)
         encoded_path = E.encode_path(path)
-        self.container.delete_range(encoded_path, encoded_path + b"\xff")
+        self.container.delete_range(encoded_path, encoded_path + b'\xff')
 
     def set(self, path: Union[AimObjectKey, AimObjectPath], value: AimObject, strict: bool = True):
         if path == Ellipsis:
@@ -70,7 +70,7 @@ class ContainerTreeView(TreeView):
 
         batch = self.container.batch()
         encoded_path = E.encode_path(path)
-        self.container.delete_range(encoded_path, encoded_path + b"\xff", store_batch=batch)
+        self.container.delete_range(encoded_path, encoded_path + b'\xff', store_batch=batch)
         for key, val in treeutils.encode_tree(value, strict=strict):
             self.container.set(encoded_path + key, val, store_batch=batch)
         self.container.commit(batch)
@@ -102,8 +102,8 @@ class ContainerTreeView(TreeView):
             else:
                 yield path
             p = E.encode_path(path)
-            assert p.endswith(b"\xfe")
-            path = p[:-1] + b"\xff"
+            assert p.endswith(b'\xfe')
+            path = p[:-1] + b'\xff'
 
     def items_eager(self, path: Union[AimObjectKey, AimObjectPath] = ()):
         return list(self.subtree(path).items())

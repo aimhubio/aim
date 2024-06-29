@@ -30,14 +30,14 @@ class FileSystemInspector:
 
     GLOBAL_FILE_LOCK_CAPABLE_FILESYSTEMS: Set[str] = {
         # The most popular local filesystems
-        "ext3",
-        "ext4",
-        "xfs",
-        "zfs",
-        "apfs",
+        'ext3',
+        'ext4',
+        'xfs',
+        'zfs',
+        'apfs',
         # We include only NFS v4 filesystems here (yet).
         # NFS v3 does not support file locks.
-        "nfs4",
+        'nfs4',
     }
     warned_devices: Set[int] = set()
 
@@ -58,16 +58,16 @@ class FileSystemInspector:
 
         if fstype is None:
             logger.warning(
-                f"Failed to determine filesystem type for {path} "
-                f"(device id: {device}). "
-                f"Using soft file locks to avoid potential data corruption."
+                f'Failed to determine filesystem type for {path} '
+                f'(device id: {device}). '
+                f'Using soft file locks to avoid potential data corruption.'
             )
             return
 
         logger.warning(
-            f"The lock file {path} is on a filesystem of type `{fstype}` "
-            f"(device id: {device}). "
-            f"Using soft file locks to avoid potential data corruption."
+            f'The lock file {path} is on a filesystem of type `{fstype}` '
+            f'(device id: {device}). '
+            f'Using soft file locks to avoid potential data corruption.'
         )
 
     @classmethod
@@ -154,7 +154,7 @@ def AutoFileLock(lock_file: Union[str, os.PathLike], timeout: float = -1) -> Bas
         # (potentially from previous versions) could be interpreted as *acquired*
         # locks by `SoftFileLock` causing a deadlock.
         # To prevent this, we add a suffix to the lock file name.
-        return SoftFileLock(f"{lock_file}.softlock", timeout)
+        return SoftFileLock(f'{lock_file}.softlock', timeout)
 
 
 class RefreshLock:
@@ -167,7 +167,7 @@ class RefreshLock:
         self._lock_path = lock_path
         self._lock = UnixFileLock(self._lock_path, timeout)
 
-        self._soft_lock_path = pathlib.Path(f"{self._lock_path}.softlock")
+        self._soft_lock_path = pathlib.Path(f'{self._lock_path}.softlock')
         self._soft_lock = SoftFileLock(self._soft_lock_path, timeout)
 
         self._thread = threading.Thread(target=self._refresh_lock, daemon=True)
@@ -176,7 +176,7 @@ class RefreshLock:
     def acquire(self):
         self._lock.acquire()
         self._soft_lock.acquire()
-        with self._soft_lock_path.open("w") as handler:
+        with self._soft_lock_path.open('w') as handler:
             handler.write(str(uuid.uuid4()))
         self._running = True
         self._thread.start()
@@ -194,13 +194,13 @@ class RefreshLock:
 
     def owner_id(self):
         try:
-            with self._soft_lock_path.open("r") as handler:
+            with self._soft_lock_path.open('r') as handler:
                 return handler.read().strip()
         except FileNotFoundError:
             return None
 
     def meta_lock(self):
-        return SoftFileLock(f"{self._soft_lock_path}.meta")
+        return SoftFileLock(f'{self._soft_lock_path}.meta')
 
     def last_refresh_time(self):
         try:

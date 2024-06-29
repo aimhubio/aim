@@ -32,7 +32,7 @@ class RequestQueue(object):
             self._client = weakref.ref(client)
 
         if self._shutdown:
-            logger.debug("Cannot register task: rpc task queue is stopped.")
+            logger.debug('Cannot register task: rpc task queue is stopped.')
             return
 
         arg_size = self._calculate_size(args)
@@ -48,7 +48,7 @@ class RequestQueue(object):
     def worker(self):
         while True:
             if self._shutdown:
-                logger.debug(f"Shutting down worker thread {threading.get_ident()}.")
+                logger.debug(f'Shutting down worker thread {threading.get_ident()}.')
                 break
             task_f, args = self._queue.get()
             if self._try_exec_task(task_f, *args):
@@ -84,7 +84,7 @@ class RequestQueue(object):
 
                 retry += 1
                 time.sleep(self.retry_interval)
-                logger.warning(f"Remote Server is unavailable, please check network connection: {e}.")
+                logger.warning(f'Remote Server is unavailable, please check network connection: {e}.')
 
         return False
 
@@ -101,10 +101,10 @@ class RequestQueue(object):
         if pending_task_count:
             logger.warning(
                 f"Processing {pending_task_count} pending tasks in the rpc queue '{self._name}'... "
-                f"Please do not kill the process."
+                f'Please do not kill the process.'
             )
             self._queue.join()
-        logger.debug("No pending tasks left.")
+        logger.debug('No pending tasks left.')
         self._shutdown = True
 
     @staticmethod

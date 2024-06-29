@@ -10,8 +10,8 @@ class Audios(MediaSequenceBase):
     @classmethod
     def allowed_dtypes(cls) -> Union[str, Tuple[str, ...]]:
         typename = Audio.get_typename()
-        return typename, f"list({typename})"
+        return typename, f'list({typename})'
 
     @classmethod
     def sequence_name(cls) -> str:
-        return "audios"
+        return 'audios'

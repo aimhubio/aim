@@ -17,11 +17,11 @@ class Metric(Sequence):
     @classmethod
     def allowed_dtypes(cls) -> Union[str, Tuple[str, ...]]:
         # TODO remove 'float64': temporary fix for repos generated with aim < 3.0.7
-        return "float", "float64", "int", "number"
+        return 'float', 'float64', 'int', 'number'
 
     @classmethod
     def sequence_name(cls) -> str:
-        return "metric"
+        return 'metric'
 
     def dataframe(
         self,
@@ -29,7 +29,7 @@ class Metric(Sequence):
         include_context: bool = False,
         include_run: bool = False,
         only_last: bool = False,
-    ) -> "DataFrame":
+    ) -> 'DataFrame':
         """Get metric series as pandas DataFrame
 
         Args:
@@ -62,31 +62,31 @@ class Metric(Sequence):
                 timestamps = []
         indices = [i for i, _ in enumerate(steps)]
         timestamps = [datetime.datetime.fromtimestamp(t) for t in timestamps]
-        data = {"idx": indices, "step": steps, "value": values, "epoch": epochs, "time": timestamps}
+        data = {'idx': indices, 'step': steps, 'value': values, 'epoch': epochs, 'time': timestamps}
 
         if include_run:
-            data["run.hash"] = [self.run.hash] * len(indices)
+            data['run.hash'] = [self.run.hash] * len(indices)
             for path, val in treeutils.unfold_tree(self.run[...], unfold_array=False, depth=3):
-                s = "run"
+                s = 'run'
                 for key in path:
                     if isinstance(key, str):
-                        s += f".{key}"
+                        s += f'.{key}'
                     else:
-                        s += f"[{key}]"
+                        s += f'[{key}]'
 
                 if isinstance(val, (tuple, list, dict)):
                     val = json.dumps(val)
                 data[s] = [val for _ in indices]
         if include_name:
-            data["metric.name"] = [self.name for _ in indices]
+            data['metric.name'] = [self.name for _ in indices]
         if include_context:
             for path, val in treeutils.unfold_tree(self.context.to_dict(), unfold_array=False, depth=3):
-                s = "metric.context"
+                s = 'metric.context'
                 for key in path:
                     if isinstance(key, str):
-                        s += f".{key}"
+                        s += f'.{key}'
                     else:
-                        s += f"[{key}]"
+                        s += f'[{key}]'
                 # path = '.'.join(path)
                 if isinstance(val, (tuple, list)):
                     val = json.dumps(val)

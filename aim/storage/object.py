@@ -14,7 +14,7 @@ class CustomObject(CustomObjectBase):
     def alias(name: str, exist_ok: bool = True):
         def decorator(cls):
             if name in CustomObject.registry and not exist_ok:
-                raise ValueError(f"CustomObject `{name}` is already registered")
+                raise ValueError(f'CustomObject `{name}` is already registered')
             CustomObject.registry[name] = cls
             return cls
 
@@ -31,7 +31,7 @@ class CustomObject(CustomObjectBase):
 
     def __new__(cls, *args, **kwargs):
         obj = super().__new__(cls)
-        obj.storage = kwargs.get("_storage", InMemoryTreeView(container={}))
+        obj.storage = kwargs.get('_storage', InMemoryTreeView(container={}))
         return obj
 
     def __deepcopy__(self, memodict=None):

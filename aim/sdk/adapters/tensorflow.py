@@ -9,8 +9,8 @@ try:
     from tensorflow.keras.callbacks import Callback
 except ImportError:
     raise RuntimeError(
-        "This contrib module requires tensorflow to be installed. "
-        "Please install it with command: \n pip install tensorflow"
+        'This contrib module requires tensorflow to be installed. '
+        'Please install it with command: \n pip install tensorflow'
     )
 
 

@@ -14,7 +14,7 @@ class Run(SdkRun):
         run_hash: Optional[str] = None,
         *,
         sync_tensorboard_log_dir: str,
-        repo: Optional[Union[str, "Repo"]] = None,
+        repo: Optional[Union[str, 'Repo']] = None,
         experiment: Optional[str] = None,
         force_resume: Optional[bool] = False,
         system_tracking_interval: Optional[Union[int, float]] = None,
@@ -32,7 +32,7 @@ class Run(SdkRun):
             capture_terminal_logs=capture_terminal_logs,
         )
 
-        self["tb_log_directory"] = sync_tensorboard_log_dir
+        self['tb_log_directory'] = sync_tensorboard_log_dir
         self._tensorboard_tracker = TensorboardTracker(self._tracker, sync_tensorboard_log_dir)
         self._tensorboard_tracker.start()
         self._resources.add_extra_resource(self._tensorboard_tracker)

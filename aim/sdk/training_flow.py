@@ -15,7 +15,7 @@ class TrainingFlow(Caller):
 
     def _extra_kwargs(self) -> Dict[str, Any]:
         kwargs = super()._extra_kwargs()
-        kwargs["run"] = self.run
+        kwargs['run'] = self.run
 
         return kwargs
 

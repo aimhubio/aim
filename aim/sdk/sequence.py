@@ -29,13 +29,13 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-T = TypeVar("T")
+T = TypeVar('T')
 
 
 class SequenceData:
     def __init__(self, series_tree, version: int, columns: List[Tuple[str, str]]):
         if len(columns) == 0:
-            raise ValueError("Cannot create SequenceData. Please specify at least one column.")
+            raise ValueError('Cannot create SequenceData. Please specify at least one column.')
 
         self.series_tree = series_tree
         self.version = version
@@ -59,10 +59,10 @@ class SequenceData:
     def view(self, columns: Union[str, Tuple[str]]):
         raise NotImplementedError
 
-    def range(self, start, stop) -> "SequenceData":
+    def range(self, start, stop) -> 'SequenceData':
         raise NotImplementedError
 
-    def sample(self, k) -> "SequenceData":
+    def sample(self, k) -> 'SequenceData':
         raise NotImplementedError
 
     def __iter__(self) -> Iterator[Tuple[int, Any]]:
@@ -106,15 +106,15 @@ class SequenceV1Data(SequenceData):
         self.step_range = step_range
         self.n_items = n_items
 
-    def view(self, columns: List[str]) -> "SequenceData":
+    def view(self, columns: List[str]) -> 'SequenceData':
         return SequenceV1Data(
             self.series_tree, columns=self._checked_columns(columns), step_range=self.step_range, n_items=self.n_items
         )
 
-    def range(self, start, stop) -> "SequenceData":
+    def range(self, start, stop) -> 'SequenceData':
         return SequenceV1Data(self.series_tree, columns=self.columns, step_range=(start, stop), n_items=self.n_items)
 
-    def sample(self, k) -> "SequenceData":
+    def sample(self, k) -> 'SequenceData':
         return SequenceV1Data(self.series_tree, columns=self.columns, step_range=self.step_range, n_items=k)
 
     def items_list(self) -> Tuple[List[int], List[Any]]:
@@ -170,17 +170,17 @@ class SequenceV2Data(SequenceData):
         # The implemented methods should tolerate this.
         self.meta_tree = meta_tree
         self.n_items = n_items
-        self.steps: ArrayView = self._get_array("step")
+        self.steps: ArrayView = self._get_array('step')
 
-    def view(self, columns: List[str]) -> "SequenceData":
+    def view(self, columns: List[str]) -> 'SequenceData':
         return SequenceV2Data(
             self.meta_tree, self.series_tree, columns=self._checked_columns(columns), n_items=self.n_items
         )
 
-    def range(self, start, stop) -> "SequenceData":
-        raise ValueError("Range selection cannot be applied to data stored with reservoir sampling.")
+    def range(self, start, stop) -> 'SequenceData':
+        raise ValueError('Range selection cannot be applied to data stored with reservoir sampling.')
 
-    def sample(self, k) -> "SequenceData":
+    def sample(self, k) -> 'SequenceData':
         return SequenceV2Data(self.meta_tree, self.series_tree, columns=self.columns, n_items=k)
 
     def items_list(self) -> Tuple[List[int], List[Any]]:
@@ -193,7 +193,7 @@ class SequenceV2Data(SequenceData):
             steps = np.fromiter(self.steps.values(), np.intp)
             columns = [np.fromiter(arr.values(), arr.dtype) for arr in self.arrays]
         else:
-            last_step = self.meta_tree.get("last_step", None)
+            last_step = self.meta_tree.get('last_step', None)
             steps = np.fromiter(islice(self.steps.values(), self.n_items), np.intp)
             columns = [np.fromiter(islice(arr.values(), self.n_items), arr.dtype) for arr in self.arrays]
 
@@ -211,7 +211,7 @@ class SequenceV2Data(SequenceData):
                 for i in range(len(columns)):
                     last_steps.append(self.arrays[i][step_hash])
             except KeyError:
-                logger.debug("Last step not found in reservoir.")
+                logger.debug('Last step not found in reservoir.')
             else:
                 # Only if all the last steps are found, we use them.
                 for i in range(len(columns)):
@@ -230,7 +230,7 @@ class Sequence(Generic[T]):
     Values, epochs and timestamps are accessed via :obj:`aim.storage.arrayview.ArrayView` interface.
     """
 
-    registry: Dict[str, "Sequence"] = dict()
+    registry: Dict[str, 'Sequence'] = dict()
     collections_allowed = False
 
     def __init_subclass__(cls, **kwargs):
@@ -243,13 +243,13 @@ class Sequence(Generic[T]):
         self,
         name: str,
         context: Context,  # TODO ?dict
-        run: "Run",
+        run: 'Run',
     ):
         self._hash: int = None
         self._version: int = None
-        self._meta_tree: TreeView = run.meta_run_tree.subtree(("traces", context.idx, name))
+        self._meta_tree: TreeView = run.meta_run_tree.subtree(('traces', context.idx, name))
         self._series_tree: TreeView = None
-        self._columns = [("val", None), ("epoch", "float64"), ("time", "float64")]
+        self._columns = [('val', None), ('epoch', 'float64'), ('time', 'float64')]
         self._data: SequenceData = None  # use data property
 
         self.name = name
@@ -257,7 +257,7 @@ class Sequence(Generic[T]):
         self.run = run
 
     def __repr__(self) -> str:
-        return f"<Sequence#{hash(self)} name=`{self.name}` context=`{self.context}` run=`{self.run}`>"
+        return f'<Sequence#{hash(self)} name=`{self.name}` context=`{self.context}` run=`{self.run}`>'
 
     @classmethod
     def allowed_dtypes(cls) -> Union[str, Tuple[str, ...]]:
@@ -266,7 +266,7 @@ class Sequence(Generic[T]):
         For example, numeric sequences a.k.a. Metric allow float and integer numbers.
         The base Sequence allows any value, and to indicate that, `allowed_dtypes` returns '*'.
         """
-        return "*"
+        return '*'
 
     @classmethod
     def sequence_name(cls) -> str:
@@ -299,7 +299,7 @@ class Sequence(Generic[T]):
     @property
     def version(self):
         if self._version is None:
-            self._version = self._meta_tree.get("version", 1)
+            self._version = self._meta_tree.get('version', 1)
         return self._version
 
     @property
@@ -308,7 +308,7 @@ class Sequence(Generic[T]):
 
         :getter: Returns values ArrayView.
         """
-        return self.data._get_array("val")
+        return self.data._get_array('val')
 
     @property
     def epochs(self) -> ArrayView:
@@ -316,7 +316,7 @@ class Sequence(Generic[T]):
 
         :getter: Returns epochs ArrayView.
         """
-        return self.data._get_array("epoch", dtype="float64")
+        return self.data._get_array('epoch', dtype='float64')
 
     @property
     def timestamps(self) -> ArrayView:
@@ -324,7 +324,7 @@ class Sequence(Generic[T]):
 
         :getter: Returns timestamps ArrayView.
         """
-        return self.data._get_array("time", dtype="float64")
+        return self.data._get_array('time', dtype='float64')
 
     def __bool__(self) -> bool:
         try:
@@ -343,7 +343,7 @@ class Sequence(Generic[T]):
 
         Required to implement ranged and sliced data fetching.
         """
-        return self._meta_tree.get("first_step", 0)
+        return self._meta_tree.get('first_step', 0)
 
     def last_step(self):
         """Get sequence tracked last step.
@@ -351,7 +351,7 @@ class Sequence(Generic[T]):
         Required to implement ranged and sliced data fetching.
         """
         # fallback to first_step() if 'last_step' key is not yet written
-        return self._meta_tree.get("last_step", self.first_step())
+        return self._meta_tree.get('last_step', self.first_step())
 
 
 class MediaSequenceBase(Sequence):
@@ -364,4 +364,4 @@ class MediaSequenceBase(Sequence):
 
         Required to implement ranged and sliced data fetching.
         """
-        return self._meta_tree.get("record_max_length", None)
+        return self._meta_tree.get('record_max_length', None)

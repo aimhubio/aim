@@ -19,36 +19,36 @@ from fastapi import Depends, HTTPException
 tags_router = APIRouter()
 
 
-@tags_router.get("/", response_model=TagListOut)
+@tags_router.get('/', response_model=TagListOut)
 async def get_tags_list_api(factory=Depends(object_factory)):
     return [
         {
-            "id": tag.uuid,
-            "name": tag.name,
-            "color": tag.color,
-            "description": tag.description,
-            "run_count": len(tag.runs),
-            "archived": tag.archived,
+            'id': tag.uuid,
+            'name': tag.name,
+            'color': tag.color,
+            'description': tag.description,
+            'run_count': len(tag.runs),
+            'archived': tag.archived,
         }
         for tag in factory.tags()
     ]
 
 
-@tags_router.get("/search/", response_model=TagListOut)
-async def search_tags_by_name_api(q: Optional[str] = "", factory=Depends(object_factory)):
+@tags_router.get('/search/', response_model=TagListOut)
+async def search_tags_by_name_api(q: Optional[str] = '', factory=Depends(object_factory)):
     return [
         {
-            "id": tag.uuid,
-            "name": tag.name,
-            "color": tag.color,
-            "description" "run_count": len(tag.runs),
-            "archived": tag.archived,
+            'id': tag.uuid,
+            'name': tag.name,
+            'color': tag.color,
+            'description' 'run_count': len(tag.runs),
+            'archived': tag.archived,
         }
         for tag in factory.search_tags(q.strip())
     ]
 
 
-@tags_router.post("/", response_model=TagUpdateOut)
+@tags_router.post('/', response_model=TagUpdateOut)
 async def create_tag_api(tag_in: TagCreateIn, factory=Depends(object_factory)):
     with factory:
         try:
@@ -60,27 +60,27 @@ async def create_tag_api(tag_in: TagCreateIn, factory=Depends(object_factory)):
         except ValueError as e:
             raise HTTPException(status_code=400, detail=str(e))
 
-    return {"id": tag.uuid, "status": "OK"}
+    return {'id': tag.uuid, 'status': 'OK'}
 
 
-@tags_router.get("/{tag_id}/", response_model=TagGetOut)
+@tags_router.get('/{tag_id}/', response_model=TagGetOut)
 async def get_tag_api(tag_id: str, factory=Depends(object_factory)):
     tag = factory.find_tag(tag_id)
     if not tag:
         raise HTTPException(status_code=404)
 
     response = {
-        "id": tag.uuid,
-        "name": tag.name,
-        "color": tag.color,
-        "description": tag.description,
-        "archived": tag.archived,
-        "run_count": len(tag.runs),
+        'id': tag.uuid,
+        'name': tag.name,
+        'color': tag.color,
+        'description': tag.description,
+        'archived': tag.archived,
+        'run_count': len(tag.runs),
     }
     return response
 
 
-@tags_router.put("/{tag_id}/", response_model=TagUpdateOut)
+@tags_router.put('/{tag_id}/', response_model=TagUpdateOut)
 async def update_tag_properties_api(tag_id: str, tag_in: TagUpdateIn, factory=Depends(object_factory)):
     with factory:
         tag = factory.find_tag(tag_id)
@@ -96,17 +96,17 @@ async def update_tag_properties_api(tag_id: str, tag_in: TagUpdateIn, factory=De
         if tag_in.archived is not None:
             tag.archived = tag_in.archived
 
-    return {"id": tag.uuid, "status": "OK"}
+    return {'id': tag.uuid, 'status': 'OK'}
 
 
-@tags_router.delete("/{tag_id}/")
+@tags_router.delete('/{tag_id}/')
 async def delete_tag_api(tag_id: str, factory=Depends(object_factory)):
     with factory:
         if not factory.delete_tag(tag_id):
             raise HTTPException(status_code=404)
 
 
-@tags_router.get("/{tag_id}/runs/", response_model=TagGetRunsOut)
+@tags_router.get('/{tag_id}/runs/', response_model=TagGetRunsOut)
 async def get_tagged_runs_api(tag_id: str, factory=Depends(object_factory)):
     project = Project()
 
@@ -116,7 +116,7 @@ async def get_tagged_runs_api(tag_id: str, factory=Depends(object_factory)):
 
     from aim.sdk.run import Run
 
-    cache_name = "tag_runs"
+    cache_name = 'tag_runs'
     project.repo.run_props_cache_hint = cache_name
     project.repo.structured_db.invalidate_cache(cache_name)
     project.repo.structured_db.init_cache(cache_name, tag.get_runs, lambda run_: run_.hash)
@@ -126,16 +126,16 @@ async def get_tagged_runs_api(tag_id: str, factory=Depends(object_factory)):
         run = Run(tagged_run.hash, repo=project.repo, read_only=True)
         tag_runs.append(
             {
-                "run_id": tagged_run.hash,
-                "name": tagged_run.name,
-                "creation_time": run.creation_time,
-                "end_time": run.end_time,
-                "experiment": tagged_run.experiment if tagged_run.experiment else None,
+                'run_id': tagged_run.hash,
+                'name': tagged_run.name,
+                'creation_time': run.creation_time,
+                'end_time': run.end_time,
+                'experiment': tagged_run.experiment if tagged_run.experiment else None,
             }
         )
 
     project.repo.structured_db.invalidate_cache(cache_name)
     project.repo.run_props_cache_hint = None
 
-    response = {"id": tag.uuid, "runs": tag_runs}
+    response = {'id': tag.uuid, 'runs': tag_runs}
     return response

@@ -8,7 +8,7 @@ from functools import lru_cache
 
 def with_metaclass(meta, *bases):
     """Create a base class with a metaclass."""
-    return meta("NewBase", bases, {})
+    return meta('NewBase', bases, {})
 
 
 class _ObjectProxyMethods(object):
@@ -67,7 +67,7 @@ class _ObjectProxyMetaType(type):
 
 
 class Eager1:
-    __slots__ = ("name", "wrapped")
+    __slots__ = ('name', 'wrapped')
 
     def __init__(self, wrapped, name):
         self.wrapped = lru_cache()(wrapped)
@@ -90,7 +90,7 @@ class Eager1:
 
 
 class Eager2:
-    __slots__ = ("view", "name", "cache")
+    __slots__ = ('view', 'name', 'cache')
 
     def __init__(self, view, name, cache):
         self.view = view
@@ -127,7 +127,7 @@ class Eager2:
 
 
 class Eager3:
-    __slots__ = ("wrapped", "key")
+    __slots__ = ('wrapped', 'key')
 
     def __init__(self, wrapped, key):
         self.wrapped = lru_cache()(wrapped)
@@ -146,7 +146,7 @@ class Eager3:
 
 
 class Eager4:
-    __slots__ = ("view", "key", "cache")
+    __slots__ = ('view', 'key', 'cache')
 
     def __init__(self, view, key, cache):
         self.view = view
@@ -178,7 +178,7 @@ class Eager4:
 
 
 class AimObjectProxy(with_metaclass(_ObjectProxyMetaType)):
-    __slots__ = ("__wrapped__", "__view__")
+    __slots__ = ('__wrapped__', '__view__')
 
     @property
     def __name__(self):
@@ -214,7 +214,7 @@ class AimObjectProxy(with_metaclass(_ObjectProxyMetaType)):
         return bytes(self.__wrapped__())
 
     def __repr__(self):
-        return "<{} at 0x{:x} for {} at 0x{:x}>".format(
+        return '<{} at 0x{:x} for {} at 0x{:x}>'.format(
             type(self).__name__, id(self), type(self.__wrapped__()).__name__, id(self.__wrapped__())
         )
 
@@ -389,19 +389,19 @@ class AimObjectProxy(with_metaclass(_ObjectProxyMetaType)):
     def __iter__(self):
         return iter(self.__wrapped__())
 
-    __slots__ = "__wrapped__", "__view__", "cache"
+    __slots__ = '__wrapped__', '__view__', 'cache'
 
     def __init__(self, wrapped, view=None, cache=None):
-        object.__setattr__(self, "__wrapped__", wrapped)
+        object.__setattr__(self, '__wrapped__', wrapped)
         # print('__wrapped__()lazy__', wrapped)
-        object.__setattr__(self, "__view__", view)
+        object.__setattr__(self, '__view__', view)
 
         # Python 3.2+ has the __qualname__ attribute, but it does not
         # allow it to be overridden using a property and it must instead
         # be an actual string object instead.
         self.cache = cache
         try:
-            object.__setattr__(self, "__qualname__", wrapped.__qualname__)
+            object.__setattr__(self, '__qualname__', wrapped.__qualname__)
         except AttributeError:
             pass
 
@@ -409,8 +409,8 @@ class AimObjectProxy(with_metaclass(_ObjectProxyMetaType)):
         # If we are being to lookup '__wrapped__()' then the
         # '__init__()' method cannot have been called.
 
-        if name == "__wrapped__":
-            raise ValueError("wrapper has not been initialised")
+        if name == '__wrapped__':
+            raise ValueError('wrapper has not been initialised')
 
         if self.__view__ is None:
             return AimObjectProxy(Eager1(self.__wrapped__, name))

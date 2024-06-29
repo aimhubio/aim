@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 GRACE_PERIOD = 100  # seconds
 
-T = TypeVar("T")
+T = TypeVar('T')
 
 
 class RepetitionCounter:
@@ -63,7 +63,7 @@ class RunVariable:
 
 class Event:
     def __init__(self, status_event_encoded: str):
-        obj_idx, idx, event_type, epoch_time, next_event_in = status_event_encoded.split("-")
+        obj_idx, idx, event_type, epoch_time, next_event_in = status_event_encoded.split('-')
         self.idx: int = int(idx)
         self.obj_idx: str = obj_idx
 
@@ -106,7 +106,7 @@ class StatusNotification(Notification):
                 cls.notifications_cache = {}
 
     def get_msg_details(self):
-        return {"run": RunVariable(self.obj_idx)}
+        return {'run': RunVariable(self.obj_idx)}
 
     def is_sent(self) -> bool:
         last_event_idx = self.notifications_cache.get(self.obj_idx, -1)
@@ -117,14 +117,14 @@ class StatusNotification(Notification):
         else:
             logger.warning(
                 f"New event id {self.rank} for object '{self.obj_idx}' "
-                f"is less than last reported event id {last_event_idx}."
+                f'is less than last reported event id {last_event_idx}.'
             )
             return True
 
     def update_last_sent(self):
         if self.rank is not None:
             self.notifications_cache[self.obj_idx] = self.rank
-            with self._notifications_cache_path.open(mode="w") as notifications_fh:
+            with self._notifications_cache_path.open(mode='w') as notifications_fh:
                 json.dump(self.notifications_cache, notifications_fh)
 
 
@@ -160,10 +160,10 @@ class WorkerThread(Thread):
             self.func()
 
     def stop(self):
-        logger.debug("Stopping worker thread...")
+        logger.debug('Stopping worker thread...')
         self.shutdown = True
         self.join()
-        logger.debug("Worker thread stopped.")
+        logger.debug('Worker thread stopped.')
 
 
 class NotificationQueue(object):
@@ -180,13 +180,13 @@ class NotificationQueue(object):
             self._queue.put(notification)
 
     def stop(self):
-        logger.debug("Processing remaining notifications...")
+        logger.debug('Processing remaining notifications...')
         self._queue.join()
-        logger.debug("Notifications queue is empty.")
-        logger.debug("Stopping worker thread...")
+        logger.debug('Notifications queue is empty.')
+        logger.debug('Stopping worker thread...')
         self._stopped = True
         self._notifier_thread.join()
-        logger.debug("Worker thread stopped.")
+        logger.debug('Worker thread stopped.')
 
     def listen(self):
         while True:
@@ -197,7 +197,7 @@ class NotificationQueue(object):
                 if notification.is_sent():
                     logger.debug(
                         f"Notification for object '{notification.obj_idx}' "
-                        f"with event ID {notification.rank} has already been sent. Skipping."
+                        f'with event ID {notification.rank} has already been sent. Skipping.'
                     )
                 else:
                     details = notification.get_msg_details()
@@ -205,16 +205,16 @@ class NotificationQueue(object):
                         self._notifier.notify(notification.message, **details)
                         notification.update_last_sent()
                     except NotificationSendError as e:
-                        logger.error(f"Failed to send notification. Reason: {e}.")
+                        logger.error(f'Failed to send notification. Reason: {e}.')
                 self._queue.task_done()
             except queue.Empty:
                 continue
 
 
-class RunStatusWatcherAutoClean(AutoClean["RunStatusWatcher"]):
+class RunStatusWatcherAutoClean(AutoClean['RunStatusWatcher']):
     PRIORITY = 30
 
-    def __init__(self, instance: "RunStatusWatcher") -> None:
+    def __init__(self, instance: 'RunStatusWatcher') -> None:
         super().__init__(instance)
         self.is_background = instance.background
         self.watcher_thread = instance.watcher_thread
@@ -231,8 +231,8 @@ class RunStatusWatcherAutoClean(AutoClean["RunStatusWatcher"]):
 
 class RunStatusWatcher:
     message_templates = {
-        "finished": "Run '{run.hash}' finished without error.",
-        "starting": "Run '{run.hash}' started.",
+        'finished': "Run '{run.hash}' finished without error.",
+        'starting': "Run '{run.hash}' started.",
     }
 
     def __init__(self, repo: Repo, background: bool = False):
@@ -245,17 +245,17 @@ class RunStatusWatcher:
         self.initialized = False
 
         work_dir = get_working_directory(self.repo_path)
-        self.lock = AutoFileLock(work_dir / "watcher.lock", timeout=0)
+        self.lock = AutoFileLock(work_dir / 'watcher.lock', timeout=0)
         try:
             self.lock.acquire()
         except TimeoutError:
             logger.error(f"Cannot start Run status watcher for '{self.repo_path}'. Failed to acquire lock.")
             return
 
-        self._status_watch_dir: Path = self.repo_path / "check_ins"
+        self._status_watch_dir: Path = self.repo_path / 'check_ins'
         self._status_watch_dir.mkdir(exist_ok=True)
 
-        self._notifications_cache_path: Path = work_dir / "last_run_notifications"
+        self._notifications_cache_path: Path = work_dir / 'last_run_notifications'
         self._notifications_cache_path.touch(exist_ok=True)
         self._status_events = EventSet()
         self._log_events = EventSet()
@@ -277,7 +277,7 @@ class RunStatusWatcher:
         if self._log_lvl_threshold is not None:
             if self._log_lvl_threshold != lvl:
                 logger.warning(
-                    f"Log Notifications level changed "
+                    f'Log Notifications level changed '
                     f"from '{logging.getLevelName(self._log_lvl_threshold)}' "
                     f"to '{logging.getLevelName(lvl)}'."
                 )
@@ -290,7 +290,7 @@ class RunStatusWatcher:
     def start_watcher(self):
         if not self.initialized:
             return
-        logger.info("Starting watcher...")
+        logger.info('Starting watcher...')
         notification = StatusNotification(message=f"Watcher is running for repo '{self.repo_path}'")
         self.notifications_queue.add_notification(notification)
         if self.background:
@@ -339,27 +339,27 @@ class RunStatusWatcher:
                             if counter.count == 1:
                                 message = counter.obj.message
                             else:
-                                message = f"{counter.obj.message} ({counter.count - 1} more messages logged)"
+                                message = f'{counter.obj.message} ({counter.count - 1} more messages logged)'
                             notification = LogNotification(obj_idx=run_hash, rank=counter.step, message=message)
                             self.notifications_queue.add_notification(notification)
 
     def poll_status_events(self) -> EventSet:
-        return self._poll(event_types=("finished", "starting", "check_in"))
+        return self._poll(event_types=('finished', 'starting', 'check_in'))
 
     def poll_log_record_events(self) -> EventSet:
-        return self._poll(event_types=("new_logs",))
+        return self._poll(event_types=('new_logs',))
 
     def _poll(self, event_types) -> EventSet:
         events = EventSet()
         for event_type in event_types:
-            for check_in_file_path in sorted(self._status_watch_dir.glob(f"*-*-{event_type}-*-*")):
+            for check_in_file_path in sorted(self._status_watch_dir.glob(f'*-*-{event_type}-*-*')):
                 events.add(Event(check_in_file_path.name))
         return events
 
     def _processed_log_records(self, log_records_data) -> Dict:
         log_level = self.log_level_threshold
 
-        steps, log_records = log_records_data.view("val").items_list()
+        steps, log_records = log_records_data.view('val').items_list()
         log_records = log_records[0]
 
         log_info_map = OrderedDict()

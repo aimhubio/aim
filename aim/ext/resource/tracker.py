@@ -61,9 +61,9 @@ class ResourceTracker(object):
         if not isinstance(interval, (int, float)) or not cls.STAT_INTERVAL_MIN <= interval <= cls.STAT_INTERVAL_MAX:
             if warn:
                 logger.warning(
-                    "To track system resource usage "
-                    "please set `system_tracking_interval` "
-                    "greater than 0 and less than 1 day"
+                    'To track system resource usage '
+                    'please set `system_tracking_interval` '
+                    'greater than 0 and less than 1 day'
                 )
             return False
         return True
@@ -152,14 +152,14 @@ class ResourceTracker(object):
         for resource, usage in stat.system.items():
             self._tracker()(
                 usage,
-                name="{}{}".format(AIM_RESOURCE_METRIC_PREFIX, resource),
+                name='{}{}'.format(AIM_RESOURCE_METRIC_PREFIX, resource),
             )
 
         # Store GPU stats
         for gpu_idx, gpu in enumerate(stat.gpus):
             for resource, usage in gpu.items():
                 self._tracker()(
-                    usage, name="{}{}".format(AIM_RESOURCE_METRIC_PREFIX, resource), context={"gpu": gpu_idx}
+                    usage, name='{}{}'.format(AIM_RESOURCE_METRIC_PREFIX, resource), context={'gpu': gpu_idx}
                 )
 
     def _stat_collector(self):
@@ -203,19 +203,19 @@ class ResourceTracker(object):
         self._io_buffer.seek(0)
         # handle the buffered data and store
 
-        lines = data.split(b"\n")
-        ansi_csi_re = re.compile(b"\001?\033\\[((?:\\d|;)*)([a-dA-D])\002?")
+        lines = data.split(b'\n')
+        ansi_csi_re = re.compile(b'\001?\033\\[((?:\\d|;)*)([a-dA-D])\002?')
 
         def _handle_csi(line):
             def _remove_csi(line):
-                return re.sub(ansi_csi_re, b"", line)
+                return re.sub(ansi_csi_re, b'', line)
 
             for match in ansi_csi_re.finditer(line):
                 arg, command = match.groups()
                 arg = int(arg.decode()) if arg else 1
-                if command == b"A":  # cursor up
+                if command == b'A':  # cursor up
                     self._line_counter -= arg
-                if command == b"B":  # cursor down
+                if command == b'B':  # cursor down
                     self._line_counter += arg
 
             return _remove_csi(line)
@@ -225,12 +225,12 @@ class ResourceTracker(object):
             # handle cursor up and down symbols
             line = _handle_csi(line)
             # handle each line for carriage returns
-            line = line.rsplit(b"\r")[-1]
-            self._tracker()(LogLine(line.decode()), name="logs", step=self._line_counter)
+            line = line.rsplit(b'\r')[-1]
+            self._tracker()(LogLine(line.decode()), name='logs', step=self._line_counter)
             self._line_counter += 1
 
         self._line_counter -= 1
 
         # if there was no b'\n' at the end of the data keep the last line in buffer for further writing
-        if line != b"":
+        if line != b'':
             self._io_buffer.write(line)

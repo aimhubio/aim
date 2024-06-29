@@ -13,4 +13,4 @@ class Figures(Sequence):
 
     @classmethod
     def sequence_name(cls) -> str:
-        return "figures"
+        return 'figures'

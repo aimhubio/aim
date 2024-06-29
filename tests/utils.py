@@ -19,29 +19,29 @@ from sqlalchemy import text as sa_text
 def decode_encoded_tree_stream(stream: Iterator[bytes], concat_chunks=False) -> bytes:
     # TODO: handle case when chunk ends at the middle of key/value
     # TODO: if remaining part of chunk cannot be unpacked, prepend to next one and try with new chunk
-    prev_chunk_tail = b""
+    prev_chunk_tail = b''
     if concat_chunks:
-        data = b""
+        data = b''
         for chunk in stream:
             data += chunk
         while data:
-            (key_size,), data_tail = struct.unpack("I", data[:4]), data[4:]
+            (key_size,), data_tail = struct.unpack('I', data[:4]), data[4:]
             key, data_tail = data_tail[:key_size], data_tail[key_size:]
 
-            (value_size,), data_tail = struct.unpack("I", data_tail[:4]), data_tail[4:]
+            (value_size,), data_tail = struct.unpack('I', data_tail[:4]), data_tail[4:]
             value, data_tail = data_tail[:value_size], data_tail[value_size:]
             data = data_tail
             yield key, value
     else:
         for chunk in stream:
             data = prev_chunk_tail + chunk
-            prev_chunk_tail = b""
+            prev_chunk_tail = b''
             while data:
                 try:
-                    (key_size,), data_tail = struct.unpack("I", data[:4]), data[4:]
+                    (key_size,), data_tail = struct.unpack('I', data[:4]), data[4:]
                     key, data_tail = data_tail[:key_size], data_tail[key_size:]
 
-                    (value_size,), data_tail = struct.unpack("I", data_tail[:4]), data_tail[4:]
+                    (value_size,), data_tail = struct.unpack('I', data_tail[:4]), data_tail[4:]
                     value, data_tail = data_tail[:value_size], data_tail[value_size:]
                     data = data_tail
                 except Exception:
@@ -50,14 +50,14 @@ def decode_encoded_tree_stream(stream: Iterator[bytes], concat_chunks=False) -> 
 
                 yield key, value
 
-        assert prev_chunk_tail == b""
+        assert prev_chunk_tail == b''
 
 
-def generate_image_set(img_count, caption_prefix="Image", img_size=(16, 16)):
+def generate_image_set(img_count, caption_prefix='Image', img_size=(16, 16)):
     return [
         AimImage(
-            pil_image.fromarray((numpy.random.rand(img_size[0], img_size[1], 3) * 255).astype("uint8")),
-            caption=f"{caption_prefix} {idx}",
+            pil_image.fromarray((numpy.random.rand(img_size[0], img_size[1], 3) * 255).astype('uint8')),
+            caption=f'{caption_prefix} {idx}',
         )
         for idx in range(img_count)
     ]
@@ -67,19 +67,19 @@ def truncate_structured_db(db):
     session = db.get_session()
     meta = StructuredBase.metadata
     for table in reversed(meta.sorted_tables):
-        session.execute(sa_text(f"DELETE FROM {table.name};"))
+        session.execute(sa_text(f'DELETE FROM {table.name};'))
 
 
 def truncate_api_db():
     with get_contexted_session() as session:
         meta = ApiBase.metadata
         for table in reversed(meta.sorted_tables):
-            session.execute(sa_text(f"DELETE FROM {table.name};"))
+            session.execute(sa_text(f'DELETE FROM {table.name};'))
             session.commit()
 
 
 def create_run_params():
-    return {"lr": 0.001, "batch_size": None}
+    return {'lr': 0.001, 'batch_size': None}
 
 
 def fill_up_test_data(extra_params: dict = None):
@@ -87,28 +87,28 @@ def fill_up_test_data(extra_params: dict = None):
     repo = Repo.default_repo()
 
     contexts = [
-        {"is_training": True, "subset": "train"},
-        {"is_training": True, "subset": "val"},
-        {"is_training": False},
+        {'is_training': True, 'subset': 'train'},
+        {'is_training': True, 'subset': 'val'},
+        {'is_training': False},
     ]
-    metrics = ["loss", "accuracy"]
+    metrics = ['loss', 'accuracy']
 
     with repo.structured_db:
         runs = []
         for idx in range(10):
             run = Run(repo=repo, system_tracking_interval=None)
             run[...] = extra_params
-            run["hparams"] = create_run_params()
-            run["run_index"] = idx
-            run["start_time"] = datetime.datetime.utcnow().isoformat()
-            run["name"] = f"Run # {idx}"
-            run.name = run["name"]
+            run['hparams'] = create_run_params()
+            run['run_index'] = idx
+            run['start_time'] = datetime.datetime.utcnow().isoformat()
+            run['name'] = f'Run # {idx}'
+            run.name = run['name']
             runs.append(run)
             metric_contexts = itertools.product(metrics, contexts)
             for metric_context in metric_contexts:
                 metric = metric_context[0]
                 context = metric_context[1]
-                if metric == "accuracy" and "subset" in context:
+                if metric == 'accuracy' and 'subset' in context:
                     continue
                 else:
                     # track 100 values per run
@@ -132,6 +132,6 @@ def is_package_installed(pkg_name: str) -> bool:
 
 def full_class_name(cls):
     module = cls.__module__
-    if module == "__builtin__":
+    if module == '__builtin__':
         return cls.__name__  # avoid outputs like '__builtin__.str'
-    return module + "." + cls.__name__
+    return module + '.' + cls.__name__

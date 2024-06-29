@@ -2,12 +2,12 @@ from abc import ABC, abstractmethod
 from typing import Collection, Generic, List, Optional, TypeVar
 
 
-T = TypeVar("T")
+T = TypeVar('T')
 
-RunCollection = Collection["Run"]
-ExperimentCollection = Collection["Experiment"]
-TagCollection = Collection["Tag"]
-NoteCollection = Collection["Note"]
+RunCollection = Collection['Run']
+ExperimentCollection = Collection['Experiment']
+TagCollection = Collection['Tag']
+NoteCollection = Collection['Note']
 
 
 class StructuredObject(ABC):
@@ -30,7 +30,7 @@ class Searchable(ABC, Generic[T]):
     def search(cls, term: str, **kwargs) -> Collection[T]: ...
 
 
-class Run(StructuredObject, Searchable["Run"]):
+class Run(StructuredObject, Searchable['Run']):
     @property
     @abstractmethod
     def hash(self) -> str: ...
@@ -61,7 +61,7 @@ class Run(StructuredObject, Searchable["Run"]):
 
     @property
     @abstractmethod
-    def experiment(self) -> Optional["Experiment"]: ...
+    def experiment(self) -> Optional['Experiment']: ...
 
     @experiment.setter
     @abstractmethod
@@ -72,17 +72,17 @@ class Run(StructuredObject, Searchable["Run"]):
     def tags(self) -> TagCollection: ...
 
     @abstractmethod
-    def add_tag(self, value: str) -> "Tag": ...
+    def add_tag(self, value: str) -> 'Tag': ...
 
     @abstractmethod
     def remove_tag(self, tag_name: str) -> bool: ...
 
     @property
     @abstractmethod
-    def info(self) -> "RunInfo": ...
+    def info(self) -> 'RunInfo': ...
 
 
-class Experiment(StructuredObject, Searchable["Experiment"]):
+class Experiment(StructuredObject, Searchable['Experiment']):
     @property
     @abstractmethod
     def uuid(self) -> str: ...
@@ -116,7 +116,7 @@ class Experiment(StructuredObject, Searchable["Experiment"]):
     def runs(self) -> RunCollection: ...
 
 
-class Tag(StructuredObject, Searchable["Tag"]):
+class Tag(StructuredObject, Searchable['Tag']):
     @property
     @abstractmethod
     def uuid(self) -> str: ...
@@ -158,7 +158,7 @@ class Tag(StructuredObject, Searchable["Tag"]):
     def runs(self) -> RunCollection: ...
 
 
-class Note(StructuredObject, Searchable["Note"]):
+class Note(StructuredObject, Searchable['Note']):
     @property
     @abstractmethod
     def id(self) -> int: ...

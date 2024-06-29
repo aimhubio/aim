@@ -8,7 +8,7 @@ from performance_tests.utils import get_baseline, write_baseline
 
 class TestContainerOpenExecutionTime(StorageTestBase):
     def test_container_open(self):
-        test_name = "test_container_open"
+        test_name = 'test_container_open'
         containers_to_open = collect_sequence_containers()
         execution_time = open_containers_for_read(containers_to_open)
         baseline = get_baseline(test_name)

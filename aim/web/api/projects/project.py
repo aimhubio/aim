@@ -8,12 +8,12 @@ from aim.web.utils import get_root_path
 class Project:
     def __init__(self):
         root_path = get_root_path()
-        repo_path = f"{root_path}/{get_aim_repo_name()}"
+        repo_path = f'{root_path}/{get_aim_repo_name()}'
 
-        self.name = "My awesome project"
+        self.name = 'My awesome project'
         self.path = root_path
         self.repo_path = repo_path
-        self.description = ""
+        self.description = ''
         self.repo = Repo.from_path(self.repo_path)
 
     def cleanup_repo_pools(self):

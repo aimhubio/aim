@@ -4,7 +4,7 @@ line-length = 120
 "__init__.py" = ["F401"]
 
 [lint.flake8-quotes]
-inline-quotes = "double"
+inline-quotes = "single"
 
 [lint]
 extend-select = ["I"]
@@ -18,4 +18,4 @@ lines-after-imports = 2
 "aim" = ["aim"]
 
 [format]
-quote-style = "double"
+quote-style = "single"

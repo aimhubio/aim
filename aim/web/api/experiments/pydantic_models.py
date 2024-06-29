@@ -9,15 +9,15 @@ class ExperimentCreateIn(BaseModel):
 
 
 class ExperimentUpdateIn(BaseModel):
-    name: Optional[str] = ""
-    description: Optional[str] = ""
+    name: Optional[str] = ''
+    description: Optional[str] = ''
     archived: Optional[bool] = None
 
 
 class ExperimentGetOut(BaseModel):
     id: UUID
     name: str
-    description: Optional[str] = ""
+    description: Optional[str] = ''
     run_count: int
     archived: bool
     creation_time: Optional[float] = None
@@ -28,7 +28,7 @@ ExperimentListOut = List[ExperimentGetOut]
 
 class ExperimentUpdateOut(BaseModel):
     id: UUID
-    status: str = "OK"
+    status: str = 'OK'
 
 
 class ExperimentGetRunsOut(BaseModel):
@@ -47,4 +47,4 @@ class ExperimentActivityApiOut(BaseModel):
     num_runs: int
     num_archived_runs: int
     num_active_runs: int
-    activity_map: Dict[str, int] = {"2021-01-01": 54}
+    activity_map: Dict[str, int] = {'2021-01-01': 54}

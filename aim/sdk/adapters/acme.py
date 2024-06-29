@@ -71,7 +71,7 @@ class AimWriter(Logger):
         self.task_id = task_id
 
     def write(self, values: LoggingData):
-        self.aim_run.track(values, context={"logger_label": self.logger_label})
+        self.aim_run.track(values, context={'logger_label': self.logger_label})
 
     def close(self):
         if self.aim_run and self.aim_run.active:

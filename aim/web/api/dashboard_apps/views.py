@@ -17,7 +17,7 @@ from sqlalchemy.orm import Session
 dashboard_apps_router = APIRouter()
 
 
-@dashboard_apps_router.get("/", response_model=ExploreStateListOut)
+@dashboard_apps_router.get('/', response_model=ExploreStateListOut)
 async def dashboard_apps_list_api(session: Session = Depends(get_session)):
     explore_states = session.query(ExploreState).filter(ExploreState.is_archived == False)  # noqa
     result = []
@@ -26,7 +26,7 @@ async def dashboard_apps_list_api(session: Session = Depends(get_session)):
     return result
 
 
-@dashboard_apps_router.post("/", status_code=201, response_model=ExploreStateGetOut)
+@dashboard_apps_router.post('/', status_code=201, response_model=ExploreStateGetOut)
 async def dashboard_apps_create_api(explore_state_in: ExploreStateCreateIn, session: Session = Depends(get_session)):
     explore_state = ExploreState()
     explore_state.type = explore_state_in.type
@@ -38,7 +38,7 @@ async def dashboard_apps_create_api(explore_state_in: ExploreStateCreateIn, sess
     return explore_state_response_serializer(explore_state)
 
 
-@dashboard_apps_router.get("/{app_id}/", response_model=ExploreStateGetOut)
+@dashboard_apps_router.get('/{app_id}/', response_model=ExploreStateGetOut)
 async def dashboard_apps_get_api(app_id: str, session: Session = Depends(get_session)):
     explore_state = (
         session.query(ExploreState).filter(ExploreState.uuid == app_id, ExploreState.is_archived == False).first()  # noqa: E712
@@ -49,7 +49,7 @@ async def dashboard_apps_get_api(app_id: str, session: Session = Depends(get_ses
     return explore_state_response_serializer(explore_state)
 
 
-@dashboard_apps_router.put("/{app_id}/", response_model=ExploreStateGetOut)
+@dashboard_apps_router.put('/{app_id}/', response_model=ExploreStateGetOut)
 async def dashboard_apps_put_api(
     app_id: str, explore_state_in: ExploreStateUpdateIn, session: Session = Depends(get_session)
 ):
@@ -69,7 +69,7 @@ async def dashboard_apps_put_api(
     return explore_state_response_serializer(explore_state)
 
 
-@dashboard_apps_router.delete("/{app_id}/")
+@dashboard_apps_router.delete('/{app_id}/')
 async def dashboard_apps_delete_api(app_id: str, session: Session = Depends(get_session)):
     explore_state = (
         session.query(ExploreState).filter(ExploreState.uuid == app_id, ExploreState.is_archived == False).first()  # noqa: E712

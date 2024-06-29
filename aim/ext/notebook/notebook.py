@@ -6,20 +6,20 @@ from aim.cli.configs import UP_NAME, VERSION_NAME
 
 
 # Error message prefix for aim commands
-ERROR_MSG_PREFIX = b"Error:"
+ERROR_MSG_PREFIX = b'Error:'
 
 # returned by get_execution_context
-_COLAB_EXEC_CONTEXT = "_COLAB_EXEC_CONTEXT"
-_IPYTHON_EXEC_CONTEXT = "_IPYTHON_EXEC_CONTEXT"
-_OTHER_EXEC_CONTEXT = "_OTHER_EXEC_CONTEXT"
+_COLAB_EXEC_CONTEXT = '_COLAB_EXEC_CONTEXT'
+_IPYTHON_EXEC_CONTEXT = '_IPYTHON_EXEC_CONTEXT'
+_OTHER_EXEC_CONTEXT = '_OTHER_EXEC_CONTEXT'
 
 # current execution context
 _CURRENT_CONTEXT = _OTHER_EXEC_CONTEXT
 
 # environment specific constants
 # useful for detecting the environment from the UI
-_SAGE_MAKER_NOTEBOOK_PATH_POSTFIX = "/aim-sage"
-_NOTEBOOK_PATH_POSTFIX = "/notebook"
+_SAGE_MAKER_NOTEBOOK_PATH_POSTFIX = '/aim-sage'
+_NOTEBOOK_PATH_POSTFIX = '/notebook'
 
 
 def get_execution_context():
@@ -44,14 +44,14 @@ def get_execution_context():
     else:
         ipython = IPython.get_ipython()
         # @TODO find a stable way to get colab context
-        if ipython is not None and "google.colab" in str(ipython):
+        if ipython is not None and 'google.colab' in str(ipython):
             # We are in Colab notebook context
             # global _CURRENT_CONTEXT
             # _CURRENT_CONTEXT = _COLAB_EXEC_CONTEXT
             return _COLAB_EXEC_CONTEXT
 
         # In an IPython command line shell or Jupyter notebook
-        elif ipython is not None and ipython.has_trait("kernel"):
+        elif ipython is not None and ipython.has_trait('kernel'):
             # global _CURRENT_CONTEXT
             # _CURRENT_CONTEXT = _IPYTHON_EXEC_CONTEXT
             return _IPYTHON_EXEC_CONTEXT
@@ -70,19 +70,19 @@ def get_argument_options(line):
     """
     # @TODO improve this logic
     # --proxy-url is useful to print the right url, and set UI's url into iframe correctly
-    supported_args = ["--port", "--host", "--repo", "--proxy-url"]
+    supported_args = ['--port', '--host', '--repo', '--proxy-url']
 
     args = shlex.split(line)
     command = args[0]
 
-    options = {"--host": "127.0.0.1", "--port": "43801", "--base-path": _NOTEBOOK_PATH_POSTFIX}
+    options = {'--host': '127.0.0.1', '--port': '43801', '--base-path': _NOTEBOOK_PATH_POSTFIX}
     for arg in args[1:]:
-        key, value = arg.split("=", 1)
+        key, value = arg.split('=', 1)
         if key in supported_args:
             options[key] = value
     # if --proxy-url passed
-    if options.get("--proxy-url"):
-        options["--base-path"] = f'/proxy/absolute/{options["--port"]}{_SAGE_MAKER_NOTEBOOK_PATH_POSTFIX}'
+    if options.get('--proxy-url'):
+        options['--base-path'] = f'/proxy/absolute/{options["--port"]}{_SAGE_MAKER_NOTEBOOK_PATH_POSTFIX}'
 
     return command, options
 
@@ -123,12 +123,12 @@ def display_notebook(host, port, display, proxy_url=None):
     """Display Aim instance in an ipython context output frame."""
     import IPython.display
 
-    url = "{}:{}{}".format(host, port, _NOTEBOOK_PATH_POSTFIX)
+    url = '{}:{}{}'.format(host, port, _NOTEBOOK_PATH_POSTFIX)
 
     # @TODO add warning if proxy_url is not defined
     if proxy_url:
         # jupyter-server-proxy supports absolute paths by using it with /proxy/absolute/<port> path
-        url = "{}{}{}{}/".format(proxy_url, "/proxy/absolute/", port, _SAGE_MAKER_NOTEBOOK_PATH_POSTFIX)
+        url = '{}{}{}{}/'.format(proxy_url, '/proxy/absolute/', port, _SAGE_MAKER_NOTEBOOK_PATH_POSTFIX)
         print(url)
 
     shell = """
@@ -156,41 +156,41 @@ def up(options, context):
 
     display = None
     if context == _OTHER_EXEC_CONTEXT:
-        print("Launching Aim ...")
+        print('Launching Aim ...')
     else:
         display = IPython.display.display(
-            IPython.display.Pretty("Launching Aim ..."),
+            IPython.display.Pretty('Launching Aim ...'),
             display_id=True,
         )
 
     result = manager.run_process(UP_NAME, options)
 
     if result.status == manager.ManagerActionStatuses.Failed:
-        print(result.info["message"])
+        print(result.info['message'])
         return
 
-    port = result.info["port"]
-    host = result.info["host"]
+    port = result.info['port']
+    host = result.info['host']
 
     # successful exec of aim up command
     if context == _COLAB_EXEC_CONTEXT:
         display_colab(port, display)
         return
     if context == _IPYTHON_EXEC_CONTEXT:
-        display_notebook(host, port, display, options.get("--proxy-url"))
+        display_notebook(host, port, display, options.get('--proxy-url'))
         return
 
     # other context
-    print("Open {}:{}".format(host, port))
+    print('Open {}:{}'.format(host, port))
 
 
 def version(options, context):
     """Handles aim version (get version process) and send to the ui"""
     result = manager.run_process(VERSION_NAME, options)
     if result.status is manager.ManagerActionStatuses.Failed:
-        print(result.info["message"])
+        print(result.info['message'])
     else:
-        print("Aim v{}".format(result.info["version"]))
+        print('Aim v{}'.format(result.info['version']))
 
 
 # Those are aim magic function available commands
@@ -207,7 +207,7 @@ def execute_magic_aim(line):
     command, options = get_argument_options(line)
     # check command existence
     if command not in handlers:
-        print("Invalid operation.")
+        print('Invalid operation.')
         return
 
     # call corresponding handler
@@ -215,4 +215,4 @@ def execute_magic_aim(line):
 
 
 def load_ipython_extension(ipython):
-    ipython.register_magic_function(execute_magic_aim, magic_kind="line", magic_name="aim")
+    ipython.register_magic_function(execute_magic_aim, magic_kind='line', magic_name='aim')

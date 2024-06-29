@@ -11,15 +11,15 @@ if TYPE_CHECKING:
 
 class ArtifactStorageRegistry:
     def __init__(self):
-        self.registry: Dict[str, Type["AbstractArtifactStorage"]] = {}
+        self.registry: Dict[str, Type['AbstractArtifactStorage']] = {}
 
-    def register(self, name: str, storage: Type["AbstractArtifactStorage"]):
+    def register(self, name: str, storage: Type['AbstractArtifactStorage']):
         assert name not in self.registry
 
         self.registry[name] = storage
 
     @lru_cache(maxsize=100)
-    def get_storage(self, url: str) -> "AbstractArtifactStorage":
+    def get_storage(self, url: str) -> 'AbstractArtifactStorage':
         res = urlparse(url)
         if res.scheme not in self.registry:
             raise ValueError(f"'{res.scheme}' is not supported artifact storage scheme.")
@@ -28,4 +28,4 @@ class ArtifactStorageRegistry:
 
 
 registry = ArtifactStorageRegistry()
-registry.register("s3", S3ArtifactStorage)
+registry.register('s3', S3ArtifactStorage)
