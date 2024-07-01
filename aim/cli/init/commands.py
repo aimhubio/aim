@@ -11,7 +11,7 @@ from aim.sdk.utils import clean_repo_path
                                                         dir_okay=True,
                                                         writable=True))
 @click.option('-y', '--yes', is_flag=True, help='Automatically confirm prompt')
-@click.option('-s', '--skip-if-exists', is_flag=True, help='Skips initialization if the repo already exists')
+@click.option('-s', '--skip-if-exists', is_flag=True, help='Skip initialization if the repo already exists')
 def init(repo, yes, skip_if_exists):
     """
     Initializes new repository in the --repo directory.
