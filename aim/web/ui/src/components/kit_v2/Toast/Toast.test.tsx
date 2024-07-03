@@ -17,7 +17,7 @@ describe(`<ToastProvider>
         <Toast
           id={1}
           icon={<IconCheck />}
-          message='Aim is an open-source, self-hosted ML experiment tracking tool'
+          message='AimOS is an easy-to-use modular observability for AI Systems. Extensible, scalable and modular.'
         />
       </ToastProvider>,
     );
@@ -34,7 +34,7 @@ describe(`<ToastProvider>
           icon={<IconCheck />}
           onDelete={() => {}}
           onUndo={() => {}}
-          message='Aim is an open-source, self-hosted ML experiment tracking tool'
+          message='AimOS is an easy-to-use modular observability for AI Systems. Extensible, scalable and modular.'
         />
       </ToastProvider>,
     );

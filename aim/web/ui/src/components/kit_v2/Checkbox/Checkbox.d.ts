@@ -6,6 +6,14 @@ import { CheckboxProps } from '@radix-ui/react-checkbox';
  */
 export interface ICheckboxProps extends CheckboxProps {
   /**
+   * The label of the checkbox.
+   * @description The label of the checkbox.
+   * @default ''
+   * @type string
+   * @optional
+   */
+  label?: string;
+  /**
    * The checked state of the checkbox.
    * @description The checked state of the checkbox.
    * @default false
