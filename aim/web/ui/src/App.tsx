@@ -11,7 +11,7 @@ import Theme from 'components/Theme/Theme';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
-import { checkIsBasePathInCachedEnv, getBasePath } from 'config/config';
+import { getBasePath } from 'config/config';
 
 import PageWrapper from 'pages/PageWrapper';
 
@@ -19,15 +19,11 @@ import routes from 'routes/routes';
 
 import projectsModel from 'services/models/projects/projectsModel';
 
-import { inIframe } from 'utils/helper';
-
 import { IProjectsModelState } from './types/services/models/projects/projectsModel';
 
 import './App.scss';
 
 const basePath = getBasePath(false);
-
-const isVisibleCacheBanner = checkIsBasePathInCachedEnv(basePath) && inIframe();
 
 // loading monaco from node modules instead of CDN
 loader.config({
