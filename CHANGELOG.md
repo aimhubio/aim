@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.22.1 Jul 4, 2024
+
+### Enhancements:
+- Add a `-s`/`--skip-if-exists` option to the `init` command to avoid reinitializing a repo if one already exists (stevenjlm)
+
 ## 3.22.0 Jun 20, 2024
 
 ### Enhancements:
