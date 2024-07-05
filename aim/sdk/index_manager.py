@@ -1,8 +1,5 @@
 import contextlib
 import datetime
-
-import aimrocks.errors
-import pytz
 import logging
 import os
 import time
@@ -11,6 +8,7 @@ from pathlib import Path
 from threading import Thread
 from typing import Iterable
 
+import aimrocks.errors
 import pytz
 
 from aim.sdk.repo import Repo

@@ -3,7 +3,6 @@ import click
 from aim.cli.configs import (
     CONVERT,
     INIT_NAME,
-    REINDEX_NAME,
     RUNS_NAME,
     SERVER_NAME,
     STORAGE,
@@ -12,9 +11,6 @@ from aim.cli.configs import (
 )
 from aim.cli.convert import commands as convert_commands
 from aim.cli.init import commands as init_commands
-from aim.cli.version import commands as version_commands
-from aim.cli.up import commands as up_commands
-from aim.cli.server import commands as server_commands
 from aim.cli.runs import commands as runs_commands
 from aim.cli.server import commands as server_commands
 from aim.cli.storage import commands as storage_commands

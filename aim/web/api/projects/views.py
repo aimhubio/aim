@@ -2,13 +2,11 @@ import os
 
 from collections import Counter
 from datetime import timedelta
-from typing import Optional, Tuple
 from logging import getLogger
-from collections import Counter
-from fastapi import Depends, HTTPException, Query, Header
-from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
+from typing import Optional, Tuple
 
-from aim.web.configs import AIM_PROJECT_SETTINGS_FILE
+from aim.sdk.index_manager import RepoIndexManager
+from aim.storage.locking import AutoFileLock
 from aim.web.api.projects.project import Project
 from aim.web.api.projects.pydantic_models import (
     ProjectActivityApiOut,
@@ -18,7 +16,7 @@ from aim.web.api.projects.pydantic_models import (
     ProjectPinnedSequencesApiOut,
 )
 from aim.web.api.utils import (
-    APIRouter,  # wrapper for fastapi.APIRouter
+    APIRouter,  # wrapper for fastapi.APIRouter  # wrapper for fastapi.APIRouter
     object_factory,
 )
 from aim.web.configs import AIM_PROJECT_SETTINGS_FILE

@@ -2,8 +2,8 @@ from functools import lru_cache
 from typing import TYPE_CHECKING, Dict, Type
 from urllib.parse import urlparse
 
-from .s3_storage import S3ArtifactStorage
 from .filesystem_storage import FilesystemArtifactStorage
+from .s3_storage import S3ArtifactStorage
 
 
 if TYPE_CHECKING:
