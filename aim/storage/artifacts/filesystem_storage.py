@@ -1,10 +1,10 @@
-import pathlib
 import os
+import pathlib
 import shutil
 import tempfile
 
-from urllib.parse import urlparse
 from typing import Optional
+from urllib.parse import urlparse
 
 from .artifact_storage import AbstractArtifactStorage
 

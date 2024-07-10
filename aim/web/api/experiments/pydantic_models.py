@@ -1,6 +1,7 @@
-from pydantic import BaseModel
-from typing import List, Optional, Dict
+from typing import Dict, List, Optional
 from uuid import UUID
+
+from pydantic import BaseModel
 
 
 class ExperimentCreateIn(BaseModel):
@@ -46,4 +47,4 @@ class ExperimentActivityApiOut(BaseModel):
     num_runs: int
     num_archived_runs: int
     num_active_runs: int
-    activity_map: Dict[str, int] = {"2021-01-01": 54}
+    activity_map: Dict[str, int] = {'2021-01-01': 54}

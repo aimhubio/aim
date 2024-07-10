@@ -1,25 +1,25 @@
 import asyncio
-import numpy as np
 import random
 import struct
 import time
 
 from collections import namedtuple
 from itertools import chain
-from typing import Iterator, Tuple, Optional, List
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Iterator, List, Optional, Tuple
 
-from fastapi import HTTPException
+import numpy as np
 
-from aim.storage.context import Context
 from aim.sdk import Run
-from aim.sdk.sequences.metric import Metric
 from aim.sdk.sequence_collection import SequenceCollection
+from aim.sdk.sequences.metric import Metric
+from aim.storage.context import Context
 from aim.storage.query import syntax_error_check
-from aim.web.configs import AIM_PROGRESS_REPORT_INTERVAL
+from aim.storage.treeutils import encode_tree
 from aim.web.api.projects.project import Project
 from aim.web.api.runs.pydantic_models import AlignedRunIn, TraceBase
-from aim.storage.treeutils import encode_tree
+from aim.web.configs import AIM_PROGRESS_REPORT_INTERVAL
+from fastapi import HTTPException
+
 
 if TYPE_CHECKING:
     from aim.sdk import Repo
@@ -41,7 +41,7 @@ def get_run_or_404(run_id, repo=None):
 
     run = repo.get_run(run_id)
     if not run:
-        raise HTTPException(status_code=404, detail="Run not found.")
+        raise HTTPException(status_code=404, detail='Run not found.')
 
     return run
 
@@ -62,10 +62,7 @@ def convert_nan_and_inf_to_str(tree):
     if tree != tree:  # x == x is False for NaN, strings break math.isnan
         return 'NaN'
     if isinstance(tree, dict):
-        return {
-            key: convert_nan_and_inf_to_str(value)
-            for key, value in tree.items()
-        }
+        return {key: convert_nan_and_inf_to_str(value) for key, value in tree.items()}
     if isinstance(tree, tuple):
         return tuple(convert_nan_and_inf_to_str(value) for value in tree)
     if isinstance(tree, list):
@@ -88,27 +85,30 @@ def get_run_props(run: Run):
             'id': run.props.experiment_obj.uuid,
             'name': run.props.experiment_obj.name,
             'description': run.props.experiment_obj.description,
-        } if run.props.experiment_obj else None,
-        'tags': [{'id': tag.uuid,
-                  'name': tag.name,
-                  'color': tag.color,
-                  'description': tag.description}
-                 for tag in run.props.tags_obj],
+        }
+        if run.props.experiment_obj
+        else None,
+        'tags': [
+            {'id': tag.uuid, 'name': tag.name, 'color': tag.color, 'description': tag.description}
+            for tag in run.props.tags_obj
+        ],
         'archived': run.archived if run.archived else False,
         'creation_time': run.creation_time,
         'end_time': run.end_time,
-        'active': run.active
+        'active': run.active,
     }
 
 
 def get_run_artifacts(run: Run):
     artifacts_info = []
     for artifact in run.artifacts.values():
-        artifacts_info.append({
-            'name': artifact.name,
-            'path': artifact.path,
-            'uri': artifact.uri,
-        })
+        artifacts_info.append(
+            {
+                'name': artifact.name,
+                'path': artifact.path,
+                'uri': artifact.uri,
+            }
+        )
     return artifacts_info
 
 
@@ -149,7 +149,7 @@ def collect_x_axis_data(x_trace: Metric, iters: np.ndarray) -> Tuple[Optional[di
 
     return (
         numpy_to_encodable(np.array(x_axis_iters, dtype='float64')),
-        numpy_to_encodable(np.array(x_axis_values, dtype='float64'))
+        numpy_to_encodable(np.array(x_axis_values, dtype='float64')),
     )
 
 
@@ -169,35 +169,35 @@ async def custom_aligned_metrics_streamer(requested_runs: List[AlignedRunIn], x_
             traces_list = []
             for trace_data in requested_traces:
                 context = Context(trace_data.context)
-                trace = run.get_metric(name=trace_data.name,
-                                       context=context)
-                x_axis_trace = run.get_metric(name=x_axis,
-                                              context=context)
+                trace = run.get_metric(name=trace_data.name, context=context)
+                x_axis_trace = run.get_metric(name=x_axis, context=context)
                 if not (trace and x_axis_trace):
                     continue
 
                 iters = np.array(trace.data.sample(trace_data.slice[-1]).indices_list())
                 x_axis_iters, x_axis_values = collect_x_axis_data(x_axis_trace, iters)
-                traces_list.append({
-                    'name': trace.name,
-                    'context': trace.context.to_dict(),
-                    'x_axis_values': x_axis_values,
-                    'x_axis_iters': x_axis_iters,
-                })
-            run_dict = {
-                run_hash: traces_list
-            }
+                traces_list.append(
+                    {
+                        'name': trace.name,
+                        'context': trace.context.to_dict(),
+                        'x_axis_values': x_axis_values,
+                        'x_axis_iters': x_axis_iters,
+                    }
+                )
+            run_dict = {run_hash: traces_list}
             encoded_tree = encode_tree(run_dict)
             yield collect_streamable_data(encoded_tree)
     except asyncio.CancelledError:
         pass
 
 
-async def metric_search_result_streamer(traces: SequenceCollection,
-                                        skip_system: bool,
-                                        steps_num: int,
-                                        x_axis: Optional[str] = None,
-                                        report_progress: Optional[bool] = True) -> bytes:
+async def metric_search_result_streamer(
+    traces: SequenceCollection,
+    skip_system: bool,
+    steps_num: int,
+    x_axis: Optional[str] = None,
+    report_progress: Optional[bool] = True,
+) -> bytes:
     try:
         last_reported_progress_time = time.time()
         progress = None
@@ -205,9 +205,9 @@ async def metric_search_result_streamer(traces: SequenceCollection,
         for run_trace_collection, progress in traces.iter_runs():
             await asyncio.sleep(ASYNC_SLEEP_INTERVAL)
             if report_progress and time.time() - last_reported_progress_time > AIM_PROGRESS_REPORT_INTERVAL:
-                yield collect_streamable_data(encode_tree(
-                    {f'progress_{progress_reports_sent}_{PROGRESS_KEY_SUFFIX}': progress}
-                ))
+                yield collect_streamable_data(
+                    encode_tree({f'progress_{progress_reports_sent}_{PROGRESS_KEY_SUFFIX}': progress})
+                )
                 progress_reports_sent += 1
                 last_reported_progress_time = time.time()
 
@@ -221,24 +221,26 @@ async def metric_search_result_streamer(traces: SequenceCollection,
                 x_axis_trace = run.get_metric(x_axis, trace.context) if x_axis else None
                 x_axis_iters, x_axis_values = collect_x_axis_data(x_axis_trace, iters)
 
-                traces_list.append({
-                    'name': trace.name,
-                    'context': trace.context.to_dict(),
-                    'slice': [0, 0, steps_num],  # TODO [AT] change once UI is ready
-                    'values': numpy_to_encodable(values),
-                    'iters': numpy_to_encodable(iters),
-                    'epochs': numpy_to_encodable(epochs),
-                    'timestamps': numpy_to_encodable(timestamps),
-                    'x_axis_values': x_axis_values,
-                    'x_axis_iters': x_axis_iters,
-                })
+                traces_list.append(
+                    {
+                        'name': trace.name,
+                        'context': trace.context.to_dict(),
+                        'slice': [0, 0, steps_num],  # TODO [AT] change once UI is ready
+                        'values': numpy_to_encodable(values),
+                        'iters': numpy_to_encodable(iters),
+                        'epochs': numpy_to_encodable(epochs),
+                        'timestamps': numpy_to_encodable(timestamps),
+                        'x_axis_values': x_axis_values,
+                        'x_axis_iters': x_axis_iters,
+                    }
+                )
 
             if run:
                 run_dict = {
                     run.hash: {
                         'params': get_run_params(run, skip_system=skip_system),
                         'traces': traces_list,
-                        'props': get_run_props(run)
+                        'props': get_run_props(run),
                     }
                 }
 
@@ -255,12 +257,14 @@ async def metric_search_result_streamer(traces: SequenceCollection,
         pass
 
 
-async def run_search_result_streamer(runs: SequenceCollection,
-                                     limit: int,
-                                     skip_system: bool,
-                                     report_progress: Optional[bool] = True,
-                                     exclude_params: Optional[bool] = False,
-                                     exclude_traces: Optional[bool] = False) -> bytes:
+async def run_search_result_streamer(
+    runs: SequenceCollection,
+    limit: int,
+    skip_system: bool,
+    report_progress: Optional[bool] = True,
+    exclude_params: Optional[bool] = False,
+    exclude_traces: Optional[bool] = False,
+) -> bytes:
     try:
         run_count = 0
         last_reported_progress_time = time.time()
@@ -270,19 +274,15 @@ async def run_search_result_streamer(runs: SequenceCollection,
             await asyncio.sleep(ASYNC_SLEEP_INTERVAL)
             # if no progress was reported for a long interval, report progress
             if report_progress and time.time() - last_reported_progress_time > AIM_PROGRESS_REPORT_INTERVAL:
-                yield collect_streamable_data(encode_tree(
-                    {f'progress_{progress_reports_sent}_{PROGRESS_KEY_SUFFIX}': progress}
-                ))
+                yield collect_streamable_data(
+                    encode_tree({f'progress_{progress_reports_sent}_{PROGRESS_KEY_SUFFIX}': progress})
+                )
                 progress_reports_sent += 1
                 last_reported_progress_time = time.time()
             if not run_trace_collection:
                 continue
             run = run_trace_collection.run
-            run_dict = {
-                run.hash: {
-                    'props': get_run_props(run)
-                }
-            }
+            run_dict = {run.hash: {'props': get_run_props(run)}}
             if not exclude_params:
                 run_dict[run.hash]['params'] = get_run_params(run, skip_system=skip_system)
             if not exclude_traces:
@@ -319,7 +319,7 @@ async def run_active_result_streamer(repo: 'Repo', report_progress: Optional[boo
                 run_dict = {
                     run.hash: {
                         'props': get_run_props(run),
-                        'traces': run.collect_sequence_info(sequence_types='metric')
+                        'traces': run.collect_sequence_info(sequence_types='metric'),
                     }
                 }
 
@@ -327,9 +327,9 @@ async def run_active_result_streamer(repo: 'Repo', report_progress: Optional[boo
                 yield collect_streamable_data(encoded_tree)
 
             if report_progress:
-                yield collect_streamable_data(encode_tree(
-                    {f'progress_{progress_reports_sent}': (progress_reports_sent + 1, active_runs_count)}
-                ))
+                yield collect_streamable_data(
+                    encode_tree({f'progress_{progress_reports_sent}': (progress_reports_sent + 1, active_runs_count)})
+                )
                 progress_reports_sent += 1
     except asyncio.CancelledError:
         pass
@@ -347,12 +347,14 @@ def collect_requested_metric_traces(run: Run, requested_traces: List[TraceBase],
         iters, (values,) = trace.data.view('val').sample(steps_num).items_list()
         values = list(map(lambda x: x if float('-inf') < x < float('inf') and x == x else None, values))
 
-        processed_traces_list.append({
-            'name': trace.name,
-            'context': trace.context.to_dict(),
-            'values': values,
-            'iters': iters,
-        })
+        processed_traces_list.append(
+            {
+                'name': trace.name,
+                'context': trace.context.to_dict(),
+                'values': values,
+                'iters': iters,
+            }
+        )
 
     return processed_traces_list
 
@@ -421,7 +423,7 @@ async def run_log_records_streamer(run: Run, record_range: str) -> bytes:
         for step, (val,) in steps_vals:
             await asyncio.sleep(ASYNC_SLEEP_INTERVAL)
             result = val.json()
-            result['is_notified'] = (step >= last_notified_log_step)
+            result['is_notified'] = step >= last_notified_log_step
             encoded_tree = encode_tree({step: result})
             yield collect_streamable_data(encoded_tree)
     except asyncio.CancelledError:
@@ -445,15 +447,18 @@ def checked_query(q: str):
     try:
         syntax_error_check(query)
     except SyntaxError as se:
-        raise HTTPException(status_code=400, detail={
-            'message': 'SyntaxError',
-            'detail': {
-                'statement': se.text,
-                'line': se.lineno,
-                'offset': se.offset,
-                'end_offset': getattr(se, 'end_offset', 0)
-            }
-        })
+        raise HTTPException(
+            status_code=400,
+            detail={
+                'message': 'SyntaxError',
+                'detail': {
+                    'statement': se.text,
+                    'line': se.lineno,
+                    'offset': se.offset,
+                    'end_offset': getattr(se, 'end_offset', 0),
+                },
+            },
+        )
     return query
 
 

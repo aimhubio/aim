@@ -1,0 +1,21 @@
+line-length = 120
+
+[lint.per-file-ignores]
+"__init__.py" = ["F401"]
+
+[lint.flake8-quotes]
+inline-quotes = "single"
+
+[lint]
+extend-select = ["I"]
+
+[lint.isort]
+no-lines-before = ["future", "standard-library", "first-party"]
+lines-between-types = 1
+lines-after-imports = 2
+
+[lint.isort.sections]
+"aim" = ["aim"]
+
+[format]
+quote-style = "single"

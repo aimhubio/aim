@@ -1,7 +1,7 @@
 from typing import Optional
 
-from aim.sdk.repo import Repo
 from aim.sdk.legacy.deprecation_warning import deprecated
+from aim.sdk.repo import Repo
 
 
 @deprecated

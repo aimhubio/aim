@@ -1,5 +1,7 @@
 import optuna
+
 from aim.optuna import AimCallback
+
 
 # ------------------------------------------------ Version 1: Single Run ------------------------------------------------
 
@@ -19,9 +21,7 @@ study.optimize(objective, n_trials=10, callbacks=[aim_callback])
 # ------------------------------------------------ Version 2: Multi Run with decorator ----------------------------------
 
 # Aim logging in multirun mode.
-aim_callback = AimCallback(
-    as_multirun=True, experiment_name='example_experiment_multi_run_with_decorator'
-)
+aim_callback = AimCallback(as_multirun=True, experiment_name='example_experiment_multi_run_with_decorator')
 
 
 @aim_callback.track_in_aim()

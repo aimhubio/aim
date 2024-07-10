@@ -1,5 +1,4 @@
 import pytest
-
 from tests.base import TestBase
 from tests.utils import is_package_installed
 
@@ -9,8 +8,8 @@ class TestDeeplakeDatasetIntegration(TestBase):
     def test_dataset_as_run_param(self):
         import deeplake
 
-        from aim.sdk.objects.plugins.deeplake_dataset import DeeplakeDataset
         from aim.sdk import Run
+        from aim.sdk.objects.plugins.deeplake_dataset import DeeplakeDataset
 
         # create dataset object
         ds = deeplake.dataset('hub://activeloop/cifar100-test')

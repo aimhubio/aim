@@ -1,19 +1,18 @@
 import logging
 import os.path
 
-from PIL import (
-    Image as PILImage,
-    ImageSequence as PILImageSequence
-)
-
 from io import BytesIO
 from itertools import chain, repeat
 from typing import List
+
 import numpy as np
 
 from aim.sdk.num_utils import inst_has_typename
 from aim.storage.object import CustomObject
 from aim.storage.types import BLOB
+from PIL import Image as PILImage
+from PIL import ImageSequence as PILImageSequence
+
 
 logger = logging.getLogger(__name__)
 
@@ -44,11 +43,7 @@ class Image(CustomObject):
     def __init__(self, image, caption: str = '', format=None, quality=90, optimize=False):
         super().__init__()
 
-        params = {
-            'format': format,
-            'quality': quality,
-            'optimize': optimize
-        }
+        params = {'format': format, 'quality': quality, 'optimize': optimize}
 
         if isinstance(image, str):
             self._from_file_path(image, params)
@@ -70,9 +65,9 @@ class Image(CustomObject):
     def caption(self) -> str:
         """Image caption, set by user.
 
-            :getter: Returns image caption.
-            :setter: Sets image caption.
-            :type: string
+        :getter: Returns image caption.
+        :setter: Sets image caption.
+        :type: string
         """
         return self.storage['caption']
 
@@ -84,8 +79,8 @@ class Image(CustomObject):
     def format(self) -> str:
         """Stored image format.
 
-            :getter: Returns image format.
-            :type: string
+        :getter: Returns image format.
+        :type: string
         """
         return self.storage['format']
 
@@ -93,8 +88,8 @@ class Image(CustomObject):
     def width(self):
         """Stored image width.
 
-            :getter: Returns image width.
-            :type: string
+        :getter: Returns image width.
+        :type: string
         """
         return self.storage['width']
 
@@ -102,8 +97,8 @@ class Image(CustomObject):
     def height(self):
         """Stored image height.
 
-            :getter: Returns image height.
-            :type: string
+        :getter: Returns image height.
+        :type: string
         """
         return self.storage['height']
 
@@ -111,8 +106,8 @@ class Image(CustomObject):
     def size(self):
         """Stored image size.
 
-            :getter: Returns image (width, height) pair.
-            :type: string
+        :getter: Returns image (width, height) pair.
+        :type: string
         """
         return self.storage['width'], self.storage['height']
 
@@ -145,7 +140,7 @@ class Image(CustomObject):
                 params['format'] = 'jpeg'
             params['format'] = img_format
 
-        if getattr(pil_image, "n_frames", 1) > 1:
+        if getattr(pil_image, 'n_frames', 1) > 1:
             # is animated
             frames = PILImageSequence.all_frames(pil_image)
             params.update(
@@ -154,10 +149,7 @@ class Image(CustomObject):
                     append_images=frames[1:],
                 )
             )
-            frames[0].save(
-                img_container,
-                **params
-            )
+            frames[0].save(img_container, **params)
         else:
             try:
                 pil_image.save(img_container, **params)
@@ -206,6 +198,7 @@ class Image(CustomObject):
     def _from_torch_tensor(self, tensor, params):
         try:
             import torch
+
             assert isinstance(tensor, torch.Tensor)
         except (ImportError, AssertionError):
             raise ValueError('Cannot convert from torch.Tensor')
@@ -230,6 +223,7 @@ class Image(CustomObject):
     def _from_tf_tensor(self, tensor, params):
         try:
             import tensorflow as tf
+
             assert isinstance(tensor, tf.Tensor)
         except (ImportError, AssertionError):
             raise ValueError('Cannot convert from tf.Tensor')

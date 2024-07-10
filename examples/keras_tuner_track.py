@@ -1,6 +1,7 @@
 import kerastuner as kt
 import tensorflow as tf
 import tensorflow_datasets as tfds
+
 from aim.keras_tuner import AimCallback
 
 
@@ -10,9 +11,7 @@ def build_model(hp):
     for i in range(hp.Int('conv_blocks', 3, 5, default=3)):
         filters = hp.Int('filters_' + str(i), 32, 256, step=32)
         for _ in range(2):
-            x = tf.keras.layers.Convolution2D(
-                filters, kernel_size=(3, 3), padding='same'
-            )(x)
+            x = tf.keras.layers.Convolution2D(filters, kernel_size=(3, 3), padding='same')(x)
             x = tf.keras.layers.BatchNormalization()(x)
             x = tf.keras.layers.ReLU()(x)
         if hp.Choice('pooling_' + str(i), ['avg', 'max']) == 'max':
@@ -20,17 +19,13 @@ def build_model(hp):
         else:
             x = tf.keras.layers.AvgPool2D()(x)
     x = tf.keras.layers.GlobalAvgPool2D()(x)
-    x = tf.keras.layers.Dense(
-        hp.Int('hidden_size', 30, 100, step=10, default=50), activation='relu'
-    )(x)
+    x = tf.keras.layers.Dense(hp.Int('hidden_size', 30, 100, step=10, default=50), activation='relu')(x)
     x = tf.keras.layers.Dropout(hp.Float('dropout', 0, 0.5, step=0.1, default=0.5))(x)
     outputs = tf.keras.layers.Dense(10, activation='softmax')(x)
 
     model = tf.keras.Model(inputs, outputs)
     model.compile(
-        optimizer=tf.keras.optimizers.Adam(
-            hp.Float('learning_rate', 1e-4, 1e-2, sampling='log')
-        ),
+        optimizer=tf.keras.optimizers.Adam(hp.Float('learning_rate', 1e-4, 1e-2, sampling='log')),
         loss='sparse_categorical_crossentropy',
         metrics=['accuracy'],
     )
@@ -41,9 +36,7 @@ def standardize_record(record):
     return tf.cast(record['image'], tf.float32) / 255.0, record['label']
 
 
-tuner = kt.Hyperband(
-    build_model, objective='val_accuracy', max_epochs=30, hyperband_iterations=2
-)
+tuner = kt.Hyperband(build_model, objective='val_accuracy', max_epochs=30, hyperband_iterations=2)
 
 data = tfds.load('cifar10')
 train_ds, test_ds = data['train'], data['test']

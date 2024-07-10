@@ -41,8 +41,7 @@ class TestDashboardAppsApi(PrefilledDataApiTestBase):
         self.assertEqual(404, get_response.status_code)
 
     def test_create_app_api(self):
-        app_data = {'state': {'test_key1': 'test_value', 'test_key2': [1, 2, 3]},
-                    'type': 'metric_explorer'}
+        app_data = {'state': {'test_key1': 'test_value', 'test_key2': [1, 2, 3]}, 'type': 'metric_explorer'}
         response = self.client.post('/api/apps/', json=app_data)
         self.assertEqual(201, response.status_code)
         app_id = response.json()['id']
@@ -57,7 +56,7 @@ class TestDashboardsApi(PrefilledDataApiTestBase):
     @classmethod
     def setUpClass(cls) -> None:
         super().setUpClass()
-        app_data = {"type": "metric_explorer", "state": {}}
+        app_data = {'type': 'metric_explorer', 'state': {}}
         response = cls.client.post('/api/apps/', json=app_data)
         cls.app_id = response.json()['id']
         for i in range(5):
@@ -92,9 +91,10 @@ class TestDashboardsApi(PrefilledDataApiTestBase):
         self.assertEqual('new description', data['description'])
 
     def test_create_dashboard_api(self):
-        response = self.client.post('/api/dashboards/', json={'name': 'awesome',
-                                                              'description': 'pretty awesome dashboard',
-                                                              'app_id': self.app_id})
+        response = self.client.post(
+            '/api/dashboards/',
+            json={'name': 'awesome', 'description': 'pretty awesome dashboard', 'app_id': self.app_id},
+        )
         self.assertEqual(201, response.status_code)
         dashboard_id = response.json()['id']
         get_response = self.client.get(f'/api/dashboards/{dashboard_id}/')

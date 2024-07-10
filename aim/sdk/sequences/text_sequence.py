@@ -1,7 +1,7 @@
 from typing import Tuple, Union
 
-from aim.sdk.sequence import MediaSequenceBase
 from aim.sdk.objects.text import Text
+from aim.sdk.sequence import MediaSequenceBase
 
 
 class Texts(MediaSequenceBase):

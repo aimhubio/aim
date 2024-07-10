@@ -1,18 +1,15 @@
 from __future__ import with_statement
-
 import logging
 import os
+
 from logging.config import fileConfig
 
+from aim.web.api.db import Base, engine
+from aim.web.configs import AIM_ENV_MODE_KEY
+from aim.web.utils import get_db_url
 from alembic import context
 from alembic.config import Config
 
-from aim.web.configs import AIM_ENV_MODE_KEY
-from aim.web.api.db import engine
-from aim.web.utils import get_db_url
-from aim.web.api.dashboards import models
-from aim.web.api.dashboard_apps import models
-from aim.web.api.db import Base
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -49,9 +46,7 @@ def run_migrations_offline():
     script output.
 
     """
-    context.configure(
-        url=get_db_url(), target_metadata=target_metadata, literal_binds=True
-    )
+    context.configure(url=get_db_url(), target_metadata=target_metadata, literal_binds=True)
 
     with context.begin_transaction():
         context.run_migrations()
@@ -81,7 +76,7 @@ def run_migrations_online():
         context.configure(
             connection=connection,
             target_metadata=target_metadata,
-            process_revision_directives=process_revision_directives
+            process_revision_directives=process_revision_directives,
         )
 
         with context.begin_transaction():

@@ -1,14 +1,11 @@
+from aim.sdk.types import QueryReportMode
+from aim.storage.query import syntax_error_check
 from parameterized import parameterized
-
 from tests.base import PrefilledDataTestBase
 from tests.utils import full_class_name
 
-from aim.sdk.types import QueryReportMode
-from aim.storage.query import syntax_error_check
-
 
 class TestQuery(PrefilledDataTestBase):
-
     def test_query_metrics(self):
         q = self.isolated_query_patch('run.hparams.batch_size == None and metric.context.is_training == True')
 
@@ -47,19 +44,21 @@ class TestQuery(PrefilledDataTestBase):
         run_count = 0
         for run_trace_collection in self.repo.query_runs(query=q, report_mode=QueryReportMode.DISABLED).iter_runs():
             run = run_trace_collection.run
-            self.assertEqual("Run # 2", run.name)
+            self.assertEqual('Run # 2', run.name)
             run_count += 1
         self.assertEqual(1, run_count)
 
-    @parameterized.expand([
-        ('run + context', 'run.hparams.batch_size == None and metric.context.is_training == True'),
-        ('run multiple filters', 'run.hparams.batch_size == None and run.hparams.lr == 0.01'),
-        ('context only', 'metric.context["is_training"] == False'),
-        ('context + metric name', 'metric.context.is_training == False and metric.name == "loss"'),
-        ('__getitem__ interface with tuple', 'run["hparams","lr"] == 0.01'),
-        ('__getitem__ interface chaining', 'run["hparams"]["lr"] == 0.01'),
-        ('mixed interface', 'run["hparams"].lr == 0.01'),
-    ])
+    @parameterized.expand(
+        [
+            ('run + context', 'run.hparams.batch_size == None and metric.context.is_training == True'),
+            ('run multiple filters', 'run.hparams.batch_size == None and run.hparams.lr == 0.01'),
+            ('context only', 'metric.context["is_training"] == False'),
+            ('context + metric name', 'metric.context.is_training == False and metric.name == "loss"'),
+            ('__getitem__ interface with tuple', 'run["hparams","lr"] == 0.01'),
+            ('__getitem__ interface chaining', 'run["hparams"]["lr"] == 0.01'),
+            ('mixed interface', 'run["hparams"].lr == 0.01'),
+        ]
+    )
     def test_query_execution(self, name, q):
         # crash/no-crash test
         # execute query and iterate over result
@@ -95,7 +94,9 @@ class TestQuery(PrefilledDataTestBase):
 
 class TestQueryDefaultExpression(PrefilledDataTestBase):
     def setUp(self):
-        self.run = next((run for run in self.repo.iter_runs() if run.get('testcase') == full_class_name(self.__class__)))
+        self.run = next(
+            (run for run in self.repo.iter_runs() if run.get('testcase') == full_class_name(self.__class__))
+        )
         self.run.archived = True
         self.run_hash = self.run.hash
 

@@ -1,16 +1,16 @@
-import os
 import logging
+import os
 import pathlib
 import threading
-import uuid
 import time
+import uuid
 
-from filelock import BaseFileLock, SoftFileLock, UnixFileLock, has_fcntl
+from typing import Dict, Optional, Set, Tuple, Union
 
 from cachetools.func import ttl_cache
+from filelock import BaseFileLock, SoftFileLock, UnixFileLock, has_fcntl
 from psutil import disk_partitions
 
-from typing import Optional, Union, Dict, Set, Tuple
 
 logger = logging.getLogger(__name__)
 
@@ -27,9 +27,14 @@ class FileSystemInspector:
     not being able to handle `fcntl` implementations.
     (e.g. remote filesystems, including NFS<4, BeeGFS, Lustre, etc.)
     """
+
     GLOBAL_FILE_LOCK_CAPABLE_FILESYSTEMS: Set[str] = {
         # The most popular local filesystems
-        'ext3', 'ext4', 'xfs', 'zfs', 'apfs',
+        'ext3',
+        'ext4',
+        'xfs',
+        'zfs',
+        'apfs',
         # We include only NFS v4 filesystems here (yet).
         # NFS v3 does not support file locks.
         'nfs4',
@@ -53,16 +58,16 @@ class FileSystemInspector:
 
         if fstype is None:
             logger.warning(
-                f"Failed to determine filesystem type for {path} "
-                f"(device id: {device}). "
-                f"Using soft file locks to avoid potential data corruption."
+                f'Failed to determine filesystem type for {path} '
+                f'(device id: {device}). '
+                f'Using soft file locks to avoid potential data corruption.'
             )
             return
 
         logger.warning(
-            f"The lock file {path} is on a filesystem of type `{fstype}` "
-            f"(device id: {device}). "
-            f"Using soft file locks to avoid potential data corruption."
+            f'The lock file {path} is on a filesystem of type `{fstype}` '
+            f'(device id: {device}). '
+            f'Using soft file locks to avoid potential data corruption.'
         )
 
     @classmethod
@@ -124,10 +129,7 @@ class FileSystemInspector:
         return True
 
 
-def AutoFileLock(
-    lock_file: Union[str, os.PathLike],
-    timeout: float = -1
-) -> BaseFileLock:
+def AutoFileLock(lock_file: Union[str, os.PathLike], timeout: float = -1) -> BaseFileLock:
     """
     Returns a file lock based on the file system type of the given path.
 
@@ -160,6 +162,7 @@ class RefreshLock:
     GRACE_PERIOD = 10 * LOCK_REFRESH_INTERVAL
 
     """ Custom lock that acquires both UnixLock and SoftFileLock and refreshes SoftFileLock periodically."""
+
     def __init__(self, lock_path: Union[str, os.PathLike], timeout: float = -1):
         self._lock_path = lock_path
         self._lock = UnixFileLock(self._lock_path, timeout)
@@ -220,6 +223,7 @@ class RefreshLock:
 
 class NoopLock:
     """No-op lock implementation using duck-typing"""
+
     def __init__(self, *args, **kwargs):
         pass
 
@@ -232,6 +236,7 @@ class NoopLock:
 
 class RunLock:
     """Interface for locking/releasing Run locks."""
+
     def lock(self, force: bool = False) -> None:
         raise NotImplementedError
 

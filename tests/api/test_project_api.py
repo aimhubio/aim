@@ -1,12 +1,11 @@
-import pytz
-
-from tests.base import PrefilledDataApiTestBase, ApiTestBase
-from tests.utils import generate_image_set
-
-from parameterized import parameterized
 import datetime
 
+import pytz
+
 from aim.sdk.run import Run
+from parameterized import parameterized
+from tests.base import ApiTestBase, PrefilledDataApiTestBase
+from tests.utils import generate_image_set
 
 
 class TestProjectApi(PrefilledDataApiTestBase):
@@ -48,7 +47,7 @@ class TestProjectParamsWithImagesApi(ApiTestBase):
     def setUpClass(cls) -> None:
         super().setUpClass()
         run1 = Run(system_tracking_interval=None)
-        run1.track(1., name='metric1', context={'a': True})
+        run1.track(1.0, name='metric1', context={'a': True})
         run1.track(generate_image_set(1), name='images1', context={'a': True})
         run1.track(generate_image_set(1), name='images1', context={'b': True})
 
@@ -56,10 +55,12 @@ class TestProjectParamsWithImagesApi(ApiTestBase):
         run2.track(1, name='metric2', context={'a': True})
         run2.track(generate_image_set(1)[0], name='images2', context={'b': True})
 
-    @parameterized.expand([
-        ({'sequence': ('metric', 'images')},),  # metrics only
-        (None,)                                 # default
-    ])
+    @parameterized.expand(
+        [
+            ({'sequence': ('metric', 'images')},),  # metrics only
+            (None,),  # default
+        ]
+    )
     def test_project_images_and_metric_info_api(self, qparams):
         client = self.client
         response = client.get('/api/projects/params', params=qparams)

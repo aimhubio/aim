@@ -1,10 +1,10 @@
-import pathlib
 import os
+import pathlib
 
 from typing import Optional
 
-from aim.storage.object import CustomObject
 from aim.storage.artifacts import registry
+from aim.storage.object import CustomObject
 
 
 @CustomObject.alias('aim.artifact')
