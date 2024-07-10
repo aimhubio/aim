@@ -19,7 +19,7 @@ class AimLoggingHandler(TrainBegin, TrainEnd, EpochBegin, EpochEnd, BatchBegin, 
         log_interval=integer k: display metrics every interval of k batches
     metrics : list of EvalMetrics
         Metrics to be logged, logged at batch end, epoch end, train end.
-    priority : scalar, default np.Inf
+    priority : scalar, default np.inf
         Priority level of the AimLoggingHandler. Priority level is sorted in
         ascending order. The lower the number is, the higher priority level the
         handler is.
@@ -32,7 +32,7 @@ class AimLoggingHandler(TrainBegin, TrainEnd, EpochBegin, EpochEnd, BatchBegin, 
                  log_system_params: Optional[bool] = True,
                  capture_terminal_logs: Optional[bool] = True,
                  metrics: Optional[List[Any]] = None,
-                 priority=np.Inf,):
+                 priority=np.inf,):
         super().__init__()
         if not isinstance(log_interval, int) and log_interval != 'epoch':
             raise ValueError("log_interval must be either an integer or string 'epoch'")
