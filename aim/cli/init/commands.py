@@ -20,13 +20,11 @@ def init(repo, yes, skip_if_exists):
     re_init = False
     if Repo.exists(repo_path):
         if yes and skip_if_exists:
-            raise click.BadParameter('Conflicting init options.'
-                                     'Either specify -y/--yes or -s/--skip-if-exists')
+            raise click.BadParameter('Conflicting init options.' 'Either specify -y/--yes or -s/--skip-if-exists')
         elif yes:
             re_init = True
         elif skip_if_exists:
-            click.echo(
-                'Repo exists at {}. Skipped initialization.'.format(repo.root_path))
+            click.echo('Repo exists at {}. Skipped initialization.'.format(repo.root_path))
             return
         else:
             re_init = click.confirm(
