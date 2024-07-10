@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Enhancements:
+- Relax `numpy` version upper bound to include `numpy<3`
+- Add a `-s`/`--skip-if-exists` option to the `init` command to avoid reinitializing a repo if one already exists (stevenjlm)
+
 ## 3.22.0 Jun 20, 2024
 
 ### Enhancements:
@@ -21,7 +27,7 @@
 - Repurpose aim reindex command for index db recreation (mihran113)
 
 ### Fixes
-- Handle index db corruption and warn in UI (mihran113) 
+- Handle index db corruption and warn in UI (mihran113)
 - Handle and skip corrupted runs (alberttorosyan)
 
 ## 3.19.3 Apr 17, 2024
@@ -42,7 +48,7 @@
 - Remove `aim storage upgrade 2to3` command (mihran113)
 - Allow HF callback to initialize run at on_init_end for tracking custom metrics with callback (dushyantbehl)
 - Support artifacts logging and storage in AWS S3 (alberttorosyan)
-- Always set run name when initializing Run in lightning callback (martenlienen) 
+- Always set run name when initializing Run in lightning callback (martenlienen)
 
 ### Fixes
 - Allow the web UI to serve assets symlinked into the static files directory (martenlienen)
