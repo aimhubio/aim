@@ -1,9 +1,8 @@
-from typing import Iterator, Tuple, Union
-
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Iterator, Tuple, Union
 
 from aim.storage import utils
 from aim.storage.utils import interfaces
+
 
 if TYPE_CHECKING:
     from aim.storage.treeview import TreeView

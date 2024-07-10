@@ -1,6 +1,6 @@
-from aim.ext.notifier.notifier import Notifier, NotificationSendError
-from aim.ext.notifier.notifier_builder import NotifierBuilder
 from aim.ext.notifier.config import Config
+from aim.ext.notifier.notifier import NotificationSendError, Notifier
+from aim.ext.notifier.notifier_builder import NotifierBuilder
 from aim.ext.notifier.utils import get_config_path
 
 

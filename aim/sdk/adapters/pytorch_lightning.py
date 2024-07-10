@@ -1,24 +1,25 @@
-import os
 import importlib.util
-from typing import Any, Dict, Optional, Union
+import os
+
 from argparse import Namespace
+from typing import Any, Dict, Optional, Union
 
 import packaging.version
 
-if importlib.util.find_spec("lightning"):
+
+if importlib.util.find_spec('lightning'):
     import lightning.pytorch as pl
 
-    from lightning.pytorch.loggers.logger import (
-        Logger, rank_zero_experiment
-    )
-
+    from lightning.pytorch.loggers.logger import Logger, rank_zero_experiment
     from lightning.pytorch.utilities import rank_zero_only
-elif importlib.util.find_spec("pytorch_lightning"):
+elif importlib.util.find_spec('pytorch_lightning'):
     import pytorch_lightning as pl
 
-    if packaging.version.parse(pl.__version__) < packaging.version.parse("1.7"):
+    if packaging.version.parse(pl.__version__) < packaging.version.parse('1.7'):
         from pytorch_lightning.loggers.base import (
             LightningLoggerBase as Logger,
+        )
+        from pytorch_lightning.loggers.base import (
             rank_zero_experiment,
         )
     else:
@@ -35,26 +36,26 @@ else:
         'or \n pip install lightning'
     )
 
-from aim.sdk.run import Run
-from aim.sdk.repo import Repo
-from aim.sdk.utils import clean_repo_path, get_aim_repo_name
 from aim.ext.resource.configs import DEFAULT_SYSTEM_TRACKING_INT
+from aim.sdk.repo import Repo
+from aim.sdk.run import Run
+from aim.sdk.utils import clean_repo_path, get_aim_repo_name
 
 
 class AimLogger(Logger):
-    def __init__(self,
-                 repo: Optional[str] = None,
-                 experiment: Optional[str] = None,
-                 train_metric_prefix: Optional[str] = 'train_',
-                 val_metric_prefix: Optional[str] = 'val_',
-                 test_metric_prefix: Optional[str] = 'test_',
-                 system_tracking_interval: Optional[int]
-                 = DEFAULT_SYSTEM_TRACKING_INT,
-                 log_system_params: Optional[bool] = True,
-                 capture_terminal_logs: Optional[bool] = True,
-                 run_name: Optional[str] = None,
-                 run_hash: Optional[str] = None,
-                 ):
+    def __init__(
+        self,
+        repo: Optional[str] = None,
+        experiment: Optional[str] = None,
+        train_metric_prefix: Optional[str] = 'train_',
+        val_metric_prefix: Optional[str] = 'val_',
+        test_metric_prefix: Optional[str] = 'test_',
+        system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT,
+        log_system_params: Optional[bool] = True,
+        capture_terminal_logs: Optional[bool] = True,
+        run_name: Optional[str] = None,
+        run_hash: Optional[str] = None,
+    ):
         super().__init__()
 
         self._experiment_name = experiment
@@ -92,7 +93,7 @@ class AimLogger(Logger):
                     repo=self._repo_path,
                     system_tracking_interval=self._system_tracking_interval,
                     capture_terminal_logs=self._capture_terminal_logs,
-                    force_resume=True
+                    force_resume=True,
                 )
             else:
                 self._run = Run(
@@ -125,12 +126,10 @@ class AimLogger(Logger):
             self.experiment.set(('hparams', key), value, strict=False)
 
     @rank_zero_only
-    def log_metrics(self, metrics: Dict[str, float],
-                    step: Optional[int] = None):
-        assert rank_zero_only.rank == 0, \
-            'experiment tried to log from global_rank != 0'
+    def log_metrics(self, metrics: Dict[str, float], step: Optional[int] = None):
+        assert rank_zero_only.rank == 0, 'experiment tried to log from global_rank != 0'
 
-        metric_items: Dict[str: Any] = {k: v for k, v in metrics.items()}
+        metric_items: Dict[str:Any] = {k: v for k, v in metrics.items()}
 
         if 'epoch' in metric_items:
             epoch: int = metric_items.pop('epoch')
@@ -140,17 +139,14 @@ class AimLogger(Logger):
         for k, v in metric_items.items():
             name = k
             context = {}
-            if self._train_metric_prefix \
-                    and name.startswith(self._train_metric_prefix):
-                name = name[len(self._train_metric_prefix):]
+            if self._train_metric_prefix and name.startswith(self._train_metric_prefix):
+                name = name[len(self._train_metric_prefix) :]
                 context['subset'] = 'train'
-            elif self._test_metric_prefix \
-                    and name.startswith(self._test_metric_prefix):
-                name = name[len(self._test_metric_prefix):]
+            elif self._test_metric_prefix and name.startswith(self._test_metric_prefix):
+                name = name[len(self._test_metric_prefix) :]
                 context['subset'] = 'test'
-            elif self._val_metric_prefix \
-                    and name.startswith(self._val_metric_prefix):
-                name = name[len(self._val_metric_prefix):]
+            elif self._val_metric_prefix and name.startswith(self._val_metric_prefix):
+                name = name[len(self._val_metric_prefix) :]
                 context['subset'] = 'val'
             self.experiment.track(v, name=name, step=step, epoch=epoch, context=context)
 

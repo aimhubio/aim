@@ -1,5 +1,7 @@
 import tensorflow as tf
+
 from aim.tensorflow import AimCallback
+
 
 mnist = tf.keras.datasets.mnist
 

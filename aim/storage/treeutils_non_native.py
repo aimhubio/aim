@@ -16,9 +16,7 @@ def convert_to_native_object(
     *,
     strict: bool = True,
 ):
-    converters = [
-        from_omegaconf_config
-    ]
+    converters = [from_omegaconf_config]
     for func in converters:
         _obj = func(obj)
         if _obj is not None:

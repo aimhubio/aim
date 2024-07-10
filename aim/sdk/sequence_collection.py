@@ -1,18 +1,18 @@
 import logging
-from abc import abstractmethod
-from typing import Iterator
-from typing import TYPE_CHECKING
-from tqdm import tqdm
 
+from abc import abstractmethod
+from typing import TYPE_CHECKING, Iterator
+
+from aim.sdk.query_utils import RunView, SequenceView
 from aim.sdk.sequence import Sequence
 from aim.sdk.types import QueryReportMode
-from aim.sdk.query_utils import RunView, SequenceView
 from aim.storage.query import RestrictedPythonQuery
+from tqdm import tqdm
 
 
 if TYPE_CHECKING:
-    from aim.sdk.run import Run
     from aim.sdk.repo import Repo
+    from aim.sdk.run import Run
     from pandas import DataFrame
 
 logger = logging.getLogger(__name__)
@@ -38,21 +38,23 @@ class SequenceCollection:
         dfs = []
         if self._item == 'run':
             dfs = [
-                run.run.dataframe(include_props=include_props,
-                                  include_params=include_params)
+                run.run.dataframe(include_props=include_props, include_params=include_params)
                 for run in self.iter_runs()
             ]
         elif self._item == 'sequence':
             dfs = [
-                metric.dataframe(include_run=include_run,
-                                 include_name=include_name,
-                                 include_context=include_context,
-                                 only_last=only_last)
+                metric.dataframe(
+                    include_run=include_run,
+                    include_name=include_name,
+                    include_context=include_context,
+                    only_last=only_last,
+                )
                 for metric in self
             ]
         if not dfs:
             return None
         import pandas as pd
+
         return pd.concat(dfs)
 
     def __iter__(self) -> Iterator[Sequence]:
@@ -90,6 +92,7 @@ class SingleRunSequenceCollection(SequenceCollection):
          query (:obj:`str`, optional): Query expression. If specified, method `iter()` will return iterator for
             sequences matching the query. If not, method `iter()` will return iterator for run's all sequences.
     """
+
     def __init__(
         self,
         run: 'Run',
@@ -110,9 +113,7 @@ class SingleRunSequenceCollection(SequenceCollection):
         logger.warning('Run is already bound to the Collection')
         raise StopIteration
 
-    def iter(
-        self
-    ) -> Iterator[Sequence]:
+    def iter(self) -> Iterator[Sequence]:
         """"""
         allowed_dtypes = self.seq_cls.allowed_dtypes()
         seq_var = self.seq_cls.sequence_name()
@@ -170,9 +171,13 @@ class QuerySequenceCollection(SequenceCollection):
             progress_bar = tqdm(total=total_runs)
 
         for run in runs_iterator:
-            seq_collection = SingleRunSequenceCollection(run, self.seq_cls, self.query,
-                                                         runs_proxy_cache=self.runs_proxy_cache,
-                                                         timezone_offset=self._timezone_offset)
+            seq_collection = SingleRunSequenceCollection(
+                run,
+                self.seq_cls,
+                self.query,
+                runs_proxy_cache=self.runs_proxy_cache,
+                timezone_offset=self._timezone_offset,
+            )
             if self.report_mode == QueryReportMode.PROGRESS_TUPLE:
                 yield seq_collection, (runs_counter, total_runs)
             else:

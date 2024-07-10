@@ -1,9 +1,14 @@
 import evaluate
 import numpy as np
+
 from aim.hugging_face import AimCallback
 from datasets import load_dataset
-from transformers import (AutoModelForSequenceClassification, AutoTokenizer,
-                          Trainer, TrainingArguments)
+from transformers import (
+    AutoModelForSequenceClassification,
+    AutoTokenizer,
+    Trainer,
+    TrainingArguments,
+)
 
 
 def tokenize_function(examples):
@@ -28,13 +33,11 @@ small_eval_dataset = tokenized_datasets['test'].shuffle(seed=42).select(range(10
 
 metric = evaluate.load('accuracy')
 
-model = AutoModelForSequenceClassification.from_pretrained(
-    "bert-base-cased", num_labels=5
-)
+model = AutoModelForSequenceClassification.from_pretrained('bert-base-cased', num_labels=5)
 
-training_args = TrainingArguments(output_dir="test_trainer")
+training_args = TrainingArguments(output_dir='test_trainer')
 
-aim_callback = AimCallback(experiment="example_experiment")
+aim_callback = AimCallback(experiment='example_experiment')
 
 
 trainer = Trainer(

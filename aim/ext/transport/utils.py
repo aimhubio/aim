@@ -1,7 +1,8 @@
 import logging
 
 from functools import wraps
-from typing import Type, Optional
+from typing import Optional, Type
+
 
 logger = logging.getLogger(__name__)
 
@@ -18,5 +19,7 @@ def handle_exception(exc_type: Type[Exception], error_message: Optional[str] = N
                     raise RuntimeError(error_message)
                 else:  # silent mode
                     pass
+
         return wrapper
+
     return inner

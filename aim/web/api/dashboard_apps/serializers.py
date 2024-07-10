@@ -1,4 +1,5 @@
 import json
+
 from aim.web.api.dashboard_apps.models import ExploreState
 
 
@@ -11,7 +12,7 @@ def explore_state_response_serializer(es_object):
         'type': es_object.type,
         'updated_at': es_object.updated_at,
         'created_at': es_object.created_at,
-        'state': json.loads(es_object.state)
+        'state': json.loads(es_object.state),
     }
 
     return response_schema

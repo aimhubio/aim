@@ -1,6 +1,8 @@
 import paddle
+
 from aim.paddle import AimCallback
 from paddle.vision.transforms import ToTensor
+
 
 train_dataset = paddle.vision.datasets.MNIST(mode='train', transform=ToTensor())
 test_dataset = paddle.vision.datasets.MNIST(mode='test', transform=ToTensor())

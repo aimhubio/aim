@@ -6,9 +6,9 @@ from aim.storage.types import BLOB
 class Text(CustomObject):
     """Text object used to store text objects in Aim repository.
 
-        Args:
-             text (:obj:): str object used to construct `aim.Text`.
-        """
+    Args:
+         text (:obj:): str object used to construct `aim.Text`.
+    """
 
     AIM_NAME = 'aim.text'
 

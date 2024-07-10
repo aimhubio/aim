@@ -1,23 +1,21 @@
-import click
-import os
-import sys
 import logging
+import os
 import subprocess
+import sys
 
 from typing import Optional
 
+import click
+
 from aim.sdk.repo import Repo, RepoStatus
-from aim.web.configs import AIM_ENV_MODE_KEY
-from aim.web.configs import AIM_LOG_LEVEL_KEY
+from aim.web.configs import AIM_ENV_MODE_KEY, AIM_LOG_LEVEL_KEY
 
 
 class ShellCommandException(Exception):
     pass
 
 
-def exec_cmd(
-    cmd, throw_on_error=True, env=None, stream_output=False, cwd=None, cmd_stdin=None, **kwargs
-):
+def exec_cmd(cmd, throw_on_error=True, env=None, stream_output=False, cwd=None, cmd_stdin=None, **kwargs):
     """
     Runs a command as a child process.
     A convenience wrapper for running a command from a Python script.
@@ -37,13 +35,11 @@ def exec_cmd(
     if env:
         cmd_env.update(env)
     if stream_output:
-        child = subprocess.Popen(
-            cmd, env=cmd_env, cwd=cwd, universal_newlines=True, stdin=subprocess.PIPE, **kwargs
-        )
+        child = subprocess.Popen(cmd, env=cmd_env, cwd=cwd, universal_newlines=True, stdin=subprocess.PIPE, **kwargs)
         child.communicate(cmd_stdin)
         exit_code = child.wait()
         if throw_on_error and exit_code != 0:
-            raise ShellCommandException("Non-zero exitcode: %s" % (exit_code))
+            raise ShellCommandException('Non-zero exitcode: %s' % (exit_code))
         return exit_code
     else:
         child = subprocess.Popen(
@@ -54,13 +50,13 @@ def exec_cmd(
             stderr=subprocess.PIPE,
             cwd=cwd,
             universal_newlines=True,
-            **kwargs
+            **kwargs,
         )
         (stdout, stderr) = child.communicate(cmd_stdin)
         exit_code = child.wait()
         if throw_on_error and exit_code != 0:
             raise ShellCommandException(
-                "Non-zero exit code: %s\n\nSTDOUT:\n%s\n\nSTDERR:%s" % (exit_code, stdout, stderr)
+                'Non-zero exit code: %s\n\nSTDOUT:\n%s\n\nSTDERR:%s' % (exit_code, stdout, stderr)
             )
         return exit_code, stdout, stderr
 
@@ -75,6 +71,7 @@ def set_log_level(log_level):
 
 def build_db_upgrade_command():
     from aim import web
+
     web_dir = os.path.dirname(web.__file__)
     migrations_dir = os.path.join(web_dir, 'migrations')
     if os.getenv(AIM_ENV_MODE_KEY, 'prod') == 'prod':
@@ -84,23 +81,35 @@ def build_db_upgrade_command():
     return [sys.executable, '-m', 'alembic', '-c', ini_file, 'upgrade', 'head']
 
 
-def build_uvicorn_command(app,
-                          host='0.0.0.0',
-                          port=0,
-                          workers=1,
-                          uds=None,
-                          ssl_keyfile=None,
-                          ssl_certfile=None,
-                          log_level='warning',
-                          ):
-    cmd = [sys.executable, '-m', 'uvicorn', '--ws-max-size', '1073741824',
-           '--host', host, '--port', f'{port}',
-           '--workers', f'{workers}']
+def build_uvicorn_command(
+    app,
+    host='0.0.0.0',
+    port=0,
+    workers=1,
+    uds=None,
+    ssl_keyfile=None,
+    ssl_certfile=None,
+    log_level='warning',
+):
+    cmd = [
+        sys.executable,
+        '-m',
+        'uvicorn',
+        '--ws-max-size',
+        '1073741824',
+        '--host',
+        host,
+        '--port',
+        f'{port}',
+        '--workers',
+        f'{workers}',
+    ]
 
     if os.getenv(AIM_ENV_MODE_KEY, 'prod') == 'prod':
         log_level = log_level or 'error'
     else:
         import aim
+
         cmd += ['--reload', '--reload-dir', os.path.dirname(aim.__file__)]
         log_level = log_level or 'debug'
 
@@ -117,6 +126,7 @@ def build_uvicorn_command(app,
 
 def get_free_port_num():
     import socket
+
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.bind(('', 0))
     port_num = s.getsockname()[1]
@@ -130,7 +140,7 @@ def get_repo_instance(repo_path: str, yes: bool) -> Optional['Repo']:
         if yes:
             init_repo = True
         else:
-            init_repo = click.confirm(f'\'{repo_path}\' is not a valid Aim repository. Do you want to initialize it?')
+            init_repo = click.confirm(f"'{repo_path}' is not a valid Aim repository. Do you want to initialize it?")
         if not init_repo:
             click.echo('To initialize repo please run the following command:')
             click.secho('aim init', fg='yellow')
@@ -140,7 +150,7 @@ def get_repo_instance(repo_path: str, yes: bool) -> Optional['Repo']:
         if yes:
             reinit_repo = True
         else:
-            reinit_repo = click.confirm('Found non-empty \'.aim\' directory. Would you like to overwrite it?')
+            reinit_repo = click.confirm("Found non-empty '.aim' directory. Would you like to overwrite it?")
         if not reinit_repo:
             click.echo('To re-initialize repo please run the following command:')
             click.secho('aim init', fg='yellow')
