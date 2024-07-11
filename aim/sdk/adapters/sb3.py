@@ -28,7 +28,7 @@ class AimOutputFormat(KVWriter):
         step: int = 0,
     ) -> None:
         for (key, value), (_, excluded) in zip(sorted(key_values.items()), sorted(key_excluded.items())):
-            if excluded is not None:
+            if excluded is not None and 'aim' in excluded:
                 continue
 
             if isinstance(value, np.ScalarType):
