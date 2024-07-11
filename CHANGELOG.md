@@ -3,8 +3,11 @@
 ## Unreleased
 
 ### Enhancements:
-- Relax `numpy` version upper bound to include `numpy<3`
+- Relax `numpy` version upper bound to include `numpy<3` (judahrand)
 - Add a `-s`/`--skip-if-exists` option to the `init` command to avoid reinitializing a repo if one already exists (stevenjlm)
+
+### Fixes:
+- Fix SB3 callback metric tracking (mihran113)
 
 ## 3.22.0 Jun 20, 2024
 
