@@ -8,6 +8,7 @@
 
 ### Fixes:
 - Fix SB3 callback metric tracking (mihran113)
+- Prevent long waiting times when connecting to incorrect or unresponsive addresses (xuzhiy)
 
 ## 3.22.0 Jun 20, 2024
 

@@ -65,7 +65,7 @@ class Client:
     def protocol_probe(self):
         endpoint = f'http://{self.remote_path}/status/'
         try:
-            response = requests.get(endpoint, headers=self.request_headers)
+            response = requests.get(endpoint, headers=self.request_headers, timeout=10)
             if response.status_code == 200:
                 if response.url.startswith('https://'):
                     self._http_protocol = 'https://'
@@ -76,7 +76,7 @@ class Client:
 
         endpoint = f'https://{self.remote_path}/status/'
         try:
-            response = requests.get(endpoint, headers=self.request_headers)
+            response = requests.get(endpoint, headers=self.request_headers, timeout=10)
             if response.status_code == 200:
                 self._http_protocol = 'https://'
                 self._ws_protocol = 'wss://'
@@ -132,7 +132,7 @@ class Client:
 
     def client_heartbeat(self):
         endpoint = f'{self._http_protocol}{self._client_endpoint}/heartbeat/{self.uri}/'
-        response = requests.get(endpoint, headers=self.request_headers)
+        response = requests.get(endpoint, headers=self.request_headers, timeout=10)
         response_json = response.json()
         if response.status_code != 200:
             raise_exception(response_json.get('message'))
@@ -145,7 +145,7 @@ class Client:
     )
     def connect(self):
         endpoint = f'{self._http_protocol}{self._client_endpoint}/connect/{self.uri}/'
-        response = requests.get(endpoint, headers=self.request_headers)
+        response = requests.get(endpoint, headers=self.request_headers, timeout=10)
         response_json = response.json()
         if response.status_code != 200:
             raise_exception(response_json.get('message'))
@@ -154,7 +154,7 @@ class Client:
 
     def reconnect(self):
         endpoint = f'{self._http_protocol}{self._client_endpoint}/reconnect/{self.uri}/'
-        response = requests.get(endpoint, headers=self.request_headers)
+        response = requests.get(endpoint, headers=self.request_headers, timeout=10)
         response_json = response.json()
         if response.status_code != 200:
             raise_exception(response_json.get('message'))
@@ -170,7 +170,7 @@ class Client:
             self._ws.close()
 
         endpoint = f'{self._http_protocol}{self._client_endpoint}/disconnect/{self.uri}/'
-        response = requests.get(endpoint, headers=self.request_headers)
+        response = requests.get(endpoint, headers=self.request_headers, timeout=10)
         response_json = response.json()
         if response.status_code != 200:
             raise_exception(response_json.get('message'))
@@ -181,7 +181,7 @@ class Client:
         self,
     ):
         endpoint = f'{self._http_protocol}{self._client_endpoint}/get-version/'
-        response = requests.get(endpoint, headers=self.request_headers)
+        response = requests.get(endpoint, headers=self.request_headers, timeout=10)
         response_json = response.json()
         if response.status_code == 404:
             return '<3.19.0'
@@ -215,7 +215,7 @@ class Client:
         if queue_id != -1:
             self.get_queue().wait_for_finish()
 
-        response = requests.get(endpoint, headers=self.request_headers)
+        response = requests.get(endpoint, headers=self.request_headers, timeout=10)
         response_json = response.json()
         if response.status_code == 400:
             raise_exception(response_json.get('exception'))
