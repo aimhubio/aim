@@ -32,7 +32,7 @@ function Reports(): React.FunctionComponentElement<React.ReactNode> {
 
   return (
     <ErrorBoundary>
-      <section className='Bookmarks'>
+      <section className='Reports'>
         <AppBar title={pageTitlesEnum.REPORTS} className='Reports__appBar' />
         <ReportsContainer>
           <BusyLoaderWrapper isLoading={isLoading} height='100%'>
