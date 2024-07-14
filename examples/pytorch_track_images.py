@@ -13,8 +13,8 @@ from tqdm import tqdm
 # Initialize a new Run
 aim_run = Run()
 
-# Device configuration
-device = torch.device('cpu')
+# moving model to gpu if available
+device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
 # Hyper parameters
 num_epochs = 5
