@@ -1,13 +1,16 @@
-from fastapi import Depends, HTTPException
-from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
-from sqlalchemy.orm import Session
-
 from aim.web.api.db import get_session
-from aim.web.api.reports.serializers import report_response_serializer
 from aim.web.api.reports.models import Report
 from aim.web.api.reports.pydantic_models import (
-    ReportCreateIn, ReportUpdateIn, ReportOut, ReportListOut,
+    ReportCreateIn,
+    ReportListOut,
+    ReportOut,
+    ReportUpdateIn,
 )
+from aim.web.api.reports.serializers import report_response_serializer
+from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
+from fastapi import Depends, HTTPException
+from sqlalchemy.orm import Session
+
 
 reports_router = APIRouter()
 
@@ -21,8 +24,7 @@ async def reports_list_api(session: Session = Depends(get_session)):
 
 @reports_router.post('/', status_code=201, response_model=ReportOut)
 async def reports_post_api(request_data: ReportCreateIn, session: Session = Depends(get_session)):
-    report = Report(request_data.code, request_data.name,
-                    request_data.description)
+    report = Report(request_data.code, request_data.name, request_data.description)
     session.add(report)
     session.commit()
     return report_response_serializer(report)
@@ -37,8 +39,7 @@ async def reports_get_api(report_id: str, session: Session = Depends(get_session
 
 
 @reports_router.put('/{report_id}/', response_model=ReportOut)
-async def reports_put_api(report_id: str, request_data: ReportUpdateIn,
-                          session: Session = Depends(get_session)):
+async def reports_put_api(report_id: str, request_data: ReportUpdateIn, session: Session = Depends(get_session)):
     report = session.query(Report).filter(Report.uuid == report_id).first()
     if not report:
         raise HTTPException(status_code=404)

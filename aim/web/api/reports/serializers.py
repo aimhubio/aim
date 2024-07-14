@@ -11,7 +11,7 @@ def report_response_serializer(report_object):
         'name': report_object.name,
         'description': report_object.description,
         'updated_at': report_object.updated_at,
-        'created_at': report_object.created_at
+        'created_at': report_object.created_at,
     }
 
     return response
