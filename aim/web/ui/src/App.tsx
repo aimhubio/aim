@@ -20,6 +20,7 @@ import routes from 'routes/routes';
 import projectsModel from 'services/models/projects/projectsModel';
 
 import { IProjectsModelState } from './types/services/models/projects/projectsModel';
+import usePyodide from './services/pyodide/usePyodide';
 
 import './App.scss';
 
@@ -34,6 +35,8 @@ loader.config({
 
 function App(): React.FunctionComponentElement<React.ReactNode> {
   const projectsData = useModel<Partial<IProjectsModelState>>(projectsModel);
+  const { loadPyodide } = usePyodide();
+
   React.useEffect(() => {
     let timeoutId: number;
     const preloader = document.getElementById('preload-spinner');
@@ -43,6 +46,9 @@ function App(): React.FunctionComponentElement<React.ReactNode> {
         preloader.remove();
       }, 500);
     }
+
+    loadPyodide();
+
     return () => {
       window.clearTimeout(timeoutId);
     };
