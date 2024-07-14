@@ -9,13 +9,16 @@ def timing(iter_count=5):
             for _ in range(iter_count):
                 f(*args, **kwargs)
             te = time.time()
-            return (te-ts)/iter_count
+            return (te - ts) / iter_count
+
         return wrapper
+
     return inner
 
 
 def get_baseline_filename():
     import performance_tests
+
     performance_tests_path = os.path.dirname(performance_tests.__file__)
     baseline_filename = os.path.join(performance_tests_path, 'BASELINE')
     if os.environ.get('AIM_PERFORMANCE_TESTS_BASELINE'):

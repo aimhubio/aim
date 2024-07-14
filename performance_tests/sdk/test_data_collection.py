@@ -1,15 +1,8 @@
 from parameterized import parameterized
-
 from performance_tests.base import SDKTestBase
-from performance_tests.utils import (
-    get_baseline,
-    write_baseline
-)
 from performance_tests.sdk.queries import queries
-from performance_tests.sdk.utils import (
-    collect_runs_data,
-    collect_metrics_data
-)
+from performance_tests.sdk.utils import collect_metrics_data, collect_runs_data
+from performance_tests.utils import get_baseline, write_baseline
 
 
 class TestDataCollectionExecutionTime(SDKTestBase):

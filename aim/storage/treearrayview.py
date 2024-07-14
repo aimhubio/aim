@@ -1,17 +1,13 @@
+from typing import Any, Iterator, List, Tuple, Union
+
 import numpy as np
 
-from typing import Any, Iterator, List, Tuple, Union
-from aim.storage.treeview import TreeView
-
 from aim.storage.arrayview import ArrayView
+from aim.storage.treeview import TreeView
 
 
 class TreeArrayView(ArrayView):
-    def __init__(
-        self,
-        tree: 'TreeView',
-        dtype: Any = None
-    ):
+    def __init__(self, tree: 'TreeView', dtype: Any = None):
         self.tree = tree
         self.dtype = dtype
 
@@ -46,21 +42,14 @@ class TreeArrayView(ArrayView):
     def __bool__(self) -> bool:
         return bool(len(self))
 
-    def __getitem__(
-        self,
-        idx: Union[int, slice]
-    ) -> Any:
+    def __getitem__(self, idx: Union[int, slice]) -> Any:
         if isinstance(idx, slice):
             raise NotImplementedError
         return self.tree[idx]
 
     # TODO implement append
 
-    def __setitem__(
-        self,
-        idx: int,
-        val: Any
-    ):
+    def __setitem__(self, idx: int, val: Any):
         assert isinstance(idx, int)
         self.tree[idx] = val
 

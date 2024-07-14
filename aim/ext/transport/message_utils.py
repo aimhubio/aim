@@ -1,11 +1,12 @@
 import importlib
-import struct
 import json
+import struct
+
 from typing import Iterator, Tuple
 
 from aim.storage.object import CustomObject
+from aim.storage.treeutils import decode_tree, encode_tree  # noqa
 from aim.storage.types import BLOB
-from aim.storage.treeutils import encode_tree, decode_tree # noqa
 
 
 def pack_args(tree: Iterator[Tuple[bytes, bytes]]) -> bytes:

@@ -1,7 +1,7 @@
-from typing import Union, Tuple
+from typing import Tuple, Union
 
-from aim.sdk.sequence import MediaSequenceBase
 from aim.sdk.objects.image import Image
+from aim.sdk.sequence import MediaSequenceBase
 
 
 class Images(MediaSequenceBase):

@@ -1,14 +1,23 @@
 import click
+
+from aim.cli.configs import (
+    CONVERT,
+    INIT_NAME,
+    RUNS_NAME,
+    SERVER_NAME,
+    STORAGE,
+    UP_NAME,
+    VERSION_NAME,
+)
+from aim.cli.convert import commands as convert_commands
+from aim.cli.init import commands as init_commands
+from aim.cli.runs import commands as runs_commands
+from aim.cli.server import commands as server_commands
+from aim.cli.storage import commands as storage_commands
+from aim.cli.up import commands as up_commands
+from aim.cli.version import commands as version_commands
 from click import core
 
-from aim.cli.configs import *  # noqa F403
-from aim.cli.init import commands as init_commands
-from aim.cli.version import commands as version_commands
-from aim.cli.up import commands as up_commands
-from aim.cli.server import commands as server_commands
-from aim.cli.runs import commands as runs_commands
-from aim.cli.convert import commands as convert_commands
-from aim.cli.storage import commands as storage_commands
 
 core._verify_python3_env = lambda: None
 

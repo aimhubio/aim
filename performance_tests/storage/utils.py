@@ -2,7 +2,6 @@ from aim import Repo
 from aim.sdk.configs import get_aim_repo_name
 from aim.sdk.types import QueryReportMode
 from aim.storage.rockscontainer import RocksContainer
-
 from performance_tests.utils import timing
 
 
@@ -21,7 +20,7 @@ def random_access_metric_values(repo, query, density):
     for trace in traces.iter():
         values = trace.values
         values_length = len(values)
-        step = len(values)//density
+        step = len(values) // density
 
         accessed_values = []
         for i in range(0, values_length, step):

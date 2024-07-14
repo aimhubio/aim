@@ -1,11 +1,11 @@
 import uuid
-import sqlalchemy as sa
 
-from sqlalchemy.orm import relationship
-from sqlalchemy.ext.declarative import declared_attr
+import sqlalchemy as sa
 
 from aim.web.api.db import Base
 from aim.web.api.utils import datetime_now
+from sqlalchemy.ext.declarative import declared_attr
+from sqlalchemy.orm import relationship
 
 
 class AppMixin(object):
@@ -21,7 +21,7 @@ class AppMixin(object):
 
     @declared_attr
     def dashboard(cls):
-        return relationship("Dashboard")
+        return relationship('Dashboard')
 
 
 class ExploreState(AppMixin, Base):

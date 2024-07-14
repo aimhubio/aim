@@ -1,12 +1,11 @@
 import os
 
-from tests.base import TestBase
-
 from aim.sdk import Run
-from aim.storage.context import Context
 from aim.storage.containertreeview import ContainerTreeView
-from aim.storage.rockscontainer import RocksContainer
+from aim.storage.context import Context
 from aim.storage.hashing import hash_auto
+from aim.storage.rockscontainer import RocksContainer
+from tests.base import TestBase
 
 
 class TestRunContainerData(TestBase):
@@ -83,8 +82,9 @@ class TestRunContainerData(TestBase):
         self.assertEqual(3.0, metric_1_dict['last'])
         self.assertEqual('float', metric_1_dict['dtype'])
 
-        metric_1_dict = tree.view(('meta', 'chunks', run.hash, 'traces',
-                                   Context({'subset': 'train'}).idx, 'metric 1')).collect()
+        metric_1_dict = tree.view(
+            ('meta', 'chunks', run.hash, 'traces', Context({'subset': 'train'}).idx, 'metric 1')
+        ).collect()
         self.assertEqual(1.0, metric_1_dict['last'])
 
     def test_series_tree_values(self):

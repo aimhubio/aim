@@ -1,11 +1,11 @@
-from urllib.parse import urlparse
 from functools import lru_cache
-from typing import Type, Dict
+from typing import TYPE_CHECKING, Dict, Type
+from urllib.parse import urlparse
 
-from .s3_storage import S3ArtifactStorage
 from .filesystem_storage import FilesystemArtifactStorage
+from .s3_storage import S3ArtifactStorage
 
-from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from .artifact_storage import AbstractArtifactStorage
 
@@ -23,7 +23,7 @@ class ArtifactStorageRegistry:
     def get_storage(self, url: str) -> 'AbstractArtifactStorage':
         res = urlparse(url)
         if res.scheme not in self.registry:
-            raise ValueError(f'\'{res.scheme}\' is not supported artifact storage scheme.')
+            raise ValueError(f"'{res.scheme}' is not supported artifact storage scheme.")
         storage_cls = self.registry[res.scheme]
         return storage_cls(url)
 

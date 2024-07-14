@@ -1,8 +1,10 @@
 import logging
 import time
+
 from typing import List, Optional
 
 from aim.ext.notifier.base_notifier import BaseNotifier
+
 
 logger = logging.getLogger(__name__)
 
@@ -32,11 +34,12 @@ class Notifier(BaseNotifier):
                 except Exception as e:
                     attempt += 1
                     if attempt == self.MAX_RETRIES:
-                        logger.error(f'Notifier {sub} failed to send message "{message}". '
-                                     f'No retries left.')
+                        logger.error(f'Notifier {sub} failed to send message "{message}". ' f'No retries left.')
                         raise NotificationSendError(e)
                     else:
-                        logger.error(f'Notifier {sub} failed to send message "{message}". '
-                                     f'Retry attempts left {self.MAX_RETRIES - attempt} '
-                                     f'Next retry in {self.RETRY_DELAY} seconds.')
+                        logger.error(
+                            f'Notifier {sub} failed to send message "{message}". '
+                            f'Retry attempts left {self.MAX_RETRIES - attempt} '
+                            f'Next retry in {self.RETRY_DELAY} seconds.'
+                        )
                         time.sleep(self.RETRY_DELAY)

@@ -1,12 +1,11 @@
-import pytest
 import numpy as np
-from parameterized import parameterized
+import pytest
 
-from tests.base import PrefilledDataApiTestBase, ApiTestBase
-from tests.utils import decode_encoded_tree_stream
-
-from aim.storage.treeutils import decode_tree
 from aim.sdk.run import Run
+from aim.storage.treeutils import decode_tree
+from parameterized import parameterized
+from tests.base import ApiTestBase, PrefilledDataApiTestBase
+from tests.utils import decode_encoded_tree_stream
 
 
 class TestRunApi(PrefilledDataApiTestBase):
@@ -14,11 +13,10 @@ class TestRunApi(PrefilledDataApiTestBase):
         client = self.client
 
         query = self.isolated_query_patch('run["name"] == "Run # 3"')
-        response = client.get('/api/runs/search/run/', params={'q': query,
-                                                               'report_progress': False})
+        response = client.get('/api/runs/search/run/', params={'q': query, 'report_progress': False})
         self.assertEqual(200, response.status_code)
 
-        decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_bytes(chunk_size=512*1024)))
+        decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_bytes(chunk_size=512 * 1024)))
         self.assertEqual(1, len(decoded_response))
         for _, run in decoded_response.items():
             self.assertEqual(4, len(run['traces']['metric']))
@@ -29,8 +27,7 @@ class TestRunApi(PrefilledDataApiTestBase):
         client = self.client
 
         query = self.isolated_query_patch('run["name"] in ["Run # 2","Run # 3"]')
-        response = client.get('/api/runs/search/run/', params={'q': query,
-                                                               'limit': 1, 'report_progress': False})
+        response = client.get('/api/runs/search/run/', params={'q': query, 'limit': 1, 'report_progress': False})
         self.assertEqual(200, response.status_code)
 
         decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_bytes(chunk_size=1024 * 1024)))
@@ -42,10 +39,9 @@ class TestRunApi(PrefilledDataApiTestBase):
             self.assertEqual('Run # 3', run['props']['name'])
 
         query = self.isolated_query_patch('run["name"] in ["Run # 2","Run # 3"]')
-        response = client.get('/api/runs/search/run/', params={'q': query,
-                                                               'limit': 5,
-                                                               'offset': offset,
-                                                               'report_progress': False})
+        response = client.get(
+            '/api/runs/search/run/', params={'q': query, 'limit': 5, 'offset': offset, 'report_progress': False}
+        )
         self.assertEqual(200, response.status_code)
 
         decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_bytes(chunk_size=1024 * 1024)))
@@ -57,11 +53,10 @@ class TestRunApi(PrefilledDataApiTestBase):
         client = self.client
 
         query = self.isolated_query_patch('run["name"] == "Run # 3"')
-        response = client.get('/api/runs/search/metric/', params={'q': query,
-                                                                  'report_progress': False})
+        response = client.get('/api/runs/search/metric/', params={'q': query, 'report_progress': False})
         self.assertEqual(200, response.status_code)
 
-        decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_bytes(chunk_size=512*1024)))
+        decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_bytes(chunk_size=512 * 1024)))
         for run in decoded_response.values():
             for trace in run['traces']:
                 self.assertEqual([0, 0, 50], trace['slice'])
@@ -75,21 +70,23 @@ class TestRunApi(PrefilledDataApiTestBase):
                 self.assertAlmostEqual(0.99, array[49])
                 self.assertEqual(50, len(array))
 
-    @parameterized.expand([
-        (10,),
-        (2,),
-        (90,),
-    ])
+    @parameterized.expand(
+        [
+            (10,),
+            (2,),
+            (90,),
+        ]
+    )
     def test_search_metrics_api_custom_step(self, step_count):
         client = self.client
 
         query = self.isolated_query_patch('run["name"] == "Run # 3"')
-        response = client.get('/api/runs/search/metric/', params={'q': query,
-                                                                  'p': step_count,
-                                                                  'report_progress': False})
+        response = client.get(
+            '/api/runs/search/metric/', params={'q': query, 'p': step_count, 'report_progress': False}
+        )
         self.assertEqual(200, response.status_code)
 
-        decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_bytes(chunk_size=512*1024)))
+        decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_bytes(chunk_size=512 * 1024)))
         for run in decoded_response.values():
             for trace in run['traces']:
                 self.assertEqual([0, 0, step_count], trace['slice'])
@@ -109,19 +106,27 @@ class TestRunApi(PrefilledDataApiTestBase):
         for run, _ in zip(self.repo.iter_runs(), range(2)):
             run_hashes.append(run.hash)
 
-        response = client.post('/api/runs/search/metric/align/', json={
-            'align_by': 'accuracy',
-            'runs': [{
-                'run_id': run_hashes[0],
-                'traces': [{'name': 'loss', 'slice': [0, 0, 100], 'context': {'is_training': False}}]
-            }, {
-                'run_id': run_hashes[1],
-                'traces': [{'name': 'loss', 'slice': [0, 0, 100], 'context': {'is_training': True, 'subset': 'train'}}]
-            }]
-        })
+        response = client.post(
+            '/api/runs/search/metric/align/',
+            json={
+                'align_by': 'accuracy',
+                'runs': [
+                    {
+                        'run_id': run_hashes[0],
+                        'traces': [{'name': 'loss', 'slice': [0, 0, 100], 'context': {'is_training': False}}],
+                    },
+                    {
+                        'run_id': run_hashes[1],
+                        'traces': [
+                            {'name': 'loss', 'slice': [0, 0, 100], 'context': {'is_training': True, 'subset': 'train'}}
+                        ],
+                    },
+                ],
+            },
+        )
         self.assertEqual(200, response.status_code)
 
-        decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_bytes(chunk_size=512*1024)))
+        decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_bytes(chunk_size=512 * 1024)))
         self.assertEqual(2, len(decoded_response))
         self.assertListEqual(run_hashes, list(decoded_response.keys()))
         self.assertEqual([], decoded_response[run_hashes[1]])
@@ -130,23 +135,37 @@ class TestRunApi(PrefilledDataApiTestBase):
         self.assertDictEqual({'is_training': False}, traces['context'])
         self.assertEqual(99, traces['x_axis_values']['shape'])
 
-    @pytest.mark.skip(reason="low priority. requires more investigation.")
+    @pytest.mark.skip(reason='low priority. requires more investigation.')
     def test_search_aligned_metrics_api_with_wrong_context(self):
         client = self.client
         run_hashes = []
         for run, _ in zip(self.repo.iter_runs(), range(2)):
             run_hashes.append(run.hash)
 
-        response = client.post('/api/runs/search/metric/align/', json={
-            'align_by': 'accuracy',
-            'runs': [{
-                'run_id': run_hashes[0],
-                'traces': [{'name': 'loss', 'slice': [0, 20, 1], 'context': {'is_training': True, 'subset': 'training'}}]
-            }, {
-                'run_id': run_hashes[1],
-                'traces': [{'name': 'loss', 'slice': [0, 10, 1], 'context': {'is_training': True, 'subset': 'val'}}]
-            }]
-        })
+        response = client.post(
+            '/api/runs/search/metric/align/',
+            json={
+                'align_by': 'accuracy',
+                'runs': [
+                    {
+                        'run_id': run_hashes[0],
+                        'traces': [
+                            {
+                                'name': 'loss',
+                                'slice': [0, 20, 1],
+                                'context': {'is_training': True, 'subset': 'training'},
+                            }
+                        ],
+                    },
+                    {
+                        'run_id': run_hashes[1],
+                        'traces': [
+                            {'name': 'loss', 'slice': [0, 10, 1], 'context': {'is_training': True, 'subset': 'val'}}
+                        ],
+                    },
+                ],
+            },
+        )
         self.assertEqual(200, response.status_code)
         decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_bytes(chunk_size=1024 * 1024)))
         self.assertEqual(2, len(decoded_response))
@@ -183,7 +202,7 @@ class TestRunApi(PrefilledDataApiTestBase):
         client = self.client
         requested_traces = [
             {'name': 'accuracy', 'context': {'is_training': False}},
-            {'name': 'loss', 'context': {'is_training': True, 'subset': 'train'}}
+            {'name': 'loss', 'context': {'is_training': True, 'subset': 'train'}},
         ]
         response = client.post(f'/api/runs/{run.hash}/metric/get-batch/', json=requested_traces)
         self.assertEqual(200, response.status_code)
@@ -240,4 +259,3 @@ class TestRunInfoApi(ApiTestBase):
 
         self.assertEqual(1, len(run_props['tags']))
         self.assertEqual('Long description for tag', run_props['tags'][0]['description'])
-

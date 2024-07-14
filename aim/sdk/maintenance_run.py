@@ -1,9 +1,10 @@
 import logging
 
-from typing import Union, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional, Union
 
-from aim.sdk.base_run import BaseRun
 from aim.ext.cleanup import AutoClean
+from aim.sdk.base_run import BaseRun
+
 
 if TYPE_CHECKING:
     from aim.sdk import Repo

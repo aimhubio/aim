@@ -1,7 +1,8 @@
-import threading
-import queue
 import atexit
 import logging
+import queue
+import threading
+
 
 logger = logging.getLogger(__name__)
 
@@ -54,8 +55,10 @@ class TaskQueue(object):
         self._stopped = True
         pending_task_count = self._queue.qsize()
         if pending_task_count:
-            logger.warning(f'Processing {pending_task_count} pending tasks in queue \'{self.name}\'... '
-                           f'Please do not kill the process.')
+            logger.warning(
+                f"Processing {pending_task_count} pending tasks in queue '{self.name}'... "
+                f'Please do not kill the process.'
+            )
             self._queue.join()
         self._shutdown = True
         logger.debug('No pending tasks left.')

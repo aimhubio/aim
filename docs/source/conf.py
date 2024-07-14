@@ -10,10 +10,13 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-import os
-import sys
 import glob
+import os
+import shutil
+import sys
+
 from importlib.util import module_from_spec, spec_from_file_location
+
 
 sys.path.insert(0, os.path.abspath('..'))
 
@@ -23,9 +26,7 @@ PATH_ROOT = os.path.join(PATH_HERE, '..', '..')
 
 FOLDER_GENERATED = 'generated'
 
-spec = spec_from_file_location(
-    'aim/__about__.py', os.path.join(PATH_ROOT, 'aim', '__about__.py')
-)
+spec = spec_from_file_location('aim/__about__.py', os.path.join(PATH_ROOT, 'aim', '__about__.py'))
 about = module_from_spec(spec)
 spec.loader.exec_module(about)
 
@@ -40,11 +41,12 @@ release = about.__version__
 
 # -- Project documents -------------------------------------------------------
 
+
 def _transform_changelog(path_in: str, path_out: str) -> None:
     with open(path_in) as fp:
         chlog_lines = fp.readlines()
     # enrich short subsub-titles to be unique
-    chlog_ver = ""
+    chlog_ver = ''
     for i, ln in enumerate(chlog_lines):
         if ln.startswith('## '):
             chlog_ver = ln[2:].split('-')[0].strip()
@@ -67,13 +69,7 @@ _transform_changelog(os.path.join(PATH_ROOT, 'CHANGELOG.md'), os.path.join(PATH_
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = [
-    'sphinx.ext.autodoc',
-    'sphinx.ext.viewcode',
-    'sphinx.ext.napoleon',
-    'sphinx_copybutton',
-    'm2r2'
-]
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.viewcode', 'sphinx.ext.napoleon', 'sphinx_copybutton', 'm2r2']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

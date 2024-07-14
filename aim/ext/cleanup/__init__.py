@@ -1,12 +1,12 @@
-import time
-from abc import abstractmethod
-
 import atexit
-import weakref
 import logging
 import threading
+import time
+import weakref
 
-from typing import Generic, Tuple, TypeVar, Dict
+from abc import abstractmethod
+from typing import Dict, Generic, Tuple, TypeVar
+
 
 T = TypeVar('T')
 
@@ -19,6 +19,7 @@ class RobustExec(threading.Thread):
     Users very often Ctrl-C to stop the program multiple times which leaves
     program no chance to clean up.
     """
+
     def __init__(self, *args, stop_signal, **kwargs):
         super().__init__(*args, **kwargs)
         self.stop_signal = stop_signal
@@ -37,9 +38,7 @@ class RobustExec(threading.Thread):
 class AutoClean(Generic[T]):
     PRIORITY = 10
     _registered_with_atexit = False
-    _finalizers: Dict[
-        T, Tuple[int, weakref.finalize]
-    ] = weakref.WeakKeyDictionary()
+    _finalizers: Dict[T, Tuple[int, weakref.finalize]] = weakref.WeakKeyDictionary()
 
     stop_signal = threading.Event()
 
