@@ -118,8 +118,7 @@ for epoch in range(num_epochs):
 
 
 # Test the model
-model.eval()
-with torch.no_grad():
+with torch.inference_mode():
     correct = 0
     total = 0
     for images, labels in test_loader:
