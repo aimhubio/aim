@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 3.23.0 Jul 15, 2024
 
 ### Enhancements:
 - Relax `numpy` version upper bound to include `numpy<3` (judahrand)
