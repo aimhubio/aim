@@ -62,7 +62,13 @@ function Board({
         const code = editorValue.current
           .replaceAll('from aim', '# from aim')
           .replaceAll('import aim', '# import aim')
-          .replaceAll('= Repo.filter', '= await Repo.filter');
+          .replaceAll('= repo.filter', '= await repo.filter')
+          .replaceAll('= repo.fetch_metrics', '= await repo.fetch_metrics')
+          .replaceAll('= repo.fetch_images', '= await repo.fetch_images')
+          .replaceAll('= repo.fetch_texts', '= await repo.fetch_texts')
+          .replaceAll('= repo.fetch_audios', '= await repo.fetch_audios')
+          .replaceAll('= repo.fetch_figures', '= await repo.fetch_figures')
+          .replaceAll('= repo.fetch_runs', '= await repo.fetch_runs');
 
         const packagesListProxy = pyodide?.pyodide_py.code.find_imports(code);
         const packagesList = packagesListProxy.toJs();

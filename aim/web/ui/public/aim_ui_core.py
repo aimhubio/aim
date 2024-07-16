@@ -57,10 +57,79 @@ def memoize(func):
     return wrapper
 
 
-class Repo:
+class repo:
     @classmethod
     @memoize_async
-    async def filter(self, type, query=""):
+    async def fetch_metrics(self, query=""):
+        type = 'metric'
+        data = await search(type, query)
+        data = create_proxy(data.to_py())
+        items = []
+        i = 0
+        for item in data:
+            d = item
+            d["type"] = type
+            d["key"] = i
+            i = i + 1
+            items.append(d)
+        data.destroy()
+        return items
+
+    @classmethod
+    @memoize_async
+    async def fetch_images(self, query=""):
+        type = 'images'
+        data = await search(type, query)
+        data = create_proxy(data.to_py())
+        items = []
+        i = 0
+        for item in data:
+            d = item
+            d["type"] = type
+            d["key"] = i
+            i = i + 1
+            items.append(d)
+        data.destroy()
+        return items
+
+    @classmethod
+    @memoize_async
+    async def fetch_audios(self, query=""):
+        type = 'audios'
+        data = await search(type, query)
+        data = create_proxy(data.to_py())
+        items = []
+        i = 0
+        for item in data:
+            d = item
+            d["type"] = type
+            d["key"] = i
+            i = i + 1
+            items.append(d)
+        data.destroy()
+        return items
+
+    @classmethod
+    @memoize_async
+    async def fetch_texts(self, query=""):
+        type = 'texts'
+        data = await search(type, query)
+        data = create_proxy(data.to_py())
+        items = []
+        i = 0
+        for item in data:
+            d = item
+            d["type"] = type
+            d["key"] = i
+            i = i + 1
+            items.append(d)
+        data.destroy()
+        return items
+
+    @classmethod
+    @memoize_async
+    async def fetch_figures(self, query=""):
+        type = 'figures'
         data = await search(type, query)
         data = create_proxy(data.to_py())
         items = []
@@ -366,7 +435,7 @@ class Component(Element):
 
 
 class LineChart(Component):
-    def __init__(self, data, x, y, color=[], stroke_style=[], options={}, key=None):
+    def __init__(self, data, x='steps', y='values', color=[], stroke_style=[], options={}, key=None):
         component_type = "LineChart"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type)
