@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+### Enhancements:
+- Add ability to create reports (mihran113)
+
 ## 3.23.0 Jul 15, 2024
 
 ### Enhancements:
