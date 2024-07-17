@@ -13,8 +13,8 @@ from tqdm import tqdm
 # Initialize a new Run
 aim_run = Run()
 
-# Device configuration
-device = torch.device('cpu')
+# moving model to gpu if available
+device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
 # Hyper parameters
 num_epochs = 5
@@ -122,8 +122,7 @@ for epoch in range(num_epochs):
 
 
 # Test the model
-model.eval()
-with torch.no_grad():
+with torch.inference_mode():
     correct = 0
     total = 0
     for images, labels in tqdm(test_loader, total=len(test_loader)):
