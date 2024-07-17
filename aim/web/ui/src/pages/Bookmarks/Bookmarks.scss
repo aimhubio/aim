@@ -3,7 +3,6 @@
 .Bookmarks {
   height: 100%;
   &__appBar {
-    position: fixed;
     width: 100%;
   }
   &__title {
@@ -11,8 +10,11 @@
     padding: 0;
     color: $primary-color;
   }
-
+  &__container {
+    overflow-y: auto;
+    height: calc(100vh - 40px);  // Subtract the height of the appBar
+  }
   &__list {
-    padding: 4rem 1.5em 1.5em;
+    padding: 2rem 1.5em 2em;
   }
 }
