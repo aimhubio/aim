@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased
+- Fix bug in bookmark page where it was not scrollable if there was too many bookmarks
+
 ## 3.23.0 Jul 15, 2024
 
 ### Enhancements:

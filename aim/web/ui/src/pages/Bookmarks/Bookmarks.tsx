@@ -29,25 +29,27 @@ function Bookmarks({
           title={pageTitlesEnum.BOOKMARKS}
           className='Bookmarks__appBar'
         />
-        <div className='Bookmarks__list container'>
-          <BusyLoaderWrapper isLoading={isLoading} height={'100%'}>
-            {data?.length > 0 &&
-              data.map((bookmark) => (
-                <BookmarkCard
-                  key={bookmark.id}
-                  {...bookmark}
-                  onBookmarkDelete={onBookmarkDelete}
-                />
-              ))}
-          </BusyLoaderWrapper>
-          {!isLoading && data?.length === 0 ? (
-            <IllustrationBlock
-              size='xLarge'
-              page='bookmarks'
-              type={IllustrationsEnum.EmptyBookmarks}
-              title={'No Bookmarks Yet'}
-            />
-          ) : null}
+        <div className='Bookmarks__container'>
+          <div className='Bookmarks__list'>
+            <BusyLoaderWrapper isLoading={isLoading} height={'100%'}>
+              {data?.length > 0 &&
+                data.map((bookmark) => (
+                  <BookmarkCard
+                    key={bookmark.id}
+                    {...bookmark}
+                    onBookmarkDelete={onBookmarkDelete}
+                  />
+                ))}
+            </BusyLoaderWrapper>
+            {!isLoading && data?.length === 0 ? (
+              <IllustrationBlock
+                size='xLarge'
+                page='bookmarks'
+                type={IllustrationsEnum.EmptyBookmarks}
+                title={'No Bookmarks Yet'}
+              />
+            ) : null}
+          </div>
         </div>
       </section>
       {notifyData?.length > 0 && (
