@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- Fix bug in bookmark page where it was not scrollable if there was too many bookmarks
 
 ### Enhancements:
 - Relax `numpy` version upper bound to include `numpy<3`
