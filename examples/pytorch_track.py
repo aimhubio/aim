@@ -10,7 +10,9 @@ from aim.pytorch import track_gradients_dists, track_params_dists
 
 
 # Initialize a new Run
-aim_run = Run()
+aim_run = Run(capture_terminal_logs=True)
+
+logging.getLogger()
 
 # moving model to gpu if available
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -18,8 +20,8 @@ device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 # Hyper parameters
 num_epochs = 5
 num_classes = 10
-batch_size = 16
-learning_rate = 0.01
+batch_size = 32
+learning_rate = 0.001
 
 # aim - Track hyper parameters
 aim_run['hparams'] = {
@@ -40,27 +42,20 @@ train_loader = torch.utils.data.DataLoader(dataset=train_dataset, batch_size=bat
 test_loader = torch.utils.data.DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=False)
 
 
-# Convolutional neural network (two convolutional layers)
+# Convolutional neural network (one convolutional layer)
 class ConvNet(nn.Module):
     def __init__(self, num_classes=10):
         super(ConvNet, self).__init__()
         self.layer1 = nn.Sequential(
-            nn.Conv2d(1, 16, kernel_size=5, stride=1, padding=2),
-            nn.BatchNorm2d(16),
+            nn.Conv2d(1, 2, kernel_size=5, stride=1, padding=2),
+            nn.BatchNorm2d(2),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2),
         )
-        self.layer2 = nn.Sequential(
-            nn.Conv2d(16, 32, kernel_size=5, stride=1, padding=2),
-            nn.BatchNorm2d(32),
-            nn.ReLU(),
-            nn.MaxPool2d(kernel_size=2, stride=2),
-        )
-        self.fc = nn.Linear(7 * 7 * 32, num_classes)
+        self.fc = nn.Linear(2 * 14 * 14, num_classes)
 
     def forward(self, x):
         out = self.layer1(x)
-        out = self.layer2(out)
         out = out.reshape(out.size(0), -1)
         out = self.fc(out)
         return out
@@ -88,21 +83,19 @@ for epoch in range(num_epochs):
         loss.backward()
         optimizer.step()
 
-        if i % 30 == 0:
-            logging.info(
-                'Epoch [{}/{}], Step [{}/{}], ' 'Loss: {:.4f}'.format(
-                    epoch + 1, num_epochs, i + 1, total_step, loss.item()
-                )
+        
+        aim_run.log_info(
+            f"Epoch [{epoch+1}/{num_epochs}], Step [{i+1}/{total_step}], Train Loss: {loss.item():.4f}"
             )
 
-            # aim - Track model loss function
-            correct = 0
-            total = 0
-            _, predicted = torch.max(outputs.data, 1)
-            total += labels.size(0)
-            correct += (predicted == labels).sum().item()
-            acc = 100 * correct / total
+        correct = 0
+        total = 0
+        _, predicted = torch.max(outputs.data, 1)
+        total += labels.size(0)
+        correct += (predicted == labels).sum().item()
+        acc = 100 * correct / total
 
+        if i % 30 == 0: 
             # aim - Track metrics
             items = {'accuracy': acc, 'loss': loss}
             aim_run.track(items, epoch=epoch, context={'subset': 'train'})
@@ -111,22 +104,29 @@ for epoch in range(num_epochs):
             track_params_dists(model, aim_run)
             track_gradients_dists(model, aim_run)
 
-            # TODO: Do actual validation
-            if i % 300 == 0:
-                aim_run.track(loss.item(), name='loss', epoch=epoch, context={'subset': 'val'})
-                aim_run.track(acc, name='accuracy', epoch=epoch, context={'subset': 'val'})
-
-
-# Test the model
-with torch.inference_mode():
-    correct = 0
-    total = 0
-    for images, labels in test_loader:
+    model.eval()
+    for i, (images, labels) in enumerate(test_loader):
         images = images.to(device)
         labels = labels.to(device)
+
+        # Forward pass
         outputs = model(images)
+        loss = criterion(outputs, labels)
+        
+        logging.info(
+            f"Epoch [{epoch+1}/{num_epochs}], Step [{i+1}/{total_step}], Valid Loss: {loss.item():.4f}"
+            )
+
+        correct = 0
+        total = 0
         _, predicted = torch.max(outputs.data, 1)
         total += labels.size(0)
         correct += (predicted == labels).sum().item()
+        acc = 100 * correct / total
 
-    logging.info('Test Accuracy: {} %'.format(100 * correct / total))
+        if i % 30 == 0:
+            # aim - Track metrics
+            items = {'accuracy': acc, 'loss': loss}
+            aim_run.track(items, epoch=epoch, context={'subset': 'test'})
+
+logging.info('Training finished')
