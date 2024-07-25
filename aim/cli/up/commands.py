@@ -17,6 +17,7 @@ from aim.web.configs import (
     AIM_ENV_MODE_KEY,
     AIM_PROFILER_KEY,
     AIM_PROXY_URL,
+    AIM_READ_ONLY_UI,
     AIM_TF_LOGS_PATH_KEY,
     AIM_UI_BASE_PATH,
     AIM_UI_DEFAULT_HOST,
@@ -43,7 +44,23 @@ from aim.web.configs import (
 @click.option('--profiler', is_flag=True, default=False)
 @click.option('--log-level', required=False, default='', type=str)
 @click.option('-y', '--yes', is_flag=True, help='Automatically confirm prompt')
-def up(dev, host, port, workers, uds, repo, tf_logs, ssl_keyfile, ssl_certfile, base_path, profiler, log_level, yes):
+@click.option('--read-only', is_flag=True, default=False)
+def up(
+    dev,
+    host,
+    port,
+    workers,
+    uds,
+    repo,
+    tf_logs,
+    ssl_keyfile,
+    ssl_certfile,
+    base_path,
+    profiler,
+    log_level,
+    yes,
+    read_only,
+):
     if dev:
         os.environ[AIM_ENV_MODE_KEY] = 'dev'
         log_level = log_level or 'debug'
@@ -71,6 +88,9 @@ def up(dev, host, port, workers, uds, repo, tf_logs, ssl_keyfile, ssl_certfile, 
 
     if tf_logs:
         os.environ[AIM_TF_LOGS_PATH_KEY] = tf_logs
+
+    if read_only:
+        os.environ[AIM_READ_ONLY_UI] = '1'
 
     try:
         db_cmd = build_db_upgrade_command()
