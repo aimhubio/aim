@@ -10,6 +10,6 @@ tensorboard==1.13.1
 tensorflow==2.5.3
 tensorflow-estimator==1.13.0
 termcolor==1.1.0
-torch==1.2.0
+torch==2.2.0
 torchvision==0.4.0
 wandb==0.13.1
