@@ -29,10 +29,10 @@ def datetime_now():
 
 def check_read_only(func):
     @wraps(func)
-    def wrapper(*args, **kwargs):
+    async def wrapper(*args, **kwargs):
         if os.environ.get(AIM_READ_ONLY_UI):
             raise HTTPException(status_code=403)
-        return func(*args, **kwargs)
+        return await func(*args, **kwargs)
 
     return wrapper
 
