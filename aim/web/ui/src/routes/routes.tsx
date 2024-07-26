@@ -57,6 +57,14 @@ const TextExplorer = React.lazy(
   () => import(/* webpackChunkName: "text" */ 'pages/TextExplorer'),
 );
 
+const Reports = React.lazy(
+  () => import(/* webpackChunkName: "Reports" */ 'pages/Reports'),
+);
+
+const Report = React.lazy(
+  () => import(/* webpackChunkName: "Report" */ 'pages/Report/Report'),
+);
+
 export interface IRoute {
   path: PathEnum;
   component:
@@ -69,7 +77,7 @@ export interface IRoute {
   icon?: string | null;
 }
 
-const routes = {
+const routes: { [key: string]: any } = {
   DASHBOARD: {
     path: PathEnum.Dashboard,
     component: Dashboard,
@@ -225,6 +233,31 @@ const routes = {
     displayName: 'Metrics_v2',
     isExact: true,
     title: pageTitlesEnum.METRICS_EXPLORER_V2,
+  },
+  REPORTS: {
+    path: PathEnum.Reports,
+    component: Reports,
+    showInSidebar: true,
+    displayName: 'Reports',
+    icon: 'reports',
+    isExact: true,
+    title: pageTitlesEnum.REPORTS,
+  },
+  REPORT: {
+    path: PathEnum.Report,
+    component: Report,
+    showInSidebar: false,
+    displayName: 'Report',
+    isExact: true,
+    title: pageTitlesEnum.REPORT,
+  },
+  REPORT_EDIT: {
+    path: PathEnum.Report_Edit,
+    component: Report,
+    showInSidebar: false,
+    displayName: 'Report',
+    isExact: true,
+    title: pageTitlesEnum.REPORT,
   },
 };
 

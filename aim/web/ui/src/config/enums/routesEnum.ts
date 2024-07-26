@@ -18,6 +18,12 @@ enum PathEnum {
   Text_Explorer = '/text',
   New_Figures_Explorer = '/new-fig',
   Metrics_Explorer = '/metrics_v2',
+  Boards = '/boards',
+  Board = '/boards/:boardId',
+  Board_Edit = '/boards/:boardId/edit',
+  Reports = '/reports',
+  Report = '/reports/:reportId',
+  Report_Edit = '/reports/:reportId/edit',
 }
 
 export { PathEnum };

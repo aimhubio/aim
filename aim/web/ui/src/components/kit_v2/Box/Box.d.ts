@@ -163,4 +163,11 @@ interface IBoxCssProps {
    * <Box color="red" />
    */
   color?: CSS['color'];
+  /**
+   * @description gap prop
+   * @optional
+   * @example
+   * <Box gap="10px" />
+   */
+  gap?: CSS['gap'];
 }

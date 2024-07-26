@@ -1,5 +1,21 @@
 export interface IControlsButtonProps {
   /**
+   * @description The button color
+   * @example 'neutral'
+   * @default 'neutral'
+   */
+  color?:
+    | 'neutral'
+    | 'key'
+    | 'peach'
+    | 'tumbleweed'
+    | 'love'
+    | 'cobalt'
+    | 'skyfall'
+    | 'robin'
+    | 'leek'
+    | 'lime';
+  /**
    * @description Popover open state
    * @example false
    */

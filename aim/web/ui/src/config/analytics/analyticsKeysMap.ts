@@ -358,6 +358,12 @@ export const ANALYTICS_EVENT_KEYS = {
       compareSelectedRuns: '[MetricsExplorer][Table] Compare selected runs',
     },
   },
+  reports: {
+    pageView: '[ReportsPage] Page view',
+  },
+  report: {
+    pageView: '[ReportPage] Page view',
+  },
   sidebar: {
     discord: '[Sidebar] Click on discord community link',
     docs: '[Sidebar] Click on docs link',

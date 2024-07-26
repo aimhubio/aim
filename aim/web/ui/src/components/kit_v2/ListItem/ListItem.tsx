@@ -23,6 +23,7 @@ const ListItem = React.forwardRef<
       children,
       leftNode,
       rightNode,
+      disabled,
       css = {},
       onClick,
       ...rest
@@ -33,6 +34,7 @@ const ListItem = React.forwardRef<
       <Container
         {...rest}
         onClick={onClick ? onClick : () => null}
+        disabled={disabled}
         size={size}
         css={css}
         ref={forwardedRef}

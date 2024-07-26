@@ -1,8 +1,10 @@
 import React from 'react';
 
+import { IconX } from '@tabler/icons-react';
+
 import { ColorPaletteType } from 'config/stitches/types';
 
-import Button from '../Button';
+import Button, { IButtonProps } from '../Button';
 import IconButton from '../IconButton';
 import Box from '../Box';
 import Icon from '../Icon';
@@ -75,7 +77,7 @@ const ToastItem = React.forwardRef<typeof ToastRoot, IToastProps>(
           <ToastAction className='ToastAction'>
             {onUndo ? (
               <Button
-                color={status as ColorPaletteType}
+                color={status as IButtonProps['color']}
                 css={{ ml: '$4' }}
                 onClick={() => onUndo(id)}
                 data-testid='undo-toast'
@@ -87,12 +89,10 @@ const ToastItem = React.forwardRef<typeof ToastRoot, IToastProps>(
               <IconButton
                 css={{ ml: '$4' }}
                 color={status as ColorPaletteType}
-                icon='close'
+                icon={<IconX />}
                 data-testid='delete-toast'
                 onClick={() => onDelete(id)}
-              >
-                Delete
-              </IconButton>
+              />
             ) : null}
           </ToastAction>
         ) : null}

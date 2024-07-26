@@ -13,7 +13,7 @@ const LeftIcon = styled(Icon, {
   ai: 'center',
   jc: 'center',
   size: '$sizes$1',
-  color: '$secondary50',
+  color: '$text-default-text-muted',
   pointerEvents: 'none',
   variants: {
     inputSize: {
@@ -29,12 +29,12 @@ const LeftIcon = styled(Icon, {
     },
     focused: {
       true: {
-        color: '$textPrimary !important',
+        color: '$icon-default-primary-deep !important',
       },
     },
     disabled: {
       true: {
-        color: '$secondary30',
+        color: '$icon-disable-text-pastel !important',
       },
     },
   },
@@ -46,7 +46,7 @@ const InputWrapper = styled('div', {
   ai: 'center',
   '&:hover': {
     [`& ${LeftIcon}`]: {
-      color: '$secondary100',
+      color: '$text-default-text-muted',
     },
   },
   variants: {
@@ -54,7 +54,7 @@ const InputWrapper = styled('div', {
       true: {
         cursor: 'not-allowed',
         pointerEvents: 'none',
-        color: '$secondary30',
+        color: '$text-disable-text-subtle',
       },
     },
   },
@@ -65,19 +65,19 @@ const InputContainer: any = styled('input', {
   outline: 'none',
   height: '100%',
   width: '100%',
-  color: '$textPrimary',
-  bs: '0px 0px 0px 1px $colors$secondary50',
+  color: '$text-default-text-deep',
+  bs: 'inset 0px 0px 0px 1px $colors$border-default-neutral-gentle',
   br: '$3',
   fontSize: '$3',
   p: 0,
   '&::placeholder': {
-    color: '$textPrimary50',
+    color: '$text-default-text-muted',
   },
   '&:hover': {
-    bs: '0px 0px 0px 1px $colors$secondary100',
+    bs: 'inset 0px 0px 0px 1px $colors$border-hover-neutral-soft',
   },
   '&:focus': {
-    bs: '0px 0px 0px 1px $colors$primary100',
+    bs: 'inset 0px 0px 0px 1px $colors$border-focus-primary-soft',
   },
   variants: {
     leftIcon: { true: {} },
@@ -100,12 +100,13 @@ const InputContainer: any = styled('input', {
     },
     error: {
       true: {
-        bs: '0px 0px 0px 1px $colors$danger100 !important',
+        bs: 'inset 0px 0px 0px 1px $colors$border-default-danger-plain !important',
       },
     },
     disabled: {
       true: {
-        color: '$textPrimary50',
+        color: '$text-disable-text-subtle',
+        bs: 'inset 0px 0px 0px 1px $colors$border-disable-neutral-light',
       },
     },
   },
@@ -147,8 +148,8 @@ const ClearButtonContainer = styled('div', {
     jc: 'center',
     p: '3px',
     '& > i': {
-      background: '$secondary20',
-      color: '#5A667A',
+      background: '$background-default-neutral-plain',
+      color: '#icon-default-text-bold',
       br: '$round',
       height: '100%',
       p: '1px',
@@ -166,22 +167,29 @@ const ClearButtonContainer = styled('div', {
         right: '$6',
       },
     },
+    disabled: {
+      true: {
+        '& .Icon__container': {
+          '& > i': {
+            opacity: 0.5,
+          },
+        },
+        userSelect: 'none',
+        cursor: 'not-allowed',
+        pointerEvents: 'none',
+      },
+    },
   },
 });
 
 const Caption = styled('p', {
   fontSize: '$2',
   mt: '2px',
-  color: '$textPrimary50',
+  color: '$text-default-text-muted',
   variants: {
     error: {
       true: {
-        color: '$danger100',
-      },
-    },
-    disabled: {
-      true: {
-        color: '$secondary30',
+        color: '$text-default-danger-plain',
       },
     },
   },

@@ -11,7 +11,7 @@ import Theme from 'components/Theme/Theme';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
-import { checkIsBasePathInCachedEnv, getBasePath } from 'config/config';
+import { getBasePath } from 'config/config';
 
 import PageWrapper from 'pages/PageWrapper';
 
@@ -19,15 +19,12 @@ import routes from 'routes/routes';
 
 import projectsModel from 'services/models/projects/projectsModel';
 
-import { inIframe } from 'utils/helper';
-
 import { IProjectsModelState } from './types/services/models/projects/projectsModel';
+import usePyodide from './services/pyodide/usePyodide';
 
 import './App.scss';
 
 const basePath = getBasePath(false);
-
-const isVisibleCacheBanner = checkIsBasePathInCachedEnv(basePath) && inIframe();
 
 // loading monaco from node modules instead of CDN
 loader.config({
@@ -38,6 +35,8 @@ loader.config({
 
 function App(): React.FunctionComponentElement<React.ReactNode> {
   const projectsData = useModel<Partial<IProjectsModelState>>(projectsModel);
+  const { loadPyodide } = usePyodide();
+
   React.useEffect(() => {
     let timeoutId: number;
     const preloader = document.getElementById('preload-spinner');
@@ -47,6 +46,9 @@ function App(): React.FunctionComponentElement<React.ReactNode> {
         preloader.remove();
       }, 500);
     }
+
+    loadPyodide();
+
     return () => {
       window.clearTimeout(timeoutId);
     };

@@ -8,48 +8,56 @@ export function getButtonStyles(
   switch (variant) {
     case 'contained':
       return {
-        bc: `$${color}${disabled ? 50 : 100}`,
+        bc: `$background-${disabled ? 'disable' : 'default'}-${color}-${
+          disabled ? 'soft' : 'plain'
+        }`,
         color: 'white',
         '&:hover': {
-          bc: `$${color}110`,
+          bc: `$background-hover-${color}-bold`,
         },
         '&:active': {
-          bc: `$${color}120`,
+          bc: `$background-active-${color}-dark`,
         },
       };
     case 'outlined':
       return {
         bc: 'transparent',
-        color: `$${color}${disabled ? 50 : 100}`,
+        color: `$text-${disabled ? 'disable' : 'default'}-${color}-${
+          disabled ? 'soft' : 'plain'
+        }`,
         bs: 'inset 0px 0px 0px 1px',
         '&:hover': {
-          backgroundColor: `$${color}10`,
-          color: `$${color}110`,
+          bc: `$background-hover-${color}-airly`,
+          color: `$text-hover-${color}-bold`,
         },
         '&:active': {
-          bc: `$${color}20`,
-          color: `$${color}120`,
+          bc: `$background-active-${color}-light`,
+          color: `$text-active-${color}-dark`,
         },
       };
     case 'ghost':
       return {
         bc: 'transparent',
-        color: `$${color}${disabled ? 50 : 100}`,
+        color: `$text-${disabled ? 'disable' : 'default'}-${color}-${
+          disabled ? 'soft' : 'plain'
+        }`,
         '&:hover': {
-          bc: `$${color}10`,
-          color: `$${color}110`,
+          bc: `$background-hover-${color}-airly`,
+          color: `$text-hover-${color}-bold`,
         },
         '&:active': {
-          bc: `$${color}20`,
-          color: `$${color}120`,
+          bc: `$background-active-${color}-light`,
+          color: `$text-active-${color}-dark`,
         },
       };
     case 'static':
       return {
         bc: 'transparent',
-        color: `$${color}${disabled ? 50 : 100}`,
+        color: `$text-${disabled ? 'disable' : 'default'}-${color}-${
+          disabled ? 'soft' : 'plain'
+        }`,
         '&:active': {
-          color: `$${color}120`,
+          color: `$text-active-${color}-dark`,
         },
       };
   }

@@ -1,0 +1,191 @@
+@use 'src/styles/abstracts' as *;
+
+.Board {
+  height: 100vh;
+  &__appBar {
+    width: 100%;
+    display: flex;
+    flex: 0;
+    white-space: nowrap;
+    padding-right: $space-xs;
+  }
+  &__title {
+    margin: 0.5em 0;
+    padding: 0;
+    color: $primary-color;
+  }
+}
+.Board__appBar__controls {
+  > * {
+    margin-left: $space-xxs;
+  }
+}
+
+.BoardVisualizer {
+  width: 100%;
+  height: calc(100% - 40px);
+  max-width: 100%;
+}
+
+.BoardVisualizer__main {
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+}
+
+.BoardVisualizer__main__editor {
+  height: 100%;
+  position: relative;
+  flex: 0.6;
+  border-right: $border-dark;
+  display: flex;
+  flex-direction: column;
+}
+
+.BoardVisualizer__main__editor__code {
+  flex: 0.8;
+}
+
+.BoardVisualizer__main__components {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 60%;
+
+  &--fullWidth {
+    width: 100%;
+  }
+}
+
+.BoardVisualizer__main__components--loading {
+  align-items: center;
+  justify-content: center;
+}
+
+.BoardVisualizer__main__components--processing {
+  & > *:not(.BoardVisualizer__main__components__spinner) {
+    filter: blur(5px);
+  }
+}
+
+.BoardVisualizer__main__components__spinner {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.BoardVisualizer__main__components__viz {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  background-color: #fff;
+  gap: $space-md;
+  padding: $space-sm $space-lg;
+}
+
+.BoardVisualizer__main__components__viz__error {
+  @include monospaceFontFamily();
+  padding: $space-xs $space-sm;
+  color: $error-color;
+}
+
+.block--row {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  justify-content: center;
+  gap: $space-xs;
+  flex-wrap: wrap;
+}
+
+.block--column {
+  display: inline-flex;
+  flex-direction: column;
+  flex: 1;
+  justify-content: center;
+  gap: $space-xs;
+}
+
+.BoardVisualizer__main__components__console {
+  @include monospaceFontFamily();
+  flex: 0.2;
+  border-top: $border-dark;
+  padding: $space-xs;
+  overflow: auto;
+}
+
+.BoardVisualizer {
+  .BoxVirtualizer {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: $grey-bg;
+    border: $border-dark;
+  }
+  
+  .BoxVirtualizer__placeholder {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 200px;
+    height: 30px;
+    background-color: #fff;
+    border-bottom: $border-dark;
+    border-right: $border-dark;
+    z-index: 3;
+  }
+  
+  .BoxVirtualizer__container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: auto;
+  }
+  
+  .BoxVirtualizer__grid {
+    display: inline;
+    overflow: hidden;
+  }
+  
+  .BoxVirtualizer__container__horizontalRuler {
+    position: sticky;
+    top: 0px;
+    height: 30px;
+    min-width: 100%;
+    border-bottom: $border-dark;
+    background-color: #fff;
+    z-index: 2;
+  }
+  
+  .BoxVirtualizer__container__verticalRuler {
+    position: sticky;
+    left: 0px;
+    width: 200px;
+    min-height: calc(100% - 30px);
+    border-right: $border-dark;
+    background-color: #fff;
+    z-index: 2;
+  }  
+}
+
+.VizComponentContainer {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: $border-dark;
+  padding: $space-xs;
+}

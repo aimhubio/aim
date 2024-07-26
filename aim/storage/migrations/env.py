@@ -2,7 +2,8 @@ import os
 
 from logging.config import fileConfig
 
-from aim.storage.structured.sql_engine.models import Base
+from aim.storage.structured.db import DB
+from aim.storage.structured.sql_engine.models import *
 from aim.web.configs import AIM_ENV_MODE_KEY
 from alembic import context
 from alembic.config import Config

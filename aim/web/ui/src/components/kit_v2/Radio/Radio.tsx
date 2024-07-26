@@ -28,20 +28,22 @@ import {
 export const RadioGroup = React.forwardRef<
   React.ElementRef<typeof StyledRadioGroup>,
   RadioGroupProps
->(({ children, ...props }: RadioGroupProps) => (
-  <StyledRadioGroup {...props}>{children}</StyledRadioGroup>
+>(({ children, ...props }: RadioGroupProps, forwardedRef) => (
+  <StyledRadioGroup {...props} ref={forwardedRef}>
+    {children}
+  </StyledRadioGroup>
 ));
 
 const Radio = React.forwardRef<React.ElementRef<typeof Flex>, IRadioItemProps>(
   ({ ...props }: IRadioItemProps, forwardedRef) => (
     <Flex ref={forwardedRef} data-disabled={props.disabled}>
-      <RadioItem {...props} id={props.id || props.value}>
+      <RadioItem {...props} id={props.id ?? props.value}>
         <IndicatorWrapper>
           <RadioGroupIndicator />
         </IndicatorWrapper>
       </RadioItem>
       {props.children ? (
-        <RadioLabel htmlFor={props.id || props.value}>
+        <RadioLabel htmlFor={props.id ?? props.value}>
           {props.children}
         </RadioLabel>
       ) : null}

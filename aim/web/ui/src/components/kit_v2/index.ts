@@ -5,13 +5,14 @@ import ButtonGroup from './ButtonGroup';
 import Checkbox from './Checkbox';
 import ControlsButton from './ControlsButton';
 import Dialog from './Dialog';
+import FormGroup from './FormGroup';
 import Icon from './Icon';
 import IconButton from './IconButton';
 import Input from './Input';
 import ListItem from './ListItem';
 import Popover from './Popover';
 import QueryBadge from './QueryBadge';
-import Radio from './Radio';
+import Radio, { RadioGroup } from './Radio';
 import Select from './Select';
 import Separator from './Separator';
 import Slider from './Slider';
@@ -21,6 +22,12 @@ import { Toast, ToastProvider } from './Toast';
 import Tooltip from './Tooltip';
 import Tree from './Tree';
 import ToggleButton from './ToggleButton';
+import Tabs from './Tabs';
+import Link from './Link';
+import Textarea from './Textarea';
+import Breadcrumb from './Breadcrumb';
+import Table from './Table';
+import AudioPlayer from './AudioPlayer';
 
 export {
   Badge,
@@ -37,6 +44,7 @@ export {
   Popover,
   QueryBadge,
   Radio,
+  RadioGroup,
   Select,
   Separator,
   Slider,
@@ -47,4 +55,11 @@ export {
   Tooltip,
   Tree,
   ToggleButton,
+  FormGroup,
+  Tabs,
+  Link,
+  Textarea,
+  Breadcrumb,
+  Table,
+  AudioPlayer,
 };

@@ -119,7 +119,7 @@ const Input = React.forwardRef<React.ElementRef<typeof Container>, IInputProps>(
           </ClearButtonContainer>
         </InputWrapper>
         {errorMessage || caption ? (
-          <Caption disabled={disabled} error={error || !!errorMessage}>
+          <Caption error={error || !!errorMessage}>
             {errorMessage ? errorMessage : caption || ''}
           </Caption>
         ) : null}

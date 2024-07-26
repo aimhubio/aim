@@ -10,6 +10,10 @@ from aim.web.utils import get_db_url
 from alembic import context
 from alembic.config import Config
 
+from aim.web.api.dashboards import models
+from aim.web.api.dashboard_apps import models
+from aim.web.api.reports import models
+
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

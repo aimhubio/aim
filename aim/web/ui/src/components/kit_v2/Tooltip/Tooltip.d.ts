@@ -29,4 +29,17 @@ export interface ITooltipProps extends TooltipProps {
    * @defaultValue {}
    */
   contentProps?: TooltipContentProps;
+  /**
+   * Is the tooltip has arrow
+   * @defaultValue false
+   * @type boolean
+   * @optional
+   */
+  hasArrow?: boolean;
+  /**
+   * The color of the tooltip.
+   * @defaultValue 'info'
+   * @optional
+   */
+  color?: 'info' | 'success' | 'warning' | 'danger';
 }

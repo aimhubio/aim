@@ -1,7 +1,7 @@
-import React from 'react';
+import * as React from 'react';
 
 import { ITextProps } from './Text.d';
-import { StyledSlot } from './Text.style';
+import StyledSlot from './Text.style';
 
 /**
  * Polymorphic Text component
@@ -24,6 +24,9 @@ const Text = React.forwardRef<React.ElementRef<typeof StyledSlot>, ITextProps>(
       weight = '$2',
       color = '$textPrimary',
       disabled = false,
+      textTransform,
+      lineHeight,
+      ellipsis,
       css,
       children,
       ...rest
@@ -33,11 +36,15 @@ const Text = React.forwardRef<React.ElementRef<typeof StyledSlot>, ITextProps>(
     const TagElement = as;
     return (
       <StyledSlot
+        ellipsis={ellipsis}
+        disabled={disabled}
         css={{
           fontSize: size,
           fontWeight: weight,
           color: disabled ? `${color}50` : color,
           fontFamily: mono ? '$mono' : '$inter',
+          textTransform,
+          lineHeight,
           ...css,
         }}
         ref={forwardedRef}

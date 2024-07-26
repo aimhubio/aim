@@ -2,8 +2,11 @@ import React from 'react';
 
 import * as PopoverPrimitive from '@radix-ui/react-popover';
 
+import Text from '../Text';
+import Separator from '../Separator';
+
 import { IPopoverProps } from './Popover.d';
-import { StyledContent } from './Popover.style';
+import { PopoverTitleStyled, StyledContent } from './Popover.style';
 
 /**
  * @description Popover component is for displaying a popover with a title, description, and actions
@@ -12,12 +15,13 @@ import { StyledContent } from './Popover.style';
  * @param {React.ReactNode} content - React children
  * @param {boolean} defaultOpen - Default open state of the popover
  * @param {PopperProps} popperProps - Popper props
+ * @param {string | React.ReactNode} title - Title of the popover
  * @returns {React.FunctionComponentElement<React.ReactNode>}
  * @constructor
  * @example
  * <Popover
  *  trigger={<Button>Open popover</Button>}
- * content={<Box>Popover content</Box>}
+ *  content={<Box>Popover content</Box>}
  * />
  */
 function Popover({
@@ -25,6 +29,7 @@ function Popover({
   content,
   defaultOpen,
   popperProps,
+  title,
 }: IPopoverProps): React.FunctionComponentElement<React.ReactNode> {
   const [open, setOpen] = React.useState(defaultOpen);
 
@@ -45,6 +50,20 @@ function Popover({
       </PopoverPrimitive.Trigger>
       <PopoverPrimitive.Portal>
         <StyledContent sideOffset={5} {...popperProps}>
+          {title ? (
+            <>
+              <PopoverTitleStyled>
+                {typeof title === 'string' ? (
+                  <Text as='h3' color='$textPrimary80' weight='$3'>
+                    {title}
+                  </Text>
+                ) : (
+                  title
+                )}
+              </PopoverTitleStyled>
+              <Separator css={{ height: '2px !important' }} color='$border10' />
+            </>
+          ) : null}
           {content}
         </StyledContent>
       </PopoverPrimitive.Portal>

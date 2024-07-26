@@ -20,6 +20,7 @@ function ResizeElement(props: ResizeElementProps) {
     side = ResizableSideEnum.LEFT,
     initialSizes,
     useLocalStorage = false,
+    onMount,
     onResizeEnd,
     onResizeStart,
     onResize,
@@ -109,6 +110,13 @@ function ResizeElement(props: ResizeElementProps) {
   const getStringifiedSize = (size: string | number) => {
     return typeof size === 'string' ? size : `${size}px`;
   };
+
+  React.useEffect(() => {
+    if (onMount) {
+      onMount(containerRef);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   React.useEffect(() => {
     const containerNode = containerRef.current;

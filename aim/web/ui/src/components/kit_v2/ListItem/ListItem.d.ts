@@ -30,6 +30,14 @@ export interface IListItemProps
    */
   children?: React.ReactNode;
   /**
+   * @description Is the list item disabled
+   * @example true
+   * @default false
+   * @optional true
+   * @type boolean
+   */
+  disabled?: boolean;
+  /**
    * @description The left node of the list item
    * @example <div>left node</div>
    * @type React.ReactNode
