@@ -1,9 +1,12 @@
 import datetime
+import os
 
+from functools import wraps
 from typing import Any, Callable
 
 import pytz
 
+from aim.web.configs import AIM_READ_ONLY_UI
 from fastapi import APIRouter as FastAPIRouter
 from fastapi import HTTPException
 from fastapi.types import DecoratedCallable
@@ -22,6 +25,16 @@ def object_factory():
 
 def datetime_now():
     return datetime.datetime.utcnow().replace(tzinfo=pytz.utc)
+
+
+def check_read_only(func):
+    @wraps(func)
+    async def wrapper(*args, **kwargs):
+        if os.environ.get(AIM_READ_ONLY_UI):
+            raise HTTPException(status_code=403)
+        return await func(*args, **kwargs)
+
+    return wrapper
 
 
 class APIRouter(FastAPIRouter):

@@ -16,6 +16,7 @@ from aim.web.api.runs.pydantic_models import NoteIn
 from aim.web.api.runs.utils import get_project_repo
 from aim.web.api.utils import (
     APIRouter,  # wrapper for fastapi.APIRouter  # wrapper for fastapi.APIRouter
+    check_read_only,
     object_factory,
 )
 from fastapi import Depends, Header, HTTPException, Request
@@ -83,6 +84,7 @@ async def get_experiment_api(exp_id: str, factory=Depends(object_factory)):
 
 
 @experiment_router.delete('/{exp_id}/')
+@check_read_only
 async def delete_experiment_api(exp_id: str):
     repo = get_project_repo()
     success = repo.delete_experiment(exp_id)
@@ -93,6 +95,7 @@ async def delete_experiment_api(exp_id: str):
 
 
 @experiment_router.put('/{exp_id}/', response_model=ExperimentUpdateOut)
+@check_read_only
 async def update_experiment_properties_api(exp_id: str, exp_in: ExperimentUpdateIn, factory=Depends(object_factory)):
     exp = factory.find_experiment(exp_id)
     if not exp:

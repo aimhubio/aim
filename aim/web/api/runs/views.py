@@ -45,6 +45,7 @@ from aim.web.api.runs.utils import (
 )
 from aim.web.api.utils import (
     APIRouter,  # wrapper for fastapi.APIRouter
+    check_read_only,
     object_factory,
 )
 from fastapi import Depends, Header, HTTPException, Query
@@ -180,6 +181,7 @@ async def run_metric_batch_api(run_id: str, requested_traces: RunTracesBatchApiI
 
 
 @runs_router.put('/{run_id}/', response_model=StructuredRunUpdateOut)
+@check_read_only
 async def update_run_properties_api(run_id: str, run_in: StructuredRunUpdateIn, factory=Depends(object_factory)):
     with factory:
         run = factory.find_run(run_id)
@@ -223,6 +225,7 @@ async def remove_run_tag_api(run_id: str, tag_id: str, factory=Depends(object_fa
 
 
 @runs_router.delete('/{run_id}/')
+@check_read_only
 async def delete_run_api(run_id: str):
     repo = get_project_repo()
     success = repo.delete_run(run_id)
@@ -235,6 +238,7 @@ async def delete_run_api(run_id: str):
 
 
 @runs_router.post('/delete-batch/')
+@check_read_only
 async def delete_runs_batch_api(runs_batch: RunsBatchIn):
     repo = get_project_repo()
     success, remaining_runs = repo.delete_runs(runs_batch)
@@ -248,6 +252,7 @@ async def delete_runs_batch_api(runs_batch: RunsBatchIn):
 
 
 @runs_router.post('/archive-batch/', response_model=StructuredRunsArchivedOut)
+@check_read_only
 async def archive_runs_batch_api(
     runs_batch: RunsBatchIn, archive: Optional[bool] = True, factory=Depends(object_factory)
 ):

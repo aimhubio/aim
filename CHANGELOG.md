@@ -1,7 +1,12 @@
 # Changelog
 
 ## Unreleased
-- Fix bug in bookmark page where it was not scrollable if there was too many bookmarks
+
+### Enhancements
+- Add read-only mode for Aim UI (mihran113)
+
+### Fixes
+- Fix bug in bookmark page where it was not scrollable if there was too many bookmarks (vinayan3)
 
 ## 3.23.0 Jul 15, 2024
 
