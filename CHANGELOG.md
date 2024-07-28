@@ -7,7 +7,7 @@
 
 ### Fixes
 - Fix bug in bookmark page where it was not scrollable if there was too many bookmarks (vinayan3)
-
+- Fix (CVE-2024-6227)[https://huntr.com/bounties/abcea7c6-bb3b-45e9-aa15-9eb6b224451a]
 ## 3.23.0 Jul 15, 2024
 
 ### Enhancements:
