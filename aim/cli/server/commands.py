@@ -15,6 +15,7 @@ from aim.ext.transport.config import (
     AIM_SERVER_DEFAULT_HOST,
     AIM_SERVER_DEFAULT_PORT,
     AIM_SERVER_MOUNTED_REPO_PATH,
+    AIM_SERVER_MOUNT,
 )
 from aim.sdk.repo import Repo
 from aim.sdk.utils import clean_repo_path
@@ -79,6 +80,7 @@ def server(host, port, repo, ssl_keyfile, ssl_certfile, base_path, log_level, de
         return
 
     os.environ[AIM_SERVER_MOUNTED_REPO_PATH] = repo_inst.path
+    os.environ[AIM_SERVER_MOUNT] = f"aim://{host}:{port}"
 
     click.secho('Running Aim Server on repo `{}`'.format(repo), fg='yellow')
     click.echo('Server is mounted on aim://{}:{}'.format(host, port), err=True)

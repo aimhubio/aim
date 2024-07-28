@@ -12,6 +12,7 @@ from aim.ext.cleanup import AutoClean
 from aim.ext.sshfs.utils import mount_remote_repo, unmount_remote_repo
 from aim.ext.task_queue.queue import TaskQueue
 from aim.ext.transport.client import Client
+from aim.ext.transport.config import AIM_SERVER_MOUNT
 from aim.sdk.configs import AIM_ENABLE_TRACKING_THREAD, get_aim_repo_name
 from aim.sdk.data_version import DATA_VERSION
 from aim.sdk.errors import RepoIntegrityError
@@ -205,6 +206,8 @@ class Repo:
         Returns:
             :obj:`Repo` object.
         """
+        if os.environ.get(AIM_SERVER_MOUNT, '') == path:
+            raise ValueError("The path cannot be the same as the mount of the server.")
         if not path.startswith('ssh://') and not cls.is_remote_path(path):
             path = clean_repo_path(path)
         repo = cls._pool.get(path)
