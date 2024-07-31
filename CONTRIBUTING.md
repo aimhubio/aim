@@ -140,7 +140,7 @@ These command will create a folder named `ComponentName` with all the necessary 
 Aim documentation is built using [Sphix](https://www.sphinx-doc.org) and is hosted at
 [Read the Docs](https://aimstack.readthedocs.io).
 The documentation sources are located at `docs/` directory. In order to build documentation locally
-run the following commands
+run the following commands with a Python interpreter version <= 3.10:
 ```shell
 pip install -r requirements.dev.txt
 cd docs
