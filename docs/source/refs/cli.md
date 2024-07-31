@@ -52,10 +52,10 @@ $ aim up [ARGS]
 
 | Args                        | Description                                                                                                      |
 | --------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| `-h` &#124; `--host <host>` | Specify host address.                                                                                            |
-| `-p` &#124; `--port <port>` | Specify port to listen to.                                                                                       |
+| `-h, --host <host>`         | Specify host address.                                                                                            |
+| `-p, --port <port>`         | Specify port to listen to. _Default is 43800._                                                                   |
 | `--repo <repo_path>`        | Path to parent directory of `.aim` repo. _Current working directory by default_.                                 |
-| `--dev`                     | Run UI in development mode.                                                                                      |
+| `--dev`                     | Run UI in development mode—enables hot-reloading only, _not meant for end-users_.                                |
 | `--profiler`                | Enables API profiling which logs run trace inside `.aim/profiler` directory.                                     |
 | `--log-level`               | Specifies log level for python logging package. _`WARNING` by default, `DEBUG` when `--dev` option is provided_. |
 
@@ -71,8 +71,8 @@ $ aim server [ARGS]
 | Args                         | Description                                                                                                      |
 | ---------------------------- | ---------------------------------------------------------------------------------------------------------------- |
 | `--repo <repo_path>`         | Path to parent directory of `.aim` repo. _Current working directory by default_.                                 |
-| `-h` &#124; `--host <host>`  | Specify host address.                                                                                            |
-| `-p` &#124; `--port <port>`  | Specify port to listen to. _Default is 53800_.                                                                   |
+| `-h, --host <host>`          | Specify host address.                                                                                            |
+| `-p, --port <port>`          | Specify port to listen to. _Default is 53800_.                                                                   |
 | `--ssl-keyfile`              | Specify path to keyfile for secure connection.                                                                   |
 | `--ssl-certfile`             | Specify path to cert. file for secure connection.                                                                |
 | `--dev`                      | Run UI in development mode.                                                                                      |                                
