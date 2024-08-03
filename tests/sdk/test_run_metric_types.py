@@ -1,10 +1,9 @@
-import pytest
 import numpy as np
-
-from tests.base import TestBase
+import pytest
 
 from aim.sdk import Repo, Run
 from aim.sdk.types import QueryReportMode
+from tests.base import TestBase
 
 
 class TestRunMetricNumpyTypes(TestBase):

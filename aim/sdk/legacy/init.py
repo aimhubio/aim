@@ -1,5 +1,5 @@
-from aim.sdk.legacy.session import DefaultSession
 from aim.sdk.legacy.deprecation_warning import deprecated
+from aim.sdk.legacy.session import DefaultSession
 
 
 @deprecated

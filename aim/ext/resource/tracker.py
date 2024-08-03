@@ -5,7 +5,6 @@ import sys
 import time
 import weakref
 
-from psutil import Process, cpu_percent
 from threading import Thread
 from typing import Union
 from weakref import WeakValueDictionary
@@ -13,6 +12,8 @@ from weakref import WeakValueDictionary
 from aim.ext.resource.configs import AIM_RESOURCE_METRIC_PREFIX
 from aim.ext.resource.log import LogLine
 from aim.ext.resource.stat import Stat
+from psutil import Process, cpu_percent
+
 
 logger = logging.getLogger(__name__)
 
@@ -59,9 +60,11 @@ class ResourceTracker(object):
             warn = False
         if not isinstance(interval, (int, float)) or not cls.STAT_INTERVAL_MIN <= interval <= cls.STAT_INTERVAL_MAX:
             if warn:
-                logger.warning('To track system resource usage '
-                               'please set `system_tracking_interval` '
-                               'greater than 0 and less than 1 day')
+                logger.warning(
+                    'To track system resource usage '
+                    'please set `system_tracking_interval` '
+                    'greater than 0 and less than 1 day'
+                )
             return False
         return True
 
@@ -75,11 +78,13 @@ class ResourceTracker(object):
         """
         cpu_percent(0.0)
 
-    def __init__(self,
-                 tracker,
-                 interval: Union[int, float] = STAT_INTERVAL_DEFAULT,
-                 capture_logs: bool = True,
-                 log_offset: int = 0):
+    def __init__(
+        self,
+        tracker,
+        interval: Union[int, float] = STAT_INTERVAL_DEFAULT,
+        capture_logs: bool = True,
+        log_offset: int = 0,
+    ):
         self._tracker = weakref.ref(tracker)
         self._stat_capture_interval = None
         if self.check_interval(interval, warn=False):
@@ -154,14 +159,12 @@ class ResourceTracker(object):
         for gpu_idx, gpu in enumerate(stat.gpus):
             for resource, usage in gpu.items():
                 self._tracker()(
-                    usage,
-                    name='{}{}'.format(AIM_RESOURCE_METRIC_PREFIX, resource),
-                    context={'gpu': gpu_idx}
+                    usage, name='{}{}'.format(AIM_RESOURCE_METRIC_PREFIX, resource), context={'gpu': gpu_idx}
                 )
 
     def _stat_collector(self):
         """
-            Statistics collecting thread body
+        Statistics collecting thread body
         """
         stat_time_counter = 0
         log_capture_time_counter = 0
@@ -201,7 +204,7 @@ class ResourceTracker(object):
         # handle the buffered data and store
 
         lines = data.split(b'\n')
-        ansi_csi_re = re.compile(b"\001?\033\\[((?:\\d|;)*)([a-dA-D])\002?")
+        ansi_csi_re = re.compile(b'\001?\033\\[((?:\\d|;)*)([a-dA-D])\002?')
 
         def _handle_csi(line):
             def _remove_csi(line):

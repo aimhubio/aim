@@ -1,10 +1,7 @@
 import time
-import os
-
-from tests.base import TestBase
 
 from aim.sdk.run import Run
-from aim.sdk.configs import AIM_ENABLE_TRACKING_THREAD
+from tests.base import TestBase
 
 
 class TestRunFinalizedAt(TestBase):
@@ -25,7 +22,7 @@ class TestRunFinalizedAt(TestBase):
 
         _func()
 
-        time.sleep(.1)  # wait for tracking queue and gc to collect the run object
+        time.sleep(0.1)  # wait for tracking queue and gc to collect the run object
         self.assertIsNotNone(self._query_run_finalized_at(run_hash[0]))
 
     def test_explicit_run_delete(self):
@@ -34,7 +31,7 @@ class TestRunFinalizedAt(TestBase):
         for i in range(10):
             run.track(i, name='seq')
         del run
-        time.sleep(.1)
+        time.sleep(0.1)
         self.assertIsNotNone(self._query_run_finalized_at(run_hash))
 
     def test_explicit_run_finalize(self):

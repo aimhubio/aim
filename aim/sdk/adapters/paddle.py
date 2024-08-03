@@ -1,7 +1,8 @@
-from paddle.hapi.callbacks import Callback
 from typing import Optional
-from aim.sdk.run import Run
+
 from aim.ext.resource.configs import DEFAULT_SYSTEM_TRACKING_INT
+from aim.sdk.run import Run
+from paddle.hapi.callbacks import Callback
 
 
 class AimCallback(Callback):
@@ -19,11 +20,14 @@ class AimCallback(Callback):
             git info, environment variables, etc.
     """
 
-    def __init__(self, repo: Optional[str] = None,
-                 experiment_name: Optional[str] = None,
-                 system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT,
-                 log_system_params: Optional[bool] = True,
-                 capture_terminal_logs: Optional[bool] = True,):
+    def __init__(
+        self,
+        repo: Optional[str] = None,
+        experiment_name: Optional[str] = None,
+        system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT,
+        log_system_params: Optional[bool] = True,
+        capture_terminal_logs: Optional[bool] = True,
+    ):
         self.repo = repo
         self.experiment_name = experiment_name
         self.system_tracking_interval = system_tracking_interval
@@ -51,7 +55,7 @@ class AimCallback(Callback):
                 if len(v) == 1:
                     v = v[0]
                 else:
-                    raise NotImplementedError(f"number of items in {k} are more than 1")
+                    raise NotImplementedError(f'number of items in {k} are more than 1')
             self._run.track(v, k, step=step, context=context, epoch=self.epoch)
 
     @property

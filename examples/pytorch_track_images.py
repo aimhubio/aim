@@ -4,15 +4,17 @@ import torch
 import torch.nn as nn
 import torchvision
 import torchvision.transforms as transforms
+
 from aim import Run
 from aim.sdk.objects.image import convert_to_aim_image_list
 from tqdm import tqdm
 
+
 # Initialize a new Run
 aim_run = Run()
 
-# Device configuration
-device = torch.device('cpu')
+# moving model to gpu if available
+device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
 # Hyper parameters
 num_epochs = 5
@@ -29,22 +31,14 @@ aim_run['hparams'] = {
 }
 
 # MNIST dataset
-train_dataset = torchvision.datasets.MNIST(
-    root='./data/', train=True, transform=transforms.ToTensor(), download=True
-)
+train_dataset = torchvision.datasets.MNIST(root='./data/', train=True, transform=transforms.ToTensor(), download=True)
 
-test_dataset = torchvision.datasets.MNIST(
-    root='./data/', train=False, transform=transforms.ToTensor()
-)
+test_dataset = torchvision.datasets.MNIST(root='./data/', train=False, transform=transforms.ToTensor())
 
 # Data loader
-train_loader = torch.utils.data.DataLoader(
-    dataset=train_dataset, batch_size=batch_size, shuffle=True
-)
+train_loader = torch.utils.data.DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True)
 
-test_loader = torch.utils.data.DataLoader(
-    dataset=test_dataset, batch_size=batch_size, shuffle=False
-)
+test_loader = torch.utils.data.DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=False)
 
 
 # Convolutional neural network (two convolutional layers)
@@ -100,16 +94,13 @@ for epoch in range(num_epochs):
 
         if i % 30 == 0:
             logging.info(
-                'Epoch [{}/{}], Step [{}/{}], '
-                'Loss: {:.4f}'.format(
+                'Epoch [{}/{}], Step [{}/{}], ' 'Loss: {:.4f}'.format(
                     epoch + 1, num_epochs, i + 1, total_step, loss.item()
                 )
             )
 
             # aim - Track model loss function
-            aim_run.track(
-                loss.item(), name='loss', epoch=epoch, context={'subset': 'train'}
-            )
+            aim_run.track(loss.item(), name='loss', epoch=epoch, context={'subset': 'train'})
 
             correct = 0
             total = 0
@@ -119,30 +110,19 @@ for epoch in range(num_epochs):
             acc = 100 * correct / total
 
             # aim - Track metrics
-            aim_run.track(
-                acc, name='accuracy', epoch=epoch, context={'subset': 'train'}
-            )
+            aim_run.track(acc, name='accuracy', epoch=epoch, context={'subset': 'train'})
 
-            aim_run.track(
-                aim_images, name='images', epoch=epoch, context={'subset': 'train'}
-            )
+            aim_run.track(aim_images, name='images', epoch=epoch, context={'subset': 'train'})
 
             # TODO: Do actual validation
             if i % 300 == 0:
-                aim_run.track(
-                    loss, name='loss', epoch=epoch, context={'subset': 'val'}
-                )
-                aim_run.track(
-                    acc, name='accuracy', epoch=epoch, context={'subset': 'val'}
-                )
-                aim_run.track(
-                    aim_images, name='images', epoch=epoch, context={'subset': 'val'}
-                )
+                aim_run.track(loss, name='loss', epoch=epoch, context={'subset': 'val'})
+                aim_run.track(acc, name='accuracy', epoch=epoch, context={'subset': 'val'})
+                aim_run.track(aim_images, name='images', epoch=epoch, context={'subset': 'val'})
 
 
 # Test the model
-model.eval()
-with torch.no_grad():
+with torch.inference_mode():
     correct = 0
     total = 0
     for images, labels in tqdm(test_loader, total=len(test_loader)):

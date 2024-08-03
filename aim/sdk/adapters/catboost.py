@@ -6,15 +6,16 @@ from aim.ext.resource import DEFAULT_SYSTEM_TRACKING_INT
 
 
 class AimLogger:
-
-    def __init__(self, loss_function: Optional[str] = "Loss",
-                 repo: Optional[str] = None,
-                 experiment: Optional[str] = None,
-                 system_tracking_interval: Optional[int]
-                 = DEFAULT_SYSTEM_TRACKING_INT,
-                 log_system_params: Optional[bool] = True,
-                 capture_terminal_logs: Optional[bool] = True,
-                 log_cout=stdout):
+    def __init__(
+        self,
+        loss_function: Optional[str] = 'Loss',
+        repo: Optional[str] = None,
+        experiment: Optional[str] = None,
+        system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT,
+        log_system_params: Optional[bool] = True,
+        capture_terminal_logs: Optional[bool] = True,
+        log_cout=stdout,
+    ):
         super().__init__()
         self._loss_function = loss_function
         self._repo_path = repo
@@ -27,7 +28,7 @@ class AimLogger:
         self._log_cout = log_cout
 
         if log_cout is not None:
-            assert hasattr(log_cout, "write")
+            assert hasattr(log_cout, 'write')
 
     @property
     def experiment(self) -> Run:

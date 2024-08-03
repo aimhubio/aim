@@ -1,11 +1,10 @@
 import datetime
 import json
 
+from typing import TYPE_CHECKING, Tuple, Union
+
 from aim.sdk.sequence import Sequence
 from aim.storage import treeutils
-
-from typing import Union, Tuple
-from typing import TYPE_CHECKING
 
 
 if TYPE_CHECKING:
@@ -29,7 +28,7 @@ class Metric(Sequence):
         include_name: bool = False,
         include_context: bool = False,
         include_run: bool = False,
-        only_last: bool = False
+        only_last: bool = False,
     ) -> 'DataFrame':
         """Get metric series as pandas DataFrame
 
@@ -63,19 +62,11 @@ class Metric(Sequence):
                 timestamps = []
         indices = [i for i, _ in enumerate(steps)]
         timestamps = [datetime.datetime.fromtimestamp(t) for t in timestamps]
-        data = {
-            'idx': indices,
-            'step': steps,
-            'value': values,
-            'epoch': epochs,
-            'time': timestamps
-        }
+        data = {'idx': indices, 'step': steps, 'value': values, 'epoch': epochs, 'time': timestamps}
 
         if include_run:
             data['run.hash'] = [self.run.hash] * len(indices)
-            for path, val in treeutils.unfold_tree(self.run[...],
-                                                   unfold_array=False,
-                                                   depth=3):
+            for path, val in treeutils.unfold_tree(self.run[...], unfold_array=False, depth=3):
                 s = 'run'
                 for key in path:
                     if isinstance(key, str):
@@ -89,9 +80,7 @@ class Metric(Sequence):
         if include_name:
             data['metric.name'] = [self.name for _ in indices]
         if include_context:
-            for path, val in treeutils.unfold_tree(self.context.to_dict(),
-                                                   unfold_array=False,
-                                                   depth=3):
+            for path, val in treeutils.unfold_tree(self.context.to_dict(), unfold_array=False, depth=3):
                 s = 'metric.context'
                 for key in path:
                     if isinstance(key, str):
@@ -105,5 +94,6 @@ class Metric(Sequence):
                 data[s] = [val for _ in indices]
 
         import pandas as pd
+
         df = pd.DataFrame(data)
         return df

@@ -57,7 +57,10 @@ jobs:
 
       - name: code style checks
         run: |
-          flake8 aim
+          set -e
+          ruff check .
+          ruff format . --check
+
 
       - name: unit-tests
         run: |

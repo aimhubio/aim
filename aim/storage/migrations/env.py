@@ -1,14 +1,13 @@
 import os
+
 from logging.config import fileConfig
 
-from sqlalchemy import create_engine
-
+from aim.storage.structured.sql_engine.models import Base
+from aim.web.configs import AIM_ENV_MODE_KEY
 from alembic import context
 from alembic.config import Config
+from sqlalchemy import create_engine
 
-from aim.web.configs import AIM_ENV_MODE_KEY
-from aim.storage.structured.sql_engine.models import *
-from aim.storage.structured.db import DB
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -51,7 +50,7 @@ def run_migrations_offline():
         url=sqlalchemy_url,
         target_metadata=target_metadata,
         literal_binds=True,
-        dialect_opts={"paramstyle": "named"},
+        dialect_opts={'paramstyle': 'named'},
     )
 
     with context.begin_transaction():
@@ -69,9 +68,7 @@ def run_migrations_online():
     connectable = create_engine(sqlalchemy_url)
 
     with connectable.connect() as connection:
-        context.configure(
-            connection=connection, target_metadata=target_metadata
-        )
+        context.configure(connection=connection, target_metadata=target_metadata)
 
         with context.begin_transaction():
             context.run_migrations()

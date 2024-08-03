@@ -96,22 +96,24 @@ This is only possible if there is a single run instance in the process.
 """
 
 import math
-import time
 import queue
 import threading
+import time
+
 from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import ClassVar, Dict, Optional, Tuple, Set, Union, TYPE_CHECKING
-
-from cachetools import LRUCache
+from typing import TYPE_CHECKING, ClassVar, Dict, Optional, Set, Tuple, Union
 
 from aim.sdk.reporter.file_manager import FileManager
+from cachetools import LRUCache
+
 
 if TYPE_CHECKING:
     from aim.sdk import Run
 
 import logging
+
 
 logger = logging.getLogger(__name__)
 
@@ -139,7 +141,7 @@ class AsteriskType:
     """
 
     def __format__(self, __format_spec: str) -> str:
-        return "*"
+        return '*'
 
 
 # Singletone instance of AsteriskType
@@ -160,12 +162,10 @@ class CheckIn:
     idx: int = 0
     expect_next_in: int = field(default=0, compare=False)
     first_seen: float = field(default_factory=time.monotonic, compare=False, repr=False)
-    flag_name: str = field(default="check_in", compare=False, repr=True)
+    flag_name: str = field(default='check_in', compare=False, repr=True)
 
     # We keep per-run cache to memoize the first time we've seen check-ins
-    per_run_cache: ClassVar[Dict[str, LRUCache]] = defaultdict(
-        lambda: LRUCache(maxsize=3)
-    )
+    per_run_cache: ClassVar[Dict[str, LRUCache]] = defaultdict(lambda: LRUCache(maxsize=3))
 
     def __bool__(self) -> bool:
         return bool(self.idx)
@@ -188,7 +188,7 @@ class CheckIn:
             return per_run_cache[key]
         except KeyError:
             now = time.monotonic()
-            logger.debug(f"* first time ({now}) seen for {key} for {run_hash}")
+            logger.debug(f'* first time ({now}) seen for {key} for {run_hash}')
             per_run_cache[key] = now
             return now
 
@@ -202,7 +202,7 @@ class CheckIn:
         return self.first_seen + expect_next_in
 
     @classmethod
-    def parse(cls, path: Union[Path, str]) -> Tuple[str, "CheckIn"]:
+    def parse(cls, path: Union[Path, str]) -> Tuple[str, 'CheckIn']:
         """
         Parse a check-in file path and return a tuple of:
           * run hash the check-in belongs to,
@@ -211,9 +211,7 @@ class CheckIn:
         if isinstance(path, str):
             path = Path(path)
 
-        run_hash, str_idx, flag_name, utc_time, str_expect_next_in = path.name.rsplit(
-            "-", maxsplit=4
-        )
+        run_hash, str_idx, flag_name, utc_time, str_expect_next_in = path.name.rsplit('-', maxsplit=4)
 
         idx = int(str_idx)
         expect_next_in = int(str_expect_next_in)
@@ -233,7 +231,7 @@ class CheckIn:
         )
 
     @classmethod
-    def poll(cls, *, file_mgr, run_hash: str) -> "CheckIn":
+    def poll(cls, *, file_mgr, run_hash: str) -> 'CheckIn':
         """
         Poll the directory for the current check-in.
 
@@ -242,13 +240,13 @@ class CheckIn:
         pattern = cls.generate_filename(run_hash=run_hash)
         check_in_path = file_mgr.poll(pattern)
         if not check_in_path:
-            logger.debug(f"no check-in found for {run_hash}; returning zero-check-in")
+            logger.debug(f'no check-in found for {run_hash}; returning zero-check-in')
             return CheckIn()
 
-        logger.debug(f"found check-in: {check_in_path}")
+        logger.debug(f'found check-in: {check_in_path}')
         parsed_run_hash, check_in = cls.parse(check_in_path)
         assert parsed_run_hash == run_hash
-        logger.debug(f"parsed check-in: {check_in}")
+        logger.debug(f'parsed check-in: {check_in}')
 
         return check_in
 
@@ -272,7 +270,7 @@ class CheckIn:
             first_seen=now,
             flag_name=self.flag_name,
         )
-        logger.debug(f"calibrated check-in: {self} -> {new}")
+        logger.debug(f'calibrated check-in: {self} -> {new}')
         return new
 
     @classmethod
@@ -294,7 +292,7 @@ class CheckIn:
         >>> CheckIn.generate_filename(run_hash="run_hash", idx=Asterisk, absolute_time=Asterisk, expect_next_in=10)
         >>> "run_hash-*-check_in-*-10"
         """
-        return f"{run_hash}-{idx:016d}-{flag_name}-{absolute_time:011.2f}-{expect_next_in:05d}"
+        return f'{run_hash}-{idx:016d}-{flag_name}-{absolute_time:011.2f}-{expect_next_in:05d}'
 
     def touch(
         self,
@@ -303,7 +301,7 @@ class CheckIn:
         run_hash: str,
         cleanup: bool = True,
         calibrate: bool = True,
-    ) -> "CheckIn":
+    ) -> 'CheckIn':
         """
         Physically write the check-in to the filesystem so that it is visible to the
         other nodes that share the filesystem.
@@ -332,10 +330,7 @@ class CheckIn:
             flag_name=self.flag_name,
         )
 
-        cleanup_file_pattern = self.generate_filename(
-            run_hash=run_hash,
-            flag_name=self.flag_name
-        ) if cleanup else None
+        cleanup_file_pattern = self.generate_filename(run_hash=run_hash, flag_name=self.flag_name) if cleanup else None
 
         file_mgr.touch(filename, cleanup_file_pattern)
 
@@ -360,6 +355,7 @@ class TimedTask:
     Only the `time` field is used for comparison. The `overwritten` field is
     to mock deletion of the task from the priority queue.
     """
+
     when: float = field(compare=True)
     flag_name: str = field(compare=False)
     overwritten: bool = field(default=False, compare=False)
@@ -377,18 +373,18 @@ class RunStatusReporter:
     finished, otherwise the run will be marked as failed.
     """
 
-    instances: Set["RunStatusReporter"] = set()
+    instances: Set['RunStatusReporter'] = set()
 
     def __init__(
         self,
         run_hash: str,
         file_mgr: FileManager,
     ) -> None:
-        logger.info(f"creating RunStatusReporter for {run_hash}")
+        logger.info(f'creating RunStatusReporter for {run_hash}')
         self.run_hash = run_hash
 
         self.file_manager = file_mgr
-        logger.debug(f"polling for check-ins in {self.file_manager}")
+        logger.debug(f'polling for check-ins in {self.file_manager}')
 
         # Detect if the run was resumed. If so, we need to find the last
         # check-in index and continue counting from there.
@@ -397,9 +393,9 @@ class RunStatusReporter:
             run_hash=self.run_hash,
         )
         if leftover:
-            logger.debug(f"leftover check-in: {leftover}")
+            logger.debug(f'leftover check-in: {leftover}')
         else:
-            logger.debug("no leftover check-in found. starting from zero")
+            logger.debug('no leftover check-in found. starting from zero')
 
         self.refresh_condition = threading.Condition()
         self.flush_condition = threading.Condition()
@@ -430,10 +426,10 @@ class RunStatusReporter:
         self.timed_tasks: Dict[str, TimedTask] = dict()
 
         # We always set the first check-in `starting`.
-        logger.info(f"starting from: {self.last_check_ins}")
-        self._increment(flag_name="starting")
+        logger.info(f'starting from: {self.last_check_ins}')
+        self._increment(flag_name='starting')
         # Initialize the background thread and flush all the initial flags
-        logger.info(f"starting writer thread for {self}")
+        logger.info(f'starting writer thread for {self}')
         self.thread = threading.Thread(target=self._writer, daemon=True)
         self.thread.start()
         self.flush(block=True)
@@ -458,7 +454,7 @@ class RunStatusReporter:
         check_in = self.last_check_ins[flag_name]
 
         if flag_name in self.physical_check_ins and self.physical_check_ins[flag_name].idx == check_in.idx:
-            logger.debug(f"Skipping touching `{flag_name}` as it is already up to date")
+            logger.debug(f'Skipping touching `{flag_name}` as it is already up to date')
             self.timed_tasks.pop(flag_name, None)
             logger.debug(f'{flag_name} is not scheduled anymore. It will be invoked as soon as next one appears')
             return
@@ -472,10 +468,7 @@ class RunStatusReporter:
         self.physical_check_ins[flag_name] = new_check_in
 
         # We will take the target (recommended) flush time much shorter.
-        expiry_date = min(
-            new_check_in.expiry_date,
-            time.monotonic() + MAX_SUSPEND_TIME
-        )
+        expiry_date = min(new_check_in.expiry_date, time.monotonic() + MAX_SUSPEND_TIME)
         # Now we reschedule the check-in for the next flush.
         new_timed_task = TimedTask(
             when=expiry_date,
@@ -510,13 +503,9 @@ class RunStatusReporter:
         idx = self.counter + 1
         self.counter = idx
 
-        logger.debug(f"incrementing {flag_name} idx -> {idx}")
+        logger.debug(f'incrementing {flag_name} idx -> {idx}')
 
-        check_in = CheckIn(
-            idx=idx,
-            expect_next_in=expect_next_in,
-            flag_name=flag_name
-        )
+        check_in = CheckIn(idx=idx, expect_next_in=expect_next_in, flag_name=flag_name)
 
         self.last_check_ins[flag_name] = check_in
         # * If there was no such check-in with the same flag name, we will
@@ -530,7 +519,7 @@ class RunStatusReporter:
             # Schedule to flush ASAP
             timed_task = TimedTask(when=0, flag_name=flag_name)
             self._schedule(timed_task)
-            logger.debug(f"scheduled {timed_task} ASAP because no physical check-in was found")
+            logger.debug(f'scheduled {timed_task} ASAP because no physical check-in was found')
         else:
             if was_scheduled.when > check_in.expiry_date:
                 # Schedule to flush ASAP
@@ -543,26 +532,26 @@ class RunStatusReporter:
                 # flag to `True` and inserting the new item with the same
                 # `flag_name`. The writer thread will just ignore such items.
                 was_scheduled.overwritten = True
-                logger.debug(f"scheduled {timed_task} because it newer is stricter than {was_scheduled}")
+                logger.debug(f'scheduled {timed_task} because it newer is stricter than {was_scheduled}')
 
         return check_in
 
     @classmethod
-    def default(cls) -> "RunStatusReporter":
+    def default(cls) -> 'RunStatusReporter':
         """
         Returns the default instance of the RunStatusReporter to make it possible
         to access the instance methods from the class interface. This is useful
         for reporting progress from anywhere in the code.
         """
         try:
-            default_instance, = cls.instances
+            (default_instance,) = cls.instances
         except ValueError:
             if cls.instances:
                 raise ValueError(
-                    f"{cls.__name__} has {len(cls.instances)} instances, indirect check-in is not supported"
+                    f'{cls.__name__} has {len(cls.instances)} instances, indirect check-in is not supported'
                 )
             else:
-                logger.warning(f"{cls.__name__} has no instances")
+                logger.warning(f'{cls.__name__} has no instances')
                 return None
         return default_instance
 
@@ -600,8 +589,8 @@ class RunStatusReporter:
             # next appropriate flush time. It is either the remaining time from
             # the previous flush, or the moment new check-in is registered.
             with self.refresh_condition:
-                logger.debug(f"no interesting things to do, sleeping for {remaining}")
-                logger.debug("until woken up")
+                logger.debug(f'no interesting things to do, sleeping for {remaining}')
+                logger.debug('until woken up')
                 logger.debug(f'unfinished tasks: {self.queue.unfinished_tasks}')
                 self.refresh_condition.wait(timeout=remaining)
 
@@ -663,13 +652,13 @@ class RunStatusReporter:
         Otherwise, all the check-ins will be flushed. In this case, the order
         of (active) check-ins (per flag name) will be preserved.
         """
-        logger.debug(f"notifying {self}")
+        logger.debug(f'notifying {self}')
 
         with self.reporter_lock:
             flag_names = [flag_name] if flag_name is not None else self.timed_tasks
             with self.flush_condition:
                 for flag_name in flag_names:
-                    logger.debug(f"flushing {flag_name}")
+                    logger.debug(f'flushing {flag_name}')
                     # We add a new task with the highest priority to flush the
                     # last check-in. This task will be processed by the writer
                     # thread immediately.
@@ -684,15 +673,15 @@ class RunStatusReporter:
                 # If `block` is set, we wait until the writer thread finishes
                 # flushing the last check-in.
                 if block:
-                    logger.debug("blocking until the writer finishes...")
+                    logger.debug('blocking until the writer finishes...')
                     self.flush_condition.wait()
-                    logger.debug("done")
+                    logger.debug('done')
 
     def _check_in(
         self,
         *,
         expect_next_in: int = 0,
-        flag_name: str = "check_in",
+        flag_name: str = 'check_in',
         flush: bool = False,
         block: bool = False,
     ) -> None:
@@ -705,7 +694,7 @@ class RunStatusReporter:
             flush = True
 
         if self.stop_signal.is_set():
-            raise RuntimeError("check-in is not allowed after stopping the writer thread")
+            raise RuntimeError('check-in is not allowed after stopping the writer thread')
 
         with self.reporter_lock:
             self._increment(
@@ -726,7 +715,7 @@ class RunStatusReporter:
 
         By default this will block until the check-in is flushed.
         """
-        return self._check_in(flush=flush, block=block, flag_name="finished")
+        return self._check_in(flush=flush, block=block, flag_name='finished')
 
     # The instance method `report_progress` and `report_successful_finish` is patched into
     # the instance in `__post_init__`
@@ -781,12 +770,13 @@ REPORT_INTERVAL = 5  # 5 seconds
 
 
 class ScheduledStatusReporter(object):
-    def __init__(self,
-                 status_reporter: RunStatusReporter,
-                 flag: str = 'progress',
-                 touch_path: Optional[Path] = None,
-                 interval: int = REPORT_INTERVAL
-                 ):
+    def __init__(
+        self,
+        status_reporter: RunStatusReporter,
+        flag: str = 'progress',
+        touch_path: Optional[Path] = None,
+        interval: int = REPORT_INTERVAL,
+    ):
         self.status_reporter = status_reporter
         self.flag = flag
         self.touch_path = touch_path

@@ -1,16 +1,15 @@
-import time
-import queue
 import logging
+import queue
 import threading
+import time
 import weakref
+
 
 logger = logging.getLogger(__name__)
 
 
 class RequestQueue(object):
-    def __init__(self, name, max_queue_memory=0,
-                 retry_count=0, retry_interval=0):
-
+    def __init__(self, name, max_queue_memory=0, retry_count=0, retry_interval=0):
         self._client = None
 
         self.retry_count = retry_count or 1
@@ -100,8 +99,10 @@ class RequestQueue(object):
     def stop(self):
         pending_task_count = self._queue.qsize()
         if pending_task_count:
-            logger.warning(f'Processing {pending_task_count} pending tasks in the task queue \'{self._name}\'... '
-                           f'Please do not kill the process.')
+            logger.warning(
+                f"Processing {pending_task_count} pending tasks in the task queue '{self._name}'... "
+                f'Please do not kill the process.'
+            )
             self._queue.join()
         logger.debug('No pending tasks left.')
         self._shutdown = True

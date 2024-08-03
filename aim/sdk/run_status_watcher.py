@@ -1,21 +1,21 @@
 import json
-import time
-import queue
 import logging
+import queue
+import time
 
-from threading import Thread
-from pathlib import Path
-from cachetools.func import ttl_cache
-from typing import Dict, Optional, Generic, TypeVar
 from abc import abstractmethod
 from collections import OrderedDict
+from pathlib import Path
+from threading import Thread
+from typing import Dict, Generic, Optional, TypeVar
 
+from aim.ext.cleanup import AutoClean
+from aim.ext.notifier import NotificationSendError, Notifier, get_config, get_notifier
+from aim.ext.notifier.utils import get_working_directory
 from aim.sdk.repo import Repo
 from aim.sdk.run import Run
 from aim.storage.locking import AutoFileLock
-from aim.ext.notifier import get_config, get_notifier, Notifier, NotificationSendError
-from aim.ext.notifier.utils import get_working_directory
-from aim.ext.cleanup import AutoClean
+from cachetools.func import ttl_cache
 
 
 logger = logging.getLogger(__name__)
@@ -56,6 +56,7 @@ class RankedSet(Generic[T]):
 
 class RunVariable:
     """Representation of Run object with run.hash only. To be replaced with real Run in the future."""
+
     def __init__(self, run_hash: str):
         self.hash = run_hash
 
@@ -76,25 +77,19 @@ EventSet = RankedSet[Event]
 
 
 class Notification:
-    def __init__(self, *,
-                 obj_idx: Optional[str] = None,
-                 rank: Optional[int] = None,
-                 message: Optional[str] = None):
+    def __init__(self, *, obj_idx: Optional[str] = None, rank: Optional[int] = None, message: Optional[str] = None):
         self.rank = rank
         self.obj_idx = obj_idx
         self.message = message
 
     @abstractmethod
-    def is_sent(self):
-        ...
+    def is_sent(self): ...
 
     @abstractmethod
-    def update_last_sent(self):
-        ...
+    def update_last_sent(self): ...
 
     @abstractmethod
-    def get_msg_details(self):
-        ...
+    def get_msg_details(self): ...
 
 
 class StatusNotification(Notification):
@@ -120,8 +115,10 @@ class StatusNotification(Notification):
         elif last_event_idx == self.rank:
             return True
         else:
-            logger.warning(f'New event id {self.rank} for object \'{self.obj_idx}\' '
-                           f'is less than last reported event id {last_event_idx}.')
+            logger.warning(
+                f"New event id {self.rank} for object '{self.obj_idx}' "
+                f'is less than last reported event id {last_event_idx}.'
+            )
             return True
 
     def update_last_sent(self):
@@ -198,8 +195,10 @@ class NotificationQueue(object):
             try:
                 notification = self._queue.get(timeout=1)
                 if notification.is_sent():
-                    logger.debug(f'Notification for object \'{notification.obj_idx}\' '
-                                 f'with event ID {notification.rank} has already been sent. Skipping.')
+                    logger.debug(
+                        f"Notification for object '{notification.obj_idx}' "
+                        f'with event ID {notification.rank} has already been sent. Skipping.'
+                    )
                 else:
                     details = notification.get_msg_details()
                     try:
@@ -232,8 +231,8 @@ class RunStatusWatcherAutoClean(AutoClean['RunStatusWatcher']):
 
 class RunStatusWatcher:
     message_templates = {
-        'finished': 'Run \'{run.hash}\' finished without error.',
-        'starting': 'Run \'{run.hash}\' started.'
+        'finished': "Run '{run.hash}' finished without error.",
+        'starting': "Run '{run.hash}' started.",
     }
 
     def __init__(self, repo: Repo, background: bool = False):
@@ -250,7 +249,7 @@ class RunStatusWatcher:
         try:
             self.lock.acquire()
         except TimeoutError:
-            logger.error(f'Cannot start Run status watcher for \'{self.repo_path}\'. Failed to acquire lock.')
+            logger.error(f"Cannot start Run status watcher for '{self.repo_path}'. Failed to acquire lock.")
             return
 
         self._status_watch_dir: Path = self.repo_path / 'check_ins'
@@ -277,12 +276,14 @@ class RunStatusWatcher:
         lvl = get_config(self.repo_path).log_level
         if self._log_lvl_threshold is not None:
             if self._log_lvl_threshold != lvl:
-                logger.warning(f'Log Notifications level changed '
-                               f'from \'{logging.getLevelName(self._log_lvl_threshold)}\' '
-                               f'to \'{logging.getLevelName(lvl)}\'.')
+                logger.warning(
+                    f'Log Notifications level changed '
+                    f"from '{logging.getLevelName(self._log_lvl_threshold)}' "
+                    f"to '{logging.getLevelName(lvl)}'."
+                )
                 self._log_lvl_threshold = lvl
         else:
-            logger.warning(f'Running with Log Notifications level \'{logging.getLevelName(lvl)}\'')
+            logger.warning(f"Running with Log Notifications level '{logging.getLevelName(lvl)}'")
             self._log_lvl_threshold = lvl
         return lvl
 
@@ -290,7 +291,7 @@ class RunStatusWatcher:
         if not self.initialized:
             return
         logger.info('Starting watcher...')
-        notification = StatusNotification(message=f'Watcher is running for repo \'{self.repo_path}\'')
+        notification = StatusNotification(message=f"Watcher is running for repo '{self.repo_path}'")
         self.notifications_queue.add_notification(notification)
         if self.background:
             self.watcher_thread.start()
@@ -310,7 +311,7 @@ class RunStatusWatcher:
                 if event.next_event_in == 0:  # wait for next check-in for infinite time
                     continue
                 epoch_now = time.time()
-                failure = (event.next_event_in + GRACE_PERIOD < epoch_now - event.detected_epoch_time)
+                failure = event.next_event_in + GRACE_PERIOD < epoch_now - event.detected_epoch_time
                 if failure:
                     notification = StatusNotification(obj_idx=event.obj_idx, rank=event.idx)
                     self.notifications_queue.add_notification(notification)

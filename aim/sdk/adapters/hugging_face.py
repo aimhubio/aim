@@ -1,11 +1,12 @@
-from logging import getLogger
-from typing import Optional, List, Dict
-from difflib import SequenceMatcher
 from collections import defaultdict
+from difflib import SequenceMatcher
+from logging import getLogger
+from typing import Dict, List, Optional
 
 from aim.ext.resource.configs import DEFAULT_SYSTEM_TRACKING_INT
 from aim.sdk.num_utils import is_number
 from aim.sdk.run import Run
+
 
 try:
     from transformers.trainer_callback import TrainerCallback
@@ -69,8 +70,9 @@ class AimCallback(TrainerCallback):
             for key, value in combined_dict.items():
                 self._run.set(('hparams', key), value, strict=False)
         if model:
-            self._run.set('model', {**vars(model.config), 'num_labels': getattr(model, 'num_labels', None)},
-                          strict=False)
+            self._run.set(
+                'model', {**vars(model.config), 'num_labels': getattr(model, 'num_labels', None)}, strict=False
+            )
 
         # Store model configs as well
         # if hasattr(model, 'config') and model.config is not None:
@@ -103,12 +105,10 @@ class AimCallback(TrainerCallback):
             prefix_set = {'train_', 'eval_', 'test_'}
             for prefix in prefix_set:
                 if log_name.startswith(prefix):
-                    log_name = log_name[len(prefix):]
+                    log_name = log_name[len(prefix) :]
                     context = {'subset': prefix[:-1]}
                     if '_' in log_name:
-                        sub_dataset = AimCallback.find_most_common_substring(
-                            list(logs.keys())
-                        ).split(prefix)[-1]
+                        sub_dataset = AimCallback.find_most_common_substring(list(logs.keys())).split(prefix)[-1]
                         if sub_dataset != prefix.rstrip('_'):
                             log_name = log_name.split(sub_dataset)[-1].lstrip('_')
                             context['sub_dataset'] = sub_dataset
@@ -145,10 +145,8 @@ class AimCallback(TrainerCallback):
             for j in range(i + 1, len(names)):
                 string1 = names[i]
                 string2 = names[j]
-                match = SequenceMatcher(None, string1, string2).find_longest_match(
-                    0, len(string1), 0, len(string2)
-                )
-                matching_substring = string1[match.a:match.a + match.size]
+                match = SequenceMatcher(None, string1, string2).find_longest_match(0, len(string1), 0, len(string2))
+                matching_substring = string1[match.a : match.a + match.size]
                 substring_counts[matching_substring] += 1
 
         return max(substring_counts, key=lambda x: substring_counts[x]).rstrip('_')
