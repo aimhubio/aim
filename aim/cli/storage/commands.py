@@ -142,6 +142,6 @@ def reindex(ctx, yes):
     if not confirmed:
         return
 
-    repo._recreate_index(verbose=verbose)
+    repo._recreate_index()
 
     return
