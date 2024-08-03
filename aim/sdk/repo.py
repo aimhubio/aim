@@ -1019,8 +1019,7 @@ class Repo:
         if index_manager.run_needs_indexing(run_hash):
             index_manager.index(run_hash)
 
-    def _recreate_index(self, verbose=False):
-        import click
+    def _recreate_index(self):
         from tqdm import tqdm
 
         if self.is_remote_repo:
@@ -1043,6 +1042,4 @@ class Repo:
         # recreate the index db
         run_hashes = self._all_run_hashes()
         for run_hash in tqdm(run_hashes, desc='Indexing runs', total=len(run_hashes)):
-            if verbose:
-                click.echo(f'Indexing run {run_hash}')
             index_manager.index(run_hash)

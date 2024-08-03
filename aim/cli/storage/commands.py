@@ -125,7 +125,6 @@ def prune(ctx):
 
 @storage.command('reindex')
 @click.option('-y', '--yes', is_flag=True, help='Automatically confirm prompt')
-@click.option('-v', '--verbose', is_flag=True, help='Verbose output')
 @click.pass_context
 def reindex(ctx, yes):
     """Recreate index database from scratch."""
