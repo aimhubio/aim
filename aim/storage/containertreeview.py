@@ -120,8 +120,14 @@ class ContainerTreeView(TreeView):
         path: Union[AimObjectKey, AimObjectPath],
         values: List[Tuple[Union[AimObjectPath, AimObjectKey], AimObject]],
     ) -> None:
+        if path == Ellipsis:
+            path = ()
+        if isinstance(path, list):
+            path = tuple(path)
+        if not isinstance(path, tuple):
+            path = (path,)
         for key, value in values:
-            self.set(tuple(path) + (key,), value)
+            self.set(path + (key,), value)
 
     def iterlevel(
         self, path: Union[AimObjectKey, AimObjectPath] = (), level: int = 1
