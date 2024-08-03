@@ -183,7 +183,7 @@ class RepoIndexManager:
                 ).subtree('meta')
                 meta_run_tree = meta_tree.subtree('chunks').subtree(run_hash)
                 meta_run_tree.finalize(index=index)
-                if meta_run_tree['end_time'] is None:
+                if meta_run_tree.get('end_time') is None:
                     index['meta', 'chunks', run_hash, 'end_time'] = datetime.datetime.now(pytz.utc).timestamp()
             except (aimrocks.errors.RocksIOError, aimrocks.errors.Corruption):
                 logger.warning(f"Indexing thread detected corrupted run '{run_hash}'. Skipping.")
