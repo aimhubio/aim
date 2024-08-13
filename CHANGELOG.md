@@ -7,6 +7,7 @@
 
 ### Fixes
 - Fix bug in bookmark page where it was not scrollable if there was too many bookmarks (vinayan3)
+- Fix exception name in `storage/union.pyx` (sulan)
 
 ## 3.23.0 Jul 15, 2024
 
