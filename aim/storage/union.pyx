@@ -53,7 +53,7 @@ class ItemsIterator(ContainerItemsIterator):
         for prefix, iterator in self._iterators.items():
             try:
                 iterator.seek_to_first()
-            except (aimrocks.errorsRocksIOError, aimrocks.errors.Corruption):
+            except (aimrocks.errors.RocksIOError, aimrocks.errors.Corruption):
                 logger.debug(f'Detected corrupted db chunk \'{prefix}\'.')
                 corrupted_dbs.add(prefix)
         self._corrupted_dbs.update(corrupted_dbs)
