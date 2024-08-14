@@ -1,4 +1,4 @@
-from typing import Any, Iterator, Tuple, Union
+from typing import Any, Iterator, List, Tuple, Union
 
 from aim.storage import encoding as E
 from aim.storage import treeutils
@@ -114,6 +114,20 @@ class ContainerTreeView(TreeView):
         for path, value in treeutils.iter_decode_tree(it, level=1, skip_top_level=True):
             (key,) = path
             yield key, value
+
+    def update(
+        self,
+        path: Union[AimObjectKey, AimObjectPath],
+        values: List[Tuple[Union[AimObjectPath, AimObjectKey], AimObject]],
+    ) -> None:
+        if path == Ellipsis:
+            path = ()
+        if isinstance(path, list):
+            path = tuple(path)
+        if not isinstance(path, tuple):
+            path = (path,)
+        for key, value in values:
+            self.set(path + (key,), value)
 
     def iterlevel(
         self, path: Union[AimObjectKey, AimObjectPath] = (), level: int = 1

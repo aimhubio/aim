@@ -98,6 +98,13 @@ class ProxyTree(TreeView):
     def items(self, path: Union[AimObjectKey, AimObjectPath] = ()) -> Iterator[Tuple[AimObjectKey, AimObject]]:
         return self.items_eager(path)
 
+    def update(
+        self,
+        path: Union[AimObjectKey, AimObjectPath],
+        values: List[Tuple[Union[AimObjectKey, AimObjectPath], AimObject]],
+    ) -> None:
+        self._rpc_client.run_instruction(self._hash, self._handler, 'update', (path, values), is_write_only=True)
+
     def iterlevel(
         self, path: Union[AimObjectKey, AimObjectPath] = (), level: int = 1
     ) -> Iterator[Tuple[AimObjectPath, AimObject]]:
@@ -162,6 +169,13 @@ class SubtreeView(TreeView):
 
     def items(self, path: Union[AimObjectKey, AimObjectPath] = ()) -> Iterator[Tuple[AimObjectKey, AimObject]]:
         return self.tree.items(self.absolute_path(path))
+
+    def update(
+        self,
+        path: Union[AimObjectKey, AimObjectPath],
+        values: List[Tuple[Union[AimObjectPath, AimObjectKey], AimObject]],
+    ):
+        self.tree.update(self.absolute_path(path), values)
 
     def iterlevel(
         self, path: Union[AimObjectKey, AimObjectPath] = (), level: int = 1
