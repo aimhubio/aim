@@ -1,9 +1,10 @@
 # Changelog
 
-## Unreleased
+## 3.24.0 Aug 14, 2024
 
 ### Enhancements
 - Add read-only mode for Aim UI (mihran113)
+- Support of mass updates in remote tracking (peter-sk)
 
 ### Fixes
 - Fix bug in bookmark page where it was not scrollable if there was too many bookmarks (vinayan3)
