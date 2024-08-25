@@ -10,6 +10,7 @@ import hashlib
 memoize_cache = {}
 
 
+# Custom deep_copy to cover all types objects
 def deep_copy(obj):
     if isinstance(obj, (list, tuple)):
         return type(obj)(deep_copy(x) for x in obj)
@@ -27,6 +28,7 @@ def deep_copy(obj):
         return obj
 
 
+# memoize functions to cache the return values of heavy time functions per argument values
 def memoize_async(func):
     async def wrapper(*args, **kwargs):
         if func.__name__ not in memoize_cache:
@@ -57,10 +59,28 @@ def memoize(func):
     return wrapper
 
 
+# cutom `repo` object with sequence fetching functions used in reports to fetch values from BE based on queries
 class repo:
     @classmethod
     @memoize_async
-    async def fetch_metrics(self, query=""):
+    async def fetch_runs(self, query="True"):
+        type = 'run'
+        data = await search(type, query)
+        data = create_proxy(data.to_py())
+        items = []
+        i = 0
+        for item in data:
+            d = item
+            d["type"] = type
+            d["key"] = i
+            i = i + 1
+            items.append(d)
+        data.destroy()
+        return items
+
+    @classmethod
+    @memoize_async
+    async def fetch_metrics(self, query="True"):
         type = 'metric'
         data = await search(type, query)
         data = create_proxy(data.to_py())
@@ -77,7 +97,7 @@ class repo:
 
     @classmethod
     @memoize_async
-    async def fetch_images(self, query=""):
+    async def fetch_images(self, query="True"):
         type = 'images'
         data = await search(type, query)
         data = create_proxy(data.to_py())
@@ -94,7 +114,7 @@ class repo:
 
     @classmethod
     @memoize_async
-    async def fetch_audios(self, query=""):
+    async def fetch_audios(self, query="True"):
         type = 'audios'
         data = await search(type, query)
         data = create_proxy(data.to_py())
@@ -111,7 +131,7 @@ class repo:
 
     @classmethod
     @memoize_async
-    async def fetch_texts(self, query=""):
+    async def fetch_texts(self, query="True"):
         type = 'texts'
         data = await search(type, query)
         data = create_proxy(data.to_py())
@@ -128,7 +148,7 @@ class repo:
 
     @classmethod
     @memoize_async
-    async def fetch_figures(self, query=""):
+    async def fetch_figures(self, query="True"):
         type = 'figures'
         data = await search(type, query)
         data = create_proxy(data.to_py())
@@ -149,6 +169,7 @@ class repo:
 ####################
 
 
+# custom function to find the value of dot separated path in nested dicts
 def find(obj, element):
     keys = element.split(".")
     rv = obj
@@ -184,6 +205,7 @@ stroke_styles = [
 ]
 
 
+# reproducible key generation for function and group arguments
 def generate_key(data):
     content = str(data)
     return hashlib.md5(content.encode()).hexdigest()
@@ -214,12 +236,15 @@ def apply_group_value_pattern(value, list):
     return value
 
 
+# main data grouping function
+# grouping options can be callable or any dot separated paths
 @memoize
 def group(name, data, options, key=None):
     group_map = {}
     grouped_data = []
     items = deep_copy(data)
     for item in items:
+        # go over the data and find the each value corresponding to the grouping option
         group_values = []
         if callable(options):
             val = options(item)
@@ -253,6 +278,8 @@ def group(name, data, options, key=None):
             )
         }
     else:
+        # sort the grouped values based on the value type of each corresponding froup options
+        # priorities are as follows: digits, any basic type, None, (list, tuple, dict)
         for i, opt in enumerate(options):
             sorted_groups = {
                 k: v
@@ -274,6 +301,7 @@ def group(name, data, options, key=None):
 
     i = 0
     for group_key in sorted_groups:
+        # apply order values for further usage based on the sorting order above
         sorted_groups[group_key]["order"] = (
             sorted_groups[group_key]["val"][0] if callable(options) else i
         )
@@ -398,8 +426,10 @@ class Component(Element):
         render_to_layout(component_data)
 
     def group(self, prop, value=[]):
+        # group the data with the main grouping function
         group_map, group_data = group(prop, self.data, value, self.key)
 
+        # apply property values corresponding to the group order
         items = []
         for i, item in enumerate(self.data):
             elem = dict(item)
@@ -597,7 +627,7 @@ class JSON(Component):
         self.render()
 
 
-class Table(Component):
+class DataFrame(Component):
     def __init__(self, data, key=None):
         component_type = "DataFrame"
         component_key = update_viz_map(component_type, key)

@@ -13,7 +13,7 @@ import { parseStream } from 'utils/encoder/streamEncoding';
 import { AlignmentOptionsEnum } from 'utils/d3';
 import { filterMetricsData } from 'utils/app/filterMetricData';
 
-const seachRequests = {
+const searchRequests = {
   [SequenceTypesEnum.Metric]: createSearchRunsRequest(SequenceTypesEnum.Metric),
   [SequenceTypesEnum.Images]: createSearchRunsRequest(SequenceTypesEnum.Images),
   [SequenceTypesEnum.Audios]: createSearchRunsRequest(SequenceTypesEnum.Audios),
@@ -38,7 +38,7 @@ const objectDepths = {
 export async function search(sequenceName: SequenceTypesEnum, query: string) {
   let data: ReadableStream;
   try {
-    data = (await seachRequests[sequenceName].call({
+    data = (await searchRequests[sequenceName].call({
       q: query,
       report_progress: false,
     })) as ReadableStream; // @TODO write better code to avoid null check
