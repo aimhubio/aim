@@ -1,7 +1,5 @@
 ## Home Page
 
-<img referrerpolicy="no-referrer-when-downgrade" src="https://static.scarf.sh/a.png?x-pxid=0df03530-c22f-47c2-9db5-b0b923dde002" />
-
 
 Aim Home Page is a high-level overview of your training activities and how to find your way around the Aim UI.
 
