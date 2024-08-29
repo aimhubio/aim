@@ -1,5 +1,7 @@
 # Overview
 
+<img referrerpolicy="no-referrer-when-downgrade" src="https://static.scarf.sh/a.png?x-pxid=0df03530-c22f-47c2-9db5-b0b923dde002" />
+
 <div align="center">
   <img src="https://user-images.githubusercontent.com/13848158/154338760-edfe1885-06f3-4e02-87fe-4b13a403516b.png">
   <h3>An easy-to-use & supercharged open-source experiment tracker</h3>
