@@ -2,6 +2,9 @@ import os
 
 from setuptools import setup
 
+# The purpose of this file is to turn the static built files into a python package.
+# When running locally, this will install the latest local build as the aim-ui package
+# of the local build.
 
 here = os.path.abspath(os.path.dirname(__file__))
 
