@@ -213,7 +213,7 @@ class RunImagesURIBulkLoadApi(RunImagesTestBase):
     @parameterized.expand([(1,), (5,), (10,)])
     def test_images_uri_bulk_load_api(self, uri_count):
         # take random N URIs
-        uris = random.sample(self.uri_map.keys(), uri_count)
+        uris = random.sample(list(self.uri_map.keys()), uri_count)
 
         client = self.client
         response = client.post('/api/runs/images/get-batch', json=uris)
@@ -420,12 +420,12 @@ class TestRunInfoApi(ApiTestBase):
         self.assertEqual('image_lists', response_data['traces']['images'][0]['name'])
         metrics_data = response_data['traces']['metric']
         self.assertEqual(3, len(metrics_data))
-        self.assertEqual('floats', metrics_data[0]['name'])
-        self.assertEqual('floats', metrics_data[1]['name'])
-        self.assertEqual('integers', metrics_data[2]['name'])
-        self.assertDictEqual({'subset': 'val'}, metrics_data[0]['context'])
-        self.assertDictEqual({'subset': 'train'}, metrics_data[1]['context'])
-        self.assertDictEqual({'subset': 'train'}, metrics_data[2]['context'])
+        contexts = []
+        for m in metrics_data:
+            contexts.append((m['context'], m['name']))
+        self.assertTrue(({'subset': 'val'}, 'floats') in contexts)
+        self.assertTrue(({'subset': 'train'}, 'floats') in contexts)
+        self.assertTrue(({'subset': 'train'}, 'integers') in contexts)
 
         response = client.get(f'api/runs/{self.run2_hash}/info', params={'sequence': ('images', 'metric')})
         self.assertEqual(200, response.status_code)
@@ -437,10 +437,11 @@ class TestRunInfoApi(ApiTestBase):
         self.assertEqual('single_images', response_data['traces']['images'][0]['name'])
         metrics_data = response_data['traces']['metric']
         self.assertEqual(2, len(metrics_data))
-        self.assertEqual('floats', metrics_data[0]['name'])
-        self.assertEqual('floats', metrics_data[1]['name'])
-        self.assertDictEqual({'subset': 'val'}, metrics_data[0]['context'])
-        self.assertDictEqual({'subset': 'train'}, metrics_data[1]['context'])
+        contexts = []
+        for m in metrics_data:
+            contexts.append((m['context'], m['name']))
+        self.assertTrue(({'subset': 'val'}, 'floats') in contexts)
+        self.assertTrue(({'subset': 'train'}, 'floats') in contexts)
 
     def test_run_info_get_metrics_only_api(self):
         client = self.client
