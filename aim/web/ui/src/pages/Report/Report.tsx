@@ -20,6 +20,8 @@ import { TopBar } from 'config/stitches/layout';
 
 import Board from 'pages/Board/Board';
 
+import generateId from 'utils/generateId';
+
 import SaveReport from './components/SaveReport';
 import useReport from './useReport';
 
@@ -31,7 +33,7 @@ const markdownComponentsOverride = {
       return <pre style={{ display: 'inline-block' }}>{children[0]}</pre>;
     }
     const match = /language-(\w+)/.exec(className || '');
-
+    const board_id = generateId();
     if (match?.[1].startsWith('aim') && children?.[0]?.trim()) {
       let height: string | number = match[1].split('_')[1];
       if (height === undefined || height === '') {
@@ -44,7 +46,11 @@ const markdownComponentsOverride = {
         <div style={{ height, display: height === 0 ? 'none' : undefined }}>
           <Board
             key={children[0]}
-            data={{ code: children[0], path: node.position.start.line }}
+            data={{
+              code: children[0],
+              path: node.position.start.line,
+              id: board_id,
+            }}
             editMode={false}
             previewMode
             stateStr=''
