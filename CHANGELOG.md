@@ -1,4 +1,8 @@
 # Changelog
+## Unreleased
+
+### Enhancements
+- Add support for self-signed SSL certificates (mihran113)
 
 ## 3.24.0 Aug 14, 2024
 
