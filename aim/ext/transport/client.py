@@ -264,7 +264,9 @@ class Client:
         if queue_id != -1:
             self.get_queue().wait_for_finish()
 
-        response = requests.post(endpoint, json=request_data, stream=True, headers=self.request_headers, verify=self.ssl_certfile)
+        response = requests.post(
+            endpoint, json=request_data, stream=True, headers=self.request_headers, verify=self.ssl_certfile
+        )
 
         if response.status_code == 400:
             raise_exception(response.json().get('exception'))
