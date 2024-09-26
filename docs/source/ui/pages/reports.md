@@ -8,23 +8,25 @@ The following image shows an example of a report created from metrics that were 
 <img alt="View Mode" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/reports/view-mode.png">
 
 
-### Single report page
+### The report page
 In single report page you can find 2 modes: `view` and `edit`. 
 
 
-In `edit` mode you can create the report that you wish for and in view mode see the final result of it, the example shared above is of the `view` mode.
-
+Create the report in `edit` mode and view the final result in the `view` mode. The example above is on the `view` mode.
 You can use 
-**```aim** sections to retrieve data from BE and visualize them. The example shown below is an overview of the `edit` mode.
+**```aim** sections to retrieve data from Aim storage and visualize them. The example shown below is an overview of the `edit` mode.
 
 <img alt="Edit Mode" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/reports/edit-mode.png">
 
 
-To get acquainted with objects and methods to fetch and visualize data check out the sections below:
+The details on objects and methods for data fetching and visualization are in the next sections.
 
 ### Data fetching methods
 
-To retrieve data from BE the following methods of `repo` object
+To retrieve data from Aim storage the following methods of `repo` object.
+
+__*Note:*__ the `repo` object is by default available in the report context.
+
 
 | Method | Description |
 | -------- | ----------- |
@@ -39,15 +41,20 @@ All the methods accept a query parameter which defaults to `True` (fetches all t
 The results of this 
 Example:
 
-```python
+````python
 ```aim
 metrics = repo.fetch_metrics('metric.name == "loss"')
 linechart = LineChart(metrics)
-```\
 ```
+````
 
 
 ### Visualization objects and methods
+
+The following classes and methods are used to visualize all the data types fetched from Aim storage. 
+There are small examples provided with each one showing a basic usage.
+
+
 
 - `LineChart`
 
@@ -63,11 +70,12 @@ Parameters:
 | `y`| `str` | `values`| the path to the property for the y-axis value |
 
 Example:
-
+````python
 ```aim
 metrics = repo.fetch_metrics()
 linechart = LineChart(metrics, x='timestamps')
 ```
+````
 
 - `ImagesList`
 
@@ -84,11 +92,12 @@ Parameters:
 
 Example:
 
-```
+````python
+```aim
 images = repo.fetch_images()
 ImagesList(images)
 ```
-
+````
 
 - `AudiosList`
 
@@ -102,10 +111,13 @@ Parameters:
 | `data` | `List[dict]` | required | the data to be plotted |
 
 Example:
-```
+````python
+```aim
 audios = repo.fetch_audios()
 AudiosList(audios)
 ```
+````
+
 - `FiguresList`
 
 Signature:
@@ -118,10 +130,13 @@ Parameters:
 | `data` | `List[dict]` | required| the data to be plotted |
 
 Example:
-```
+````python
+```aim
 figures = repo.fetch_figures()
 FiguresList(figures)
 ```
+````
+
 - `TextsList`
 
 Signature:
@@ -135,10 +150,12 @@ Parameters:
 
 
  Example:
-```
+````python
+```aim
 texts = repo.fetch_texts()
 TextsList(texts)
 ```
+````
 
 
 All the aforementioned objects have `group` method available to them:
@@ -154,22 +171,25 @@ def group(prop, values=[]):
 The `group` method can be applied multiple times sequentially.
 
 Example:
-```
+````python
+```aim
 metrics = repo.fetch_metrics()
 linechart = LineChart(metrics)
 linechart.group('color', ['run.hash'])
 linechart.group('row', ['metric_name'])
 ```
+````
 
 <img alt="Grouping Example" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/reports/grouping-example.png">
 
 ### Search Report 
-You can easily find the report in a big pile with the search ba.
+The search bar is available so you can easily find the report you are looking for.
+ 
 <img alt="Search Report" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/reports/search-report.png">
 
 ### Delete Report
     
-You can find the `Delete` button under the options button in the upper right corner of the report card. 
+The Delete button is available with the options button in the upper right corner of the report card. 
 It will open a modal, where you can confirm or cancel the deletion.
 
 <img alt="Delete Report" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/reports/delete-report.png">
