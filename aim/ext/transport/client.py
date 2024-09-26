@@ -1,6 +1,7 @@
 import base64
 import logging
 import os
+import ssl
 import threading
 import uuid
 import weakref
@@ -10,6 +11,7 @@ from typing import Tuple
 
 import requests
 
+from aim.ext.transport.config import AIM_CLIENT_SSL_CERTIFICATES_FILE
 from aim.ext.transport.heartbeat import HeartbeatSender
 from aim.ext.transport.message_utils import (
     decode_tree,
@@ -43,6 +45,13 @@ class Client:
         self._http_protocol = 'http://'
         self._ws_protocol = 'ws://'
         self.request_headers = {}
+
+        self.ssl_certfile = os.getenv(AIM_CLIENT_SSL_CERTIFICATES_FILE)
+        self.ssl_context = None
+        if self.ssl_certfile:
+            self.ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+            self.ssl_context.load_cert_chain(certfile=self.ssl_certfile)
+
         self.protocol_probe()
 
         self._resource_pool = weakref.WeakValueDictionary()
@@ -76,7 +85,7 @@ class Client:
 
         endpoint = f'https://{self.remote_path}/status/'
         try:
-            response = requests.get(endpoint, headers=self.request_headers, timeout=10)
+            response = requests.get(endpoint, headers=self.request_headers, timeout=10, verify=self.ssl_certfile)
             if response.status_code == 200:
                 self._http_protocol = 'https://'
                 self._ws_protocol = 'wss://'
@@ -132,7 +141,7 @@ class Client:
 
     def client_heartbeat(self):
         endpoint = f'{self._http_protocol}{self._client_endpoint}/heartbeat/{self.uri}/'
-        response = requests.get(endpoint, headers=self.request_headers, timeout=10)
+        response = requests.get(endpoint, headers=self.request_headers, timeout=10, verify=self.ssl_certfile)
         response_json = response.json()
         if response.status_code != 200:
             raise_exception(response_json.get('message'))
@@ -145,7 +154,7 @@ class Client:
     )
     def connect(self):
         endpoint = f'{self._http_protocol}{self._client_endpoint}/connect/{self.uri}/'
-        response = requests.get(endpoint, headers=self.request_headers, timeout=10)
+        response = requests.get(endpoint, headers=self.request_headers, timeout=10, verify=self.ssl_certfile)
         response_json = response.json()
         if response.status_code != 200:
             raise_exception(response_json.get('message'))
@@ -154,7 +163,7 @@ class Client:
 
     def reconnect(self):
         endpoint = f'{self._http_protocol}{self._client_endpoint}/reconnect/{self.uri}/'
-        response = requests.get(endpoint, headers=self.request_headers, timeout=10)
+        response = requests.get(endpoint, headers=self.request_headers, timeout=10, verify=self.ssl_certfile)
         response_json = response.json()
         if response.status_code != 200:
             raise_exception(response_json.get('message'))
@@ -170,7 +179,7 @@ class Client:
             self._ws.close()
 
         endpoint = f'{self._http_protocol}{self._client_endpoint}/disconnect/{self.uri}/'
-        response = requests.get(endpoint, headers=self.request_headers, timeout=10)
+        response = requests.get(endpoint, headers=self.request_headers, timeout=10, verify=self.ssl_certfile)
         response_json = response.json()
         if response.status_code != 200:
             raise_exception(response_json.get('message'))
@@ -181,7 +190,7 @@ class Client:
         self,
     ):
         endpoint = f'{self._http_protocol}{self._client_endpoint}/get-version/'
-        response = requests.get(endpoint, headers=self.request_headers, timeout=10)
+        response = requests.get(endpoint, headers=self.request_headers, timeout=10, verify=self.ssl_certfile)
         response_json = response.json()
         if response.status_code == 404:
             return '<3.19.0'
@@ -198,7 +207,7 @@ class Client:
             'args': base64.b64encode(args).decode(),
         }
 
-        response = requests.post(endpoint, json=request_data, headers=self.request_headers)
+        response = requests.post(endpoint, json=request_data, headers=self.request_headers, verify=self.ssl_certfile)
         response_json = response.json()
         if response.status_code == 400:
             raise_exception(response_json.get('exception'))
@@ -215,7 +224,7 @@ class Client:
         if queue_id != -1:
             self.get_queue().wait_for_finish()
 
-        response = requests.get(endpoint, headers=self.request_headers, timeout=10)
+        response = requests.get(endpoint, headers=self.request_headers, timeout=10, verify=self.ssl_certfile)
         response_json = response.json()
         if response.status_code == 400:
             raise_exception(response_json.get('exception'))
@@ -255,7 +264,9 @@ class Client:
         if queue_id != -1:
             self.get_queue().wait_for_finish()
 
-        response = requests.post(endpoint, json=request_data, stream=True, headers=self.request_headers)
+        response = requests.post(
+            endpoint, json=request_data, stream=True, headers=self.request_headers, verify=self.ssl_certfile
+        )
 
         if response.status_code == 400:
             raise_exception(response.json().get('exception'))
@@ -297,6 +308,7 @@ class Client:
                 f'{self._ws_protocol}{self._tracking_endpoint}/{self.uri}/write-instruction/',
                 additional_headers=self.request_headers,
                 max_size=None,
+                ssl_context=self.ssl_context,
             )
 
         return self._ws

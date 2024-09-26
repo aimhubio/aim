@@ -210,6 +210,26 @@ where `--ssl-keyfile` is the path to the private key file for the certificate an
 (check out the [Aim CLI](../refs/cli.html#server) here).
 
 
+If you're using self-signed certificates the client has to be configured accordingly, otherwise the client will automatically detect if the server supports secure connection or not.
+Please set __AIM_CLIENT_SSL_CERTIFICATES_FILE__ environment variable to the file, where PEM encoded root certificates are located, e.g.
+
+```shell
+export __AIM_CLIENT_SSL_CERTIFICATES_FILE__=/path/of/the/certs/file
+```
+
+__*Note:*__
+For the sake of convenience of providing only one file to the client, the private key will be taken from certfile as well.
+The following example will do the trick:
+
+```shell
+# generate the cert and key files
+openssl genrsa -out server.key 2048
+openssl req -new -x509 -sha256 -key server.key -out server.crt -days 3650 -subj '/CN={DOMAIN_NAME}'
+# append the private key to the certs in a new file
+cat server.crt server.key > server.includesprivatekey.pem
+# set the env variable for aim client
+export __AIM_CLIENT_SSL_CERTIFICATES_FILE__=./server.includesprivatekey.pem
+```
 ### Conclusion
 
 As you can see, aim remote tracking server allows running experiments on multiple hosts with simple setup and
