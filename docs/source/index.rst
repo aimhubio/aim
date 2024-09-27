@@ -30,6 +30,7 @@
    ui/pages/table.md
    ui/pages/bookmarks.md
    ui/pages/tags.md
+   ui/pages/reports.md
 
 
 .. toctree::

@@ -11,7 +11,7 @@ import { styled } from 'config/stitches';
 export const ToastRoot: StyledComponent<typeof Toast.Root, any> = styled(
   Toast.Root,
   {
-    bc: '$textPrimary',
+    bc: '$background-default-text-deep',
     color: 'white',
     display: 'flex',
     bs: 'hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px',
@@ -41,13 +41,13 @@ export const ToastRoot: StyledComponent<typeof Toast.Root, any> = styled(
       status: {
         info: {},
         success: {
-          bc: '$success100',
+          bc: '$background-default-success-plain',
         },
         warning: {
-          bc: '$warning100',
+          bc: '$background-default-warning-plain',
         },
         danger: {
-          bc: '$danger100',
+          bc: '$background-default-danger-plain',
         },
       },
     },
@@ -87,6 +87,7 @@ export const ToastViewPort = styled(Toast.Viewport, {
   padding: '$8',
   gap: '$5',
   maxWidth: '50vw',
+  zIndex: '$max',
   minWidth: '300px',
   margin: 0,
   listStyle: 'none',

@@ -9,6 +9,7 @@ export interface IIllustrationProps {
   className?: string;
   size?: IllustrationSizeType;
   showImage?: boolean;
+  children?: React.ReactNode;
 }
 
 export type IllustrationSizeType = 'small' | 'medium' | 'large' | 'xLarge';

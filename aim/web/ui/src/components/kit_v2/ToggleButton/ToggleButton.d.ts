@@ -1,5 +1,3 @@
-import { ColorPaletteType } from 'config/stitches/types';
-
 import { IButtonProps } from '../Button';
 
 export interface IToggleButtonProps {
@@ -9,14 +7,14 @@ export interface IToggleButtonProps {
    * @example
    * <ToggleButton size="sm" />
    */
-  size: IButtonProps['size'];
+  size?: IButtonProps['size'];
   /**
    * The color of the button.
    * @default 'primary'
    * @example
    * <ToggleButton color="secondary" />
    */
-  color: ColorPaletteType;
+  color?: IButtonProps['color'];
   /**
    * The change callback.
    * @example
@@ -55,4 +53,10 @@ export interface IToggleButtonProps {
    * <ToggleButton leftValue="left" />
    */
   leftValue: string;
+  /**
+   *  The disabled state of the button.
+   *  @example
+   * <ToggleButton disabled={true} />
+   */
+  disabled?: boolean;
 }

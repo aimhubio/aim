@@ -9,7 +9,7 @@ const Container = styled('button', {
   fontWeight: '$2',
   cursor: 'pointer',
   borderRadius: '$3',
-  transition: 'all 0.2s ease-in-out',
+  transition: 'all 0.18s ease-out',
   fontSize: '$2',
   variants: {
     size: {

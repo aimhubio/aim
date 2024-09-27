@@ -49,6 +49,7 @@ export type IconName =
   | 'metrics'
   | 'tags'
   | 'bookmarks'
+  | 'reports'
   | 'runs'
   | 'back-left'
   | 'back-down'
