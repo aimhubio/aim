@@ -7,12 +7,18 @@ const Container = styled('div', {
   br: '$3',
   transition: 'all 0.2s ease-out',
   cursor: 'pointer',
-  color: '#454545',
+  color: '$text-default-text-deep',
   fontSize: '$3',
   '&:hover': {
-    bc: '#EFF0F2',
+    bc: '$background-hover-neutral-airly',
   },
   variants: {
+    disabled: {
+      true: {
+        pointerEvents: 'none',
+        color: '$colors$text-disable-text-subtle',
+      },
+    },
     size: {
       sm: {
         height: '$1',

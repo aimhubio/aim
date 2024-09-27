@@ -1,13 +1,13 @@
-import React from 'react';
+import * as React from 'react';
 
 import { IconEye } from '@tabler/icons-react';
 
 import ButtonGroup from '../ButtonGroup';
 import Button from '../Button';
 import IconButton from '../IconButton';
+import Text from '../Text';
 
 import { IQueryBadgeProps } from './QueryBadge.d';
-import { ButtonText } from './QueryBadge.style';
 
 /**
  * @component QueryBadge
@@ -47,7 +47,7 @@ const QueryBadge = React.forwardRef<
           css={color === 'primary' ? { bc: '$primary10' } : {}}
           horizontalSpacing='compact'
         >
-          <ButtonText
+          <Text
             mono
             color={
               disabled
@@ -58,7 +58,7 @@ const QueryBadge = React.forwardRef<
             }
           >
             {children}
-          </ButtonText>
+          </Text>
         </Button>
         <IconButton
           icon={<IconEye />}
@@ -70,4 +70,5 @@ const QueryBadge = React.forwardRef<
 );
 
 QueryBadge.displayName = 'QueryBadge';
+
 export default React.memo(QueryBadge);

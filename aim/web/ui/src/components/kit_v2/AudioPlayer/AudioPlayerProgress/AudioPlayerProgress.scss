@@ -1,0 +1,78 @@
+@use 'src/styles/abstracts' as *;
+
+.AudioPlayerProgress {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  &__timer {
+    display: flex;
+    span {
+      width: 2rem;
+      text-align: right;
+      @include monospaceFontFamily();
+      &:last-child {
+        text-align: left;
+      }
+    }
+    &-long {
+      min-width: toRem(74px);
+      span {
+        min-width: 2.5rem;
+        text-align: right;
+        display: inline-block;
+        &:last-child {
+          text-align: left;
+        }
+      }
+    }
+  }
+  &__progressSlider {
+    margin: 0 $space-xxxs 0 $space-xxs;
+    height: toRem(40px);
+    flex: 1;
+    overflow: hidden;
+    .MuiSlider-root {
+      height: 100% !important;
+    }
+    &.Slider {
+      &:hover {
+        .MuiSlider-thumb {
+          opacity: 1;
+          visibility: visible;
+          margin-top: 0;
+        }
+        .Mui-disabled {
+          .MuiSlider-thumb {
+            opacity: 0;
+            visibility: hidden;
+          }
+        }
+      }
+      .MuiSlider {
+        &-root {
+          height: 0.375rem;
+          display: flex;
+          align-items: center;
+        }
+        &-thumb {
+          width: 0.5rem;
+          height: 0.5rem;
+          box-shadow: unset;
+          margin-top: 0;
+          transition: opacity 0.18s ease-out;
+          opacity: 0;
+          visibility: hidden;
+          &:hover {
+            box-shadow: unset;
+          }
+          &::after {
+            width: toRem(18px);
+            height: toRem(22px);
+            top: toRem(-6px);
+            left: toRem(-5px);
+          }
+        }
+      }
+    }
+  }
+}
