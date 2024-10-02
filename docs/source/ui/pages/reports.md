@@ -161,12 +161,12 @@ TextsList(texts)
 All the aforementioned objects have `group` method available to them:
 
 ```python
-def group(prop, values=[]):
+def group(prop: str, value: Union[str, list]):
     ...
 ```
-`prop`- name of the property to be grouped by. Available options are: `color`, `stroke_style`, `row`, `column`
+`prop`- name of the property to be grouped by. Available options are: `color`, `stroke_style`, `row`, `column` (the first 2 are available for `LineChart `only)
 
-`value`- list of values of sequence fields to be grouped by. Available fields are all those fields that are also available in grouping options of the explorer pages.
+`value`- single or multiple values of sequence fields to be grouped by. Available fields are all those fields that are also available in grouping options of the explorer pages.
 
 The `group` method can be applied multiple times sequentially.
 
@@ -175,8 +175,8 @@ Example:
 ```aim
 metrics = repo.fetch_metrics()
 linechart = LineChart(metrics)
-linechart.group('color', ['run.hash'])
-linechart.group('row', ['metric_name'])
+linechart.group('color', 'run.hash')
+linechart.group('row', ['metric.name', 'metric.context.subset'])
 ```
 ````
 

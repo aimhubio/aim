@@ -425,7 +425,10 @@ class Component(Element):
 
         render_to_layout(component_data)
 
-    def group(self, prop, value=[]):
+    def group(self, prop, value):
+        if isinstance(value, str):
+            value = [value]
+
         # group the data with the main grouping function
         group_map, group_data = group(prop, self.data, value, self.key)
 
