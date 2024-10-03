@@ -229,11 +229,14 @@ class DB(object):
             # delete index db and mark as corrupted
             corruption_marker = Path(index_path) / '.corrupted'
             if not corruption_marker.exists():
-                logger.warning('Corrupted index db. Deleting the index db to avoid errors. '
-                               'Please run `aim storage reindex command to restore optimal performance.`')
-                shutil.rmtree(index_path)
-                Path(index_path).mkdir()
-                corruption_marker.touch()
+                # discard the case when index db does not exist
+                rocks_current_path = Path(index_path) / 'CURRENT'
+                if rocks_current_path.exists():
+                    logger.warning('Corrupted index db. Deleting the index db to avoid errors. '
+                                   'Please run `aim storage reindex command to restore optimal performance.`')
+                    shutil.rmtree(index_path)
+                    Path(index_path).mkdir()
+                    corruption_marker.touch()
             index_db = None
         except Exception:
             index_db = None
