@@ -7,6 +7,7 @@ export PATH=/opt/python/${PYTHON_VERSION}/bin:$PATH
 python -m pip cache purge
 echo "build wheels for ${PYTHON_VERSION}"
 python -m pip install build
+python -m pip install setuptools
 python -m build
 pip install dist/*${PYTHON_VERSION}*.whl
 pip install git+https://github.com/aimhubio/auditwheel.git@include-exclude-new
