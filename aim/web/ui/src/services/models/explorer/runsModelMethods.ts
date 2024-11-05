@@ -245,7 +245,7 @@ function getRunsModelMethods(
               count++;
             }
           }
-          const { data, params, metricsColumns, selectedRows } =
+          const { data, params, metricsColumns, selectedRows, includeCreator } =
             processData(runsData);
           const tableData = getDataAsTableRows(data, metricsColumns, params);
           const tableColumns = getRunsTableColumns(
@@ -253,6 +253,7 @@ function getRunsModelMethods(
             params,
             model.getState()?.config?.table.columnsOrder!,
             model.getState()?.config?.table.hiddenColumns!,
+            includeCreator,
           );
           updateTableData(tableData, tableColumns, configData);
 
@@ -306,15 +307,15 @@ function getRunsModelMethods(
     configData = model.getState()!.config!,
     shouldURLUpdate?: boolean,
   ): void {
-    const { data, params, metricsColumns, selectedRows } = processData(
-      model.getState()?.rawData,
-    );
+    const { data, params, metricsColumns, selectedRows, includeCreator } =
+      processData(model.getState()?.rawData);
     const tableData = getDataAsTableRows(data, metricsColumns, params);
     const tableColumns: ITableColumn[] = getRunsTableColumns(
       metricsColumns,
       params,
       configData?.table?.columnsOrder!,
       configData?.table?.hiddenColumns!,
+      includeCreator,
     );
     model.setState({
       config: configData,
@@ -387,6 +388,7 @@ function getRunsModelMethods(
     selectedRows: any;
     runHashArray: string[];
     unselectedRowsCount: number;
+    includeCreator: boolean;
   } {
     const grouping = model.getState()?.config?.grouping;
     const paletteIndex: number = grouping?.paletteIndex || 0;
@@ -397,9 +399,11 @@ function getRunsModelMethods(
     let params: string[] = [];
     let runProps: string[] = [];
     let unselectedRowsCount = 0;
+    let includeCreator = false;
     data?.forEach((run: IRun<IParamTrace>, index) => {
       params = params.concat(getObjectPaths(run.params, run.params));
       runProps = runProps.concat(getObjectPaths(run.props, run.props));
+      includeCreator = includeCreator || run.props.creator != null;
       const metricsValues: Record<
         string,
         Record<MetricsValueKeyEnum, number | string>
@@ -462,6 +466,7 @@ function getRunsModelMethods(
       selectedRows,
       runHashArray,
       unselectedRowsCount,
+      includeCreator,
     };
   }
 
@@ -676,6 +681,7 @@ function getRunsModelMethods(
           experimentId: metric.run.props.experiment?.id ?? '',
           run: metric.run.props.name,
           description: metric.run.props?.description ?? '-',
+          creator: metric.run.props?.creator?.username ?? '',
           date: moment(metric.run.props.creation_time * 1000).format(
             TABLE_DATE_FORMAT,
           ),
@@ -811,7 +817,7 @@ function getRunsModelMethods(
 
   function onExportTableData(): void {
     // @TODO need to get data and params from state not from processData
-    const { data, params, metricsColumns } = processData(
+    const { data, params, metricsColumns, includeCreator } = processData(
       model.getState()?.rawData,
     );
     const tableData = getDataAsTableRows(data, metricsColumns, params, true);
@@ -821,6 +827,7 @@ function getRunsModelMethods(
       params,
       configData?.table.columnsOrder!,
       configData?.table.hiddenColumns!,
+      includeCreator,
     );
     const excludedFields: string[] = ['#', 'actions'];
     const filteredHeader: string[] = tableColumns.reduce(
@@ -877,8 +884,14 @@ function getRunsModelMethods(
   }
 
   function updateData(newData: any): void {
-    const { data, params, metricsColumns, selectedRows, unselectedRowsCount } =
-      processData(newData);
+    const {
+      data,
+      params,
+      metricsColumns,
+      selectedRows,
+      unselectedRowsCount,
+      includeCreator,
+    } = processData(newData);
     if (unselectedRowsCount) {
       onNotificationAdd({
         notification: {
@@ -901,6 +914,7 @@ function getRunsModelMethods(
       params,
       model.getState()?.config?.table.columnsOrder!,
       model.getState()?.config?.table.hiddenColumns!,
+      includeCreator,
     );
     const lastRowKey = newData[newData.length - 1].hash;
     model.setState({
