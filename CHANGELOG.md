@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.25.1 Nov 6, 2024
+- Fix corruption marking on empty index db (mihran113)
+
 ## 3.25.0 Oct 2, 2024
 
 ### Enhancements:

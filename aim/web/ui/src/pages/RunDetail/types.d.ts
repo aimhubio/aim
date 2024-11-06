@@ -41,6 +41,10 @@ export interface IRunInfo {
     id: string;
     name: string;
   };
+  creator: {
+    email: string;
+    username: string;
+  };
   name: string;
   description: string;
   tags: any[];
