@@ -3,14 +3,14 @@ import classNames from 'classnames';
 
 import { Link } from '@material-ui/core';
 
-import { IExperimentNameBoxProps } from '.';
+import { IRunCreatorBoxProps } from '.';
 
 import './RunCreatorBox.scss';
 
-const ExperimentNameBox = ({ creatorUsername }: IExperimentNameBoxProps) => {
+const RunCreatorBox = ({ creatorUsername }: IRunCreatorBoxProps) => {
   return (
     <div
-      className={classNames('ExperimentNameBox', {
+      className={classNames('RunCreatorBox', {
         isHidden: creatorUsername === '',
       })}
     >
@@ -23,4 +23,4 @@ const ExperimentNameBox = ({ creatorUsername }: IExperimentNameBoxProps) => {
   );
 };
 
-export default ExperimentNameBox;
+export default RunCreatorBox;

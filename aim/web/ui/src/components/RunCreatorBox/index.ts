@@ -1,5 +1,5 @@
-import ExperimentNameBox from './RunCreatorBox';
+import RunCreatorBox from './RunCreatorBox';
 
 export * from './RunCreatorBox.d';
 
-export default ExperimentNameBox;
+export default RunCreatorBox;

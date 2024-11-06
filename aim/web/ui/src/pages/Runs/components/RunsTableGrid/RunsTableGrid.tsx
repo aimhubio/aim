@@ -6,7 +6,7 @@ import RunNameColumn from 'components/Table/RunNameColumn';
 import GroupedColumnHeader from 'components/Table/GroupedColumnHeader';
 import AttachedTagsList from 'components/AttachedTagsList/AttachedTagsList';
 import ExperimentNameBox from 'components/ExperimentNameBox';
-import RunCreatorBox from 'components/RunCreatorBox/RunCreatorBox';
+import RunCreatorBox from 'components/RunCreatorBox';
 
 import COLORS from 'config/colors/colors';
 import { TABLE_DEFAULT_CONFIG } from 'config/table/tableConfigs';

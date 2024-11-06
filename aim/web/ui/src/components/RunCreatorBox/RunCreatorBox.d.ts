@@ -1,3 +1,3 @@
-export interface IExperimentNameBoxProps {
+export interface IRunCreatorBoxProps {
   creatorUsername?: string;
 }
