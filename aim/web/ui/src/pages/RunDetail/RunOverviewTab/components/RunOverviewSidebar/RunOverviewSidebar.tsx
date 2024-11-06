@@ -1,9 +1,10 @@
 import React from 'react';
+import Avatar from 'react-avatar';
 import { NavLink, useRouteMatch } from 'react-router-dom';
 import classNames from 'classnames';
 import moment from 'moment';
 
-import { Divider } from '@material-ui/core';
+import { Box, Divider, Link } from '@material-ui/core';
 
 import { Button, Icon, Text } from 'components/kit';
 import AttachedTagsList from 'components/AttachedTagsList/AttachedTagsList';
@@ -11,6 +12,7 @@ import CopyToClipBoard from 'components/CopyToClipBoard/CopyToClipBoard';
 
 import runDetailAppModel from 'services/models/runs/runDetailAppModel';
 
+import stringToColor from 'utils/stringToColor';
 import { processDurationTime } from 'utils/processDurationTime';
 
 import { IRunOverviewSidebarProps } from './RunOverviewSidebar.d';
@@ -201,6 +203,41 @@ function RunOverviewSidebar({
           )}
         </div>
         <Divider className='RunOverviewSidebar__section__Divider' />
+        {info?.creator && (
+          <div className='RunOverviewSidebar__section RunOverviewSidebar__section__creator'>
+            <Text weight={600} size={18} tint={100} component='h3'>
+              Creator
+            </Text>
+            <div className='RunOverviewSidebar__section__creator__avatar'>
+              <Link
+                href={`${window.location.origin}/${info.creator.username}`}
+                underline='none'
+              >
+                <Box css={{ display: 'flex' }}>
+                  <Box>
+                    <Avatar
+                      name={info.creator.username}
+                      color={stringToColor(info.creator.username)}
+                      size='48'
+                      round={true}
+                      style={{ fontWeight: 600 }}
+                      textSizeRatio={1.75}
+                    />
+                  </Box>
+                  <Box css={{ marginLeft: '16px' }}>
+                    <Text weight={600} size={18} tint={100} component='h2'>
+                      {info.creator.username}
+                    </Text>
+                    <Text tint={100}> {info.creator.email} </Text>
+                  </Box>
+                </Box>
+              </Link>
+            </div>
+          </div>
+        )}
+        {info?.creator && (
+          <Divider className='RunOverviewSidebar__section__Divider' />
+        )}
         <div className='RunOverviewSidebar__section RunOverviewSidebar__section__insights'>
           <Text weight={600} size={18} tint={100} component='h3'>
             Insights

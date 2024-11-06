@@ -4,6 +4,7 @@ export interface IRun<T> {
   params: IRunParams;
   props: {
     experiment: { name: string; id: string; description: string } | null;
+    creator: { username: string; email: string; photo: string | null } | null;
     name: string;
     creation_time: number;
     end_time: number;
