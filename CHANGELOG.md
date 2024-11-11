@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.25.2 
+- Fix aggregated metrics' computations (mihran113)
+
 ## 3.25.1 Nov 6, 2024
 - Fix corruption marking on empty index db (mihran113)
 
