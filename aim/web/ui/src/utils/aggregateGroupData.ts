@@ -106,9 +106,7 @@ export function aggregateGroupData({
               (scale.yAxis === ScaleEnum.Linear || y > 0)
             ) {
               if (yValuesPerX.hasOwnProperty(value)) {
-                if (!yValuesPerX[value].includes(y)) {
-                  yValuesPerX[value].push(y);
-                }
+                yValuesPerX[value].push(y);
               } else {
                 yValuesPerX[value] = [y];
               }
