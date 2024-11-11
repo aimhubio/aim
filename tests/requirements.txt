@@ -1,7 +1,7 @@
 -r ../requirements.txt
 torch
 tensorflow
-deeplake
+deeplake<4.0.0 # update when proper documentation is available
 # hub
 fastapi>=0.87.0
 httpx
