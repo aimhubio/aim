@@ -216,14 +216,25 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
         return [tag.name for tag in self.tags_obj]
 
     def add_tag(self, value: str) -> None:
+        def unsafe_add_tag():
+            if value is None:
+                tag = None
+            else:
+                tag = session.query(TagModel).filter(TagModel.name == value).first()
+                if not tag:
+                    tag = TagModel(value)
+                    session.add(tag)
+            self._model.tags.append(tag)
+            session.add(self._model)
+
         session = self._session
-        tag = session.query(TagModel).filter(TagModel.name == value).first()
-        if not tag:
-            tag = TagModel(value)
-            session.add(tag)
-        self._model.tags.append(tag)
-        session.add(self._model)
-        session_commit_or_flush(session)
+        unsafe_add_tag()
+        try:
+            session_commit_or_flush(session)
+        except IntegrityError:
+            session.rollback()
+            unsafe_add_tag()
+            session_commit_or_flush(session)
 
     def remove_tag(self, tag_name: str) -> bool:
         session = self._session
