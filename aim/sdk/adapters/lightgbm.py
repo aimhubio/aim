@@ -3,6 +3,7 @@ from typing import Optional
 from aim import Run
 from aim.ext.resource import DEFAULT_SYSTEM_TRACKING_INT
 
+
 try:
     from lightgbm.callback import CallbackEnv
 except ImportError:
@@ -19,12 +20,14 @@ class AimCallback:
     https://lightgbm.readthedocs.io/en/latest/pythonapi/lightgbm.record_evaluation.html
     """
 
-    def __init__(self, repo: Optional[str] = None,
-                 experiment: Optional[str] = None,
-                 system_tracking_interval: Optional[int]
-                 = DEFAULT_SYSTEM_TRACKING_INT,
-                 log_system_params: Optional[bool] = True,
-                 capture_terminal_logs: Optional[bool] = True,):
+    def __init__(
+        self,
+        repo: Optional[str] = None,
+        experiment: Optional[str] = None,
+        system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT,
+        log_system_params: Optional[bool] = True,
+        capture_terminal_logs: Optional[bool] = True,
+    ):
         self._repo_path = repo
         self._experiment = experiment
         self._system_tracking_interval = system_tracking_interval
@@ -64,11 +67,11 @@ class AimCallback:
             self._run_hash = self._run.hash
 
     def before_tracking(self, **kwargs):
-        """ Runs before tracking data """
+        """Runs before tracking data"""
         pass
 
     def after_tracking(self, **kwargs):
-        """ Runs after tracking data """
+        """Runs after tracking data"""
         pass
 
     def __call__(self, env: CallbackEnv):

@@ -1,19 +1,20 @@
 import contextlib
-import time
 import datetime
-import pytz
 import logging
 import os
+import time
 
-from threading import Thread
 from pathlib import Path
-
+from threading import Thread
 from typing import Iterable
 
+import aimrocks.errors
+import pytz
 
 from aim.sdk.repo import Repo
 from aim.sdk.run_status_watcher import Event
 from aim.storage.locking import RefreshLock
+
 
 logger = logging.getLogger(__name__)
 
@@ -41,6 +42,7 @@ class RepoIndexManager:
 
         self._indexing_in_progress = False
         self._reindex_thread: Thread = None
+        self._corrupted_runs = set()
 
     @property
     def repo_status(self):
@@ -56,7 +58,7 @@ class RepoIndexManager:
         return len(runs_with_progress) > 0
 
     def start_indexing_thread(self):
-        logger.info(f'Starting indexing thread for repo \'{self.repo_path}\'')
+        logger.info(f"Starting indexing thread for repo '{self.repo_path}'")
         self._reindex_thread = Thread(target=self._run_forever, daemon=True)
         self._reindex_thread.start()
 
@@ -72,17 +74,19 @@ class RepoIndexManager:
 
                 # sleep for small interval to release index db lock in between and allow
                 # other running jobs to properly finalize and index Run.
-                sleep_interval = .1
+                sleep_interval = 0.1
                 time.sleep(sleep_interval)
             if not self._indexing_in_progress:
                 idle_cycles += 1
                 sleep_interval = 2 * idle_cycles if idle_cycles < 5 else 10
-                logger.info(f'No un-indexed runs found. Next check will run in {sleep_interval} seconds. '
-                            f'Waiting for un-indexed run...')
+                logger.info(
+                    f'No un-indexed runs found. Next check will run in {sleep_interval} seconds. '
+                    f'Waiting for un-indexed run...'
+                )
                 time.sleep(sleep_interval)
 
     def _runs_with_progress(self) -> Iterable[str]:
-        runs_with_progress = os.listdir(self.progress_dir)
+        runs_with_progress = filter(lambda x: x not in self._corrupted_runs, os.listdir(self.progress_dir))
         run_hashes = sorted(runs_with_progress, key=lambda r: os.path.getmtime(os.path.join(self.progress_dir, r)))
         return run_hashes
 
@@ -158,20 +162,30 @@ class RepoIndexManager:
                                 except TimeoutError:
                                     continue
                     else:
-                        logger.debug(f'Countdown to force-acquire lock. '
-                                     f'Time remaining: {RefreshLock.GRACE_PERIOD - (time.time() - last_touch_seen)}')
+                        logger.debug(
+                            f'Countdown to force-acquire lock. '
+                            f'Time remaining: {RefreshLock.GRACE_PERIOD - (time.time() - last_touch_seen)}'
+                        )
 
     def run_needs_indexing(self, run_hash: str) -> bool:
         return os.path.exists(self.progress_dir / run_hash)
 
-    def index(self, run_hash, ) -> bool:
+    def index(
+        self,
+        run_hash,
+    ) -> bool:
         lock = RefreshLock(self._index_lock_path(), timeout=10)
         with self.lock_index(lock):
             index = self.repo._get_index_tree('meta', 0).view(())
-            meta_tree = self.repo.request_tree(
-                'meta', run_hash, read_only=True, from_union=False, no_cache=True).subtree('meta')
-            meta_run_tree = meta_tree.subtree('chunks').subtree(run_hash)
-            meta_run_tree.finalize(index=index)
-            if meta_run_tree['end_time'] is None:
-                index['meta', 'chunks', run_hash, 'end_time'] = datetime.datetime.now(pytz.utc).timestamp()
+            try:
+                meta_tree = self.repo.request_tree(
+                    'meta', run_hash, read_only=True, from_union=False, no_cache=True
+                ).subtree('meta')
+                meta_run_tree = meta_tree.subtree('chunks').subtree(run_hash)
+                meta_run_tree.finalize(index=index)
+                if meta_run_tree.get('end_time') is None:
+                    index['meta', 'chunks', run_hash, 'end_time'] = datetime.datetime.now(pytz.utc).timestamp()
+            except (aimrocks.errors.RocksIOError, aimrocks.errors.Corruption):
+                logger.warning(f"Indexing thread detected corrupted run '{run_hash}'. Skipping.")
+                self._corrupted_runs.add(run_hash)
             return True

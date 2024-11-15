@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react';
 import { useLocation } from 'react-router-dom';
 
@@ -12,6 +13,7 @@ import { BreadCrumbProps } from './BreadCrumb.d';
  * @description - Breadcrumb component of the kit. It shows the current location in the app and allows to navigate to the parent pages
  * @returns {React.FunctionComponentElement<React.ReactNode>}
  */
+/* eslint-disable react/prop-types */
 function Breadcrumb({
   customRouteValues,
   items = [],

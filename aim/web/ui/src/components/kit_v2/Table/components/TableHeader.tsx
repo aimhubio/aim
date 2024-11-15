@@ -6,6 +6,7 @@ import { TableHeaderStyled } from '../Table.style';
 const TableHeader = React.forwardRef<
   HTMLTableSectionElement,
   React.HTMLAttributes<HTMLTableSectionElement>
+  /* eslint-disable react/prop-types */
 >(({ className, ...props }, ref) => (
   <TableHeaderStyled
     ref={ref}

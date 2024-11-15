@@ -1,13 +1,94 @@
 # Changelog
 
-## 3.18.0
+## 3.25.1 Nov 6, 2024
+- Fix corruption marking on empty index db (mihran113)
+
+## 3.25.0 Oct 2, 2024
+
+### Enhancements:
+- Add ability to create reports (mihran113)
+- Add support for self-signed SSL certificates (mihran113)
+
+
+## 3.24.0 Aug 14, 2024
+
+### Enhancements:
+- Add read-only mode for Aim UI (mihran113)
+- Support of mass updates in remote tracking (peter-sk)
+
+### Fixes:
+- Fix bug in bookmark page where it was not scrollable if there was too many bookmarks (vinayan3)
+- Fix exception name in `storage/union.pyx` (sulan)
+
+## 3.23.0 Jul 15, 2024
+
+### Enhancements:
+- Relax `numpy` version upper bound to include `numpy<3` (judahrand)
+- Add a `-s`/`--skip-if-exists` option to the `init` command to avoid reinitializing a repo if one already exists (stevenjlm)
+
+### Fixes:
+- Fix SB3 callback metric tracking (mihran113)
+- Prevent long waiting times when connecting to incorrect or unresponsive addresses (xuzhiy)
+
+## 3.22.0 Jun 20, 2024
+
+### Enhancements:
+- Add filesystem-based backend for artifact storage (gpascale)
+
+## 3.21.0 Jun 17, 2024
+
+### Enhancements:
+- Add feature to delete full experiments (mauricekraus)
+- Add support for python 3.12 (mahnerak)
+
+### Fixes:
+- Increase websockets max_size for large images sent to server (jasonmads)
+- Correct flags when running Aim UI in Jupiter notebooks (synapticarbors)
+
+## 3.20.1 Jun 3, 2024
+
+### Enhancements:
+- Repurpose aim reindex command for index db recreation (mihran113)
+
+### Fixes
+- Handle index db corruption and warn in UI (mihran113)
+- Handle and skip corrupted runs (alberttorosyan)
+
+## 3.19.3 Apr 17, 2024
+- Resolve issue with new runs after tracking queue shutdown (mihran113)
+- Reset base path when opening new tabs (mihran113)
+
+## 3.19.2  Mar 22, 2024
+- Resolve live update failing issue (mihran113)
+- Resolve issue with remote tracking protocol probe fail (mihran113)
+
+## 3.19.1 Mar 14, 2024
+- Accept calls on tracking server without trailing slashes (mihran113)
+
+## 3.19.0 Mar 13, 2024
+
+### Enhancements:
+- Replace grpc with http/ws as transport for aim tracking server (mihran113)
+- Remove `aim storage upgrade 2to3` command (mihran113)
+- Allow HF callback to initialize run at on_init_end for tracking custom metrics with callback (dushyantbehl)
+- Support artifacts logging and storage in AWS S3 (alberttorosyan)
+- Always set run name when initializing Run in lightning callback (martenlienen)
+
+### Fixes
+- Allow the web UI to serve assets symlinked into the static files directory (martenlienen)
+
+## 3.18.1 Feb 7, 2024
 
 ### Enhancements:
 
 - Add support for `sqlalchemy 2.0` (mihran113)
+- Add `min/max/first` values tracking and visualization for metrics (mihran113, KaroMourad)
 
-## 3.17.6 
-
+### Fixes
+- Fix pytorch_lightning aliases issue (popfido)
+- Fix typos in stat.py to collect gpu memory and power correctly (ChanderG)
+- Fix bug in pytorch lightning raising lock timeout (inc0)
+- Fix compatibility with `sqlalchemy < 2.0` versions (mihran113)
 - Switch to patched version of official `pynvml` (mihran113)
 - Remove telemetry tracking (mihran113)
 

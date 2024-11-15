@@ -1,11 +1,12 @@
 import React from 'react';
 
-import { IIconButtonProps } from 'components/kit_v2/IconButton';
+import { IButtonProps } from 'components/kit';
 
 export interface ICopyToClipBoardProps {
   contentRef?: React.RefObject<any>;
   showSuccessDelay?: number;
   className?: string;
   copyContent?: string | null;
-  iconSize?: IIconButtonProps['size'];
+  iconSize?: IButtonProps['size'];
+  isURL?: bool | null;
 }

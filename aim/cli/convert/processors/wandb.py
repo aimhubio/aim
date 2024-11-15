@@ -1,13 +1,14 @@
-from pathlib import Path
 import re
+
+from pathlib import Path
 from tempfile import TemporaryDirectory
 
 import click
-from tqdm import tqdm
 
 from aim import Run
-from aim.ext.resource.log import LogLine
 from aim.ext.resource.configs import AIM_RESOURCE_METRIC_PREFIX
+from aim.ext.resource.log import LogLine
+from tqdm import tqdm
 
 
 def parse_wandb_logs(repo_inst, entity, project, run_id):
@@ -21,25 +22,20 @@ def parse_wandb_logs(repo_inst, entity, project, run_id):
 
     if run_id is None:
         # process all runs
-        runs = client.runs(entity + "/" + project)
+        runs = client.runs(entity + '/' + project)
     else:
         try:
             # get the run by run_id
-            run = client.run(f"{entity}/{project}/{run_id}")
+            run = client.run(f'{entity}/{project}/{run_id}')
         except Exception:
             click.echo(f"Could not find run '{entity}/{project}/{run_id}'", err=True)
             return
         runs = (run,)
 
-    for run in tqdm(runs, desc="Converting wandb logs"):
+    for run in tqdm(runs, desc='Converting wandb logs'):
         if not run.config.items():
             continue
-        aim_run = Run(
-            repo=repo_inst,
-            system_tracking_interval=None,
-            capture_terminal_logs=False,
-            experiment=project
-        )
+        aim_run = Run(repo=repo_inst, system_tracking_interval=None, capture_terminal_logs=False, experiment=project)
         aim_run['wandb_run_id'] = run.id
         aim_run['wandb_run_name'] = run.name
         aim_run.description = run.notes
@@ -55,7 +51,7 @@ def parse_wandb_logs(repo_inst, entity, project, run_id):
                     with open(Path(tmpdirname) / console_log_filename) as f:
                         [aim_run.track(LogLine(line), name='logs', step=i) for i, line in enumerate(f.readlines())]
             except Exception:
-                click.echo("Failed to track console output log.", err=True)
+                click.echo('Failed to track console output log.', err=True)
 
             # TODO: Collect media files, possibly?
 
@@ -64,8 +60,7 @@ def parse_wandb_logs(repo_inst, entity, project, run_id):
         for tag in run.tags:
             aim_run.add_tag(tag)
 
-        keys = [key for key in run.history(stream='default').keys()
-                if not key.startswith('_')]
+        keys = [key for key in run.history(stream='default').keys() if not key.startswith('_')]
 
         # Collect metrics
         for record in run.scan_history():
@@ -77,12 +72,12 @@ def parse_wandb_logs(repo_inst, entity, project, run_id):
                 if value is None:
                     continue
                 try:
-                    tag, name = key.rsplit("/", 1)
-                    if "train" in tag:
+                    tag, name = key.rsplit('/', 1)
+                    if 'train' in tag:
                         context = {'tag': tag, 'subset': 'train'}
-                    elif "val" in tag:
+                    elif 'val' in tag:
                         context = {'tag': tag, 'subset': 'val'}
-                    elif "test" in tag:
+                    elif 'test' in tag:
                         context = {'tag': tag, 'subset': 'test'}
                     else:
                         context = {'tag': tag}
@@ -90,8 +85,9 @@ def parse_wandb_logs(repo_inst, entity, project, run_id):
                     name, context = key, {}
                 try:
                     if timestamp:
-                        aim_run._tracker._track(value, track_time=timestamp, name=name,
-                                                step=step, epoch=epoch, context=context)
+                        aim_run._tracker._track(
+                            value, track_time=timestamp, name=name, step=step, epoch=epoch, context=context
+                        )
                     else:
                         aim_run.track(value, name=name, step=step, epoch=epoch, context=context)
                 except ValueError:
@@ -116,8 +112,9 @@ def parse_wandb_logs(repo_inst, entity, project, run_id):
 
                 try:
                     if timestamp:
-                        aim_run._tracker._track(value, track_time=timestamp,
-                                                name=f'{AIM_RESOURCE_METRIC_PREFIX}{name}', context=context)
+                        aim_run._tracker._track(
+                            value, track_time=timestamp, name=f'{AIM_RESOURCE_METRIC_PREFIX}{name}', context=context
+                        )
                     else:
                         aim_run.track(value, name=f'{AIM_RESOURCE_METRIC_PREFIX}{name}', context=context)
                 except ValueError:
@@ -148,7 +145,7 @@ def _normalize_system_metric_key(key):
             'memory.availableMB': None,
             'memory.percent': 'p_memory_percent',
             'momory.rssMB': None,
-        }
+        },
     }
 
     name = re.sub(r'^system\.', '', key)
@@ -162,7 +159,7 @@ def _normalize_system_metric_key(key):
         gpu_idx_match = gpu_idx_pattern.search(name)
         if gpu_idx_match:
             gpu_idx_str = gpu_idx_match.group()
-            name = name[len(gpu_idx_str):]
+            name = name[len(gpu_idx_str) :]
             gpu_idx = int(gpu_idx_str.rstrip('.'))
             context = {'gpu': gpu_idx, 'tag': 'system', 'subset': 'gpu'}
         else:

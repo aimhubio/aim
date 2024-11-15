@@ -1,31 +1,26 @@
 import ignite
 import torch
 import torch.nn.functional as F
+
 from aim.pytorch_ignite import AimLogger
 from ignite.contrib.handlers import ProgressBar
-from ignite.engine import (Events, create_supervised_evaluator,
-                           create_supervised_trainer)
+from ignite.engine import Events, create_supervised_evaluator, create_supervised_trainer
 from ignite.handlers import EarlyStopping, global_step_from_engine
 from ignite.metrics import Accuracy, ConfusionMatrix, Loss, RunningAverage
 from torch import nn, optim
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 
+
 # transform to normalize the data
-transform = transforms.Compose(
-    [transforms.ToTensor(), transforms.Normalize((0.5,), (0.5,))]
-)
+transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5,), (0.5,))])
 
 # Download and load the training data
-trainset = datasets.FashionMNIST(
-    './data', download=True, train=True, transform=transform
-)
+trainset = datasets.FashionMNIST('./data', download=True, train=True, transform=transform)
 train_loader = DataLoader(trainset, batch_size=64, shuffle=True)
 
 # Download and load the test data
-validationset = datasets.FashionMNIST(
-    './data', download=True, train=False, transform=transform
-)
+validationset = datasets.FashionMNIST('./data', download=True, train=False, transform=transform)
 val_loader = DataLoader(validationset, batch_size=64, shuffle=True)
 
 
@@ -40,9 +35,7 @@ class CNN(nn.Module):
             nn.MaxPool2d(kernel_size=2, stride=2),
         )
 
-        self.convlayer2 = nn.Sequential(
-            nn.Conv2d(32, 64, 3), nn.BatchNorm2d(64), nn.ReLU(), nn.MaxPool2d(2)
-        )
+        self.convlayer2 = nn.Sequential(nn.Conv2d(32, 64, 3), nn.BatchNorm2d(64), nn.ReLU(), nn.MaxPool2d(2))
 
         self.fc1 = nn.Linear(64 * 6 * 6, 600)
         self.drop = nn.Dropout2d(0.25)

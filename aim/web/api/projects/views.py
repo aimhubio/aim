@@ -1,12 +1,12 @@
 import os
-from datetime import timedelta
-from typing import Optional, Tuple
 
 from collections import Counter
-from fastapi import Depends, HTTPException, Query, Header
-from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
+from datetime import timedelta
+from logging import getLogger
+from typing import Optional, Tuple
 
-from aim.web.configs import AIM_PROJECT_SETTINGS_FILE
+from aim.sdk.index_manager import RepoIndexManager
+from aim.storage.locking import AutoFileLock
 from aim.web.api.projects.project import Project
 from aim.web.api.projects.pydantic_models import (
     ProjectActivityApiOut,
@@ -15,11 +15,17 @@ from aim.web.api.projects.pydantic_models import (
     ProjectPinnedSequencesApiIn,
     ProjectPinnedSequencesApiOut,
 )
-from aim.web.api.utils import object_factory
-from aim.sdk.index_manager import RepoIndexManager
-from aim.storage.locking import AutoFileLock
+from aim.web.api.utils import (
+    APIRouter,  # wrapper for fastapi.APIRouter  # wrapper for fastapi.APIRouter
+    object_factory,
+)
+from aim.web.configs import AIM_PROJECT_SETTINGS_FILE
+from fastapi import Depends, Header, HTTPException, Query
+
 
 projects_router = APIRouter()
+
+logger = getLogger()
 
 
 @projects_router.get('/', response_model=ProjectApiOut)
@@ -29,17 +35,36 @@ async def project_api():
     if not project.exists():
         raise HTTPException(status_code=404)
 
+    # check if the index db was corrupted and deleted
+    index_corrupted = project.repo.is_index_corrupted()
+    if index_corrupted:
+        runs_corrupted = False  # prevent multiple alert banners in UI
+        logger.warning(
+            'Index db was corrupted and deleted. '
+            'Please run `aim storage reindex` command to restore optimal performance.'
+        )
+    else:
+        # check are there any corrupted run chunks
+        runs_corrupted = len(project.repo.list_corrupted_runs()) > 0
+        if runs_corrupted:
+            logger.warning(
+                'Corrupted Runs were detected. '
+                'Please run `aim runs rm --corrupted` command to remove corrupted runs. '
+                'You can list corrupted run hashes using `aim runs ls --corrupted` command.'
+            )
+
     return {
         'name': project.name,
         'path': project.path,
         'description': project.description,
         'telemetry_enabled': 0,
+        'warn_index': index_corrupted,
+        'warn_runs': runs_corrupted,
     }
 
 
 @projects_router.get('/activity/', response_model=ProjectActivityApiOut)
-async def project_activity_api(x_timezone_offset: int = Header(default=0),
-                               factory=Depends(object_factory)):
+async def project_activity_api(x_timezone_offset: int = Header(default=0), factory=Depends(object_factory)):
     project = Project()
 
     if not project.exists():
@@ -67,6 +92,7 @@ async def project_activity_api(x_timezone_offset: int = Header(default=0),
 @projects_router.get('/pinned-sequences/', response_model=ProjectPinnedSequencesApiOut)
 async def get_pinned_metrics_api():
     import json
+
     project = Project()
 
     if not project.exists():
@@ -92,6 +118,7 @@ async def get_pinned_metrics_api():
 @projects_router.post('/pinned-sequences/', response_model=ProjectPinnedSequencesApiOut)
 async def update_pinned_metrics_api(request_data: ProjectPinnedSequencesApiIn):
     import json
+
     project = Project()
 
     if not project.exists():
@@ -123,8 +150,7 @@ async def update_pinned_metrics_api(request_data: ProjectPinnedSequencesApiIn):
 
 
 @projects_router.get('/params/', response_model=ProjectParamsOut, response_model_exclude_defaults=True)
-async def project_params_api(sequence: Optional[Tuple[str, ...]] = Query(()),
-                             exclude_params: Optional[bool] = False):
+async def project_params_api(sequence: Optional[Tuple[str, ...]] = Query(()), exclude_params: Optional[bool] = False):
     project = Project()
 
     if not project.exists():

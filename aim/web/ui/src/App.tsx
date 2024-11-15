@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
+import { useModel } from 'hooks';
 
 import { loader } from '@monaco-editor/react';
 
@@ -10,19 +11,20 @@ import Theme from 'components/Theme/Theme';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
-import { checkIsBasePathInCachedEnv, getBasePath } from 'config/config';
+import { getBasePath } from 'config/config';
 
 import PageWrapper from 'pages/PageWrapper';
 
 import routes from 'routes/routes';
 
-import { inIframe } from 'utils/helper';
+import projectsModel from 'services/models/projects/projectsModel';
+
+import { IProjectsModelState } from './types/services/models/projects/projectsModel';
+import usePyodide from './services/pyodide/usePyodide';
 
 import './App.scss';
 
 const basePath = getBasePath(false);
-
-const isVisibleCacheBanner = checkIsBasePathInCachedEnv(basePath) && inIframe();
 
 // loading monaco from node modules instead of CDN
 loader.config({
@@ -32,6 +34,9 @@ loader.config({
 });
 
 function App(): React.FunctionComponentElement<React.ReactNode> {
+  const projectsData = useModel<Partial<IProjectsModelState>>(projectsModel);
+  const { loadPyodide } = usePyodide();
+
   React.useEffect(() => {
     let timeoutId: number;
     const preloader = document.getElementById('preload-spinner');
@@ -41,6 +46,9 @@ function App(): React.FunctionComponentElement<React.ReactNode> {
         preloader.remove();
       }, 500);
     }
+
+    loadPyodide();
+
     return () => {
       window.clearTimeout(timeoutId);
     };
@@ -50,10 +58,16 @@ function App(): React.FunctionComponentElement<React.ReactNode> {
     <BrowserRouter basename={basePath}>
       <ProjectWrapper />
       <Theme>
-        {isVisibleCacheBanner && (
-          <AlertBanner type='warning' isVisiblePermanently={true}>
-            You are using UI from notebook env, please make sure to
-            <b>keep server running</b> for a better experience
+        {projectsData?.project?.warn_index && (
+          <AlertBanner type='warning'>
+            Index db was corrupted and deleted. Please run
+            <b>`aim storage reindex`</b> command to restore optimal performance.
+          </AlertBanner>
+        )}
+        {projectsData?.project?.warn_runs && (
+          <AlertBanner type='warning'>
+            Corrupted runs were detected. Please run
+            <b>`aim runs rm --corrupted`</b> command to remove corrupted runs.
           </AlertBanner>
         )}
         <div className='pageContainer'>

@@ -6,7 +6,7 @@
 
 import * as Comlink from 'comlink';
 
-import { setAPIBasePath } from 'config/config';
+import { setAPIBasePath, setAPIAuthToken } from 'config/config';
 
 import {
   decodeBufferPairs,
@@ -254,6 +254,10 @@ function replaceBasePath(basePath: string) {
   setAPIBasePath(basePath);
 }
 
+function setAuthToken(authToken: string) {
+  setAPIAuthToken(authToken);
+}
+
 const WebWorker = {
   subscribeToApiCallResult,
   setConfig,
@@ -261,6 +265,7 @@ const WebWorker = {
   close,
   stop,
   replaceBasePath,
+  setAuthToken,
 };
 
 export type IWorker = typeof WebWorker;

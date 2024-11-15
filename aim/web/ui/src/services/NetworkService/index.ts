@@ -1,3 +1,8 @@
+import Cookies from 'js-cookie';
+
+import ENDPOINTS from '../api/endpoints';
+import { AuthToken } from '../api/api';
+
 import {
   HttpRequestMethods,
   HttpErrorMessages,
@@ -22,6 +27,12 @@ import exceptionDetector from './interceptors/exceptionDetector';
 class NetworkService {
   private interceptors: Interceptor[] = [exceptionDetector];
   private readonly uri?: string;
+  private readonly AUTH_TOKEN_KEY = 'Auth';
+  private readonly AUTH_REFRESH_TOKEN_KEY = 'token';
+  private readonly CONTENT_TYPE = {
+    JSON: 'application/json',
+    FORM_DATA: 'application/x-www-form-urlencoded',
+  };
 
   constructor(uri: string, interceptors: Array<Interceptor> = []) {
     if (!uri) {
@@ -37,49 +48,63 @@ class NetworkService {
     this.uri = uri;
   }
 
-  public makeAPIGetRequest = (url: string, options: RequestOptions = {}) => {
+  public makeAPIGetRequest = (
+    url: string,
+    options: RequestOptions = {},
+    apiHost: string | undefined = this.uri,
+  ) => {
     options = options || {};
     options.method = HttpRequestMethods.GET;
-    return this.makeAPIRequest(url, options);
+    return this.makeAPIRequest(url, options, apiHost);
   };
 
-  public makeAPIPostRequest = (url: string, options: RequestOptions = {}) => {
+  public makeAPIPostRequest = (
+    url: string,
+    options: RequestOptions = {},
+    apiHost: string | undefined = this.uri,
+  ) => {
     options.method = HttpRequestMethods.POST;
-    return this.makeAPIRequest(url, options);
+    return this.makeAPIRequest(url, options, apiHost);
   };
 
   public makeAPIPutRequest = (
     urlPrefix: string,
     options: RequestOptions = {},
+    apiHost: string | undefined = this.uri,
   ) => {
     options.method = HttpRequestMethods.PUT;
-    return this.makeAPIRequest(urlPrefix, options);
+    return this.makeAPIRequest(urlPrefix, options, apiHost);
   };
 
   public makeAPIDeleteRequest = (
     urlPrefix: string,
     options: RequestOptions = {},
+    apiHost: string | undefined = this.uri,
   ) => {
     options.method = HttpRequestMethods.DELETE;
-    return this.makeAPIRequest(urlPrefix, options);
+    return this.makeAPIRequest(urlPrefix, options, apiHost);
   };
 
   public makeAPIPatchRequest = (
     urlPrefix: string,
     options: RequestOptions = {},
+    apiHost: string | undefined = this.uri,
   ) => {
     options.method = HttpRequestMethods.PATCH;
-    return this.makeAPIRequest(urlPrefix, options);
+    return this.makeAPIRequest(urlPrefix, options, apiHost);
   };
 
-  public createUrl = (arg: string | Array<string>): string => {
+  public createUrl = (
+    arg: string | Array<string>,
+    apiHost: string | undefined = this.uri,
+  ): string => {
     if (Array.isArray(arg)) {
-      return [this.uri, ...arg].join('/');
+      return [apiHost, ...arg].join('/');
     }
     if (arg) {
-      return `${this.uri}/${arg}`;
+      return `${apiHost}/${arg}`;
     }
-    return `${this.uri}`;
+    return `${apiHost}`;
   };
 
   private createQueryParams = (queryParams: Record<string, unknown>) => {
@@ -105,12 +130,13 @@ class NetworkService {
   public makeAPIRequest = (
     partUrl: string,
     options: RequestOptions = {},
+    apiHost: string | undefined = this.uri,
   ): Promise<{ body: any; headers: any }> => {
     return new Promise((resolve, reject) => {
-      let url = this.createUrl(partUrl);
+      let url = this.createUrl(partUrl, apiHost);
 
       this.request(url, options)
-        .then(async (response: { json?: any; status?: any; headers?: any }) => {
+        .then(async (response: Response) => {
           if (!response) {
             return reject({
               message: HttpErrorMessages.INVALID_RESPONSE_DATA,
@@ -143,7 +169,9 @@ class NetworkService {
           }
 
           if (response.status >= 400) {
-            return reject(body);
+            return await this.checkCredentials(response, url, () =>
+              this.request(url, options),
+            );
           }
 
           return resolve({ body, headers });
@@ -175,6 +203,10 @@ class NetworkService {
         method: options.method,
         headers: options.headers || this.getRequestHeaders(),
       };
+
+      if (options.credentials) {
+        fetchOptions.credentials = options.credentials;
+      }
 
       if (options.headers) {
         fetchOptions.headers = options.headers;
@@ -212,17 +244,147 @@ class NetworkService {
     this.interceptors.push(interceptor);
   }
 
-  private getTimezoneOffset = (): string => {
+  /**
+   * getTimezoneOffset is a function that returns the timezone offset
+   * @returns string
+   * @example
+   * const timezoneOffset = getTimezoneOffset();
+   */
+  public getTimezoneOffset(): string {
     return `${new Date().getTimezoneOffset()}`;
-  };
+  }
 
-  public getRequestHeaders = () => {
-    return {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
+  /**
+   * getAuthToken - Gets the token from local storage
+   * @returns {string} - The token
+   */
+  public getAuthToken(): string {
+    return localStorage.getItem(this.AUTH_TOKEN_KEY) || '';
+  }
+
+  /**
+   * getRequestHeaders is a function that returns the request headers
+   * @returns object
+   * @example
+   * const requestHeaders = getRequestHeaders();
+   * const response = await fetch(`${API_ROOT}${endpoint}`, {
+   *  method: "POST",
+   *  headers: requestHeaders,
+   *  body: JSON.stringify(data),
+   * });
+   */
+  public getRequestHeaders(headers = {}) {
+    const requestHeaders: Record<string, string> = {
       'X-Timezone-Offset': this.getTimezoneOffset(),
+      'Content-Type': this.CONTENT_TYPE.JSON,
+      ...headers,
     };
-  };
+
+    const Authorization = this.getAuthToken();
+    if (Authorization) {
+      requestHeaders.Authorization = Authorization;
+    }
+    return requestHeaders;
+  }
+
+  /**
+   * refreshToken is a function that makes a GET request to the auth endpoint for refresh the token
+   * @returns IResponse<AuthToken>
+   * @throws Error
+   */
+  public async refreshToken() {
+    return this.makeAPIGetRequest(
+      `${ENDPOINTS.AUTH.BASE}/${ENDPOINTS.AUTH.REFRESH}`,
+      {
+        headers: this.getRequestHeaders(),
+        credentials:
+          process.env.NODE_ENV === 'development' ? 'include' : 'same-origin',
+      },
+      `${window.location.origin}/api`,
+    );
+  }
+
+  /**
+   * removeAuthToken - Removes the token from local storage and refresh token from cookies
+   * @returns {void}
+   */
+  public removeAuthToken(): void {
+    localStorage.removeItem(this.AUTH_TOKEN_KEY);
+    this.removeRefreshToken();
+  }
+
+  /**
+   * setAuthToken - Sets the token in local storage and refresh token in cookies
+   * @param {AuthToken} token - The token object
+   * @returns {void}
+   */
+  public setAuthToken({
+    token_type,
+    refresh_token,
+    access_token,
+  }: AuthToken): void {
+    localStorage.setItem(this.AUTH_TOKEN_KEY, `${token_type} ${access_token}`);
+    this.setRefreshToken(refresh_token);
+  }
+
+  /**
+   * setRefreshToken - Sets the refresh token in cookies
+   * @param refresh_token - The refresh token
+   * @returns {void}
+   */
+  public setRefreshToken(refresh_token: string): void {
+    Cookies.set(this.AUTH_REFRESH_TOKEN_KEY, refresh_token);
+  }
+
+  /**
+   * removeRefreshToken - Removes the refresh token from cookies
+   * @returns {void}
+   */
+  public removeRefreshToken(): void {
+    Cookies.remove(this.AUTH_REFRESH_TOKEN_KEY);
+  }
+
+  /**
+   * parseResponse is a generic function that parses the response body
+   * @param response is the response object
+   * @returns <T>
+   * @throws Error
+   * @example
+   * const response = await fetch(`${API_ROOT}${endpoint}`);
+   * return parseResponse<T>(response);
+   */
+  public async parseResponse<T>(response: Response): Promise<T> {
+    try {
+      const data = await response.json();
+      if (response.ok) {
+        return data;
+      } else {
+        return Promise.reject(new Error(data.message));
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async checkCredentials<T>(
+    response: Response,
+    endpoint: string,
+    refetch: () => Promise<T>,
+  ): Promise<T> {
+    if (response.status === 401) {
+      if (endpoint === `${ENDPOINTS.AUTH.BASE}/${ENDPOINTS.AUTH.REFRESH}`) {
+        this.removeAuthToken();
+        return this.parseResponse<T>(response);
+      }
+      // Refresh token
+      const token = (await this.refreshToken()).body;
+      if (token) {
+        this.setAuthToken(token);
+        return refetch();
+      }
+    }
+    return this.parseResponse<T>(response);
+  }
 }
 
 export * from './types';

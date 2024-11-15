@@ -1,6 +1,7 @@
-from pydantic import BaseModel
-from typing import Dict, List, Tuple, Optional, Union
+from typing import Dict, List, Optional, Tuple, Union
 from uuid import UUID
+
+from pydantic import BaseModel
 
 
 # response models
@@ -75,10 +76,17 @@ class MetricSearchRunView(BaseModel):
     props: PropsView
 
 
+class ArtifactInfo(BaseModel):
+    name: str
+    path: str
+    uri: str
+
+
 class RunInfoOut(BaseModel):
     params: dict
     traces: Dict[str, List[TraceOverview]]
     props: PropsView
+    artifacts: List[ArtifactInfo]
 
 
 RunMetricSearchApiOut = Dict[str, MetricSearchRunView]
@@ -166,6 +174,7 @@ RunsBatchIn = List[str]
 
 
 # Custom object Models "Fully Generic"
+
 
 class BaseRangeInfo(BaseModel):
     record_range_used: Tuple[int, int]

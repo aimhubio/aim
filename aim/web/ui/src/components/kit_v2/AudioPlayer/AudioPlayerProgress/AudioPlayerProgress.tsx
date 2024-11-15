@@ -77,7 +77,7 @@ function AudioPlayerProgress({
           onValueChange={onProgressChange}
           value={[trackProgress]}
           step={0.1}
-          max={audio.duration || 1}
+          max={Math.round(audio.duration || 1)}
           min={0}
           disabled={disabled}
           showLabel={false}

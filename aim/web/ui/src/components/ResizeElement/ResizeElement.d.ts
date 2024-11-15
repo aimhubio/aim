@@ -10,6 +10,7 @@ export interface ResizeElementProps {
   gutterSize?: number;
   snapOffset?: number;
   useLocalStorage?: boolean;
+  onMount?: (resizeElement: React.RefObject<HTMLDivElement>) => void;
   initialSizes: {
     width?: WidthProperty<string | number>;
     height?: HeightProperty<string | number>;

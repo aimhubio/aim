@@ -6,6 +6,7 @@ import { TableCellStyled } from '../Table.style';
 const TableCell = React.forwardRef<
   HTMLTableCellElement,
   React.TdHTMLAttributes<HTMLTableCellElement>
+  /* eslint-disable react/prop-types */
 >(({ className, ...props }, ref) => (
   <TableCellStyled
     ref={ref}

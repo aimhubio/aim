@@ -1,5 +1,6 @@
-import requests
 from typing import Optional
+
+import requests
 
 from aim.ext.notifier.base_notifier import BaseNotifier
 

@@ -1,8 +1,9 @@
 from typing import TYPE_CHECKING
-from aim.storage.treeutils import encode_tree
-from aim.ext.transport.message_utils import pack_args
 
+from aim.ext.transport.message_utils import pack_args
 from aim.ext.transport.remote_resource import RemoteResourceAutoClean
+from aim.storage.treeutils import encode_tree
+
 
 if TYPE_CHECKING:
     from aim.ext.transport.client import Client
@@ -46,3 +47,6 @@ class RemoteRepoProxy:
 
     def _close_run(self, hash_):
         return self._rpc_client.run_instruction(-1, self._handler, '_close_run', [hash_])
+
+    def _recreate_index(self):
+        return self._rpc_client.run_instruction(-1, self._handler, '_recreate_index', [])

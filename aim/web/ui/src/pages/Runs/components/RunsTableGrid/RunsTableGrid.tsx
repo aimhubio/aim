@@ -6,6 +6,7 @@ import RunNameColumn from 'components/Table/RunNameColumn';
 import GroupedColumnHeader from 'components/Table/GroupedColumnHeader';
 import AttachedTagsList from 'components/AttachedTagsList/AttachedTagsList';
 import ExperimentNameBox from 'components/ExperimentNameBox';
+import RunCreatorBox from 'components/RunCreatorBox';
 
 import COLORS from 'config/colors/colors';
 import { TABLE_DEFAULT_CONFIG } from 'config/table/tableConfigs';
@@ -24,6 +25,7 @@ function getRunsTableColumns(
   runColumns: string[] = [],
   order: { left: string[]; middle: string[]; right: string[] },
   hiddenColumns: string[],
+  includeCreator: boolean = false,
 ): ITableColumn[] {
   let columns: ITableColumn[] = [
     {
@@ -86,6 +88,22 @@ function getRunsTableColumns(
         ? 'right'
         : null,
     },
+    ...(includeCreator
+      ? [
+          {
+            key: 'creator',
+            content: <span>Creator</span>,
+            topHeader: 'Run',
+            pin: order?.left?.includes('creator')
+              ? 'left'
+              : order?.middle?.includes('creator')
+              ? null
+              : order?.right?.includes('creator')
+              ? 'right'
+              : null,
+          },
+        ]
+      : []),
     {
       key: 'date',
       content: <span>Date</span>,
@@ -238,6 +256,9 @@ function runsTableRowRenderer(
             active={rowData.active}
           />
         ),
+      },
+      creator: {
+        content: <RunCreatorBox creatorUsername={rowData.creator} />,
       },
       tags: {
         content: (

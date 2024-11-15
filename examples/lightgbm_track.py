@@ -3,6 +3,7 @@ import os
 
 import lightgbm as lgb
 import pandas as pd
+
 from aim.lightgbm import AimCallback
 from sklearn.metrics import mean_squared_error
 

@@ -24,6 +24,7 @@ import ManageColumnsPopover from 'pages/Metrics/components/Table/ManageColumnsPo
 import HideRowsPopover from 'pages/Metrics/components/Table/HideRowsPopover/HideRowsPopover';
 import RowHeightPopover from 'pages/Metrics/components/Table/RowHeightPopover/RowHeightPopover';
 import CompareSelectedRunsPopover from 'pages/Metrics/components/Table/CompareSelectedRunsPopover';
+import MetricsValueKeyPopover from 'pages/Metrics/components/Table/MetricsValueKeyPopover';
 
 import { ITableProps } from 'types/components/Table/Table';
 
@@ -49,6 +50,8 @@ const Table = React.forwardRef(function Table(
     onRowHover = () => {},
     onRowClick = () => {},
     onTableResizeModeChange,
+    onMetricsValueKeyChange,
+    metricsValueKey,
     custom,
     data,
     columns,
@@ -835,6 +838,13 @@ const Table = React.forwardRef(function Table(
                     appName={appName}
                   />
                 )}
+                {onMetricsValueKeyChange && (
+                  <MetricsValueKeyPopover
+                    metricsValueKey={metricsValueKey}
+                    onMetricsValueKeyChange={onMetricsValueKeyChange}
+                    appName={appName}
+                  />
+                )}
               </div>
               {onTableDiffShow && (
                 <Button
@@ -1099,6 +1109,10 @@ function propsComparator(
   }
 
   if (prevProps.rowHeight !== nextProps.rowHeight) {
+    return false;
+  }
+
+  if (prevProps.metricsValueKey !== nextProps.metricsValueKey) {
     return false;
   }
 

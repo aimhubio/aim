@@ -4,6 +4,7 @@ import {
   getExperimentById,
   getExperiments,
   updateExperimentById,
+  deleteExperimentById,
   IExperimentData,
 } from 'modules/core/api/experimentsApi';
 import createResource from 'modules/core/utils/createResource';
@@ -21,6 +22,30 @@ function experimentEngine() {
     state: experimentsState,
     destroy: destroyExperiments,
   } = createResource<IExperimentData[]>(getExperiments);
+
+  function deleteExperiment() {
+    const experimentData = experimentState.getState().data;
+    if (!experimentData) return;
+    destroyExperiment();
+    destroyExperiments();
+    experimentState.setState({ data: null });
+    deleteExperimentById(experimentData.id)
+      .then(() => {
+        notificationContainerStore.onNotificationAdd({
+          id: Date.now(),
+          messages: ['Experiment successfully deleted'],
+          severity: 'success',
+        });
+        analytics.trackEvent('[Experiment] Delete Experiment');
+      })
+      .catch((err) => {
+        notificationContainerStore.onNotificationAdd({
+          id: Date.now(),
+          messages: [err.message || 'Something went wrong'],
+          severity: 'error',
+        });
+      });
+  }
 
   function updateExperiment(name: string, description: string) {
     const experimentData = experimentState.getState().data;
@@ -58,6 +83,7 @@ function experimentEngine() {
     experimentsState,
     destroyExperiments,
     updateExperiment,
+    deleteExperiment,
   };
 }
 

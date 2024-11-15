@@ -1,5 +1,6 @@
-from pydantic import BaseModel
 from typing import Dict, List, Optional
+
+from pydantic import BaseModel
 
 
 class ProjectApiOut(BaseModel):
@@ -7,6 +8,8 @@ class ProjectApiOut(BaseModel):
     path: str
     description: str
     telemetry_enabled: int
+    warn_index: Optional[bool] = False
+    warn_runs: Optional[bool] = False
 
 
 class ProjectParamsOut(BaseModel):
@@ -24,7 +27,7 @@ class ProjectActivityApiOut(BaseModel):
     num_runs: int
     num_archived_runs: int
     num_active_runs: int
-    activity_map: Dict[str, int] = {"2021-01-01": 54}
+    activity_map: Dict[str, int] = {'2021-01-01': 54}
 
 
 class Sequence(BaseModel):

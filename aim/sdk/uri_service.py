@@ -1,15 +1,15 @@
-from cryptography.fernet import Fernet
 from collections import defaultdict
-from typing import Iterator, List, Optional, Dict
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict, Iterator, List, Optional
 
-from aim.storage.encoding import encode_path, decode_path
+from aim.storage.encoding import decode_path, encode_path
 from aim.storage.types import BLOB
+from cryptography.fernet import Fernet
+
 
 if TYPE_CHECKING:
-    from aim.storage.types import AimObjectPath
-    from aim.storage.prefixview import PrefixView
     from aim.sdk.repo import Repo
+    from aim.storage.prefixview import PrefixView
+    from aim.storage.types import AimObjectPath
 
 
 def generate_resource_path(prefix_view: 'PrefixView', additional_path: 'AimObjectPath') -> str:

@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom';
 
 import { styled, css } from 'config/stitches';
-import { textEllipsis } from 'config/stitches/foundations/layout';
+import { textEllipsis } from 'config/stitches/layout';
 
 const StyledLink = css({
   textDecoration: 'none',

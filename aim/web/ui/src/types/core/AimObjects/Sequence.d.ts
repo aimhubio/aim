@@ -6,7 +6,7 @@ export interface SequenceBase {
 }
 
 export interface SequenceOverview extends SequenceBase {
-  last_value: number;
+  values: number;
 }
 
 export interface SequenceBaseView extends SequenceBase {

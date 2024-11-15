@@ -5,6 +5,7 @@ import { TableRowStyled } from '../Table.style';
 import { TableRowProps } from '../Table.d';
 
 const TableRow = React.forwardRef<HTMLTableRowElement, TableRowProps>(
+  /* eslint-disable react/prop-types */
   ({ className, isFocused, ...props }, ref) => (
     <TableRowStyled
       ref={ref}

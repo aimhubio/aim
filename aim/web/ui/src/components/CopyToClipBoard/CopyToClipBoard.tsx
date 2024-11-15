@@ -1,10 +1,9 @@
 import React from 'react';
 
 import { Tooltip } from '@material-ui/core';
-import { IconClipboard, IconClipboardCheck } from '@tabler/icons-react';
 
+import { Button, Icon } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
-import { IconButton } from 'components/kit_v2';
 
 import { useCopy } from 'hooks/useCopy';
 
@@ -15,21 +14,28 @@ function CopyToClipboard({
   showSuccessDelay = 1500,
   className = '',
   copyContent = null,
-  iconSize = 'md',
+  iconSize = 'medium',
+  isURL = false,
 }: ICopyToClipBoardProps): React.FunctionComponentElement<ICopyToClipBoardProps> {
-  const { onCopy, copied } = useCopy(copyContent ?? contentRef);
+  const { onCopy, copied, setCopied } = useCopy(copyContent ?? contentRef);
 
+  React.useEffect(() => {
+    if (copied) {
+      setTimeout(() => {
+        setCopied(false);
+      }, showSuccessDelay);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [copied]);
+
+  const iconName = isURL ? 'link' : 'copy';
   return (
     <ErrorBoundary>
       <Tooltip title={copied ? 'Copied!' : 'Copy to clipboard'}>
         <span className={className} onClick={onCopy}>
-          <IconButton
-            icon={copied ? <IconClipboardCheck /> : <IconClipboard />}
-            css={copied ? { transition: 'unset' } : {}}
-            color={copied ? 'success' : 'secondary'}
-            size={iconSize}
-            variant={copied ? 'static' : 'ghost'}
-          />
+          <Button withOnlyIcon color='secondary' size={iconSize}>
+            {copied ? <Icon name='check' /> : <Icon name={iconName} />}
+          </Button>
         </span>
       </Tooltip>
     </ErrorBoundary>

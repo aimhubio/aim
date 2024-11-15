@@ -1,11 +1,13 @@
-import sys
 import os
-import platform
+import sys
 
 from shutil import rmtree
-from setuptools import find_packages, setup, Command, Extension
-from Cython.Build import cythonize
+
 from aimrocks import lib_utils
+from Cython.Build import cythonize
+from setuptools import Command, Extension, find_packages, setup
+
+
 # TODO This `setup.py` assumes that `Cython` and `aimrocks` are installed.
 # This is okay for now as users are expected to install `aim` from wheels.
 
@@ -29,7 +31,7 @@ packages = find_packages(exclude=('tests', 'performance_tests', 'aim.web.ui'))
 # Get a list of all files in the html directory to include in our module
 def package_files(directory):
     paths = []
-    for (path, _, filenames) in os.walk(directory):
+    for path, _, filenames in os.walk(directory):
         for filename in filenames:
             paths.append(os.path.join('..', path, filename))
     return paths
@@ -38,26 +40,28 @@ def package_files(directory):
 migration_files = package_files('aim/web/migrations')
 storage_migration_files = package_files('aim/storage/migrations')
 notifier_files = package_files('aim/ext/notifier')
-version_files = ['../aim/VERSION', ]
+version_files = [
+    '../aim/VERSION',
+]
 
 readme_file = 'README.md'
-readme_text = open('/'.join((here, readme_file)), encoding="utf-8").read()
+readme_text = open('/'.join((here, readme_file)), encoding='utf-8').read()
 LONG_DESCRIPTION = readme_text.strip()
 
 SETUP_REQUIRED = [
-    'Cython==3.0.0a11',
+    'Cython==3.0.10',
 ]
 
 # What packages are required for this module to be executed?
 REQUIRED = [
     f'aim-ui=={__version__}',
     'aimrecords==0.0.7',
-    'aimrocks==0.4.0',
+    'aimrocks==0.5.*',
     'cachetools>=4.0.0',
     'click>=7.0',
     'cryptography>=3.0',
     'filelock<4,>=3.3.0',
-    'numpy<2,>=1.12.0',
+    'numpy<3,>=1.12.0',
     'psutil>=5.6.7',
     'RestrictedPython>=5.1',
     'tqdm>=4.20.0',
@@ -69,16 +73,12 @@ REQUIRED = [
     'SQLAlchemy>=1.4.1',
     'uvicorn<1,>=0.12.0',
     'Pillow>=8.0.0',
-    'protobuf<5,>=3.9.2',
     'packaging>=15.0',
     'python-dateutil',
     'requests',
+    'websockets',
+    'boto3',
 ]
-
-if platform.machine() != 'arm64':
-    # Temporarily avoid `grpcio` until the issue
-    # https://github.com/grpc/grpc/issues/29262 is resolved
-    REQUIRED.append('grpcio>=1.42.0')
 
 
 class UploadCommand(Command):
@@ -127,16 +127,7 @@ class UploadCommand(Command):
 INCLUDE_DIRS = [lib_utils.get_include_dir()]
 LIB_DIRS = [lib_utils.get_lib_dir()]
 LIBS = lib_utils.get_libs()
-COMPILE_ARGS = [
-    '-std=c++11',
-    '-O3',
-    '-Wall',
-    '-Wextra',
-    '-Wconversion',
-    '-fno-strict-aliasing',
-    '-fno-rtti',
-    '-fPIC'
-]
+COMPILE_ARGS = ['-std=c++11', '-O3', '-Wall', '-Wextra', '-Wconversion', '-fno-strict-aliasing', '-fno-rtti', '-fPIC']
 CYTHON_SCRITPS = [
     ('aim.storage.hashing.c_hash', 'aim/storage/hashing/c_hash.pyx'),
     ('aim.storage.hashing.hashing', 'aim/storage/hashing/hashing.py'),
@@ -203,7 +194,7 @@ setup(
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: 3.11',
-        'Programming Language :: Python :: Implementation :: PyPy'
+        'Programming Language :: Python :: Implementation :: PyPy',
     ],
     ext_modules=cytonize_extensions(),
     entry_points={
@@ -212,7 +203,5 @@ setup(
             'aim-watcher=aim.cli.watcher_cli:cli_entry_point',
         ],
     },
-    cmdclass={
-        'upload': UploadCommand
-    }
+    cmdclass={'upload': UploadCommand},
 )

@@ -19,21 +19,19 @@ This section describes governance processes we follow in developing Aim.
 
 ### Persons of Interest
 
+#### BDFL
+Role: All final decisions related to Aim.
+- Gev Soghomonyan ([SGevorg](https://github.com/SGevorg))
+
 #### Authors
 
 - Gev Soghomonyan ([SGevorg](https://github.com/SGevorg))
-- Gor Arakelyan ([gorarakelyan](https://github.com/gorarakelyan))
+- Gor Arakelyan ([gorarakelyan](https://github.com/gorarakelyan)) (no longer associated)
 
-#### Primary Maintainers
+#### Maintainers
 
 - Albert Torosyan ([alberttorosyan](https://github.com/alberttorosyan))
 - Karen Hambardzumyan ([mahnerak](https://github.com/mahnerak))
-- Ruben Karapetyan ([roubkar](https://github.com/roubkar))
-
-#### Core Contributors
-
-- Arsen Alkamyan ([arsengit](https://github.com/arsengit))
-- Karo Muradyan ([KaroMourad](https://github.com/KaroMourad))
 - Mihran Vanyan ([mihran113](https://github.com/mihran113))
 
 ### Releases
@@ -142,7 +140,7 @@ These command will create a folder named `ComponentName` with all the necessary 
 Aim documentation is built using [Sphix](https://www.sphinx-doc.org) and is hosted at
 [Read the Docs](https://aimstack.readthedocs.io).
 The documentation sources are located at `docs/` directory. In order to build documentation locally
-run the following commands
+run the following commands with a Python interpreter version <= 3.10:
 ```shell
 pip install -r requirements.dev.txt
 cd docs

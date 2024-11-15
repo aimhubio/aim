@@ -4,6 +4,7 @@ import classNames from 'classnames';
 const TableFooter = React.forwardRef<
   HTMLTableSectionElement,
   React.HTMLAttributes<HTMLTableSectionElement>
+  /* eslint-disable react/prop-types */
 >(({ className, ...props }, ref) => (
   <tfoot
     ref={ref}

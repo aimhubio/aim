@@ -1,17 +1,20 @@
+from datetime import datetime
+from typing import List
+
 from aim.storage.structured.entities import (
-    ObjectFactory,
-    Run, Experiment, Tag,
-    RunCollection,
+    Experiment,
     ExperimentCollection,
+    ObjectFactory,
+    Run,
+    RunCollection,
+    Tag,
     TagCollection,
 )
 from aim.storage.structured.sql_engine.entities import (
-    ModelMappedRun,
     ModelMappedExperiment,
+    ModelMappedRun,
     ModelMappedTag,
 )
-from typing import List
-from datetime import datetime
 
 
 class ModelMappedFactory(ObjectFactory):
@@ -62,6 +65,9 @@ class ModelMappedFactory(ObjectFactory):
 
     def create_experiment(self, name: str) -> Experiment:
         return ModelMappedExperiment.from_name(name, session=self._session or self.get_session())
+
+    def delete_experiment(self, _id: str) -> bool:
+        return ModelMappedExperiment.delete_experiment(_id, session=self._session or self.get_session())
 
     def tags(self) -> TagCollection:
         return ModelMappedTag.all(session=self._session or self.get_session())

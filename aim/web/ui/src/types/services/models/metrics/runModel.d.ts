@@ -4,6 +4,7 @@ export interface IRun<T> {
   params: IRunParams;
   props: {
     experiment: { name: string; id: string; description: string } | null;
+    creator: { username: string; email: string; photo: string | null } | null;
     name: string;
     creation_time: number;
     end_time: number;
@@ -33,7 +34,13 @@ export interface ISequence<T> {
 export interface IParamTrace {
   name: string;
   context: { [key: string]: unknown };
-  last_value: { last: number | string };
+  values: {
+    last: number | string;
+    min: number | string;
+    max: number | string;
+    first: number | string;
+    first_step?: number | string;
+  };
 }
 
 export interface IMetricTrace {

@@ -49,6 +49,7 @@ export type IconName =
   | 'metrics'
   | 'tags'
   | 'bookmarks'
+  | 'reports'
   | 'runs'
   | 'back-left'
   | 'back-down'
@@ -159,4 +160,5 @@ export type IconName =
   | 'audios'
   | 'distributions'
   | 'dashboard'
-  | 'chart-legends';
+  | 'chart-legends'
+  | 'metric-value';

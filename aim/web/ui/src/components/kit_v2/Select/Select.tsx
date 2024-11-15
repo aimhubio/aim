@@ -1,7 +1,8 @@
 import React from 'react';
 import { FixedSizeList as List } from 'react-window';
 
-import { IconCaretDown, IconCaretUp } from '@tabler/icons-react';
+import { ReactComponent as ArrowDown } from 'assets/icons/dropdown-arrow-down.svg';
+import { ReactComponent as ArrowUp } from 'assets/icons/dropdown-arrow-up.svg';
 
 import Popover from '../Popover';
 import Button from '../Button';
@@ -23,13 +24,14 @@ const sizeDict = {
  * @param {boolean} multiple - whether multiple select
  * @param {React.ReactNode} trigger - trigger element
  * @param triggerProps
- * @param {PopoverProps} popoverProps - popover props
+ * @param {ISelectProps['popoverProps']} popoverProps - popover props
  * @param {string | string[] | undefined } value - selected value
  * @param {(val: string | string[]) => void} onValueChange - on value change callback
  * @param {boolean} searchable - whether searchable
  * @param {ISelectItemProps['data']['items']} options - options
  * @param {('sm' | 'md' | 'lg')} size - size
  * @param {number} height - the height of the list
+ * @param {boolean} disabled - the disabled state of the list item
  * @returns {React.FunctionComponentElement<React.ReactNode>}
  */
 const Select = ({
@@ -44,7 +46,7 @@ const Select = ({
   size = 'md',
   height = 256,
   disabled = false,
-}: ISelectProps) => {
+}: ISelectProps): React.FunctionComponentElement<React.ReactNode> => {
   const [search, setSearch] = React.useState('');
   const onSearchChange = React.useCallback((e) => {
     setSearch(e.target.value);
@@ -183,7 +185,7 @@ const Select = ({
                 disabled={disabled}
                 variant='outlined'
                 color='secondary'
-                rightIcon={open ? <IconCaretUp /> : <IconCaretDown />}
+                rightIcon={open ? <ArrowUp /> : <ArrowDown />}
                 {...triggerProps}
               >
                 <Text css={{ flex: '1' }} disabled={disabled}>

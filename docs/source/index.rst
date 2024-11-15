@@ -30,6 +30,7 @@
    ui/pages/table.md
    ui/pages/bookmarks.md
    ui/pages/tags.md
+   ui/pages/reports.md
 
 
 .. toctree::
@@ -44,6 +45,7 @@
    using/remote_tracking.md
    using/training_monitoring.md
    using/logging.md
+   using/artifacts.md
    using/notifications.md
    using/callbacks.md
    using/k8s_deployment.md

@@ -8,6 +8,7 @@ import ControlPopover from 'components/ControlPopover/ControlPopover';
 import { Button, Icon, Text } from 'components/kit';
 import { IconName } from 'components/kit/Icon';
 
+import { getBasePath } from 'config/config';
 import { EXPLORE_SELECTED_RUNS_CONFIG } from 'config/table/tableConfigs';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
@@ -75,6 +76,7 @@ function CompareSelectedRunsPopover({
           ANALYTICS_EVENT_KEYS[appName]?.table?.compareSelectedRuns,
         );
         if (newTab) {
+          url = `${getBasePath()}${url}`;
           window.open(url, '_blank');
           window.focus();
           return;

@@ -6,6 +6,7 @@ import { TableBodyStyled } from '../Table.style';
 const TableBody = React.forwardRef<
   HTMLTableSectionElement,
   React.HTMLAttributes<HTMLTableSectionElement>
+  /* eslint-disable react/prop-types */
 >(({ className, ...props }, ref) => (
   <TableBodyStyled
     ref={ref}
