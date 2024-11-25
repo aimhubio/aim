@@ -16,6 +16,7 @@
     "prettier"
   ],
   "rules": {
+    "react/prop-types": "off",
     "prettier/prettier": "error",
     "react/no-unescaped-entities": 0,
     "no-console": "warn",
