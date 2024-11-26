@@ -4,28 +4,23 @@ This is a collection of scripts and utilities to run over an Aim repo to collect
 
 ## Base Project Stats
 
-The `troubleshooting.base_project_statistics` script is a utility to collect and analyze statistics from a specified **AIM repo**.
-It provides a detailed JSON report with stats such as the number of runs, metrics, and query times, enabling efficient troubleshooting and performance analysis.
-The command processes the repository at the given path and generates a JSON file containing statistics.
+The `troubleshooting.base_project_statistics` script is a utility to collect and analyze statistics from **AIM repo**.
+It provides a report with base stats: the number of runs, metrics, and query times.
+Query time samples are collected by running sample basic queries.
+
+The output of the script is a JSON file containing the statistics.
 
 ## How to Use the Command
 
-1. **Download the script**:  
-   Ensure `base_project_statistics.py` is in your working directory.
+**Step 1:** Download the `base_project_statistics.py` is in your working directory.
+**Step 2:** Execute the script on the repo of interest
 
 ```bash
 wget https://raw.githubusercontent.com/aimhubio/aim/main/troubleshooting/base_project_statistics.py
-```
-
-2. **Run the command**:  
-   Execute the script with the required `--repo` parameter. For example:
-
-```bash
 python -m base_project_statistics --repo <path_to_repo>
-```
 
-3. **Review the output**:  
-   The command generates a JSON file in the current working directory, containing statistics about the repository.
+```
+The command generates a JSON file in the current working directory, containing statistics about the repository.
 
 ## Example JSON Output
 
