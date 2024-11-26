@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.26.2 Dec 5, 2024
+- Fix bug in RunStatusReporter raising non-deterministic RuntimeError exception
+
 ## 3.26.1 Dec 3, 2024
 - Re-upload after PyPI size limitation fix
 
