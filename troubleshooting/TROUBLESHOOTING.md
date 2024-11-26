@@ -28,26 +28,26 @@ A typical output file contains the following information:
 
 ```json
 {
-  "# of all runs": 7,
-  "# of unindexed runs": 0,
-  "total # of metrics": 188,
-  "average # of metrics per run": 26.8,
-  "max # of metrics for a single run": 47,
-  "average # of params per run": 16,
-  "max # of params for a single run": 16,
-  "time to query runs (sec.)": 0.0353,
-  "time to query metrics (sec.)": 15.7062
+  "runs_count": 19,
+  "unindexed_runs_count": 3,
+  "metrics_count": 323,
+  "avg_metrics_per_run": 17.0,
+  "max_metrics_per_run": 17,
+  "avg_params_per_run": 224.58,
+  "max_params_per_run": 225,
+  "runs_query_time": 0.036,
+  "metrics_query_time": 15.7
 }
 ```
 
 ### Key Fields
 
-- `# of all runs`: Total number of runs in the repository.
-- `# of unindexed runs`: Number of runs that are not indexed.
-- `total # of metrics`: Total count of metrics across all runs.
-- `average # of metrics per run`: Average number of metrics per run.
-- `max # of metrics for a single run`: Maximum number of metrics in a single run.
-- `average # of params per run`: Average number of parameters per run.
-- `max # of params for a single run`: Maximum number of parameters in a single run.
-- `time to query runs (sec.)`: Time taken to query runs, in seconds.
-- `time to query metrics (sec.)`: Time taken to query metrics, in seconds.
+- `runs_count`: Total number of runs in the repository.
+- `unindexed_runs_count`: Number of runs that are not indexed.
+- `metrics_count`: Total count of metrics across all runs.
+- `avg_metrics_per_run`: Average number of metrics per run.
+- `max_metrics_per_run`: Maximum number of metrics in a single run.
+- `avg_params_per_run`: Average number of parameters per run.
+- `max_params_per_run`: Maximum number of parameters in a single run.
+- `runs_query_time`: Time taken to query runs, in seconds.
+- `metrics_query_time`: Time taken to query metrics, in seconds.

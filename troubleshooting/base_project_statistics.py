@@ -43,8 +43,8 @@ stats = {}
 all_runs = set(repo.list_all_runs())
 unindexed_runs = set(repo.list_active_runs())
 
-stats['# of all runs'] = len(all_runs)
-stats['# of unindexed runs'] = len(unindexed_runs)
+stats['runs_count'] = len(all_runs)
+stats['unindexed_runs_count'] = len(unindexed_runs)
 
 print('Collecting Runs info')
 metrics_count_list = []
@@ -54,25 +54,33 @@ for run in tqdm.tqdm(repo.iter_runs()):
     params_count_list.append(count_params(run))
 print('Done')
 
-stats['total # of metrics'] = sum(metrics_count_list)
-stats['average # of metrics per run'] = sum(metrics_count_list) / len(all_runs)
-stats['max # of metrics for a single run'] = max(metrics_count_list)
-stats['average # of params per run'] = sum(params_count_list) / len(all_runs)
-stats['max # of params for a single run'] = max(params_count_list)
+stats['metrics_count'] = sum(metrics_count_list)
+stats['avg_metrics_per_run'] = round(sum(metrics_count_list) / len(all_runs), 2)
+stats['max_metrics_per_run'] = max(metrics_count_list)
+stats['avg_params_per_run'] = round(sum(params_count_list) / len(all_runs), 2)
+stats['max_params_per_run'] = max(params_count_list)
 
 
 print('Collecting query performance info')
-start = time.time()
-for run in repo.query_runs('run.hparams.lr < 0.001', report_mode=0).iter_runs():
-    pass
-end = time.time()
-stats['time to query runs (sec.)'] = round(end - start, 4)
+
+# Execute Run query with a single parameter access.
+# This is required to make sure there is a point lookup for each of the runs in the repo.
+run_query = 'run.hparams.lr < 0.001'
 
 start = time.time()
-for metric in repo.query_metrics('run.hparams.lr < 0.001 and metric.name == "loss"', report_mode=0).iter():
+for run in repo.query_runs(run_query, report_mode=0).iter_runs():
     pass
 end = time.time()
-stats['time to query metrics (sec.)'] = round(end - start, 4)
+stats['runs_query_time'] = round(end - start, 4)
+
+# Execute Metric query with a single run parameter access and metric name check.
+# This is required to make sure there is a point lookup for each of the metrics in the repo.
+metric_query = 'run.hparams.lr < 0.001 and metric.name == "loss"'
+start = time.time()
+for metric in repo.query_metrics(metric_query, report_mode=0).iter():
+    pass
+end = time.time()
+stats['metrics_query_time'] = round(end - start, 4)
 print('Done')
 
 with open('aim_repo_stats.json', 'w') as fp:
