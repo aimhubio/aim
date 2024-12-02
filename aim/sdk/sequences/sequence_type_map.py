@@ -10,5 +10,5 @@ SEQUENCE_TYPE_MAP = {
     'aim.text': 'texts',
     'list(aim.text)': 'texts',
     'aim.distribution': 'distributions',
-    'aim.figure': 'figures'
+    'aim.figure': 'figures',
 }

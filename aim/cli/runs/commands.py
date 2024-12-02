@@ -183,7 +183,7 @@ def update_metrics(ctx, yes):
 
     click.secho(
         f"This command will update Runs from Aim Repo '{repo_path}' to the latest data format to ensure better "
-        f"performance. Please make sure no Runs are active and Aim UI is not running."
+        f'performance. Please make sure no Runs are active and Aim UI is not running.'
     )
     if yes:
         confirmed = True
@@ -200,7 +200,7 @@ def update_metrics(ctx, yes):
         try:
             # check if the Run has already been updated.
             meta_run_tree.first_key('typed_traces')
-            click.secho(f"Run {run_hash} is uo-to-date. Skipping.")
+            click.secho(f'Run {run_hash} is uo-to-date. Skipping.')
             continue
         except KeyError:
             for ctx_idx, run_ctx_dict in meta_run_tree.subtree('traces').items():

@@ -214,7 +214,9 @@ class RunTracker:
 
             def update_trace_dtype(old_dtype: str, new_dtype: str):
                 logger.warning(f"Updating sequence '{name}' data type from {old_dtype} to {new_dtype}.")
-                new_trace_type = SEQUENCE_TYPE_MAP.get(dtype, 'sequence')  # use mapping from value type to sequence type
+                new_trace_type = SEQUENCE_TYPE_MAP.get(
+                    dtype, 'sequence'
+                )  # use mapping from value type to sequence type
                 self.meta_tree['traces_types', new_dtype, ctx_id, name] = 1
                 self.meta_run_tree['typed_traces', new_trace_type, ctx_id, name] = 1
                 self.meta_run_tree['traces', ctx_id, name, 'dtype'] = new_dtype
