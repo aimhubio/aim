@@ -27,6 +27,7 @@ from aim.sdk.remote_run_reporter import RemoteFileManager, RemoteRunHeartbeatRep
 from aim.sdk.reporter import RunStatusReporter, ScheduledStatusReporter
 from aim.sdk.reporter.file_manager import LocalFileManager
 from aim.sdk.sequence import Sequence
+from aim.sdk.sequences.sequence_type_map import SEQUENCE_TYPE_MAP
 from aim.sdk.sequence_collection import SingleRunSequenceCollection
 from aim.sdk.tracker import RunTracker
 from aim.sdk.types import AimObject
@@ -496,17 +497,36 @@ class BasicRun(BaseRun, StructuredRunMixin):
         """
         if isinstance(dtypes, str):
             dtypes = (dtypes,)
-        for ctx_idx, run_ctx_dict in self.meta_run_tree.subtree('traces').items():
-            assert isinstance(ctx_idx, int)
-            ctx = self.idx_to_ctx(ctx_idx)
-            # run_ctx_view = run_meta_traces.view(ctx_idx)
-            for seq_name in run_ctx_dict.keys():
-                assert isinstance(seq_name, str)
-                # skip sequences not matching dtypes.
-                # sequences with no dtype are considered to be float sequences.
-                # '*' stands for all data types
-                if '*' in dtypes or run_ctx_dict[seq_name].get('dtype', 'float') in dtypes:
-                    yield seq_name, ctx, self
+        try:
+            self.meta_run_tree.first_key('typed_traces')
+            has_trace_type_info = True
+        except KeyError:
+            has_trace_type_info = False
+
+        if has_trace_type_info:
+            # use set to remove duplicates for overlapping types (such as int and float for metric)
+            trace_types = set()
+            for dtype in dtypes:
+                trace_types.add(SEQUENCE_TYPE_MAP.get(dtype))
+            for trace_type in trace_types:
+                for ctx_idx, run_ctx_dict in self.meta_run_tree.subtree('typed_traces').get(trace_type, {}).items():
+                    assert isinstance(ctx_idx, int)
+                    ctx = self.idx_to_ctx(ctx_idx)
+                    for seq_name in run_ctx_dict.keys():
+                        assert isinstance(seq_name, str)
+                        yield seq_name, ctx, self
+        else:
+            for ctx_idx, run_ctx_dict in self.meta_run_tree.subtree('traces').items():
+                assert isinstance(ctx_idx, int)
+                ctx = self.idx_to_ctx(ctx_idx)
+                # run_ctx_view = run_meta_traces.view(ctx_idx)
+                for seq_name in run_ctx_dict.keys():
+                    assert isinstance(seq_name, str)
+                    # skip sequences not matching dtypes.
+                    # sequences with no dtype are considered to be float sequences.
+                    # '*' stands for all data types
+                    if '*' in dtypes or run_ctx_dict[seq_name].get('dtype', 'float') in dtypes:
+                        yield seq_name, ctx, self
 
     def metrics(self) -> 'SequenceCollection':
         """Get iterable object for all run tracked metrics.
