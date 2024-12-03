@@ -1,9 +1,9 @@
 import argparse
-import sys
-import tqdm
 import json
+import sys
 import time
-import pprint
+
+import tqdm
 
 import aim
 
