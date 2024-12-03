@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.26.1 Dec 3, 2024
+- Re-upload after PyPI size limitation fix
+
 ## 3.26.0 Dec 3, 2024
 
 ### Enhancements:
