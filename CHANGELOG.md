@@ -1,5 +1,12 @@
 # Changelog
 
+## 3.26.0 Dec 3, 2024
+
+### Enhancements:
+- Improved performance of metric queries by sequence metadata separation (alberttorosyan)
+- Add statistics dump script for basic troubleshooting (alberttorosyan)
+
+
 ## 3.25.1 Nov 6, 2024
 - Fix corruption marking on empty index db (mihran113)
 
