@@ -7,6 +7,8 @@ import tqdm
 
 from aim.cli.runs.utils import make_zip_archive, match_runs, upload_repo_runs
 from aim.sdk.repo import Repo
+from aim.sdk.index_manager import RepoIndexManager
+from aim.sdk.sequences.sequence_type_map import SEQUENCE_TYPE_MAP
 from psutil import cpu_count
 
 
@@ -169,3 +171,43 @@ def close_runs(ctx, hashes, yes):
 
     for _ in tqdm.tqdm(pool.imap_unordered(repo._close_run, hashes), desc='Closing runs', total=len(hashes)):
         pass
+
+
+@runs.command(name='update-metrics')
+@click.pass_context
+@click.option('-y', '--yes', is_flag=True, help='Automatically confirm prompt')
+def update_metrics(ctx, yes):
+    """Separate Sequence metadata for optimal read."""
+    repo_path = ctx.obj['repo']
+    repo = Repo.from_path(repo_path)
+
+    click.secho(
+        f"This command will update Runs from Aim Repo '{repo_path}' to the latest data format to ensure better "
+        f'performance. Please make sure no Runs are active and Aim UI is not running.'
+    )
+    if yes:
+        confirmed = True
+    else:
+        confirmed = click.confirm('Do you want to proceed?')
+    if not confirmed:
+        return
+
+    index_manager = RepoIndexManager.get_index_manager(repo)
+    hashes = repo.list_all_runs()
+    for run_hash in tqdm.tqdm(hashes, desc='Updating runs', total=len(hashes)):
+        meta_tree = repo.request_tree('meta', run_hash, read_only=False, from_union=False)
+        meta_run_tree = meta_tree.subtree(('meta', 'chunks', run_hash))
+        try:
+            # check if the Run has already been updated.
+            meta_run_tree.first_key('typed_traces')
+            click.secho(f'Run {run_hash} is uo-to-date. Skipping.')
+            continue
+        except KeyError:
+            for ctx_idx, run_ctx_dict in meta_run_tree.subtree('traces').items():
+                assert isinstance(ctx_idx, int)
+                for seq_name in run_ctx_dict.keys():
+                    assert isinstance(seq_name, str)
+                    dtype = run_ctx_dict[seq_name].get('dtype', 'float')
+                    seq_type = SEQUENCE_TYPE_MAP.get(dtype, 'sequence')
+                    meta_run_tree['typed_traces', seq_type, ctx_idx, seq_name] = 1
+            index_manager.index(run_hash)

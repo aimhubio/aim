@@ -10,10 +10,12 @@ logger = logging.getLogger(__name__)
 
 class FileManager(object):
     @abstractmethod
-    def poll(self, pattern: str) -> Optional[str]: ...
+    def poll(self, pattern: str) -> Optional[str]:
+        ...
 
     @abstractmethod
-    def touch(self, filename: str, cleanup_file_pattern: Optional[str] = None): ...
+    def touch(self, filename: str, cleanup_file_pattern: Optional[str] = None):
+        ...
 
 
 class LocalFileManager(FileManager):
