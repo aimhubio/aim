@@ -1,7 +1,11 @@
 # Changelog
 
-## 3.26.2 Dec 5, 2024
-- Fix bug in RunStatusReporter raising non-deterministic RuntimeError exception
+## Unreleased:
+
+### Fixes:
+- Fix aggregated metrics' computations (mihran113)
+- Fix bug in RunStatusReporter raising non-deterministic RuntimeError exception (VassilisVassiliadis)
+
 
 ## 3.26.1 Dec 3, 2024
 - Re-upload after PyPI size limitation fix
@@ -11,7 +15,6 @@
 ### Enhancements:
 - Improved performance of metric queries by sequence metadata separation (alberttorosyan)
 - Add statistics dump script for basic troubleshooting (alberttorosyan)
-
 
 ## 3.25.1 Nov 6, 2024
 - Fix corruption marking on empty index db (mihran113)
