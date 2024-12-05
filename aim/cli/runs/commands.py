@@ -6,8 +6,8 @@ import click
 import tqdm
 
 from aim.cli.runs.utils import make_zip_archive, match_runs, upload_repo_runs
-from aim.sdk.repo import Repo
 from aim.sdk.index_manager import RepoIndexManager
+from aim.sdk.repo import Repo
 from aim.sdk.sequences.sequence_type_map import SEQUENCE_TYPE_MAP
 from psutil import cpu_count
 
