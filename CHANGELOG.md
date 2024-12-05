@@ -1,9 +1,11 @@
 # Changelog
 
-## Unreleased
+## Unreleased:
 
 ### Fixes:
 - Fix aggregated metrics' computations (mihran113)
+- Fix bug in RunStatusReporter raising non-deterministic RuntimeError exception (VassilisVassiliadis)
+
 
 ## 3.26.1 Dec 3, 2024
 - Re-upload after PyPI size limitation fix
