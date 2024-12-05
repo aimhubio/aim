@@ -1,10 +1,10 @@
 import React from 'react';
-import AudioPlayer from 'material-ui-audio-player';
 
 import { Tooltip } from '@material-ui/core';
 
 import { Button, Icon, Spinner, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import AudioPlayer from 'components/AudioPlayer';
 
 import { BATCH_COLLECT_DELAY } from 'config/mediaConfigs/mediaConfigs';
 
