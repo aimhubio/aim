@@ -15,6 +15,7 @@ from aim.storage.context import Context
 from aim.storage.hashing import hash_auto
 from aim.storage.object import CustomObject
 from aim.storage.types import AimObject
+from aim.sdk.sequences.sequence_type_map import SEQUENCE_TYPE_MAP
 
 
 if TYPE_CHECKING:
@@ -152,7 +153,7 @@ class RunTracker:
         try:
             seq_info.version = self.meta_run_tree['traces', ctx_id, name, 'version']
         except KeyError:
-            self.meta_run_tree['traces', ctx_id, name, 'version'] = seq_info.dtype = 1
+            self.meta_run_tree['traces', ctx_id, name, 'version'] = seq_info.version = 1
         try:
             seq_info.dtype = self.meta_run_tree['traces', ctx_id, name, 'dtype']
         except KeyError:
@@ -213,7 +214,11 @@ class RunTracker:
 
             def update_trace_dtype(old_dtype: str, new_dtype: str):
                 logger.warning(f"Updating sequence '{name}' data type from {old_dtype} to {new_dtype}.")
+                new_trace_type = SEQUENCE_TYPE_MAP.get(
+                    dtype, 'sequence'
+                )  # use mapping from value type to sequence type
                 self.meta_tree['traces_types', new_dtype, ctx_id, name] = 1
+                self.meta_run_tree['typed_traces', new_trace_type, ctx_id, name] = 1
                 self.meta_run_tree['traces', ctx_id, name, 'dtype'] = new_dtype
                 seq_info.dtype = new_dtype
 
@@ -222,11 +227,13 @@ class RunTracker:
                 raise ValueError(f"Cannot log value '{val}' on sequence '{name}'. Incompatible data types.")
 
         if seq_info.count == 0:
+            trace_type = SEQUENCE_TYPE_MAP.get(dtype, 'sequence')  # use mapping from value type to sequence type
             self.meta_tree['traces_types', dtype, ctx_id, name] = 1
             self.meta_run_tree['traces', ctx_id, name, 'dtype'] = dtype
             self.meta_run_tree['traces', ctx_id, name, 'version'] = seq_info.version
             self.meta_run_tree['traces', ctx_id, name, 'first'] = val
             self.meta_run_tree['traces', ctx_id, name, 'first_step'] = step
+            self.meta_run_tree['typed_traces', trace_type, ctx_id, name] = 1
             seq_info.dtype = dtype
 
         if step >= seq_info.count:
