@@ -3,9 +3,8 @@ import json
 import sys
 import time
 
-import tqdm
-
 import aim
+import tqdm
 
 
 def count_metrics(run):
@@ -24,10 +23,7 @@ def count_dict_keys(params):
     Count the number of leaf nodes in a nested dictionary.
     A leaf node is a value that is not a dictionary.
     """
-    return sum(
-        count_dict_keys(value) if isinstance(value, dict) else 1
-        for value in params.values()
-    )
+    return sum(count_dict_keys(value) if isinstance(value, dict) else 1 for value in params.values())
 
 
 parser = argparse.ArgumentParser(description='Process command line arguments.')
