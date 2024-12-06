@@ -83,16 +83,13 @@ class Notification:
         self.message = message
 
     @abstractmethod
-    def is_sent(self):
-        ...
+    def is_sent(self): ...
 
     @abstractmethod
-    def update_last_sent(self):
-        ...
+    def update_last_sent(self): ...
 
     @abstractmethod
-    def get_msg_details(self):
-        ...
+    def get_msg_details(self): ...
 
 
 class StatusNotification(Notification):

@@ -10,12 +10,12 @@ import pytz
 
 from aim.sdk.configs import AIM_ENABLE_TRACKING_THREAD
 from aim.sdk.num_utils import convert_to_py_number, is_number
+from aim.sdk.sequences.sequence_type_map import SEQUENCE_TYPE_MAP
 from aim.sdk.utils import check_types_compatibility, get_object_typename
 from aim.storage.context import Context
 from aim.storage.hashing import hash_auto
 from aim.storage.object import CustomObject
 from aim.storage.types import AimObject
-from aim.sdk.sequences.sequence_type_map import SEQUENCE_TYPE_MAP
 
 
 if TYPE_CHECKING:

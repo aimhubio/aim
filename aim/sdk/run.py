@@ -27,8 +27,8 @@ from aim.sdk.remote_run_reporter import RemoteFileManager, RemoteRunHeartbeatRep
 from aim.sdk.reporter import RunStatusReporter, ScheduledStatusReporter
 from aim.sdk.reporter.file_manager import LocalFileManager
 from aim.sdk.sequence import Sequence
-from aim.sdk.sequences.sequence_type_map import SEQUENCE_TYPE_MAP
 from aim.sdk.sequence_collection import SingleRunSequenceCollection
+from aim.sdk.sequences.sequence_type_map import SEQUENCE_TYPE_MAP
 from aim.sdk.tracker import RunTracker
 from aim.sdk.types import AimObject
 from aim.sdk.utils import (
