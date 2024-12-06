@@ -500,7 +500,7 @@ class BasicRun(BaseRun, StructuredRunMixin):
         try:
             self.meta_run_tree.first_key('typed_traces')
             has_trace_type_info = True
-        except KeyError:
+        except (KeyError, StopIteration):
             has_trace_type_info = False
 
         if has_trace_type_info:
