@@ -5,7 +5,8 @@
 ### Fixes:
 - Fix aggregated metrics' computations (mihran113)
 - Fix bug in RunStatusReporter raising non-deterministic RuntimeError exception (VassilisVassiliadis)
-
+- Fix tag addition issue from parallel runs (mihran113)
+- Handle `StopIteration` exception in iter_sequence_info_by_type method (alberttorosyan)
 
 ## 3.26.1 Dec 3, 2024
 - Re-upload after PyPI size limitation fix
