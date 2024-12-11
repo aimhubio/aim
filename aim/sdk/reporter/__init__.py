@@ -655,7 +655,7 @@ class RunStatusReporter:
         logger.debug(f'notifying {self}')
 
         with self.reporter_lock:
-            flag_names = [flag_name] if flag_name is not None else self.timed_tasks
+            flag_names = [flag_name] if flag_name is not None else list(self.timed_tasks)
             with self.flush_condition:
                 for flag_name in flag_names:
                     logger.debug(f'flushing {flag_name}')

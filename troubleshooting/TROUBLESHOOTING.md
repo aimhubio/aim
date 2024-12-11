@@ -10,7 +10,7 @@ Query time samples are collected by running sample basic queries.
 
 The output of the script is a JSON file containing the statistics.
 
-## How to Use the Command
+### How to Use the Command
 
 **Step 1:** Download the `base_project_statistics.py` is in your working directory.
 **Step 2:** Execute the script on the repo of interest
@@ -22,7 +22,7 @@ python -m base_project_statistics --repo <path_to_repo>
 ```
 The command generates a JSON file in the current working directory, containing statistics about the repository.
 
-## Example JSON Output
+### Example JSON Output
 
 A typical output file contains the following information:
 

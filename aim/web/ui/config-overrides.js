@@ -6,6 +6,12 @@ module.exports = {
   webpack: function (config, webpackEnv) {
     const isEnvProduction = webpackEnv === 'production';
 
+    config.module.rules.push({
+      test: /\.mjs$/,
+      include: /node_modules/,
+      type: 'javascript/auto',
+    });
+
     // Optimization Overrides
     config.optimization.splitChunks = {
       cacheGroups: {
