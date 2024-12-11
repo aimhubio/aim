@@ -1,5 +1,6 @@
 import importlib.util
 import os
+import warnings
 
 from argparse import Namespace
 from typing import Any, Dict, Optional, Union
@@ -47,14 +48,16 @@ class AimLogger(Logger):
         self,
         repo: Optional[str] = None,
         experiment: Optional[str] = None,
-        train_metric_prefix: Optional[str] = 'train_',
-        val_metric_prefix: Optional[str] = 'val_',
-        test_metric_prefix: Optional[str] = 'test_',
+        train_metric_prefix: Optional[str] = 'train_', # deprecated
+        val_metric_prefix: Optional[str] = 'val_',     # deprecated
+        test_metric_prefix: Optional[str] = 'test_',   # deprecated
         system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT,
         log_system_params: Optional[bool] = True,
         capture_terminal_logs: Optional[bool] = True,
         run_name: Optional[str] = None,
         run_hash: Optional[str] = None,
+        context_prefixes: Optional[Dict] = None,
+        context_postfixes: Optional[Dict] = None,
     ):
         super().__init__()
 
@@ -62,9 +65,44 @@ class AimLogger(Logger):
         self._run_name = run_name
         self._repo_path = repo
 
-        self._train_metric_prefix = train_metric_prefix
-        self._val_metric_prefix = val_metric_prefix
-        self._test_metric_prefix = test_metric_prefix
+        CONTEXT_PREFIXES_DEFAULT = dict(subset={'train': 'train_', 'val': 'val_', 'test': 'test_'})
+        if context_prefixes is None:
+            context_prefixes = CONTEXT_PREFIXES_DEFAULT
+        if context_postfixes is None:
+            context_postfixes = {}
+
+        # Handle deprecated SUBSET_metric_prefix arguments
+        if context_prefixes == CONTEXT_PREFIXES_DEFAULT:
+            # only use deprecated SUBSET_metric_prefixes if context_prefixes is default
+            context_prefixes['subset']['train'] = train_metric_prefix
+            context_prefixes['subset']['val'] = val_metric_prefix
+            context_prefixes['subset']['test'] = test_metric_prefix
+            # setting a legacy subset_metric_prefixes to None or '' will remove it from context_prefixes
+            if not train_metric_prefix:
+                context_prefixes['subset'].pop('train')
+            if not val_metric_prefix:
+                context_prefixes['subset'].pop('val')
+            if not test_metric_prefix:
+                context_prefixes['subset'].pop('test')
+            # if all subset values were removed, remove the subset
+            if not context_prefixes['subset']:
+                context_prefixes.pop('subset')
+                # context_prefixes is now empty {}
+        elif train_metric_prefix != 'train_' or val_metric_prefix != 'val_' or test_metric_prefix != 'test_':
+            raise ValueError('Arguments "train_metric_prefix" "val_metric_prefix" "train_metric_prefix" cannot be used in conjunction with "context_prefixes".')
+        # Deprecation warnings if SUBSET_metric_prefix arguments are not default
+        if train_metric_prefix != 'train_':
+            msg = 'The argument "train_metric_prefix" is deprecated. Consider using "context_prefixes" instead.'
+            warnings.warn(msg, category=DeprecationWarning, stacklevel=2)
+        if val_metric_prefix != 'val_':
+            msg = 'The argument "val_metric_prefix" is deprecated. Consider using "context_prefixes" instead.'
+            warnings.warn(msg, category=DeprecationWarning, stacklevel=2)
+        if test_metric_prefix != 'test_':
+            msg = 'The argument "test_metric_prefix" is deprecated. Consider using "context_prefixes" instead.'
+            warnings.warn(msg, category=DeprecationWarning, stacklevel=2)
+
+        self._context_prefixes = context_prefixes
+        self._context_postfixes = context_postfixes
         self._system_tracking_interval = system_tracking_interval
         self._log_system_params = log_system_params
         self._capture_terminal_logs = capture_terminal_logs
@@ -130,25 +168,30 @@ class AimLogger(Logger):
         assert rank_zero_only.rank == 0, 'experiment tried to log from global_rank != 0'
 
         metric_items: Dict[str:Any] = {k: v for k, v in metrics.items()}
-
-        if 'epoch' in metric_items:
-            epoch: int = metric_items.pop('epoch')
-        else:
-            epoch = None
+        epoch: int = metric_items.pop('epoch', None)
 
         for k, v in metric_items.items():
-            name = k
-            context = {}
-            if self._train_metric_prefix and name.startswith(self._train_metric_prefix):
-                name = name[len(self._train_metric_prefix) :]
-                context['subset'] = 'train'
-            elif self._test_metric_prefix and name.startswith(self._test_metric_prefix):
-                name = name[len(self._test_metric_prefix) :]
-                context['subset'] = 'test'
-            elif self._val_metric_prefix and name.startswith(self._val_metric_prefix):
-                name = name[len(self._val_metric_prefix) :]
-                context['subset'] = 'val'
+            name, context = self.parse_context(k)
             self.experiment.track(v, name=name, step=step, epoch=epoch, context=context)
+
+    def parse_context(self, name):
+        context = {}
+
+        for ctx, mappings in self._context_prefixes.items():
+            for category, prefix in mappings.items():
+                if name.startswith(prefix):
+                    name = name[len(prefix):]
+                    context[ctx] = category
+                    break  # avoid prefix rename cascade
+
+        for ctx, mappings in self._context_postfixes.items():
+            for category, postfix in mappings.items():
+                if name.endswith(postfix):
+                    name = name[:-len(postfix)]
+                    context[ctx] = category
+                    break  # avoid postfix rename cascade
+
+        return name, context
 
     @rank_zero_only
     def finalize(self, status: str = '') -> None:
@@ -173,65 +216,3 @@ class AimLogger(Logger):
     @property
     def version(self) -> str:
         return self.experiment.hash
-
-
-class AimLoggerWithContext(AimLogger):
-    def __init__(
-        self,
-        repo: Optional[str] = None,
-        experiment: Optional[str] = None,
-        context_prefixes: Optional[Dict] = dict(subset={'train':'train_', 'val':'val_', 'test':'test_'}),
-        context_postfixes: Optional[Dict] = dict(),
-        system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT,
-        log_system_params: Optional[bool] = True,
-        capture_terminal_logs: Optional[bool] = True,
-        run_name: Optional[str] = None,
-        run_hash: Optional[str] = None,
-    ):
-        super().__init__()
-        self._experiment_name = experiment
-        self._run_name = run_name
-        self._repo_path = repo
-
-        self._context_prefixes = context_prefixes
-        self._context_postfixes = context_postfixes
-        self._system_tracking_interval = system_tracking_interval
-        self._log_system_params = log_system_params
-        self._capture_terminal_logs = capture_terminal_logs
-
-        self._run = None
-        self._run_hash = run_hash
-
-    @rank_zero_only
-    def log_metrics(self, metrics: Dict[str, float], step: Optional[int] = None):
-        assert rank_zero_only.rank == 0, 'experiment tried to log from global_rank != 0'
-
-        metric_items: Dict[str:Any] = {k: v for k, v in metrics.items()}
-
-        if 'epoch' in metric_items:
-            epoch: int = metric_items.pop('epoch')
-        else:
-            epoch = None
-
-        for k, v in metric_items.items():
-            name, context = self.parse_context(k)
-            self.experiment.track(v, name=name, step=step, epoch=epoch, context=context)
-
-    def parse_context(self, name):
-        context = {}
-
-        for ctx, mappings in self._context_prefixes.items():
-            for category, prefix in mappings.items():
-                if name.startswith(prefix):
-                    name = name[len(prefix):]
-                    context[ctx] = category
-                    break  # avoid prefix rename cascade
-
-        for ctx, mappings in self._context_postfixes.items():
-            for category, postfix in mappings.items():
-                if name.endswith(postfix):
-                    name = name[:-len(postfix)]
-                    context[ctx] = category
-                    break  # avoid postfix rename cascade
-
-        return name, context
