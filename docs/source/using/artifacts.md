@@ -47,9 +47,21 @@ Currently supported backends for artifacts storage are.
 
 #### S3 Artifacts Storage Backend
 
-Aim uses `boto3` Python package for accessing AWS resources. No additional credentials
-validation os done on the Aim side. More details on how credentials configuration is done
+Aim uses `boto3` Python package for accessing S3 resources. By default `boto3` targets AWS S3 resources. Connection and credential validation is handled by `boto3`. A typical way of supplying credentials for instance is by setting `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` environment variables.  More details on how configuration is done
 for `boto3` is available [here](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/credentials.html).
+
+If you require direct control of how the `boto3` client handles your s3 connection, you may use `aim.storage.artifacts.s3_storage.S3ArtifactStorage_clientconfig(...)`. `S3ArtifactStorage_clientconfig` accepts any keyword-arguments that the `boto3.client` accepts, overwriting other means of boto3 configuration. This allows for the setting of credentials and connection details such as `endpoint_url` and `botocore` [Config](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/configuration.html) parameters.
+
+```python
+import aim
+from aim.storage.artifacts.s3_storage import S3ArtifactStorage_clientconfig
+
+S3ArtifactStorage_clientconfig(aws_access_key_id=..., aws_secret_access_key=...,
+                               endpoint_url=..., config={'retries': {...}, },)
+run = aim.Run(...)
+run.set_artifacts_uri('s3://...')
+run.log_artifact(..., name=...)
+```
 
 #### File-system Artifacts Storage Backend
 
