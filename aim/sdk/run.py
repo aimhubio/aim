@@ -4,6 +4,7 @@ import logging
 import os
 import pathlib
 import sys
+import warnings
 
 from collections import defaultdict
 from functools import partialmethod
@@ -420,21 +421,29 @@ class BasicRun(BaseRun, StructuredRunMixin):
     def artifacts_uri(self) -> str:
         if self._run_artifacts_uri is None:
             base_uri = self.meta_run_tree.get('artifacts_uri', None)
+            if base_uri is None: return None
             self._run_artifacts_uri = os.path.join(base_uri, self.hash)
         return self._run_artifacts_uri
 
     def set_artifacts_uri(self, uri: str):
+        if '://' not in uri:
+            msg = f'artifacts_uri must start with a scheme, e.g. s3:// or file://. Got "{uri}"'
+            warnings.warn(msg, stacklevel=2)
         self.meta_run_tree['artifacts_uri'] = uri
         self._run_artifacts_uri = os.path.join(uri, self.hash)
 
     @noexcept
     def log_artifact(self, path: str, name: Optional[str] = None, *, block: bool = False):
+        if self.artifacts_uri is None:
+            raise ValueError('run.artifacts_uri is None. Use run.set_artifacts_uri(...) to set this value')
         artifact = Artifact(path, uri=self.artifacts_uri, name=name)
         artifact.upload(block=block)
         self.meta_run_tree.subtree('artifacts')[artifact.name] = artifact
 
     @noexcept
     def log_artifacts(self, path: str, name: Optional[str] = None, *, block: bool = False):
+        if self.artifacts_uri is None:
+            raise ValueError('run.artifacts_uri is None. Use run.set_artifacts_uri(...) to set this value')
         dir_path = pathlib.Path(path)
         if name is None:
             name = dir_path.name
