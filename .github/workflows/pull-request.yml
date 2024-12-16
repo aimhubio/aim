@@ -46,7 +46,7 @@ jobs:
       - name: setup python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.7'
+          python-version: '3.8'
           architecture: x64
 
       - name: install deps
