@@ -418,10 +418,11 @@ class BasicRun(BaseRun, StructuredRunMixin):
 
     # artifacts logging API
     @property
-    def artifacts_uri(self) -> str:
+    def artifacts_uri(self) -> Optional[str]:
         if self._run_artifacts_uri is None:
             base_uri = self.meta_run_tree.get('artifacts_uri', None)
-            if base_uri is None: return None
+            if base_uri is None:
+                return None
             self._run_artifacts_uri = os.path.join(base_uri, self.hash)
         return self._run_artifacts_uri
 
