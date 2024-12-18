@@ -83,20 +83,40 @@ Step 1. Create `AimLogger` object
 
 ```python
 # track experimental data by using Aim
-aim_logger = AimLogger(
-    experiment='aim_on_pt_lightning',
-    train_metric_prefix='train_',
-    val_metric_prefix='val_',
-)
+aim_logger = AimLogger(repo='path/to/aim/repo', experiment='aim_on_pt_lightning')
 ```
 
 Step 2. Pass the `aim_logger` object as the `logger` argument
-
 
 ```python
 # track experimental data by using Aim
 trainer = Trainer(gpus=1, progress_bar_refresh_rate=20, max_epochs=5, logger=aim_logger)
 ```
+
+#### Managing Aim Contexts
+Aim contexts can be automatically derived from your metric names by defining prefixes and postfixes with the `context_prefixes` and `context_postfixes` kwargs. By default, AimLogger recognizes `train_`, `val_`, and `test_` prefixes and assign metrics with those postfixes to the `subset` context. 
+
+For instance, calling `self.log("val_loss", loss_value)` in a pl.LightningModule instance will log `loss_value` to Aim in a metric called "loss" with the "val" context.
+
+Changing this default and adding new contexts is possible with the following usage:
+```python
+Aimlogger(...,
+    context_prefixes = dict(subset={'train': 'train_',    # the default behavior,
+                                    'val':   'val_',      # shown here as example
+                                    'test':  'test_'}),  
+    contest_postfixes = dict(custom_context={'weighted':'_weighted', # a new, user-defined 
+                                             'macro':   '_macro'},   # metric-averaging context
+)
+```
+
+To remove all default context mapping, do `AimLogger(..., context_prefixes={})`.
+
+If you need more than two contexts per metric, or have other context needs, you can always directly access Aim's tracking capabilities from a pl.LightningModule or pl.Trainer instance with:
+    `instance.logger.experiment.track(value, name=..., context=...)`
+
+For the Pytorch Lightning AimLogger, arguments `train_metric_prefix`, `val_metric_prefix`, `test_metric_prefix` are deprecated but functional. However, using them in conjuncture with `context_prefixes` will raise a ValueError. 
+
+
 Adapter source can be found [here](https://github.com/aimhubio/aim/blob/main/aim/sdk/adapters/pytorch_lightning.py).  
 Example using Pytorch Lightning can be found [here](https://github.com/aimhubio/aim/blob/main/examples/pytorch_lightning_track.py).
 
