@@ -1,6 +1,11 @@
 # Changelog
 
-## Unreleased:
+## 3.27.0 Dec 18, 2024
+
+### Enhancements:
+- Enable custom boto3 client parameters for `S3ArtifactStorage` (sbatchelder)
+- Return `None` for `run.artifact_uri` if not set (sbatchelder)
+- Enable custom contexts for `PytorchLightning` logger (sbatchelder)
 
 ### Fixes:
 - Fix aggregated metrics' computations (mihran113)
