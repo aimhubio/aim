@@ -7,6 +7,7 @@ This is different from CPython's implementation because of many reasons:
   *  Our implementation are less prone to manually designed collisions.
 """
 
+import _hashlib
 import hashlib
 
 from typing import Tuple, Union
@@ -34,6 +35,44 @@ _HASH_OBJECT_SALT = encode_int64(-2435585119574290752)
 _HASH_STR_SALT = encode_int64(7540324813251503183)
 _HASH_BYTES_SALT = encode_int64(-6836296829636613855)
 
+# Invoke hashlib algorithm based on the security mode.
+# In normal mode use the original blake2b based hashing.
+# If we in the restrictive FIPS mode, RHEL FIPS mode restricts
+# the hashlib functions like blake2 to use openssl blake2 implementations
+# which limit the parameters and hence doesn't allow to customise the digest size.
+# So we use shake_256 as alternative in FIPS mode which provides variable length
+# digest support and is an acceptable SHA-3 Algorithm.
+# This class writes a wrapper as the digest signature is different for both.
+class aim_hash_algorithm:
+    digest_size: int = _HASH_SIZE
+    salt: int
+    is_fips_mode_enabled: bool
+    hashlib_state: None
+
+    # Based on the FIPS mode choose between blake2b or shake_256 hash function
+    def _invoke_hashlib(self):
+        if not self.is_fips_mode_enabled:
+            return hashlib.blake2b(digest_size=self.digest_size, salt=self.salt)
+        else:
+            return hashlib.shake_256()
+
+    def __init__(self, digest_size = None, salt = None):
+        if digest_size:
+            self.digest_size = digest_size
+        self.salt = salt
+        self.is_fips_mode_enabled = True if _hashlib.get_fips_mode() == 1 else False
+        self.hashlib_state = self._invoke_hashlib()
+
+    def update(self, obj: bytes):
+        self.hashlib_state.update(obj)
+
+    def digest(self):
+        if not self.is_fips_mode_enabled:
+            # blake2 digest signature
+            return self.hashlib_state.digest()
+        else:
+            # shake_256 digest signature with variable length
+            return self.hashlib_state.digest(length=self.digest_size)
 
 def hash_none(obj: NoneType = None) -> int:
     """Hash None values."""
@@ -47,7 +86,8 @@ def hash_uniform(bad_hash):
     in real applications) craft / find such examples that `a != b` but
     `hash(a) == hash(b)`
     """
-    state = hashlib.blake2b(encode_int64(bad_hash), digest_size=_HASH_SIZE, salt=_HASH_UNIFORM_SALT)
+    state = aim_hash_algorithm(salt=_HASH_UNIFORM_SALT)
+    state.update(encode_int64(bad_hash))
     return decode_int64(state.digest())
 
 
@@ -75,9 +115,9 @@ def hash_bool(obj: bool) -> int:
 def hash_bytes(obj: bytes) -> int:
     """Hash an `bytes` buffer"""
     # We use `blake2b` to hash the `bytes` object
-    state = hashlib.blake2b(obj, digest_size=_HASH_SIZE, salt=_HASH_BYTES_SALT)
+    state = aim_hash_algorithm(salt=_HASH_BYTES_SALT)
+    state.update(obj)
     return decode_int64(state.digest())
-
 
 def hash_string(obj: str) -> int:
     """Hash an string object"""
@@ -85,7 +125,8 @@ def hash_string(obj: str) -> int:
     # First, we encode them to `utf-8` and then compute the hash
     # but *a different hash seed is provided* to make sure strings and their
     # utf-8 encoded blobs do not map to the same hash.
-    state = hashlib.blake2b(obj.encode('utf-8'), digest_size=_HASH_SIZE, salt=_HASH_STR_SALT)
+    state = aim_hash_algorithm(salt=_HASH_STR_SALT)
+    state.update(obj.encode('utf-8'))
     return decode_int64(state.digest())
 
 
@@ -95,11 +136,10 @@ def hash_array(obj: AimObjectArray) -> int:
     We do not take into account whether it is a `list` or `tuple`, so
     `hash([1, 2, ['x', 5]]) == hash((1, 2, ('x', 5)))`
     """
-    state = hashlib.blake2b(digest_size=_HASH_SIZE, salt=_HASH_ARRAY_SALT)
+    state = aim_hash_algorithm(salt=_HASH_ARRAY_SALT)
     for i in obj:
         piece_hash = hash_auto(i)
         state.update(encode_int64(piece_hash))
-
     return decode_int64(state.digest())
 
 
@@ -117,7 +157,7 @@ def hash_object(obj: AimObjectDict) -> int:
     The implementation does not take into account the order
     `hash({'a': 5, 'b': 7}) == hash({'b': 7, 'a': 5})`
     """
-    state = hashlib.blake2b(digest_size=_HASH_SIZE, salt=_HASH_OBJECT_SALT)
+    state = aim_hash_algorithm(salt=_HASH_OBJECT_SALT)
     # Here we use `key_cmp` to run over the object keys in an (meaningless but)
     # deterministic order.
     for key_val_tuple in sorted(obj.items(), key=key_cmp):
