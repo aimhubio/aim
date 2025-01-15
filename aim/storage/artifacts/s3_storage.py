@@ -73,7 +73,7 @@ class S3ArtifactStorage(AbstractArtifactStorage):
         return client
 
 
-def S3ArtifactStorage_factory(**boto3_client_kwargs: dict):
+def S3ArtifactStorage_factory(**boto3_client_kwargs):
     class S3ArtifactStorageCustom(S3ArtifactStorage):
         def _get_s3_client(self):
             import boto3
@@ -88,7 +88,7 @@ def S3ArtifactStorage_factory(**boto3_client_kwargs: dict):
     return S3ArtifactStorageCustom
 
 
-def S3ArtifactStorage_clientconfig(**boto3_client_kwargs: dict):
+def S3ArtifactStorage_clientconfig(**boto3_client_kwargs):
     from aim.storage.artifacts import registry
 
     registry.registry['s3'] = S3ArtifactStorage_factory(**boto3_client_kwargs)
