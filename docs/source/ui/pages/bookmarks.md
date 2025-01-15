@@ -2,7 +2,7 @@
 
 ### Overview
 
-Use the Bookmarks to save the Aim Explorer state. This includes search query, aggregations and any other modifications applied to the explorer. The Bookmarks page is a list of [cards](#bookmark-card) to quickly access the explorer state with one click.
+Use the Bookmarks to save the Aim Explorer state. This includes search query, aggregations and any other modifications applied to the explorer. The Bookmarks page is a list of [cards](#the-bookmark-card) to quickly access the explorer state with one click.
 
 <img alt="bookmarks" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/bookmarks/bookmarks.png">
 <p>&nbsp;</p>
