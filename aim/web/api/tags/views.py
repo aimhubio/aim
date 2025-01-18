@@ -41,7 +41,7 @@ async def search_tags_by_name_api(q: Optional[str] = '', factory=Depends(object_
             'id': tag.uuid,
             'name': tag.name,
             'color': tag.color,
-            'description' 'run_count': len(tag.runs),
+            'descriptionrun_count': len(tag.runs),
             'archived': tag.archived,
         }
         for tag in factory.search_tags(q.strip())

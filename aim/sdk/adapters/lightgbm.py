@@ -8,8 +8,7 @@ try:
     from lightgbm.callback import CallbackEnv
 except ImportError:
     raise RuntimeError(
-        'This contrib module requires Lightgbm to be installed. '
-        'Please install it with command: \n pip install lightgbm'
+        'This contrib module requires Lightgbm to be installed. Please install it with command: \n pip install lightgbm'
     )
 
 

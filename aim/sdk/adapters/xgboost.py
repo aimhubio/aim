@@ -8,8 +8,7 @@ try:
     from xgboost.callback import TrainingCallback
 except ImportError:
     raise RuntimeError(
-        'This contrib module requires XGBoost to be installed. '
-        'Please install it with command: \n pip install xgboost'
+        'This contrib module requires XGBoost to be installed. Please install it with command: \n pip install xgboost'
     )
 
 

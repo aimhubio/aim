@@ -1,7 +1,7 @@
-query_0 = 'run.hparams.benchmark == "glue" ' 'and run.hparams.dataset == "cola" ' 'and metric.context.subset != "train"'
-query_1 = 'run.hparams.benchmark == "glue" ' 'and run.hparams.dataset == "cola"'
+query_0 = 'run.hparams.benchmark == "glue" and run.hparams.dataset == "cola" and metric.context.subset != "train"'
+query_1 = 'run.hparams.benchmark == "glue" and run.hparams.dataset == "cola"'
 query_2 = 'run.hparams.benchmark == "glue"'
-query_3 = 'run.hparams.dataset == "cola" ' 'and run.experiment.name != "baseline-warp_4-cola"'
+query_3 = 'run.hparams.dataset == "cola" and run.experiment.name != "baseline-warp_4-cola"'
 
 
 queries = {

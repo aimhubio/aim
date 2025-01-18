@@ -96,7 +96,7 @@ def up(
         db_cmd = build_db_upgrade_command()
         exec_cmd(db_cmd, stream_output=True)
     except ShellCommandException:
-        click.echo('Failed to initialize Aim DB. ' 'Please see the logs above for details.')
+        click.echo('Failed to initialize Aim DB. Please see the logs above for details.')
         return
 
     if port == 0:

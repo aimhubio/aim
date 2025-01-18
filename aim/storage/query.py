@@ -52,7 +52,7 @@ def safer_getattr(object, name, default=None, getattr=getattr):
     if name == 'format' and isinstance(object, str):
         raise NotImplementedError('Using format() on a %s is not safe.' % object.__class__.__name__)
     if name[0] == '_':
-        raise AttributeError('"{name}" is an invalid attribute name because it ' 'starts with "_"'.format(name=name))
+        raise AttributeError('"{name}" is an invalid attribute name because it starts with "_"'.format(name=name))
     val = getattr(object, name, default)
     return val
 

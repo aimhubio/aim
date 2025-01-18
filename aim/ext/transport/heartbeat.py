@@ -15,10 +15,8 @@ class HeartbeatSender(object):
     HEARTBEAT_INTERVAL_DEFAULT = 10
     NETWORK_CHECK_INTERVAL = 180
 
-    NETWORK_UNSTABLE_WARNING_TEMPLATE = (
-        'Network connection between client `{}` ' 'and server `{}` appears to be unstable.'
-    )
-    NETWORK_ABSENT_WARNING_TEMPLATE = 'Network connection between client `{}` ' 'and server `{}` appears to be absent.'
+    NETWORK_UNSTABLE_WARNING_TEMPLATE = 'Network connection between client `{}` and server `{}` appears to be unstable.'
+    NETWORK_ABSENT_WARNING_TEMPLATE = 'Network connection between client `{}` and server `{}` appears to be absent.'
 
     def __init__(
         self,
