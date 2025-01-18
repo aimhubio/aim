@@ -11,7 +11,11 @@ exclude = [
 inline-quotes = "single"
 
 [lint]
-extend-select = ["I"]
+extend-select = [
+  "I",
+  "PGH004", # blanket-noqa
+  "RUF100", # unused-noqa
+]
 
 [lint.isort]
 no-lines-before = ["future", "standard-library", "first-party"]

@@ -31,7 +31,7 @@ def _decode_histogram(value):
 
     # This is a bit weird but it seems the histogram counts is usually padded by 0 as tensorboard
     # only stores the right limits?
-    # See https://github.com/pytorch/pytorch/blob/7d2a18da0b3427fcbe44b461a0aa508194535885/torch/utils/tensorboard/summary.py#L390 # noqa
+    # See https://github.com/pytorch/pytorch/blob/7d2a18da0b3427fcbe44b461a0aa508194535885/torch/utils/tensorboard/summary.py#L390
     bin_counts = bin_counts[1:]
 
     bin_range = (bucket_limits[0], bucket_limits[-1])

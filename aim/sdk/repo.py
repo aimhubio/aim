@@ -985,7 +985,7 @@ class Repo:
         from aim.sdk.utils import backup_run
 
         if self.is_remote_repo:
-            self._remote_repo_proxy._restore_run(run_hash)  # noqa
+            self._remote_repo_proxy._restore_run(run_hash)
         else:
             backup_run(self, run_hash)
 
@@ -993,7 +993,7 @@ class Repo:
         from aim.sdk.utils import restore_run_backup
 
         if self.is_remote_repo:
-            self._remote_repo_proxy._restore_run(run_hash)  # noqa
+            self._remote_repo_proxy._restore_run(run_hash)
         else:
             restore_run_backup(self, run_hash)
 
