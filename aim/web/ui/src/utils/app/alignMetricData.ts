@@ -31,6 +31,7 @@ export function alignByStep(
 export function alignByEpoch(
   data: IMetricsCollection<IMetric>[],
 ): IMetricsCollection<IMetric>[] {
+  console.log('meow');
   for (let i = 0; i < data.length; i++) {
     const metricCollection = data[i];
     for (let j = 0; j < metricCollection.data.length; j++) {
@@ -44,21 +45,33 @@ export function alignByEpoch(
           epochs[epoch] = [metric.data.steps[i]];
         }
       });
-
+      // Get unique epoch values (for ex. (1, 1.495) instead of (1, 1)), because the epochs can be duplicate
+      let xValues = [
+        ...metric.data.epochs.map((epoch, i) => {
+          return (
+            epoch +
+            (epochs[epoch].length > 1
+              ? (0.99 / epochs[epoch].length) *
+                epochs[epoch].indexOf(metric.data.steps[i])
+              : 0)
+          );
+        }),
+      ];
+      let yValues = [...metric.data.values];
+      let pointsArray = [];
+      // Combine the x and y axis arrays into an array of points
+      for (let idx = 0; idx < xValues.length; idx++) {
+        pointsArray[idx] = [xValues[idx], yValues[idx]];
+      }
+      // Sort the combined array based on the first element of the point (epoch)
+      pointsArray.sort(function (a, b) {
+        return a[0] - b[0];
+      });
       metric.data = {
         ...metric.data,
-        xValues: [
-          ...metric.data.epochs.map((epoch, i) => {
-            return (
-              epoch +
-              (epochs[epoch].length > 1
-                ? (0.99 / epochs[epoch].length) *
-                  epochs[epoch].indexOf(metric.data.steps[i])
-                : 0)
-            );
-          }),
-        ],
-        yValues: [...metric.data.values],
+        // Separate the x and y axis values back into xValues and yValues
+        xValues: pointsArray.map((point) => point[0]),
+        yValues: pointsArray.map((point) => point[1]),
       };
     }
   }
