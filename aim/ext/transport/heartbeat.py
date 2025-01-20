@@ -118,7 +118,7 @@ class HeartbeatSender(object):
 
 
 class HeartbeatWatcher:
-    CLIENT_KEEP_ALIVE_TIME_DEFAULT = 30 * 60  # 30 minutes
+    CLIENT_KEEP_ALIVE_TIME_DEFAULT = 5 * 60  # 5 minutes
 
     def __init__(self, heartbeat_pool, keep_alive_time: Union[int, float] = CLIENT_KEEP_ALIVE_TIME_DEFAULT):
         self._heartbeat_pool = heartbeat_pool
