@@ -3,6 +3,7 @@ import logging
 from abc import abstractmethod
 from typing import TYPE_CHECKING, Iterator
 
+from aim.sdk.query_analyzer import QueryExpressionTransformer
 from aim.sdk.query_utils import RunView, SequenceView
 from aim.sdk.sequence import Sequence
 from aim.sdk.types import QueryReportMode
@@ -170,20 +171,33 @@ class QuerySequenceCollection(SequenceCollection):
         if self.report_mode == QueryReportMode.PROGRESS_BAR:
             progress_bar = tqdm(total=total_runs)
 
+        seq_var = self.seq_cls.sequence_name()
+        t = QueryExpressionTransformer(var_names=[seq_var, ])
+        run_expr, is_transformed = t.transform(self.query)
+        run_query = RestrictedPythonQuery(run_expr)
+
         for run in runs_iterator:
-            seq_collection = SingleRunSequenceCollection(
-                run,
-                self.seq_cls,
-                self.query,
-                runs_proxy_cache=self.runs_proxy_cache,
-                timezone_offset=self._timezone_offset,
-            )
-            if self.report_mode == QueryReportMode.PROGRESS_TUPLE:
-                yield seq_collection, (runs_counter, total_runs)
-            else:
-                if self.report_mode == QueryReportMode.PROGRESS_BAR:
-                    progress_bar.update(1)
-                yield seq_collection
+            check_run_sequences = True
+            if is_transformed:
+                run_view = RunView(run, runs_proxy_cache=self.runs_proxy_cache, timezone_offset=self._timezone_offset)
+                match = run_query.check(**{'run': run_view})
+                if not match:
+                    check_run_sequences = False
+
+            if check_run_sequences:
+                seq_collection = SingleRunSequenceCollection(
+                    run,
+                    self.seq_cls,
+                    self.query,
+                    runs_proxy_cache=self.runs_proxy_cache,
+                    timezone_offset=self._timezone_offset,
+                )
+                if self.report_mode == QueryReportMode.PROGRESS_TUPLE:
+                    yield seq_collection, (runs_counter, total_runs)
+                else:
+                    if self.report_mode == QueryReportMode.PROGRESS_BAR:
+                        progress_bar.update(1)
+                    yield seq_collection
             runs_counter += 1
 
     def iter(self) -> Iterator[Sequence]:
