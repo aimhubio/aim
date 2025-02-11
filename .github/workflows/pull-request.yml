@@ -82,9 +82,9 @@ jobs:
         run: |
           python3 -m venv venv
           . venv/bin/activate
-          pip install --upgrade pip
-          pip install -r performance_tests/requirements.txt
-          pip install .
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.dev.txt
+          python -m pip install -r performance_tests/requirements.txt
 
       - name: perf tests
         run: |
