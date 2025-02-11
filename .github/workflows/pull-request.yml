@@ -84,7 +84,7 @@ jobs:
           . venv/bin/activate
           pip install --upgrade pip
           pip install -r performance_tests/requirements.txt
-          pip install -e .
+          pip install .
 
       - name: perf tests
         run: |
