@@ -39,11 +39,7 @@ def _cleanup_test_repo(path):
 
 
 def pytest_sessionstart(session):
-    if os.environ.get('AIM_LOCAL_PERFORMANCE_TEST'):
-        _init_test_repos()
-    else:
-        # github actions performance tests on self hosted runner
-        os.chdir('/home/ubuntu/performance_logs/')
+    _init_test_repos()
     time.sleep(10)
 
 
