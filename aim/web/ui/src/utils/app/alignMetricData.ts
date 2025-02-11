@@ -31,7 +31,6 @@ export function alignByStep(
 export function alignByEpoch(
   data: IMetricsCollection<IMetric>[],
 ): IMetricsCollection<IMetric>[] {
-  console.log('meow');
   for (let i = 0; i < data.length; i++) {
     const metricCollection = data[i];
     for (let j = 0; j < metricCollection.data.length; j++) {
