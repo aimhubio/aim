@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Fixes:
+- Decrease client resources keep-alive time (mihran113)
+- Fix connection of data points on epoch alignment (mihran113)
+
 ## 3.27.0 Dec 18, 2024
 
 ### Enhancements:
