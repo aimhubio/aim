@@ -39,7 +39,11 @@ def _cleanup_test_repo(path):
 
 
 def pytest_sessionstart(session):
-    _init_test_repos()
+    if os.environ.get('AIM_LOCAL_PERFORMANCE_TEST'):
+        _init_test_repos()
+    else:
+        # github actions performance tests on self hosted runner
+        os.chdir('/Users/github/workers/perf-tests/actions-runner/_work/performance_logs')
     time.sleep(10)
 
 
