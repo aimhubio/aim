@@ -1,6 +1,6 @@
 import ast
 
-from typing import List, Tuple, Any
+from typing import Any, List, Tuple
 
 
 class Unknown(ast.AST):
