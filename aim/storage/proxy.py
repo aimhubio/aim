@@ -174,7 +174,7 @@ class Eager4:
             if self.cache is not None and cache_key is not None:
                 self.cache[cache_key] = res
 
-            return res
+        return res
 
 
 class AimObjectProxy(with_metaclass(_ObjectProxyMetaType)):
