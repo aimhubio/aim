@@ -3,18 +3,20 @@ import logging
 from abc import abstractmethod
 from typing import TYPE_CHECKING, Iterator
 
+from tqdm import tqdm
+
 from aim.sdk.query_analyzer import QueryExpressionTransformer
 from aim.sdk.query_utils import RunView, SequenceView
 from aim.sdk.sequence import Sequence
 from aim.sdk.types import QueryReportMode
 from aim.storage.query import RestrictedPythonQuery
-from tqdm import tqdm
 
 
 if TYPE_CHECKING:
+    from pandas import DataFrame
+
     from aim.sdk.repo import Repo
     from aim.sdk.run import Run
-    from pandas import DataFrame
 
 logger = logging.getLogger(__name__)
 
