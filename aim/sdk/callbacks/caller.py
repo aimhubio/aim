@@ -42,7 +42,7 @@ class Caller:
         for handler in handlers:
             try:
                 handler(**all_kwargs)
-            except Exception:  # noqa
+            except Exception:
                 # TODO catch errors on handler invocation (nice-to-have)
                 logger.warning(f"Failed to run callback '{handler.__name__}'.")
                 logger.warning(traceback.format_exc())

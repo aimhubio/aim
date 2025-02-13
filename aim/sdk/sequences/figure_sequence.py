@@ -9,7 +9,7 @@ class Figures(Sequence):
 
     @classmethod
     def allowed_dtypes(cls) -> Union[str, Tuple[str, ...]]:
-        return (Figure.get_typename(),)  # noqa : need a tuple for consitancy
+        return (Figure.get_typename(),)  # need a tuple for consitancy
 
     @classmethod
     def sequence_name(cls) -> str:

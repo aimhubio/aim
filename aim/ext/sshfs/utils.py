@@ -197,7 +197,7 @@ def unmount_remote_repo(mount_point: str, mount_root: str):
     if exit_code != 0:
         # in case of failure log warning so the user can unmount manually if needed
         logger.warning(
-            f'Could not unmount path: {mount_point}.\n' f'Please unmount manually using command:\n' f'{" ".join(cmd)}'
+            f'Could not unmount path: {mount_point}.\nPlease unmount manually using command:\n{" ".join(cmd)}'
         )
     else:
         shutil.rmtree(mount_root)

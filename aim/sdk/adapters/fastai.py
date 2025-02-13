@@ -11,7 +11,7 @@ try:
     from fastcore.basics import detuplify, ignore_exceptions, store_attr
 except ImportError:
     raise RuntimeError(
-        'This contrib module requires fastai to be installed. ' 'Please install it with command: \n pip install fastai'
+        'This contrib module requires fastai to be installed. Please install it with command: \n pip install fastai'
     )
 
 logger = getLogger(__name__)
@@ -107,7 +107,11 @@ class AimCallback(Callback):
             args['n_inp'] = n_inp
             xb = self.dls.valid.one_batch()[:n_inp]
             args.update(
-                {f'input {n+1} dim {i+1}': d for n in range(n_inp) for i, d in enumerate(list(detuplify(xb[n]).shape))}
+                {
+                    f'input {n + 1} dim {i + 1}': d
+                    for n in range(n_inp)
+                    for i, d in enumerate(list(detuplify(xb[n]).shape))
+                }
             )
         except Exception:
             logger.warning('Failed to gather input dimensions')

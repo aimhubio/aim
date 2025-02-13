@@ -19,7 +19,7 @@ dashboard_apps_router = APIRouter()
 
 @dashboard_apps_router.get('/', response_model=ExploreStateListOut)
 async def dashboard_apps_list_api(session: Session = Depends(get_session)):
-    explore_states = session.query(ExploreState).filter(ExploreState.is_archived == False)  # noqa
+    explore_states = session.query(ExploreState).filter(ExploreState.is_archived == False)  # noqa: E712
     result = []
     for es in explore_states:
         result.append(explore_state_response_serializer(es))

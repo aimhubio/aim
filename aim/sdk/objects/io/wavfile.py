@@ -316,7 +316,7 @@ def _raise_bad_format(format_tag):
     except ValueError:
         format_name = f'{format_tag:#06x}'
     raise ValueError(
-        f"Unknown wave file format: {format_name}. Supported formats: {', '.join(x.name for x in KNOWN_WAVE_FORMATS)}"
+        f'Unknown wave file format: {format_name}. Supported formats: {", ".join(x.name for x in KNOWN_WAVE_FORMATS)}'
     )
 
 
@@ -447,12 +447,12 @@ def _read_data_chunk(fid, format_tag, channels, bit_depth, is_big_endian, block_
             # Remaining bit depths can map directly to signed numpy dtypes
             dtype = f'{fmt}i{bytes_per_sample}'
         else:
-            raise ValueError('Unsupported bit depth: the WAV file ' f'has {bit_depth}-bit integer data.')
+            raise ValueError(f'Unsupported bit depth: the WAV file has {bit_depth}-bit integer data.')
     elif format_tag == WAVE_FORMAT.IEEE_FLOAT:
         if bit_depth in {32, 64}:
             dtype = f'{fmt}f{bytes_per_sample}'
         else:
-            raise ValueError('Unsupported bit depth: the WAV file ' f'has {bit_depth}-bit floating-point data.')
+            raise ValueError(f'Unsupported bit depth: the WAV file has {bit_depth}-bit floating-point data.')
     else:
         _raise_bad_format(format_tag)
 
@@ -480,7 +480,7 @@ def _read_data_chunk(fid, format_tag, channels, bit_depth, is_big_endian, block_
             data = numpy.memmap(fid, dtype=dtype, mode='c', offset=start, shape=(n_samples,))
             fid.seek(start + size)
         else:
-            raise ValueError('mmap=True not compatible with ' f'{bytes_per_sample}-byte container size.')
+            raise ValueError(f'mmap=True not compatible with {bytes_per_sample}-byte container size.')
 
     _handle_pad_byte(fid, size)
 
@@ -516,7 +516,7 @@ def _read_riff_chunk(fid):
         fmt = '>I'
     else:
         # There are also .wav files with "FFIR" or "XFIR" signatures?
-        raise ValueError(f'File format {repr(str1)} not understood. Only ' "'RIFF' and 'RIFX' supported.")
+        raise ValueError(f"File format {repr(str1)} not understood. Only 'RIFF' and 'RIFX' supported.")
 
     # Size of entire file
     file_size = struct.unpack(fmt, fid.read(4))[0] + 8
@@ -554,7 +554,7 @@ def read(buffer, mmap=False):
                 if data_chunk_received:
                     # End of file but data successfully read
                     warnings.warn(
-                        'Reached EOF prematurely; finished at {:d} bytes, ' 'expected {:d} bytes from header.'.format(
+                        'Reached EOF prematurely; finished at {:d} bytes, expected {:d} bytes from header.'.format(
                             fid.tell(), file_size
                         ),
                         WavFileWarning,

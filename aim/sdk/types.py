@@ -1,5 +1,6 @@
-from aim.storage.types import *  # noqa F401
 from enum import Enum
+
+from aim.storage.types import *  # noqa: F403
 
 
 class QueryReportMode(Enum):

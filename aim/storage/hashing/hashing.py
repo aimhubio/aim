@@ -11,7 +11,7 @@ import hashlib
 
 from typing import Tuple, Union
 
-from aim.storage.encoding import decode_int64, encode_int64  # noqa
+from aim.storage.encoding import decode_int64, encode_int64
 from aim.storage.hashing import c_hash
 from aim.storage.types import (
     AimObject,

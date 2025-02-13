@@ -61,7 +61,7 @@ class PyInstrumentProfilerMiddleware:
         profiler = self.profiler(interval=self._profiler_interval)
         try:
             profiler.start()
-        except:  # noqa
+        except:  # noqa: E722
             skip_profiling = True
         else:
             skip_profiling = False

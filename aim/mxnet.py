@@ -1,2 +1,2 @@
 # Alias to SDK mxnet interface
-from aim.sdk.adapters.mxnet import AimLoggingHandler  # noqa F401
+from aim.sdk.adapters.mxnet import AimLoggingHandler as AimLoggingHandler

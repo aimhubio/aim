@@ -40,7 +40,7 @@ def convert_tensorboard(ctx, logdir, flat, no_cache):
 @click.option('--flat', '-f', required=False, is_flag=True, default=False)
 def convert_tensorflow(ctx, logdir, flat):
     click.secho(
-        "WARN: Command 'tf' is deprecated and will be removed in future releases," " please use 'tensorboard' instead.",
+        "WARN: Command 'tf' is deprecated and will be removed in future releases, please use 'tensorboard' instead.",
         fg='red',
     )
     repo_inst = ctx.obj['repo_inst']

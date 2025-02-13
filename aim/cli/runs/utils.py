@@ -48,7 +48,7 @@ def upload_repo_runs(buffer: io.BytesIO, bucket_name: str) -> Tuple[bool, str]:
         import boto3
     except ImportError:
         raise RuntimeError(
-            "This command requires 'boto3' to be installed. " 'Please install it with command: \n pip install boto3'
+            "This command requires 'boto3' to be installed. Please install it with command: \n pip install boto3"
         )
 
     try:
