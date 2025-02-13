@@ -95,5 +95,5 @@ def server(host, port, repo, ssl_keyfile, ssl_certfile, base_path, log_level, de
         )
         exec_cmd(cmd, stream_output=True)
     except ShellCommandException:
-        click.echo('Failed to run Aim Tracking Server. ' 'Please see the logs above for details.')
+        click.echo('Failed to run Aim Tracking Server. Please see the logs above for details.')
         exit(1)

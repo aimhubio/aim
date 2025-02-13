@@ -13,7 +13,7 @@ def handle_exception(exc_type: Type[Exception], error_message: Optional[str] = N
         def wrapper(*args, **kwargs):
             try:
                 return func(*args, **kwargs)
-            except exc_type as e:  # noqa
+            except exc_type:
                 if error_message is not None:
                     logger.error(error_message)
                     raise RuntimeError(error_message)

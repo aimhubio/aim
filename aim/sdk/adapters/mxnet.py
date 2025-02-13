@@ -75,7 +75,7 @@ class AimLoggingHandler(TrainBegin, TrainEnd, EpochBegin, EpochEnd, BatchBegin, 
         optimizer = trainer.optimizer.__class__.__name__
         lr = trainer.learning_rate
 
-        estimator.logger.info('Training begin: using optimizer %s ' 'with current learning rate %.4f ', optimizer, lr)
+        estimator.logger.info('Training begin: using optimizer %s with current learning rate %.4f ', optimizer, lr)
         if estimator.max_epoch:
             estimator.logger.info('Train for %d epochs.', estimator.max_epoch)
         else:

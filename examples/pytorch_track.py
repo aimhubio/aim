@@ -90,7 +90,7 @@ for epoch in range(num_epochs):
 
         if i % 30 == 0:
             logging.info(
-                'Epoch [{}/{}], Step [{}/{}], ' 'Loss: {:.4f}'.format(
+                'Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}'.format(
                     epoch + 1, num_epochs, i + 1, total_step, loss.item()
                 )
             )

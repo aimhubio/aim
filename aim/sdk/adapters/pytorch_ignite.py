@@ -8,7 +8,7 @@ try:
     from torch.optim import Optimizer
 except ImportError:
     raise RuntimeError(
-        'This contrib module requires PyTorch to be installed. ' 'Please install it with command: \n pip install torch'
+        'This contrib module requires PyTorch to be installed. Please install it with command: \n pip install torch'
     )
 try:
     from ignite.contrib.handlers.base_logger import (
@@ -185,8 +185,7 @@ class OutputHandler(BaseOutputHandler):
 
         if not isinstance(global_step, int):
             raise TypeError(
-                f'global_step must be int, got {type(global_step)}.'
-                ' Please check the output of global_step_transform.'
+                f'global_step must be int, got {type(global_step)}. Please check the output of global_step_transform.'
             )
 
         metrics = {}

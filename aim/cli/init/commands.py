@@ -20,7 +20,7 @@ def init(repo, yes, skip_if_exists):
     re_init = False
     if Repo.exists(repo_path):
         if yes and skip_if_exists:
-            raise click.BadParameter('Conflicting init options.' 'Either specify -y/--yes or -s/--skip-if-exists')
+            raise click.BadParameter('Conflicting init options.Either specify -y/--yes or -s/--skip-if-exists')
         elif yes:
             re_init = True
         elif skip_if_exists:
@@ -28,7 +28,7 @@ def init(repo, yes, skip_if_exists):
             return
         else:
             re_init = click.confirm(
-                'Aim repository is already initialized. ' 'Do you want to re-initialize to empty Aim repository?'
+                'Aim repository is already initialized. Do you want to re-initialize to empty Aim repository?'
             )
         if not re_init:
             return

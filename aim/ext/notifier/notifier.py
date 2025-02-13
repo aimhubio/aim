@@ -34,7 +34,7 @@ class Notifier(BaseNotifier):
                 except Exception as e:
                     attempt += 1
                     if attempt == self.MAX_RETRIES:
-                        logger.error(f'Notifier {sub} failed to send message "{message}". ' f'No retries left.')
+                        logger.error(f'Notifier {sub} failed to send message "{message}". No retries left.')
                         raise NotificationSendError(e)
                     else:
                         logger.error(

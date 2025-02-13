@@ -9,7 +9,7 @@ try:
     from keras.callbacks import Callback
 except ImportError:
     raise RuntimeError(
-        'This contrib module requires keras to be installed. ' 'Please install it with command: \n pip install keras'
+        'This contrib module requires keras to be installed. Please install it with command: \n pip install keras'
     )
 
 

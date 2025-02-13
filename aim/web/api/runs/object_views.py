@@ -32,7 +32,7 @@ from starlette.responses import StreamingResponse
 class CustomObjectApiConfig:
     sequence_type: type = Sequence
     resolve_blobs: bool = False
-    dump_record_fn: callable = lambda x: x.data  # noqa E731
+    dump_record_fn: callable = lambda x: x.data
     model: type = BaseModel
 
     @staticmethod
@@ -165,7 +165,7 @@ class TextApiConfig(CustomObjectApiConfig):
 class DistributionApiConfig(CustomObjectApiConfig):
     sequence_type = Distributions
     resolve_blobs = True
-    dump_record_fn = lambda x: numpy_to_encodable(x.weights)  # noqa E731
+    dump_record_fn = lambda x: numpy_to_encodable(x.weights)  # noqa: E731
     model = DistributionInfo
 
 
@@ -178,5 +178,5 @@ class AudioApiConfig(CustomObjectApiConfig):
 class FigureApiConfig(CustomObjectApiConfig):
     sequence_type = Figures
     resolve_blobs = True
-    dump_record_fn = lambda x: x.data  # noqa E731
+    dump_record_fn = lambda x: x.data  # noqa: E731
     model = FigureInfo

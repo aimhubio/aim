@@ -5,7 +5,8 @@ import struct
 from typing import Iterator, Tuple
 
 from aim.storage.object import CustomObject
-from aim.storage.treeutils import decode_tree, encode_tree  # noqa
+from aim.storage.treeutils import decode_tree as decode_tree
+from aim.storage.treeutils import encode_tree as encode_tree
 from aim.storage.types import BLOB
 
 

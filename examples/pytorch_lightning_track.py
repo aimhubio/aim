@@ -4,7 +4,7 @@ import os
 
 if importlib.util.find_spec('lightning'):
     import lightning.pytorch as pl
-elif importlib.util.find_spec('pytorch_lightning'):  # noqa F401
+elif importlib.util.find_spec('pytorch_lightning'):  # F401
     import pytorch_lightning as pl
 else:
     raise RuntimeError(
