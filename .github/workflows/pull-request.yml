@@ -32,42 +32,42 @@ jobs:
 #        with:
 #          regex: '^\[(?:feat|fix|doc|refactor|deprecation)\]\s[A-Z].*(?<!\.)$'
 #          github_token: ${{ github.token }}
-#  run-checks:
-#    if: github.event.pull_request.draft == false && github.event.action != 'edited'
-#    runs-on: ubuntu-latest
-#    name: Run Unit-tests & Code-style checks
-#    steps:
-#      - name: checkout
-#        uses: actions/checkout@v2
-#        with:
-#          ref: ${{ github.head_ref }}
-#          repository: ${{ github.event.pull_request.head.repo.full_name }}
-#
-#      - name: setup python
-#        uses: actions/setup-python@v2
-#        with:
-#          python-version: '3.8'
-#          architecture: x64
-#
-#      - name: install deps
-#        run: |
-#          python -m pip install --upgrade pip
-#          python -m pip install -r requirements.dev.txt
-#          python -m pip install -r tests/requirements.txt
-#
-#      - name: code style checks
-#        run: |
-#          set -e
-#          ruff check .
-#          ruff format . --check
-#
-#
-#      - name: unit-tests
-#        run: |
-#          pytest --cov-report term --cov-branch --cov-fail-under=50 --cov=aim/web --cov=aim/storage --cov=aim/sdk tests
+  run-checks:
+    if: github.event.pull_request.draft == false && github.event.action != 'edited'
+    runs-on: ubuntu-latest
+    name: Run Unit-tests & Code-style checks
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+
+      - name: setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+          architecture: x64
+
+      - name: install deps
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.dev.txt
+          python -m pip install -r tests/requirements.txt
+
+      - name: code style checks
+        run: |
+          set -e
+          ruff check .
+          ruff format . --check
+
+
+      - name: unit-tests
+        run: |
+          pytest --cov-report term --cov-branch --cov-fail-under=50 --cov=aim/web --cov=aim/storage --cov=aim/sdk tests
 
   storage-performance-checks:
-#    needs: run-checks
+    needs: run-checks
     concurrency: storage-performance-checks
     runs-on: [self-hosted, perf-tests]
     name: Performance tests
