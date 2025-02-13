@@ -43,7 +43,7 @@ def pytest_sessionstart(session):
         _init_test_repos()
     else:
         # github actions performance tests on self hosted runner
-        os.chdir('/home/ubuntu/performance_logs/')
+        os.chdir('/Users/github/workers/perf-tests/actions-runner/_work/performance_logs')
     time.sleep(10)
 
 
