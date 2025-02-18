@@ -68,8 +68,8 @@ jobs:
 
   storage-performance-checks:
     needs: run-checks
-    concurrency: perf-tests
-    runs-on: [self-hosted, performance-tests]
+    concurrency: storage-performance-checks
+    runs-on: [self-hosted, perf-tests]
     name: Performance tests
     steps:
       - name: checkout
