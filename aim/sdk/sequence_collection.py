@@ -3,20 +3,18 @@ import logging
 from abc import abstractmethod
 from typing import TYPE_CHECKING, Iterator
 
-from tqdm import tqdm
-
 from aim.sdk.query_analyzer import QueryExpressionTransformer
 from aim.sdk.query_utils import RunView, SequenceView
 from aim.sdk.sequence import Sequence
 from aim.sdk.types import QueryReportMode
 from aim.storage.query import RestrictedPythonQuery
+from tqdm import tqdm
 
 
 if TYPE_CHECKING:
-    from pandas import DataFrame
-
     from aim.sdk.repo import Repo
     from aim.sdk.run import Run
+    from pandas import DataFrame
 
 logger = logging.getLogger(__name__)
 
@@ -174,7 +172,11 @@ class QuerySequenceCollection(SequenceCollection):
             progress_bar = tqdm(total=total_runs)
 
         seq_var = self.seq_cls.sequence_name()
-        t = QueryExpressionTransformer(var_names=[seq_var, ])
+        t = QueryExpressionTransformer(
+            var_names=[
+                seq_var,
+            ]
+        )
         run_expr, is_transformed = t.transform(self.query)
         run_query = RestrictedPythonQuery(run_expr)
 

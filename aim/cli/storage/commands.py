@@ -56,7 +56,7 @@ def to_3_11(ctx, hashes, yes):
         try:
             run = Run(run_hash, repo=repo)
             if run.check_metrics_version():
-                backup_run(run)
+                backup_run(repo, run.hash)
                 run.update_metrics()
                 index_manager.index(run_hash)
             else:
