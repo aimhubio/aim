@@ -91,7 +91,7 @@ class DB(ObjectFactory):
 
     def get_session(self, autocommit=True):
         session_cls = scoped_session(sessionmaker(autoflush=False, bind=self.engine))
-        session = session_cls
+        session = session_cls()
         setattr(session, 'autocommit', autocommit)
         return session
 
