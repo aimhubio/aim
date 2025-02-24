@@ -287,7 +287,7 @@ class BasicRun(BaseRun, StructuredRunMixin):
                     raise RuntimeError
                 else:
                     logger.warning(f'Detected sub-optimal format metrics for Run {self.hash}. Upgrading...')
-                    backup_path = backup_run(self)
+                    backup_path = backup_run(self.repo, self.hash)
                     try:
                         self.update_metrics()
                         logger.warning(f'Successfully converted Run {self.hash}')

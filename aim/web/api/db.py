@@ -15,12 +15,12 @@ engine = create_engine(
     echo=(logging.INFO >= int(os.environ.get(AIM_LOG_LEVEL_KEY, logging.WARNING))),
     connect_args={'check_same_thread': False},
 )
-SessionLocal = sessionmaker(autoflush=False, bind=engine)
 Base = declarative_base()
 
 
 def get_session():
-    session = SessionLocal()
+    session_cls = sessionmaker(autoflush=False, bind=engine)
+    session = session_cls()
     try:
         yield session
     finally:
@@ -29,7 +29,8 @@ def get_session():
 
 @contextmanager
 def get_contexted_session():
-    session = SessionLocal()
+    session_cls = sessionmaker(autoflush=False, bind=engine)
+    session = session_cls()
     try:
         yield session
     finally:

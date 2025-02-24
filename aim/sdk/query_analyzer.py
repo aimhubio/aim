@@ -10,6 +10,17 @@ class Unknown(ast.AST):
 Unknown = Unknown()  # create a single instance of <unknown> value node
 
 
+def unparse(*args, **kwargs):
+    import sys
+
+    if sys.version_info.minor < 9:
+        import astunparse
+
+        return astunparse.unparse(*args, **kwargs)
+    else:
+        return ast.unparse(*args, **kwargs)
+
+
 class QueryExpressionTransformer(ast.NodeTransformer):
     def __init__(self, *, var_names: List[str]):
         self._var_names = var_names
@@ -20,7 +31,7 @@ class QueryExpressionTransformer(ast.NodeTransformer):
         if transformed is Unknown:
             return expr, False
         else:
-            return ast.unparse(transformed), True
+            return unparse(transformed), True
 
     def visit_Expression(self, node: ast.Expression) -> Any:
         node: ast.Expression = self.generic_visit(node)
