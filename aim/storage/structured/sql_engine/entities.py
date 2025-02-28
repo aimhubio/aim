@@ -1,5 +1,6 @@
 from typing import Collection, List, Optional, Union
 
+import logging
 import pytz
 
 from aim.storage.structured.entities import Experiment as IExperiment
@@ -24,6 +25,8 @@ from sqlalchemy import __version__ as sa_version
 from sqlalchemy import delete
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload
+
+logger = logging.getLogger(__name__)
 
 
 def session_commit_or_flush(session):
@@ -226,6 +229,10 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
                     session.add(tag)
             self._model.tags.append(tag)
             session.add(self._model)
+
+        if value in self.tags:
+            logger.warning(f'Tag with value: {value} is already present in this run.')
+            return
 
         session = self._session
         unsafe_add_tag()
