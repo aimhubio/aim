@@ -1,6 +1,7 @@
+import logging
+
 from typing import Collection, List, Optional, Union
 
-import logging
 import pytz
 
 from aim.storage.structured.entities import Experiment as IExperiment
@@ -25,6 +26,7 @@ from sqlalchemy import __version__ as sa_version
 from sqlalchemy import delete
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload
+
 
 logger = logging.getLogger(__name__)
 
