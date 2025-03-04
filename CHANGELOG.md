@@ -11,6 +11,7 @@
 ### Enhancements:
 - Skip metrics check when run is known to yield false result (alberttorosyan)
 - Correct indentation on query proxy object return statement (alberttorosyan)
+- Fix spurious assertion error in message stream parsing (qzed)
 
 ## 3.27.0 Dec 18, 2024
 
