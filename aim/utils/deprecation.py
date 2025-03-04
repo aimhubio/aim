@@ -12,7 +12,7 @@ def python_version_deprecation_check():
     version_info = sys.version_info
     if version_info.major == 3 and version_info.minor == 7:
         deprecation_warning(
-            remove_version='3.17',
+            remove_version='3.30',
             msg='Python 3.7 has reached EOL. Aim support for Python 3.7 is deprecated!',
             remove_msg_template='Python 3.7 support will be dropped in',
         )
