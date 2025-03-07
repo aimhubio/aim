@@ -16,6 +16,7 @@ if sys.version_info.minor < 9:
     def unparse(*args, **kwargs):
         return astunparse.unparse(*args, **kwargs)
 else:
+
     def unparse(*args, **kwargs):
         return ast.unparse(*args, **kwargs)
 
