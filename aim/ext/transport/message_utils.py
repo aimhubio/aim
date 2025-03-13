@@ -55,7 +55,9 @@ def raise_exception(server_exception):
     module = importlib.import_module(server_exception.get('module_name'))
     exception = getattr(module, server_exception.get('class_name'))
     args = json.loads(server_exception.get('args') or [])
-    raise exception(*args) if args else exception()
+    message = server_exception.get('message')
+
+    raise exception(*args) if args else Exception(message)
 
 
 def build_exception(exception: Exception):
@@ -63,6 +65,7 @@ def build_exception(exception: Exception):
         'module_name': exception.__class__.__module__,
         'class_name': exception.__class__.__name__,
         'args': json.dumps(exception.args),
+        'message': str(exception),
     }
 
 
