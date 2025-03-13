@@ -1,4 +1,5 @@
 import ast
+import sys
 
 from typing import Any, List, Tuple
 
@@ -9,15 +10,14 @@ class Unknown(ast.AST):
 
 Unknown = Unknown()  # create a single instance of <unknown> value node
 
+if sys.version_info.minor < 9:
+    import astunparse
 
-def unparse(*args, **kwargs):
-    import sys
-
-    if sys.version_info.minor < 9:
-        import astunparse
-
+    def unparse(*args, **kwargs):
         return astunparse.unparse(*args, **kwargs)
-    else:
+else:
+
+    def unparse(*args, **kwargs):
         return ast.unparse(*args, **kwargs)
 
 
@@ -26,12 +26,15 @@ class QueryExpressionTransformer(ast.NodeTransformer):
         self._var_names = var_names
 
     def transform(self, expr: str) -> Tuple[str, bool]:
-        node = ast.parse(expr, mode='eval')
-        transformed = self.visit(node)
-        if transformed is Unknown:
-            return expr, False
+        if expr:
+            node = ast.parse(expr, mode='eval')
+            transformed = self.visit(node)
+            if transformed is Unknown:
+                return expr, False
+            else:
+                return unparse(transformed), True
         else:
-            return unparse(transformed), True
+            return expr, False
 
     def visit_Expression(self, node: ast.Expression) -> Any:
         node: ast.Expression = self.generic_visit(node)
