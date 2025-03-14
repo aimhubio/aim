@@ -61,8 +61,12 @@ class DB(ObjectFactory):
         self.db_url = self.get_db_url(path)
         self.readonly = readonly
         self.engine = create_engine(
-            self.db_url, echo=(logging.INFO >= int(os.environ.get(AIM_LOG_LEVEL_KEY, logging.WARNING)))
+            self.db_url,
+            echo=(logging.INFO >= int(os.environ.get(AIM_LOG_LEVEL_KEY, logging.WARNING))),
+            pool_size=10,
+            max_overflow=20,
         )
+        self.session_cls = scoped_session(sessionmaker(autoflush=False, bind=self.engine))
         self._upgraded = None
 
     @classmethod
@@ -90,8 +94,7 @@ class DB(ObjectFactory):
         return self._caches
 
     def get_session(self, autocommit=True):
-        session_cls = scoped_session(sessionmaker(autoflush=False, bind=self.engine))
-        session = session_cls()
+        session = self.session_cls()
         setattr(session, 'autocommit', autocommit)
         return session
 
