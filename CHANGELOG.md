@@ -13,6 +13,7 @@
 ### Enhancements:
 - Skip metrics check when run is known to yield false result (alberttorosyan)
 - Correct indentation on query proxy object return statement (alberttorosyan)
+- Remove metric version check to improve performance of metric retrieval (mihran113)
 
 ## 3.27.0 Dec 18, 2024
 
