@@ -6,7 +6,6 @@
 - Decrease client resources keep-alive time (mihran113)
 - Fix connection of data points on epoch alignment (mihran113)
 - Resolve issue with adding duplicate tags to the same run (mihran113)
-- Resolve session refresh issues when db file is replaced (mihran113)
 - Improve error messages for remote tracking server (mihran113)
 - Fix spurious assertion error in message stream parsing (qzed)
 
