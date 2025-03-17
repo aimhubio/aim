@@ -22,7 +22,7 @@ from aim.storage.encoding.encoding_native cimport (
     decode_double,
     decode_utf_8_str,
 )
-from aim.storage.encoding.encoding_native cimport decode_path  # noqa F401
+from aim.storage.encoding.encoding_native cimport decode_path  # noqa: F401
 from aim.storage.utils import ArrayFlagType, ObjectFlagType, CustomObjectFlagType
 from aim.storage.utils import ArrayFlag, ObjectFlag
 from aim.storage.container import ContainerValue
