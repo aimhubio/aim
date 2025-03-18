@@ -2,29 +2,29 @@ import os
 
 from aim.ext.resource.stat import Stat
 
+
 try:
     import accelerate.utils.environment
 except ImportError:
     raise RuntimeError(
-        "This contrib module requires HuggingFace Accelerate to be installed. "
-        "Please install it with command: \n pip install accelerate"
+        'This contrib module requires HuggingFace Accelerate to be installed. '
+        'Please install it with command: \n pip install accelerate'
     )
 
 import copy
+import json
+import logging
+import select
+import socket
 import struct
 import threading
 import time
+import typing
 
 import aim
-import aim.hugging_face
 import aim.ext.resource
+import aim.hugging_face
 import aim.sdk.configs
-
-import typing
-import socket
-import select
-import logging
-import json
 
 
 class IncompletePackageError(Exception):
@@ -41,14 +41,14 @@ class IncompleteDataError(IncompletePackageError):
 
 def packet_encode(usage: typing.Dict[str, typing.Any]) -> bytes:
     data = json.dumps(usage)
-    header = len(data).to_bytes(4, "big")
-    packet = b"".join((header, struct.pack(f"!{len(data)}s", data.encode("utf-8"))))
+    header = len(data).to_bytes(4, 'big')
+    packet = b''.join((header, struct.pack(f'!{len(data)}s', data.encode('utf-8'))))
     return packet
 
 
 def packet_decode(packet: bytes) -> typing.Dict[str, typing.Any]:
-    length = int.from_bytes(packet[:4], "big")
-    raw = struct.unpack_from(f"!{length}s", packet, 4)[0]
+    length = int.from_bytes(packet[:4], 'big')
+    raw = struct.unpack_from(f'!{length}s', packet, 4)[0]
     decoded = json.loads(raw)
     return decoded
 
@@ -74,12 +74,10 @@ class MetricsReporter:
 
         self.node_rank = node_rank
         self.rank = rank
-        self.log = logging.getLogger(f"MetricsReporter{rank}")
+        self.log = logging.getLogger(f'MetricsReporter{rank}')
 
         self._connect(host=host, port=port)
-        self.tracker = ResourceTrackerForwarder(
-            tracker=self, interval=interval, capture_logs=False
-        )
+        self.tracker = ResourceTrackerForwarder(tracker=self, interval=interval, capture_logs=False)
 
     def start(self):
         self.tracker.start()
@@ -102,9 +100,7 @@ class MetricsReporter:
 
         while time.time() - start <= connection_timeout:
             # This should deal with both ipv4 and ipv6 hosts
-            for family, socktype, proto, canonname, sa in socket.getaddrinfo(
-                host, port, proto=socket.SOL_TCP
-            ):
+            for family, socktype, proto, canonname, sa in socket.getaddrinfo(host, port, proto=socket.SOL_TCP):
                 self.client = socket.socket(family, socktype, proto)
                 try:
                     self.client.connect(sa)
@@ -112,50 +108,43 @@ class MetricsReporter:
                 except (ConnectionRefusedError, OSError) as e:
                     self.client.close()
                     self.log.info(
-                        f"Could not connect to main worker due to {e} - "
-                        f"will retry in {retry_seconds} seconds"
+                        f'Could not connect to main worker due to {e} - will retry in {retry_seconds} seconds'
                     )
             time.sleep(retry_seconds)
 
-        raise ConnectionError(
-            f"Could not connect to server {host}:{port} after {connection_timeout} seconds"
-        )
+        raise ConnectionError(f'Could not connect to server {host}:{port} after {connection_timeout} seconds')
 
     def __call__(self, stat: aim.ext.resource.tracker.Stat):
         if self.client is None:
-            self.log.info(
-                "Connection has already closed, will not propagate this system metrics snapshot"
-            )
+            self.log.info('Connection has already closed, will not propagate this system metrics snapshot')
             return
 
         # This is invoked by @self.tracker
         raw = {
-            "stat": stat.stat_item.to_dict(),
-            "worker": {
-                "node_rank": self.node_rank,
-                "rank": self.rank,
+            'stat': stat.stat_item.to_dict(),
+            'worker': {
+                'node_rank': self.node_rank,
+                'rank': self.rank,
             },
         }
-        self.log.debug(f"Send {raw}")
+        self.log.debug(f'Send {raw}')
 
         packet = packet_encode(raw)
         try:
             self.client.sendall(packet)
         except BrokenPipeError:
             self.log.info(
-                f"BrokenPipeError while transmitting system metrics {raw} - will stop recording system metrics"
+                f'BrokenPipeError while transmitting system metrics {raw} - will stop recording system metrics'
             )
             try:
                 self.stop()
             except RuntimeError as e:
-                if e.args[0] != "cannot join current thread":
+                if e.args[0] != 'cannot join current thread':
                     # Calling stop() causes self.tracker() to try to join this thread. In turn that raises
                     # this RuntimeError
                     raise
         except Exception as e:
-            self.log.info(
-                f"{e} while transmitting system metrics {raw} - will ignore exception"
-            )
+            self.log.info(f'{e} while transmitting system metrics {raw} - will ignore exception')
 
 
 class MetricsReceiver:
@@ -177,7 +166,7 @@ class MetricsReceiver:
         ] = None
 
         self.clients: typing.List[socket.socket] = []
-        self.log = logging.getLogger("MetricsReceiver")
+        self.log = logging.getLogger('MetricsReceiver')
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
         self._wait_workers(
@@ -212,7 +201,7 @@ class MetricsReceiver:
             self.thread.join()
 
     def _recv(self, sock: socket.socket, length: int) -> typing.Optional[bytes]:
-        data = b""
+        data = b''
         retries = 0
         while len(data) < length and retries < 10:
             buf = sock.recv(length - len(data))
@@ -227,9 +216,7 @@ class MetricsReceiver:
 
         return data
 
-    def _recv_packet(
-        self, sock: socket.socket
-    ) -> typing.Optional[typing.Dict[str, typing.Any]]:
+    def _recv_packet(self, sock: socket.socket) -> typing.Optional[typing.Dict[str, typing.Any]]:
         try:
             header = self._recv(sock, 4)
 
@@ -237,7 +224,7 @@ class MetricsReceiver:
                 # The client disconnected
                 return None
 
-            length = int.from_bytes(header, "big")
+            length = int.from_bytes(header, 'big')
         except IncompletePackageError:
             raise IncompleteHeaderError()
         try:
@@ -254,21 +241,17 @@ class MetricsReceiver:
                 try:
                     packet = self._recv_packet(client)
                 except IncompletePackageError as e:
-                    self.log.info(
-                        f"Error {e} while receiving update - will assume this is a transient error"
-                    )
+                    self.log.info(f'Error {e} while receiving update - will assume this is a transient error')
                     continue
 
                 if packet:
-                    self.tracker(packet["stat"], packet["worker"])
+                    self.tracker(packet['stat'], packet['worker'])
                 else:
-                    self.log.info("Client disconnected")
+                    self.log.info('Client disconnected')
                     client.close()
                     self.clients.remove(client)
 
-    def _wait_workers(
-        self, host: str, port: int, num_workers: int, connection_timeout: float
-    ):
+    def _wait_workers(self, host: str, port: int, num_workers: int, connection_timeout: float):
         # This may raise an exception, don't catch it here and let it flow to the caller
         self.server.bind((host, port))
         self.server.listen(num_workers)
@@ -276,23 +259,21 @@ class MetricsReceiver:
         # We're actually going to pause here, till we get all clients OR we run out of time
 
         start = time.time()
-        self.log.info(f"Waiting for {num_workers} workers to connect")
+        self.log.info(f'Waiting for {num_workers} workers to connect')
         # Block for 5 seconds while waiting for new connections
         while time.time() - start <= connection_timeout:
             read, _write, _error = select.select([self.server], [], [], 5.0)
             for server in read:
                 client, _client_address = server.accept()
                 self.clients.append(client)
-                self.log.info(f"Client {len(self.clients)}/{num_workers} connected")
+                self.log.info(f'Client {len(self.clients)}/{num_workers} connected')
 
                 if len(self.clients) == num_workers:
                     return
 
         self.server.close()
 
-        raise ConnectionError(
-            f"{num_workers - len(self.clients)} out of {num_workers} total clients did not connect"
-        )
+        raise ConnectionError(f'{num_workers - len(self.clients)} out of {num_workers} total clients did not connect')
 
 
 class AimCallback(aim.hugging_face.AimCallback):
@@ -301,15 +282,11 @@ class AimCallback(aim.hugging_face.AimCallback):
         main_port: int,
         repo: typing.Optional[str] = None,
         experiment: typing.Optional[str] = None,
-        system_tracking_interval: typing.Optional[
-            int
-        ] = aim.ext.resource.DEFAULT_SYSTEM_TRACKING_INT,
+        system_tracking_interval: typing.Optional[int] = aim.ext.resource.DEFAULT_SYSTEM_TRACKING_INT,
         log_system_params: typing.Optional[bool] = True,
         capture_terminal_logs: typing.Optional[bool] = True,
         main_addr: typing.Optional[str] = None,
-        distributed_information: typing.Optional[
-            accelerate.utils.environment.CPUInformation
-        ] = None,
+        distributed_information: typing.Optional[accelerate.utils.environment.CPUInformation] = None,
         connection_timeout: int = 60 * 5,
         workers_only_on_rank_0: bool = True,
     ):
@@ -345,13 +322,13 @@ class AimCallback(aim.hugging_face.AimCallback):
                 If unable auxiliary workers are unable to connect to main worker
         """
         if main_addr is None:
-            main_addr = os.environ.get("MASTER_ADDR")
+            main_addr = os.environ.get('MASTER_ADDR')
 
         if not main_addr:
-            raise ValueError("main_addr cannot be empty")
+            raise ValueError('main_addr cannot be empty')
 
-        if not main_port or main_port <0:
-            raise ValueError("main_port must be a positive number")
+        if not main_port or main_port < 0:
+            raise ValueError('main_port must be a positive number')
 
         if distributed_information is None:
             distributed_information = accelerate.utils.get_cpu_distributed_information()
@@ -365,32 +342,23 @@ class AimCallback(aim.hugging_face.AimCallback):
         self.metrics_receiver: typing.Optional[MetricsReceiver] = None
 
         self._run: typing.Optional[aim.Run] = None
-        self.log = logging.getLogger("CustomAimCallback")
+        self.log = logging.getLogger('CustomAimCallback')
 
         if not workers_only_on_rank_0:
             # This is primarily for debugging. It enables the creation of multiple auxiliary workers on a single node
             auxiliary_workers = self.distributed_information.world_size
         else:
-            auxiliary_workers = (
-                self.distributed_information.world_size
-                // self.distributed_information.local_world_size
-            )
+            auxiliary_workers = self.distributed_information.world_size // self.distributed_information.local_world_size
 
         # Instantiate a MetricsReporter for all workers which are not rank 0
         if (
             self.distributed_information.rank is not None
             and self.distributed_information.rank > 0
-            and (
-                not workers_only_on_rank_0
-                or self.distributed_information.local_rank == 0
-            )
+            and (not workers_only_on_rank_0 or self.distributed_information.local_rank == 0)
             and system_tracking_interval is not None
         ):
             if workers_only_on_rank_0:
-                node_rank = (
-                    distributed_information.rank
-                    // distributed_information.local_world_size
-                )
+                node_rank = distributed_information.rank // distributed_information.local_world_size
             else:
                 node_rank = distributed_information.rank
 
@@ -402,9 +370,7 @@ class AimCallback(aim.hugging_face.AimCallback):
                 interval=system_tracking_interval,
             )
 
-            self.log.info(
-                f"Distributed worker {self.distributed_information.rank} connected"
-            )
+            self.log.info(f'Distributed worker {self.distributed_information.rank} connected')
         elif self.distributed_information.rank == 0:
             # When running as the main worker, we initialize aim as usual. If there're multiple
             # auxiliary workers, we also start a listening server. The auxiliary workers will connect
@@ -417,16 +383,12 @@ class AimCallback(aim.hugging_face.AimCallback):
                 capture_terminal_logs,
             )
 
-            if (
-                auxiliary_workers > 1
-                and main_port is not None
-                and system_tracking_interval is not None
-            ):
-                self.log.info(f"There are {auxiliary_workers} workers")
+            if auxiliary_workers > 1 and main_port is not None and system_tracking_interval is not None:
+                self.log.info(f'There are {auxiliary_workers} workers')
 
                 self.metrics_receiver = MetricsReceiver(
                     # Bind to 0.0.0.0 so that we can accept connections coming in from any interface
-                    host="0.0.0.0",
+                    host='0.0.0.0',
                     port=main_port,
                     num_workers=auxiliary_workers - 1,
                     connection_timeout=self.connection_timeout,
@@ -449,18 +411,16 @@ class AimCallback(aim.hugging_face.AimCallback):
         """
         # TODO: Investigate whether it's better to spin up a dedicated RunTracker here or not
         if self._run is None:
-            self.log.info(
-                f"The aim Run is inactive, will not register these metrics from {worker_info}"
-            )
+            self.log.info(f'The aim Run is inactive, will not register these metrics from {worker_info}')
             return
 
         tracker = self._run._tracker
         context = copy.deepcopy(worker_info)
 
-        for resource, usage in stat["system"].items():
+        for resource, usage in stat['system'].items():
             tracker(
                 usage,
-                name="{}{}".format(
+                name='{}{}'.format(
                     aim.ext.resource.configs.AIM_RESOURCE_METRIC_PREFIX,
                     resource,
                 ),
@@ -468,14 +428,14 @@ class AimCallback(aim.hugging_face.AimCallback):
             )
 
         # Store GPU stats
-        for gpu_idx, gpu in enumerate(stat["gpus"]):
+        for gpu_idx, gpu in enumerate(stat['gpus']):
             for resource, usage in gpu.items():
                 context = copy.deepcopy(worker_info)
-                context.update({"gpu": gpu_idx})
+                context.update({'gpu': gpu_idx})
 
                 tracker(
                     usage,
-                    name="{}{}".format(
+                    name='{}{}'.format(
                         aim.ext.resource.configs.AIM_RESOURCE_METRIC_PREFIX,
                         resource,
                     ),

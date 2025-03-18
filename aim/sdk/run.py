@@ -567,14 +567,6 @@ class BasicRun(BaseRun, StructuredRunMixin):
         Returns:
             :obj:`Metric` object if exists, `None` otherwise.
         """
-        if self.read_only and not Run._metric_version_warning_shown:
-            if self.check_metrics_version():
-                logger.warning(
-                    f'Detected sub-optimal format metrics for Run {self.hash}. Consider upgrading repo '
-                    f'to improve queries performance:'
-                )
-                logger.warning(f"aim storage --repo {self.repo.path} upgrade 3.11+ '*'")
-                Run._metric_version_warning_shown = True
 
         return self._get_sequence('metric', name, context)
 
