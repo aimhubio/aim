@@ -53,6 +53,7 @@ def unpack_stream(stream) -> Tuple[bytes, bytes]:
 
 def raise_exception(server_exception):
     from filelock import Timeout
+
     module = importlib.import_module(server_exception.get('module_name'))
     exception = getattr(module, server_exception.get('class_name'))
     args = json.loads(server_exception.get('args') or [])
