@@ -8,8 +8,6 @@ import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import * as analytics from 'services/analytics';
 
-import useRunMetricsBatch from '../hooks/useRunMetricsBatch';
-
 import GitInfoCard from './components/GitInfoCard';
 import RunOverviewTabMetricsCard from './components/MetricsCard/RunOverviewTabMetricsCard';
 import RunOverviewTabArtifactsCard from './components/ArtifactsCard/RunOverviewTabArtifactsCard';
@@ -27,11 +25,6 @@ function RunOverviewTab({ runData, runHash }: IRunOverviewTabProps) {
   const overviewSectionRef = React.useRef<HTMLElement | any>(null);
   const overviewSectionContentRef = React.useRef<HTMLElement | any>(null);
   const [containerHeight, setContainerHeight] = React.useState<number>(0);
-
-  useRunMetricsBatch({
-    runTraces: runData.runTraces,
-    runHash,
-  });
 
   React.useEffect(() => {
     analytics.pageView(

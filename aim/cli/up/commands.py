@@ -29,7 +29,7 @@ from aim.web.configs import (
 @click.command()
 @click.option('-h', '--host', default=AIM_UI_DEFAULT_HOST, type=str)
 @click.option('-p', '--port', default=AIM_UI_DEFAULT_PORT, type=int)
-@click.option('-w', '--workers', default=1, type=int)
+@click.option('-w', '--workers', default=2, type=int)
 @click.option('--uds', required=False, type=click.Path(exists=False, file_okay=True, dir_okay=False, readable=True))
 @click.option('--repo', required=False, type=click.Path(exists=True, file_okay=False, dir_okay=True, writable=True))
 @click.option('--tf_logs', type=click.Path(exists=True, readable=True))
