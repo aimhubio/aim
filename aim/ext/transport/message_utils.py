@@ -52,12 +52,17 @@ def unpack_stream(stream) -> Tuple[bytes, bytes]:
 
 
 def raise_exception(server_exception):
+    from filelock import Timeout
     module = importlib.import_module(server_exception.get('module_name'))
     exception = getattr(module, server_exception.get('class_name'))
     args = json.loads(server_exception.get('args') or [])
     message = server_exception.get('message')
 
-    raise exception(*args) if args else Exception(message)
+    # special handling for lock timeouts as they require lock argument which can't be passed over the network
+    if exception == Timeout:
+        raise Exception(message)
+
+    raise exception(*args) if args else exception()
 
 
 def build_exception(exception: Exception):
