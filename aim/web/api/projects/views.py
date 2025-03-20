@@ -5,7 +5,6 @@ from datetime import timedelta
 from logging import getLogger
 from typing import Optional, Tuple
 
-from aim.sdk.index_manager import RepoIndexManager
 from aim.storage.locking import AutoFileLock
 from aim.web.api.projects.project import Project
 from aim.web.api.projects.pydantic_models import (
@@ -171,13 +170,3 @@ async def project_params_api(sequence: Optional[Tuple[str, ...]] = Query(()), ex
         }
     response.update(**project.repo.collect_sequence_info(sequence))
     return response
-
-
-@projects_router.get('/status/')
-async def project_status_api():
-    project = Project()
-
-    if not project.exists():
-        raise HTTPException(status_code=404)
-
-    return RepoIndexManager.get_index_manager(project.repo).repo_status
