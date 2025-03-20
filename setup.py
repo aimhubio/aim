@@ -76,6 +76,7 @@ REQUIRED = [
     'packaging>=15.0',
     'python-dateutil',
     'requests',
+    'watchdog',
     'websockets',
     'boto3',
 ]

@@ -51,7 +51,7 @@ def to_3_11(ctx, hashes, yes):
     if not confirmed:
         return
 
-    index_manager = RepoIndexManager.get_index_manager(repo)
+    index_manager = RepoIndexManager.get_index_manager(repo, disable_monitoring=True)
     for run_hash in tqdm(matched_hashes):
         try:
             run = Run(run_hash, repo=repo)
@@ -97,7 +97,7 @@ def restore_runs(ctx, hashes, yes):
         return
 
     remaining_runs = []
-    index_manager = RepoIndexManager.get_index_manager(repo)
+    index_manager = RepoIndexManager.get_index_manager(repo, disable_monitoring=True)
     for run_hash in tqdm(matched_hashes):
         try:
             restore_run_backup(repo, run_hash)

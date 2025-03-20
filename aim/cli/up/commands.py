@@ -123,9 +123,7 @@ def up(
     if profiler:
         os.environ[AIM_PROFILER_KEY] = '1'
 
-    index_mng = RepoIndexManager.get_index_manager(repo_inst)
-    index_mng.start_indexing_thread()
-
+    RepoIndexManager.get_index_manager(repo_inst)
     try:
         server_cmd = build_uvicorn_command(
             'aim.web.run:app',

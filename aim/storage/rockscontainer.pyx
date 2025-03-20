@@ -144,7 +144,7 @@ class RocksContainer(Container):
             lock_cls = self.get_lock_cls()
             self._lock = lock_cls(self._lock_path, timeout)
             self._lock.acquire()
-        else:
+        elif not self._extra_opts.get('skip_read_optimization', False):
             self.optimize_for_read()
 
         self._db = aimrocks.DB(str(self.path),
