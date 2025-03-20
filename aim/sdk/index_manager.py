@@ -18,7 +18,7 @@ class NewChunkCreatedHandler(FileSystemEventHandler):
     def on_created(self, event):
         if event.is_directory:
             chunk_name = os.path.basename(event.src_path)
-            logger.debug(f"Detected new chunk directory: {chunk_name}")
+            logger.debug(f'Detected new chunk directory: {chunk_name}')
             self.manager.monitor_chunk_directory(event.src_path)
 
 
@@ -38,7 +38,7 @@ class ChunkChangedHandler(FileSystemEventHandler):
         with self.lock:
             if run_hash in self.pending_events:
                 self.pending_events.remove(run_hash)
-                logger.debug(f"Triggering indexing for run {run_hash}")
+                logger.debug(f'Triggering indexing for run {run_hash}')
                 self.manager.add_run_to_queue(run_hash)
 
     def on_any_event(self, event):
@@ -51,14 +51,14 @@ class ChunkChangedHandler(FileSystemEventHandler):
 
         # Ensure the parent directory is directly inside meta/chunks/
         if parent_dir.parent != self.manager.chunks_dir:
-            logger.debug(f"Skipping event outside valid chunk directory: {event.src_path}")
+            logger.debug(f'Skipping event outside valid chunk directory: {event.src_path}')
             return
 
-        if event_path.name.startswith("LOG"):
-            logger.debug(f"Skipping event for LOG-prefixed file: {event.src_path}")
+        if event_path.name.startswith('LOG'):
+            logger.debug(f'Skipping event for LOG-prefixed file: {event.src_path}')
             return
 
-        logger.debug(f"Detected change in {event.src_path}")
+        logger.debug(f'Detected change in {event.src_path}')
         self._trigger_event(run_hash)
 
 
@@ -98,17 +98,17 @@ class RepoIndexManager:
 
     def _monitor_existing_chunks(self):
         for chunk_path in self.chunks_dir.iterdir():
-            if chunk_path.is_dir() and not chunk_path.name.startswith("LOG"):
-                logger.debug(f"Monitoring existing chunk: {chunk_path}")
+            if chunk_path.is_dir() and not chunk_path.name.startswith('LOG'):
+                logger.debug(f'Monitoring existing chunk: {chunk_path}')
                 self.monitor_chunk_directory(chunk_path)
 
     def monitor_chunk_directory(self, chunk_path):
         """Ensure chunk directory is monitored using a single handler."""
         if str(chunk_path) not in self.observer._watches:
             self.observer.schedule(self.chunk_change_handler, chunk_path, recursive=True)
-            logger.debug(f"Started monitoring chunk directory: {chunk_path}")
+            logger.debug(f'Started monitoring chunk directory: {chunk_path}')
         else:
-            logger.debug(f"Chunk directory already monitored: {chunk_path}")
+            logger.debug(f'Chunk directory already monitored: {chunk_path}')
 
     def add_run_to_queue(self, run_hash):
         if run_hash in self._corrupted_runs:
@@ -116,7 +116,7 @@ class RepoIndexManager:
         timestamp = os.path.getmtime(os.path.join(self.chunks_dir, run_hash))
         with self.lock:
             self.indexing_queue.put((timestamp, run_hash))
-        logger.debug(f"Run {run_hash} added to indexing queue with timestamp {timestamp}")
+        logger.debug(f'Run {run_hash} added to indexing queue with timestamp {timestamp}')
 
     def _process_queue(self):
         while True:
