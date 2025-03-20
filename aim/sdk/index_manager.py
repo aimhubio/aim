@@ -2,11 +2,16 @@ import logging
 import os
 import queue
 import threading
+
 from pathlib import Path
-from watchdog.observers import Observer
-from watchdog.events import FileSystemEventHandler
+
 import aimrocks.errors
+
+from watchdog.events import FileSystemEventHandler
+from watchdog.observers import Observer
+
 from aim.sdk.repo import Repo
+
 
 logger = logging.getLogger(__name__)
 

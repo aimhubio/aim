@@ -11,8 +11,8 @@ from aim.cli.utils import (
     get_repo_instance,
     set_log_level,
 )
-from aim.sdk.repo import Repo
 from aim.sdk.index_manager import RepoIndexManager
+from aim.sdk.repo import Repo
 from aim.sdk.utils import clean_repo_path
 from aim.web.configs import (
     AIM_ENV_MODE_KEY,
