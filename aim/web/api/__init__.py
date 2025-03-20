@@ -23,7 +23,6 @@ def create_app():
         max_age=86400,
     )
 
-    from aim.sdk.index_manager import RepoIndexManager
     from aim.web.api.dashboard_apps.views import dashboard_apps_router
     from aim.web.api.dashboards.views import dashboards_router
     from aim.web.api.experiments.views import experiment_router
@@ -35,11 +34,6 @@ def create_app():
     from aim.web.api.utils import ResourceCleanupMiddleware
     from aim.web.api.views import statics_router
     from aim.web.configs import AIM_UI_BASE_PATH
-
-    # The indexing thread has to run in the same process as the uvicorn app itself.
-    # This allows sharing state of indexing using memory instead of process synchronization methods.
-    index_mng = RepoIndexManager.get_index_manager(Project().repo)
-    index_mng.start_indexing_thread()
 
     api_app = FastAPI()
     api_app.add_middleware(GZipMiddleware, compresslevel=1)
