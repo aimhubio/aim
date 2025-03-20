@@ -5,7 +5,6 @@ from datetime import timedelta
 from logging import getLogger
 from typing import Optional, Tuple
 
-from aim.sdk.index_manager import RepoIndexManager
 from aim.storage.locking import AutoFileLock
 from aim.web.api.projects.project import Project
 from aim.web.api.projects.pydantic_models import (

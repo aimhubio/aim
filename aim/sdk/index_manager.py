@@ -1,4 +1,3 @@
-import datetime
 import logging
 import os
 import queue
@@ -7,7 +6,6 @@ from pathlib import Path
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 import aimrocks.errors
-import pytz
 from aim.sdk.repo import Repo
 
 logger = logging.getLogger(__name__)

@@ -1012,8 +1012,6 @@ class Repo:
         if self.is_remote_repo:
             self._remote_repo_proxy._close_run(run_hash)
 
-        from aim.sdk.index_manager import RepoIndexManager
-
         lock_manager = LockManager(self.path)
 
         if lock_manager.release_locks(run_hash, force=True):
