@@ -7,10 +7,9 @@ from pathlib import Path
 
 import aimrocks.errors
 
+from aim.sdk.repo import Repo
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
-
-from aim.sdk.repo import Repo
 
 
 logger = logging.getLogger(__name__)
