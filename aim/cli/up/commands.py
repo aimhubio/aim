@@ -11,6 +11,7 @@ from aim.cli.utils import (
     get_repo_instance,
     set_log_level,
 )
+from aim.sdk.index_manager import RepoIndexManager
 from aim.sdk.repo import Repo
 from aim.sdk.utils import clean_repo_path
 from aim.web.configs import (
@@ -121,6 +122,9 @@ def up(
 
     if profiler:
         os.environ[AIM_PROFILER_KEY] = '1'
+
+    index_mng = RepoIndexManager.get_index_manager(repo_inst)
+    index_mng.start_indexing_thread()
 
     try:
         server_cmd = build_uvicorn_command(
