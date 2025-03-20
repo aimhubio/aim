@@ -1015,7 +1015,6 @@ class Repo:
         from aim.sdk.index_manager import RepoIndexManager
 
         lock_manager = LockManager(self.path)
-        index_manager = RepoIndexManager.get_index_manager(self)
 
         if lock_manager.release_locks(run_hash, force=True):
             # Run rocksdb optimizations if container locks are removed
@@ -1023,8 +1022,6 @@ class Repo:
             seqs_db_path = os.path.join(self.path, 'seqs', 'chunks', run_hash)
             optimize_container(meta_db_path, extra_options={'compaction': True})
             optimize_container(seqs_db_path, extra_options={})
-        if index_manager.run_needs_indexing(run_hash):
-            index_manager.index(run_hash)
 
     def _recreate_index(self):
         from tqdm import tqdm
@@ -1035,7 +1032,7 @@ class Repo:
 
         from aim.sdk.index_manager import RepoIndexManager
 
-        index_manager = RepoIndexManager.get_index_manager(self)
+        index_manager = RepoIndexManager.get_index_manager(self, disable_monitoring=True)
 
         # force delete the index db and the locks
 
