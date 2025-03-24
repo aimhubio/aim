@@ -1,6 +1,14 @@
 # Changelog
 
-## Unreleased
+## 3.28.0 Mar 21, 2025
+
+### Enhancements:
+- Skip metrics check when run is known to yield false result (alberttorosyan)
+- Remove metric version check to improve performance of metric retrieval (mihran113)
+- Move indexing thread to main process of `aim up` (alberttorosyan)
+- Add AimCallback implementation for hugging face distributed runs (VassilisVassiliadis)
+- Add py.typed marker to allow usage of existing type annotations (bluenote10)
+
 
 ### Fixes:
 - Decrease client resources keep-alive time (mihran113)
@@ -8,11 +16,9 @@
 - Resolve issue with adding duplicate tags to the same run (mihran113)
 - Improve error messages for remote tracking server (mihran113)
 - Fix spurious assertion error in message stream parsing (qzed)
-
-### Enhancements:
-- Skip metrics check when run is known to yield false result (alberttorosyan)
 - Correct indentation on query proxy object return statement (alberttorosyan)
-- Remove metric version check to improve performance of metric retrieval (mihran113)
+- Fix typing issues in S3ArtifactStorage implementation (sbatchelder)
+
 
 ## 3.27.0 Dec 18, 2024
 
