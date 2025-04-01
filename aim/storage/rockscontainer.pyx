@@ -159,15 +159,8 @@ class RocksContainer(Container):
         Store the collection of `(key, value)` records in the :obj:`Container`
         `index` for fast reads.
         """
-        if not self._progress_path:
-            return
-
         for k, v in self.items():
             index[k] = v
-
-        if self._progress_path.exists():
-            self._progress_path.unlink()
-        self._progress_path = None
 
     def close(self):
         """Close all the resources."""
