@@ -102,7 +102,7 @@ class RepoIndexManager:
 
     def _monitor_existing_chunks(self):
         for chunk_path in self.chunks_dir.iterdir():
-            if chunk_path.is_dir() and not chunk_path.name.startswith('LOG'):
+            if chunk_path.is_dir():
                 logger.debug(f'Monitoring existing chunk: {chunk_path}')
                 self.monitor_chunk_directory(chunk_path)
 
