@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased:
+
+### Fixes:
+- Fix min/max calculation for single point metrics (mihran113)
+
 ## 3.28.0 Mar 21, 2025
 
 ### Enhancements:
