@@ -269,7 +269,9 @@ class Repo:
     def is_remote_path(cls, path: str):
         return path.startswith('aim://')
 
-    def _get_container(self, name: str, read_only: bool, from_union: bool = False, skip_read_optimization: bool = False) -> Container:
+    def _get_container(
+        self, name: str, read_only: bool, from_union: bool = False, skip_read_optimization: bool = False
+    ) -> Container:
         # TODO [AT]: refactor get container/tree logic to make it more simple
         if self.read_only and not read_only:
             raise ValueError('Repo is read-only')
@@ -317,11 +319,17 @@ class Repo:
         read_only: bool,
         from_union: bool = False,  # TODO maybe = True by default
         no_cache: bool = False,
-        skip_read_optimization: bool = False
+        skip_read_optimization: bool = False,
     ):
         if not self.is_remote_repo:
-            return self.request(name, sub, read_only=read_only, from_union=from_union, no_cache=no_cache,
-                                skip_read_optimization=skip_read_optimization).tree()
+            return self.request(
+                name,
+                sub,
+                read_only=read_only,
+                from_union=from_union,
+                no_cache=no_cache,
+                skip_read_optimization=skip_read_optimization,
+            ).tree()
         else:
             return ProxyTree(self._client, name, sub, read_only=read_only, from_union=from_union, no_cache=no_cache)
 
@@ -333,7 +341,7 @@ class Repo:
         read_only: bool,
         from_union: bool = False,  # TODO maybe = True by default
         no_cache: bool = False,
-        skip_read_optimization: bool = False
+        skip_read_optimization: bool = False,
     ):
         container_config = ContainerConfig(name, sub, read_only)
         container_view = self.container_view_pool.get(container_config)
@@ -344,8 +352,9 @@ class Repo:
                 else:
                     assert sub is not None
                     path = os.path.join(name, 'chunks', sub)
-                container = self._get_container(path, read_only=True, from_union=from_union,
-                                                skip_read_optimization=skip_read_optimization)
+                container = self._get_container(
+                    path, read_only=True, from_union=from_union, skip_read_optimization=skip_read_optimization
+                )
             else:
                 assert sub is not None
                 path = os.path.join(name, 'chunks', sub)
