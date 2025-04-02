@@ -89,5 +89,7 @@ class RunStatusManager:
             )
             if meta_run_tree.get('end_time') is None:
                 meta_run_tree['end_time'] = datetime.datetime.now(pytz.utc).timestamp()
+            progress_path = self.progress_dir / run_hash
+            progress_path.unlink(missing_ok=True)
         except (aimrocks.errors.RocksIOError, aimrocks.errors.Corruption):
             self._corrupted_runs.add(run_hash)
