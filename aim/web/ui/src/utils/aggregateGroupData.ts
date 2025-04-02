@@ -113,6 +113,17 @@ export function aggregateGroupData({
             }
           }
         }
+        // add special case handling for single point metrics
+        if (trace.xValues.length === 1) {
+          const step = trace.xValues[0];
+          let value = chartXValues.indexOf(step);
+          let y = trace.yValues[0];
+          if (yValuesPerX.hasOwnProperty(value)) {
+            yValuesPerX[value].push(y);
+          } else {
+            yValuesPerX[value] = [y];
+          }
+        }
       }
     }
 
