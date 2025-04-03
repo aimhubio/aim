@@ -9,7 +9,8 @@ import aimrocks.errors
 
 from aim.sdk.repo import Repo
 from watchdog.events import FileSystemEventHandler
-from watchdog.observers.polling import PollingObserver as Observer
+from watchdog.observers import Observer
+from watchdog.observers.polling import PollingObserver
 
 
 logger = logging.getLogger(__name__)
@@ -20,7 +21,7 @@ class NewChunkCreatedHandler(FileSystemEventHandler):
         self.manager = manager
 
     def on_created(self, event):
-        if event.is_directory:
+        if event.is_directory and Path(event.src_path).parent == self.manager.chunks_dir:
             chunk_name = os.path.basename(event.src_path)
             logger.debug(f'Detected new chunk directory: {chunk_name}')
             self.manager.monitor_chunk_directory(event.src_path)
@@ -89,13 +90,17 @@ class RepoIndexManager:
             self.indexing_queue = queue.PriorityQueue()
             self.lock = threading.Lock()
 
-            self.observer = Observer()
+            self.new_chunk_observer = Observer()
+            self.chunk_change_observer = PollingObserver()
+
             self.new_chunk_handler = NewChunkCreatedHandler(self)
             self.chunk_change_handler = ChunkChangedHandler(self)
 
-            self.observer.schedule(self.new_chunk_handler, self.chunks_dir, recursive=True)
+            self.new_chunk_observer.schedule(self.new_chunk_handler, self.chunks_dir, recursive=True)
+            self.new_chunk_observer.start()
+
             self._monitor_existing_chunks()
-            self.observer.start()
+            self.chunk_change_observer.start()
 
             self._reindex_thread = threading.Thread(target=self._process_queue, daemon=True)
             self._reindex_thread.start()
@@ -108,8 +113,8 @@ class RepoIndexManager:
 
     def monitor_chunk_directory(self, chunk_path):
         """Ensure chunk directory is monitored using a single handler."""
-        if str(chunk_path) not in self.observer._watches:
-            self.observer.schedule(self.chunk_change_handler, chunk_path, recursive=True)
+        if str(chunk_path) not in self.chunk_change_observer._watches:
+            self.chunk_change_observer.schedule(self.chunk_change_handler, chunk_path, recursive=True)
             logger.debug(f'Started monitoring chunk directory: {chunk_path}')
         else:
             logger.debug(f'Chunk directory already monitored: {chunk_path}')
