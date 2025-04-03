@@ -9,7 +9,7 @@ import aimrocks.errors
 
 from aim.sdk.repo import Repo
 from watchdog.events import FileSystemEventHandler
-from watchdog.observers import Observer
+from watchdog.observers.polling import PollingObserver as Observer
 
 
 logger = logging.getLogger(__name__)
