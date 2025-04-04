@@ -144,7 +144,6 @@ class Repo:
 
         self.container_pool: Dict[ContainerConfig, Container] = WeakValueDictionary()
         self.persistent_pool: Dict[ContainerConfig, Container] = dict()
-        self.container_view_pool: Dict[ContainerConfig, Container] = WeakValueDictionary()
 
         self._run_props_cache_hint = None
         self._encryption_key = None
@@ -330,46 +329,38 @@ class Repo:
         *,
         read_only: bool,
         from_union: bool = False,  # TODO maybe = True by default
-        no_cache: bool = False,
+        no_cache: bool = False,  # TODO remove
         skip_read_optimization: bool = False
     ):
         if not self.is_remote_repo:
-            return self.request(name, sub, read_only=read_only, from_union=from_union, no_cache=no_cache,
-                                skip_read_optimization=skip_read_optimization).tree()
+            return self.request_container(name, sub, read_only=read_only, from_union=from_union,
+                                          skip_read_optimization=skip_read_optimization).tree()
         else:
-            return ProxyTree(self._client, name, sub, read_only=read_only, from_union=from_union, no_cache=no_cache)
+            return ProxyTree(self._client, name, sub, read_only=read_only, from_union=from_union)
 
-    def request(
+    def request_container(
         self,
         name: str,
         sub: str = None,
         *,
         read_only: bool,
         from_union: bool = False,  # TODO maybe = True by default
-        no_cache: bool = False,
         skip_read_optimization: bool = False
     ):
-        container_config = ContainerConfig(name, sub, read_only)
-        container_view = self.container_view_pool.get(container_config)
-        if container_view is None or no_cache:
-            if read_only:
-                if from_union:
-                    path = name
-                else:
-                    assert sub is not None
-                    path = os.path.join(name, 'chunks', sub)
-                container = self._get_container(path, read_only=True, from_union=from_union,
-                                                skip_read_optimization=skip_read_optimization)
+        if read_only:
+            if from_union:
+                path = name
             else:
                 assert sub is not None
                 path = os.path.join(name, 'chunks', sub)
-                container = self._get_container(path, read_only=False, from_union=False)
+            container = self._get_container(path, read_only=True, from_union=from_union,
+                                            skip_read_optimization=skip_read_optimization)
+        else:
+            assert sub is not None
+            path = os.path.join(name, 'chunks', sub)
+            container = self._get_container(path, read_only=False, from_union=False)
 
-            container_view = container
-            if not no_cache:
-                self.container_view_pool[container_config] = container_view
-
-        return container_view
+        return container
 
     def request_props(self, hash_: str, read_only: bool, created_at: 'datetime' = None):
         if self.is_remote_repo:
