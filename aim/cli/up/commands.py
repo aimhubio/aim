@@ -13,6 +13,7 @@ from aim.cli.utils import (
 )
 from aim.sdk.index_manager import RepoIndexManager
 from aim.sdk.repo import Repo
+from aim.sdk.run_status_manager import RunStatusManager
 from aim.sdk.utils import clean_repo_path
 from aim.web.configs import (
     AIM_ENV_MODE_KEY,
@@ -124,6 +125,8 @@ def up(
         os.environ[AIM_PROFILER_KEY] = '1'
 
     RepoIndexManager.get_index_manager(repo_inst)
+    run_status_mng = RunStatusManager(repo_inst)
+    run_status_mng.start()
     try:
         server_cmd = build_uvicorn_command(
             'aim.web.run:app',
