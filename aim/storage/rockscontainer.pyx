@@ -35,6 +35,7 @@ class RocksAutoClean(AutoClean):
         super().__init__(instance)
         self._lock = None
         self._db = None
+        self._progress_path = None
 
     def _close(self):
         """
@@ -48,6 +49,9 @@ class RocksAutoClean(AutoClean):
                 self._db = None
             self._lock.release()
             self._lock = None
+        if self._progress_path is not None:
+            self._progress_path.unlink(missing_ok=True)
+            self._progress_path = None
         if self._db is not None:
             self._db = None
 
@@ -104,6 +108,7 @@ class RocksContainer(Container):
         if not self.read_only:
             progress_dir.mkdir(parents=True, exist_ok=True)
             self._progress_path.touch(exist_ok=True)
+            self._resources._progress_path = self._progress_path
 
         self.db
         # TODO check if Containers are reopenable
@@ -159,15 +164,8 @@ class RocksContainer(Container):
         Store the collection of `(key, value)` records in the :obj:`Container`
         `index` for fast reads.
         """
-        if not self._progress_path:
-            return
-
         for k, v in self.items():
             index[k] = v
-
-        if self._progress_path.exists():
-            self._progress_path.unlink()
-        self._progress_path = None
 
     def close(self):
         """Close all the resources."""
