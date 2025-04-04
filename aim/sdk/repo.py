@@ -8,6 +8,8 @@ from enum import Enum
 from typing import TYPE_CHECKING, Dict, Iterator, List, NamedTuple, Optional, Set, Tuple
 from weakref import WeakValueDictionary
 
+import aimrocks.errors
+
 from aim.ext.cleanup import AutoClean
 from aim.ext.sshfs.utils import mount_remote_repo, unmount_remote_repo
 from aim.ext.task_queue.queue import TaskQueue
@@ -127,9 +129,14 @@ class Repo:
             self.root_path = path
         self.path = os.path.join(self.root_path, get_aim_repo_name())
 
-        if init:
+        if init and not self.is_remote_repo:
             os.makedirs(self.path, exist_ok=True)
             os.makedirs(os.path.join(self.path, 'locks'), exist_ok=True)
+
+            # Make sure meta index db is created
+            path = os.path.join(self.path, 'meta', 'index')
+            RocksContainer(path, read_only=False)
+
         if not self.is_remote_repo and not os.path.exists(self.path):
             if self._mount_root:
                 unmount_remote_repo(self.root_path, self._mount_root)
@@ -278,10 +285,17 @@ class Repo:
         container = self.container_pool.get(container_config)
         if container is None:
             if from_union:
-                # Temporarily use index db when getting data from union.
-                path = os.path.join(self.path, name, 'index')
-                container = RocksContainer(path, read_only=read_only, skip_read_optimization=skip_read_optimization)
-                self.persistent_pool[container_config] = container
+                try:
+                    # Use index db when getting data from union.
+                    path = os.path.join(self.path, name, 'index')
+                    container = RocksContainer(path, read_only=read_only, skip_read_optimization=skip_read_optimization)
+                    self.persistent_pool[container_config] = container
+                except aimrocks.errors.RocksIOError:
+                    # Fallback to union db if index db is non-existent.
+                    logger.warning('Index db is missing! Falling back to reading from run chunks.')
+                    path = os.path.join(self.path, name)
+                    container = RocksUnionContainer(path, read_only=read_only)
+                    self.persistent_pool[container_config] = container
             else:
                 path = os.path.join(self.path, name)
                 container = RocksContainer(path, read_only=read_only, skip_read_optimization=skip_read_optimization)
