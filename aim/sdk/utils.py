@@ -165,13 +165,12 @@ def prune(repo):
         return all_paths
 
     subtrees_to_lookup = ('attrs', 'traces_types', 'contexts', 'traces')
-    repo_meta_tree = repo._get_meta_tree()
 
     # set of all repo paths that can be left dangling after run deletion
     repo_paths = set()
     for key in subtrees_to_lookup:
         try:
-            repo_paths.update(flatten(repo_meta_tree.collect(key, strict=False), parent_path=(key,)))
+            repo_paths.update(flatten(repo.meta_tree.collect(key, strict=False), parent_path=(key,)))
         except KeyError:
             pass
 
@@ -179,7 +178,7 @@ def prune(repo):
     for run_hash in tqdm(run_hashes):
         # construct unique paths set for each run
         run_paths = set()
-        run_meta_tree = repo.request_tree('meta', run_hash, from_union=False, read_only=True).subtree('meta')
+        run_meta_tree = repo.request_tree('meta', run_hash, read_only=True).subtree('meta')
         for key in subtrees_to_lookup:
             try:
                 run_paths.update(flatten(run_meta_tree.collect(key, strict=False), parent_path=(key,)))

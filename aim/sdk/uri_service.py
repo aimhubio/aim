@@ -55,7 +55,7 @@ class URIService:
             for uri, sub_name, resource_path in self.runs_pool[run_name]:
                 container = run_containers.get(sub_name)
                 if not container:
-                    container = self._get_container(run_name, sub_name)
+                    container = self.repo.request_container(sub_name, run_name, read_only=True)
                     run_containers[sub_name] = container
 
                 resource_path = decode_path(bytes.fromhex(resource_path))
@@ -70,11 +70,3 @@ class URIService:
 
         # clear runs pool
         self.runs_pool.clear()
-
-    def _get_container(self, run_name: str, sub_name: str):
-        if sub_name == 'meta':
-            container = self.repo.request(sub_name, run_name, from_union=True, read_only=True)
-        else:
-            container = self.repo.request(sub_name, run_name, read_only=True)
-
-        return container

@@ -242,11 +242,8 @@ class DB(object):
             index_db = None
             logger.info('No index was detected')
 
-        # If index exists -- only load those in progress
-        selector = 'progress' if index_db is not None else 'chunks'
-
         new_dbs: Dict[bytes, aimrocks.DB] = {}
-        db_dir = os.path.join(self.db_path, self.db_name, selector)
+        db_dir = os.path.join(self.db_path, self.db_name, 'chunks')
         for prefix in self._list_dir(db_dir):
             path = os.path.join(self.db_path, self.db_name, "chunks", prefix)
             prefix = encode_path((self.db_name, "chunks", prefix))

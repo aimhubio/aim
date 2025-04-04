@@ -138,7 +138,7 @@ class RepoIndexManager:
         index = self.repo._get_index_tree('meta', 0).view(())
         try:
             meta_tree = self.repo.request_tree(
-                'meta', run_hash, read_only=True, from_union=False, no_cache=True, skip_read_optimization=True
+                'meta', run_hash, read_only=True, skip_read_optimization=True
             ).subtree('meta')
             meta_run_tree = meta_tree.subtree('chunks').subtree(run_hash)
             meta_run_tree.finalize(index=index)
