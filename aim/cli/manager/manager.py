@@ -33,7 +33,7 @@ def run_up(args):
         import requests
 
         server_path = 'http://{}:{}{}'.format(args['--host'], args['--port'], args['--base-path'])
-        status_api = f'{server_path}/api/projects/status'
+        status_api = f'{server_path}/api/projects/'
         retry_count = 5
         sleep_interval = 1
         for _ in range(retry_count):
