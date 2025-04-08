@@ -18,7 +18,6 @@ class Project:
 
     def cleanup_repo_pools(self):
         self.repo.container_pool.clear()
-        self.repo.container_view_pool.clear()
         self.repo.persistent_pool.clear()
 
     def cleanup_sql_caches(self):
