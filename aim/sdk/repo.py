@@ -992,7 +992,7 @@ class Repo:
 
         from aim.sdk.index_manager import RepoIndexManager
 
-        index_manager = RepoIndexManager.get_index_manager(self, disable_monitoring=True)
+        index_manager = RepoIndexManager.get_index_manager(self)
 
         # force delete the index db and the locks
 

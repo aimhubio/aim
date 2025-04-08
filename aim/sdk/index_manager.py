@@ -1,3 +1,4 @@
+import hashlib
 import logging
 import os
 import queue
@@ -71,14 +72,14 @@ class RepoIndexManager:
     index_manager_pool = {}
 
     @classmethod
-    def get_index_manager(cls, repo: Repo, disable_monitoring: bool = False):
+    def get_index_manager(cls, repo: Repo):
         mng = cls.index_manager_pool.get(repo.path, None)
         if mng is None:
-            mng = RepoIndexManager(repo, disable_monitoring)
+            mng = RepoIndexManager(repo)
             cls.index_manager_pool[repo.path] = mng
         return mng
 
-    def __init__(self, repo: Repo, disable_monitoring: bool):
+    def __init__(self, repo: Repo):
         self.repo_path = repo.path
         self.repo = repo
         self.chunks_dir = Path(self.repo_path) / 'meta' / 'chunks'
@@ -86,17 +87,23 @@ class RepoIndexManager:
 
         self._corrupted_runs = set()
 
-        if not disable_monitoring:
-            self.indexing_queue = queue.PriorityQueue()
-            self.lock = threading.Lock()
+        self.indexing_queue = queue.PriorityQueue()
+        self.lock = threading.Lock()
 
-            self.new_chunk_observer = Observer()
-            self.chunk_change_observer = PollingObserver()
+        self.new_chunk_observer = Observer()
+        self.chunk_change_observer = PollingObserver()
 
-            self.new_chunk_handler = NewChunkCreatedHandler(self)
-            self.chunk_change_handler = ChunkChangedHandler(self)
+        self.new_chunk_handler = NewChunkCreatedHandler(self)
+        self.chunk_change_handler = ChunkChangedHandler(self)
 
-            self.new_chunk_observer.schedule(self.new_chunk_handler, self.chunks_dir, recursive=True)
+        self.new_chunk_observer.schedule(self.new_chunk_handler, self.chunks_dir, recursive=True)
+
+        self._stop_event = threading.Event()
+        self._reindex_thread = None
+
+    def start(self):
+        if not self._reindex_thread or not self._reindex_thread.is_alive():
+            self._stop_event.clear()
             self.new_chunk_observer.start()
 
             self._monitor_existing_chunks()
@@ -105,9 +112,19 @@ class RepoIndexManager:
             self._reindex_thread = threading.Thread(target=self._process_queue, daemon=True)
             self._reindex_thread.start()
 
+    def stop(self):
+        self._stop_event.set()
+        if self._reindex_thread:
+            self._reindex_thread.join()
+
     def _monitor_existing_chunks(self):
+        index_db = self.repo.request_tree('meta', read_only=True)
         for chunk_path in self.chunks_dir.iterdir():
             if chunk_path.is_dir():
+                run_hash = chunk_path.name
+                if self._is_run_index_outdated(run_hash, index_db):
+                    logger.debug(f'Run {run_hash} is not up-to-date. Indexing...')
+                    self.index(run_hash)
                 logger.debug(f'Monitoring existing chunk: {chunk_path}')
                 self.monitor_chunk_directory(chunk_path)
 
@@ -128,7 +145,7 @@ class RepoIndexManager:
         logger.debug(f'Run {run_hash} added to indexing queue with timestamp {timestamp}')
 
     def _process_queue(self):
-        while True:
+        while not self._stop_event.is_set():
             _, run_hash = self.indexing_queue.get()
             logger.debug(f'Indexing run {run_hash}...')
             self.index(run_hash)
@@ -137,12 +154,36 @@ class RepoIndexManager:
     def index(self, run_hash):
         index = self.repo._get_index_tree('meta', 0).view(())
         try:
+            run_checksum = self._get_run_checksum(run_hash)
             meta_tree = self.repo.request_tree(
                 'meta', run_hash, read_only=True, skip_read_optimization=True
             ).subtree('meta')
             meta_run_tree = meta_tree.subtree('chunks').subtree(run_hash)
             meta_run_tree.finalize(index=index)
+            index['index_cache', run_hash] = run_checksum
         except (aimrocks.errors.RocksIOError, aimrocks.errors.Corruption):
             logger.warning(f"Indexing thread detected corrupted run '{run_hash}'. Skipping.")
             self._corrupted_runs.add(run_hash)
         return True
+
+    def _is_run_index_outdated(self, run_hash, index_db):
+        return self._get_run_checksum(run_hash) != index_db.get(('index_cache', run_hash))
+
+    def _get_run_checksum(self, run_hash):
+        hash_obj = hashlib.md5()
+
+        for root, dirs, files in os.walk(os.path.join(self.chunks_dir, run_hash)):
+            for name in sorted(files):  # sort to ensure consistent order
+                if name.startswith('LOG'):  # skip access logs
+                    continue
+                filepath = os.path.join(root, name)
+                try:
+                    stat = os.stat(filepath)
+                    hash_obj.update(filepath.encode('utf-8'))
+                    hash_obj.update(str(stat.st_mtime).encode('utf-8'))
+                    hash_obj.update(str(stat.st_size).encode('utf-8'))
+                except FileNotFoundError:
+                    # File might have been deleted between os.walk and os.stat
+                    continue
+
+        return hash_obj.hexdigest()
