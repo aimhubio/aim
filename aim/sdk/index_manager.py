@@ -3,14 +3,17 @@ import logging
 import os
 import queue
 import threading
+import time
 
 from pathlib import Path
 
 import aimrocks.errors
 
 from aim.sdk.repo import Repo
+from typing import Dict
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
+from watchdog.observers.api import ObservedWatch
 from watchdog.observers.polling import PollingObserver
 
 
@@ -20,12 +23,17 @@ logger = logging.getLogger(__name__)
 class NewChunkCreatedHandler(FileSystemEventHandler):
     def __init__(self, manager):
         self.manager = manager
+        self.known_chunks = set(p.name for p in self.manager.chunks_dir.iterdir() if p.is_dir())
 
-    def on_created(self, event):
-        if event.is_directory and Path(event.src_path).parent == self.manager.chunks_dir:
-            chunk_name = os.path.basename(event.src_path)
-            logger.debug(f'Detected new chunk directory: {chunk_name}')
-            self.manager.monitor_chunk_directory(event.src_path)
+    def on_modified(self, event):
+        if event.is_directory and Path(event.src_path) == self.manager.chunks_dir:
+            current_chunks = set(p.name for p in self.manager.chunks_dir.iterdir() if p.is_dir())
+            new_chunks = current_chunks - self.known_chunks
+            for chunk_name in new_chunks:
+                chunk_path = self.manager.chunks_dir / chunk_name
+                logger.debug(f'Detected new chunk directory: {chunk_name}')
+                self.manager.monitor_chunk_directory(chunk_path)
+            self.known_chunks = current_chunks
 
 
 class ChunkChangedHandler(FileSystemEventHandler):
@@ -95,43 +103,61 @@ class RepoIndexManager:
 
         self.new_chunk_handler = NewChunkCreatedHandler(self)
         self.chunk_change_handler = ChunkChangedHandler(self)
-
-        self.new_chunk_observer.schedule(self.new_chunk_handler, self.chunks_dir, recursive=True)
+        self._watches: Dict[str, ObservedWatch] = dict()
+        self.new_chunk_observer.schedule(self.new_chunk_handler, self.chunks_dir, recursive=False)
 
         self._stop_event = threading.Event()
-        self._reindex_thread = None
+        self._index_thread = None
+        self._monitor_thread = None
 
     def start(self):
-        if not self._reindex_thread or not self._reindex_thread.is_alive():
-            self._stop_event.clear()
-            self.new_chunk_observer.start()
+        self._stop_event.clear()
+        self.new_chunk_observer.start()
+        self.chunk_change_observer.start()
 
-            self._monitor_existing_chunks()
-            self.chunk_change_observer.start()
+        if not self._index_thread or not self._index_thread.is_alive():
+            self._index_thread = threading.Thread(target=self._process_indexing_queue, daemon=True)
+            self._index_thread.start()
 
-            self._reindex_thread = threading.Thread(target=self._process_queue, daemon=True)
-            self._reindex_thread.start()
+        if not self._monitor_thread or not self._monitor_thread.is_alive():
+            self._monitor_thread = threading.Thread(target=self._monitor_existing_chunks, daemon=True)
+            self._monitor_thread.start()
 
     def stop(self):
         self._stop_event.set()
-        if self._reindex_thread:
-            self._reindex_thread.join()
+        self.new_chunk_observer.stop()
+        self.chunk_change_observer.stop()
+        if self._monitor_thread:
+            self._monitor_thread.join()
+        if self._index_thread:
+            self._index_thread.join()
 
     def _monitor_existing_chunks(self):
-        index_db = self.repo.request_tree('meta', read_only=True)
-        for chunk_path in self.chunks_dir.iterdir():
-            if chunk_path.is_dir():
-                run_hash = chunk_path.name
-                if self._is_run_index_outdated(run_hash, index_db):
-                    logger.debug(f'Run {run_hash} is not up-to-date. Indexing...')
-                    self.index(run_hash)
-                logger.debug(f'Monitoring existing chunk: {chunk_path}')
-                self.monitor_chunk_directory(chunk_path)
+        while not self._stop_event.is_set():
+            index_db = self.repo.request_tree('meta', read_only=True)
+            monitored_chunks = set(self._watches.keys())
+            for chunk_path in self.chunks_dir.iterdir():
+                if chunk_path.is_dir() \
+                        and chunk_path.name not in monitored_chunks \
+                        and self._is_run_index_outdated(chunk_path.name, index_db):
+                    logger.debug(f'Monitoring existing chunk: {chunk_path}')
+                    self.monitor_chunk_directory(chunk_path)
+                    logger.debug(f'Triggering indexing for run {chunk_path.name}')
+                    self.add_run_to_queue(chunk_path.name)
+            self.repo.container_pool.clear()
+            time.sleep(5)
+
+    def _stop_monitoring_chunk(self, run_hash):
+        watch = self._watches.pop(run_hash, None)
+        if watch:
+            self.chunk_change_observer.unschedule(watch)
+            logger.debug(f'Stopped monitoring chunk: {run_hash}')
 
     def monitor_chunk_directory(self, chunk_path):
         """Ensure chunk directory is monitored using a single handler."""
-        if str(chunk_path) not in self.chunk_change_observer._watches:
-            self.chunk_change_observer.schedule(self.chunk_change_handler, chunk_path, recursive=True)
+        if chunk_path.name not in self._watches:
+            watch = self.chunk_change_observer.schedule(self.chunk_change_handler, chunk_path, recursive=True)
+            self._watches[chunk_path.name] = watch
             logger.debug(f'Started monitoring chunk directory: {chunk_path}')
         else:
             logger.debug(f'Chunk directory already monitored: {chunk_path}')
@@ -144,7 +170,7 @@ class RepoIndexManager:
             self.indexing_queue.put((timestamp, run_hash))
         logger.debug(f'Run {run_hash} added to indexing queue with timestamp {timestamp}')
 
-    def _process_queue(self):
+    def _process_indexing_queue(self):
         while not self._stop_event.is_set():
             _, run_hash = self.indexing_queue.get()
             logger.debug(f'Indexing run {run_hash}...')
@@ -161,8 +187,13 @@ class RepoIndexManager:
             meta_run_tree = meta_tree.subtree('chunks').subtree(run_hash)
             meta_run_tree.finalize(index=index)
             index['index_cache', run_hash] = run_checksum
+
+            if meta_run_tree.get('end_time') is not None:
+                logger.debug(f'Indexing thread detected finished run: {run_hash}. Stopping monitoring...')
+                self._stop_monitoring_chunk(run_hash)
+
         except (aimrocks.errors.RocksIOError, aimrocks.errors.Corruption):
-            logger.warning(f"Indexing thread detected corrupted run '{run_hash}'. Skipping.")
+            logger.warning(f'Indexing thread detected corrupted run: {run_hash}. Skipping.')
             self._corrupted_runs.add(run_hash)
         return True
 
