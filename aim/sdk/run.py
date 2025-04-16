@@ -82,9 +82,9 @@ class BasicRunAutoClean(AutoClean['BasicRun']):
     def add_extra_resource(self, resource) -> None:
         self.extra_resources.append(resource)
 
-    def finalize_run(self):
+    def set_run_end_time(self):
         """
-        Finalize the run by indexing all the data.
+        Set Run end_time to mark it as finished.
         """
         self.meta_run_tree['end_time'] = datetime.datetime.now(pytz.utc).timestamp()
 
@@ -94,7 +94,7 @@ class BasicRunAutoClean(AutoClean['BasicRun']):
 
     def _close(self) -> None:
         """
-        Close the `Run` instance resources and trigger indexing.
+        Close the `Run` instance resources.
         """
         if self.read_only:
             logger.debug(f'Run {self.hash} is read-only, skipping cleanup')
@@ -104,7 +104,7 @@ class BasicRunAutoClean(AutoClean['BasicRun']):
             res.close()
 
         self.empty_rpc_queue()
-        self.finalize_run()
+        self.set_run_end_time()
         if self._heartbeat is not None:
             self._heartbeat.stop()
         if self._checkins is not None:
@@ -724,12 +724,6 @@ class BasicRun(BaseRun, StructuredRunMixin):
         self._resources = None
         self._props = None
         self._cleanup_trees()
-
-    def finalize(self):
-        if self._resources is None:
-            return
-
-        self._resources.finalize_run()
 
     def dataframe(
         self,
