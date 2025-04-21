@@ -6,11 +6,11 @@ import threading
 import time
 
 from pathlib import Path
+from typing import Dict
 
 import aimrocks.errors
 
 from aim.sdk.repo import Repo
-from typing import Dict
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 from watchdog.observers.api import ObservedWatch
@@ -137,9 +137,11 @@ class RepoIndexManager:
             index_db = self.repo.request_tree('meta', read_only=True)
             monitored_chunks = set(self._watches.keys())
             for chunk_path in self.chunks_dir.iterdir():
-                if chunk_path.is_dir() \
-                        and chunk_path.name not in monitored_chunks \
-                        and self._is_run_index_outdated(chunk_path.name, index_db):
+                if (
+                    chunk_path.is_dir()
+                    and chunk_path.name not in monitored_chunks
+                    and self._is_run_index_outdated(chunk_path.name, index_db)
+                ):
                     logger.debug(f'Monitoring existing chunk: {chunk_path}')
                     self.monitor_chunk_directory(chunk_path)
                     logger.debug(f'Triggering indexing for run {chunk_path.name}')
@@ -181,9 +183,9 @@ class RepoIndexManager:
         index = self.repo._get_index_tree('meta', 0).view(())
         try:
             run_checksum = self._get_run_checksum(run_hash)
-            meta_tree = self.repo.request_tree(
-                'meta', run_hash, read_only=True, skip_read_optimization=True
-            ).subtree('meta')
+            meta_tree = self.repo.request_tree('meta', run_hash, read_only=True, skip_read_optimization=True).subtree(
+                'meta'
+            )
             meta_run_tree = meta_tree.subtree('chunks').subtree(run_hash)
             meta_run_tree.finalize(index=index)
             index['index_cache', run_hash] = run_checksum

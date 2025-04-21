@@ -295,28 +295,15 @@ class Repo:
 
         return container
 
-    def request_tree(
-        self,
-        name: str,
-        sub: str = None,
-        *,
-        read_only: bool,
-        skip_read_optimization: bool = False
-    ):
+    def request_tree(self, name: str, sub: str = None, *, read_only: bool, skip_read_optimization: bool = False):
         if not self.is_remote_repo:
-            return self.request_container(name, sub, read_only=read_only,
-                                          skip_read_optimization=skip_read_optimization).tree()
+            return self.request_container(
+                name, sub, read_only=read_only, skip_read_optimization=skip_read_optimization
+            ).tree()
         else:
             return ProxyTree(self._client, name, sub, read_only=read_only)
 
-    def request_container(
-        self,
-        name: str,
-        sub: str = None,
-        *,
-        read_only: bool,
-        skip_read_optimization: bool = False
-    ):
+    def request_container(self, name: str, sub: str = None, *, read_only: bool, skip_read_optimization: bool = False):
         container_config = ContainerConfig(name, sub, read_only)
         container = self.container_pool.get(container_config)
         if container is None:
@@ -967,6 +954,10 @@ class Repo:
             restore_run_backup(self, run_hash)
 
     def _close_run(self, run_hash):
+        import datetime
+
+        import pytz
+
         def optimize_container(path, extra_options):
             rc = RocksContainer(path, read_only=True, **extra_options)
             rc.optimize_for_read()
@@ -977,6 +968,15 @@ class Repo:
         lock_manager = LockManager(self.path)
 
         if lock_manager.release_locks(run_hash, force=True):
+            # Set run end time if locks are removed
+            meta_tree = self.request_tree(
+                'meta',
+                run_hash,
+                read_only=False,
+            ).subtree('meta')
+            meta_run_tree = meta_tree.subtree('chunks').subtree(run_hash)
+            meta_run_tree['end_time'] = datetime.datetime.now(pytz.utc).timestamp()
+
             # Run rocksdb optimizations if container locks are removed
             meta_db_path = os.path.join(self.path, 'meta', 'chunks', run_hash)
             seqs_db_path = os.path.join(self.path, 'seqs', 'chunks', run_hash)
