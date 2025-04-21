@@ -51,6 +51,9 @@ function ExportPreview({
       if (attributes) {
         attributes.remove?.();
       }
+      svgElement
+        .querySelectorAll('.Line.aggregated')
+        .forEach((e) => e.remove());
       return svgElement;
     },
     [],
@@ -193,6 +196,7 @@ function ExportPreview({
   );
 
   const onExportImage = React.useCallback((): void => {
+    console.log('meow');
     setProcessing(true);
     try {
       const chartGrid = gridRef.current;
