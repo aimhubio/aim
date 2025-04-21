@@ -196,7 +196,6 @@ function ExportPreview({
   );
 
   const onExportImage = React.useCallback((): void => {
-    console.log('meow');
     setProcessing(true);
     try {
       const chartGrid = gridRef.current;
