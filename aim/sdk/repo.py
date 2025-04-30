@@ -975,7 +975,8 @@ class Repo:
                 read_only=False,
             ).subtree('meta')
             meta_run_tree = meta_tree.subtree('chunks').subtree(run_hash)
-            meta_run_tree['end_time'] = datetime.datetime.now(pytz.utc).timestamp()
+            if not meta_run_tree.get('end_time'):
+                meta_run_tree['end_time'] = datetime.datetime.now(pytz.utc).timestamp()
 
             # Run rocksdb optimizations if container locks are removed
             meta_db_path = os.path.join(self.path, 'meta', 'chunks', run_hash)
