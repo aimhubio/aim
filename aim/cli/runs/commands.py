@@ -192,10 +192,10 @@ def update_metrics(ctx, yes):
     if not confirmed:
         return
 
-    index_manager = RepoIndexManager.get_index_manager(repo, disable_monitoring=True)
+    index_manager = RepoIndexManager.get_index_manager(repo)
     hashes = repo.list_all_runs()
     for run_hash in tqdm.tqdm(hashes, desc='Updating runs', total=len(hashes)):
-        meta_tree = repo.request_tree('meta', run_hash, read_only=False, from_union=False)
+        meta_tree = repo.request_tree('meta', run_hash, read_only=False)
         meta_run_tree = meta_tree.subtree(('meta', 'chunks', run_hash))
         try:
             # check if the Run has already been updated.

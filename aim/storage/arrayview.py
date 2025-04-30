@@ -9,8 +9,7 @@ class ArrayView:
     when index values are not important.
     """
 
-    def __iter__(self) -> Iterator[Any]:
-        ...
+    def __iter__(self) -> Iterator[Any]: ...
 
     def keys(self) -> Iterator[int]:
         """Return sparse indices iterator.
@@ -44,16 +43,13 @@ class ArrayView:
         """
         ...
 
-    def __len__(self) -> int:
-        ...
+    def __len__(self) -> int: ...
 
-    def __getitem__(self, idx: Union[int, slice]):
-        ...
+    def __getitem__(self, idx: Union[int, slice]): ...
 
     # TODO implement append
 
-    def __setitem__(self, idx: int, val: Any):
-        ...
+    def __setitem__(self, idx: int, val: Any): ...
 
     def sparse_list(self) -> Tuple[List[int], List[Any]]:
         """Get sparse indices and values as :obj:`list`s."""

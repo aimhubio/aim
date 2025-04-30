@@ -24,8 +24,6 @@ class ProxyTree(TreeView):
         sub: str,
         *,
         read_only: bool,
-        from_union: bool = False,
-        no_cache: bool = False,
         index=False,
         timeout=None,
     ):
@@ -38,10 +36,8 @@ class ProxyTree(TreeView):
             'name': name,
             'sub': sub,
             'read_only': read_only,
-            'from_union': from_union,
             'index': index,
             'timeout': timeout,
-            'no_cache': no_cache,
         }
         self.init_args = pack_args(encode_tree(kwargs))
         self.resource_type = 'TreeView'

@@ -124,7 +124,9 @@ def up(
     if profiler:
         os.environ[AIM_PROFILER_KEY] = '1'
 
-    RepoIndexManager.get_index_manager(repo_inst)
+    index_mng = RepoIndexManager.get_index_manager(repo_inst)
+    index_mng.start()
+
     run_status_mng = RunStatusManager(repo_inst)
     run_status_mng.start()
     try:
