@@ -8,6 +8,8 @@ from enum import Enum
 from typing import TYPE_CHECKING, Dict, Iterator, List, NamedTuple, Optional, Set, Tuple
 from weakref import WeakValueDictionary
 
+import aimrocks.errors
+
 from aim.ext.cleanup import AutoClean
 from aim.ext.sshfs.utils import mount_remote_repo, unmount_remote_repo
 from aim.ext.task_queue.queue import TaskQueue
@@ -127,9 +129,14 @@ class Repo:
             self.root_path = path
         self.path = os.path.join(self.root_path, get_aim_repo_name())
 
-        if init:
+        if init and not self.is_remote_repo:
             os.makedirs(self.path, exist_ok=True)
             os.makedirs(os.path.join(self.path, 'locks'), exist_ok=True)
+
+            # Make sure meta index db is created
+            path = os.path.join(self.path, 'meta', 'index')
+            RocksContainer(path, read_only=False)
+
         if not self.is_remote_repo and not os.path.exists(self.path):
             if self._mount_root:
                 unmount_remote_repo(self.root_path, self._mount_root)
@@ -137,7 +144,6 @@ class Repo:
 
         self.container_pool: Dict[ContainerConfig, Container] = WeakValueDictionary()
         self.persistent_pool: Dict[ContainerConfig, Container] = dict()
-        self.container_view_pool: Dict[ContainerConfig, Container] = WeakValueDictionary()
 
         self._run_props_cache_hint = None
         self._encryption_key = None
@@ -160,7 +166,7 @@ class Repo:
 
     @property
     def meta_tree(self):
-        return self.request_tree('meta', read_only=True, from_union=True).subtree('meta')
+        return self.request_tree('meta', read_only=True).subtree('meta')
 
     def __repr__(self) -> str:
         return f'<Repo#{hash(self)} path={self.path} read_only={self.read_only}>'
@@ -269,28 +275,6 @@ class Repo:
     def is_remote_path(cls, path: str):
         return path.startswith('aim://')
 
-    def _get_container(
-        self, name: str, read_only: bool, from_union: bool = False, skip_read_optimization: bool = False
-    ) -> Container:
-        # TODO [AT]: refactor get container/tree logic to make it more simple
-        if self.read_only and not read_only:
-            raise ValueError('Repo is read-only')
-
-        container_config = ContainerConfig(name, None, read_only=read_only)
-        container = self.container_pool.get(container_config)
-        if container is None:
-            if from_union:
-                # Temporarily use index db when getting data from union.
-                path = os.path.join(self.path, name, 'index')
-                container = RocksContainer(path, read_only=read_only, skip_read_optimization=skip_read_optimization)
-                self.persistent_pool[container_config] = container
-            else:
-                path = os.path.join(self.path, name)
-                container = RocksContainer(path, read_only=read_only, skip_read_optimization=skip_read_optimization)
-            self.container_pool[container_config] = container
-
-        return container
-
     def _get_index_tree(self, name: str, timeout: int):
         if not self.is_remote_repo:
             return self._get_index_container(name, timeout).tree()
@@ -311,60 +295,30 @@ class Repo:
 
         return container
 
-    def request_tree(
-        self,
-        name: str,
-        sub: str = None,
-        *,
-        read_only: bool,
-        from_union: bool = False,  # TODO maybe = True by default
-        no_cache: bool = False,
-        skip_read_optimization: bool = False,
-    ):
+    def request_tree(self, name: str, sub: str = None, *, read_only: bool, skip_read_optimization: bool = False):
         if not self.is_remote_repo:
-            return self.request(
-                name,
-                sub,
-                read_only=read_only,
-                from_union=from_union,
-                no_cache=no_cache,
-                skip_read_optimization=skip_read_optimization,
+            return self.request_container(
+                name, sub, read_only=read_only, skip_read_optimization=skip_read_optimization
             ).tree()
         else:
-            return ProxyTree(self._client, name, sub, read_only=read_only, from_union=from_union, no_cache=no_cache)
+            return ProxyTree(self._client, name, sub, read_only=read_only)
 
-    def request(
-        self,
-        name: str,
-        sub: str = None,
-        *,
-        read_only: bool,
-        from_union: bool = False,  # TODO maybe = True by default
-        no_cache: bool = False,
-        skip_read_optimization: bool = False,
-    ):
+    def request_container(self, name: str, sub: str = None, *, read_only: bool, skip_read_optimization: bool = False):
         container_config = ContainerConfig(name, sub, read_only)
-        container_view = self.container_view_pool.get(container_config)
-        if container_view is None or no_cache:
-            if read_only:
-                if from_union:
-                    path = name
-                else:
-                    assert sub is not None
-                    path = os.path.join(name, 'chunks', sub)
-                container = self._get_container(
-                    path, read_only=True, from_union=from_union, skip_read_optimization=skip_read_optimization
-                )
+        container = self.container_pool.get(container_config)
+        if container is None:
+            if sub is None:
+                try:
+                    path = os.path.join(self.path, name, 'index')
+                    container = RocksContainer(path, read_only=True, skip_read_optimization=skip_read_optimization)
+                except aimrocks.errors.RocksIOError:
+                    path = os.path.join(self.path, name)
+                    container = RocksUnionContainer(path, read_only=True)
             else:
-                assert sub is not None
-                path = os.path.join(name, 'chunks', sub)
-                container = self._get_container(path, read_only=False, from_union=False)
-
-            container_view = container
-            if not no_cache:
-                self.container_view_pool[container_config] = container_view
-
-        return container_view
+                path = os.path.join(self.path, name, 'chunks', sub)
+                container = RocksContainer(path, read_only=read_only, skip_read_optimization=skip_read_optimization)
+            self.container_pool[container_config] = container
+        return container
 
     def request_props(self, hash_: str, read_only: bool, created_at: 'datetime' = None):
         if self.is_remote_repo:
@@ -755,9 +709,6 @@ class Repo:
 
         return encryption_key
 
-    def _get_meta_tree(self):
-        return self.request_tree('meta', read_only=True, from_union=True).subtree('meta')
-
     @staticmethod
     def available_sequence_types():
         return Sequence.registry.keys()
@@ -779,7 +730,6 @@ class Repo:
         Returns:
             :obj:`dict`: Tree of sequences and their contexts groupped by sequence type.
         """
-        meta_tree = self._get_meta_tree()
         sequence_traces = {}
         if isinstance(sequence_types, str):
             sequence_types = (sequence_types,)
@@ -792,7 +742,7 @@ class Repo:
             dtype_traces = set()
             for dtype in dtypes:
                 try:
-                    dtype_trace_tree = meta_tree.collect(('traces_types', dtype))
+                    dtype_trace_tree = self.meta_tree.collect(('traces_types', dtype))
                     for ctx_id, seqs in dtype_trace_tree.items():
                         for seq_name in seqs.keys():
                             dtype_traces.add((ctx_id, seq_name))
@@ -800,7 +750,7 @@ class Repo:
                     pass
             if 'float' in dtypes:  # old sequences without dtype set are considered float sequences
                 try:
-                    dtype_trace_tree = meta_tree.collect('traces')
+                    dtype_trace_tree = self.meta_tree.collect('traces')
                     for ctx_id, seqs in dtype_trace_tree.items():
                         for seq_name in seqs.keys():
                             dtype_traces.add((ctx_id, seq_name))
@@ -808,7 +758,7 @@ class Repo:
                     pass
             traces_info = defaultdict(list)
             for ctx_id, seq_name in dtype_traces:
-                traces_info[seq_name].append(meta_tree['contexts', ctx_id])
+                traces_info[seq_name].append(self.meta_tree['contexts', ctx_id])
             sequence_traces[seq_type] = traces_info
         return sequence_traces
 
@@ -818,9 +768,8 @@ class Repo:
         Returns:
             :obj:`dict`: All runs meta-parameters.
         """
-        meta_tree = self._get_meta_tree()
         try:
-            return meta_tree.collect('attrs', strict=False)
+            return self.meta_tree.collect('attrs', strict=False)
         except KeyError:
             return {}
 
@@ -891,22 +840,13 @@ class Repo:
     def _copy_run(self, run_hash, dest_repo):
         def copy_trees():
             # copy run meta tree
-            source_meta_tree = self.request_tree(
-                'meta', run_hash, read_only=True, from_union=False, no_cache=True
-            ).subtree('meta')
-            dest_meta_tree = dest_repo.request_tree(
-                'meta', run_hash, read_only=False, from_union=False, no_cache=True
-            ).subtree('meta')
-            dest_meta_run_tree = dest_meta_tree.subtree('chunks').subtree(run_hash)
+            source_meta_tree = self.request_tree('meta', run_hash, read_only=True).subtree('meta')
+            dest_meta_tree = dest_repo.request_tree('meta', run_hash, read_only=False).subtree('meta')
             dest_meta_tree[...] = source_meta_tree[...]
-            dest_index = dest_repo._get_index_tree('meta', timeout=10).view(())
-            dest_meta_run_tree.finalize(index=dest_index)
 
             # copy run series tree
-            source_series_run_tree = self.request_tree('seqs', run_hash, read_only=True, no_cache=True).subtree('seqs')
-            dest_series_run_tree = dest_repo.request_tree('seqs', run_hash, read_only=False, no_cache=True).subtree(
-                'seqs'
-            )
+            source_series_run_tree = self.request_tree('seqs', run_hash, read_only=True).subtree('seqs')
+            dest_series_run_tree = dest_repo.request_tree('seqs', run_hash, read_only=False).subtree('seqs')
 
             # copy v2 sequences
             source_v2_tree = source_series_run_tree.subtree(('v2', 'chunks', run_hash))
@@ -1014,6 +954,10 @@ class Repo:
             restore_run_backup(self, run_hash)
 
     def _close_run(self, run_hash):
+        import datetime
+
+        import pytz
+
         def optimize_container(path, extra_options):
             rc = RocksContainer(path, read_only=True, **extra_options)
             rc.optimize_for_read()
@@ -1024,6 +968,16 @@ class Repo:
         lock_manager = LockManager(self.path)
 
         if lock_manager.release_locks(run_hash, force=True):
+            # Set run end time if locks are removed
+            meta_tree = self.request_tree(
+                'meta',
+                run_hash,
+                read_only=False,
+            ).subtree('meta')
+            meta_run_tree = meta_tree.subtree('chunks').subtree(run_hash)
+            if not meta_run_tree.get('end_time'):
+                meta_run_tree['end_time'] = datetime.datetime.now(pytz.utc).timestamp()
+
             # Run rocksdb optimizations if container locks are removed
             meta_db_path = os.path.join(self.path, 'meta', 'chunks', run_hash)
             seqs_db_path = os.path.join(self.path, 'seqs', 'chunks', run_hash)
@@ -1039,7 +993,7 @@ class Repo:
 
         from aim.sdk.index_manager import RepoIndexManager
 
-        index_manager = RepoIndexManager.get_index_manager(self, disable_monitoring=True)
+        index_manager = RepoIndexManager.get_index_manager(self)
 
         # force delete the index db and the locks
 

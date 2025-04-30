@@ -80,8 +80,7 @@ class Query:
         self.expr = expr
 
     @abstractmethod
-    def check(self, **params) -> bool:
-        ...
+    def check(self, **params) -> bool: ...
 
     def __call__(self, **params):
         return self.check(**params)

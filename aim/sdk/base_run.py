@@ -39,6 +39,7 @@ class BaseRun:
         if self.read_only:
             assert run_hash is not None
             self.hash = run_hash
+            self.meta_tree: TreeView = self.repo.request_tree('meta', read_only=True).subtree('meta')
         else:
             if run_hash is None:
                 self.hash = generate_run_hash()
@@ -48,10 +49,8 @@ class BaseRun:
                 raise MissingRunError(f'Cannot find Run {run_hash} in aim Repo {self.repo.path}.')
             self._lock = self.repo.request_run_lock(self.hash)
             self._lock.lock(force=force_resume)
+            self.meta_tree: TreeView = self.repo.request_tree('meta', self.hash, read_only=False).subtree('meta')
 
-        self.meta_tree: TreeView = self.repo.request_tree(
-            'meta', self.hash, read_only=read_only, from_union=True
-        ).subtree('meta')
         self.meta_run_tree: TreeView = self.meta_tree.subtree('chunks').subtree(self.hash)
 
         self._series_run_trees: Dict[int, TreeView] = None
