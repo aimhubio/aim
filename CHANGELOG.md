@@ -1,9 +1,16 @@
 # Changelog
 
-## Unreleased:
+## 3.29.0 May 8, 2025:
+
+### Enhancements:
+- Constant indexing of in-progress runs (alberttorosyan)
+- Fallback to union view if index db is missing (alberttorosyan, mihran113)
+
 
 ### Fixes:
 - Fix min/max calculation for single point metrics (mihran113)
+- Aim web ui integration in jupyter/colab (larissapoghosyan)
+
 
 ## 3.28.0 Mar 21, 2025
 
