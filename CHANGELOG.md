@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.29.0 May 8, 2025:
+## 3.29.1 May 8, 2025:
 
 ### Enhancements:
 - Constant indexing of in-progress runs (alberttorosyan)
@@ -10,7 +10,9 @@
 ### Fixes:
 - Fix min/max calculation for single point metrics (mihran113)
 - Aim web ui integration in jupyter/colab (larissapoghosyan)
+- Package publishing for Linux/Python 3.7 (alberttorosyan)
 
+## 3.29.0 May 8, 2025 (Yanked)
 
 ## 3.28.0 Mar 21, 2025
 
