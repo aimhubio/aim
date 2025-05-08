@@ -96,6 +96,7 @@ jobs:
           python -m pip install -r requirements.txt
 
       - name: Build bdist wheels for 'cp37-cp37m'
+        if: matrix.manylinux-version == 'manylinux_2_24_x86_64'
         uses: nick-fields/retry@v2
         with:
           max_attempts: 3
