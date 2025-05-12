@@ -51,6 +51,9 @@ function ExportPreview({
       if (attributes) {
         attributes.remove?.();
       }
+      svgElement
+        .querySelectorAll('.Line.aggregated')
+        .forEach((e) => e.remove());
       return svgElement;
     },
     [],
