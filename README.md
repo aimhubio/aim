@@ -199,6 +199,29 @@ Check out the two most famous Aim-based tools.
 
 Follow the steps below to get started with Aim.
 
+For developer, 
+
+Modify version number in /aim/VERSION
+
+run 
+```
+python setup.py sdist bdist_wheel
+```
+in root path to generate wheel under dist folder
+
+Then Upload to storage server (replace your version):
+```
+atomic_data_cli upload --storage-type NFS \
+  ~/work/ponyai/.sub-repos/aim/dist/aim-3.29.1-cp38-cp38-linux_x86_64.whl \
+  /sjc1/infra/software/aim/aim-3.29.1-cp38-cp38-linux_x86_64.whl
+```
+Then it should be found in "https://storage.corp.pony.ai:7443/sjc1/infra/software/aim/"
+
+Upload to Nexus server:
+https://nexus.aws-us-west-2.corp.pony.ai/#browse/upload:pypi-hosted
+
+Then search by "aim" and find package under the folder
+
 ## 1. Install Aim on your training environment
 
 ```shell
