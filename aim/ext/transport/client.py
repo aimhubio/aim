@@ -49,7 +49,7 @@ class Client:
         self.ssl_certfile = os.getenv(AIM_CLIENT_SSL_CERTIFICATES_FILE)
         self.ssl_context = None
         if self.ssl_certfile:
-            self.ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+            self.ssl_context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
             self.ssl_context.load_cert_chain(certfile=self.ssl_certfile)
 
         self.protocol_probe()
