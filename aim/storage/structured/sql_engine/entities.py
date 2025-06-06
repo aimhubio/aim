@@ -87,11 +87,9 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
 
     @classmethod
     def delete_run(cls, runhash: str, session) -> bool:
-        try:
-            rows_affected = session.query(RunModel).filter(RunModel.hash == runhash).delete()
-            session_commit_or_flush(session)
-        except Exception:
-            return False
+        rows_affected = session.query(RunModel).filter(RunModel.hash == runhash).delete()
+        session_commit_or_flush(session)
+
         return rows_affected > 0
 
     @classmethod

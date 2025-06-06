@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased:
+
+### Fixes: 
+- Fix issues with tag false reassignment (mihran113)
+
 ## 3.29.1 May 8, 2025:
 
 ### Enhancements:
