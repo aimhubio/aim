@@ -51,10 +51,9 @@ class Run(Base):
     experiment_id = Column(ForeignKey('experiment.id'), nullable=True)
 
     experiment = relationship('Experiment', backref=backref('runs', uselist=True, order_by='Run.created_at.desc()'))
-    tags = relationship('Tag', secondary=run_tags,
-                        backref=backref('runs', uselist=True),
-                        cascade="all, delete",
-                        passive_deletes=True)
+    tags = relationship(
+        'Tag', secondary=run_tags, backref=backref('runs', uselist=True), cascade='all, delete', passive_deletes=True
+    )
     notes = relationship('Note', back_populates='run')
 
     def __init__(self, run_hash, created_at=None):
