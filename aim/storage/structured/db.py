@@ -9,7 +9,7 @@ from aim.storage.structured.sql_engine.factory import (
 )
 from aim.storage.types import SafeNone
 from aim.web.configs import AIM_LOG_LEVEL_KEY
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, event
 from sqlalchemy.orm import scoped_session, sessionmaker
 
 
@@ -66,6 +66,7 @@ class DB(ObjectFactory):
             pool_size=10,
             max_overflow=20,
         )
+        event.listen(self.engine, 'connect', lambda c, _: c.execute('pragma foreign_keys=on'))
         self.session_cls = scoped_session(sessionmaker(autoflush=False, bind=self.engine))
         self._upgraded = None
 

@@ -29,9 +29,19 @@ def upgrade():
     with op.batch_alter_table('run_tag', naming_convention=naming_convention) as batch_op:
         # First drop the existing foreign key
         batch_op.drop_constraint('fk_run_tag_run_id_run', type_='foreignkey')
+        batch_op.drop_constraint('fk_run_tag_tag_id_tag', type_='foreignkey')
 
         # Then create a new one with CASCADE
-        batch_op.create_foreign_key('run_tag', 'run', ['run_id'], ['id'], ondelete='CASCADE')
+        batch_op.create_foreign_key('fk_run_tag_run_id_run', 'run', ['run_id'], ['id'], ondelete='CASCADE')
+        batch_op.create_foreign_key('fk_run_tag_tag_id_tag', 'tag', ['tag_id'], ['id'], ondelete='CASCADE')
+
+
+    with op.batch_alter_table('note', naming_convention=naming_convention) as batch_op:
+        # First drop the existing foreign key
+        batch_op.drop_constraint('fk_note_run_id_run', type_='foreignkey')
+
+        # Then create a new one with CASCADE
+        batch_op.create_foreign_key('fk_note_run_id_run', 'run', ['run_id'], ['id'], ondelete='CASCADE')
 
 
 def downgrade():
@@ -44,6 +54,16 @@ def downgrade():
     with op.batch_alter_table('run_tag', naming_convention=naming_convention) as batch_op:
         # Drop the CASCADE foreign key
         batch_op.drop_constraint('fk_run_tag_run_id_run', type_='foreignkey')
+        batch_op.drop_constraint('fk_run_tag_tag_id_tag', type_='foreignkey')
 
-        # Recreate without CASCADE
-        batch_op.create_foreign_key('run_tag', 'run', ['run_id'], ['id'])
+        # Then create a new one with CASCADE
+        batch_op.create_foreign_key('fk_run_tag_run_id_run', 'run', ['run_id'], ['id'],)
+        batch_op.create_foreign_key('fk_run_tag_tag_id_tag', 'tag', ['tag_id'], ['id'],)
+
+    with op.batch_alter_table('note', naming_convention=naming_convention) as batch_op:
+        # First drop the existing foreign key
+        batch_op.drop_constraint('fk_note_run_id_run', type_='foreignkey')
+
+        # Then create a new one with CASCADE
+        batch_op.create_foreign_key('fk_note_run_id_run', 'run', ['run_id'], ['id'],)
+

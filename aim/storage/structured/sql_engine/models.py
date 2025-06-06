@@ -108,7 +108,7 @@ class Note(Base):
 
     id = Column(Integer, autoincrement=True, primary_key=True)
     content = Column(Text, nullable=False, default='')
-    run_id = Column(Integer, ForeignKey('run.id'))
+    run_id = Column(Integer, ForeignKey('run.id', ondelete='CASCADE'),)
     experiment_id = Column(Integer, ForeignKey('experiment.id'))
 
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
