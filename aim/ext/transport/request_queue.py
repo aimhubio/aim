@@ -79,7 +79,7 @@ class RequestQueue(object):
             try:
                 task_f(*args)
                 return True
-            except ConnectionClosedError as e:
+            except (ConnectionClosedError, TimeoutError) as e:
                 self._needs_reconnect = True
 
                 retry += 1
