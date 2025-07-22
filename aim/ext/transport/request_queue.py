@@ -63,7 +63,7 @@ class RequestQueue(object):
 
     def _try_exec_task(self, task_f, *args):
         # temporary workaround for M1 build
-        from websockets.exceptions import ConnectionClosedError
+        from websockets.exceptions import WebSocketException
 
         retry = 0
         while retry < self.retry_count:
@@ -79,7 +79,7 @@ class RequestQueue(object):
             try:
                 task_f(*args)
                 return True
-            except (ConnectionClosedError, TimeoutError) as e:
+            except (WebSocketException, TimeoutError) as e:
                 self._needs_reconnect = True
 
                 retry += 1
