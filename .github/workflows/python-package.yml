@@ -145,6 +145,15 @@ jobs:
           retry_wait_seconds: 60
           command: docker run  -e PYTHON_VERSION='cp312-cp312' --mount type=bind,source=$PWD,target=/opt/aim quay.io/pypa/${{ matrix.manylinux-version }} bash /opt/aim/docker/build-wheels.sh
 
+      - name: Build bdist wheels for 'cp313-cp313'
+        if: matrix.manylinux-version == 'manylinux_2_28_x86_64'
+        uses: nick-fields/retry@v2
+        with:
+          max_attempts: 3
+          timeout_minutes: 30
+          retry_wait_seconds: 60
+          command: docker run  -e PYTHON_VERSION='cp313-cp313' --mount type=bind,source=$PWD,target=/opt/aim quay.io/pypa/${{ matrix.manylinux-version }} bash /opt/aim/docker/build-wheels.sh
+
       - name: Publish wheels
         env:
           PYPI_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
@@ -171,7 +180,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ '3.7', '3.8', '3.9', '3.10', '3.11', '3.12' ]
+        python-version: [ '3.7', '3.8', '3.9', '3.10', '3.11', '3.12', '3.13' ]
         arch: ['arm64', 'x86_64']
         exclude:
           - arch: 'arm64'

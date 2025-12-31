@@ -5,6 +5,9 @@
 ### Fixes: 
 - Fix issues with tag false reassignment (mihran113)
 
+### Enhancements:
+- Add support for python 3.13 (mahnerak)
+
 ## 3.29.1 May 8, 2025:
 
 ### Enhancements:

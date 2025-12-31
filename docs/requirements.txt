@@ -3,4 +3,4 @@ sphinx
 sphinx_rtd_theme
 m2r2==0.3.3.post2
 sphinx-copybutton
-Cython==3.0.10
+Cython==3.0.12
