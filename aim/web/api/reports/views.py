@@ -10,9 +10,36 @@ from aim.web.api.reports.serializers import report_response_serializer
 from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
 from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
+import re
 
 
 reports_router = APIRouter()
+
+
+def validate_code_safety(code: str) -> bool:
+    """
+    Validate that Python code doesn't contain potentially harmful JavaScript execution calls.
+    Returns True if code is safe, False otherwise.
+    """
+    if not code:
+        return True
+        
+    dangerous_patterns = [
+        r'pyodide\s*\.\s*code\s*\.\s*run_js',
+        r'pyodide\s*\.\s*code\s*\.\s*eval_js',
+        r'pyodide\s*\.\s*code\s*\.\s*create_proxy',
+        r'eval\s*\(',
+        r'Function\s*\(',
+        r'document\.write\s*\(',
+        r'document\.execCommand\s*\(',
+        r'javascript:',
+    ]
+    
+    for pattern in dangerous_patterns:
+        if re.search(pattern, code, re.IGNORECASE):
+            return False
+            
+    return True
 
 
 @reports_router.get('/', response_model=ReportListOut)
@@ -24,6 +51,11 @@ async def reports_list_api(session: Session = Depends(get_session)):
 
 @reports_router.post('/', status_code=201, response_model=ReportOut)
 async def reports_post_api(request_data: ReportCreateIn, session: Session = Depends(get_session)):
+    if not validate_code_safety(request_data.code):
+        raise HTTPException(
+            status_code=400,
+            detail="Potentially unsafe code detected. JavaScript execution functions are not allowed."
+        )
     report = Report(request_data.code, request_data.name, request_data.description)
     session.add(report)
     session.commit()
@@ -44,6 +76,11 @@ async def reports_put_api(report_id: str, request_data: ReportUpdateIn, session:
     if not report:
         raise HTTPException(status_code=404)
     if request_data.code is not None:
+        if not validate_code_safety(request_data.code):
+            raise HTTPException(
+                status_code=400,
+                detail="Potentially unsafe code detected. JavaScript execution functions are not allowed."
+            )
         report.code = request_data.code
     if request_data.name is not None:
         report.name = request_data.name
