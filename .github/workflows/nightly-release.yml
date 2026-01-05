@@ -3,7 +3,7 @@ name: nightly releases
 on:
   schedule:
     # Run at 20:00 UTC Every Day
-    - cron: "0 20 * * *"
+    - cron: "0 20 * * 0"
 
 jobs:
   version-override:
