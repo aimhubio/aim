@@ -138,6 +138,14 @@ def restore_run_backup(repo, run_hash):
         shutil.rmtree(f'meta/chunks/{run_hash}', ignore_errors=True)
         shutil.rmtree(f'seqs/chunks/{run_hash}', ignore_errors=True)
         with tarfile.open(run_bcp_file, 'r:gz') as tar:
+            # Check for path traversal attempts in tar members
+            for member in tar.getmembers():
+                # Normalize path and check for path traversal attempts
+                norm_path = os.path.normpath(member.name)
+                if norm_path.startswith('/') or '..' in norm_path.split(os.sep):
+                    raise ValueError(f"Security error: Potential path traversal attempt in backup file: {member.name}")
+            
+            # Only extract after all members have been checked
             tar.extractall()
         progress_path = pathlib.Path('meta') / 'progress' / run_hash
         progress_path.touch(exist_ok=True)
