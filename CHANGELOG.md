@@ -4,6 +4,7 @@
 
 ### Fixes: 
 - Fix issues with tag false reassignment (mihran113)
+- Fix issue of detecting defice arrays with newer versions of jax (alberttorosyan)
 
 ## 3.29.1 May 8, 2025:
 
