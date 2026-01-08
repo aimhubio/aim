@@ -334,6 +334,37 @@ See the docs on how to [set up the remote server](https://aimstack.readthedocs.i
 
 Read the full documentation on [aimstack.readthedocs.io](https://aimstack.readthedocs.io) 📖
 
+# 🚀 Performance Benchmarks
+
+We continuously track and optimize Aim’s performance through automated benchmarks across different repo sizes. 
+Below are selected results from recent runs.
+
+## Querying Metrics from Filtered Runs
+
+Chart demonstrating metric queries performance with runs filter applied.
+Query times remain consistent across varying metric counts, with fast filtering.
+
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/c15c57cc-4f53-4190-b0de-4eeef55368c4" width="400" />
+</div>
+
+## Querying Metrics from All Runs
+
+Heatmap showing average query times for retrieving selected metric across different numbers of runs and metrics.
+Performance remains under 1s for typical workloads and scales linearly beyond.
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/2e5cdef9-7c31-4728-968e-8c7a3699052e" width="400" />
+</div>
+
+## Run Selection Performance
+
+Line chart showing how average run selection time changes for different repository sizes.
+All query types (selecting 50%, 10%, and 1% of runs) scale linearly, with sub-second response times up to 1K runs.
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/04e3133e-cdcf-4855-81e1-74f1ee03a3f3" width="400" />
+</div>
+
+
 # 🆚 Comparisons to familiar tools
 
 <details>
