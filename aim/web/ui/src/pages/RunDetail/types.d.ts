@@ -23,6 +23,7 @@ export interface IRunDetailMetricsAndSystemTabProps {
   runBatch: any;
   isSystem?: boolean;
   isRunBatchLoading: boolean;
+  showPin?: boolean;
 }
 
 export interface IRunBatch {
@@ -100,6 +101,7 @@ export interface IRunMetricCardProps {
   observer: IntersectionObserver | undefined;
   isPinned: boolean;
   togglePin: (metric: IPinnedSequence, isPinned: boolean) => void;
+  showPin?: boolean;
 }
 
 export interface IImagesVisualizerProps extends ITraceVisualizerProps {}

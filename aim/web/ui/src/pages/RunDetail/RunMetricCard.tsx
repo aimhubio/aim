@@ -20,6 +20,7 @@ function RunMetricCard({
   observer,
   isPinned,
   togglePin,
+  showPin = true,
 }: IRunMetricCardProps): React.FunctionComponentElement<React.ReactNode> {
   const containerRef = React.useRef(null);
 
@@ -37,27 +38,29 @@ function RunMetricCard({
         data-context={contextToString(batch.context)}
         ref={containerRef}
       >
-        <Tooltip title={isPinned ? 'Unpin' : 'Pin'}>
-          <div className='RunDetailMetricsTab__container__chartContainer__metricDetailBox__pin'>
-            <Button
-              color={isPinned ? 'primary' : 'default'}
-              size='xSmall'
-              variant='outlined'
-              withOnlyIcon
-              onClick={() =>
-                togglePin(
-                  {
-                    name: batch.name,
-                    context: batch.context,
-                  },
-                  isPinned,
-                )
-              }
-            >
-              <Icon name='pin' />
-            </Button>
-          </div>
-        </Tooltip>
+        {showPin && (
+          <Tooltip title={isPinned ? 'Unpin' : 'Pin'}>
+            <div className='RunDetailMetricsTab__container__chartContainer__metricDetailBox__pin'>
+              <Button
+                color={isPinned ? 'primary' : 'default'}
+                size='xSmall'
+                variant='outlined'
+                withOnlyIcon
+                onClick={() =>
+                  togglePin(
+                    {
+                      name: batch.name,
+                      context: batch.context,
+                    },
+                    isPinned,
+                  )
+                }
+              >
+                <Icon name='pin' />
+              </Button>
+            </div>
+          </Tooltip>
+        )}
         <div className='RunDetailMetricsTab__container__chartContainer__chartBox'>
           {batch.iters ? (
             <ErrorBoundary>

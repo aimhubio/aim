@@ -1,0 +1,24 @@
+// components/ActiveRunMetrics/ActiveRunMetrics.scss
+.ActiveRunMetrics {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  &__title {
+    margin-bottom: 1rem;
+  }
+
+  &__content {
+    flex: 1;
+    overflow: auto;
+  }
+
+  &__loading,
+  &__error,
+  &__empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+  }
+}

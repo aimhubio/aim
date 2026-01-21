@@ -14,7 +14,18 @@ import useActiveRunsTable from './useActiveRunsTable';
 
 import './ActiveRunsTable.scss';
 
-function ActiveRunsTable() {
+// eslint-disable-next-line import/order
+import { decode } from 'utils/encoder/encoder';
+
+interface IActiveRunsSelectionTableProps {
+  onRunSelect?: (runHash: string) => void;
+  selectedRunHash?: string | null;
+}
+
+function ActiveRunsTable({
+  onRunSelect,
+  selectedRunHash,
+}: IActiveRunsSelectionTableProps) {
   const {
     tableRef,
     tableColumns,
@@ -24,6 +35,29 @@ function ActiveRunsTable() {
     comparisonQuery,
     onRowSelect,
   } = useActiveRunsTable();
+
+  // Handle row click to select a run
+  const handleRowClick = React.useCallback(
+    (rowKey?: string) => {
+      // Only proceed if rowKey is defined and onRunSelect is provided
+      if (rowKey && onRunSelect) {
+        let runHash = `${JSON.parse(decode(rowKey)).hash}`;
+        onRunSelect(runHash);
+      }
+    },
+    [onRunSelect],
+  );
+
+  // Effect to auto-select the first run if none is selected and we have data
+  React.useEffect(() => {
+    if (!loading && tableData.length > 0 && !selectedRunHash && onRunSelect) {
+      const firstRowHash = `${JSON.parse(decode(tableData[0].key)).hash}`;
+      if (firstRowHash) {
+        onRunSelect(firstRowHash);
+      }
+      tableRef.current?.setActiveRow(tableData[0].key);
+    }
+  }, [loading, tableRef, tableData, selectedRunHash, onRunSelect]);
 
   return (
     <div className='ActiveRunsTable'>
@@ -60,9 +94,9 @@ function ActiveRunsTable() {
             custom
             topHeader
             multiSelect
+            noHover={true}
             noColumnActions
             hideHeaderActions
-            showRowClickBehaviour={false}
             showResizeContainerActionBar={false}
             appName={'dashboard' as AppNameEnum} // @TODO: change to Dashboard
             ref={tableRef}
@@ -77,10 +111,12 @@ function ActiveRunsTable() {
             }}
             selectedRows={selectedRows}
             onRowSelect={onRowSelect}
+            onRowClick={handleRowClick}
           />
         )}
       </div>
     </div>
   );
 }
+
 export default ActiveRunsTable;

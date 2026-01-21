@@ -68,6 +68,7 @@ export interface ITableProps {
   showResizeContainerActionBar?: boolean;
   resizeMode?: ResizeModeEnum;
   multiSelect?: boolean;
+  noHover?: boolean;
   selectedRows?: any;
   minHeight?: string;
   onRowSelect?: any;

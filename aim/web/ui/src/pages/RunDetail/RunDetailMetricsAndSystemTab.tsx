@@ -32,6 +32,7 @@ function RunDetailMetricsAndSystemTab({
   runBatch,
   isSystem,
   isRunBatchLoading,
+  showPin = true,
 }: IRunDetailMetricsAndSystemTabProps): React.FunctionComponentElement<React.ReactNode> {
   const containerRef = React.useRef<HTMLDivElement>(null);
   const observerRef = React.useRef<IntersectionObserver>();
@@ -240,6 +241,7 @@ function RunDetailMetricsAndSystemTab({
                   observer={observerRef.current}
                   isPinned={pinned}
                   togglePin={togglePin}
+                  showPin={showPin}
                 />
               );
             })}

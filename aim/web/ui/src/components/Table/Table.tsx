@@ -79,6 +79,7 @@ const Table = React.forwardRef(function Table(
     onSortReset,
     height = 'calc(100% - 40px)',
     multiSelect = false,
+    noHover = false,
     selectedRows,
     onRowSelect,
     minHeight,
@@ -454,7 +455,7 @@ const Table = React.forwardRef(function Table(
   }
 
   function rowHoverHandler(row) {
-    if (activeRowKey.current === null) {
+    if (activeRowKey.current === null && !noHover) {
       if (typeof onRowHover === 'function') {
         onRowHover(row.key);
       }
