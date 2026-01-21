@@ -72,7 +72,7 @@
     "zustand": "^4.1.1"
   },
   "scripts": {
-    "start": "react-app-rewired --max_old_space_size=4096 start",
+    "dev": "react-app-rewired --max_old_space_size=4096 start",
     "build": "react-app-rewired --max_old_space_size=4096 build && gzipper c -i js,css,html ./build && node tasks/index-html-template-generator.js",
     "test": "react-app-rewired test ",
     "test:coverage": "react-app-rewired test --collectCoverage",
