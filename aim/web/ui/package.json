@@ -24,7 +24,7 @@
     "@stitches/react": "^1.2.8",
     "@storybook/react": "^6.5.12",
     "@tabler/icons-react": "^2.2.0",
-    "@uiw/react-textarea-code-editor": "^1.4.14",
+    "@uiw/react-textarea-code-editor": "^3.1.1",
     "antd": "^4.23.6",
     "bs58check": "^2.1.2",
     "classnames": "^2.3.1",
