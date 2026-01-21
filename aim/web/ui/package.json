@@ -39,7 +39,7 @@
     "humanize-duration": "^3.27.0",
     "immer": "^9.0.16",
     "js-cookie": "^3.0.5",
-    "lodash-es": "^4.17.21",
+    "lodash-es": "^4.17.23",
     "marked": "^4.1.1",
     "md5": "^2.3.0",
     "memoize-one": "^5.2.1",
