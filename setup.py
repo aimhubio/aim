@@ -81,6 +81,10 @@ REQUIRED = [
     'boto3',
 ]
 
+EXTRAS_REQUIRE = {
+    'gcs': ['google-cloud-storage>=3.9.0'],
+}
+
 if sys.version_info.minor < 9:
     REQUIRED += ['astunparse']
 
