@@ -79,6 +79,7 @@ REQUIRED = [
     'watchdog',
     'websockets',
     'boto3',
+    'google-cloud-storage',
 ]
 
 if sys.version_info.minor < 9:

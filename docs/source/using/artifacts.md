@@ -18,6 +18,9 @@ run = aim.Run()
 # Use S3 as artifacts storage
 run.set_artifacts_uri('s3://aim/artifacts/')
 
+# Use Google Cloud Storage as artifacts storage
+run.set_artifacts_uri('gs://aim/artifacts/')
+
 # Use file-system as artifacts storage
 run.set_artifacts_uri('file:///home/user/aim/artifacts/')
 ```
@@ -43,6 +46,7 @@ stores, such as AWS S3, may be a better choice.
 When the artifacts URI is set, Aim will detect storage backend based on the URI scheme.
 Currently supported backends for artifacts storage are.
 - S3
+- Google Cloud Storage (GCS)
 - File System
 
 #### S3 Artifacts Storage Backend
@@ -60,6 +64,33 @@ S3ArtifactStorage_clientconfig(aws_access_key_id=..., aws_secret_access_key=...,
                                endpoint_url=..., config={'retries': {...}, },)
 run = aim.Run(...)
 run.set_artifacts_uri('s3://...')
+run.log_artifact(..., name=...)
+```
+
+#### GCS Artifacts Storage Backend
+
+Aim uses `google-cloud-storage` Python package for accessing Google Cloud Storage resources.
+
+Authentication is handled by the `google-cloud-storage` library. A typical way of supplying credentials is by setting the `GOOGLE_APPLICATION_CREDENTIALS` environment variable to point to a service account key file. Alternatively, if running on Google Cloud infrastructure (GCE, GKE, Cloud Run, etc.), the default service account credentials will be used automatically. More details on how authentication is configured for `google-cloud-storage` is available [here](https://cloud.google.com/docs/authentication/provide-credentials-adc).
+
+Basic usage:
+```python
+import aim
+
+run = aim.Run()
+run.set_artifacts_uri('gs://my-bucket/artifacts/')
+run.log_artifact('model.pt', name='model-checkpoint')
+```
+
+If you require direct control of how the GCS client is configured, you may use `aim.storage.artifacts.gcs_storage.GCSArtifactStorage_clientconfig(...)`. `GCSArtifactStorage_clientconfig` accepts any keyword-arguments that the `google.cloud.storage.Client` accepts, allowing you to specify custom project, credentials, or other configuration options.
+
+```python
+import aim
+from aim.storage.artifacts.gcs_storage import GCSArtifactStorage_clientconfig
+
+GCSArtifactStorage_clientconfig(project='my-project', credentials=...)
+run = aim.Run(...)
+run.set_artifacts_uri('gs://...')
 run.log_artifact(..., name=...)
 ```
 
