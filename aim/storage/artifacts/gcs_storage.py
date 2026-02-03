@@ -5,6 +5,14 @@ from concurrent.futures import ThreadPoolExecutor
 from concurrent.futures import wait as wait_for_finish
 from typing import Optional
 from urllib.parse import urlparse
+try:
+    from google.cloud import storage
+except ImportError:
+    raise ImportError(
+        'google-cloud-storage is required for GCS artifact storage. '
+        'Install it with: pip install google-cloud-storage'
+    )
+
 
 from aim.ext.cleanup import AutoClean
 
@@ -73,14 +81,6 @@ class GCSArtifactStorage(AbstractArtifactStorage):
         self._futures.remove(future)
 
     def _get_gcs_client(self):
-        try:
-            from google.cloud import storage
-        except ImportError:
-            raise ImportError(
-                'google-cloud-storage is required for GCS artifact storage. '
-                'Install it with: pip install google-cloud-storage'
-            )
-
         client = storage.Client()
         return client
 
@@ -88,14 +88,6 @@ class GCSArtifactStorage(AbstractArtifactStorage):
 def GCSArtifactStorage_factory(**gcs_client_kwargs):
     class GCSArtifactStorageCustom(GCSArtifactStorage):
         def _get_gcs_client(self):
-            try:
-                from google.cloud import storage
-            except ImportError:
-                raise ImportError(
-                    'google-cloud-storage is required for GCS artifact storage. '
-                    'Install it with: pip install google-cloud-storage'
-                )
-
             client = storage.Client(**gcs_client_kwargs)
             return client
 

@@ -130,7 +130,7 @@ class TestGCSArtifactStorage(unittest.TestCase):
 
         self.assertTrue(result.endswith('artifact.txt'))
         # Should be in a temp directory
-        self.assertIn('tmp', result.lower()) or self.assertIn('temp', result.lower())
+        self.assertIn('tmp', result.lower()) is None or self.assertIn('temp', result.lower()) is None
 
     @patch('aim.storage.artifacts.gcs_storage.storage')
     def test_delete_artifact(self, mock_storage):
@@ -169,9 +169,8 @@ class TestGCSArtifactStorage(unittest.TestCase):
             from aim.storage.artifacts import gcs_storage
             import importlib
 
-            importlib.reload(gcs_storage)
-
             with self.assertRaises(ImportError) as context:
+                importlib.reload(gcs_storage)
                 gcs_storage.GCSArtifactStorage('gs://my-bucket/artifacts')
 
             self.assertIn('google-cloud-storage', str(context.exception))
