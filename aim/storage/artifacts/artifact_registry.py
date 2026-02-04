@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING, Dict, Type
 from urllib.parse import urlparse
 
 from .filesystem_storage import FilesystemArtifactStorage
+from .gc_storage import GCArtifactStorage
 from .s3_storage import S3ArtifactStorage
 
 
@@ -30,4 +31,5 @@ class ArtifactStorageRegistry:
 
 registry = ArtifactStorageRegistry()
 registry.register('s3', S3ArtifactStorage)
+registry.register('gs', GCArtifactStorage)
 registry.register('file', FilesystemArtifactStorage)

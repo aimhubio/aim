@@ -18,6 +18,9 @@ run = aim.Run()
 # Use S3 as artifacts storage
 run.set_artifacts_uri('s3://aim/artifacts/')
 
+# Use GCS as artifacts storage
+run.set_artifacts_uri('gs://aim/artifacts/')
+
 # Use file-system as artifacts storage
 run.set_artifacts_uri('file:///home/user/aim/artifacts/')
 ```
@@ -44,6 +47,7 @@ When the artifacts URI is set, Aim will detect storage backend based on the URI 
 Currently supported backends for artifacts storage are.
 - S3
 - File System
+- GCS
 
 #### S3 Artifacts Storage Backend
 
@@ -60,6 +64,22 @@ S3ArtifactStorage_clientconfig(aws_access_key_id=..., aws_secret_access_key=...,
                                endpoint_url=..., config={'retries': {...}, },)
 run = aim.Run(...)
 run.set_artifacts_uri('s3://...')
+run.log_artifact(..., name=...)
+```
+#### GCS Artifacts Storage Backend
+In order to use Google Cloud Store with Aim, install `aim[gcs]`.  
+
+Aim uses `google-cloud-storage` Python package for accessing GCS resources. Connection and credential validation is handled by `google-cloud-storage`. More information is available [here](https://docs.cloud.google.com/docs/authentication/client-libraries#python_1).  
+
+If you require direct control of how the `google-cloud-storage` Client is created, you may use `aim.storage.artifacts.gc_storage.GCArtifactStorage_clientconfig(...)`. This method accepts any keyword-arguments that the `google.cloud.storage.Client` constructor accepts.
+
+```python
+import aim
+from aim.storage.artifacts.gc_storage import GCArtifactStorage_clientconfig
+
+GCArtifactStorage_clientconfig(project=..., credentials=...)
+run = aim.Run(...)
+run.set_artifacts_uri('gs://...')
 run.log_artifact(..., name=...)
 ```
 
