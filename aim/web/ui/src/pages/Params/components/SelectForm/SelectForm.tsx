@@ -1,7 +1,14 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import { Box, Checkbox, Divider, InputBase, Popper } from '@material-ui/core';
+import {
+  Box,
+  Checkbox,
+  Divider,
+  InputBase,
+  Popper,
+  Tooltip,
+} from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import {
   CheckBox as CheckBoxIcon,
@@ -34,6 +41,10 @@ function SelectForm({
   const [searchValue, setSearchValue] = React.useState<string>('');
   const searchRef = React.useRef<any>(null);
   const autocompleteRef: any = React.useRef<React.MutableRefObject<any>>(null);
+
+  // Guard against the user opening the selector before options are loaded (slow network).
+  const isSelectDataReady = Array.isArray(selectFormData?.options);
+  const isParamsSelectorDisabled = isDisabled || !isSelectDataReady;
   React.useEffect(() => {
     return () => {
       searchRef.current?.abort();
@@ -86,6 +97,9 @@ function SelectForm({
   }
 
   function handleClick(event: React.ChangeEvent<any>) {
+    if (isParamsSelectorDisabled) {
+      return;
+    }
     setAnchorEl(event.currentTarget);
   }
 
@@ -131,16 +145,24 @@ function SelectForm({
             >
               <ErrorBoundary>
                 <Box display='flex' alignItems='center'>
-                  <Button
-                    variant='contained'
-                    color='primary'
-                    onClick={handleClick}
-                    aria-describedby={id}
-                    disabled={isDisabled}
+                  <Tooltip
+                    title={
+                      isParamsSelectorDisabled && !isDisabled ? 'Loading…' : ''
+                    }
                   >
-                    <Icon name='plus' style={{ marginRight: '0.5rem' }} /> Run
-                    Params
-                  </Button>
+                    <div>
+                      <Button
+                        variant='contained'
+                        color='primary'
+                        onClick={handleClick}
+                        aria-describedby={id}
+                        disabled={isParamsSelectorDisabled}
+                      >
+                        <Icon name='plus' style={{ marginRight: '0.5rem' }} />
+                        Run Params
+                      </Button>
+                    </div>
+                  </Tooltip>
                   <Popper
                     id={id}
                     open={open}
@@ -278,7 +300,7 @@ function SelectForm({
           <div className='SelectForm__TextField'>
             <AutocompleteInput
               refObject={autocompleteRef}
-              context={selectFormData?.suggestions}
+              context={selectFormData?.suggestions ?? {}}
               error={selectFormData?.error}
               onEnter={handleParamsSearch}
               value={selectedParamsData?.query}

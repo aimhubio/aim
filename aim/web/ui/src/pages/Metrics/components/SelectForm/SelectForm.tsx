@@ -46,6 +46,11 @@ function SelectForm({
   const autocompleteRef: any = React.useRef<React.MutableRefObject<any>>(null);
   const advancedAutocompleteRef: any =
     React.useRef<React.MutableRefObject<any>>(null);
+
+  // On slow networks it's possible for the user to click the selector before
+  // the explorer context/options are loaded. Guard against that state.
+  const isSelectDataReady = Array.isArray(selectFormData?.options);
+  const isMetricSelectorDisabled = isDisabled || !isSelectDataReady;
   React.useEffect(() => {
     return () => {
       searchRef.current?.abort();
@@ -106,6 +111,9 @@ function SelectForm({
   }
 
   function handleClick(event: React.ChangeEvent<any>) {
+    if (isMetricSelectorDisabled) {
+      return;
+    }
     setAnchorEl(event.currentTarget);
   }
 
@@ -156,9 +164,9 @@ function SelectForm({
               <div className='Metrics__SelectForm__textarea'>
                 <AutocompleteInput
                   advanced
-                  error={selectFormData.advancedError}
+                  error={selectFormData?.advancedError}
                   refObject={advancedAutocompleteRef}
-                  context={selectFormData?.advancedSuggestions}
+                  context={selectFormData?.advancedSuggestions ?? {}}
                   value={selectedMetricsData?.advancedQuery}
                   onEnter={handleMetricSearch}
                   disabled={isDisabled}
@@ -167,16 +175,24 @@ function SelectForm({
             ) : (
               <>
                 <Box display='flex' alignItems='center'>
-                  <Button
-                    variant='contained'
-                    color='primary'
-                    onClick={handleClick}
-                    aria-describedby={id}
-                    disabled={isDisabled}
+                  <Tooltip
+                    title={
+                      isMetricSelectorDisabled && !isDisabled ? 'Loading…' : ''
+                    }
                   >
-                    <Icon name='plus' style={{ marginRight: '0.5rem' }} />
-                    Metrics
-                  </Button>
+                    <div>
+                      <Button
+                        variant='contained'
+                        color='primary'
+                        onClick={handleClick}
+                        aria-describedby={id}
+                        disabled={isMetricSelectorDisabled}
+                      >
+                        <Icon name='plus' style={{ marginRight: '0.5rem' }} />
+                        Metrics
+                      </Button>
+                    </div>
+                  </Tooltip>
                   <Popper
                     id={id}
                     open={open}
@@ -292,9 +308,9 @@ function SelectForm({
             <div className='Metrics__SelectForm__TextField'>
               <AutocompleteInput
                 refObject={autocompleteRef}
-                error={selectFormData.error}
+                error={selectFormData?.error}
                 value={selectedMetricsData?.query}
-                context={selectFormData.suggestions}
+                context={selectFormData?.suggestions ?? {}}
                 onEnter={handleMetricSearch}
                 disabled={isDisabled}
               />
