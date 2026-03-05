@@ -47,6 +47,10 @@ function SelectForm({
   const autocompleteRef: any = React.useRef<React.MutableRefObject<any>>(null);
   const advancedAutocompleteRef: any =
     React.useRef<React.MutableRefObject<any>>(null);
+
+  // Guard against the user opening the selector before options are loaded (slow network).
+  const isSelectDataReady = Array.isArray(selectFormData?.options);
+  const isImagesSelectorDisabled = isDisabled || !isSelectDataReady;
   React.useEffect(() => {
     return () => {
       searchMetricsRef.current?.abort();
@@ -115,6 +119,9 @@ function SelectForm({
   }
 
   function handleClick(event: React.ChangeEvent<any>) {
+    if (isImagesSelectorDisabled) {
+      return;
+    }
     setAnchorEl(event.currentTarget);
   }
 
@@ -167,7 +174,7 @@ function SelectForm({
                   <AutocompleteInput
                     advanced
                     refObject={advancedAutocompleteRef}
-                    context={selectFormData?.advancedSuggestions}
+                    context={selectFormData?.advancedSuggestions ?? {}}
                     value={selectedImagesData?.advancedQuery}
                     error={selectFormData?.advancedError}
                     onEnter={handleSearch}
@@ -177,16 +184,26 @@ function SelectForm({
               ) : (
                 <ErrorBoundary>
                   <Box display='flex' alignItems='center'>
-                    <Button
-                      variant='contained'
-                      color='primary'
-                      onClick={handleClick}
-                      aria-describedby={id}
-                      disabled={isDisabled}
+                    <Tooltip
+                      title={
+                        isImagesSelectorDisabled && !isDisabled
+                          ? 'Loading…'
+                          : ''
+                      }
                     >
-                      <Icon name='plus' style={{ marginRight: '0.5rem' }} />
-                      Images
-                    </Button>
+                      <div>
+                        <Button
+                          variant='contained'
+                          color='primary'
+                          onClick={handleClick}
+                          aria-describedby={id}
+                          disabled={isImagesSelectorDisabled}
+                        >
+                          <Icon name='plus' style={{ marginRight: '0.5rem' }} />
+                          Images
+                        </Button>
+                      </div>
+                    </Tooltip>
                     <Popper
                       id={id}
                       open={open}
@@ -304,7 +321,7 @@ function SelectForm({
               <div className='SelectForm__TextField'>
                 <AutocompleteInput
                   refObject={autocompleteRef}
-                  context={selectFormData?.suggestions}
+                  context={selectFormData?.suggestions ?? {}}
                   value={selectedImagesData?.query}
                   error={selectFormData?.error}
                   onEnter={handleSearch}
