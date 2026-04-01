@@ -9,6 +9,7 @@ from fastapi import FastAPI
 from fastapi.exceptions import HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
+from starlette.middleware.csrf import CSRFMiddleware
 
 
 def create_app():
@@ -18,10 +19,13 @@ def create_app():
         CORSMiddleware,
         allow_origins=['*'],
         allow_methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'HEAD'],
-        allow_headers=['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization', 'X-Timezone-Offset'],
+        allow_headers=['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization', 'X-Timezone-Offset', 'X-CSRF-Token'],
         allow_credentials=True,
         max_age=86400,
     )
+
+    # Add CSRF protection middleware
+    app.add_middleware(CSRFMiddleware, secret_key="aim-web-api-csrf-secret-key-2024")
 
     from aim.web.api.dashboard_apps.views import dashboard_apps_router
     from aim.web.api.dashboards.views import dashboards_router
