@@ -397,10 +397,13 @@ class Repo:
         from aim.storage.encoding import decode_path
 
         def get_run_hash_from_prefix(prefix: bytes):
-            return decode_path(prefix)[-1]
+            path = decode_path(prefix)
+            if not path:
+                return None
+            return path[-1]
 
         container = RocksUnionContainer(os.path.join(self.path, 'meta'), read_only=True)
-        return list(map(get_run_hash_from_prefix, container.corrupted_dbs))
+        return [h for h in map(get_run_hash_from_prefix, container.corrupted_dbs) if h is not None]
 
     def _active_run_hashes(self) -> Set[str]:
         if self.is_remote_repo:
