@@ -322,6 +322,11 @@ export const ANALYTICS_EVENT_KEYS = {
         clickApplyButton: '[RunDetail] [Audios] Click apply button',
         changeContext: '[RunDetail] [Audios] Change context',
       },
+      videos: {
+        tabView: '[RunDetail] [Videos] Tab view',
+        clickApplyButton: '[RunDetail] [Videos] Click apply button',
+        changeContext: '[RunDetail] [Videos] Change context',
+      },
       figures: {
         tabView: '[RunDetail] [Figures] Tab view',
         clickApplyButton: '[RunDetail] [Figures] Click apply button',
@@ -370,5 +375,6 @@ export const ANALYTICS_EVENT_KEYS = {
   },
   figures: {} as any,
   audios: {} as any,
+  videos: {} as any,
   text: {} as any,
 };

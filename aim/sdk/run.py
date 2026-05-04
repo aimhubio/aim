@@ -50,6 +50,7 @@ if TYPE_CHECKING:
     from aim.sdk.sequences.image_sequence import Images
     from aim.sdk.sequences.metric import Metric
     from aim.sdk.sequences.text_sequence import Texts
+    from aim.sdk.sequences.video_sequence import Videos
     from pandas import DataFrame
 
 logger = logging.getLogger(__name__)
@@ -605,6 +606,10 @@ class BasicRun(BaseRun, StructuredRunMixin):
             :obj:`Audios` object if exists, `None` otherwise.
         """
         return self._get_sequence('audios', name, context)
+
+    def get_video_sequence(self, name: str, context: Context) -> Optional['Videos']:
+        """Retrieve videos sequence by its name and context."""
+        return self._get_sequence('videos', name, context)
 
     def get_distribution_sequence(self, name: str, context: Context) -> Optional['Distributions']:
         """Retrieve distributions sequence by it's name and context.

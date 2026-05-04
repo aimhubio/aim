@@ -45,6 +45,15 @@ aim.sdk.objects.audio
 .. autoclass:: Audio
    :members:
 
+aim.sdk.objects.video
+---------------------
+
+.. automodule:: aim.sdk.objects.video
+.. currentmodule:: aim.sdk.objects.video
+
+.. autoclass:: Video
+   :members:
+
 aim.sdk.objects.text
 ---------------------
 
@@ -109,6 +118,16 @@ aim.sdk.sequences.audio_sequence module
 .. currentmodule:: aim.sdk.sequences.audio_sequence
 
 .. autoclass:: Audios
+   :exclude-members: allowed_dtypes
+   :members:
+
+aim.sdk.sequences.video_sequence module
+-----------------------------
+
+.. automodule:: aim.sdk.sequences.video_sequence
+.. currentmodule:: aim.sdk.sequences.video_sequence
+
+.. autoclass:: Videos
    :exclude-members: allowed_dtypes
    :members:
 
