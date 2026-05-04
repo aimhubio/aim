@@ -1,0 +1,37 @@
+@use 'src/styles/abstracts' as *;
+
+.RunDetailMediaTab {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+
+  &__tabs {
+    flex: 0 0 auto;
+    min-height: toRem(42px);
+    border: toRem(1px) solid $grayish;
+    border-bottom: none;
+    border-top-left-radius: toRem(6px);
+    border-top-right-radius: toRem(6px);
+    background: $white;
+
+    .MuiTab-root {
+      min-height: toRem(42px);
+    }
+  }
+
+  &__content {
+    flex: 1 1 auto;
+    min-height: 0;
+
+    .TraceVisualizationWrapper {
+      .Menu {
+        border-top-left-radius: 0;
+      }
+
+      .VisualizerArea {
+        border-top-right-radius: 0;
+      }
+    }
+  }
+}

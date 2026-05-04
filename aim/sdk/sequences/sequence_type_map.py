@@ -7,6 +7,8 @@ SEQUENCE_TYPE_MAP = {
     'list(aim.image)': 'images',
     'aim.audio': 'audios',
     'list(aim.audio)': 'audios',
+    'aim.video': 'videos',
+    'list(aim.video)': 'videos',
     'aim.text': 'texts',
     'list(aim.text)': 'texts',
     'aim.distribution': 'distributions',

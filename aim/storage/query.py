@@ -137,7 +137,7 @@ def query_add_default_expr(query: str) -> str:
 class RestrictedPythonQuery(Query):
     __slots__ = ('_checker', 'run_metadata_cache')
 
-    allowed_params = {'run', 'metric', 'images', 'audios', 'distributions', 'figures', 'texts'}
+    allowed_params = {'run', 'metric', 'images', 'audios', 'videos', 'distributions', 'figures', 'texts'}
 
     def __init__(self, query: str):
         stripped_query = strip_query(query)

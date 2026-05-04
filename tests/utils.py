@@ -7,6 +7,7 @@ from typing import Iterator
 import numpy
 
 from aim.sdk.objects.image import Image as AimImage
+from aim.sdk.objects.video import Video as AimVideo
 from aim.sdk.repo import Repo
 from aim.sdk.run import Run
 from aim.storage.structured.sql_engine.models import Base as StructuredBase
@@ -60,6 +61,18 @@ def generate_image_set(img_count, caption_prefix='Image', img_size=(16, 16)):
             caption=f'{caption_prefix} {idx}',
         )
         for idx in range(img_count)
+    ]
+
+
+def generate_video_set(video_count, caption_prefix='Video'):
+    return [
+        AimVideo(
+            data=f'fake mp4 bytes {idx}'.encode(),
+            format='mp4',
+            fps=24 + idx,
+            caption=f'{caption_prefix} {idx}',
+        )
+        for idx in range(video_count)
     ]
 
 

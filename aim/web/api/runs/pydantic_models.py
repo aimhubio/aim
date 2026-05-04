@@ -221,6 +221,15 @@ class AudioInfo(BaseModel):
     index: int
 
 
+class VideoInfo(BaseModel):
+    caption: str
+    format: str
+    fps: Optional[float] = None
+    size: Optional[int] = None
+    blob_uri: str
+    index: int
+
+
 class DistributionInfo(BaseModel):
     data: EncodedNumpyArray
     bin_count: int
@@ -238,3 +247,4 @@ class NoteIn(BaseModel):
 ImageList = List[ImageInfo]
 TextList = List[TextInfo]
 AudioList = List[AudioInfo]
+VideoList = List[VideoInfo]

@@ -1,5 +1,5 @@
 # pre-defined sequences and custom objects
-from aim.sdk.objects import Audio, Distribution, Figure, Image, Text
+from aim.sdk.objects import Audio, Distribution, Figure, Image, Text, Video
 from aim.sdk.repo import Repo
 
 # SDK aliases
@@ -10,4 +10,5 @@ from aim.sdk.sequences.figure_sequence import Figures
 from aim.sdk.sequences.image_sequence import Images
 from aim.sdk.sequences.metric import Metric
 from aim.sdk.sequences.text_sequence import Texts
+from aim.sdk.sequences.video_sequence import Videos
 from aim.sdk.training_flow import TrainingFlow

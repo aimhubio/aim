@@ -64,6 +64,10 @@ const RunDetailMetricsAndSystemTab = React.lazy(
       /* webpackChunkName: "RunDetailMetricsAndSystemTab" */ './RunDetailMetricsAndSystemTab'
     ),
 );
+const RunDetailMediaTab = React.lazy(
+  () =>
+    import(/* webpackChunkName: "RunDetailMediaTab" */ './RunDetailMediaTab'),
+);
 const TraceVisualizationContainer = React.lazy(
   () =>
     import(
@@ -89,12 +93,19 @@ const tabs: Record<string, string> = {
   metrics: 'Metrics',
   system: 'System',
   distributions: 'Distributions',
-  images: 'Images',
-  audios: 'Audios',
+  media: 'Media',
   texts: 'Texts',
   figures: 'Figures',
   settings: 'Settings',
 };
+
+const mediaRouteKeys = ['images', 'videos', 'audios'];
+
+function isMediaRouteKey(
+  value?: string,
+): value is 'images' | 'videos' | 'audios' {
+  return value === 'images' || value === 'videos' || value === 'audios';
+}
 
 function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
   const { runHash } = useParams<{ runHash: string }>();
@@ -113,13 +124,24 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
   function redirect(): void {
     const splitPathname: string[] = pathname.split('/');
     const path: string = `${url}/overview`;
-    if (splitPathname.length > 4) {
+    if (splitPathname.length > 5) {
+      history.replace(path);
+      setActiveTab(path);
+      return;
+    }
+    if (
+      splitPathname.length === 5 &&
+      (splitPathname[3] !== 'media' || !isMediaRouteKey(splitPathname[4]))
+    ) {
       history.replace(path);
       setActiveTab(path);
       return;
     }
     if (splitPathname[3]) {
-      if (!Object.keys(tabs).includes(splitPathname[3])) {
+      if (
+        !Object.keys(tabs).includes(splitPathname[3]) &&
+        !isMediaRouteKey(splitPathname[3])
+      ) {
         history.replace(path);
       }
     } else {
@@ -175,18 +197,10 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
         traceInfo={runData?.runTraces}
       />
     ),
-    images: (
-      <TraceVisualizationContainer
+    media: (
+      <RunDetailMediaTab
+        basePath={url}
         runHash={runHash}
-        traceType='images'
-        traceInfo={runData?.runTraces}
-        runParams={runData?.runParams}
-      />
-    ),
-    audios: (
-      <TraceVisualizationContainer
-        runHash={runHash}
-        traceType='audios'
         traceInfo={runData?.runTraces}
         runParams={runData?.runParams}
       />
@@ -238,8 +252,27 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
   }
 
   function getCurrentTabValue(pathname: string, url: string) {
+    const splitPathname = pathname.split('/');
+    if (splitPathname[3] === 'media' || isMediaRouteKey(splitPathname[3])) {
+      return `${url}/media`;
+    }
     const values = Object.keys(tabs).map((tabKey) => `${url}/${tabKey}`);
     return values.indexOf(pathname) === -1 ? false : pathname;
+  }
+
+  function getTabContent(tabKey: string) {
+    if (isMediaRouteKey(tabKey)) {
+      return (
+        <RunDetailMediaTab
+          basePath={url}
+          runHash={runHash}
+          traceInfo={runData?.runTraces}
+          runParams={runData?.runParams}
+          initialTraceType={tabKey}
+        />
+      );
+    }
+    return tabContent[tabKey];
   }
 
   React.useEffect(() => {
@@ -450,24 +483,12 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
             height='calc(100vh - 98px)'
           >
             <Switch>
-              {Object.keys(tabs).map((tabKey: string) => (
-                <Route path={`${url}/${tabKey}`} key={tabKey}>
-                  <ErrorBoundary>
-                    {tabKey === 'overview' ? (
-                      <div className='RunDetail__runDetailContainer__tabPanelBox overviewPanel'>
-                        <React.Suspense
-                          fallback={
-                            <div className='RunDetail__runDetailContainer__tabPanelBox__suspenseLoaderContainer'>
-                              <Spinner />
-                            </div>
-                          }
-                        >
-                          {tabContent[tabKey]}
-                        </React.Suspense>
-                      </div>
-                    ) : (
-                      <div className='RunDetail__runDetailContainer__tabPanelBox'>
-                        <div className='RunDetail__runDetailContainer__tabPanel container'>
+              {[...Object.keys(tabs), ...mediaRouteKeys].map(
+                (tabKey: string) => (
+                  <Route path={`${url}/${tabKey}`} key={tabKey}>
+                    <ErrorBoundary>
+                      {tabKey === 'overview' ? (
+                        <div className='RunDetail__runDetailContainer__tabPanelBox overviewPanel'>
                           <React.Suspense
                             fallback={
                               <div className='RunDetail__runDetailContainer__tabPanelBox__suspenseLoaderContainer'>
@@ -478,11 +499,25 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
                             {tabContent[tabKey]}
                           </React.Suspense>
                         </div>
-                      </div>
-                    )}
-                  </ErrorBoundary>
-                </Route>
-              ))}
+                      ) : (
+                        <div className='RunDetail__runDetailContainer__tabPanelBox'>
+                          <div className='RunDetail__runDetailContainer__tabPanel container'>
+                            <React.Suspense
+                              fallback={
+                                <div className='RunDetail__runDetailContainer__tabPanelBox__suspenseLoaderContainer'>
+                                  <Spinner />
+                                </div>
+                              }
+                            >
+                              {getTabContent(tabKey)}
+                            </React.Suspense>
+                          </div>
+                        </div>
+                      )}
+                    </ErrorBoundary>
+                  </Route>
+                ),
+              )}
             </Switch>
           </BusyLoaderWrapper>
         </div>

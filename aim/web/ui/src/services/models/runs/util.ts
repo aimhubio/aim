@@ -385,6 +385,50 @@ export function processAudiosData(
   };
 }
 
+export function processVideosData(data: Partial<ImagesData>) {
+  const {
+    record_range_total,
+    iters,
+    values,
+    index_range_total,
+    context,
+    name,
+  } = data;
+  let videos: any[] = [];
+
+  values?.forEach((stepData: IImageData[], stepIndex: number) => {
+    stepData.forEach((video: IImageData) => {
+      const step = iters?.[stepIndex];
+      const videoKey = encode({
+        name,
+        traceContext: context,
+        index: video.index,
+        step,
+        caption: video.caption,
+      });
+      const seqKey = encode({
+        name,
+        traceContext: context,
+      });
+      videos.push({
+        ...video,
+        name,
+        step,
+        context,
+        key: videoKey,
+        seqKey,
+      });
+    });
+  });
+
+  return {
+    videos: _.orderBy(videos, ['step', 'index'], ['desc', 'asc']),
+    record_range: [record_range_total?.[0], (record_range_total?.[1] || 0) - 1],
+    index_range: [index_range_total?.[0], (index_range_total?.[1] || 0) - 1],
+    processedDataType: VisualizationMenuTitles.videos,
+  };
+}
+
 function groupData(data: IProcessedImageData[]): {
   key: string;
   config: { [key: string]: string };

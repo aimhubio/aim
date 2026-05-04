@@ -77,14 +77,12 @@ function RunOverviewSidebar({
         value: traces?.distributions?.length || 0,
       },
       {
-        name: 'Images',
-        path: `${path}/images`,
-        value: traces?.images?.length || 0,
-      },
-      {
-        name: 'Audios',
-        path: `${path}/audios`,
-        value: traces?.audios?.length || 0,
+        name: 'Media',
+        path: `${path}/media`,
+        value:
+          (traces?.images?.length || 0) +
+          (traces?.videos?.length || 0) +
+          (traces?.audios?.length || 0),
       },
       {
         name: 'Texts',

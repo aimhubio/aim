@@ -630,6 +630,15 @@ class Repo:
 
         return QuerySequenceCollection(repo=self, seq_cls=Audios, query=query, report_mode=report_mode)
 
+    def query_videos(
+        self, query: str = '', report_mode: QueryReportMode = QueryReportMode.PROGRESS_BAR
+    ) -> QuerySequenceCollection:
+        """Get video collections satisfying query expression."""
+        self._prepare_runs_cache()
+        from aim.sdk.sequences.video_sequence import Videos
+
+        return QuerySequenceCollection(repo=self, seq_cls=Videos, query=query, report_mode=report_mode)
+
     def query_figure_objects(
         self, query: str = '', report_mode: QueryReportMode = QueryReportMode.PROGRESS_BAR
     ) -> QuerySequenceCollection:

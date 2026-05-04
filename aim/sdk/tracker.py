@@ -101,9 +101,11 @@ class RunTracker:
 
         if self._non_blocking:
             val = deepcopy(value)
-            self.repo.tracking_queue.register_task(
+            warn_queue_full = self.repo.tracking_queue.register_task(
                 self._track, val, track_time, name, step, epoch, context=context
-            ) or self.track_rate_warn()
+            )
+            if warn_queue_full:
+                self.track_rate_warn()
         else:
             self._track(value, track_time, name, step, epoch, context=context)
 

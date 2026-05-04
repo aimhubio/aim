@@ -40,12 +40,16 @@ const AudiosVisualizer = React.lazy(
   () =>
     import(/* webpackChunkName: "AudiosVisualizer" */ '../AudiosVisualizer'),
 );
+const VideosVisualizer = React.lazy(
+  () =>
+    import(/* webpackChunkName: "VideosVisualizer" */ '../VideosVisualizer'),
+);
 
 const traceTypeVisualization = {
   images: ImagesVisualizer,
   distributions: DistributionsVisualizer,
   audios: AudiosVisualizer,
-  videos: () => null, // @TODO add tracking event keys in analyticsKeysMap object
+  videos: VideosVisualizer,
   texts: TextsVisualizer,
   figures: PlotlyVisualizer,
 };
