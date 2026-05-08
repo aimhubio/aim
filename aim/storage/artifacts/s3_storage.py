@@ -8,7 +8,7 @@ from urllib.parse import urlparse
 
 from aim.ext.cleanup import AutoClean
 
-from .artifact_storage import AbstractArtifactStorage
+from .artifact_storage import AbstractArtifactStorage, safe_join_posix
 
 
 class S3ArtifactsStorageAutoClean(AutoClean['S3ArtifactStorage']):
@@ -37,12 +37,12 @@ class S3ArtifactStorage(AbstractArtifactStorage):
         self._resources = S3ArtifactsStorageAutoClean(self)
 
     def upload_artifact(self, file_path: str, artifact_path: str, block: bool = False):
-        dest_path = pathlib.Path(self._prefix) / artifact_path
+        dest_key = safe_join_posix(self._prefix, artifact_path)
         if block:
-            self._client.upload_file(Filename=file_path, Bucket=self._bucket, Key=dest_path.as_posix())
+            self._client.upload_file(Filename=file_path, Bucket=self._bucket, Key=dest_key)
         else:
             future = self._thread_pool.submit(
-                self._client.upload_file, Filename=file_path, Bucket=self._bucket, Key=dest_path.as_posix()
+                self._client.upload_file, Filename=file_path, Bucket=self._bucket, Key=dest_key
             )
             future.add_done_callback(self._upload_complete)
             self._futures.add(future)
@@ -53,15 +53,15 @@ class S3ArtifactStorage(AbstractArtifactStorage):
         else:
             dest_dir = pathlib.Path(dest_dir)
             dest_dir.mkdir(parents=True, exist_ok=True)
-        source_path = pathlib.Path(self._prefix) / artifact_path
-        dest_path = dest_dir / source_path.name
-        self._client.download_file(Bucket=self._bucket, Key=source_path.as_posix(), Filename=dest_path.as_posix())
+        source_key = safe_join_posix(self._prefix, artifact_path)
+        dest_path = dest_dir / pathlib.PurePosixPath(source_key).name
+        self._client.download_file(Bucket=self._bucket, Key=source_key, Filename=dest_path.as_posix())
 
         return dest_path.as_posix()
 
     def delete_artifact(self, artifact_path: str):
-        path = pathlib.Path(self._prefix) / artifact_path
-        self._client.delete_object(Bucket=self._bucket, Key=path.as_posix())
+        key = safe_join_posix(self._prefix, artifact_path)
+        self._client.delete_object(Bucket=self._bucket, Key=key)
 
     def _upload_complete(self, future):
         self._futures.remove(future)
