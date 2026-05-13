@@ -114,6 +114,7 @@ const _2__56 = Math.pow(2, 56);
 const _2__48 = Math.pow(2, 48);
 const _2__40 = Math.pow(2, 40);
 const _2__32 = Math.pow(2, 32);
+const _2__24 = Math.pow(2, 24);
 
 function decode_q_le(x: number[], offset: number) {
   offset = offset | 0;
@@ -145,7 +146,7 @@ function decode_q_le(x: number[], offset: number) {
     x[offset + 6] * _2__48 +
     x[offset + 5] * _2__40 +
     x[offset + 4] * _2__32 +
-    (x[offset + 3] << 24) +
+    x[offset + 3] * _2__24 +
     (x[offset + 2] << 16) +
     (x[offset + 1] << 8) +
     (x[offset + 0] << 0)
