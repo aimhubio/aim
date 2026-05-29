@@ -963,7 +963,7 @@ class Repo:
             rc.optimize_for_read()
 
         if self.is_remote_repo:
-            self._remote_repo_proxy._close_run(run_hash)
+            return self._remote_repo_proxy._close_run(run_hash)
 
         lock_manager = LockManager(self.path)
 
