@@ -41,7 +41,7 @@ def get_run_or_404(run_id, repo=None):
 
     run = repo.get_run(run_id)
     if not run:
-        raise HTTPException(status_code=404, detail='Run not found.')
+        raise HTTPException(status_code=404, detail={'message': 'Run not found.'})
 
     return run
 
@@ -305,6 +305,8 @@ async def run_search_result_streamer(
 
 
 async def run_active_result_streamer(repo: 'Repo', report_progress: Optional[bool] = True):
+    import logging as _logging
+    _logger = _logging.getLogger(__name__)
     try:
         active_run_hashes = repo.list_active_runs()
 
@@ -314,17 +316,24 @@ async def run_active_result_streamer(repo: 'Repo', report_progress: Optional[boo
         for run_hash in active_run_hashes:
             await asyncio.sleep(ASYNC_SLEEP_INTERVAL)
 
-            run = Run(run_hash, repo=repo, read_only=True)
-            if run.active:
-                run_dict = {
-                    run.hash: {
-                        'props': get_run_props(run),
-                        'traces': run.collect_sequence_info(sequence_types='metric'),
+            try:
+                run = Run(run_hash, repo=repo, read_only=True)
+                if run.active:
+                    run_dict = {
+                        run.hash: {
+                            'props': get_run_props(run),
+                            'traces': run.collect_sequence_info(sequence_types='metric'),
+                        }
                     }
-                }
 
-                encoded_tree = encode_tree(run_dict)
-                yield collect_streamable_data(encoded_tree)
+                    encoded_tree = encode_tree(run_dict)
+                    yield collect_streamable_data(encoded_tree)
+            except Exception as e:
+                # Skip corrupted or inaccessible runs — a single bad run must
+                # not abort the entire active-runs stream and cause the server
+                # to return a partial/invalid response that the frontend tries
+                # to parse as JSON (leading to "body stream already read").
+                _logger.warning(f'Skipping active run {run_hash}: {e}')
 
             if report_progress:
                 yield collect_streamable_data(
