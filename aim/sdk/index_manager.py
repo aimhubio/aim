@@ -176,8 +176,14 @@ class RepoIndexManager:
         while not self._stop_event.is_set():
             _, run_hash = self.indexing_queue.get()
             logger.debug(f'Indexing run {run_hash}...')
-            self.index(run_hash)
-            self.indexing_queue.task_done()
+            try:
+                self.index(run_hash)
+            except Exception as e:
+                # An unhandled exception here would silently kill this daemon
+                # thread, leaving the indexing queue permanently stalled.
+                logger.error(f'Unexpected error indexing run {run_hash}: {e}')
+            finally:
+                self.indexing_queue.task_done()
 
     def index(self, run_hash):
         index = self.repo._get_index_tree('meta', 0).view(())
@@ -196,6 +202,11 @@ class RepoIndexManager:
 
         except (aimrocks.errors.RocksIOError, aimrocks.errors.Corruption):
             logger.warning(f'Indexing thread detected corrupted run: {run_hash}. Skipping.')
+            self._corrupted_runs.add(run_hash)
+        except Exception as e:
+            # Catch-all: log and skip rather than propagating to
+            # _process_indexing_queue where it would kill the thread.
+            logger.warning(f'Indexing run {run_hash} failed unexpectedly: {e}. Skipping.')
             self._corrupted_runs.add(run_hash)
         return True
 

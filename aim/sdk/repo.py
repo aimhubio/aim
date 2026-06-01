@@ -978,6 +978,13 @@ class Repo:
             if not meta_run_tree.get('end_time'):
                 meta_run_tree['end_time'] = datetime.datetime.now(pytz.utc).timestamp()
 
+            # Remove the progress file so list_active_runs() no longer returns
+            # this run. Without this, a crashed run stays in meta/progress/ forever
+            # and the active-runs streamer keeps polling it on every UI refresh.
+            progress_path = os.path.join(self.path, 'meta', 'progress', run_hash)
+            if os.path.exists(progress_path):
+                os.remove(progress_path)
+
             # Run rocksdb optimizations if container locks are removed
             meta_db_path = os.path.join(self.path, 'meta', 'chunks', run_hash)
             seqs_db_path = os.path.join(self.path, 'seqs', 'chunks', run_hash)
