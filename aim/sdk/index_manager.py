@@ -209,27 +209,13 @@ class RepoIndexManager:
         except (aimrocks.errors.RocksIOError, aimrocks.errors.Corruption):
             logger.warning(f'Indexing thread detected corrupted run: {run_hash}. Skipping.')
             self._corrupted_runs.add(run_hash)
-<<<<<<< ours
-<<<<<<< ours
             self._stop_monitoring_chunk(run_hash)
-=======
->>>>>>> theirs
-=======
-            self._stop_monitoring_chunk(run_hash)
->>>>>>> theirs
         except Exception as e:
             # Catch-all: log and skip rather than propagating to
             # _process_indexing_queue where it would kill the thread.
             logger.warning(f'Indexing run {run_hash} failed unexpectedly: {e}. Skipping.')
             self._corrupted_runs.add(run_hash)
-<<<<<<< ours
-<<<<<<< ours
             self._stop_monitoring_chunk(run_hash)
-=======
->>>>>>> theirs
-=======
-            self._stop_monitoring_chunk(run_hash)
->>>>>>> theirs
         return True
 
     def _is_run_index_outdated(self, run_hash, index_db):
