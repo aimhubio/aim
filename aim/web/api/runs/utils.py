@@ -198,6 +198,8 @@ async def metric_search_result_streamer(
     x_axis: Optional[str] = None,
     report_progress: Optional[bool] = True,
 ) -> bytes:
+    import logging as _logging
+    _logger = _logging.getLogger(__name__)
     try:
         last_reported_progress_time = time.time()
         progress = None
@@ -213,43 +215,47 @@ async def metric_search_result_streamer(
 
             run = None
             traces_list = []
-            for trace in run_trace_collection.iter():
-                if not run:
-                    run = run_trace_collection.run
-                iters, (values, epochs, timestamps) = trace.data.sample(steps_num).numpy()
+            try:
+                for trace in run_trace_collection.iter():
+                    if not run:
+                        run = run_trace_collection.run
+                    iters, (values, epochs, timestamps) = trace.data.sample(steps_num).numpy()
 
-                x_axis_trace = run.get_metric(x_axis, trace.context) if x_axis else None
-                x_axis_iters, x_axis_values = collect_x_axis_data(x_axis_trace, iters)
+                    x_axis_trace = run.get_metric(x_axis, trace.context) if x_axis else None
+                    x_axis_iters, x_axis_values = collect_x_axis_data(x_axis_trace, iters)
 
-                traces_list.append(
-                    {
-                        'name': trace.name,
-                        'context': trace.context.to_dict(),
-                        'slice': [0, 0, steps_num],  # TODO [AT] change once UI is ready
-                        'values': numpy_to_encodable(values),
-                        'iters': numpy_to_encodable(iters),
-                        'epochs': numpy_to_encodable(epochs),
-                        'timestamps': numpy_to_encodable(timestamps),
-                        'x_axis_values': x_axis_values,
-                        'x_axis_iters': x_axis_iters,
+                    traces_list.append(
+                        {
+                            'name': trace.name,
+                            'context': trace.context.to_dict(),
+                            'slice': [0, 0, steps_num],  # TODO [AT] change once UI is ready
+                            'values': numpy_to_encodable(values),
+                            'iters': numpy_to_encodable(iters),
+                            'epochs': numpy_to_encodable(epochs),
+                            'timestamps': numpy_to_encodable(timestamps),
+                            'x_axis_values': x_axis_values,
+                            'x_axis_iters': x_axis_iters,
+                        }
+                    )
+
+                if run:
+                    run_dict = {
+                        run.hash: {
+                            'params': get_run_params(run, skip_system=skip_system),
+                            'traces': traces_list,
+                            'props': get_run_props(run),
+                        }
                     }
-                )
 
-            if run:
-                run_dict = {
-                    run.hash: {
-                        'params': get_run_params(run, skip_system=skip_system),
-                        'traces': traces_list,
-                        'props': get_run_props(run),
-                    }
-                }
-
-                encoded_tree = encode_tree(run_dict)
-                yield collect_streamable_data(encoded_tree)
-                if report_progress:
-                    yield collect_streamable_data(encode_tree({f'progress_{progress_reports_sent}': progress}))
-                    progress_reports_sent += 1
-                    last_reported_progress_time = time.time()
+                    encoded_tree = encode_tree(run_dict)
+                    yield collect_streamable_data(encoded_tree)
+                    if report_progress:
+                        yield collect_streamable_data(encode_tree({f'progress_{progress_reports_sent}': progress}))
+                        progress_reports_sent += 1
+                        last_reported_progress_time = time.time()
+            except Exception as e:
+                run_hash = run.hash if run else 'unknown'
+                _logger.warning(f'metric_search_result_streamer: skipping run {run_hash}: {e}')
 
         if report_progress and progress:
             yield collect_streamable_data(encode_tree({f'progress_{progress_reports_sent}': progress}))
@@ -265,6 +271,8 @@ async def run_search_result_streamer(
     exclude_params: Optional[bool] = False,
     exclude_traces: Optional[bool] = False,
 ) -> bytes:
+    import logging as _logging
+    _logger = _logging.getLogger(__name__)
     try:
         run_count = 0
         last_reported_progress_time = time.time()
@@ -281,22 +289,25 @@ async def run_search_result_streamer(
                 last_reported_progress_time = time.time()
             if not run_trace_collection:
                 continue
-            run = run_trace_collection.run
-            run_dict = {run.hash: {'props': get_run_props(run)}}
-            if not exclude_params:
-                run_dict[run.hash]['params'] = get_run_params(run, skip_system=skip_system)
-            if not exclude_traces:
-                run_dict[run.hash]['traces'] = run.collect_sequence_info(sequence_types='metric')
+            try:
+                run = run_trace_collection.run
+                run_dict = {run.hash: {'props': get_run_props(run)}}
+                if not exclude_params:
+                    run_dict[run.hash]['params'] = get_run_params(run, skip_system=skip_system)
+                if not exclude_traces:
+                    run_dict[run.hash]['traces'] = run.collect_sequence_info(sequence_types='metric')
 
-            encoded_tree = encode_tree(run_dict)
-            yield collect_streamable_data(encoded_tree)
-            if report_progress:
-                yield collect_streamable_data(encode_tree({f'progress_{progress_reports_sent}': progress}))
-                progress_reports_sent += 1
-                last_reported_progress_time = time.time()
-            run_count += 1
-            if limit and run_count >= limit:
-                break
+                encoded_tree = encode_tree(run_dict)
+                yield collect_streamable_data(encoded_tree)
+                if report_progress:
+                    yield collect_streamable_data(encode_tree({f'progress_{progress_reports_sent}': progress}))
+                    progress_reports_sent += 1
+                    last_reported_progress_time = time.time()
+                run_count += 1
+                if limit and run_count >= limit:
+                    break
+            except Exception as e:
+                _logger.warning(f'run_search_result_streamer: skipping run: {e}')
 
         if report_progress and progress:
             yield collect_streamable_data(encode_tree({f'progress_{progress_reports_sent}': progress}))
