@@ -807,7 +807,9 @@ class Repo:
 
     def _delete_local_run_data(self, run_hash: str):
         # remove data from index container
-        index_tree = self._get_index_container('meta', timeout=0).tree()
+        # timeout=30: the index daemon holds the LOCK continuously; give it
+        # enough time to finish its current write before we acquire it.
+        index_tree = self._get_index_container('meta', timeout=30).tree()
         del index_tree.subtree(('meta', 'chunks'))[run_hash]
 
         # delete rocksdb containers data
