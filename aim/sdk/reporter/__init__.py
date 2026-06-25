@@ -804,3 +804,8 @@ class ScheduledStatusReporter(object):
     def stop(self):
         self.stop_signal.set()
         self.thread.join()
+        if self.touch_path is not None and self.touch_path.exists():
+            try:
+                self.touch_path.unlink()
+            except OSError:
+                pass
