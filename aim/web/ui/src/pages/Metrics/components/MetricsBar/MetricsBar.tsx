@@ -7,7 +7,7 @@ import BookmarkForm from 'components/BookmarkForm/BookmarkForm';
 import AppBar from 'components/AppBar/AppBar';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import LiveUpdateSettings from 'components/LiveUpdateSettings/LiveUpdateSettings';
-import { Button, Icon, Text } from 'components/kit';
+import { Button, Icon, Text, Switcher } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import ConfirmModal from 'components/ConfirmModal/ConfirmModal';
 
@@ -26,6 +26,8 @@ function MetricsBar({
   onBookmarkUpdate,
   onResetConfigData,
   onLiveUpdateConfigChange,
+  tableView,
+  onTableViewChange,
 }: IMetricsBarProps): React.FunctionComponentElement<React.ReactNode> {
   const [popover, setPopover] = React.useState<string>('');
 
@@ -47,6 +49,21 @@ function MetricsBar({
   return (
     <ErrorBoundary>
       <AppBar title={title} disabled={disabled}>
+        {onTableViewChange && (
+          <div className='MetricsBar__tableViewToggle'>
+            <Text className='MetricsBar__tableViewToggle__Text' size={14}>
+              Legend:
+            </Text>
+            <Switcher
+              checked={tableView === 'legend'}
+              onChange={() =>
+                onTableViewChange(tableView === 'legend' ? 'table' : 'legend')
+              }
+              size='small'
+              color='primary'
+            />
+          </div>
+        )}
         <LiveUpdateSettings
           {...liveUpdateConfig}
           onLiveUpdateConfigChange={onLiveUpdateConfigChange}

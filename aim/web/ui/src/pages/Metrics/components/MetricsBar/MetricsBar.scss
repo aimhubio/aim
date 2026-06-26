@@ -1,6 +1,15 @@
 @use 'src/styles/abstracts' as *;
 
 .MetricsBar {
+  &__tableViewToggle {
+    display: flex;
+    align-items: center;
+    margin-right: $space-md;
+    &__Text {
+      margin-right: $space-xs;
+      white-space: nowrap;
+    }
+  }
   &__item__bookmark {
     margin-right: $space-xxxs;
     padding: 0 $space-xs !important;

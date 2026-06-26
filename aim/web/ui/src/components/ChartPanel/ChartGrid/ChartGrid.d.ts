@@ -16,4 +16,5 @@ export interface IChartGridProps {
   syncHoverState?: (args: ISyncHoverStateArgs) => void;
   resizeMode?: ResizeModeEnum;
   onMount?: () => void;
+  controls?: React.ReactNode;
 }

@@ -187,6 +187,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
                       resizeMode={props.resizeMode}
                       onMount={onChartMount}
                       chartPanelOffsetHeight={props.chartPanelOffsetHeight}
+                      controls={props.controls}
                     />
                     <ErrorBoundary>
                       <ChartPopover

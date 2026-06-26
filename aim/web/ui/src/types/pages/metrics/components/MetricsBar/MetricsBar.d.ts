@@ -12,4 +12,6 @@ export interface IMetricsBarProps {
     enabled?: boolean;
   }) => void;
   title: string;
+  tableView?: 'table' | 'legend';
+  onTableViewChange?: (value: 'table' | 'legend') => void;
 }

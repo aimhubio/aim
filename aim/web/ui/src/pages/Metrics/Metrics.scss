@@ -53,6 +53,40 @@
     &.hide {
       display: none;
     }
+    // In legend view the bottom panel shrinks to fit the legend content
+    // instead of taking a fixed share of the height.
+    &.legendView {
+      flex: 0 0 auto !important;
+      height: auto !important;
+      min-height: 0 !important;
+      max-height: 40%;
+    }
+  }
+  .Metrics__runsLegend {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    gap: $space-xs $space-md;
+    padding: $space-sm;
+    max-height: 100%;
+    overflow-y: auto;
+    &__item {
+      display: flex;
+      align-items: center;
+      max-width: 16rem;
+    }
+    &__color {
+      flex-shrink: 0;
+      width: 0.75rem;
+      height: 0.75rem;
+      border-radius: 2px;
+      margin-right: $space-xxs;
+    }
+    &__name {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
   }
 }
 

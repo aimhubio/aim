@@ -10,6 +10,7 @@ import ResizePanel from 'components/ResizePanel/ResizePanel';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import Grouping from 'components/Grouping/Grouping';
 import ProgressBar from 'components/ProgressBar/ProgressBar';
+import { Text } from 'components/kit';
 
 import pageTitlesEnum from 'config/pageTitles/pageTitles';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
@@ -44,6 +45,7 @@ function Metrics(
 ): React.FunctionComponentElement<React.ReactNode> {
   const [isProgressBarVisible, setIsProgressBarVisible] =
     React.useState<boolean>(false);
+  const [tableView, setTableView] = React.useState<'table' | 'legend'>('table');
   const chartProps = React.useMemo(() => {
     return (props.lineChartData || []).map((chartData: ILine[]) => ({
       axesScaleType: props.axesScaleType,
@@ -78,6 +80,26 @@ function Metrics(
     props.axesScaleRange,
   ]);
 
+  // Unique runs (name + plot color) shown as a legend when the table is collapsed.
+  const runsLegend = React.useMemo(() => {
+    const seen = new Map<string, { name: string; color: string }>();
+    (props.lineChartData || []).forEach((chartData: ILine[]) => {
+      chartData.forEach((line: any) => {
+        const hash = line?.run?.hash;
+        if (hash && !seen.has(hash)) {
+          seen.set(hash, {
+            name: line?.run?.props?.name || hash,
+            color: line?.color || '#000',
+          });
+        }
+      });
+    });
+    return Array.from(seen.entries()).map(([hash, value]) => ({
+      hash,
+      ...value,
+    }));
+  }, [props.lineChartData]);
+
   return (
     <ErrorBoundary>
       <div ref={props.wrapperElemRef} className='Metrics__container'>
@@ -91,6 +113,8 @@ function Metrics(
               liveUpdateConfig={props.liveUpdateConfig}
               onLiveUpdateConfigChange={props.onLiveUpdateConfigChange}
               title={pageTitlesEnum.METRICS_EXPLORER}
+              tableView={tableView}
+              onTableViewChange={setTableView}
             />
             <div className='Metrics__SelectForm__Grouping__container'>
               <SelectForm
@@ -230,11 +254,44 @@ function Metrics(
                     className={classNames('Metrics__table__container', {
                       fullHeight: props.resizeMode === ResizeModeEnum.MaxHeight,
                       hide: props.resizeMode === ResizeModeEnum.Hide,
+                      legendView:
+                        tableView === 'legend' &&
+                        props.resizeMode !== ResizeModeEnum.MaxHeight,
                     })}
                   >
                     {props.resizeMode === ResizeModeEnum.Hide ? null : (
-                      <ErrorBoundary>
-                        <Table
+                      <>
+                        {tableView === 'legend' ? (
+                          <div className='Metrics__runsLegend'>
+                            {runsLegend.length > 0 ? (
+                              runsLegend.map((run) => (
+                                <div
+                                  className='Metrics__runsLegend__item'
+                                  key={run.hash}
+                                >
+                                  <span
+                                    className='Metrics__runsLegend__color'
+                                    style={{ backgroundColor: run.color }}
+                                  />
+                                  <Text
+                                    size={12}
+                                    tint={100}
+                                    className='Metrics__runsLegend__name'
+                                    title={run.name}
+                                  >
+                                    {run.name}
+                                  </Text>
+                                </div>
+                              ))
+                            ) : (
+                              <Text size={12} tint={50}>
+                                No runs to display
+                              </Text>
+                            )}
+                          </div>
+                        ) : (
+                          <ErrorBoundary>
+                            <Table
                           // deletable
                           custom
                           ref={props.tableRef}
@@ -289,8 +346,10 @@ function Metrics(
                           visualizationElementType={
                             VisualizationElementEnum.LINE
                           }
-                        />
-                      </ErrorBoundary>
+                            />
+                          </ErrorBoundary>
+                        )}
+                      </>
                     )}
                   </div>
                 </>
