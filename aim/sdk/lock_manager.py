@@ -20,6 +20,10 @@ from filelock import SoftFileLock, Timeout, UnixFileLock
 
 logger = logging.getLogger(__name__)
 
+# Locks written by a different machine cannot have their PID checked remotely.
+# Treat them as stale after this many hours of inactivity.
+STALE_LOCK_THRESHOLD_HOURS = 4
+
 
 class LockingVersion(Enum):
     LEGACY = 0
@@ -164,8 +168,21 @@ class LockManager(object):
         return success
 
     def is_stalled_lock(self, lock_file_path: Path) -> bool:
-        with open(lock_file_path, mode='r') as lock_metadata_fh:
-            machine_id, pid, *_ = lock_metadata_fh.read().split('-')
-            if int(machine_id) == self.machine_id and not psutil.pid_exists(int(pid)):
-                return True
-        return False
+        try:
+            with open(lock_file_path, mode='r') as lock_metadata_fh:
+                parts = lock_metadata_fh.read().strip().split('-')
+                machine_id, pid = int(parts[0]), int(parts[1])
+            if machine_id == self.machine_id:
+                # Same machine: check if the owning process is still alive.
+                return not psutil.pid_exists(pid)
+            # Cross-machine lock: the remote PID cannot be checked from here.
+            # Fall back to file age — if the lock file has not been refreshed
+            # in STALE_LOCK_THRESHOLD_HOURS it is almost certainly abandoned
+            # (e.g. a training node that was killed with SIGKILL or SIGTERM
+            # without releasing the lock).
+            age = datetime.datetime.now() - datetime.datetime.fromtimestamp(
+                lock_file_path.stat().st_mtime
+            )
+            return age > datetime.timedelta(hours=STALE_LOCK_THRESHOLD_HOURS)
+        except Exception:
+            return False

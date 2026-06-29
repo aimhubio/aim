@@ -25,10 +25,15 @@ if TYPE_CHECKING:
 
 
 def get_blobs_batch(uri_batch: List[str], repo: 'Repo') -> Iterator[bytes]:
+    import logging as _logging
+    _logger = _logging.getLogger(__name__)
     uri_service = URIService(repo=repo)
     batch_iterator = uri_service.request_batch(uri_batch=uri_batch)
-    for it in batch_iterator:
-        yield collect_streamable_data(encode_tree(it))
+    try:
+        for it in batch_iterator:
+            yield collect_streamable_data(encode_tree(it))
+    except Exception as e:
+        _logger.warning(f'get_blobs_batch: skipping blob due to error: {e}')
 
 
 class CustomObjectApi:
@@ -143,10 +148,17 @@ class CustomObjectApi:
                     progress_reports_sent += 1
                     last_reported_progress_time = time.time()
                 if run_info.get('traces') and run_info.get('run'):
-                    traces_list = []
-                    for trace in run_info['traces']:
-                        traces_list.append(self._get_trace_info(trace, True, True))
-                    yield _pack_run_data(run_info['run'], traces_list)
+                    try:
+                        traces_list = []
+                        for trace in run_info['traces']:
+                            traces_list.append(self._get_trace_info(trace, True, True))
+                        yield _pack_run_data(run_info['run'], traces_list)
+                    except Exception as _e:
+                        import logging as _logging
+                        _logging.getLogger(__name__).warning(
+                            f'search_result_streamer: skipping run {run_info["run"].hash} due to error: {_e}'
+                        )
+                        continue
                     if report_progress:
                         yield collect_streamable_data(
                             encode_tree({f'progress_{progress_reports_sent}': run_info['progress']})
@@ -162,18 +174,23 @@ class CustomObjectApi:
             pass
 
     async def requested_traces_streamer(self) -> List[dict]:
+        import logging as _logging
+        _logger = _logging.getLogger(__name__)
         try:
             for key in list(self.trace_cache.keys()):
                 run_info = self.trace_cache[key]
                 await asyncio.sleep(ASYNC_SLEEP_INTERVAL)
                 for trace in run_info['traces']:
-                    trace_dict = self._get_trace_info(trace, False, False)
-                    trace_dict['record_range_used'] = self.record_range
-                    trace_dict['record_range_total'] = self.total_record_range
-                    if self.use_list:
-                        trace_dict['index_range'] = self.index_range
-                        trace_dict['index_range_total'] = self.total_index_range
-                    yield collect_streamable_data(encode_tree(trace_dict))
+                    try:
+                        trace_dict = self._get_trace_info(trace, False, False)
+                        trace_dict['record_range_used'] = self.record_range
+                        trace_dict['record_range_total'] = self.total_record_range
+                        if self.use_list:
+                            trace_dict['index_range'] = self.index_range
+                            trace_dict['index_range_total'] = self.total_index_range
+                        yield collect_streamable_data(encode_tree(trace_dict))
+                    except Exception as _e:
+                        _logger.warning(f'requested_traces_streamer: skipping trace due to error: {_e}')
                 del self.trace_cache[key]
             self.run = None
         except asyncio.CancelledError:

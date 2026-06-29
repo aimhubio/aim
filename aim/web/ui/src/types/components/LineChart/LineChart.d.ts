@@ -55,6 +55,7 @@ export interface ILineChartProps {
   axesScaleType?: IAxesScaleState;
   readOnly?: boolean;
   margin?: { top: number; right: number; bottom: number; left: number };
+  onDoubleClick?: () => void;
 }
 
 export interface ILineChartRef {

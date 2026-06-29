@@ -169,9 +169,19 @@ class NetworkService {
           }
 
           if (response.status >= 400) {
-            return await this.checkCredentials(response, url, () =>
-              this.request(url, options),
-            );
+            // Body may already be consumed above (JSON content-type). Only
+            // call checkCredentials for 401 (token refresh). For all other
+            // errors, reject with the already-parsed body so callers get a
+            // proper error instead of "body stream already read".
+            if (response.status === 401) {
+              return await this.checkCredentials(response, url, () =>
+                this.request(url, options),
+              );
+            }
+            return reject({
+              message: (body as any)?.message || 'Request failed',
+              res: { body, headers },
+            });
           }
 
           return resolve({ body, headers });

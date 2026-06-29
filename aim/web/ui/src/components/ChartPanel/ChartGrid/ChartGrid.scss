@@ -4,4 +4,77 @@
   min-height: 50%;
   padding: 4px;
   box-shadow: -1px -1px 0 0 $grey-lighter;
+  &__sections {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+  }
+  &__section {
+    width: 100%;
+    margin: 0 !important;
+    &:before {
+      display: none;
+    }
+    &__summary {
+      position: sticky;
+      top: 0;
+      z-index: 3;
+      background-color: $white;
+      border-bottom: $border-separator;
+      min-height: 2.5rem !important;
+      .MuiAccordionSummary-content {
+        align-items: center;
+        margin: $space-xs 0 !important;
+      }
+    }
+    &__count {
+      margin-left: $space-xs;
+    }
+    &__details {
+      display: flex;
+      flex-wrap: wrap;
+      width: 100%;
+      padding: 0 !important;
+    }
+  }
+  &__fullScreenDialog {
+    width: 90vw;
+    height: 90vh;
+    max-width: 90vw;
+    max-height: 90vh;
+    position: relative;
+    &__closeBtn {
+      position: absolute;
+      top: $space-xs;
+      right: $space-xs;
+      z-index: 2;
+      background-color: $white;
+    }
+    &__body {
+      display: flex;
+      width: 100%;
+      height: 100%;
+    }
+    &__chart {
+      flex: 1;
+      height: 100%;
+      min-width: 0;
+      padding: $space-md;
+      box-sizing: border-box;
+    }
+    &__controls {
+      width: 3.75rem;
+      flex-shrink: 0;
+      max-height: 100%;
+      overflow-y: auto;
+      border-left: $border-separator;
+    }
+  }
+}
+
+// Inside foldable subset sections each chart needs a definite height,
+// since the accordion details container is auto-sized (unlike the flat grid).
+.ChartGrid__section__details > .ChartGrid {
+  height: 20rem;
+  min-height: 20rem;
 }

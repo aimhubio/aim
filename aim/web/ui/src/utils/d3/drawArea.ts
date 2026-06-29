@@ -112,19 +112,22 @@ function drawArea(args: IDrawAreaArgs): void {
     .attr('height', offsetHeight + 2 * CircleEnum.Radius);
 
   const titleText = Object.entries(chartTitle || {})
-    .map(
-      ([key, value]) =>
-        `${key}=${
-          isSystemMetric(value) ? formatSystemMetricName(value) : value
-        }`,
-    )
+    .map(([, value]) => {
+      const formatted = isSystemMetric(value)
+        ? formatSystemMetricName(value)
+        : value;
+      // strip the surrounding double quotes added by formatValue
+      return typeof formatted === 'string'
+        ? formatted.replace(/^"(.*)"$/, '$1')
+        : formatted;
+    })
     .join(', ');
 
   const title = {
     x: margin.left / 6,
     fontSize: 11,
     fontFamily: 'Inter, sans-serif',
-    fontWeight: 400,
+    fontWeight: 600,
     chartIndex: {
       fontFamily: 'Inconsolata, monospace',
     },

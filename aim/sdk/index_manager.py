@@ -134,19 +134,25 @@ class RepoIndexManager:
 
     def _monitor_existing_chunks(self):
         while not self._stop_event.is_set():
-            index_db = self.repo.request_tree('meta', read_only=True)
-            monitored_chunks = set(self._watches.keys())
-            for chunk_path in self.chunks_dir.iterdir():
-                if (
-                    chunk_path.is_dir()
-                    and chunk_path.name not in monitored_chunks
-                    and self._is_run_index_outdated(chunk_path.name, index_db)
-                ):
-                    logger.debug(f'Monitoring existing chunk: {chunk_path}')
-                    self.monitor_chunk_directory(chunk_path)
-                    logger.debug(f'Triggering indexing for run {chunk_path.name}')
-                    self.add_run_to_queue(chunk_path.name)
-            self.repo.container_pool.clear()
+            try:
+                index_db = self.repo.request_tree('meta', read_only=True)
+                monitored_chunks = set(self._watches.keys())
+                for chunk_path in self.chunks_dir.iterdir():
+                    try:
+                        if (
+                            chunk_path.is_dir()
+                            and chunk_path.name not in monitored_chunks
+                            and self._is_run_index_outdated(chunk_path.name, index_db)
+                        ):
+                            logger.debug(f'Monitoring existing chunk: {chunk_path}')
+                            self.monitor_chunk_directory(chunk_path)
+                            logger.debug(f'Triggering indexing for run {chunk_path.name}')
+                            self.add_run_to_queue(chunk_path.name)
+                    except Exception as e:
+                        logger.warning(f'Error checking chunk {chunk_path}: {e}')
+                self.repo.container_pool.clear()
+            except Exception as e:
+                logger.error(f'_monitor_existing_chunks iteration failed: {e}')
             time.sleep(5)
 
     def _stop_monitoring_chunk(self, run_hash):
@@ -155,9 +161,19 @@ class RepoIndexManager:
             self.chunk_change_observer.unschedule(watch)
             logger.debug(f'Stopped monitoring chunk: {run_hash}')
 
+    # Maximum number of chunk directories to watch simultaneously.
+    # PollingObserver opens file descriptors for each watch; capping this
+    # prevents "Too many open files" when there are hundreds of runs.
+    MAX_WATCHED_CHUNKS = 50
+
     def monitor_chunk_directory(self, chunk_path):
         """Ensure chunk directory is monitored using a single handler."""
         if chunk_path.name not in self._watches:
+            if len(self._watches) >= self.MAX_WATCHED_CHUNKS:
+                # Drop the oldest watch to stay under the fd limit.
+                oldest = next(iter(self._watches))
+                self._stop_monitoring_chunk(oldest)
+                logger.debug(f'Watch limit reached, dropped oldest watch: {oldest}')
             watch = self.chunk_change_observer.schedule(self.chunk_change_handler, chunk_path, recursive=True)
             self._watches[chunk_path.name] = watch
             logger.debug(f'Started monitoring chunk directory: {chunk_path}')
@@ -176,12 +192,19 @@ class RepoIndexManager:
         while not self._stop_event.is_set():
             _, run_hash = self.indexing_queue.get()
             logger.debug(f'Indexing run {run_hash}...')
-            self.index(run_hash)
-            self.indexing_queue.task_done()
+            try:
+                self.index(run_hash)
+            except Exception as e:
+                # An unhandled exception here would silently kill this daemon
+                # thread, leaving the indexing queue permanently stalled.
+                logger.error(f'Unexpected error indexing run {run_hash}: {e}')
+            finally:
+                self.indexing_queue.task_done()
 
     def index(self, run_hash):
-        index = self.repo._get_index_tree('meta', 0).view(())
+        import gc
         try:
+            index = self.repo._get_index_tree('meta', 0).view(())
             run_checksum = self._get_run_checksum(run_hash)
             meta_tree = self.repo.request_tree('meta', run_hash, read_only=True, skip_read_optimization=True).subtree(
                 'meta'
@@ -197,6 +220,19 @@ class RepoIndexManager:
         except (aimrocks.errors.RocksIOError, aimrocks.errors.Corruption):
             logger.warning(f'Indexing thread detected corrupted run: {run_hash}. Skipping.')
             self._corrupted_runs.add(run_hash)
+            self._stop_monitoring_chunk(run_hash)
+        except Exception as e:
+            # Catch-all: log and skip rather than propagating to
+            # _process_indexing_queue where it would kill the thread.
+            logger.warning(f'Indexing run {run_hash} failed unexpectedly: {e}. Skipping.')
+            self._corrupted_runs.add(run_hash)
+            self._stop_monitoring_chunk(run_hash)
+        finally:
+            # Release TreeView references so RocksDB containers can be GC'd
+            # promptly. Without this, WeakValueDictionary entries stay alive
+            # until the next GC cycle, accumulating open file descriptors.
+            self.repo.container_pool.clear()
+            gc.collect()
         return True
 
     def _is_run_index_outdated(self, run_hash, index_db):

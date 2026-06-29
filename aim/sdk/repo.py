@@ -397,10 +397,11 @@ class Repo:
         from aim.storage.encoding import decode_path
 
         def get_run_hash_from_prefix(prefix: bytes):
-            return decode_path(prefix)[-1]
+            parts = decode_path(prefix)
+            return parts[-1] if parts else None
 
         container = RocksUnionContainer(os.path.join(self.path, 'meta'), read_only=True)
-        return list(map(get_run_hash_from_prefix, container.corrupted_dbs))
+        return [h for h in map(get_run_hash_from_prefix, container.corrupted_dbs) if h is not None]
 
     def _active_run_hashes(self) -> Set[str]:
         if self.is_remote_repo:
@@ -806,7 +807,9 @@ class Repo:
 
     def _delete_local_run_data(self, run_hash: str):
         # remove data from index container
-        index_tree = self._get_index_container('meta', timeout=0).tree()
+        # timeout=30: the index daemon holds the LOCK continuously; give it
+        # enough time to finish its current write before we acquire it.
+        index_tree = self._get_index_container('meta', timeout=30).tree()
         del index_tree.subtree(('meta', 'chunks'))[run_hash]
 
         # delete rocksdb containers data
@@ -963,7 +966,7 @@ class Repo:
             rc.optimize_for_read()
 
         if self.is_remote_repo:
-            self._remote_repo_proxy._close_run(run_hash)
+            return self._remote_repo_proxy._close_run(run_hash)
 
         lock_manager = LockManager(self.path)
 
@@ -977,6 +980,13 @@ class Repo:
             meta_run_tree = meta_tree.subtree('chunks').subtree(run_hash)
             if not meta_run_tree.get('end_time'):
                 meta_run_tree['end_time'] = datetime.datetime.now(pytz.utc).timestamp()
+
+            # Remove the progress file so list_active_runs() no longer returns
+            # this run. Without this, a crashed run stays in meta/progress/ forever
+            # and the active-runs streamer keeps polling it on every UI refresh.
+            progress_path = os.path.join(self.path, 'meta', 'progress', run_hash)
+            if os.path.exists(progress_path):
+                os.remove(progress_path)
 
             # Run rocksdb optimizations if container locks are removed
             meta_db_path = os.path.join(self.path, 'meta', 'chunks', run_hash)

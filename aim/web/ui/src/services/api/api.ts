@@ -48,22 +48,30 @@ function createAPIRequestWrapper<ResponseDataType>(
             try {
               if (response.status >= 400) {
                 const body = await response.json();
+                // Body stream is now consumed — must not call response.json() again.
 
                 if (typeof exceptionHandler === 'function') {
                   exceptionHandler(body);
                 }
 
-                return await checkCredentials<ResponseDataType>(
-                  response,
-                  url,
-                  () =>
-                    createAPIRequestWrapper<ResponseDataType>(
-                      url,
-                      options,
-                      stream,
-                      apiHost,
-                    ).call(exceptionHandler),
-                );
+                // Only attempt a token refresh + retry for 401. For any other
+                // error the body is already consumed; passing `response` to
+                // checkCredentials() would call parseResponse() → response.json()
+                // a second time → "body stream already read".
+                if (response.status === 401) {
+                  return await checkCredentials<ResponseDataType>(
+                    response,
+                    url,
+                    () =>
+                      createAPIRequestWrapper<ResponseDataType>(
+                        url,
+                        options,
+                        stream,
+                        apiHost,
+                      ).call(exceptionHandler),
+                  );
+                }
+                return;
               }
               const data = stream ? response.body : await response.json();
 

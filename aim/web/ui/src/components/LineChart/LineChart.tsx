@@ -51,6 +51,7 @@ const LineChart = React.forwardRef(function LineChart(
     onZoomChange,
     resizeMode,
     onMount,
+    onDoubleClick,
     axesScaleType = {
       xAxis: ScaleEnum.Linear,
       yAxis: ScaleEnum.Linear,
@@ -319,6 +320,21 @@ const LineChart = React.forwardRef(function LineChart(
           zoomMode: !readOnly && zoom?.active,
         })}
       >
+        {onDoubleClick && (
+          <div
+            onClick={onDoubleClick}
+            title='Click to open in full screen'
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              height: 30,
+              cursor: 'zoom-in',
+              zIndex: 1,
+            }}
+          />
+        )}
         <div ref={visAreaRef} />
       </div>
     </ErrorBoundary>
