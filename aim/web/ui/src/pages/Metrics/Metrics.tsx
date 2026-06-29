@@ -292,60 +292,64 @@ function Metrics(
                         ) : (
                           <ErrorBoundary>
                             <Table
-                          // deletable
-                          custom
-                          ref={props.tableRef}
-                          data={props.tableData}
-                          columns={props.tableColumns}
-                          // Table options
-                          multiSelect
-                          topHeader
-                          groups={!Array.isArray(props.tableData)}
-                          rowHeight={props.tableRowHeight}
-                          rowHeightMode={
-                            props.tableRowHeight === RowHeightSize.sm
-                              ? 'small'
-                              : props.tableRowHeight === RowHeightSize.md
-                              ? 'medium'
-                              : 'large'
-                          }
-                          sortOptions={props.sortOptions}
-                          sortFields={props.sortFields}
-                          hiddenRows={props.hiddenMetrics}
-                          hiddenColumns={props.hiddenColumns}
-                          resizeMode={props.resizeMode}
-                          columnsWidths={props.columnsWidths}
-                          selectedRows={props.selectedRows}
-                          hideSystemMetrics={props.hideSystemMetrics}
-                          appName={AppNameEnum.METRICS}
-                          hiddenChartRows={props.lineChartData?.length === 0}
-                          columnsOrder={props.columnsOrder}
-                          sameValueColumns={props?.sameValueColumns!}
-                          // Table actions
-                          onSort={props.onSortChange}
-                          onSortReset={props.onSortReset}
-                          onExport={props.onExportTableData}
-                          onManageColumns={props.onColumnsOrderChange}
-                          onColumnsVisibilityChange={
-                            props.onColumnsVisibilityChange
-                          }
-                          onTableDiffShow={props.onTableDiffShow}
-                          onRowHeightChange={props.onRowHeightChange}
-                          onRowsChange={props.onMetricVisibilityChange}
-                          onRowHover={props.onTableRowHover}
-                          onRowClick={props.onTableRowClick}
-                          onTableResizeModeChange={
-                            props.onTableResizeModeChange
-                          }
-                          updateColumnsWidths={props.updateColumnsWidths}
-                          onRowSelect={props.onRowSelect}
-                          archiveRuns={props.archiveRuns}
-                          deleteRuns={props.deleteRuns}
-                          onRowsVisibilityChange={props.onRowsVisibilityChange}
-                          focusedState={props.focusedState}
-                          visualizationElementType={
-                            VisualizationElementEnum.LINE
-                          }
+                              // deletable
+                              custom
+                              ref={props.tableRef}
+                              data={props.tableData}
+                              columns={props.tableColumns}
+                              // Table options
+                              multiSelect
+                              topHeader
+                              groups={!Array.isArray(props.tableData)}
+                              rowHeight={props.tableRowHeight}
+                              rowHeightMode={
+                                props.tableRowHeight === RowHeightSize.sm
+                                  ? 'small'
+                                  : props.tableRowHeight === RowHeightSize.md
+                                  ? 'medium'
+                                  : 'large'
+                              }
+                              sortOptions={props.sortOptions}
+                              sortFields={props.sortFields}
+                              hiddenRows={props.hiddenMetrics}
+                              hiddenColumns={props.hiddenColumns}
+                              resizeMode={props.resizeMode}
+                              columnsWidths={props.columnsWidths}
+                              selectedRows={props.selectedRows}
+                              hideSystemMetrics={props.hideSystemMetrics}
+                              appName={AppNameEnum.METRICS}
+                              hiddenChartRows={
+                                props.lineChartData?.length === 0
+                              }
+                              columnsOrder={props.columnsOrder}
+                              sameValueColumns={props?.sameValueColumns!}
+                              // Table actions
+                              onSort={props.onSortChange}
+                              onSortReset={props.onSortReset}
+                              onExport={props.onExportTableData}
+                              onManageColumns={props.onColumnsOrderChange}
+                              onColumnsVisibilityChange={
+                                props.onColumnsVisibilityChange
+                              }
+                              onTableDiffShow={props.onTableDiffShow}
+                              onRowHeightChange={props.onRowHeightChange}
+                              onRowsChange={props.onMetricVisibilityChange}
+                              onRowHover={props.onTableRowHover}
+                              onRowClick={props.onTableRowClick}
+                              onTableResizeModeChange={
+                                props.onTableResizeModeChange
+                              }
+                              updateColumnsWidths={props.updateColumnsWidths}
+                              onRowSelect={props.onRowSelect}
+                              archiveRuns={props.archiveRuns}
+                              deleteRuns={props.deleteRuns}
+                              onRowsVisibilityChange={
+                                props.onRowsVisibilityChange
+                              }
+                              focusedState={props.focusedState}
+                              visualizationElementType={
+                                VisualizationElementEnum.LINE
+                              }
                             />
                           </ErrorBoundary>
                         )}

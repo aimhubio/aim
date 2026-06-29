@@ -178,7 +178,10 @@ class NetworkService {
                 this.request(url, options),
               );
             }
-            return reject({ message: (body as any)?.message || 'Request failed', res: { body, headers } });
+            return reject({
+              message: (body as any)?.message || 'Request failed',
+              res: { body, headers },
+            });
           }
 
           return resolve({ body, headers });
