@@ -11,6 +11,28 @@ from aim.ext.cleanup import AutoClean
 from .artifact_storage import AbstractArtifactStorage
 
 
+def _build_client_kwargs(boto3_client_kwargs):
+    """Append the Aim user-agent token to the S3 client's botocore config.
+
+    Any caller-provided endpoint_url, config, and user_agent_extra are kept; the
+    aim/<version> token is appended so the client works with any S3-compatible endpoint.
+    """
+    import botocore.config
+
+    from aim.__version__ import __version__
+
+    kwargs = dict(boto3_client_kwargs)
+    config = kwargs.get('config')
+    if isinstance(config, dict):
+        config = botocore.config.Config(**config)
+    aim_user_agent = f'aim/{__version__}'
+    if config is not None and config.user_agent_extra:
+        aim_user_agent = f'{config.user_agent_extra} {aim_user_agent}'
+    user_agent_config = botocore.config.Config(user_agent_extra=aim_user_agent)
+    kwargs['config'] = config.merge(user_agent_config) if config is not None else user_agent_config
+    return kwargs
+
+
 class S3ArtifactsStorageAutoClean(AutoClean['S3ArtifactStorage']):
     def __init__(self, instance: 'S3ArtifactStorage') -> None:
         super().__init__(instance)
@@ -69,21 +91,15 @@ class S3ArtifactStorage(AbstractArtifactStorage):
     def _get_s3_client(self):
         import boto3
 
-        client = boto3.client('s3')
-        return client
+        return boto3.client('s3', **_build_client_kwargs({}))
 
 
 def S3ArtifactStorage_factory(**boto3_client_kwargs):
     class S3ArtifactStorageCustom(S3ArtifactStorage):
         def _get_s3_client(self):
             import boto3
-            import botocore
 
-            if 'config' in boto3_client_kwargs and isinstance(boto3_client_kwargs['config'], dict):
-                config_kwargs = boto3_client_kwargs.pop('config')
-                boto3_client_kwargs['config'] = botocore.config.Config(**config_kwargs)
-            client = boto3.client('s3', **boto3_client_kwargs)
-            return client
+            return boto3.client('s3', **_build_client_kwargs(boto3_client_kwargs))
 
     return S3ArtifactStorageCustom
 
