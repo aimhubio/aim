@@ -63,6 +63,8 @@ run.set_artifacts_uri('s3://...')
 run.log_artifact(..., name=...)
 ```
 
+Because `endpoint_url` is passed straight through to `boto3`, the same backend works with any S3-compatible object store, such as Amazon S3, Backblaze B2, Cloudflare R2, or MinIO. Set `endpoint_url` to your provider's endpoint (for example `https://your-s3-endpoint.example.com`) and keep using the `s3://` URI scheme.
+
 #### File-system Artifacts Storage Backend
 
 Aim provides ability to use mounted FS as an artifact storage. Any kind of storage that provides a mounted FS
