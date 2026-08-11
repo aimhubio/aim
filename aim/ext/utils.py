@@ -1,5 +1,8 @@
 import logging
+import re
 import subprocess
+
+from functools import lru_cache
 
 from fastapi.responses import JSONResponse
 
@@ -7,12 +10,43 @@ from fastapi.responses import JSONResponse
 logger = logging.getLogger(__name__)
 
 
+def _get_installed_distributions():
+    try:
+        from importlib import metadata as metadata_module
+    except ImportError:
+        import importlib_metadata as metadata_module  # Python 3.7 support
+
+    return metadata_module.distributions()
+
+
+# Installed distributions normally do not change while the current Python process is running.
+@lru_cache(maxsize=1)
+def _collect_installed_package_versions():
+    installed_package_versions = {}
+
+    for installed_distribution in _get_installed_distributions():
+        distribution_metadata = installed_distribution.metadata
+        package_name = distribution_metadata.get('Name')
+        package_version = distribution_metadata.get('Version')
+
+        if not package_name or not package_version:
+            continue
+
+        # Preserve the normalized key format previously provided by pkg_resources.
+        normalized_package_name = re.sub(
+            r'[^A-Za-z0-9.]+',
+            '-',
+            package_name,
+        ).lower()
+
+        installed_package_versions.setdefault(normalized_package_name, package_version)
+
+    return installed_package_versions
+
+
 def get_installed_packages():
-    import pkg_resources
-
-    packages = {i.key: i.version for i in pkg_resources.working_set}
-
-    return packages
+    # Return a copy so callers cannot modify the cached package information.
+    return _collect_installed_package_versions().copy()
 
 
 def get_environment_variables():

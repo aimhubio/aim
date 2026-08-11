@@ -74,6 +74,7 @@ REQUIRED = [
     'uvicorn<1,>=0.12.0',
     'Pillow>=8.0.0',
     'packaging>=15.0',
+    'importlib-metadata<6.8; python_version < "3.8"',
     'python-dateutil',
     'requests',
     'watchdog',
