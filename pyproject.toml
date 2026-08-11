@@ -1,2 +1,0 @@
-[build-system]
-requires = ["setuptools", "cython == 3.0.10", "aimrocks == 0.5.*"]

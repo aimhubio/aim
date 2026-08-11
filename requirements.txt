@@ -1,4 +1,0 @@
-# installs dependencies from ./setup.py, and the package itself,
-# in editable mode
--e ./aim/web/ui
--e .
