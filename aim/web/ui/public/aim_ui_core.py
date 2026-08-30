@@ -176,7 +176,7 @@ def find(obj, element):
     for key in keys:
         try:
             rv = rv[key]
-        except:
+        except (KeyError, IndexError, TypeError):
             return None
     return rv
 
@@ -217,7 +217,7 @@ viz_map_keys = {}
 
 
 def update_viz_map(viz_type, key=None):
-    if key != None:
+    if key is not None:
         viz_map_keys[key] = key
         return key
     if viz_type in viz_map_keys:
@@ -248,7 +248,7 @@ def group(name, data, options, key=None):
         group_values = []
         if callable(options):
             val = options(item)
-            if type(val) == bool:
+            if type(val) is bool:
                 val = int(val)
             group_values.append(val)
         else:
@@ -339,7 +339,7 @@ def render_to_layout(data):
             current_layout[i] = data
             is_found = True
 
-    if is_found == False:
+    if not is_found:
         current_layout.append(data)
 
     updateLayout(current_layout, data["board_id"])
@@ -468,7 +468,10 @@ class Component(Element):
 
 
 class LineChart(Component):
-    def __init__(self, data, x='steps', y='values', color=[], stroke_style=[], options={}, key=None):
+    def __init__(self, data, x='steps', y='values', color=None, stroke_style=None, options=None, key=None):
+        color = color or []
+        stroke_style = stroke_style or []
+        options = options or {}
         component_type = "LineChart"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type)
@@ -517,7 +520,7 @@ class LineChart(Component):
         return self.state["focused_point"] if "focused_point" in self.state else None
 
     async def on_active_point_change(self, val, is_active):
-        if val != None:
+        if val is not None:
             data = create_proxy(val.to_py())
             item = self.data[data["key"]]
 
@@ -574,7 +577,8 @@ class AudiosList(Component):
 
 
 class TextsList(Component):
-    def __init__(self, data, color=[], key=None):
+    def __init__(self, data, color=None, key=None):
+        color = color or []
         component_type = "Texts"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type)
@@ -744,7 +748,8 @@ class TextInput(Component):
 
 
 class Select(Component):
-    def __init__(self, value=None, values=None, options=[], key=None):
+    def __init__(self, value=None, values=None, options=None, key=None):
+        options = options or []
         component_type = "Select"
         component_key = update_viz_map(component_type, key)
         super().__init__(component_key, component_type)
