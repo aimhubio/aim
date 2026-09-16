@@ -1,4 +1,14 @@
+export interface IRunOverviewTabArtifact {
+  name: string;
+  path: string;
+  uri: string;
+}
+
+export type IRunOverviewTabArtifactRow = IRunOverviewTabArtifact & {
+  key: string | number;
+};
+
 export interface IRunOverviewTabArtifactsCardProps {
-  artifacts: { [key: string]: string };
+  artifacts: IRunOverviewTabArtifact[];
   isRunInfoLoading: boolean;
 }

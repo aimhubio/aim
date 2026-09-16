@@ -11,12 +11,16 @@ import CopyToClipBoard from 'components/CopyToClipBoard/CopyToClipBoard';
 import { formatValue } from 'utils/formatValue';
 
 import { IRunOverviewTabArtifactsCardProps } from './RunOverviewTabArtifactsCard.d';
+import { getArtifactsTableData } from './getArtifactsTableData';
 
 function RunOverviewTabArtifactsCard({
   artifacts,
   isRunInfoLoading,
 }: IRunOverviewTabArtifactsCardProps) {
-  const tableData = React.useMemo(() => artifacts, [artifacts]);
+  const tableData = React.useMemo(
+    () => getArtifactsTableData(artifacts),
+    [artifacts],
+  );
 
   const dataListProps = React.useMemo(
     (): ICardProps['dataListProps'] => ({
