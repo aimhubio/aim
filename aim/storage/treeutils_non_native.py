@@ -26,6 +26,11 @@ def convert_to_native_object(
         if not strict:
             obj = repr(obj)
         else:
-            raise TypeError(f'Unhandled non-native value `{obj}` of type `{type(obj)}`.')
+            raise TypeError(
+                f'Cannot store value of type {type(obj).__name__}. '
+                f'Supported types are: None, bool, int, float, str, bytes, list, dict, and custom Aim objects. '
+                f'Consider converting your value to a supported type (e.g., use .isoformat() for datetime objects). '
+                f'Got: {type(obj).__module__}.{type(obj).__name__}'
+            )
 
     return obj

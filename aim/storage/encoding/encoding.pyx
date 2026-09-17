@@ -94,7 +94,11 @@ cpdef object encode(object value):
         type_id = FLAGS._CUSTOM_OBJECT
         encoding = encode_utf_8_str(value.aim_name)
     else:
-        raise NotImplementedError
+        raise TypeError(
+            f'Cannot encode value of type {type(value).__name__}. '
+            f'Supported types are: None, bool, int, float, str, bytes, list, dict, and custom Aim objects. '
+            f'Got: {type(value).__module__}.{type(value).__name__}'
+        )
 
     # Finally, we prepend the content `encoding` with a single byte which
     # encodes the type of the value

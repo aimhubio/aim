@@ -345,12 +345,15 @@ class BasicRun(BaseRun, StructuredRunMixin):
         Args:
              key (:obj:`str`): Top-level meta-parameter name. Use ellipsis to reset
                 run's all meta-parameters.
-             val: Meta-parameter value.
+             val: Meta-parameter value. Supported types: None, bool, int, float, str,
+                bytes, list, dict, and custom Aim objects. For datetime objects, convert
+                to string using .isoformat() or .timestamp() before storing.
 
         Examples:
             >>> run = Run('3df703c')
             >>> run[...] = params
             >>> run['hparams'] = {'batch_size': 42}
+            >>> run['start_time'] = datetime.datetime.now().isoformat()
         """
         self.meta_run_attrs_tree[key] = val
         self.meta_attrs_tree[key] = val
