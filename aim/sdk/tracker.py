@@ -127,7 +127,10 @@ class RunTracker:
                 seq_info = self.sequence_infos[ctx.idx, name]
                 if not seq_info.initialized:
                     self._init_sequence_info(ctx.idx, name, val)
-                step = step if step is not None else seq_info.count
+                if step is None and epoch is not None:
+                    step = epoch
+                elif step is None:
+                    step = seq_info.count
 
                 self._update_context_data(ctx)
                 self._update_sequence_info(ctx.idx, name, val, step)
