@@ -24,7 +24,7 @@ Aim easily integrates with your favourite ML frameworks.
 
 Aim loggers give access to the `aim.Run` object instance via the `experiment` property. The `aim.Run` instance will help you to easily track additional metrics or set any other `key: value` pairs (params) relevant to your project.
 
-In this way you can easily extend the default integrations. More info about this is abailable on Integration guides [section.](../using/integration_guides.html) 
+In this way you can easily extend the default integrations. More info about this is available on Integration guides [section.](../using/integration_guides.html) 
 
 ### Integration with Pytorch Ignite
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/aimhubio/tutorials/blob/publication/notebooks/pytorch_ignite_track.ipynb)  
@@ -191,7 +191,7 @@ It only takes 2 steps to easily integrate aim in keras to record experimental in
 from aim.keras_tuner import AimCallback
 ```
 
-In kerastuner, we call the `search()` method of the tuner object to perform a search for best hyperparameter configuations. The callbacks are provided here. `AimCallback` inherits the usage specification of callbacks. We just need to add it to the callbacks list.
+In kerastuner, we call the `search()` method of the tuner object to perform a search for best hyperparameter configurations. The callbacks are provided here. `AimCallback` inherits the usage specification of callbacks. We just need to add it to the callbacks list.
 
 ```python
 tuner.search(

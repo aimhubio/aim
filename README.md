@@ -532,7 +532,7 @@ In case you've found Aim helpful in your research journey, we'd be thrilled if y
 
 ## Contributing to Aim
 
-Considering contibuting to Aim? 
+Considering contributing to Aim? 
 To get started, please take a moment to read the [CONTRIBUTING.md](https://github.com/aimhubio/aim/blob/main/CONTRIBUTING.md) guide. 
 
 Join Aim contributors by submitting your first pull request. Happy coding! 😊

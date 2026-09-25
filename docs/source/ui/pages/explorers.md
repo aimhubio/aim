@@ -120,7 +120,7 @@ The trend-line calculation methods:
 - Min
 - Max
 
-The area calcualtion methods:
+The area calculation methods:
 - None _(when you'd like to remove the area)_
 - Min/Max
 - Mean +/- Standard Deviation
@@ -341,7 +341,7 @@ Use select grouping dropdown which is located in the right top corner of the ima
 ###### How to use image grouping?
 
 - Click on grouping button
-- Select fields by which you want to groupe images
+- Select fields by which you want to group images
 
 Grouping will be apply after each field selection also you can select grouping mode (Group or Reverse)
 
@@ -375,7 +375,7 @@ Any change in controls will help to explore images better on the workspace
 #### Images sorting control
 
 - Click on image sorting button
-- Select fields for sorting images. Selection ordering is meaningful and data will be sorting by selection order. Bellow is visible Ordered By list where contains all selected fields from dropdown. You can remove any already selected field by clicking on `x` icon or change sorting direction by clicking radio button Asc or Desc. Default selected direction is Asc.
+- Select fields for sorting images. Selection ordering is meaningful and data will be sorting by selection order. Below is visible Ordered By list where contains all selected fields from dropdown. You can remove any already selected field by clicking on `x` icon or change sorting direction by clicking radio button Asc or Desc. Default selected direction is Asc.
 - For reset all existing sorting fields you can simply click on Reset Sorting button
 
 <img alt="Images sorting popover" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/images-explore/images-explore-sorting-desc.png">
