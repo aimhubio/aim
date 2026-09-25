@@ -29,7 +29,7 @@ Here you can see all available options you can use to configure your Run instanc
 ### Reusing Run in your Repo
 
 Sometimes you might want to add/update parameters and tracked values in your existing Run instance. This can be achieved
-trough using `run_hash` parameter. Aim generates a unique id (uuid) for your Run instance only if `run_hash` parameter
+through using `run_hash` parameter. Aim generates a unique id (uuid) for your Run instance only if `run_hash` parameter
 is not supplied. Example of re-using generated run.
 
 ```python

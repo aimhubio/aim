@@ -102,7 +102,7 @@ So you can track lots of metadata at each iteration of test step: images, texts,
 
 ### Hugging Face
 Here is how to extend the basic Hugging Face logger. 
-Below is an example of a `CustomCallback` that's derived from the `AimCallback`. The main HF method here is the `on_log()` that's overriden.
+Below is an example of a `CustomCallback` that's derived from the `AimCallback`. The main HF method here is the `on_log()` that's overridden.
 
 This allows us to track any `str` object that is passed to `on_log()` method as `aim.Text`.
 

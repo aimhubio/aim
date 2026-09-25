@@ -44,7 +44,7 @@ for epoch in range(num_epochs):
         outputs = model(images)
         loss = criterion(outputs, labels)
     
-        # Report progress assuming each iteration shoud take less than 3 sec.
+        # Report progress assuming each iteration should take less than 3 sec.
         aim_run.report_progress(expect_next_in=3)
 
         # Backward and optimize

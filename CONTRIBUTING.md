@@ -40,7 +40,7 @@ We release a new minor version (e.g., 3.8.0) every three to four week and patch 
 
 ## Contribution Process
 
-The Aim contribution process starts with filing a GitHub issue. Aim defines six categories of issues: enhancements (feature requests), bug reports, code health improvements, peformance improvements, tests, questions.
+The Aim contribution process starts with filing a GitHub issue. Aim defines six categories of issues: enhancements (feature requests), bug reports, code health improvements, performance improvements, tests, questions.
 
 Aim maintainers actively triage and respond to GitHub issues. In general, we recommend waiting for feedback from an Aim maintainer or community member before proceeding to implement a feature or patch. This is particularly important for significant changes, and will typically be labeled during triage with `phase / exploring`.
 
