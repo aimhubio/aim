@@ -185,6 +185,9 @@ class StructuredRunMixin:
 
         :getter: Returns run finalization time.
         """
+        if self.meta_run_tree is None:
+            # run is closed and its trees are released; use the value captured on close
+            return self._end_time_at_close
         try:
             return self.meta_run_tree['end_time']
         except KeyError:
@@ -269,6 +272,7 @@ class BasicRun(BaseRun, StructuredRunMixin):
         force_resume: bool = False,
     ):
         self._resources: Optional[BasicRunAutoClean] = None
+        self._end_time_at_close: Optional[float] = None
         super().__init__(run_hash, repo=repo, read_only=read_only, force_resume=force_resume)
 
         self.meta_attrs_tree: TreeView = self.meta_tree.subtree('attrs')
@@ -718,6 +722,8 @@ class BasicRun(BaseRun, StructuredRunMixin):
             return
         self._resources.close()
         self._tracker.sequence_infos.clear()
+        # keep `end_time` (and `active`) readable after the trees are released
+        self._end_time_at_close = self.end_time
         # de-reference trees and other resources
         del self._resources
         del self._props

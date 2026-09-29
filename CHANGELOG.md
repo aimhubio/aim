@@ -4,6 +4,7 @@
 
 ### Fixes: 
 - Fix issues with tag false reassignment (mihran113)
+- Fix `TypeError` when reading `run.active` / `run.end_time` after `run.close()` (eastagiletracker)
 
 ## 3.29.1 May 8, 2025:
 
