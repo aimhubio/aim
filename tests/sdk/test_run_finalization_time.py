@@ -53,3 +53,39 @@ class TestRunFinalizedAtWithTrackingQueue(TestRunFinalizedAt):
     def tearDownClass(cls) -> None:
         Run.track_in_thread = False
         super().tearDownClass()
+
+
+class TestRunStateAfterClose(TestBase):
+    def test_active_after_close(self):
+        """covers https://github.com/aimhubio/aim/issues/3205"""
+        run = Run(system_tracking_interval=None)
+        run.track(1.0, name='seq')
+        self.assertTrue(run.active)
+        self.assertIsNone(run.end_time)
+        self.assertIsNone(run.finalized_at)
+
+        run.close()
+        self.assertFalse(run.active)
+        self.assertIsNotNone(run.end_time)
+        self.assertIsNotNone(run.finalized_at)
+        self.assertGreaterEqual(run.duration, 0)
+
+    def test_close_is_idempotent(self):
+        run = Run(system_tracking_interval=None)
+        run.close()
+        end_time = run.end_time
+        run.close()
+        self.assertFalse(run.active)
+        self.assertEqual(end_time, run.end_time)
+
+
+class TestRunStateAfterCloseWithTrackingQueue(TestRunStateAfterClose):
+    @classmethod
+    def setUpClass(cls) -> None:
+        super().setUpClass()
+        Run.track_in_thread = True
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        Run.track_in_thread = False
+        super().tearDownClass()
