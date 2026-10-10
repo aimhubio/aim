@@ -16,24 +16,24 @@ $yellow: #ffd76e;
 $cyan: #5fc8ff;
 $indigo: #7785ff;
 $white: #ffffff;
-$pico: #1c2852;
-$grayish: #dee6f3;
-$cuddle: #bdcee8;
+$pico: var(--aim-pico, #1c2852);
+$grayish: var(--aim-grayish, #dee6f3);
+$cuddle: var(--aim-cuddle, #bdcee8);
 $denim: $primary-color;
 $black: #000000;
 $transparent: transparent;
 
-$grey: #586069;
+$grey: var(--aim-grey, #586069);
 
-$grey-darker: #24292e;
-$grey-bg: #f7f7f7;
-$grey-lighter: #e8e8e8;
-$grey-light-xx: #d4d4d4;
-$primary-dark: #243969;
-$primary-darker: #142447;
-$primary-bg: #f7faff;
-$primary-lighter: #dfe6f7;
-$primary-light: #7a94cc;
+$grey-darker: var(--aim-grey-darker, #24292e);
+$grey-bg: var(--aim-grey-bg, #f7f7f7);
+$grey-lighter: var(--aim-grey-lighter, #e8e8e8);
+$grey-light-xx: var(--aim-grey-light-xx, #d4d4d4);
+$primary-dark: var(--aim-primary-dark, #243969);
+$primary-darker: var(--aim-primary-darker, #142447);
+$primary-bg: var(--aim-primary-bg, #f7faff);
+$primary-lighter: var(--aim-primary-lighter, #dfe6f7);
+$primary-light: var(--aim-primary-light, #7a94cc);
 
 // tinted colors
 $primary-color-110: #1266cc;
@@ -43,52 +43,52 @@ $primary-color-70: #5b9dee;
 $primary-color-60: #72abf0;
 $primary-color-50: #89b9f2;
 $primary-color-40: #a1c7f5;
-$primary-color-30: #d0e3fa;
+$primary-color-30: var(--aim-primary-color-30, #d0e3fa);
 $primary-color-25: #c4dcf9;
-$primary-color-20: #dceafb;
-$primary-color-10: #e8f1fc;
-$primary-color-5: #f3f8fe;
+$primary-color-20: var(--aim-primary-color-20, #dceafb);
+$primary-color-10: var(--aim-primary-color-10, #e8f1fc);
+$primary-color-5: var(--aim-primary-color-5, #f3f8fe);
 
-$pico-100: #1c2852;
-$pico-90: #2a355a;
-$pico-80: #414b6d;
-$pico-70: #606986;
-$pico-60: #6b728b;
-$pico-50: #83899e;
-$pico-40: #a4a9ba;
-$pico-30: #b5b9c5;
-$pico-20: #d2d4dc;
-$pico-10: #e8eaee;
-$pico-5: #f4f4f6;
-$pico-2: #fafafb;
+$pico-100: var(--aim-pico-100, #1c2852);
+$pico-90: var(--aim-pico-90, #2a355a);
+$pico-80: var(--aim-pico-80, #414b6d);
+$pico-70: var(--aim-pico-70, #606986);
+$pico-60: var(--aim-pico-60, #6b728b);
+$pico-50: var(--aim-pico-50, #83899e);
+$pico-40: var(--aim-pico-40, #a4a9ba);
+$pico-30: var(--aim-pico-30, #b5b9c5);
+$pico-20: var(--aim-pico-20, #d2d4dc);
+$pico-10: var(--aim-pico-10, #e8eaee);
+$pico-5: var(--aim-pico-5, #f4f4f6);
+$pico-2: var(--aim-pico-2, #fafafb);
 
-$cuddle-110: #90afda;
-$cuddle-70: #d1ddef;
-$cuddle-50: #dee6f3;
-$cuddle-30: #ebf0f8;
-$cuddle-20: #f2f5fa;
-$cuddle-10: #f8fafd;
+$cuddle-110: var(--aim-cuddle-110, #90afda);
+$cuddle-70: var(--aim-cuddle-70, #d1ddef);
+$cuddle-50: var(--aim-cuddle-50, #dee6f3);
+$cuddle-30: var(--aim-cuddle-30, #ebf0f8);
+$cuddle-20: var(--aim-cuddle-20, #f2f5fa);
+$cuddle-10: var(--aim-cuddle-10, #f8fafd);
 
-$mark-color: #fffac1;
+$mark-color: var(--aim-mark-color, #fffac1);
 
 $warning-color-80: #edc949;
 $warning-color-50: #f4dd8d;
 $warning-color-25: #fff2bf;
-$warning-color-10: #fffae6;
-$warning-color-5: #f7f7f3;
+$warning-color-10: var(--aim-warning-color-10, #fffae6);
+$warning-color-5: var(--aim-warning-color-5, #f7f7f3);
 
 $success-color-100: #2bc784;
 $success-color-80: #55d29d;
 $success-color-50: #95e3c2;
 $success-color-25: #caf1e0;
-$success-color-10: #eaf9f3;
-$success-color-5: #eef7f8;
+$success-color-10: var(--aim-success-color-10, #eaf9f3);
+$success-color-5: var(--aim-success-color-5, #eef7f8);
 
 $error-color-80: #eb716d;
 $error-color-50: #f3a7a4;
 $error-color-25: #f9d3d1;
-$error-color-10: #fdeded;
-$error-color-5: #f7f1f5;
+$error-color-10: var(--aim-error-color-10, #fdeded);
+$error-color-5: var(--aim-error-color-5, #f7f1f5);
 
 // border
 $border-width-main: 0.0625rem solid;

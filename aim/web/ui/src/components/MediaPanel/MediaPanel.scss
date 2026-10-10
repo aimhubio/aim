@@ -42,7 +42,7 @@
       flex: 1;
     }
     &__controls {
-      border-left: 0.0625rem solid #dceafb;
+      border-left: 0.0625rem solid var(--aim-primary-color-20, #dceafb);
       width: 3.75rem;
       max-height: 100%;
       overflow-y: auto;

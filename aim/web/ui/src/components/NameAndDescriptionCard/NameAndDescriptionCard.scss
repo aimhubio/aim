@@ -3,7 +3,7 @@
 .NameAndDescriptionCard {
   width: 100%;
   padding: $space-lg;
-  background-color: #ffffff;
+  background-color: var(--aim-surface);
   border: $border-grey;
   margin-bottom: $space-unit;
   border-radius: $border-radius-lg;

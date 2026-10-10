@@ -1,6 +1,6 @@
 @use 'src/styles/abstracts' as *;
 
-$logs-box-background: #ffffff;
+$logs-box-background: var(--aim-surface);
 
 .RunDetailLogsTabWrapper {
   overflow: hidden;

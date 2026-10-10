@@ -16,7 +16,7 @@ const TooltipContent = styled(Tooltip.Content, {
   border: '1px solid $colors$border-bgborder-airly-opacity',
   wordBreak: 'break-word',
   lineHeight: 1,
-  backgroundColor: 'white',
+  backgroundColor: 'var(--aim-surface-raised)',
   bs: '$moderate',
   zIndex: 1000,
   userSelect: 'none',

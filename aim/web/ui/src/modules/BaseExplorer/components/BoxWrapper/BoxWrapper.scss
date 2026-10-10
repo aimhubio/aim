@@ -2,7 +2,7 @@
 
 .BoxWrapper {
   position: absolute;
-  background-color: #fff;
+  background-color: var(--aim-surface);
   display: flex;
   flex-direction: column;
   box-shadow: -1px -1px 0 0px $pico-30, inset -1px -1px 0 0px $pico-30;
@@ -22,11 +22,11 @@
     left: calc(100% - 24px - 0.25rem);
     z-index: 1;
     text-align: right;
-    background-color: $white;
+    background-color: var(--aim-surface);
   }
   &__depthSlider {
     padding: 0;
-    background-color: white;
+    background-color: var(--aim-surface);
     width: calc(100% - 2px);
     height: 1.75rem;
     margin-bottom: toRem(1px);
@@ -54,7 +54,7 @@
       position: absolute;
       padding: 0 $space-xs;
       z-index: 1;
-      background-color: white;
+      background-color: var(--aim-surface);
       width: calc(100% - 20rem);
       height: 2rem;
       bottom: 0;

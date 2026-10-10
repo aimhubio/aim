@@ -14,7 +14,7 @@
   left: 0;
   width: 200px;
   height: 30px;
-  background-color: #fff;
+  background-color: var(--aim-surface);
   border-bottom: $border-dark;
   border-right: $border-dark;
   z-index: 3;
@@ -38,7 +38,7 @@
   height: 30px;
   min-width: 100%;
   border-bottom: $border-dark;
-  background-color: #fff;
+  background-color: var(--aim-surface);
   z-index: 2;
 }
 
@@ -48,6 +48,6 @@
   width: 200px;
   min-height: 100%;
   border-right: $border-dark;
-  background-color: #fff;
+  background-color: var(--aim-surface);
   z-index: 2;
 }

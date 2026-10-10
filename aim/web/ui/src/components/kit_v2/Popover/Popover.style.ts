@@ -13,7 +13,7 @@ const StyledContent = styled(PopoverPrimitive.Content, {
   padding: '$7',
   width: 340,
   zIndex: '$popover',
-  backgroundColor: 'white',
+  backgroundColor: 'var(--aim-surface-raised)',
   border: '1px solid rgba(90, 102, 122, 0.2)',
   boxShadow: '0 2px 4px -4px rgba(54, 61, 73, 0.25)',
   '@media (prefers-reduced-motion: no-preference)': {

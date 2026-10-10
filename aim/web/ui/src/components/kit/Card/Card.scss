@@ -6,7 +6,7 @@
   padding: $space-lg;
   border: $border-grey;
   border-radius: $border-radius-lg;
-  background: $white;
+  background: var(--aim-surface);
   width: 100%;
   &__header {
     margin-bottom: $space-md;

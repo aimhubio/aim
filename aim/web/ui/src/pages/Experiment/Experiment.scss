@@ -4,7 +4,7 @@
   height: 100%;
   background: $cuddle-10;
   &__tabsContainer {
-    background: $white;
+    background: var(--aim-surface);
     box-shadow: 0 toRem(4px) toRem(6px) rgba(144, 175, 218, 0.2),
       0 1px 0 0 $cuddle-20;
     border-top: $border-grey-lighter;

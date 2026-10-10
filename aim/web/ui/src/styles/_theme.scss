@@ -1,0 +1,164 @@
+// Shared surface tokens. Component styles can migrate to these without
+// changing the light palette or inverting images and series colors.
+:root {
+  --aim-surface-rgb: 255, 255, 255;
+  --aim-pico: #1c2852;
+  --aim-pico-100: #1c2852;
+  --aim-pico-90: #2a355a;
+  --aim-pico-80: #414b6d;
+  --aim-pico-70: #606986;
+  --aim-pico-60: #6b728b;
+  --aim-pico-50: #83899e;
+  --aim-pico-40: #a4a9ba;
+  --aim-pico-30: #b5b9c5;
+  --aim-pico-20: #d2d4dc;
+  --aim-pico-10: #e8eaee;
+  --aim-pico-5: #f4f4f6;
+  --aim-pico-2: #fafafb;
+  --aim-grayish: #dee6f3;
+  --aim-cuddle: #bdcee8;
+  --aim-cuddle-110: #90afda;
+  --aim-cuddle-70: #d1ddef;
+  --aim-cuddle-50: #dee6f3;
+  --aim-cuddle-30: #ebf0f8;
+  --aim-cuddle-20: #f2f5fa;
+  --aim-cuddle-10: #f8fafd;
+  --aim-grey: #586069;
+  --aim-grey-darker: #24292e;
+  --aim-grey-bg: #f7f7f7;
+  --aim-grey-lighter: #e8e8e8;
+  --aim-grey-light-xx: #d4d4d4;
+  --aim-primary-dark: #243969;
+  --aim-primary-darker: #142447;
+  --aim-primary-bg: #f7faff;
+  --aim-primary-lighter: #dfe6f7;
+  --aim-primary-light: #7a94cc;
+  --aim-primary-color-30: #d0e3fa;
+  --aim-primary-color-20: #dceafb;
+  --aim-primary-color-10: #e8f1fc;
+  --aim-primary-color-5: #f3f8fe;
+  --aim-warning-color-10: #fffae6;
+  --aim-warning-color-5: #f7f7f3;
+  --aim-success-color-10: #eaf9f3;
+  --aim-success-color-5: #eef7f8;
+  --aim-error-color-10: #fdeded;
+  --aim-error-color-5: #f7f1f5;
+  --aim-mark-color: #fffac1;
+
+  --aim-surface: #ffffff;
+  --aim-surface-raised: #ffffff;
+  --aim-text: #414b6d;
+  --aim-text-secondary: #6b728b;
+  --aim-border: #e8f1fc;
+}
+
+:root[data-aim-theme='dark'] {
+  color-scheme: dark;
+  --aim-surface-rgb: 21, 26, 38;
+  --aim-pico: #e5eaf3;
+  --aim-pico-100: #e5eaf3;
+  --aim-pico-90: #d8dfec;
+  --aim-pico-80: #cbd5e5;
+  --aim-pico-70: #b2bdd1;
+  --aim-pico-60: #a5b2c9;
+  --aim-pico-50: #97a5bd;
+  --aim-pico-40: #8593ad;
+  --aim-pico-30: #67758d;
+  --aim-pico-20: #45516a;
+  --aim-pico-10: #303b50;
+  --aim-pico-5: #252e40;
+  --aim-pico-2: #1b2231;
+  --aim-grayish: #354158;
+  --aim-cuddle: #64748b;
+  --aim-cuddle-110: #7288a8;
+  --aim-cuddle-70: #44516a;
+  --aim-cuddle-50: #354158;
+  --aim-cuddle-30: #29354a;
+  --aim-cuddle-20: #222d40;
+  --aim-cuddle-10: #1b2434;
+  --aim-grey: #b2bdd1;
+  --aim-grey-darker: #e5eaf3;
+  --aim-grey-bg: #202838;
+  --aim-grey-lighter: #39445c;
+  --aim-grey-light-xx: #45516a;
+  --aim-primary-dark: #b5c7ef;
+  --aim-primary-darker: #cbd8f5;
+  --aim-primary-bg: #1b283d;
+  --aim-primary-lighter: #303e57;
+  --aim-primary-light: #8daee9;
+  --aim-primary-color-30: #344f71;
+  --aim-primary-color-20: #2a405e;
+  --aim-primary-color-10: #27374f;
+  --aim-primary-color-5: #1b283d;
+  --aim-warning-color-10: #3b321d;
+  --aim-warning-color-5: #2d2b23;
+  --aim-success-color-10: #19392f;
+  --aim-success-color-5: #1c2d2e;
+  --aim-error-color-10: #40272e;
+  --aim-error-color-5: #322431;
+  --aim-mark-color: #574817;
+
+  --aim-surface: #151a26;
+  --aim-surface-raised: #202838;
+  --aim-text: #e5eaf3;
+  --aim-text-secondary: #b2bdd1;
+  --aim-border: #39445c;
+}
+
+:root[data-aim-theme='light'] {
+  color-scheme: light;
+}
+
+:root[data-aim-theme='dark'] {
+  --aim-ui-colors-neutral-soft: #39445c;
+  --aim-ui-colors-neutral-gentle: #202838;
+  --aim-ui-colors-neutral-light: #202838;
+  --aim-ui-colors-neutral-airly: #202838;
+  --aim-ui-colors-neutral-lumos: #202838;
+  --aim-ui-colors-bgborder-soft: #39445c;
+  --aim-ui-colors-bgborder-light: #202838;
+  --aim-ui-colors-bgborder-airly: #202838;
+  --aim-ui-colors-bgborder-lumos: #202838;
+  --aim-ui-colors-background-default-neutral-soft: #202838;
+  --aim-ui-colors-background-default-neutral-gentle: #202838;
+  --aim-ui-colors-background-hover-neutral-light: #202838;
+  --aim-ui-colors-background-default-neutral-light: #202838;
+  --aim-ui-colors-background-disable-neutral-light: #202838;
+  --aim-ui-colors-background-default-neutral-airly: #202838;
+  --aim-ui-colors-background-hover-neutral-airly: #202838;
+  --aim-ui-colors-background-default-neutral-lumos: #202838;
+  --aim-ui-colors-background-hover-neutral-lumos: #202838;
+  --aim-ui-colors-background-focus-neutral-lumos: #202838;
+  --aim-ui-colors-background-applied-neutral-lumos: #202838;
+  --aim-ui-colors-background-disable-neutral-gentle: #202838;
+  --aim-ui-colors-background-disable-neutral-lumos: #202838;
+  --aim-ui-colors-background-hover-bgborder-airly: #202838;
+  --aim-ui-colors-background-default-bgborder-lumos: #202838;
+  --aim-ui-colors-border-hover-neutral-soft: #39445c;
+  --aim-ui-colors-border-disable-neutral-soft: #39445c;
+  --aim-ui-colors-border-default-neutral-gentle: #39445c;
+  --aim-ui-colors-border-hover-neutral-gentle: #39445c;
+  --aim-ui-colors-border-disable-neutral-light: #39445c;
+  --aim-ui-colors-border-focus-neutral-soft: #39445c;
+  --aim-ui-colors-border-default-bgborder-soft: #39445c;
+  --aim-ui-colors-border-default-bgborder-light: #39445c;
+  --aim-ui-colors-border-default-bgborder-airly: #39445c;
+  --aim-ui-colors-border-default-bgborder-lumos: #39445c;
+  --aim-ui-colors-text-active-secondary-dark: #e5eaf3;
+  --aim-ui-colors-text-hover-secondary-bold: #e5eaf3;
+  --aim-ui-colors-text-default-secondary-plain: #e5eaf3;
+  --aim-ui-colors-text-focus-secondary-plain: #e5eaf3;
+  --aim-ui-colors-text-disable-secondary-soft: #b2bdd1;
+  --aim-ui-colors-text-default-text-deep: #e5eaf3;
+  --aim-ui-colors-text-default-text-bold: #e5eaf3;
+  --aim-ui-colors-text-default-text-muted: #b2bdd1;
+  --aim-ui-colors-text-disable-text-subtle: #b2bdd1;
+  --aim-ui-colors-icon-default-text-deep: #e5eaf3;
+  --aim-ui-colors-icon-default-text-bold: #e5eaf3;
+  --aim-ui-colors-icon-default-text-muted: #b2bdd1;
+  --aim-ui-colors-icon-disable-text-subtle: #b2bdd1;
+  --aim-ui-colors-icon-default-text-soft: #b2bdd1;
+  --aim-ui-colors-icon-disable-text-pastel: #b2bdd1;
+  --aim-ui-colors-separator-default-bgborder-light: #39445c;
+  --aim-ui-colors-separator-default-bgborder-airly: #39445c;
+}

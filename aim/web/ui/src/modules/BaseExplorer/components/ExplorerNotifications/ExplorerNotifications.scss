@@ -2,7 +2,7 @@
 
 .ExplorerNotifications {
   .MuiPaper-root {
-    background: $white;
+    background: var(--aim-surface);
     height: 4rem;
     display: flex;
     align-items: center;

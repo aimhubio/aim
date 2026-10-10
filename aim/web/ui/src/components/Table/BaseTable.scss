@@ -35,15 +35,15 @@ $table-prefix: BaseTable !default;
   $table-padding-right: 15px !default;
   $column-padding: 7.5px !default;
 
-  $background-color: #ffffff !default;
-  $box-shadow-color: #eeeeee !default;
+  $background-color: var(--aim-surface) !default;
+  $box-shadow-color: var(--aim-border, #eeeeee) !default;
   $box-shadow-offset: 2px !default;
   $box-shadow-blur: 4px !default;
-  $border: 1px solid #eeeeee !default;
-  $header-background-color: #f8f8f8 !default;
+  $border: 1px solid var(--aim-border, #eeeeee) !default;
+  $header-background-color: var(--aim-pico-2, #f8f8f8) !default;
   $header-font-weight: $font-600 !default;
-  $row-hovered-background-color: #e2f2ff !default;
-  $header-cell-hovered-background-color: #f3f3f3 !default;
+  $row-hovered-background-color: var(--aim-primary-color-10, #e2f2ff) !default;
+  $header-cell-hovered-background-color: var(--aim-pico-5, #f3f3f3) !default;
   $sort-indicator-hovered-color: #888888 !default;
   $column-resizer-color: #5bb4ff !default;
 
@@ -101,7 +101,7 @@ $table-prefix: BaseTable !default;
 
       .#{$table-prefix}__header {
         background-color: $header-background-color;
-        color: #1c2852;
+        color: var(--aim-pico, var(--aim-pico-100, #1c2852));
       }
     }
 

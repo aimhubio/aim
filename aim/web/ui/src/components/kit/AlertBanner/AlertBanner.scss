@@ -51,7 +51,7 @@
   line-height: 40px;
   align-items: center;
   justify-content: center;
-  color: #414b6d;
+  color: var(--aim-pico-80, #414b6d);
   z-index: 1;
 
   & > div {
