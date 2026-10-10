@@ -83,7 +83,7 @@
       }
       &__itemBox {
         font-size: $text-sm;
-        background-color: rgba($primary-bg, 0.7);
+        background-color: color-mix(in srgb, $primary-bg 70%, transparent);
         display: flex;
         flex-direction: column;
         flex: 1;
@@ -131,7 +131,7 @@
             border-radius: $border-radius-main;
             box-shadow: inset 0px -12px 20px -16px rgb(0 0 0 / 10%);
             transition: box-shadow ease-out 0.18s;
-            
+
             &:hover {
               box-shadow: inset 0px -12px 20px -16px rgb(0 0 0 / 20%);
 

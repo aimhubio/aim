@@ -22,7 +22,7 @@ $border-radius: 0.2rem;
     height: 100%;
     width: 100%;
     box-sizing: border-box;
-    background: #fff;
+    background: var(--aim-surface);
     &--small {
       --cell-height: 22px;
       --group-margin: 2px;
@@ -109,7 +109,7 @@ $border-radius: 0.2rem;
 
 .Table__pane--selection {
   left: 0;
-  background: #fff;
+  background: var(--aim-surface);
   z-index: 2;
   &.withShadow {
     box-shadow: 1px 0 3px 0 $cuddle;
@@ -132,7 +132,7 @@ $border-radius: 0.2rem;
 .Table__column {
   display: flex;
   flex-direction: column;
-  background-color: #fff;
+  background-color: var(--aim-surface);
   z-index: 0;
   width: stretch;
   width: -webkit-fill-available;
@@ -230,7 +230,7 @@ $border-radius: 0.2rem;
 }
 
 .Table__action__popup {
-  background-color: #fff;
+  background-color: var(--aim-surface);
   border: 1px solid $primary-lighter;
   border-radius: $border-radius;
   box-shadow: $box-shadow;
@@ -288,7 +288,7 @@ $border-radius: 0.2rem;
   border-right: 1px solid $border-color;
   text-align: left;
   box-sizing: border-box;
-  background-color: #fff;
+  background-color: var(--aim-surface);
   white-space: nowrap;
   text-overflow: ellipsis;
   height: var(--cell-height);
@@ -580,7 +580,7 @@ $border-radius: 0.2rem;
 
 .Popover__body {
   position: fixed;
-  background-color: #fff;
+  background-color: var(--aim-surface);
   outline: 0;
   overflow-y: auto;
   z-index: 999;
@@ -604,7 +604,7 @@ $border-radius: 0.2rem;
   }
   &__stroke {
     display: block;
-    background-color: #fff;
+    background-color: var(--aim-surface);
     width: 2.5rem;
     height: 1rem;
     margin-left: 0.5rem;

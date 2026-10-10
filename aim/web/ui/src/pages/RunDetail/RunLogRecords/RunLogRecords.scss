@@ -4,7 +4,7 @@
   padding: $space-lg 0;
   height: 100%;
   &__contentWrapper {
-    background: $white;
+    background: var(--aim-surface);
     border: $border-grey;
     border-radius: $border-radius-lg;
     height: 100%;
@@ -15,7 +15,7 @@
         display: none;
         height: toRem(50px);
         width: 100%;
-        background: $white;
+        background: var(--aim-surface);
         position: absolute;
         bottom: 0;
         left: 0;

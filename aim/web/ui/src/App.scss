@@ -3,14 +3,16 @@
 @import 'src/styles/components/_tooltip.scss';
 @import 'src/styles/components/_inputs.scss';
 @import 'src/styles/_global.scss';
+@import 'src/styles/_theme.scss';
 
 body {
+  background-color: var(--aim-surface);
   -webkit-font-smoothing: antialiased;
   overscroll-behavior: none;
 }
 
 #root {
-  background-color: #ffff;
+  background-color: var(--aim-surface);
 }
 .mainContainer {
   width: calc(100% - 75px);

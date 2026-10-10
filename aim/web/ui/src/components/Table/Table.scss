@@ -76,7 +76,7 @@
       }
       &:nth-child(odd) {
         .BaseTable__row-cell {
-          background: $white;
+          background: var(--aim-surface);
         }
       }
       &:nth-child(even) {

@@ -45,7 +45,7 @@
     white-space: nowrap;
     padding: $space-xxxxxs $space-xxxs;
     border-radius: $border-radius-xss;
-    background-color: white;
+    background-color: var(--aim-surface);
     box-shadow: 0 1px 2px 0 #00000029;
     user-select: none;
   }

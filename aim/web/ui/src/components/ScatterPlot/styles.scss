@@ -1,7 +1,7 @@
 @use 'src/styles/abstracts' as *;
 
 .ScatterPlot {
-  background-color: white;
+  background-color: var(--aim-surface);
   height: 100%;
   width: 100%;
   position: relative;

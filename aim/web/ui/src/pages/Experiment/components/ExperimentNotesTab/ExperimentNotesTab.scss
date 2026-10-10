@@ -79,12 +79,12 @@
       }
       hr {
         &::before {
-          border-top: 0.0625rem solid #bdcee8;
+          border-top: 0.0625rem solid var(--aim-cuddle, #bdcee8);
         }
       }
       .page-break {
         &::before {
-          border-top: 0.0625rem dashed #bdcee8;
+          border-top: 0.0625rem dashed var(--aim-cuddle, #bdcee8);
         }
       }
       .heading-actions {
@@ -121,7 +121,7 @@
 }
 #block-menu-container {
   box-shadow: 0 0.25rem 0.375rem rgb(144 175 218 / 20%);
-  border: 0.0625rem solid #e8f1fc;
+  border: 0.0625rem solid var(--aim-primary-color-10, #e8f1fc);
   svg {
     fill: $pico-80;
   }

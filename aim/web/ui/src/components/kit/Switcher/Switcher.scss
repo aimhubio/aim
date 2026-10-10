@@ -11,7 +11,7 @@
 
   &__circle {
     border-radius: 0.625rem;
-    background-color: #fff;
+    background-color: var(--aim-surface);
     transition: all 0.1s linear;
     position: absolute;
     left: 2px;
@@ -128,7 +128,7 @@
       width: 1rem;
       height: 1rem;
       &__checked {
-       left: calc(100% - 18px);
+        left: calc(100% - 18px);
       }
     }
     &:hover {
@@ -153,7 +153,7 @@
 
   &__outlined {
     border: 0.0625rem solid $pico-50;
-    background-color: #fff;
+    background-color: var(--aim-surface);
     color: $pico-50;
 
     &.Switcher__primary {
@@ -181,7 +181,7 @@
 
       &.Switcher__checked {
         border-color: $primary-color;
-        background-color: #fff;
+        background-color: var(--aim-surface);
         color: $primary-color;
       }
     }

@@ -69,7 +69,7 @@
       justify-content: space-between;
       align-items: center;
       padding: 1.25rem;
-      background: #ffffff;
+      background: var(--aim-surface);
       border-bottom: $border-grey;
       .MuiInputBase-root {
         height: 2rem;
@@ -81,11 +81,11 @@
         .MuiInputBase-input {
           font-weight: $font-500;
           font-size: $text-md;
-          color: #414b6d;
+          color: var(--aim-pico-80, #414b6d);
           &::placeholder {
             font-weight: $font-500;
             font-size: $text-md;
-            color: #606986;
+            color: var(--aim-pico-70, #606986);
             opacity: 1;
           }
         }
@@ -116,7 +116,7 @@
         align-items: center;
         justify-content: flex-start;
         height: 40px;
-        background-color: $white;
+        background-color: var(--aim-surface);
         &::before {
           content: '';
           width: 34px;
@@ -136,7 +136,7 @@
       width: 350px;
       &__titleBox {
         height: 40px;
-        border-bottom: 1px solid #f2f5fa;
+        border-bottom: 1px solid var(--aim-cuddle-20, #f2f5fa);
         display: flex;
         justify-content: center;
         align-items: center;
@@ -218,7 +218,7 @@
     }
     &__header {
       &-row {
-        background: #ebf0f8;
+        background: var(--aim-cuddle-30, #ebf0f8);
         border-bottom: none;
       }
       &-cell {
@@ -233,7 +233,7 @@
     &__row {
       border-bottom: none;
       &--hovered {
-        background: #e8f1fc;
+        background: var(--aim-primary-color-10, #e8f1fc);
       }
       &-cell {
         border-right: $border-grey;

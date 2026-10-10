@@ -67,7 +67,7 @@
           margin-right: 0;
         }
         .MuiOutlinedInput-root {
-          background-color: $white;
+          background-color: var(--aim-surface);
         }
         label {
           font-size: $text-sm;

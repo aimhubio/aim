@@ -6,6 +6,7 @@ import _ from 'lodash-es';
 import Editor, { useMonaco } from '@monaco-editor/react';
 
 import { Icon, Text } from 'components/kit';
+import { ThemeContext } from 'components/Theme/Theme';
 
 import { getMonacoConfig } from 'config/monacoConfig/monacoConfig';
 import { DOCUMENTATIONS } from 'config/references';
@@ -30,6 +31,7 @@ function AutocompleteInput({
   onEnter,
   onChange,
 }: IAutocompleteInputProps) {
+  const { dark } = React.useContext(ThemeContext);
   const [hasSelection, setHasSelection] = React.useState(false);
   const [containerWidth, setContainerWidth] = React.useState<number>(0);
   const [focused, setFocused] = React.useState<boolean>(false);
@@ -100,8 +102,18 @@ function AutocompleteInput({
   }, [containerWidth]);
 
   const monacoConfig: Record<any, any> = React.useMemo(() => {
-    return getMonacoConfig(advanced);
-  }, [advanced]);
+    return getMonacoConfig(advanced, dark);
+  }, [advanced, dark]);
+
+  React.useEffect(() => {
+    if (monaco && mounted) {
+      monaco.editor.defineTheme(
+        monacoConfig.theme.name,
+        monacoConfig.theme.config,
+      );
+      monaco.editor.setTheme(monacoConfig.theme.name);
+    }
+  }, [monaco, mounted, monacoConfig]);
 
   const handleFocus: () => void = React.useCallback((): void => {
     setFocused(true);

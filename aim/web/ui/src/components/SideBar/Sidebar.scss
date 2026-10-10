@@ -16,6 +16,18 @@
     width: 75.6px;
     overflow: hidden;
   }
+  &__themeToggle {
+    align-self: center;
+    color: #d2d4dc;
+    &:hover {
+      color: #fff;
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    &:focus-visible {
+      outline: 2px solid #64b5f6;
+      outline-offset: -2px;
+    }
+  }
   &__List {
     flex: 1 100%;
     padding: 0;
@@ -60,7 +72,7 @@
         left: 0px;
         height: 40px;
         width: 3px;
-        background-color: #ffff;
+        background-color: var(--aim-surface);
         border-radius: 0 0.375rem 0.375rem 0;
       }
     }
@@ -78,14 +90,14 @@
       justify-content: center;
       font-size: $text-xxl;
       text-align: center;
-      color: $pico-20;
+      color: #d2d4dc;
       text-decoration: none;
       height: toRem(44px);
       transition: color 0.18s ease-out;
       &:hover {
-        color: $white;
+        color: #fff;
         svg {
-          fill: $white;
+          fill: #fff;
         }
       }
     }
@@ -98,6 +110,7 @@
       top: 0;
     }
     & > span {
+      color: #b5b9c5;
       text-align: center;
       margin-top: $space-xs;
     }

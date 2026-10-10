@@ -56,7 +56,7 @@ const config = {
     width: 25,
     fontFamily: 'Inconsolata, monospace',
   },
-  defaultColor: '#484f56',
+  defaultColor: 'var(--aim-text)',
 };
 
 const getGroupLegendProps: Record<string, (title?: string) => GroupLegendProp> =
@@ -78,7 +78,7 @@ const getGroupLegendProps: Record<string, (title?: string) => GroupLegendProp> =
 
           element
             ?.attr('y', y)
-            .attr('fill', '#484f56')
+            .attr('fill', 'var(--aim-text)')
             .style('outline', '1px solid #dee6f3')
             .style('border-radius', '1px')
             .style('padding', '2px')
@@ -161,7 +161,7 @@ const getGroupLegendProps: Record<string, (title?: string) => GroupLegendProp> =
 
           element
             ?.attr('y', y)
-            .attr('fill', '#484f56')
+            .attr('fill', 'var(--aim-text)')
             .style('outline', '1px solid #dee6f3')
             .style('border-radius', '1px')
             .style('padding', '2px')
@@ -188,7 +188,7 @@ const getGroupLegendProps: Record<string, (title?: string) => GroupLegendProp> =
 
           element
             ?.attr('y', y)
-            .attr('fill', '#484f56')
+            .attr('fill', 'var(--aim-text)')
             .style('outline', '1px solid #dee6f3')
             .style('border-radius', '1px')
             .style('padding', '2px')
@@ -279,7 +279,7 @@ function drawLegendArea(
     .style('fill', 'transparent');
 
   if (readOnly) {
-    bgRect.style('stroke-width', 1).style('stroke', '#bdcee8');
+    bgRect.style('stroke-width', 1).style('stroke', 'var(--aim-border)');
   }
 
   const groupsWrapper = svgWrapper

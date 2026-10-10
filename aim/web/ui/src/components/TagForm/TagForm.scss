@@ -3,7 +3,7 @@
 .TagForm {
   &__tagFormContainer {
     padding: 20px;
-    border-bottom: 1px solid #f2f5fa;
+    border-bottom: 1px solid var(--aim-cuddle-20, #f2f5fa);
     &__TextField {
       width: 100%;
       margin-top: $space-xxxs;

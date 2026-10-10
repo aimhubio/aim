@@ -6,7 +6,7 @@
   height: 3rem;
   width: 100%;
   justify-content: center;
-  background: $white;
+  background: var(--aim-surface);
   border-top: $border-main;
   border-bottom-right-radius: toRem(6px);
   .RangePanelContainer {
