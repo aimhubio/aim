@@ -1,7 +1,7 @@
 @use 'src/styles/abstracts' as *;
 
 .Dashboard {
-  background-color: #ffffff;
+  background-color: var(--aim-surface);
   overflow: hidden;
   display: flex;
   .DataList .BaseTable__row-cell {

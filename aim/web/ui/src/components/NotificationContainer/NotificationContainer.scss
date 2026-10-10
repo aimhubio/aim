@@ -8,7 +8,7 @@
     border: 0.0625rem solid #e64e48;
   }
   .MuiPaper-root {
-    background: $white;
+    background: var(--aim-surface);
     height: 4rem;
     display: flex;
     align-items: center;

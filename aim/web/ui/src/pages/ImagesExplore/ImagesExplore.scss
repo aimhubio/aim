@@ -1,7 +1,7 @@
 @use 'src/styles/abstracts' as *;
 .ImagesExplore {
   &__container {
-    background-color: #ffffff;
+    background-color: var(--aim-surface);
     min-width: 50rem;
     height: 100%;
     .ImagesExplore__visualization {

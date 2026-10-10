@@ -31,7 +31,7 @@
       padding: $space-sm 1rem $space-sm 0;
       border: 0.0625rem solid $error-color-25;
       margin-top: $space-sm;
-      background-color: $white;
+      background-color: var(--aim-surface);
       border-radius: $radius-main;
       .Text {
         color: #4a1212;
@@ -57,7 +57,7 @@
     padding: $space-xs;
     position: relative;
     z-index: 4;
-    background-color: $white;
+    background-color: var(--aim-surface);
     &:hover {
       border: 0.0625rem solid $cuddle-110;
     }

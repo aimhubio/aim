@@ -253,14 +253,14 @@ function drawAxes(args: IDrawAxesArgs): void {
       ?.append('g')
       .attr('class', 'yAxis')
       .attr('stroke-width', 0.2)
-      .attr('color', '#414b6d')
+      .attr('color', 'var(--aim-text)')
       .attr('fill', 'none')
       .call(yAxis)
       .attr('font-size', tickFontSize);
 
     axesRef.current.yAxis
       .select('.domain')
-      .attr('stroke', '#414b6d')
+      .attr('stroke', 'var(--aim-text)')
       .attr('stroke-width', 0.4);
 
     const ticks = axesRef.current.yAxis.selectAll('.tick');
@@ -272,7 +272,7 @@ function drawAxes(args: IDrawAxesArgs): void {
     if (!drawBgTickLines.y) {
       ticks
         ?.select('line')
-        .attr('stroke', '#414b6d')
+        .attr('stroke', 'var(--aim-text)')
         .attr('stroke-width', 0.4)
         .attr('y2', '0.5');
     }
@@ -288,7 +288,7 @@ function drawAxes(args: IDrawAxesArgs): void {
       ?.append('g')
       .attr('class', 'xAxis')
       .attr('stroke-width', 0.2)
-      .attr('color', '#414b6d')
+      .attr('color', 'var(--aim-text)')
       .attr('fill', 'none')
       .attr('transform', `translate(0, ${plotBoxRef.current.height})`)
       .call(xAxis)
@@ -296,7 +296,7 @@ function drawAxes(args: IDrawAxesArgs): void {
 
     axesRef.current.xAxis
       .select('.domain')
-      .attr('stroke', '#414b6d')
+      .attr('stroke', 'var(--aim-text)')
       .attr('stroke-width', 0.4);
 
     const ticks = axesRef.current.xAxis.selectAll('.tick');
@@ -313,7 +313,7 @@ function drawAxes(args: IDrawAxesArgs): void {
     if (!drawBgTickLines.x) {
       ticks
         ?.select('line')
-        .attr('stroke', '#414b6d')
+        .attr('stroke', 'var(--aim-text)')
         .attr('stroke-width', 0.4)
         .attr('y2', '0.5');
     }
@@ -327,7 +327,7 @@ function drawAxes(args: IDrawAxesArgs): void {
       .attr('text-anchor', 'end')
       .attr('alignment-baseline', 'ideographic')
       .style('font-size', '1.1em')
-      .style('fill', '#586069')
+      .style('fill', 'var(--aim-text-secondary)')
       .text(xAxisTitle);
   }
 

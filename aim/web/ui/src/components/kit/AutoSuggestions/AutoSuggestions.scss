@@ -4,9 +4,9 @@
   position: absolute;
   width: 21.875rem;
   max-width: calc(100vw - 29rem);
-  border: 0.0625rem solid #dceafb;
+  border: 0.0625rem solid var(--aim-primary-color-20, #dceafb);
   border-radius: 0.0625rem;
-  background-color: #fff;
+  background-color: var(--aim-surface);
   z-index: 9999;
   overflow: hidden;
   &__item {
@@ -19,7 +19,7 @@
     &:hover,
     &:focus-visible,
     &:focus {
-      background-color: #dceafb;
+      background-color: var(--aim-primary-color-20, #dceafb);
       outline: unset;
     }
     &:last-child {
@@ -30,6 +30,6 @@
 
 //for safari browsers
 .AutoSuggestions__item:focus {
-  background-color: #dceafb;
+  background-color: var(--aim-primary-color-20, #dceafb);
   outline: unset;
 }

@@ -6,7 +6,7 @@
   padding: $space-lg 0;
   &__content {
     height: 100%;
-    background: $white;
+    background: var(--aim-surface);
     padding: $space-lg;
     border: $border-grey;
     border-radius: $border-radius-lg;

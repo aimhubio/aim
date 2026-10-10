@@ -1,7 +1,7 @@
 @use 'src/styles/abstracts' as *;
 
 .LineChart {
-  background-color: white;
+  background-color: var(--aim-surface);
   height: 100%;
   width: 100%;
   position: relative;
@@ -54,7 +54,6 @@
         opacity: 0.8;
       }
     }
-
   }
   .ChartMouseValue {
     position: absolute;
@@ -143,7 +142,8 @@
     opacity: 1;
     paint-order: stroke;
     cursor: pointer;
-    filter: drop-shadow(0 0 0.5px #ffffff) drop-shadow(0 0 0.5px #ffffff) drop-shadow(0 0 0.5px #ffffff);
+    filter: drop-shadow(0 0 0.5px #ffffff) drop-shadow(0 0 0.5px #ffffff)
+      drop-shadow(0 0 0.5px #ffffff);
   }
 
   @keyframes inProgressIndicator {

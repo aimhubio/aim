@@ -9,7 +9,7 @@
   border-left: $border-main;
   border-right: $border-main;
   padding-left: 1.5rem;
-  background: $white;
+  background: var(--aim-surface);
   z-index: 1;
   &__title {
     flex: 1;

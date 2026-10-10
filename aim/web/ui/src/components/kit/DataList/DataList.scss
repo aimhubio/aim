@@ -38,7 +38,7 @@
     }
     &__header {
       &-row {
-        background: #ebf0f8;
+        background: var(--aim-cuddle-30, #ebf0f8);
         border-bottom: none;
       }
       &-cell {
@@ -56,7 +56,7 @@
       border-bottom: none;
       cursor: initial;
       &--hovered {
-        background: #e8f1fc;
+        background: var(--aim-primary-color-10, #e8f1fc);
       }
 
       &-cell {

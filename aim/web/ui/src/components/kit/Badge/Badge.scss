@@ -52,7 +52,7 @@
     opacity: 0.5;
   }
   &__default {
-    color: #414b6d;
+    color: var(--aim-pico-80, #414b6d);
     background-color: $cuddle-10;
     border: $border-grey;
     &:hover {

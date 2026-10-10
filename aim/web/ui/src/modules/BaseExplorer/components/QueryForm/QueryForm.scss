@@ -54,8 +54,8 @@
     max-width: 600px;
     border-radius: $radius-main;
     z-index: 10;
-    color: #586069;
-    background-color: #ffffff;
+    color: var(--aim-grey, #586069);
+    background-color: var(--aim-surface);
     .MuiAutocomplete-paper {
       box-shadow: unset;
       margin: unset;
@@ -65,7 +65,7 @@
   &__clearAll {
     height: 24px;
     width: 24px;
-    background: #e8f1fc;
+    background: var(--aim-primary-color-10, #e8f1fc);
     border-radius: 6px;
     display: flex;
     align-items: center;
@@ -78,11 +78,11 @@
       position: absolute;
       width: 20px;
       height: 34px;
-      background: rgba(255, 255, 255, 0.5);
+      background: rgba(var(--aim-surface-rgb), 0.5);
       background: linear-gradient(
-                      90deg,
-                      rgba(255, 255, 255, 0) 0%,
-                      rgba(255, 255, 255, 1) 92%
+        90deg,
+        rgba(var(--aim-surface-rgb), 0) 0%,
+        rgba(var(--aim-surface-rgb), 1) 92%
       );
       left: -20px;
       top: -5px;
@@ -138,4 +138,3 @@
     }
   }
 }
-

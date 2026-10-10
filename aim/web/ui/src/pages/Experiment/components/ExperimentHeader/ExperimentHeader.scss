@@ -3,7 +3,7 @@
 .ExperimentHeader {
   &__headerContainer {
     height: 4.375rem;
-    background: $white;
+    background: var(--aim-surface);
     display: flex;
     align-items: center;
     &__appBarBox {

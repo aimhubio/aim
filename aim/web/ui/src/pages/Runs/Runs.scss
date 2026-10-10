@@ -14,7 +14,7 @@
 }
 
 .Runs__container {
-  background-color: #ffffff;
+  background-color: var(--aim-surface);
   .Runs__paper {
     padding: 1em;
     height: 100%;
@@ -54,8 +54,8 @@
       justify-content: space-between;
       align-items: center;
       padding: 1.25rem;
-      background: #ffffff;
-      border-bottom: 0.0625rem solid #ebf0f8;
+      background: var(--aim-surface);
+      border-bottom: 0.0625rem solid var(--aim-cuddle-30, #ebf0f8);
       .MuiInputBase-root {
         height: 2rem;
         padding-left: 0.8125rem;
@@ -66,11 +66,11 @@
         .MuiInputBase-input {
           font-weight: $font-500;
           font-size: $text-sm;
-          color: #414b6d;
+          color: var(--aim-pico-80, #414b6d);
           &::placeholder {
             font-weight: $font-500;
             font-size: $text-sm;
-            color: #606986;
+            color: var(--aim-pico-70, #606986);
             opacity: 1;
           }
         }
@@ -99,7 +99,7 @@
         align-items: center;
         justify-content: flex-start;
         height: 40px;
-        background-color: $white;
+        background-color: var(--aim-surface);
         &::before {
           content: '';
           width: 34px;
@@ -119,7 +119,7 @@
       width: 350px;
       &__titleBox {
         height: 40px;
-        border-bottom: 1px solid #f2f5fa;
+        border-bottom: 1px solid var(--aim-cuddle-20, #f2f5fa);
         display: flex;
         justify-content: center;
         align-items: center;
@@ -163,7 +163,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: rgba(255, 255, 255, 0.3);
+  background-color: rgba(var(--aim-surface-rgb), 0.3);
 }
 
 .Run__list {
