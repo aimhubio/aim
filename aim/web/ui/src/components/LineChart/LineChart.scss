@@ -51,10 +51,10 @@
         opacity: 0.5;
       }
       .inProgressLineIndicator:not(.active):not(.focus) {
+        --in-progress-opacity: 0.8;
         opacity: 0.8;
       }
     }
-
   }
   .ChartMouseValue {
     position: absolute;
@@ -138,23 +138,31 @@
   }
 
   .inProgressLineIndicator {
-    animation: inProgressIndicator 0.5s cubic-bezier(0.6, -0.03, 0.22, 0.76)
-      infinite;
+    // Blink opacity in discrete steps, keeping SVG geometry fixed.
+    // Avoid the animated stroke-width and filters that repaint idle charts.
+    animation: inProgressIndicator 1s step-end infinite;
+    stroke-width: 3;
     opacity: 1;
     paint-order: stroke;
     cursor: pointer;
-    filter: drop-shadow(0 0 0.5px #ffffff) drop-shadow(0 0 0.5px #ffffff) drop-shadow(0 0 0.5px #ffffff);
+
+    &.active,
+    &.focus {
+      animation: none;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      animation: none;
+    }
   }
 
   @keyframes inProgressIndicator {
-    0% {
-      stroke-width: 3;
+    0%,
+    100% {
+      opacity: var(--in-progress-opacity, 1);
     }
     50% {
-      stroke-width: 5;
-    }
-    100% {
-      stroke-width: 3;
+      opacity: calc(var(--in-progress-opacity, 1) * 0.5);
     }
   }
 }
