@@ -3,7 +3,10 @@ import { AppNameEnum } from 'services/models/explorer';
 const WHITE = '#fff';
 const TEXT_COLOR = '#414b6d';
 const BORDER_COLOR = '#a1c7f5';
-export const getMonacoConfig = (advanced = false): Record<any, any> => ({
+export const getMonacoConfig = (
+  advanced = false,
+  dark = false,
+): Record<any, any> => ({
   height: advanced ? '62px' : '24px',
   options: {
     lineNumbers: 'off',
@@ -33,27 +36,29 @@ export const getMonacoConfig = (advanced = false): Record<any, any> => ({
   theme: {
     name: 'aim-theme',
     config: {
-      base: 'vs',
+      base: dark ? 'vs-dark' : 'vs',
       inherit: true,
-      rules: [{ background: 'ffffff' }],
+      rules: [{ background: dark ? '151a26' : 'ffffff' }],
       colors: {
-        'editor.foreground': TEXT_COLOR,
-        'editor.background': WHITE,
+        'editor.foreground': dark ? '#e5eaf3' : TEXT_COLOR,
+        'editor.background': dark ? '#151a26' : WHITE,
         'editorCursor.foreground': '#83899e',
-        'dropdown.background': WHITE,
-        'editorSuggestWidget.background': WHITE,
-        'editorSuggestWidget.border': BORDER_COLOR,
-        'editorSuggestWidget.selectedBackground': '#dceafb',
-        'editorSuggestWidget.selectedForeground': TEXT_COLOR,
-        'editorSuggestWidget.highlightForeground': '#1c2852',
-        'editorSuggestWidget.focusHighlightForeground': '#1c2852',
-        'editorSuggestWidget.foreground': TEXT_COLOR,
-        'list.hoverBackground': '#f3f8fe',
-        'scrollbar.shadow': WHITE,
-        'editorHoverWidget.background': WHITE,
-        'editorHoverWidget.border': BORDER_COLOR,
-        'editorHoverWidget.statusBarBackground': WHITE,
-        'editorHoverWidget.foreground': TEXT_COLOR,
+        'dropdown.background': dark ? '#151a26' : WHITE,
+        'editorSuggestWidget.background': dark ? '#151a26' : WHITE,
+        'editorSuggestWidget.border': dark ? '#45516a' : BORDER_COLOR,
+        'editorSuggestWidget.selectedBackground': dark ? '#2a405e' : '#dceafb',
+        'editorSuggestWidget.selectedForeground': dark ? '#e5eaf3' : TEXT_COLOR,
+        'editorSuggestWidget.highlightForeground': dark ? '#b5c7ef' : '#1c2852',
+        'editorSuggestWidget.focusHighlightForeground': dark
+          ? '#b5c7ef'
+          : '#1c2852',
+        'editorSuggestWidget.foreground': dark ? '#e5eaf3' : TEXT_COLOR,
+        'list.hoverBackground': dark ? '#27374f' : '#f3f8fe',
+        'scrollbar.shadow': dark ? '#151a26' : WHITE,
+        'editorHoverWidget.background': dark ? '#151a26' : WHITE,
+        'editorHoverWidget.border': dark ? '#45516a' : BORDER_COLOR,
+        'editorHoverWidget.statusBarBackground': dark ? '#151a26' : WHITE,
+        'editorHoverWidget.foreground': dark ? '#e5eaf3' : TEXT_COLOR,
       },
     },
   },

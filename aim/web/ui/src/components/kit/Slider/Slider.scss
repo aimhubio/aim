@@ -20,7 +20,7 @@
       background: $primary-color;
     }
     .MuiSlider-thumb {
-      background: $white;
+      background: var(--aim-surface);
       border: 0.09375rem solid $primary-color;
       margin-top: -0.25rem;
       margin-left: -$space-xxs;
@@ -32,7 +32,7 @@
         width: 2.3125rem;
         height: 1.1875rem;
         border: 0.0625rem solid $primary-color;
-        background: $white;
+        background: var(--aim-surface);
         border-radius: 0.4375rem;
         transform: unset;
         span {

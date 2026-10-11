@@ -43,11 +43,11 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  background-color: #fff;
+  background-color: var(--aim-surface);
 
   .monaco-editor-background,
   .monaco-editor .margin {
-    background-color: #fff;
+    background-color: var(--aim-surface);
   }
 }
 

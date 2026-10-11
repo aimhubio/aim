@@ -149,7 +149,7 @@ function drawArea(args: IDrawAreaArgs): void {
         .append('text')
         .attr('x', 0)
         .attr('y', 12)
-        .attr('fill', '#484f56')
+        .attr('fill', 'var(--aim-text)')
         .style('outline', '1px solid #dee6f3')
         .style('border-radius', '1px')
         .style('white-space', 'pre')
@@ -161,7 +161,7 @@ function drawArea(args: IDrawAreaArgs): void {
       .append('text')
       .attr('x', title.x + 39)
       .attr('y', 12)
-      .attr('fill', '#484f56')
+      .attr('fill', 'var(--aim-text)')
       .text(textEllipsis)
       .append('svg:title')
       .text(titleText);

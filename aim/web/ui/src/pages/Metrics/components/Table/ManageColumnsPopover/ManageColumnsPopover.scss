@@ -73,7 +73,7 @@
 }
 
 .ColumnList__items__wrapper__dragging {
-  background: #f3f8fe;
+  background: var(--aim-primary-color-5, #f3f8fe);
 }
 
 .ManageColumns__actions__container {

@@ -27,7 +27,7 @@
     }
     &__appBarContainer {
       height: 4.375rem;
-      background: #ffffff;
+      background: var(--aim-surface);
       display: flex;
       align-items: center;
       &__appBarBox {
@@ -79,7 +79,6 @@
           max-width: 100%;
           text-decoration: none;
 
-
           &:hover {
             text-decoration: underline;
             color: inherit;
@@ -95,7 +94,7 @@
           display: flex;
           i {
             margin-right: $space-xxs;
-            color: #606986;
+            color: var(--aim-pico-70, #606986);
           }
         }
         &__Skeleton {
@@ -106,7 +105,7 @@
           height: 1.5rem;
           top: -$space-xxxxs;
           &.opened {
-            background: #e8f1fc;
+            background: var(--aim-primary-color-10, #e8f1fc);
           }
           .MuiButton-label {
             padding-top: $space-xxxxs;
@@ -155,7 +154,7 @@
     }
 
     &__tabsContainer {
-      background: #ffffff;
+      background: var(--aim-surface);
       box-shadow: 0 toRem(4px) toRem(6px) rgba(144, 175, 218, 0.2),
         0 1px 0 0 $cuddle-20;
       border-top: $border-grey-lighter;
@@ -249,7 +248,7 @@
   border-radius: 0.5rem;
   height: 100%;
   overflow: auto;
-  background-color: #ffffff;
+  background-color: var(--aim-surface);
 }
 
 .RunDistributionsTab {
@@ -274,7 +273,7 @@
       width: calc(50% - 0.75rem);
       border: $border-grey;
       border-radius: 0.5rem;
-      background: $white;
+      background: var(--aim-surface);
       &__chartBox {
         display: flex;
         align-items: center;
@@ -319,7 +318,7 @@
       height: calc(100% - 2.25rem);
       display: flex;
       &__experimentsListContainer {
-        background: $white;
+        background: var(--aim-surface);
         width: 50%;
         height: 100%;
         position: relative;
@@ -335,7 +334,7 @@
             background: linear-gradient(
               180deg,
               rgba(248, 250, 253, 0) 0%,
-              #f8fafd 75.52%
+              var(--aim-cuddle-10, #f8fafd) 75.52%
             );
             height: $space-xs;
             width: 100%;
@@ -412,7 +411,7 @@
           background: linear-gradient(
             180deg,
             rgba(248, 250, 253, 0) 0%,
-            #f8fafd 75.52%
+            var(--aim-cuddle-10, #f8fafd) 75.52%
           );
           height: $space-xs;
           width: 100%;
@@ -495,7 +494,7 @@
       }
     }
     &__headerContainer {
-      background: #f3f8fe;
+      background: var(--aim-primary-color-5, #f3f8fe);
       width: 100%;
       height: 2.25rem;
       display: flex;
@@ -526,7 +525,7 @@
   }
   .MuiPaper-root {
     width: 37.5rem;
-    background: $white;
+    background: var(--aim-surface);
     border: $border-main;
     box-sizing: border-box;
     box-shadow: 0 0.25rem 0.375rem rgba(144, 175, 218, 0.2);

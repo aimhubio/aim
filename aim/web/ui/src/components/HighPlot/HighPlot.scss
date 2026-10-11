@@ -1,7 +1,7 @@
 @use 'src/styles/abstracts' as *;
 
 .HighPlot__container {
-  background-color: white;
+  background-color: var(--aim-surface);
   height: 100%;
   width: 100%;
   position: relative;

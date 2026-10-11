@@ -51,7 +51,7 @@
       }
     }
     &__closeButtonContainer {
-      color: #414b6d;
+      color: var(--aim-pico-80, #414b6d);
       padding: 0.25rem 0.3125rem 0.25rem 1.125rem;
       display: flex;
       justify-content: flex-end;

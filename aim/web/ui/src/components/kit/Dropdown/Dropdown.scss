@@ -8,7 +8,7 @@
     transition: 0.3s all;
     pointer-events: none;
     &.swapped {
-      background: #ffffff;
+      background: var(--aim-surface);
       transition: 0.3s all;
       padding: 0 0.25rem;
       top: -0.5125rem !important;
@@ -40,7 +40,7 @@
   cursor: pointer;
   border-radius: $border-radius-sm;
   &:hover {
-    background: #f2f5fa;
+    background: var(--aim-cuddle-20, #f2f5fa);
   }
   & > span {
     white-space: nowrap;

@@ -21,7 +21,7 @@
       position: absolute;
       top: toRem(-28px);
       left: toRem(-1px);
-      background: #fff;
+      background: var(--aim-surface);
       border: $border-main;
       border-bottom: transparent;
       border-radius: $space-xxxs $space-xxxs 0 0;
@@ -30,7 +30,7 @@
         content: '';
         height: $space-xxxs;
         width: calc(100% + 2px);
-        background: #fff;
+        background: var(--aim-surface);
         position: absolute;
         bottom: toRem(-2px);
         left: toRem(-1px);
