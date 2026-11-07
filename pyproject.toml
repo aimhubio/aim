@@ -1,2 +1,8 @@
 [build-system]
-requires = ["setuptools", "cython == 3.0.10", "aimrocks == 0.5.*"]
+requires = [
+    "setuptools",
+    "cython == 3.0.12",
+    "aimrocks == 0.5.*; python_version < '3.13'",
+    # Python 3.13 macOS wheels are currently only available in this prerelease.
+    "aimrocks == 0.5.3.dev8; python_version >= '3.13'",
+]
