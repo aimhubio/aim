@@ -16,7 +16,15 @@ function RunOverviewTabArtifactsCard({
   artifacts,
   isRunInfoLoading,
 }: IRunOverviewTabArtifactsCardProps) {
-  const tableData = React.useMemo(() => artifacts, [artifacts]);
+  // The table identifies rows by the `key` field, so every row needs a unique one
+  const tableData = React.useMemo(
+    () =>
+      artifacts.map((artifact, index) => ({
+        ...artifact,
+        key: index,
+      })),
+    [artifacts],
+  );
 
   const dataListProps = React.useMemo(
     (): ICardProps['dataListProps'] => ({
