@@ -1,4 +1,4 @@
 export interface IRunOverviewTabArtifactsCardProps {
-  artifacts: { [key: string]: string };
+  artifacts: Array<{ name: string; path: string; uri: string }>;
   isRunInfoLoading: boolean;
 }
